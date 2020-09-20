@@ -28,12 +28,12 @@ function setupServer(): Server {
 
 function setupMiddleware(app: Application): void {
   app.use(securityMiddleware());
-  app.use(logger.middleware());
+  app.use(logger.middleware);
   app.use(json());
 }
 
 function setupRoutes(app: Application): void {
-  app.use(authenticationRoutes);
+  app.use('/api', authenticationRoutes);
 }
 
 function setupErrorHandling(app: Application): void {

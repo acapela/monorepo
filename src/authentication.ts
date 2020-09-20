@@ -7,7 +7,7 @@ import { AuthenticationError } from './errors';
 
 export const router = Router();
 
-router.post('/users', verifyAuthentication, async (_, res) => {
+router.post('/v1/users', verifyAuthentication, async (_, res) => {
   const firebaseUser: FirebaseUser = res.locals.firebaseUser;
   const user = await createOrFindUser({
     firebaseId: firebaseUser.id,
