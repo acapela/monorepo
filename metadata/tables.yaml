@@ -1,1 +1,14 @@
-[]
+- table:
+    schema: public
+    name: user
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - email
+      - firebase_id
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      limit: 1
