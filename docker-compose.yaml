@@ -7,6 +7,8 @@ services:
     - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: dev
+    ports:
+    - "5432:5432"
   hasura:
     image: hasura/graphql-engine:v1.3.2
     ports:
@@ -16,12 +18,11 @@ services:
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:dev@postgres:5432/postgres
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "false" # all changes must go through migrations
-      ## enable debugging mode. It is recommended to disable this in production
       HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      ## uncomment next line to set an admin secret
-      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      HASURA_GRAPHQL_JWT_SECRET: "{ \"jwk_url\": \"https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com\", \"audience\": \"meetnomoreapp\", \"issuer\": \"https://securetoken.google.com/meetnomoreapp\" }"
+      HASURA_GRAPHQL_ADMIN_SECRET: dev
 volumes:
   db_data:
 

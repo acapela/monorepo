@@ -45,9 +45,11 @@ async function verifyAuthentication(req: Request, res: Response, next: (error?: 
 
 function addHasuraClaimsForUser(user: User) {
   return firebase.auth().setCustomUserClaims(user.firebaseId, {
-    'X-Hasura-User-Id': user.id,
-    'X-Hasura-Allowed-Roles': ['user'], // TODO: dynamically load this from the database
-    'X-Hasura-Default-Role': 'user',
+    'https://hasura.io/jwt/claims': {
+      'x-hasura-user-id': user.id,
+      'x-hasura-allowed-roles': ['user'], // TODO: dynamically load this from the database
+      'x-hasura-default-role': 'user',
+    },
   });
 }
 

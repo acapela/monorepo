@@ -10,6 +10,7 @@ import { PORT, IS_PRODUCTION } from './config';
 import * as logger from './logger';
 import database from './database';
 import { errorHandling, notFoundRouteHandling } from './errors';
+import './firebase';
 
 import { router as authenticationRoutes } from './authentication';
 

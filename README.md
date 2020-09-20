@@ -4,7 +4,7 @@ This is our main backend repository, it contains our hasura setup and API server
 
 ## Usage
 
-After cloning, run `yarn` to install the hasura cli. After that, use `docker-compose up` to spin up a local hasura and postgres instance to work with. Then, use hasura commands like `npx hasura console` to interact with your hasura instance.
+After cloning, run `yarn` to install the dependencies. After that, use `docker-compose up` to spin up your local hasura and postgres instance to work with.
 
 TODO: moving the API server here
 TODO: connecting to firebase auth

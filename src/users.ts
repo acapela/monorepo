@@ -17,7 +17,7 @@ export async function createOrFindUser({
 
 export async function findUserByFirebaseId(firebaseId: string): Promise<User | null> {
   const [databaseUser] = await database
-    .select('id, email, firebase_id')
+    .select(['id', 'email', 'firebase_id'])
     .from('user')
     .where({ firebase_id: firebaseId })
     .limit(1);
@@ -40,9 +40,9 @@ export async function createUser({
     .insert({
       id: uuid(),
       email,
-      firebaseId,
+      firebase_id: firebaseId,
     })
-    .returning('id, email, firebase_id');
+    .returning(['id', 'email', 'firebase_id']);
   return convertDatabaseUser(databaseUser);
 }
 
