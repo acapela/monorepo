@@ -1,17 +1,23 @@
 import express, { Application } from 'express';
+import 'express-async-errors'; // patches express to handle errors from async functions, must be right after express
 import { promisify } from 'util';
 import { Server, createServer } from 'http';
 import securityMiddleware from 'helmet';
 import { json } from 'body-parser';
-import { createTerminus } from '@godaddy/terminus';
+import { createTerminus as gracefulShutdown } from '@godaddy/terminus';
 
 import { PORT, IS_PRODUCTION } from './config';
 import * as logger from './logger';
+import database from './database';
+import { errorHandling, notFoundRouteHandling } from './errors';
+
+import { router as authenticationRoutes } from './authentication';
 
 function setupServer(): Server {
   const app = express();
   setupMiddleware(app);
   setupRoutes(app);
+  setupErrorHandling(app);
 
   const server = createServer(app);
   setupGracefulShutdown(server);
@@ -26,15 +32,20 @@ function setupMiddleware(app: Application): void {
 }
 
 function setupRoutes(app: Application): void {
-  app.get('/', (_, res) => res.end('Hello, world'));
+  app.use(authenticationRoutes);
+}
+
+function setupErrorHandling(app: Application): void {
+  app.use(notFoundRouteHandling);
+  app.use(errorHandling);
 }
 
 function setupGracefulShutdown(server: Server) {
   const closeServer = promisify(server.close.bind(server));
 
-  createTerminus(server, {
-    onSignal: async () => {
-      await closeServer();
+  gracefulShutdown(server, {
+    onSignal: () => {
+      return Promise.all([database.destroy(), closeServer()]);
     },
   });
 }
