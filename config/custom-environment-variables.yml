@@ -1,5 +1,5 @@
 database:
-  connection-url: DB_CONNECTION_URL
+  connectionUrl: DB_CONNECTION_URL
 
 port: PORT
 
