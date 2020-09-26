@@ -6,9 +6,9 @@ This is our main backend repository, it contains our hasura setup and API server
 
 After cloning, run `npm install` to install the dependencies. After that, use `docker-compose up` to spin up your local hasura and postgres instance to work with.
 
-TODO: moving the API server here
-TODO: connecting to firebase auth
-TODO: set up end to end tests between the three
+Use `npm run test:watch` to start running tests.
+
+To successfully use firebase auth locally, you need to have credentials to the service account of the firebase instance. Head [here](https://console.cloud.google.com/iam-admin/serviceaccounts/details/105485369863137256806?authuser=0&project=meetnomoreapp) to get a new key. Store this in a json file, and then add the path of it to an environment variable called `GOOGLE_APPLICATION_CREDENTIALS`. For example, `GOOGLE_APPLICATION_CREDENTIALS=/Users/uku.tammet/Projects/acapela/auth-credentials.json`, if I saved the key file in that location with that name. Obviously, these are secret, you should safeguard them and never commit them.
 
 # Architecture
 
