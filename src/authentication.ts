@@ -24,18 +24,7 @@ router.post('/v1/users', verifyAuthentication, async (_, res) => {
 });
 
 async function verifyAuthentication(req: Request, res: Response, next: (error?: Error) => void) {
-  const authenticationHeader = req.get('Authorization') || '';
-  if (!authenticationHeader) {
-    throw new AuthenticationError('No authorization header present');
-  }
-  const type = authenticationHeader.slice(0, authenticationHeader.indexOf(' '));
-  if (type !== 'Bearer') {
-    throw new AuthenticationError('Unsupported authorization type');
-  }
-  const token = authenticationHeader.slice('Bearer '.length);
-  if (!token) {
-    throw new AuthenticationError('No bearer token present');
-  }
+  const token = extractToken(req.get('Authorization') || '');
   try {
     const claims = await firebase.auth().verifyIdToken(token);
     res.locals.firebaseUser = extractFirebaseUserFromClaims(claims);
@@ -43,6 +32,21 @@ async function verifyAuthentication(req: Request, res: Response, next: (error?: 
   } catch (e) {
     throw new AuthenticationError('Invalid bearer token');
   }
+}
+
+function extractToken(header: string): string {
+  if (!header) {
+    throw new AuthenticationError('No authorization header present');
+  }
+  const type = header.slice(0, header.indexOf(' '));
+  if (type !== 'Bearer') {
+    throw new AuthenticationError('Unsupported authorization type');
+  }
+  const token = header.slice('Bearer '.length);
+  if (!token) {
+    throw new AuthenticationError('No bearer token present');
+  }
+  return token;
 }
 
 function addHasuraClaimsForUser(user: User) {
