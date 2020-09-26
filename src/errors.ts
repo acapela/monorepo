@@ -33,3 +33,9 @@ export class AuthenticationError extends HttpError {
     super(401, message);
   }
 }
+
+export class UnprocessableEntityError extends HttpError {
+  constructor(message: string = 'The request is invalid') {
+    super(422, message);
+  }
+}

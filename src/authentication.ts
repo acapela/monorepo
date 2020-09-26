@@ -3,15 +3,18 @@ import admin from 'firebase-admin';
 import firebase from 'firebase-admin';
 
 import { createOrFindUser, User } from './users';
-import { AuthenticationError } from './errors';
+import { AuthenticationError, UnprocessableEntityError } from './errors';
 
 export const router = Router();
 
 router.post('/v1/users', verifyAuthentication, async (_, res) => {
   const firebaseUser: FirebaseUser = res.locals.firebaseUser;
+  if (!firebaseUser.verifiedEmail) {
+    throw new UnprocessableEntityError('Email of the user is missing or not yet verified');
+  }
   const user = await createOrFindUser({
     firebaseId: firebaseUser.id,
-    email: firebaseUser.email!, // TODO: do we need email here? no guarantee it's there atm
+    email: firebaseUser.verifiedEmail,
   });
   await addHasuraClaimsForUser(user);
   res.status(200).json({
@@ -56,11 +59,11 @@ function addHasuraClaimsForUser(user: User) {
 function extractFirebaseUserFromClaims(claims: admin.auth.DecodedIdToken): FirebaseUser {
   return {
     id: claims.sub,
-    email: claims.email,
+    verifiedEmail: claims.email_verified && claims.email ? claims.email : null,
   };
 }
 
 interface FirebaseUser {
   id: string;
-  email: string | undefined;
+  verifiedEmail: string | null;
 }
