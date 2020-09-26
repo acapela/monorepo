@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest src",
-    "test:watch": "jest src --watch",
+    "test": "jest src --runInBand",
+    "test:watch": "jest src --runInBand --watch",
     "build": "tsc",
     "start": "node dist",
     "format": "prettier --write --single-quote src",

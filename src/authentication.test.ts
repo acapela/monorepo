@@ -5,22 +5,12 @@ import firebase from 'firebase-admin';
 
 import { createUser, findUserByFirebaseId, User } from './users';
 import { setupServer } from './app';
-import { cleanupDatabase } from './testSupport/testDatabaseUtils';
-import database from './database';
 
 const fakeAuth = firebase.auth() as any;
 
 describe('Users endpoint', () => {
   const app = setupServer();
   const unauthorized = 401;
-
-  beforeEach(async () => {
-    await cleanupDatabase();
-  });
-
-  afterAll(async () => {
-    await database.destroy();
-  });
 
   it('creates a new user and adds hasura claims to their token', async () => {
     const uid = uuid();
