@@ -19,9 +19,7 @@ jobs:
         image: hasura/graphql-engine:v1.3.2
         ports:
           - "8080:8080"
-        depends_on:
-          - "postgres"
-        environment:
+        env:
           HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:dev@postgres:5432/postgres
           HASURA_GRAPHQL_DEV_MODE: "true"
           HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
