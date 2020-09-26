@@ -1,5 +1,4 @@
 import { Request, Response, Router } from 'express';
-import admin from 'firebase-admin';
 import firebase from 'firebase-admin';
 
 import { createOrFindUser, User } from './users';
@@ -56,7 +55,7 @@ function addHasuraClaimsForUser(user: User) {
   });
 }
 
-function extractFirebaseUserFromClaims(claims: admin.auth.DecodedIdToken): FirebaseUser {
+function extractFirebaseUserFromClaims(claims: firebase.auth.DecodedIdToken): FirebaseUser {
   return {
     id: claims.sub,
     verifiedEmail: claims.email_verified && claims.email ? claims.email : null,

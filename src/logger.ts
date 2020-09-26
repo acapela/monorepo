@@ -1,12 +1,14 @@
 import pino from 'pino';
 import { ServerResponse } from 'http';
 import { Request } from 'express';
+import config from 'config';
 
 const NANOSECONDS_IN_MILLISECOND = 1000000;
 
 const logger = pino({
   messageKey: 'message',
   prettyPrint: process.env.NODE_ENV !== 'production',
+  level: config.get('logging.level'),
 });
 
 export function info(message: string, params: object = {}): void {

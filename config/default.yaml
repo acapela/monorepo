@@ -1,7 +1,14 @@
+# default configuration, runs in dev mode. Environment variable and different environments (prod, test) can override this
+# Check out custom-environment-variables.yaml
+# more info: https://github.com/lorenwest/node-config
+
 firebase:
   databaseUrl: https://meetnomoreapp.firebaseio.com
 
 database:
   connectionUrl: postgres://postgres:dev@localhost:5432/postgres
+
+logging:
+  level: info
 
 port: 1337
