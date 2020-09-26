@@ -27,14 +27,19 @@ jobs:
           HASURA_GRAPHQL_JWT_SECRET: "{ \"jwk_url\": \"https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com\", \"audience\": \"meetnomoreapp\", \"issuer\": \"https://securetoken.google.com/meetnomoreapp\" }"
           HASURA_GRAPHQL_ADMIN_SECRET: dev
     steps:
-    - uses: actions/checkout@v2
-    - name: Cache NPM dependencies
-      uses: actions/cache@v1
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-          ${{ runner.OS }}-npm-cache-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: npm install
     - name: Build project
