@@ -11,19 +11,19 @@ const logger = pino({
   level: config.get('logging.level'),
 });
 
-export function info(message: string, params: object = {}): void {
+export function info(message: string, params: Record<string, unknown> = {}): void {
   logger.info({ ...params, message });
 }
 
-export function warn(message: string, params: object = {}): void {
+export function warn(message: string, params: Record<string, unknown> = {}): void {
   logger.warn({ ...params, message });
 }
 
-export function error(message: string, params: object = {}): void {
+export function error(message: string, params: Record<string, unknown> = {}): void {
   logger.error({ ...params, message });
 }
 
-export function middleware(req: Request, res: ServerResponse, next: () => any) {
+export function middleware(req: Request, res: ServerResponse, next: () => void): void {
   const startTime = process.hrtime();
   res.once('finish', () => {
     info('Request finished', {

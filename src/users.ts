@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import database from './database';
 
-export async function createOrFindUser({ email, firebaseId }: { email: string; firebaseId: string }) {
+export async function createOrFindUser({ email, firebaseId }: { email: string; firebaseId: string }): Promise<User> {
   const user = await findUserByFirebaseId(firebaseId);
   if (user) {
     return user;

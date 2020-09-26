@@ -1,7 +1,7 @@
 jest.mock('firebase-admin', () => {
   class FakeFirebase {
     public readonly credential: FakeFirebaseCredential;
-    public savedSettings: object | undefined;
+    public savedSettings: Record<string, unknown> | undefined;
     private readonly fakeAuth: FakeFirebaseAuth;
 
     constructor() {
@@ -13,17 +13,19 @@ jest.mock('firebase-admin', () => {
       return this.fakeAuth;
     }
 
-    initializeApp(settings: object) {
+    initializeApp(settings: Record<string, unknown>) {
       this.savedSettings = settings;
     }
   }
 
   class FakeFirebaseCredential {
-    applicationDefault() {}
+    applicationDefault() {
+      return 'fake-credentials';
+    }
   }
 
   class FakeFirebaseAuth {
-    private readonly claims: Map<string, object>;
+    private readonly claims: Map<string, Record<string, unknown>>;
     private readonly userTokens: Map<string, string[]>;
 
     constructor() {
@@ -32,14 +34,14 @@ jest.mock('firebase-admin', () => {
     }
 
     // mocks
-    async setCustomUserClaims(uid: string, claims: object) {
+    async setCustomUserClaims(uid: string, claims: Record<string, unknown>) {
       const existingClaims = this.claims.get(uid) || {};
       Object.assign(existingClaims, claims);
       this.claims.set(uid, existingClaims);
     }
 
     async verifyIdToken(token: string) {
-      const [user] = Array.from(this.userTokens.entries()).find(([_, tokens]) => tokens.includes(token)) || [];
+      const [user] = Array.from(this.userTokens.entries()).find((entry) => entry[1].includes(token)) || [];
       if (!user) {
         throw new Error('invalid test token');
       }
@@ -58,12 +60,12 @@ jest.mock('firebase-admin', () => {
       return this;
     }
 
-    setFakeUserClaims(uid: string, claims: object) {
+    setFakeUserClaims(uid: string, claims: Record<string, unknown>) {
       this.claims.set(uid, claims);
       return this;
     }
 
-    getFakeUserClaims(uid: string): object | undefined {
+    getFakeUserClaims(uid: string): Record<string, unknown> | undefined {
       return this.claims.get(uid);
     }
   }

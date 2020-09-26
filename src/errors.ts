@@ -1,16 +1,22 @@
 import { Request, Response } from 'express';
 
-export function notFoundRouteHandling() {
+export function notFoundRouteHandling(): void {
   throw new NotFoundError();
 }
 
-export function errorHandling(err: Error, req: Request, res: Response, next: () => any) {
-  const status = typeof (err as any).status !== 'undefined' ? (err as any).status : 500;
-  const response: { message: string } = {
+export function errorHandling(
+  err: Error,
+  req: Request,
+  res: Response,
+  /* eslint-disable */ next: () => void /* eslint-enable */
+): void {
+  const anyError = err as any; // eslint-disable-line
+  const status = typeof anyError.status !== 'undefined' ? anyError.status : 500;
+  const response: { message: string; stack?: string } = {
     message: err.message || 'Something went wrong',
   };
   if (process.env.NODE_ENV !== 'production' && err.stack) {
-    (response as any).stack = err.stack;
+    response.stack = err.stack;
   }
   res.status(status).json(response);
 }
@@ -25,19 +31,19 @@ class HttpError extends Error {
 }
 
 export class NotFoundError extends HttpError {
-  constructor(message: string = 'Not found') {
+  constructor(message = 'Not found') {
     super(404, message);
   }
 }
 
 export class AuthenticationError extends HttpError {
-  constructor(message: string = 'You are not authenticated') {
+  constructor(message = 'You are not authenticated') {
     super(401, message);
   }
 }
 
 export class UnprocessableEntityError extends HttpError {
-  constructor(message: string = 'The request is invalid') {
+  constructor(message = 'The request is invalid') {
     super(422, message);
   }
 }

@@ -23,8 +23,8 @@ router.post('/v1/users', verifyAuthentication, async (_, res) => {
   });
 });
 
-async function verifyAuthentication(req: Request, res: Response, next: (error?: Error) => any) {
-  const authenticationHeader = req.get('Authorization')!;
+async function verifyAuthentication(req: Request, res: Response, next: (error?: Error) => void) {
+  const authenticationHeader = req.get('Authorization') || '';
   if (!authenticationHeader) {
     throw new AuthenticationError('No authorization header present');
   }
