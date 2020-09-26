@@ -1,0 +1,46 @@
+name: Test
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        ports: 
+          - "5433:5432"
+        env:
+          POSTGRES_PASSWORD: dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      hasura:
+        image: hasura/graphql-engine:v1.3.2
+        ports:
+          - "8080:8080"
+        depends_on:
+          - "postgres"
+        environment:
+          HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:dev@postgres:5432/postgres
+          HASURA_GRAPHQL_DEV_MODE: "true"
+          HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+          HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+          HASURA_GRAPHQL_JWT_SECRET: "{ \"jwk_url\": \"https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com\", \"audience\": \"meetnomoreapp\", \"issuer\": \"https://securetoken.google.com/meetnomoreapp\" }"
+          HASURA_GRAPHQL_ADMIN_SECRET: dev
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache NPM dependencies
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-npm-cache-
+    - name: Install dependencies
+      run: npm install
+    - name: Build project
+      run: npm run build
+    - name: Run tests
+      run: npm run test
+
