@@ -1,9 +1,8 @@
-import express, { Application } from 'express';
+import express, { Application, json } from 'express';
 import 'express-async-errors'; // patches express to handle errors from async functions, must be right after express
 import { promisify } from 'util';
 import { Server, createServer } from 'http';
 import securityMiddleware from 'helmet';
-import { json } from 'body-parser';
 import { createTerminus as gracefulShutdown } from '@godaddy/terminus';
 
 import { PORT, IS_PRODUCTION } from './config';
