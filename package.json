@@ -8,7 +8,8 @@
     "test:watch": "jest src --watch",
     "build": "tsc",
     "start": "node dist",
-    "format": "prettier --write --single-quote src"
+    "format": "prettier --write --single-quote src",
+    "checkformat": "prettier --check src"
   },
   "husky": {
     "hooks": {
