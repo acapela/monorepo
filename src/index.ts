@@ -54,7 +54,10 @@ function start(): void {
   const server = setupServer();
   const port = config.get('port');
   server.listen(port, () =>
-    logger.info('Server started', { port, production: process.env.NODE_ENV === 'production' }),
+    logger.info('Server started', {
+      port,
+      production: process.env.NODE_ENV === 'production',
+    })
   );
 }
 

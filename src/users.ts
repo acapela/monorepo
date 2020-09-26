@@ -1,13 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import database from './database';
 
-export async function createOrFindUser({
-  email,
-  firebaseId,
-}: {
-  email: string;
-  firebaseId: string;
-}) {
+export async function createOrFindUser({ email, firebaseId }: { email: string; firebaseId: string }) {
   const user = await findUserByFirebaseId(firebaseId);
   if (user) {
     return user;
@@ -29,13 +23,7 @@ export async function findUserByFirebaseId(firebaseId: string): Promise<User | n
   return null;
 }
 
-export async function createUser({
-  email,
-  firebaseId,
-}: {
-  email: string;
-  firebaseId: string;
-}): Promise<User> {
+export async function createUser({ email, firebaseId }: { email: string; firebaseId: string }): Promise<User> {
   const [databaseUser] = await database('user')
     .insert({
       id: uuid(),
