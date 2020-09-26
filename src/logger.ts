@@ -2,13 +2,11 @@ import pino from 'pino';
 import { ServerResponse } from 'http';
 import { Request } from 'express';
 
-import { IS_PRODUCTION } from './config';
-
 const NANOSECONDS_IN_MILLISECOND = 1000000;
 
 const logger = pino({
   messageKey: 'message',
-  prettyPrint: !IS_PRODUCTION,
+  prettyPrint: process.env.NODE_ENV !== 'production',
 });
 
 export function info(message: string, params: object = {}): void {

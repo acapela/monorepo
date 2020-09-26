@@ -1,9 +1,9 @@
 import knex from 'knex';
-import { DB_CONNECTION_URL } from './config';
+import config from 'config';
 
 const database = knex({
   client: 'pg',
-  connection: DB_CONNECTION_URL,
+  connection: config.get('database.connection-url'),
 });
 
 export default database;

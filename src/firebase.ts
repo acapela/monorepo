@@ -1,7 +1,7 @@
 import admin from 'firebase-admin';
-import { FIREBASE_DATABASE_URL } from './config';
+import config from 'config';
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
-  databaseURL: FIREBASE_DATABASE_URL,
+  databaseURL: config.get('firebase.database-url'),
 });

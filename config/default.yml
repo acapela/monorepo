@@ -1,0 +1,7 @@
+firebase:
+  database-url: https://meetnomoreapp.firebaseio.com
+
+database:
+  connection-url: postgres://postgres:dev@localhost:5432/postgres
+
+port: 1337

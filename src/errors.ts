@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { IS_PRODUCTION } from './config';
 
 export function notFoundRouteHandling() {
   throw new NotFoundError();
@@ -8,7 +7,7 @@ export function notFoundRouteHandling() {
 export function errorHandling(err: Error, req: Request, res: Response, next: () => any) {
   const status = typeof (err as any).status !== 'undefined' ? (err as any).status : 500;
   const response: { message: string } = { message: err.message || 'Something went wrong' };
-  if (!IS_PRODUCTION && err.stack) {
+  if (process.env.NODE_ENV !== 'production' && err.stack) {
     (response as any).stack = err.stack;
   }
   res.status(status).json(response);

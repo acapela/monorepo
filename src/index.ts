@@ -3,9 +3,9 @@ import 'express-async-errors'; // patches express to handle errors from async fu
 import { promisify } from 'util';
 import { Server, createServer } from 'http';
 import securityMiddleware from 'helmet';
+import config from 'config';
 import { createTerminus as gracefulShutdown } from '@godaddy/terminus';
 
-import { PORT, IS_PRODUCTION } from './config';
 import * as logger from './logger';
 import database from './database';
 import { errorHandling, notFoundRouteHandling } from './errors';
@@ -52,8 +52,9 @@ function setupGracefulShutdown(server: Server) {
 
 function start(): void {
   const server = setupServer();
-  server.listen(PORT, () =>
-    logger.info('Server started', { port: PORT, production: IS_PRODUCTION }),
+  const port = config.get('port');
+  server.listen(port, () =>
+    logger.info('Server started', { port, production: process.env.NODE_ENV === 'production' }),
   );
 }
 
