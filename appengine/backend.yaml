@@ -1,0 +1,10 @@
+service: backend
+runtime: nodejs12
+
+#inbound_services:
+#  - warmup
+
+instance_class: F1
+
+automatic_scaling:
+  min_instances: 1
