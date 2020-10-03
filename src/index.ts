@@ -1,10 +1,11 @@
-import config from "config";
+// We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
+import config from "./config";
 
-import * as logger from "./logger";
-import { setupServer } from "./app";
-
-function start(): void {
-  const server = setupServer();
+async function start(): Promise<void> {
+  await config.load();
+  const logger = require("./logger");
+  logger.info("Configuration loaded");
+  const server = require("./app").setupServer();
   const port = config.get("port");
   server.listen(port, () =>
     logger.info("Server started", {

@@ -1,7 +1,7 @@
 import pino from "pino";
 import { ServerResponse } from "http";
 import { Request } from "express";
-import config from "config";
+import config from "./config";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 

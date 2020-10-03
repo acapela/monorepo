@@ -1,3 +1,6 @@
 # Production-specific configuration properties.
 # These mostly come from environment variables in custom-environment-variables.yaml,
 # but static production configuration properties can be added here
+
+logging:
+  level: info

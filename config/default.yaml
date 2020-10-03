@@ -5,6 +5,7 @@
 firebase:
   databaseUrl: https://meetnomoreapp.firebaseio.com
 
+# overridden from secrets
 database:
   user: user
   password: dev
@@ -15,5 +16,11 @@ database:
 
 logging:
   level: info
+
+# What google secret manager secrets to use in production and what config properties to map them to
+secrets:
+  "database.user": DB_USER
+  "database.password": DB_PASSWORD
+  "database.name": DB_NAME
 
 port: 1337

@@ -1,5 +1,5 @@
 import knex from "knex";
-import config from "config";
+import config from "./config";
 import * as logger from "./logger";
 
 const socketPath: string = config.get("database.host.socketPath") || "/cloudsql";
