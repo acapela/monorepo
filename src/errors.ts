@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { HttpStatus } from './http';
 
 export function notFoundRouteHandling(): void {
   throw new NotFoundError();
@@ -11,7 +12,7 @@ export function errorHandling(
   /* eslint-disable */ next: () => void /* eslint-enable */
 ): void {
   const anyError = err as any; // eslint-disable-line
-  const status = typeof anyError.status !== 'undefined' ? anyError.status : 500;
+  const status = typeof anyError.status !== 'undefined' ? anyError.status : HttpStatus.INTERNAL_SERVER_ERROR;
   const response: { message: string; stack?: string } = {
     message: err.message || 'Something went wrong',
   };
@@ -32,18 +33,18 @@ class HttpError extends Error {
 
 export class NotFoundError extends HttpError {
   constructor(message = 'Not found') {
-    super(404, message);
+    super(HttpStatus.NOT_FOUND, message);
   }
 }
 
 export class AuthenticationError extends HttpError {
   constructor(message = 'You are not authenticated') {
-    super(401, message);
+    super(HttpStatus.UNAUTHORIZED, message);
   }
 }
 
 export class UnprocessableEntityError extends HttpError {
   constructor(message = 'The request is invalid') {
-    super(422, message);
+    super(HttpStatus.UNPROCESSABLE_ENTITY, message);
   }
 }

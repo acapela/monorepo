@@ -5,12 +5,12 @@ import firebase from 'firebase-admin';
 
 import { createUser, findUserByFirebaseId, User } from './users';
 import { setupServer } from './app';
+import { HttpStatus } from './http';
 
 const fakeAuth = firebase.auth() as any;
 
 describe('Users endpoint', () => {
   const app = setupServer();
-  const unauthorized = 401;
 
   it('creates a new user and adds hasura claims to their token', async () => {
     const uid = uuid();
@@ -24,7 +24,7 @@ describe('Users endpoint', () => {
     fakeAuth.addFakeUserToken(uid, token);
 
     expect(await findUserByFirebaseId(uid)).toBeNull();
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(200);
+    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(HttpStatus.OK);
     const user = (await findUserByFirebaseId(uid)) as User;
     expect(user).toEqual(
       expect.objectContaining({
@@ -56,7 +56,7 @@ describe('Users endpoint', () => {
       firebaseId: uid,
     });
 
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(200, user);
+    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(HttpStatus.OK, user);
     const retrievedUser = (await findUserByFirebaseId(uid)) as User;
     expect(retrievedUser).toEqual(user);
     const claims = fakeAuth.getFakeUserClaims(uid);

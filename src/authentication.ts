@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import firebase from 'firebase-admin';
 
+import { HttpStatus } from './http';
 import { createOrFindUser, User } from './users';
 import { AuthenticationError, UnprocessableEntityError } from './errors';
 
@@ -16,7 +17,7 @@ router.post('/v1/users', verifyAuthentication, async (_, res) => {
     email: firebaseUser.verifiedEmail,
   });
   await addHasuraClaimsForUser(user);
-  res.status(200).json({
+  res.status(HttpStatus.OK).json({
     id: user.id,
     firebaseId: user.firebaseId,
     email: user.email,

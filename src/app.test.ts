@@ -1,6 +1,7 @@
 import request from 'supertest';
 
 import { setupServer } from './app';
+import { HttpStatus } from './http';
 
 describe('Application', () => {
   const app = setupServer();
@@ -9,7 +10,7 @@ describe('Application', () => {
     await request(app)
       .post('/a-route-that-probably-does-not-exist')
       .expect((response) => {
-        expect(response.status).toEqual(404);
+        expect(response.status).toEqual(HttpStatus.NOT_FOUND);
         expect(response.body.message).toEqual('Not found');
       });
   });
