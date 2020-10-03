@@ -1,16 +1,16 @@
-import express, { Application, json } from 'express';
-import 'express-async-errors'; // patches express to handle errors from async functions, must be right after express
-import { promisify } from 'util';
-import { Server, createServer } from 'http';
-import securityMiddleware from 'helmet';
-import { createTerminus as gracefulShutdown } from '@godaddy/terminus';
+import express, { Application, json } from "express";
+import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
+import { promisify } from "util";
+import { Server, createServer } from "http";
+import securityMiddleware from "helmet";
+import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 
-import * as logger from './logger';
-import database from './database';
-import { errorHandling, notFoundRouteHandling } from './errors';
-import './firebase';
+import * as logger from "./logger";
+import database from "./database";
+import { errorHandling, notFoundRouteHandling } from "./errors";
+import "./firebase";
 
-import { router as authenticationRoutes } from './authentication';
+import { router as authenticationRoutes } from "./authentication";
 
 export function setupServer(): Server {
   const app = express();
@@ -31,7 +31,7 @@ function setupMiddleware(app: Application): void {
 }
 
 function setupRoutes(app: Application): void {
-  app.use('/api', authenticationRoutes);
+  app.use("/api", authenticationRoutes);
 }
 
 function setupErrorHandling(app: Application): void {

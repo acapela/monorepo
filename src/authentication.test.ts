@@ -1,21 +1,21 @@
-import request from 'supertest';
-import { v4 as uuid } from 'uuid';
-import './testSupport/testFirebase';
-import firebase from 'firebase-admin';
+import request from "supertest";
+import { v4 as uuid } from "uuid";
+import "./testSupport/testFirebase";
+import firebase from "firebase-admin";
 
-import { createUser, findUserByFirebaseId, User } from './users';
-import { setupServer } from './app';
-import { HttpStatus } from './http';
+import { createUser, findUserByFirebaseId, User } from "./users";
+import { setupServer } from "./app";
+import { HttpStatus } from "./http";
 
 const fakeAuth = firebase.auth() as any;
 
-describe('Users endpoint', () => {
+describe("Users endpoint", () => {
   const app = setupServer();
 
-  it('creates a new user and adds hasura claims to their token', async () => {
+  it("creates a new user and adds hasura claims to their token", async () => {
     const uid = uuid();
     const token = uuid();
-    const email = 'heiki@acape.la';
+    const email = "heiki@acape.la";
     fakeAuth.setFakeUserClaims(uid, {
       sub: uid,
       email_verified: true,
@@ -24,7 +24,7 @@ describe('Users endpoint', () => {
     fakeAuth.addFakeUserToken(uid, token);
 
     expect(await findUserByFirebaseId(uid)).toBeNull();
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(HttpStatus.OK);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(HttpStatus.OK);
     const user = (await findUserByFirebaseId(uid)) as User;
     expect(user).toEqual(
       expect.objectContaining({
@@ -34,17 +34,17 @@ describe('Users endpoint', () => {
     );
     expect(user.id).toBeDefined();
     const claims = fakeAuth.getFakeUserClaims(uid);
-    expect(claims['https://hasura.io/jwt/claims']).toEqual({
-      'x-hasura-user-id': user.id,
-      'x-hasura-allowed-roles': ['user'],
-      'x-hasura-default-role': 'user',
+    expect(claims["https://hasura.io/jwt/claims"]).toEqual({
+      "x-hasura-user-id": user.id,
+      "x-hasura-allowed-roles": ["user"],
+      "x-hasura-default-role": "user",
     });
   });
 
-  it('finds an existing user and adds hasura claims to their token', async () => {
+  it("finds an existing user and adds hasura claims to their token", async () => {
     const uid = uuid();
     const token = uuid();
-    const email = 'heiki@acape.la';
+    const email = "heiki@acape.la";
     fakeAuth.setFakeUserClaims(uid, {
       sub: uid,
       email_verified: true,
@@ -56,21 +56,21 @@ describe('Users endpoint', () => {
       firebaseId: uid,
     });
 
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(HttpStatus.OK, user);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(HttpStatus.OK, user);
     const retrievedUser = (await findUserByFirebaseId(uid)) as User;
     expect(retrievedUser).toEqual(user);
     const claims = fakeAuth.getFakeUserClaims(uid);
-    expect(claims['https://hasura.io/jwt/claims']).toEqual({
-      'x-hasura-user-id': user.id,
-      'x-hasura-allowed-roles': ['user'],
-      'x-hasura-default-role': 'user',
+    expect(claims["https://hasura.io/jwt/claims"]).toEqual({
+      "x-hasura-user-id": user.id,
+      "x-hasura-allowed-roles": ["user"],
+      "x-hasura-default-role": "user",
     });
   });
 
-  it('fails if the user does not have a verified email', async () => {
+  it("fails if the user does not have a verified email", async () => {
     const uid = uuid();
     const token = uuid();
-    const email = 'heiki@acape.la';
+    const email = "heiki@acape.la";
     fakeAuth.setFakeUserClaims(uid, {
       sub: uid,
       email_verified: false,
@@ -78,10 +78,10 @@ describe('Users endpoint', () => {
     });
     fakeAuth.addFakeUserToken(uid, token);
 
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(422);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(422);
   });
 
-  it('fails if the user does not have an email', async () => {
+  it("fails if the user does not have an email", async () => {
     const uid = uuid();
     const token = uuid();
     fakeAuth.setFakeUserClaims(uid, {
@@ -91,18 +91,18 @@ describe('Users endpoint', () => {
     });
     fakeAuth.addFakeUserToken(uid, token);
 
-    await request(app).post('/api/v1/users/').set('Authorization', `Bearer ${token}`).expect(422);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(422);
   });
 
-  it('returns unauthorized when the token is missing', async () => {
-    await request(app).post('/api/v1/users/').expect(unauthorized);
+  it("returns unauthorized when the token is missing", async () => {
+    await request(app).post("/api/v1/users/").expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('returns unauthorized when the token is not a bearer type', async () => {
-    await request(app).post('/api/v1/users/').set('Authorization', 'Basic faketoken').expect(unauthorized);
+  it("returns unauthorized when the token is not a bearer type", async () => {
+    await request(app).post("/api/v1/users/").set("Authorization", "Basic faketoken").expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('returns unauthorized when the token is invalid', async () => {
-    await request(app).post('/api/v1/users/').set('Authorization', 'Bearer faketoken').expect(unauthorized);
+  it("returns unauthorized when the token is invalid", async () => {
+    await request(app).post("/api/v1/users/").set("Authorization", "Bearer faketoken").expect(HttpStatus.UNAUTHORIZED);
   });
 });

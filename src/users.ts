@@ -1,5 +1,5 @@
-import { v4 as uuid } from 'uuid';
-import database from './database';
+import { v4 as uuid } from "uuid";
+import database from "./database";
 
 export async function createOrFindUser({ email, firebaseId }: { email: string; firebaseId: string }): Promise<User> {
   const user = await findUserByFirebaseId(firebaseId);
@@ -11,8 +11,8 @@ export async function createOrFindUser({ email, firebaseId }: { email: string; f
 
 export async function findUserByFirebaseId(firebaseId: string): Promise<User | null> {
   const [databaseUser] = await database
-    .select(['id', 'email', 'firebase_id'])
-    .from('user')
+    .select(["id", "email", "firebase_id"])
+    .from("user")
     .where({ firebase_id: firebaseId })
     .limit(1);
 
@@ -24,13 +24,13 @@ export async function findUserByFirebaseId(firebaseId: string): Promise<User | n
 }
 
 export async function createUser({ email, firebaseId }: { email: string; firebaseId: string }): Promise<User> {
-  const [databaseUser] = await database('user')
+  const [databaseUser] = await database("user")
     .insert({
       id: uuid(),
       email,
       firebase_id: firebaseId,
     })
-    .returning(['id', 'email', 'firebase_id']);
+    .returning(["id", "email", "firebase_id"]);
   return convertDatabaseUser(databaseUser);
 }
 

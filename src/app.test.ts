@@ -1,17 +1,17 @@
-import request from 'supertest';
+import request from "supertest";
 
-import { setupServer } from './app';
-import { HttpStatus } from './http';
+import { setupServer } from "./app";
+import { HttpStatus } from "./http";
 
-describe('Application', () => {
+describe("Application", () => {
   const app = setupServer();
 
-  it('has 404s set up correctly', async () => {
+  it("has 404s set up correctly", async () => {
     await request(app)
-      .post('/a-route-that-probably-does-not-exist')
+      .post("/a-route-that-probably-does-not-exist")
       .expect((response) => {
         expect(response.status).toEqual(HttpStatus.NOT_FOUND);
-        expect(response.body.message).toEqual('Not found');
+        expect(response.body.message).toEqual("Not found");
       });
   });
 });

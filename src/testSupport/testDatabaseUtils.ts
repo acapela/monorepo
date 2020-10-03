@@ -1,5 +1,5 @@
-import database from '../database';
+import database from "../database";
 
 export async function cleanupDatabase(): Promise<unknown[]> {
-  return Promise.all([database('user').truncate()]);
+  return Promise.all([database("user").truncate()]);
 }

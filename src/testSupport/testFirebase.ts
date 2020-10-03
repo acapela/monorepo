@@ -1,4 +1,4 @@
-jest.mock('firebase-admin', () => {
+jest.mock("firebase-admin", () => {
   class FakeFirebase {
     public readonly credential: FakeFirebaseCredential;
     public savedSettings: Record<string, unknown> | undefined;
@@ -20,7 +20,7 @@ jest.mock('firebase-admin', () => {
 
   class FakeFirebaseCredential {
     applicationDefault() {
-      return 'fake-credentials';
+      return "fake-credentials";
     }
   }
 
@@ -43,18 +43,18 @@ jest.mock('firebase-admin', () => {
     async verifyIdToken(token: string) {
       const [user] = Array.from(this.userTokens.entries()).find((entry) => entry[1].includes(token)) || [];
       if (!user) {
-        throw new Error('invalid test token');
+        throw new Error("invalid test token");
       }
       const claims = this.claims.get(user);
       if (!claims) {
-        throw new Error('invalid test token');
+        throw new Error("invalid test token");
       }
       return claims;
     }
 
     // test support methods
     addFakeUserToken(uid: string, token: string) {
-      const existingTokens = this.userTokens.get('uid') || [];
+      const existingTokens = this.userTokens.get("uid") || [];
       existingTokens.push(token);
       this.userTokens.set(uid, existingTokens);
       return this;

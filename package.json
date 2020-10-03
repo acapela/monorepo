@@ -8,7 +8,7 @@
     "test:watch": "jest src --runInBand --watch",
     "build": "tsc",
     "start": "node dist",
-    "format": "prettier --write --single-quote src",
+    "format": "prettier --write src",
     "lint": "eslint \"src/**/*.{js,ts}\"",
     "checkformat": "prettier --check src"
   },

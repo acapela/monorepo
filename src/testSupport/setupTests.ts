@@ -1,5 +1,5 @@
-import { cleanupDatabase } from './testDatabaseUtils';
-import database from '../database';
+import { cleanupDatabase } from "./testDatabaseUtils";
+import database from "../database";
 
 beforeEach(async () => {
   await cleanupDatabase();
