@@ -9,7 +9,9 @@ jobs:
         ports:
           - "5432:5432"
         env:
+          POSTGRES_USER: user
           POSTGRES_PASSWORD: dev
+          POSTGRES_DB: dev_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -20,7 +22,7 @@ jobs:
         ports:
           - "8080:8080"
         env:
-          HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:dev@postgres:5432/postgres
+          HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
