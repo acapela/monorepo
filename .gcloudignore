@@ -25,3 +25,4 @@ dist/
 
 # Exclude random stuff not needed in prod
 docker-compose.yaml
+hasura/
