@@ -9,7 +9,42 @@ const logger = pino({
   messageKey: "message",
   prettyPrint: process.env.NODE_ENV !== "production",
   level: config.get("logging.level"),
+  formatters: {
+    // formatting severity to integrate into google cloud logging
+    // https://cloud.google.com/logging/docs/agent/configuration#special-fields
+    level(_, number) {
+      return { level: number, severity: levelToSeverity(number) };
+    },
+  },
 });
+
+function levelToSeverity(level: number): string {
+  if (level < 30) {
+    return "DEBUG";
+  }
+  if (level <= 30) {
+    return "INFO";
+  }
+  if (level <= 39) {
+    return "NOTICE";
+  }
+  if (level <= 49) {
+    return "WARNING";
+  }
+  if (level <= 59) {
+    return "ERROR";
+  }
+  if (level <= 69) {
+    return "CRITICAL";
+  } // also fatal
+  if (level <= 79) {
+    return "ALERT";
+  }
+  if (level <= 99) {
+    return "EMERGENCY";
+  }
+  return "DEFAULT";
+}
 
 export function info(message: string, params: Record<string, unknown> = {}): void {
   logger.info({ ...params, message });
