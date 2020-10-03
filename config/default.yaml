@@ -6,7 +6,12 @@ firebase:
   databaseUrl: https://meetnomoreapp.firebaseio.com
 
 database:
-  connectionUrl: postgres://postgres:dev@localhost:5432/postgres
+  user: user
+  password: dev
+  name: dev_db
+  host:
+    socketPath: localhost
+    connection: ""
 
 logging:
   level: info

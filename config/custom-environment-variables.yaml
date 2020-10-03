@@ -1,5 +1,9 @@
 database:
-  connectionUrl: DB_CONNECTION_URL
+  user: DB_USER
+  password: DB_PASS
+  name: DB_NAME
+  host:
+    socketPath: DB_SOCKET_PATH
+    connection: CLOUD_SQL_CONNECTION_NAME
 
 port: PORT
-
