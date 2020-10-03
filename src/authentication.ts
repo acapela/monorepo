@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import firebase from "firebase-admin";
 
+import firebase from "./firebase";
 import { HttpStatus } from "./http";
 import { createOrFindUser, User } from "./users";
 import { AuthenticationError, UnprocessableEntityError } from "./errors";

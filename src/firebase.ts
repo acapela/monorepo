@@ -5,3 +5,5 @@ admin.initializeApp({
   credential: admin.credential.applicationDefault(),
   databaseURL: config.get("firebase.databaseUrl"),
 });
+
+export default admin;
