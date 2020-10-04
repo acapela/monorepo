@@ -6,6 +6,7 @@ logging:
 database:
   host:
     socketPath: /cloudsql
+    connection: meetnomoreapp:europe-west1:howl-database
 
 overrides:
   environmentVariables:
