@@ -2,7 +2,7 @@ import knex from "knex";
 import config from "./config";
 import * as logger from "./logger";
 
-const socketPath: string = config.get("database.host.socketPath") || "/cloudsql";
+const socketPath: string = config.get("database.host.socketPath");
 const connection: string = config.get("database.host.connection");
 const host = connection ? `${socketPath}/${connection}` : socketPath;
 

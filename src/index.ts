@@ -1,6 +1,8 @@
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import config from "./config";
 
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 async function start(): Promise<void> {
   await config.load();
   const logger = require("./logger");
@@ -14,5 +16,7 @@ async function start(): Promise<void> {
     })
   );
 }
+
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 start();

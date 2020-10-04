@@ -28,6 +28,7 @@
     "@types/flat": "^5.0.1",
     "@types/jest": "^26.0.14",
     "@types/js-yaml": "^3.12.5",
+    "@types/lodash": "^4.14.161",
     "@types/node": "^14.11.1",
     "@types/pino": "^6.3.0",
     "@types/pino-http": "^5.0.5",
@@ -57,6 +58,7 @@
     "helmet": "^4.1.1",
     "js-yaml": "^3.14.0",
     "knex": "^0.21.5",
+    "lodash": "^4.17.20",
     "pg": "^8.3.3",
     "pino": "^6.6.1",
     "uuid": "^8.3.0"

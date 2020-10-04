@@ -12,12 +12,14 @@ services:
     ports:
       - "5432:5432"
   hasura:
-    image: hasura/graphql-engine:v1.3.2
+    image: hasura/graphql-engine:v1.3.2.cli-migrations
     ports:
       - "8080:8080"
     depends_on:
       - "postgres"
     restart: always
+    volumes:
+      - ./hasura/migrations:/hasura-migrations
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
       HASURA_GRAPHQL_DEV_MODE: "true"

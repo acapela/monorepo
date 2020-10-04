@@ -1,6 +1,17 @@
 # Production-specific configuration properties.
-# These mostly come from environment variables in custom-environment-variables.yaml,
-# but static production configuration properties can be added here
 
 logging:
   level: info
+
+database:
+  host:
+    socketPath: /cloudsql
+
+overrides:
+  environmentVariables:
+    "port": PORT
+
+  googleCloudSecrets:
+    "database.user": DB_USER
+    "database.password": DB_PASSWORD
+    "database.name": DB_NAME
