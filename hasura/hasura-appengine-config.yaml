@@ -1,3 +1,0 @@
-service: hasura
-runtime: custom
-env: flex

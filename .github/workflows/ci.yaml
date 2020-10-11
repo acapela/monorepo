@@ -79,11 +79,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-      - name: Authenticate with google cloud
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Deploy on heroku
+        uses: akhileshns/heroku-deploy@v3.5.7
         with:
-          version: "290.0.1"
-          project_id: meetnomoreapp
-          service_account_key: ${{ secrets.GCLOUD_AUTH }}
-      - name: Deploy hasura
-        run: gcloud app deploy --quiet --project=meetnomoreapp hasura/hasura-appengine-config.yaml
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "acapela-hasura"
+          heroku_email: "ukutammet@gmail.com"
+          appdir: hasura

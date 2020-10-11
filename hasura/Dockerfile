@@ -1,5 +1,11 @@
 FROM hasura/graphql-engine:v1.3.2
-COPY config.yaml ./config.yaml
-COPY metadata ./metadata
-COPY migrations ./migrations
-# COPY seeds ./seeds
+
+ENV HASURA_GRAPHQL_DEV_MODE=false
+
+CMD graphql-engine \
+   --database-url $DATABASE_URL \
+   serve \
+   --enable-console true \
+   --server-port $PORT \
+   --admin-secret $HASURA_GRAPHQL_ADMIN_SECRET \
+   --jwt-secret $HASURA_GRAPHQL_JWT_SECRET \
