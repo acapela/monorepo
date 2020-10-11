@@ -12,7 +12,7 @@ exec bin/cloud_sql_proxy -credential_file=/credentials.json -instances=\$GCLOUD_
   && chmod +x bin/run_cloud_sql_proxy \
   && chmod +x bin/cloud_sql_proxy
 
-CMD run_cloud_sql_proxy
+CMD /bin/run_cloud_sql_proxy
 # && graphql-engine \
 #   serve \
 #   --enable-console \
