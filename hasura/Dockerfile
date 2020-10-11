@@ -2,6 +2,9 @@ FROM hasura/graphql-engine:v1.3.2.cli-migrations-v2
 
 ENV HASURA_GRAPHQL_DEV_MODE=false
 
+# https://github.com/hasura/graphql-engine/issues/4651
+ENV HASURA_GRAPHQL_CLI_ENVIRONMENT=default
+
 ADD ./migrations /hasura-migrations
 ADD ./metadata /hasura-metadata
 
