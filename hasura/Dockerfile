@@ -11,7 +11,8 @@ exec cloud_sql_proxy -credential_file=/credentials.json -instances=\$GCLOUD_INST
 " > run_cloud_sql_proxy \
   && chmod +x run_cloud_sql_proxy
 
-CMD run_cloud_sql_proxy &> null && graphql-engine \
-   serve \
-   --enable-console \
-   --server-port $PORT \
+CMD run_cloud_sql_proxy
+# && graphql-engine \
+#   serve \
+#   --enable-console \
+#   --server-port $PORT \
