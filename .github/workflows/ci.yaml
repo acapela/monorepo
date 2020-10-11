@@ -74,8 +74,8 @@ jobs:
   deploy-hasura:
     name: Deploy hasura
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/master'
+    # needs: test
+    # if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2

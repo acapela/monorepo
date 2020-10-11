@@ -1,6 +1,9 @@
-FROM hasura/graphql-engine:v1.3.2
+FROM hasura/graphql-engine:v1.3.2.cli-migrations-v2
 
 ENV HASURA_GRAPHQL_DEV_MODE=false
+
+ADD ./migrations /hasura-migrations
+ADD ./metadata /hasura-metadata
 
 # here we first install cloud sql proxy.
 # then, we create a script that will start the proxy in the background
