@@ -17,4 +17,6 @@ exec /bin/cloud_sql_proxy -credential_file=/credentials.json -instances=\$GCLOUD
   && chmod +x bin/cloud_sql_proxy
 
 # we run the script that will start the proxy and then start hasura
-CMD ["sh","-c","run_cloud_sql_proxy && graphql-engine serve --enable-console --server-port $PORT"]
+ENTRYPOINT []
+
+CMD ["sh","-c","run_cloud_sql_proxy && docker-entrypoint.sh && graphql-engine serve --enable-console --server-port $PORT"]
