@@ -20,6 +20,7 @@ services:
     restart: always
     volumes:
       - ./hasura/migrations:/hasura-migrations
+      - ./hasura/metadata:/hasura-metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
       HASURA_GRAPHQL_DEV_MODE: "true"
