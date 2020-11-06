@@ -51,6 +51,8 @@ jobs:
         run: npm run build
       - name: Run tests
         run: npm run test
+      - name: Run tests for hasura schema
+        run: npm run test:hasura
       - name: Lint
         run: npm run lint
       - name: Check formatting
@@ -72,17 +74,26 @@ jobs:
       - name: Deploy backend
         run: gcloud app deploy --quiet --project=meetnomoreapp backend-appengine-config.yaml
   deploy-hasura:
-    name: Deploy hasura
+    name: Deploy hasura migrations
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-      - name: Deploy on heroku
-        uses: akhileshns/heroku-deploy@v3.5.7
+      - name: Apply hasura migrations
+        uses: tibotiber/hasura-action@master
         with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "acapela-hasura"
-          heroku_email: "ukutammet@gmail.com"
-          appdir: hasura
+          args: migrate apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura
+      - name: Apply hasura metadata changes
+        uses: tibotiber/hasura-action@master
+        with:
+          args: metadata apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura

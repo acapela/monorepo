@@ -50,7 +50,7 @@ function extractToken(header: string): string {
   return token;
 }
 
-function addHasuraClaimsForUser(user: User) {
+export function addHasuraClaimsForUser(user: User) {
   return firebase.auth().setCustomUserClaims(user.firebaseId, {
     "https://hasura.io/jwt/claims": {
       "x-hasura-user-id": user.id,

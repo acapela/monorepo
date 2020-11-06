@@ -25,7 +25,7 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_NO_OF_RETRIES: 5
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_JWT_SECRET: '{ "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com", "audience": "meetnomoreapp", "issuer": "https://securetoken.google.com/meetnomoreapp" }'
       HASURA_GRAPHQL_ADMIN_SECRET: dev

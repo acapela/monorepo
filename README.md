@@ -37,6 +37,18 @@ Hasura is a standalone server we have to deploy that uses postgres and its own c
 5. You commit, push, get a PR review, have CI run your tests and merge the migration into prod
 6. From production, our CI will deploy the latest migration onto our production server
 
+### Working on hasura
+
+To make changes to the hasura schema, follow these steps:
+
+1. Run `docker-compose up` to run postgres and hasura.
+2. Run `npm run dev-hasura` to start a developer console pointing at your local hasura.
+3. Through the console, make changes to the hasura schema. This automatically creates migrations and metadata.
+4. Write tests against your new graphql schema, in the hasura/tests directory.
+5. [Squash the new migrations, using the hasura cli, into a single logical migration](https://hasura.io/docs/1.0/graphql/core/migrations/migrations-setup.html#step-6-squash-migrations-and-add-checkpoints-to-version-control)
+6. Make a PR, get reviews.
+7. When your PR is merged, the hasura migrations are automatically applied to production using github actions.
+
 ### Hasura authentication through firebase
 
 Hasura's authentication can work in [two ways](https://hasura.io/docs/1.0/graphql/core/auth/authentication/index.html):
