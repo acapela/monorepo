@@ -24,10 +24,12 @@ describe("user", () => {
       createUser({
         email: "test@example.com",
         firebaseId: "test-id-1",
+        name: "test-user-1",
       }),
       createUser({
         email: "test2@example.com",
         firebaseId: "test-id-2",
+        name: "test-user-2",
       }),
     ]);
 
@@ -36,6 +38,7 @@ describe("user", () => {
         user {
           id
           email
+          name
         }
       }
     `;

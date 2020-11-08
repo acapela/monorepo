@@ -1,14 +1,217 @@
 - table:
     schema: public
-    name: user
+    name: message
+  object_relationships:
+  - name: message_type
+    using:
+      foreign_key_constraint_on: type
+  - name: thread
+    using:
+      foreign_key_constraint_on: thread_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        thread:
+          room:
+            finished_at:
+              _is_null: true
+      set:
+        user_id: x-hasura-User-Id
+      columns:
+      - media_url
+      - text
+      - thread_id
+      - transcription
+      - type
+      backend_only: false
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - thread_id
+      - user_id
+      - created_at
+      - type
+      - media_url
+      - text
+      - transcription
+      filter: {}
+- table:
+    schema: public
+    name: message_type
+  is_enum: true
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - value
+      filter: {}
+- table:
+    schema: public
+    name: room
+  object_relationships:
+  - name: creator
+    using:
+      foreign_key_constraint_on: creator_id
+  array_relationships:
+  - name: participants
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: room_participants
+        column_mapping:
+          id: room_id
+  - name: threads
+    using:
+      foreign_key_constraint_on:
+        column: room_id
+        table:
+          schema: public
+          name: thread
+  insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      set:
+        creator_id: x-hasura-User-Id
+      columns:
+      - deadline
+      - name
+      - summary
+      backend_only: false
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - created_at
+      - creator_id
+      - deadline
+      - finished_at
+      - id
+      - name
+      - summary
+      filter: {}
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - deadline
+      - finished_at
+      - name
+      - summary
+      filter:
+        creator_id:
+          _eq: X-Hasura-User-Id
+      check: null
+- table:
+    schema: public
+    name: room_participants
+  object_relationships:
+  - name: room
+    using:
+      foreign_key_constraint_on: room_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - room_id
+      - user_id
+      filter: {}
+- table:
+    schema: public
+    name: thread
+  object_relationships:
+  - name: room
+    using:
+      foreign_key_constraint_on: room_id
+  array_relationships:
+  - name: messages
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: message
+        column_mapping:
+          id: thread_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        room:
+          _and:
+          - creator_id:
+              _eq: X-Hasura-User-Id
+          - finished_at:
+              _is_null: true
+      columns:
+      - index
+      - name
+      - room_id
+      backend_only: false
   select_permissions:
   - role: user
     permission:
       columns:
       - id
-      - email
-      - firebase_id
+      - index
+      - name
+      - room_id
+      filter: {}
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - index
+      - name
       filter:
-        id:
-          _eq: X-Hasura-User-Id
+        room:
+          _and:
+          - creator_id:
+              _eq: X-Hasura-User-Id
+          - finished_at:
+              _is_null: true
+      check: null
+- table:
+    schema: public
+    name: user
+  array_relationships:
+  - name: created_rooms
+    using:
+      foreign_key_constraint_on:
+        column: creator_id
+        table:
+          schema: public
+          name: room
+  - name: messages
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: message
+        column_mapping:
+          id: user_id
+  - name: rooms
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: room_participants
+        column_mapping:
+          id: user_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - avatar_url
+      - id
+      - name
+      filter: {}
       limit: 1

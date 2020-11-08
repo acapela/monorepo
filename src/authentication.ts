@@ -15,13 +15,10 @@ router.post("/v1/users", verifyAuthentication, async (_, res) => {
   const user = await createOrFindUser({
     firebaseId: firebaseUser.id,
     email: firebaseUser.verifiedEmail,
+    name: "Heiki", // TODO: should we actually get this value from firebase identity?
   });
   await addHasuraClaimsForUser(user);
-  res.status(HttpStatus.OK).json({
-    id: user.id,
-    firebaseId: user.firebaseId,
-    email: user.email,
-  });
+  res.status(HttpStatus.OK).json(user);
 });
 
 async function verifyAuthentication(req: Request, res: Response, next: (error?: Error) => void) {
@@ -50,7 +47,7 @@ function extractToken(header: string): string {
   return token;
 }
 
-export function addHasuraClaimsForUser(user: User) {
+export function addHasuraClaimsForUser(user: User): Promise<void> {
   return firebase.auth().setCustomUserClaims(user.firebaseId, {
     "https://hasura.io/jwt/claims": {
       "x-hasura-user-id": user.id,

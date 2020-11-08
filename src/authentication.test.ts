@@ -45,6 +45,7 @@ describe("Users endpoint", () => {
     const uid = uuid();
     const token = uuid();
     const email = "heiki@acape.la";
+    const name = "Heiki";
     fakeAuth.setFakeUserClaims(uid, {
       sub: uid,
       email_verified: true,
@@ -54,9 +55,12 @@ describe("Users endpoint", () => {
     const user = await createUser({
       email,
       firebaseId: uid,
+      name,
     });
-
-    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(HttpStatus.OK, user);
+    await request(app)
+      .post("/api/v1/users/")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(HttpStatus.OK, JSON.stringify(user));
     const retrievedUser = (await findUserByFirebaseId(uid)) as User;
     expect(retrievedUser).toEqual(user);
     const claims = fakeAuth.getFakeUserClaims(uid);

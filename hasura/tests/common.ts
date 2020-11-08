@@ -5,11 +5,12 @@ import { addHasuraClaimsForUser } from "../../src/authentication";
 export const TEST_USER_UID = "test-user-uid";
 export const TEST_USER_EMAIL = "acapela-test-user@acape.la";
 
-export async function getTestUserToken() {
+export async function getTestUserToken(): Promise<string> {
   const firebaseUser = await getOrCreateFirebaseTestUser();
   const user = await createOrFindUser({
     email: firebaseUser.email!,
     firebaseId: firebaseUser.uid,
+    name: firebaseUser.displayName!,
   });
   await addHasuraClaimsForUser(user);
   const token = await firebase.auth().createCustomToken(firebaseUser.uid, {
