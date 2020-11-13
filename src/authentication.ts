@@ -32,7 +32,7 @@ async function verifyAuthentication(req: Request, res: Response, next: (error?: 
   }
 }
 
-function extractToken(header: string): string {
+export function extractToken(header: string): string {
   if (!header) {
     throw new AuthenticationError("No authorization header present");
   }

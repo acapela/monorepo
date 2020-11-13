@@ -29,5 +29,7 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_JWT_SECRET: '{ "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com", "audience": "meetnomoreapp", "issuer": "https://securetoken.google.com/meetnomoreapp" }'
       HASURA_GRAPHQL_ADMIN_SECRET: dev
+      HASURA_EVENTS_WEBHOOK_URL: http://localhost:1337/api/v1/events
+      HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer dev-event-secret
 volumes:
   db_data:
