@@ -27,10 +27,12 @@ jest.mock("firebase-admin", () => {
   class FakeFirebaseAuth {
     private readonly claims: Map<string, Record<string, unknown>>;
     private readonly userTokens: Map<string, string[]>;
+    private readonly userInfo: Map<string, UserInfo>;
 
     constructor() {
       this.claims = new Map();
       this.userTokens = new Map();
+      this.userInfo = new Map();
     }
 
     // mocks
@@ -52,12 +54,20 @@ jest.mock("firebase-admin", () => {
       return claims;
     }
 
+    async getUser(uid: string) {
+      return this.userInfo.get(uid);
+    }
+
     // test support methods
     addFakeUserToken(uid: string, token: string) {
       const existingTokens = this.userTokens.get("uid") || [];
       existingTokens.push(token);
       this.userTokens.set(uid, existingTokens);
       return this;
+    }
+
+    setFakeUserInfo(uid: string, info: UserInfo) {
+      this.userInfo.set(uid, info);
     }
 
     setFakeUserClaims(uid: string, claims: Record<string, unknown>) {
@@ -68,6 +78,10 @@ jest.mock("firebase-admin", () => {
     getFakeUserClaims(uid: string): Record<string, unknown> | undefined {
       return this.claims.get(uid);
     }
+  }
+
+  interface UserInfo {
+    displayName?: string;
   }
 
   return new FakeFirebase();

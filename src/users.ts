@@ -5,16 +5,18 @@ export async function createOrFindUser({
   email,
   firebaseId,
   name,
+  avatarUrl,
 }: {
   email: string;
   firebaseId: string;
   name: string;
+  avatarUrl?: string;
 }): Promise<User> {
   const user = await findUserByFirebaseId(firebaseId);
   if (user) {
     return user;
   }
-  return createUser({ email, firebaseId, name });
+  return createUser({ email, firebaseId, name, avatarUrl });
 }
 
 export async function findUserByFirebaseId(firebaseId: string): Promise<User | null> {
@@ -35,10 +37,12 @@ export async function createUser({
   email,
   firebaseId,
   name,
+  avatarUrl,
 }: {
   email: string;
   firebaseId: string;
   name: string;
+  avatarUrl?: string;
 }): Promise<User> {
   const [databaseUser] = await database("user")
     .insert({
@@ -46,6 +50,7 @@ export async function createUser({
       email,
       name,
       firebase_id: firebaseId,
+      avatar_url: avatarUrl,
     })
     .returning(["id", "email", "firebase_id", "name", "avatar_url", "created_at"]);
   return convertDatabaseUser(databaseUser);

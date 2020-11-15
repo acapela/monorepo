@@ -8,14 +8,13 @@ import { AuthenticationError, UnprocessableEntityError } from "./errors";
 export const router = Router();
 
 router.post("/v1/users", verifyAuthentication, async (_, res) => {
-  const firebaseUser: FirebaseUser = res.locals.firebaseUser;
-  if (!firebaseUser.verifiedEmail) {
-    throw new UnprocessableEntityError("Email of the user is missing or not yet verified");
-  }
+  const firebaseToken: FirebaseTokenInfo = res.locals.firebaseTokenInfo;
+  const firebaseUser: FirebaseUser = await getFirebaseUser(firebaseToken.id);
   const user = await createOrFindUser({
     firebaseId: firebaseUser.id,
     email: firebaseUser.verifiedEmail,
-    name: "Heiki", // TODO: should we actually get this value from firebase identity?
+    name: firebaseUser.name,
+    avatarUrl: firebaseUser.avatarUrl,
   });
   await addHasuraClaimsForUser(user);
   res.status(HttpStatus.OK).json(user);
@@ -23,9 +22,10 @@ router.post("/v1/users", verifyAuthentication, async (_, res) => {
 
 async function verifyAuthentication(req: Request, res: Response, next: (error?: Error) => void) {
   const token = extractToken(req.get("Authorization") || "");
+  let claims;
   try {
-    const claims = await firebase.auth().verifyIdToken(token);
-    res.locals.firebaseUser = extractFirebaseUserFromClaims(claims);
+    claims = await firebase.auth().verifyIdToken(token);
+    res.locals.firebaseTokenInfo = extractFirebaseTokenInfoFromClaims(claims);
     next();
   } catch (e) {
     throw new AuthenticationError("Invalid bearer token");
@@ -57,14 +57,33 @@ export function addHasuraClaimsForUser(user: User): Promise<void> {
   });
 }
 
-function extractFirebaseUserFromClaims(claims: firebase.auth.DecodedIdToken): FirebaseUser {
+function extractFirebaseTokenInfoFromClaims(claims: firebase.auth.DecodedIdToken) {
+  return { id: claims.sub };
+}
+
+async function getFirebaseUser(id: string): Promise<FirebaseUser> {
+  const user = await firebase.auth().getUser(id);
+  if (!user) {
+    throw new UnprocessableEntityError("No firebase user exists for the given user id");
+  }
+  if (!user.emailVerified || !user.email) {
+    throw new UnprocessableEntityError("Email of the user is missing or not yet verified");
+  }
   return {
-    id: claims.sub,
-    verifiedEmail: claims.email_verified && claims.email ? claims.email : null,
+    id: user.uid,
+    verifiedEmail: user.email,
+    name: user.displayName || user.email,
+    avatarUrl: user.photoURL,
   };
 }
 
 interface FirebaseUser {
   id: string;
-  verifiedEmail: string | null;
+  verifiedEmail: string;
+  name: string;
+  avatarUrl?: string;
+}
+
+interface FirebaseTokenInfo {
+  id: string;
 }

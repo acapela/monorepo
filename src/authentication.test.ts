@@ -16,10 +16,15 @@ describe("Users endpoint", () => {
     const uid = uuid();
     const token = uuid();
     const email = "heiki@acape.la";
-    fakeAuth.setFakeUserClaims(uid, {
-      sub: uid,
-      email_verified: true,
+    const name = "Heiki Grenke";
+    const avatarUrl = "https://example.com/avatar";
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.setFakeUserInfo(uid, {
+      uid,
+      displayName: name,
+      emailVerified: true,
       email,
+      photoURL: avatarUrl,
     });
     fakeAuth.addFakeUserToken(uid, token);
 
@@ -30,6 +35,8 @@ describe("Users endpoint", () => {
       expect.objectContaining({
         firebaseId: uid,
         email,
+        name,
+        avatarUrl,
       })
     );
     expect(user.id).toBeDefined();
@@ -46,9 +53,11 @@ describe("Users endpoint", () => {
     const token = uuid();
     const email = "heiki@acape.la";
     const name = "Heiki";
-    fakeAuth.setFakeUserClaims(uid, {
-      sub: uid,
-      email_verified: true,
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.setFakeUserInfo(uid, {
+      uid,
+      displayName: name,
+      emailVerified: true,
       email,
     });
     fakeAuth.addFakeUserToken(uid, token);
@@ -71,31 +80,75 @@ describe("Users endpoint", () => {
     });
   });
 
-  it("fails if the user does not have a verified email", async () => {
+  it("uses email as default name when name does not exist", async () => {
     const uid = uuid();
     const token = uuid();
     const email = "heiki@acape.la";
-    fakeAuth.setFakeUserClaims(uid, {
-      sub: uid,
-      email_verified: false,
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.setFakeUserInfo(uid, {
+      uid,
+      emailVerified: true,
       email,
     });
     fakeAuth.addFakeUserToken(uid, token);
 
-    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(422);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(HttpStatus.OK);
+    const user = (await findUserByFirebaseId(uid)) as User;
+    expect(user).toEqual(
+      expect.objectContaining({
+        firebaseId: uid,
+        email,
+        name: email,
+      })
+    );
+  });
+
+  it("fails if the user has no record on firebase", async () => {
+    const uid = uuid();
+    const token = uuid();
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.addFakeUserToken(uid, token);
+
+    await request(app)
+      .post("/api/v1/users/")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+  });
+
+  it("fails if the user does not have a verified email", async () => {
+    const uid = uuid();
+    const token = uuid();
+    const email = "heiki@acape.la";
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.setFakeUserInfo(uid, {
+      uid,
+      displayName: "Heiki Grenke",
+      emailVerified: false,
+      email,
+    });
+    fakeAuth.addFakeUserToken(uid, token);
+
+    await request(app)
+      .post("/api/v1/users/")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
   });
 
   it("fails if the user does not have an email", async () => {
     const uid = uuid();
     const token = uuid();
-    fakeAuth.setFakeUserClaims(uid, {
-      sub: uid,
-      email_verified: true,
-      email: null,
+    fakeAuth.setFakeUserClaims(uid, { sub: uid });
+    fakeAuth.setFakeUserInfo(uid, {
+      uid,
+      displayName: "Heiki Grenke",
+      emailVerified: true,
     });
     fakeAuth.addFakeUserToken(uid, token);
 
-    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(422);
+    await request(app)
+      .post("/api/v1/users/")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
   });
 
   it("returns unauthorized when the token is missing", async () => {
