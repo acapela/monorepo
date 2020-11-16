@@ -32,14 +32,16 @@
   - role: user
     permission:
       columns:
-      - thread_id
-      - user_id
       - created_at
-      - type
+      - id
       - media_url
       - text
+      - thread_id
       - transcription
+      - type
+      - user_id
       filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: message_type
@@ -165,6 +167,7 @@
       - name
       - room_id
       filter: {}
+      allow_aggregations: true
   update_permissions:
   - role: user
     permission:
