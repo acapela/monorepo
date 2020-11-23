@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
   hasura:
-    image: hasura/graphql-engine:v1.3.2.cli-migrations-v2
+    image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
     ports:
       - "8080:8080"
     depends_on:
@@ -26,6 +26,8 @@ services:
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_NO_OF_RETRIES: 5
       HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
+      HASURA_GRAPHQL_METADATA_DIR: /hasura-metadata
+      HASURA_GRAPHQL_MIGRATIONS_DIR: /hasura-migrations
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_JWT_SECRET: '{ "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com", "audience": "meetnomoreapp", "issuer": "https://securetoken.google.com/meetnomoreapp" }'
       HASURA_GRAPHQL_ADMIN_SECRET: dev

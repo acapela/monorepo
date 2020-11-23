@@ -112,6 +112,43 @@
       check: null
 - table:
     schema: public
+    name: room_invites
+  object_relationships:
+  - name: inviter
+    using:
+      foreign_key_constraint_on: inviter_id
+  - name: room
+    using:
+      foreign_key_constraint_on: room_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        room:
+          creator_id:
+            _eq: X-Hasura-User-Id
+      set:
+        inviter_id: x-hasura-User-Id
+      columns:
+      - email
+      - room_id
+      backend_only: false
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - accepted_at
+      - created_at
+      - email
+      - id
+      - inviter_id
+      - room_id
+      filter:
+        room:
+          creator_id:
+            _eq: X-Hasura-User-Id
+- table:
+    schema: public
     name: room_participants
   object_relationships:
   - name: room

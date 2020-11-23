@@ -49,6 +49,8 @@ To make changes to the hasura schema, follow these steps:
 6. Make a PR, get reviews.
 7. When your PR is merged, the hasura migrations are automatically applied to production using github actions.
 
+If hasura is not updating metadata automatically through this workflow, try wiping your local hasura setup, by running `rm -rf ~/.hasura`.
+
 ### Hasura authentication through firebase
 
 Hasura's authentication can work in [two ways](https://hasura.io/docs/1.0/graphql/core/auth/authentication/index.html):
