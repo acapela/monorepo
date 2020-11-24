@@ -7,7 +7,7 @@ export function notFoundRouteHandling(): void {
 
 export function errorHandling(
   err: Error,
-  req: Request,
+  _: Request,
   res: Response,
   /* eslint-disable */ next: () => void /* eslint-enable */
 ): void {

@@ -5,7 +5,7 @@ import { setupServer } from "../app";
 import { HttpStatus } from "../http";
 import { handlers as fakeHandlers } from "./eventHandlers";
 
-import { BaseHasuraEvent, HasuraEvent, HasuraEventOperation } from "./events";
+import { BaseHasuraEvent, HasuraEventOperation } from "./events";
 
 jest.mock("./eventHandlers", () => ({
   handlers: [
@@ -109,7 +109,7 @@ describe("Hasura event handling", () => {
   it("returns unauthorized when the token is not a bearer type", async () => {
     await request(app)
       .post("/api/v1/events/")
-      .set("Authorization", "Basic faketoken")
+      .set("Authorization", "Basic dev-event-secret")
       .send(hasuraEvent("all-handlers"))
       .expect(HttpStatus.UNAUTHORIZED);
   });

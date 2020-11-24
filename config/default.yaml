@@ -16,6 +16,7 @@ database:
 
 hasura:
   eventSecret: dev-event-secret # used to authenticate calls from hasura events to backend
+  actionSecret: dev-action-secret # used to authenticate calls from hasura actions to backend
 
 logging:
   level: info

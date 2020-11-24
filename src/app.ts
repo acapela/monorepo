@@ -12,6 +12,7 @@ import "./firebase";
 
 import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
+import { router as actionRoutes } from "./actions/actions";
 
 export function setupServer(): Server {
   const app = express();
@@ -34,6 +35,7 @@ function setupMiddleware(app: Application): void {
 function setupRoutes(app: Application): void {
   app.use("/api", authenticationRoutes);
   app.use("/api", eventRoutes);
+  app.use("/api", actionRoutes);
 }
 
 function setupErrorHandling(app: Application): void {

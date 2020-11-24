@@ -1,2 +1,18 @@
+type Mutation {
+  accept_invite (
+    code: String!
+  ): InviteAcceptResponse
+}
 
+
+
+
+input InviteAcceptCommand {
+  code : String!
+}
+
+type InviteAcceptResponse {
+  room_id : ID!
+  invite_id : ID!
+}
 

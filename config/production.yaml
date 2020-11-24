@@ -17,3 +17,4 @@ overrides:
     "database.password": DB_PASSWORD
     "database.name": DB_NAME
     "hasura.eventSecret": HASURA_EVENT_SECRET
+    "hasura.actionSecret": HASURA_ACTION_SECRET

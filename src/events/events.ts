@@ -10,11 +10,17 @@ const eventHandlers = groupHandlersByTriggerName(handlers);
 
 router.post("/v1/events", authenticateHasura, async (req: Request, res: Response) => {
   const hasuraEvent = req.body as HasuraEvent<unknown>;
-  logger.info(`Handling event ${hasuraEvent.id} of type ${hasuraEvent.trigger.name}`);
-  if (!hasuraEvent.event.session_variables["x-hasura-user-id"]) {
+  const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
+  if (!userId) {
     throw new AuthenticationError("No user id provided with a hasura event");
   }
-  const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
+
+  logger.info("Handling event", {
+    eventId: hasuraEvent.id,
+    triggerName: hasuraEvent.trigger.name,
+    userId,
+  });
+
   const handler = eventHandlers.get(hasuraEvent.trigger.name);
   if (!handler) {
     throw new UnprocessableEntityError(`Unknown trigger ${hasuraEvent.trigger.name}`);
@@ -28,10 +34,14 @@ router.post("/v1/events", authenticateHasura, async (req: Request, res: Response
       name: hasuraEvent.trigger.name,
     },
   });
-  logger.info(`Handled event ${hasuraEvent.id} of type ${hasuraEvent.trigger.name}`);
+  logger.info("Handled event", {
+    eventId: hasuraEvent.id,
+    triggerName: hasuraEvent.trigger.name,
+    userId,
+  });
 });
 
-function authenticateHasura(req: Request, res: Response, next: () => any) {
+function authenticateHasura(req: Request, _: Response, next: () => unknown) {
   const token = extractToken(req.get("Authorization") || "");
   if (token !== config.get("hasura.eventSecret")) {
     throw new AuthenticationError("Hasura events call done with invalid secret");
@@ -77,14 +87,12 @@ async function handleEvent(handler: EventHandler<unknown>, event: HasuraEvent<un
 }
 
 function groupHandlersByTriggerName(handlers: EventHandler<unknown>[]): Map<string, EventHandler<unknown>> {
-  const map = new Map();
-  handlers.forEach((handler) => {
+  return handlers.reduce((map, handler) => {
     if (map.has(handler.triggerName)) {
       throw new Error(`Duplicate event handler found for trigger ${handler.triggerName}`);
     }
-    map.set(handler.triggerName, handler);
-  });
-  return map;
+    return map.set(handler.triggerName, handler);
+  }, new Map());
 }
 
 export type HasuraEvent<DataT> = InsertEvent<DataT> | UpdateEvent<DataT> | DeleteEvent<DataT> | ManualEvent<DataT>;

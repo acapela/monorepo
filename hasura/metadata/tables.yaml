@@ -68,6 +68,13 @@
           name: room_participants
         column_mapping:
           id: room_id
+  - name: room_invites
+    using:
+      foreign_key_constraint_on:
+        column: room_id
+        table:
+          schema: public
+          name: room_invites
   - name: threads
     using:
       foreign_key_constraint_on:
@@ -137,7 +144,7 @@
   - role: user
     permission:
       columns:
-      - accepted_at
+      - used_at
       - created_at
       - email
       - id
@@ -230,6 +237,13 @@
         table:
           schema: public
           name: room
+  - name: invites
+    using:
+      foreign_key_constraint_on:
+        column: inviter_id
+        table:
+          schema: public
+          name: room_invites
   - name: messages
     using:
       manual_configuration:
