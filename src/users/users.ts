@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import database from "./database";
+import database from "../database";
 
 export async function createOrFindUser({
   email,
@@ -7,9 +7,9 @@ export async function createOrFindUser({
   name,
   avatarUrl,
 }: {
-  email: string;
+  email?: string;
   firebaseId: string;
-  name: string;
+  name?: string;
   avatarUrl?: string;
 }): Promise<User> {
   const user = await findUserByFirebaseId(firebaseId);
@@ -19,11 +19,31 @@ export async function createOrFindUser({
   return createUser({ email, firebaseId, name, avatarUrl });
 }
 
+export async function updateUser(user: User): Promise<User> {
+  const [databaseUser] = await database("user")
+    .update({
+      email: user.email,
+      name: user.name,
+      avatar_url: user.avatarUrl,
+    })
+    .where({ id: user.id, firebase_id: user.firebaseId })
+    .returning(["id", "email", "firebase_id", "name", "avatar_url", "created_at"]);
+  return convertDatabaseUser(databaseUser);
+}
+
 export async function findUserByFirebaseId(firebaseId: string): Promise<User | null> {
+  return findBy({ firebase_id: firebaseId });
+}
+
+export async function findUserById(id: string): Promise<User | null> {
+  return findBy({ id });
+}
+
+async function findBy(query: Record<string, string>): Promise<User | null> {
   const [databaseUser] = await database
     .select(["id", "email", "firebase_id", "name", "avatar_url", "created_at"])
     .from("user")
-    .where({ firebase_id: firebaseId })
+    .where(query)
     .limit(1);
 
   if (databaseUser) {
@@ -39,9 +59,9 @@ export async function createUser({
   name,
   avatarUrl,
 }: {
-  email: string;
+  email?: string;
   firebaseId: string;
-  name: string;
+  name?: string;
   avatarUrl?: string;
 }): Promise<User> {
   const [databaseUser] = await database("user")
@@ -58,9 +78,9 @@ export async function createUser({
 
 export interface User {
   id: string;
-  email: string;
+  email?: string;
   firebaseId: string;
-  name: string;
+  name?: string;
   avatarUrl?: string;
   createdAt: Date;
   lastActiveAt: Date;
@@ -68,9 +88,9 @@ export interface User {
 
 interface DatabaseUser {
   id: string;
-  email: string;
+  email?: string;
   firebase_id: string;
-  name: string;
+  name?: string;
   avatar_url?: string;
   created_at: Date;
   last_active_at: Date;

@@ -8,7 +8,7 @@ import { HasuraSessionVariables } from "../events/events";
 
 export const router = Router();
 
-const actionHandlers = groupHandlersActionName(handlers);
+const actionHandlers = groupHandlersByActionName(handlers);
 
 router.post("/v1/actions", authenticateHasura, async (req: Request, res: Response) => {
   const hasuraAction = req.body as HasuraAction<string, unknown>;
@@ -57,7 +57,7 @@ function authenticateHasura(req: Request, _: Response, next: () => unknown) {
   next();
 }
 
-function groupHandlersActionName(
+function groupHandlersByActionName(
   handlers: ActionHandler<unknown, unknown>[]
 ): Map<string, ActionHandler<unknown, unknown>> {
   return handlers.reduce((map, handler) => {

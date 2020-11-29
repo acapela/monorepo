@@ -1,7 +1,6 @@
-import { v4 as uuid } from "uuid";
 import { setupServer } from "../app";
 import { addParticipant, createRoom, getIfParticipantExists, Room } from "./rooms";
-import { createUser, User } from "../users";
+import { createUser, User } from "../users/users";
 import { HasuraEventOperation } from "../events/events";
 import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";

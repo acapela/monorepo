@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import "./testSupport/testFirebase";
 import firebase from "firebase-admin";
 
-import { createUser, findUserByFirebaseId, User } from "./users";
+import { createUser, findUserByFirebaseId, User } from "./users/users";
 import { setupServer } from "./app";
 import { HttpStatus } from "./http";
 
@@ -115,40 +115,24 @@ describe("Users endpoint", () => {
       .expect(HttpStatus.UNPROCESSABLE_ENTITY);
   });
 
-  it("fails if the user does not have a verified email", async () => {
-    const uid = uuid();
-    const token = uuid();
-    const email = "heiki@acape.la";
-    fakeAuth.setFakeUserClaims(uid, { sub: uid });
-    fakeAuth.setFakeUserInfo(uid, {
-      uid,
-      displayName: "Heiki Grenke",
-      emailVerified: false,
-      email,
-    });
-    fakeAuth.addFakeUserToken(uid, token);
-
-    await request(app)
-      .post("/api/v1/users/")
-      .set("Authorization", `Bearer ${token}`)
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
-  });
-
-  it("fails if the user does not have an email", async () => {
+  it("can create an anonymous user", async () => {
     const uid = uuid();
     const token = uuid();
     fakeAuth.setFakeUserClaims(uid, { sub: uid });
     fakeAuth.setFakeUserInfo(uid, {
       uid,
-      displayName: "Heiki Grenke",
-      emailVerified: true,
     });
     fakeAuth.addFakeUserToken(uid, token);
 
-    await request(app)
-      .post("/api/v1/users/")
-      .set("Authorization", `Bearer ${token}`)
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+    await request(app).post("/api/v1/users/").set("Authorization", `Bearer ${token}`).expect(HttpStatus.OK);
+    const user = (await findUserByFirebaseId(uid)) as User;
+    expect(user).toEqual(
+      expect.objectContaining({
+        firebaseId: uid,
+        email: null,
+        name: null,
+      })
+    );
   });
 
   it("returns unauthorized when the token is missing", async () => {

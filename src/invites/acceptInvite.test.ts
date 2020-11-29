@@ -8,7 +8,7 @@ import { AcceptInviteActionInputs } from "./acceptInvite";
 import { HasuraAction } from "../actions/actions";
 import { createInviteForTests as createInvite, findInviteByCode } from "./invites";
 import { addParticipant, createRoom, getIfParticipantExists, Room } from "../rooms/rooms";
-import { createUser, User } from "../users";
+import { createUser, User } from "../users/users";
 
 describe("Accepting invites", () => {
   const app = setupServer();
@@ -39,7 +39,7 @@ describe("Accepting invites", () => {
     const invite = await createInvite({
       roomId: room.id,
       inviterId: firstUser.id,
-      email: secondUser.email,
+      email: secondUser.email!,
     });
     expect(await getIfParticipantExists(room.id, secondUser.id)).toBe(false);
     expect(await inviteUsedWithCode(invite.code)).toBe(false);
@@ -66,7 +66,7 @@ describe("Accepting invites", () => {
     const invite = await createInvite({
       roomId: room.id,
       inviterId: firstUser.id,
-      email: secondUser.email,
+      email: secondUser.email!,
     });
     await acceptInvite(secondUser.id, invite.code).expect(HttpStatus.OK);
 
@@ -82,7 +82,7 @@ describe("Accepting invites", () => {
     const invite = await createInvite({
       roomId: room.id,
       inviterId: firstUser.id,
-      email: secondUser.email,
+      email: secondUser.email!,
     });
     await addParticipant(room.id, secondUser.id);
 

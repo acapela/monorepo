@@ -5,6 +5,11 @@ type Mutation {
 }
 
 
+type Mutation {
+  upgrade_current_user : UpgradeUserResponse
+}
+
+
 
 
 input InviteAcceptCommand {
@@ -14,5 +19,9 @@ input InviteAcceptCommand {
 type InviteAcceptResponse {
   room_id : ID!
   invite_id : ID!
+}
+
+type UpgradeUserResponse {
+  user_id : ID!
 }
 

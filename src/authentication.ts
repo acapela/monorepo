@@ -1,15 +1,18 @@
 import { Request, Response, Router } from "express";
 
-import firebase from "./firebase";
+import firebase, { getFirebaseUser } from "./firebase";
 import { HttpStatus } from "./http";
-import { createOrFindUser, User } from "./users";
+import { createOrFindUser, User } from "./users/users";
 import { AuthenticationError, UnprocessableEntityError } from "./errors";
 
 export const router = Router();
 
 router.post("/v1/users", verifyAuthentication, async (_, res) => {
   const firebaseToken: FirebaseTokenInfo = res.locals.firebaseTokenInfo;
-  const firebaseUser: FirebaseUser = await getFirebaseUser(firebaseToken.id);
+  const firebaseUser = await getFirebaseUser(firebaseToken.id);
+  if (!firebaseUser) {
+    throw new UnprocessableEntityError("No firebase user found");
+  }
   const user = await createOrFindUser({
     firebaseId: firebaseUser.id,
     email: firebaseUser.verifiedEmail,
@@ -51,7 +54,7 @@ export function addHasuraClaimsForUser(user: User): Promise<void> {
   return firebase.auth().setCustomUserClaims(user.firebaseId, {
     "https://hasura.io/jwt/claims": {
       "x-hasura-user-id": user.id,
-      "x-hasura-allowed-roles": ["user"], // TODO: dynamically load this from the database
+      "x-hasura-allowed-roles": ["user"], // TODO: dynamically load this from the database once we have roles
       "x-hasura-default-role": "user",
     },
   });
@@ -59,29 +62,6 @@ export function addHasuraClaimsForUser(user: User): Promise<void> {
 
 function extractFirebaseTokenInfoFromClaims(claims: firebase.auth.DecodedIdToken) {
   return { id: claims.sub };
-}
-
-async function getFirebaseUser(id: string): Promise<FirebaseUser> {
-  const user = await firebase.auth().getUser(id);
-  if (!user) {
-    throw new UnprocessableEntityError("No firebase user exists for the given user id");
-  }
-  if (!user.emailVerified || !user.email) {
-    throw new UnprocessableEntityError("Email of the user is missing or not yet verified");
-  }
-  return {
-    id: user.uid,
-    verifiedEmail: user.email,
-    name: user.displayName || user.email,
-    avatarUrl: user.photoURL,
-  };
-}
-
-interface FirebaseUser {
-  id: string;
-  verifiedEmail: string;
-  name: string;
-  avatarUrl?: string;
 }
 
 interface FirebaseTokenInfo {

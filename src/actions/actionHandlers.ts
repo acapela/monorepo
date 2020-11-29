@@ -1,4 +1,5 @@
 import { acceptInvite } from "../invites/acceptInvite";
+import { upgradeCurrentUser } from "../users/upgradeUser";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;
@@ -6,4 +7,4 @@ export interface ActionHandler<DataT, ResponseT> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handlers: ActionHandler<any, any>[] = [acceptInvite];
+export const handlers: ActionHandler<any, any>[] = [acceptInvite, upgradeCurrentUser];
