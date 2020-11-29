@@ -5,7 +5,8 @@ import { setupServer } from "../app";
 import { HttpStatus } from "../http";
 import { handlers as fakeHandlers } from "./eventHandlers";
 
-import { BaseHasuraEvent, HasuraEventOperation } from "./events";
+import { HasuraEventOperation } from "./events";
+import { hasuraEvent } from "./eventTestSupport";
 
 jest.mock("./eventHandlers", () => ({
   handlers: [
@@ -122,42 +123,3 @@ describe("Hasura event handling", () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 });
-
-function hasuraEvent(
-  triggerName: string,
-  {
-    op = HasuraEventOperation.INSERT,
-    oldData = null,
-    newData = null,
-    userId = uuid(),
-  }: {
-    op?: HasuraEventOperation;
-    oldData?: any;
-    newData?: any;
-    userId?: string | null;
-  } = {}
-): BaseHasuraEvent<typeof op, unknown, unknown> {
-  return {
-    id: uuid(),
-    created_at: new Date().toString(),
-    trigger: {
-      name: triggerName,
-    },
-    table: {
-      schema: "test",
-      name: "test",
-    },
-    event: {
-      op,
-      session_variables: userId
-        ? {
-            "x-hasura-user-id": userId,
-          }
-        : {},
-      data: {
-        new: newData,
-        old: oldData,
-      },
-    },
-  };
-}

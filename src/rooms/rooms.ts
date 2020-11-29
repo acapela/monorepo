@@ -1,6 +1,6 @@
 import Knex from "knex";
 import { v4 as uuid } from "uuid";
-import database from "./database";
+import database from "../database";
 
 export async function findRoomById(roomId: string): Promise<Room | null> {
   const [databaseRoom] = await database

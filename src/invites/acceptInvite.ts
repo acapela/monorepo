@@ -1,7 +1,7 @@
 import { validate as validateUuid } from "uuid";
 import { ActionHandler } from "../actions/actionHandlers";
 import { findInviteByCode, markInviteAsUsed } from "./invites";
-import { getIfParticipantExists, addParticipant } from "../rooms";
+import { getIfParticipantExists, addParticipant } from "../rooms/rooms";
 import { NotFoundError, UnprocessableEntityError } from "../errors";
 import database from "../database";
 

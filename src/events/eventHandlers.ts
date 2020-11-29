@@ -1,3 +1,5 @@
+import { handleRoomCreated } from "../rooms/events";
+
 export interface EventHandler<DataT> {
   triggerName: string;
   handleInsert?: (userId: string, newData: DataT) => Promise<void>;
@@ -6,4 +8,5 @@ export interface EventHandler<DataT> {
   handleManual?: (userId: string, newData: DataT) => Promise<void>;
 }
 
-export const handlers: EventHandler<unknown>[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handlers: EventHandler<any>[] = [handleRoomCreated];

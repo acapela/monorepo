@@ -7,7 +7,7 @@ import { HttpStatus } from "../http";
 import { AcceptInviteActionInputs } from "./acceptInvite";
 import { HasuraAction } from "../actions/actions";
 import { createInviteForTests as createInvite, findInviteByCode } from "./invites";
-import { addParticipant, createRoom, getIfParticipantExists, Room } from "../rooms";
+import { addParticipant, createRoom, getIfParticipantExists, Room } from "../rooms/rooms";
 import { createUser, User } from "../users";
 
 describe("Accepting invites", () => {
