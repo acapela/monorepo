@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "./http";
+import logger from "./logger";
 
 export function notFoundRouteHandling(): void {
   throw new NotFoundError();
@@ -13,6 +14,12 @@ export function errorHandling(
 ): void {
   const anyError = err as any; // eslint-disable-line
   const status = typeof anyError.status !== "undefined" ? anyError.status : HttpStatus.INTERNAL_SERVER_ERROR;
+  if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+    logger.error("Server encountered an internal server error", {
+      errorMessage: err.message,
+      stack: err.stack,
+    });
+  }
   const response: { message: string; stack?: string } = {
     message: err.message || "Something went wrong",
   };
