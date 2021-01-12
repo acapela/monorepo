@@ -38,6 +38,12 @@ class HttpError extends Error {
   }
 }
 
+export class BadRequestError extends HttpError {
+  constructor(message = "Bad request") {
+    super(HttpStatus.BAD_REQUEST, message);
+  }
+}
+
 export class NotFoundError extends HttpError {
   constructor(message = "Not found") {
     super(HttpStatus.NOT_FOUND, message);
@@ -53,5 +59,11 @@ export class AuthenticationError extends HttpError {
 export class UnprocessableEntityError extends HttpError {
   constructor(message = "The request is invalid") {
     super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+  }
+}
+
+export class InternalServerError extends HttpError {
+  constructor(message = "Internal Server Error") {
+    super(HttpStatus.INTERNAL_SERVER_ERROR, message);
   }
 }

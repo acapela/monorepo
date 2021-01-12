@@ -16,6 +16,22 @@ jest.mock("firebase-admin", () => {
     initializeApp(settings: Record<string, unknown>) {
       this.savedSettings = settings;
     }
+
+    // TODO long-lasting solution for this
+    firestore() {
+      return {
+        batch() {
+          return {
+            commit: () => {
+              return;
+            },
+            update: () => {
+              return;
+            },
+          };
+        },
+      };
+    }
   }
 
   class FakeFirebaseCredential {
@@ -56,6 +72,10 @@ jest.mock("firebase-admin", () => {
 
     async getUser(uid: string) {
       return this.userInfo.get(uid);
+    }
+
+    async generateSignInWithEmailLink(): Promise<string> {
+      return "fakeSignInLink";
     }
 
     // test support methods

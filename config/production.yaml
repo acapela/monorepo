@@ -8,6 +8,13 @@ database:
     socketPath: /cloudsql
     connection: meetnomoreapp:europe-west1:howl-database
 
+hasura:
+  queryApi.url: https://backend.acape.la/v1/query
+  queryApi.role: admin
+
+backend:
+  rootUrl: https://backend-dot-meetnomoreapp.appspot.com
+
 overrides:
   environmentVariables:
     "port": PORT
@@ -17,4 +24,8 @@ overrides:
     "database.password": DB_PASSWORD
     "database.name": DB_NAME
     "hasura.eventSecret": HASURA_EVENT_SECRET
+    "hasura.queryApi.secret": HASURA_API_SECRET
     "hasura.actionSecret": HASURA_ACTION_SECRET
+    "hasura.notificationSecret": HASURA_NOTIFICATION_SECRET
+    "sengrid.apiKey": SENDGRID_API_KEY
+    "backend.authToken": BACKEND_AUTH_TOKEN

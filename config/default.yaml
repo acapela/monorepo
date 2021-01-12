@@ -16,9 +16,24 @@ database:
 
 hasura:
   eventSecret: dev-event-secret # used to authenticate calls from hasura events to backend
+  queryApi:
+    url: http://localhost:8080/v1/query
+    secret: dev
+    role: admin
   actionSecret: dev-action-secret # used to authenticate calls from hasura actions to backend
+  notificationSecret: dev-notification-secret
 
 logging:
   level: info
 
 port: 1337
+
+backend:
+  rootUrl: http://localhost:1337
+  authToken: dev-auth-token
+
+sendgrid:
+  apiKey: SG.fakeApiKey
+
+app:
+  url: https://meetnomore.com
