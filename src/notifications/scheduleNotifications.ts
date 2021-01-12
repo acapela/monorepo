@@ -17,14 +17,17 @@ export async function scheduleNotifications(roomId: string): Promise<ScheduleReq
     webhook: `${rootUrl}/api/v1/notifications`,
     schedule: "*/10 * * * *",
     payload: {
-      roomId: roomId,
+      roomId,
       notifications: notificationsToSchedule,
     },
     include_in_metadata: false,
     comment: `Notification cron job for room with id ${roomId}`,
-    headers: {
-      Authorization: `Bearer ${config.get("hasura.notificationSecret")}`,
-    },
+    headers: [
+      {
+        name: "Authorization",
+        value: `Bearer ${config.get("hasura.notificationSecret")}`,
+      },
+    ],
   });
 
   return hasuraResponse.data;

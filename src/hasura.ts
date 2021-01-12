@@ -14,6 +14,11 @@ export type ScheduleRequestResponse = {
   message: string;
 };
 
+export type HasuraHeader = {
+  name: string;
+  value: string;
+};
+
 export default abstract class Hasura {
   static apiUrl: string = config.get("hasura.queryApi.url");
   static apiSecret: string = config.get("hasura.queryApi.secret");
@@ -48,7 +53,7 @@ export default abstract class Hasura {
     payload: any;
     comment: string;
     include_in_metadata: boolean;
-    headers: Record<string, string>;
+    headers?: Array<HasuraHeader>;
   }): Promise<AxiosResponse<ScheduleRequestResponse>> {
     return Hasura.authenticatedRequest({
       type: "create_cron_trigger",
