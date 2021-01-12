@@ -41,10 +41,16 @@ router.post(
     } catch (e) {
       if ((e as AxiosError).response?.status === HttpStatus.BAD_REQUEST) {
         res.sendStatus(HttpStatus.BAD_REQUEST);
-        logger.info(`Room with id ${scheduleReq.roomId} already exists`);
+        logger.info(`Room with id ${scheduleReq.roomId} already exists`, {
+          roomId: scheduleReq.roomId,
+          error: e,
+        });
       } else {
         res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        logger.info(`Failed to create notification job for room ${scheduleReq.roomId}`);
+        logger.info(`Failed to create notification job for room ${scheduleReq.roomId}`, {
+          roomId: scheduleReq.roomId,
+          error: e,
+        });
       }
     }
   }
@@ -78,7 +84,9 @@ router.post(
       res.send(namesOfNotificationsToProcess);
     } catch (e) {
       res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-      logger.error(`Failed to process notifications for room ${trigger.roomId}\n ${e}`);
+      logger.error(`Failed to process notifications for room ${trigger.roomId}`, {
+        error: e,
+      });
     }
   }
 );
