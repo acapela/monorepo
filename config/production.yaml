@@ -9,8 +9,9 @@ database:
     connection: meetnomoreapp:europe-west1:howl-database
 
 hasura:
-  queryApi.url: https://backend.acape.la/v1/query
-  queryApi.role: admin
+  queryApi:
+    url: https://backend.acape.la/v1/query
+    role: admin
 
 backend:
   rootUrl: https://backend-dot-meetnomoreapp.appspot.com
