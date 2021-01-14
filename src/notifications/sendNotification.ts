@@ -49,9 +49,8 @@ export async function sendNotifcations(
   const NotificationsToProcess: Array<Notification> = Notifications.filter(
     (notification: Notification) => namesOfNotificationsToProcess.indexOf(notification.NOTIFICATION_NAME) > -1
   );
-
   // Fetch the room
-  const roomRef: FirebaseFirestore.DocumentReference = db.collection("rooms").doc(roomId);
+  const roomRef: FirebaseFirestore.DocumentReference = db.collection("conversations").doc(roomId);
   const agendaPointsRef: FirebaseFirestore.CollectionReference<DocumentData> = roomRef.collection("agendaPoints");
 
   const room: Room = await roomRefsToDoc(roomRef, agendaPointsRef);
