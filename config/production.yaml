@@ -16,6 +16,9 @@ hasura:
 backend:
   rootUrl: https://backend-dot-meetnomoreapp.appspot.com
 
+app:
+  url: https://meetnomore.com
+
 overrides:
   environmentVariables:
     "port": PORT

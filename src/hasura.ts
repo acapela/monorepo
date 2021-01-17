@@ -3,6 +3,7 @@ import Axios, { AxiosResponse } from "axios";
 
 type HasuraRequestPayload = {
   type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: any;
 };
 
@@ -50,6 +51,7 @@ export default abstract class Hasura {
     name: string;
     schedule: string;
     webhook: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any;
     comment: string;
     include_in_metadata: boolean;

@@ -1,10 +1,7 @@
+import { MailDataRequired } from "@sendgrid/helpers/classes/mail";
 import logger from "../../logger";
 import { NotificationMeta } from "../UserNotification";
-import sgMail from "@sendgrid/mail";
-import { MailDataRequired } from "@sendgrid/helpers/classes/mail";
-import config from "../../config";
-
-sgMail.setApiKey(config.get("sendgrid.apiKey"));
+import { sendEmail } from "../../notifications/emailSender";
 
 export default function SendEmailNotification(content: MailDataRequired, notificationMeta: NotificationMeta): void {
   logger.info(`Notification is about to be sent`, {
@@ -13,7 +10,7 @@ export default function SendEmailNotification(content: MailDataRequired, notific
   });
 
   try {
-    sgMail.send(content, true);
+    sendEmail(content, true);
   } catch (e) {
     throw new Error(`Failed to send notification ${notificationMeta.name} to ${content.to}, the following error ocurred:
         ${e}`);

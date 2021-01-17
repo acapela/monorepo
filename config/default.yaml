@@ -36,4 +36,4 @@ sendgrid:
   apiKey: SG.fakeApiKey
 
 app:
-  url: https://meetnomore.com
+  url: http://localhost:3000

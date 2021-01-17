@@ -15,8 +15,10 @@ export function sendEvent(
 
 export interface HasuraEventParameters {
   op?: HasuraEventOperation;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   oldData?: any;
   newData?: any;
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   userId?: string | null;
 }
 
