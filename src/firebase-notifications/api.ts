@@ -57,9 +57,11 @@ router.post(
 );
 
 type HasuraWebhook<T> = {
-  payload: {
-    payload: T;
-  };
+  scheduled_time: string;
+  payload: T;
+  name: string;
+  id: string;
+  comment: string;
 };
 
 type SendNotificationTriggerPayload = {
@@ -72,7 +74,7 @@ router.post(
   validateSecret("hasura.notificationSecret", "Invalid secret provided for sending notifications"),
   async (req: Request, res: Response) => {
     const triggerRequest = req.body as HasuraWebhook<SendNotificationTriggerPayload>;
-    const trigger: SendNotificationTriggerPayload = triggerRequest.payload.payload;
+    const trigger: SendNotificationTriggerPayload = triggerRequest.payload;
 
     // check which kind of notifications the trigger wants to run
     const namesOfNotificationsToProcess: Array<NotificationName> = trigger.notifications;

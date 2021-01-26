@@ -1,7 +1,7 @@
-import { NotificationName, NotificationMeta, NotificationAgentName, UserNotification } from "./UserNotification";
 import { MailData } from "@sendgrid/helpers/classes/mail";
-import { Thread, Participant, Room } from "./domain";
 import { Timestamp } from "@google-cloud/firestore";
+import { NotificationName, NotificationMeta, NotificationAgentName, UserNotification } from "./UserNotification";
+import { Thread, Participant, Room } from "./domain";
 import { generateMagicLinkToRoom } from "./utils";
 
 export default class InviteNotification extends UserNotification {
@@ -44,7 +44,10 @@ ${
   }
 
   shouldSendToAgent(): boolean {
-    return !this.participant.notificationsStatus.Invite?.timeSent && this.room.agendaPoints.length > 0;
+    return (
+      (this.participant.notificationsStatus === undefined || !this.participant.notificationsStatus.Invite?.timeSent) &&
+      this.room.agendaPoints.length > 0
+    );
   }
 
   afterNotificationSentToAgent(): void {

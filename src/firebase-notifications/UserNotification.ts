@@ -1,6 +1,6 @@
+import { DocumentData } from "@google-cloud/firestore";
 import { Room, Participant } from "./domain";
 import SendEmailNotification from "./agents/email";
-import { DocumentData } from "@google-cloud/firestore";
 
 const NotificationAgents: NotificationAgents = {
   email: SendEmailNotification,
@@ -74,7 +74,6 @@ export abstract class UserNotification {
    */
   public process(): boolean {
     const shouldBeRelased: boolean = this.shouldSendToAgent();
-
     if (shouldBeRelased) {
       this.sendToAgent();
       this.afterNotificationSentToAgent();
