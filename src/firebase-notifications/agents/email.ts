@@ -1,6 +1,5 @@
 import { MailDataRequired } from "@sendgrid/helpers/classes/mail";
 import logger from "../../logger";
-import config from "../../config";
 import { NotificationMeta } from "../UserNotification";
 import { sendEmail } from "../../notifications/emailSender";
 
@@ -11,10 +10,10 @@ export default function SendEmailNotification(content: MailDataRequired, notific
   });
 
   try {
-    if (config.get("sendgrid.apiKey") !== "SG.fakeApiKey") {
+    if (process.env.NODE_ENV === "production") {
       sendEmail(content, true);
     } else {
-      logger.info(`Not sending notification ${notificationMeta.name} in non-production env`);
+      logger.info(`Not sending notification ${notificationMeta.name} in ${process.env.NODE_ENV} env`);
     }
   } catch (e) {
     logger.info(`Failed to send notification to ${content.to}`, {
