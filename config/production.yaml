@@ -31,5 +31,5 @@ overrides:
     "hasura.queryApi.secret": HASURA_API_SECRET
     "hasura.actionSecret": HASURA_ACTION_SECRET
     "hasura.notificationSecret": HASURA_NOTIFICATION_SECRET
-    "sengrid.apiKey": SENDGRID_API_KEY
+    "sendgrid.apiKey": SENDGRID_API_KEY
     "backend.authToken": BACKEND_AUTH_TOKEN
