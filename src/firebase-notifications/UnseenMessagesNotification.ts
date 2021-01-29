@@ -42,16 +42,15 @@ export default class UnseenMessagesNotification extends UserNotification {
   generateUnreadSummary(unread: Array<UnreadMessagesInThread>, textMode = false): string {
     // TODO utils?
     const nextLine = textMode ? "\n" : "<br />";
+    const boldText = (text: string) => (textMode ? text : `"<b>${text}</b>"`);
 
     function buildMessagesList(messages: Array<Message>): string {
-      return messages.map((message: Message) => `${message.author} said:${nextLine}${message.text}`).join(nextLine);
+      return messages.map((message: Message) => `${message.author}:${nextLine}${message.text}`).join(nextLine);
     }
 
     return unread
       .map((point: UnreadMessagesInThread, index: number): string => {
-        return `${index + 1}. ${
-          point.thread.title
-        }${nextLine} Unread messages in this thread: ${nextLine}${buildMessagesList(point.messages)}`;
+        return `${boldText(`${index + 1}. ${point.thread.title}`)}${nextLine}${buildMessagesList(point.messages)}`;
       })
       .join(nextLine);
   }
@@ -67,11 +66,11 @@ export default class UnseenMessagesNotification extends UserNotification {
           to: this.participant.email,
           from: "acapela@meetnomore.com",
           subject: `Your Acapela ${this.room.title} has unread messages.`,
-          text: `Here's an overview of your unread messages: \n
-${summary}\n
+          text: `Here's an overview of your unread messages: \n\n
+${summary}\n\n
 Go to ${magicLink} to respond or mark the agenda points as checked`,
-          html: `Here's an overview of your unread messages: <br />
-${summary}<br />
+          html: `Here's an overview of your unread messages: <br /><br />
+${summary}<br /><br />
 Go to the <a href="${magicLink}">Acapela</a> to respond or mark the agenda points as checked.`,
         };
     }

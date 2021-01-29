@@ -1,8 +1,8 @@
 import { MailData } from "@sendgrid/helpers/classes/mail";
-import { Timestamp } from "@google-cloud/firestore";
 import { NotificationName, NotificationMeta, NotificationAgentName, UserNotification } from "./UserNotification";
 import { Thread, Participant, Room } from "./domain";
 import { generateMagicLinkToRoom } from "./utils";
+import { firestore } from "firebase-admin";
 
 export default class InviteNotification extends UserNotification {
   public static NOTIFICATION_NAME: NotificationName = "Invite";
@@ -20,33 +20,44 @@ export default class InviteNotification extends UserNotification {
           to: this.participant.email,
           from: "acapela@meetnomore.com",
           subject: `You got invited to ${this.room.title}`,
-          text: `You got invited to room ${this.room.title}.
-Participants:
-${this.generateParticipantsList(this.room, true)}
+          text: `You got invited to ${this.room.title}.\n
+Participants:\n
+${this.generateParticipantsList(this.room, true)}\n
 ${
   this.room.agendaPoints.length &&
   `Room agenda:\n
- ${this.generateAgendaSummary(this.room, true)}\nGo to ${magicLink} to start the discussion.
+ ${this.generateAgendaSummary(this.room, true)}\n\nGo to ${magicLink} to start the discussion.
  `
 }`,
-          html: `You got invited to room ${this.room.title}.<br />
+          html: `You got invited to ${this.room.title}.<br />
 Participants:<br />
 ${this.generateParticipantsList(this.room)}<br />
 
 ${
   this.room.agendaPoints.length &&
   `Room agenda:<br />
-  ${this.generateAgendaSummary(this.room)}<br />Go to the <a href="${magicLink}">Acapela</a> to start the discussion.
+  ${this.generateAgendaSummary(
+    this.room
+  )}<br /><br />Go to the <a href="${magicLink}">Acapela</a> to start the discussion.
   `
 }`,
         };
     }
   }
 
+  hasParticipantAlreadyBeenInvited(): boolean {
+    return (
+      this.participant.notificationsStatus !== undefined && this.participant.notificationsStatus.Invite !== undefined
+    );
+  }
+
+  isParticipantRoomAuthor(): boolean {
+    return this.participant.userId === this.room.authorId;
+  }
+
   shouldSendToAgent(): boolean {
     return (
-      (this.participant.notificationsStatus === undefined || !this.participant.notificationsStatus.Invite?.timeSent) &&
-      this.room.agendaPoints.length > 0
+      !this.hasParticipantAlreadyBeenInvited() && !this.isParticipantRoomAuthor() && this.room.agendaPoints.length > 0
     );
   }
 
@@ -78,7 +89,7 @@ ${
       notificationsStatus: {
         ...this.participant.notificationsStatus,
         Invite: {
-          timeSent: new Timestamp(Math.floor(Date.now() / 1000), 0),
+          timeSent: firestore.Timestamp.now(),
           notificationData: {},
         },
       },

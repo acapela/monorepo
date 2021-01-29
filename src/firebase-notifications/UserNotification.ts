@@ -1,4 +1,4 @@
-import { DocumentData } from "@google-cloud/firestore";
+import { DocumentData, Timestamp } from "@google-cloud/firestore";
 import { Room, Participant } from "./domain";
 import SendEmailNotification from "./agents/email";
 
@@ -52,7 +52,7 @@ export abstract class UserNotification {
     newParticipants[participantIndex].notificationsStatus = {
       ...this.participant.notificationsStatus,
       [this.meta.name]: {
-        timeSent: new Date(),
+        timeSent: new Timestamp(Math.floor(new Date().getTime() / 1000), 0),
         notificationData: newStatus,
       },
     };

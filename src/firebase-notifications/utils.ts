@@ -18,7 +18,10 @@ export function getUnreadMessages(room: Room, userId: string): Array<UnreadMessa
     if (unreadMessages.length) {
       allUnread.push({
         thread,
-        messages: unreadMessages,
+        messages: unreadMessages.map((message) => {
+          const sender = room.participants.find((participant) => participant.userId === message.author);
+          return { ...message, author: sender?.name } as Message;
+        }),
       });
     }
   }
