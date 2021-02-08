@@ -58,6 +58,19 @@ jobs:
         run: npm run lint
       - name: Check formatting
         run: npm run checkformat
+      - name: Test docker build
+        run: docker build -t backend-test-build .
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: go-semantic-release/action@v1
+        id: semrel
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-file: package.json
   deploy-backend:
     name: Deploy backend
     runs-on: ubuntu-latest
