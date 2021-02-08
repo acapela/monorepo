@@ -66,6 +66,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-file: package.json
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: meetnomoreapp
+          service_account_key: ${{ secrets.GCLOUD_AUTH }}
+        #if: steps.semrel.outputs.version != ''
+      - run: gcloud auth configure-docker eu.gcr.io
+        #if: steps.semrel.outputs.version != ''
       - run: ./scripts/build-and-push.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
   deploy-backend:
