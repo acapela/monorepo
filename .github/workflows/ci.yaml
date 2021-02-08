@@ -66,6 +66,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-file: package.json
+      - run: ./scripts/build-and-push.sh ${{ steps.semrel.outputs.version }}
+        if: steps.semrel.outputs.version != ''
   deploy-backend:
     name: Deploy backend
     runs-on: ubuntu-latest
