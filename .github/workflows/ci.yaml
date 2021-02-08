@@ -58,8 +58,6 @@ jobs:
         run: npm run lint
       - name: Check formatting
         run: npm run checkformat
-      - name: Test docker build
-        run: docker build -t backend-test-build .
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
@@ -71,9 +69,9 @@ jobs:
         with:
           project_id: meetnomoreapp
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
-        #if: steps.semrel.outputs.version != ''
+        if: steps.semrel.outputs.version != ''
       - run: gcloud auth configure-docker eu.gcr.io
-        #if: steps.semrel.outputs.version != ''
+        if: steps.semrel.outputs.version != ''
       - run: ./scripts/build-and-push.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
   deploy-backend:
