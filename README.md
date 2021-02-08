@@ -95,3 +95,32 @@ We will for sure need functionality for which you don't need to log in. The way 
 3. Client refreshes authentication, starts calling hasura as before. We have custom authorization rules for the visitor role configured in hasura that give them very limited access.
 
 We can also turn these anonymous users into full users later, using a [specific firebase mechanism](https://firebase.google.com/docs/auth/web/anonymous-auth#convert-an-anonymous-account-to-a-permanent-account) plus probably another endpoint on our side.
+
+## Commit Message Convention
+
+This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
+That means it is necessary to stick to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention to trigger new releases.
+
+### How to trigger releases?
+
+#### Patch Release
+
+```
+fix(pencil): stop graphite breaking when too much pressure applied
+```
+
+#### ~~Minor~~ Feature Release
+
+```
+feat(pencil): add 'graphiteWidth' option
+```
+
+#### ~~Major~~ Breaking Release
+
+```
+perf(pencil): remove graphiteWidth option
+
+BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reason.
+```
+
+[*More info*](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular)
