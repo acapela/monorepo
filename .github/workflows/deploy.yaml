@@ -1,0 +1,65 @@
+name: Deploy
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy-backend:
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Authenticate with google cloud
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "290.0.1"
+          project_id: meetnomoreapp
+          service_account_key: ${{ secrets.GCLOUD_AUTH }}
+      - name: Deploy backend
+        run: gcloud app deploy --quiet --project=meetnomoreapp backend-appengine-config.yaml
+  deploy-hasura-prod:
+    name: Deploy hasura migrations in production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Apply hasura migrations
+        uses: tibotiber/hasura-action@master
+        with:
+          args: migrate apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura
+      - name: Apply hasura metadata changes
+        uses: tibotiber/hasura-action@master
+        with:
+          args: metadata apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura
+  deploy-hasura-staging:
+    name: Deploy hasura migrations in staging environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Apply hasura migrations
+        uses: tibotiber/hasura-action@master
+        with:
+          args: migrate apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_STAGING_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_STAGING_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura
+      - name: Apply hasura metadata changes
+        uses: tibotiber/hasura-action@master
+        with:
+          args: metadata apply
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_STAGING_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_STAGING_ADMIN_SECRET }}
+          HASURA_WORKDIR: hasura
