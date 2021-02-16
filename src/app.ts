@@ -52,5 +52,15 @@ function setupGracefulShutdown(server: Server) {
     onSignal: () => {
       return Promise.all([database.destroy(), closeServer()]);
     },
+    beforeShutdown: () => {
+      return new Promise((resolve) => {
+        setTimeout(resolve, 5000);
+      });
+    },
+    healthChecks: {
+      "/healthz": async function () {
+        return true;
+      },
+    },
   });
 }
