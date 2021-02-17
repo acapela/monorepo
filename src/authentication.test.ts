@@ -6,6 +6,7 @@ import firebase from "firebase-admin";
 import { createUser, findUserByFirebaseId, User } from "./users/users";
 import { setupServer } from "./app";
 import { HttpStatus } from "./http";
+import { assertHasFirebaseAdminAccess } from "./firebase";
 
 const fakeAuth = firebase.auth() as any;
 
@@ -145,5 +146,15 @@ describe("Users endpoint", () => {
 
   it("returns unauthorized when the token is invalid", async () => {
     await request(app).post("/api/v1/users/").set("Authorization", "Bearer faketoken").expect(HttpStatus.UNAUTHORIZED);
+  });
+});
+
+describe("firebase admin access", () => {
+  it("properly asserts firebase admin access", async () => {
+    expect(async () => {
+      await assertHasFirebaseAdminAccess();
+    }).rejects.toMatchInlineSnapshot(
+      `[Error: Unable to connect to firebase admin. Is this code running on Google Cloud env or is GOOGLE_APPLICATION_CREDENTIALS env var present?]`
+    );
   });
 });

@@ -4,6 +4,7 @@ import firebase, { getFirebaseUser } from "./firebase";
 import { HttpStatus } from "./http";
 import { createOrFindUser, User } from "./users/users";
 import { AuthenticationError, UnprocessableEntityError } from "./errors";
+import logger from "./logger";
 
 export const router = Router();
 
@@ -30,7 +31,8 @@ async function verifyAuthentication(req: Request, res: Response, next: (error?: 
     claims = await firebase.auth().verifyIdToken(token);
     res.locals.firebaseTokenInfo = extractFirebaseTokenInfoFromClaims(claims);
     next();
-  } catch (e) {
+  } catch (error) {
+    logger.error("Unexpected bearer token error", error);
     throw new AuthenticationError("Invalid bearer token");
   }
 }
