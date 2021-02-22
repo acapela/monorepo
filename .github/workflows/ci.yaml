@@ -74,3 +74,13 @@ jobs:
         if: steps.semrel.outputs.version != ''
       - run: ./scripts/build-and-push.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
+      - run: ./scripts/trigger-deploy.sh staging ${{ steps.semrel.outputs.version }}
+        if: steps.semrel.outputs.version != ''
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_STAGING_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_STAGING_ADMIN_SECRET }}
+      - run: ./scripts/trigger-deploy.sh production ${{ steps.semrel.outputs.version }}
+        if: steps.semrel.outputs.version != ''
+        env:
+          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
+          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}

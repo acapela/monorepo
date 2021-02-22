@@ -2,17 +2,27 @@
 
 set -euo pipefail
 
-if [ -z "${1:-}" ]; then
+STAGE=${1:-}
+VERSION=${2:-}
+
+[ -z "$STAGE" ] && {
+  echo "stage not set"
+  exit 1
+}
+
+[ -z "$VERSION" ] && {
   echo "version not set"
   exit 1
-fi
+}
 
-VERSION=$1
-
-payload="{\"ref\":\"master\", \"inputs\":{\"stage\":\"staging\", \"app\": \"api\", \"version\":\"$VERSION\"}}"
+payload="{\"ref\":\"master\", \"inputs\":{\"stage\":\"$STAGE\", \"app\":\"api\", \"version\":\"$VERSION\"}}"
 
 echo $payload | jq
 
+echo "migrating hasura..."
+./scripts/migrate-hasura.sh
+
+echo "starting deployment..."
 curl -X POST \
   -H "Authorization: token $GITHUB_BOT_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
