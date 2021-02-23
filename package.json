@@ -8,6 +8,7 @@
     ]
   },
   "scripts": {
+    "dock": "docker-compose -f ./infrastructure/docker-compose.yaml up",
     "frontend": "yarn workspace @acapela/frontend",
     "backend": "yarn workspace @acapela/backend"
   },
