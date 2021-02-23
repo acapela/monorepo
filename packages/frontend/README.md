@@ -1,0 +1,30 @@
+# Acapela web frontend
+
+This repo contains the application that powers acapela's web frontend.
+
+## Usage
+
+To run the frontend, you need a working backend server and hasura instance.
+By default, in development, if you run [the backend server locally as described here](https://github.com/weareacapela/backend), it will connect and work with your local backend and hasura instances. You can override this by overriding the `BACKEND_HOST` and `HASURA_HOST` environment variables.
+
+Use `npm run dev` to start the development frontend instance.
+
+Use `npm run analyze` to run a bundle analysis environment to investigate your bundle size.
+
+Use `npm run test:watch` to start an interactive test environment.
+
+## Deployment
+
+When you create a pr, it will run tests and linting automatically. When you get a review and merge, ci will automatically deploy to production.
+
+## Stack
+
+We use:
+- next.js, but we may revisit and move to create react app instead, as our application is a full-blown SPA not focused on static content.
+- typescript
+- tailwind for css
+- jest + react testing library for tests
+- firebase for authentication
+- apollo for graphql
+- prettier + eslint
+

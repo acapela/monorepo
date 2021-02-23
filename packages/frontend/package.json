@@ -1,0 +1,74 @@
+{
+  "name": "acapela-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "analyze": "ANALYZE=true next build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "format": "prettier --write src pages",
+    "lint": "eslint \"{src,pages}/**/*.{js,ts}\"",
+    "checkformat": "prettier --check src pages"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run format"
+    ]
+  },
+  "dependencies": {
+    "@apollo/client": "^3.2.5",
+    "@reach/dialog": "^0.12.1",
+    "axios": "^0.21.0",
+    "classnames": "^2.2.6",
+    "date-fns": "^2.16.1",
+    "firebase": "^7.24.0",
+    "focus-visible": "^5.2.0",
+    "formik": "^2.2.5",
+    "framer-motion": "^3.1.1",
+    "graphql": "^15.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.21.17",
+    "next": "10.0.7",
+    "next-auth": "^3.4.2",
+    "pg": "^8.5.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "subscriptions-transport-ws": "^0.9.18",
+    "tailwindcss": "^2.0.1"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^9.5.5",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/next-auth": "^3.1.24",
+    "@types/node": "^14.11.10",
+    "@types/react": "^16.9.53",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "autoprefixer": "^10.0.4",
+    "babel-jest": "^26.5.2",
+    "babel-plugin-graphql-tag": "^3.1.0",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
+    "husky": "^4.3.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^26.5.3",
+    "lint-staged": "^10.5.1",
+    "msw": "^0.21.3",
+    "postcss": "^8.1.10",
+    "postcss-focus-visible": "^5.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3",
+    "whatwg-fetch": "^3.5.0"
+  }
+}
