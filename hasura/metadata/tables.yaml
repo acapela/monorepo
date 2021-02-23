@@ -1,5 +1,12 @@
 - table:
     schema: public
+    name: account
+  object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+- table:
+    schema: public
     name: message
   object_relationships:
   - name: message_type
