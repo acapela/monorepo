@@ -126,3 +126,4 @@ class MissingEnvironmentVariable extends Error {
 
 const config = new Config();
 export default config;
+

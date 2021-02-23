@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "../design/Button";
-import firebase from "../firebase";
+import { signOut } from "next-auth/client";
 
 interface Logout {
   loading: boolean;
@@ -11,7 +11,7 @@ const useLogout = (): Logout => {
   const [loading, setLoading] = useState(false);
   async function logout() {
     setLoading(true);
-    await firebase.auth().signOut();
+    await signOut();
   }
 
   return { loading, logout };
