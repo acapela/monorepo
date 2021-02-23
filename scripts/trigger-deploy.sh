@@ -24,7 +24,7 @@ echo "migrating hasura..."
 
 echo "starting deployment..."
 curl -X POST \
-  -H "Authorization: token $GITHUB_BOT_TOKEN" \
+  -H "Authorization: token $GH_BOT_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/repos/weareacapela/kubernetes/actions/workflows/deploy.yaml/dispatches \
   -d "$payload"
