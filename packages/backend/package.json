@@ -6,12 +6,9 @@
   "scripts": {
     "test": "jest src --runInBand",
     "test:watch": "jest src --runInBand --watch",
-    "test:hasura": "jest hasura/tests --runInBand",
-    "test:hasura:watch": "jest hasura/tests --runInBand --watch",
     "build": "tsc",
     "start": "node dist",
     "dev": "tsc-watch --onSuccess 'node ./dist'",
-    "dev-hasura": "hasura console --project hasura --admin-secret dev",
     "format": "prettier --write src",
     "lint": "eslint \"src/**/*.{js,ts}\"",
     "checkformat": "prettier --check src",
