@@ -18,13 +18,14 @@
     "docker:up": "docker-compose -f ./infrastructure/docker-compose.yaml up",
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
     "frontend": "cd packages/frontend && npm --",
-    "backend": "yarn workspace @acapela/frontend",
+    "backend": "cd packages/frontend && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev"
   },
   "ntl": {
     "descriptions": {
       "frontned:dev": "Start frontend dev server",
+      "backend:dev": "Start backend dev server",
       "docker:up:detach": "Start docker infrastructure in detached mode",
       "docker:up": "Start docker infrastructure in interactive mode",
       "docker:stop": "Stop docker infrastructure",
