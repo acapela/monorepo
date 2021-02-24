@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+      - "**"
 jobs:
   test:
     name: Test
@@ -33,7 +33,7 @@ jobs:
       - name: Setup node v15
         uses: actions/setup-node@v2
         with:
-          node-version: '15'
+          node-version: "15"
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -45,7 +45,7 @@ jobs:
         run: npm ci
       - name: Migrate postgres using hasura migrations
         run: |
-          cd hasura
+          cd infrastructure/hasura
           npx hasura migrate status --skip-update-check --endpoint http://localhost:8080
           npx hasura migrate apply --skip-update-check --endpoint http://localhost:8080
       - name: Build project
