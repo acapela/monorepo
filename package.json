@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "workspaces": {
     "packages": [
-      "packages/*"
+      "frontend",
+      "backend"
     ]
   },
   "scripts": {
@@ -17,8 +18,8 @@
     "docker:up:detach": "npm run docker:up -- -d",
     "docker:up": "docker-compose -f ./infrastructure/docker-compose.yaml up",
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
-    "frontend": "cd packages/frontend && npm --",
-    "backend": "cd packages/frontend && npm --",
+    "frontend": "cd frontend && npm --",
+    "backend": "cd frontend && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev"
   },
