@@ -30,7 +30,7 @@ services:
       HASURA_GRAPHQL_MIGRATIONS_DIR: /hasura-migrations
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       # HASURA_GRAPHQL_JWT_SECRET: '{ "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com", "audience": "meetnomoreapp", "issuer": "https://securetoken.google.com/meetnomoreapp" }'
-      HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS512", "key": "a2dea0d46286fb02f7c76ee52e80cdcf13746f6523556474c2b0943b20804b25"}'
+      HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS512", "key": "${AUTH_JWT_TOKEN_SECRET}"}'
       HASURA_GRAPHQL_ADMIN_SECRET: dev
       HASURA_ACTIONS_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/actions
       HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER: Bearer dev-action-secret

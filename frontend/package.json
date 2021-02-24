@@ -24,14 +24,14 @@
     ]
   },
   "peerDependencies": {
+    "axios": "*",
+    "date-fns": "*",
     "graphql": "*",
-    "react": "*",
-    "react-dom": "*",
     "knex": "*",
     "pg": "*",
-    "axios": "*",
-    "typescript": "*",
-    "date-fns": "*"
+    "react": "*",
+    "react-dom": "*",
+    "typescript": "*"
   },
   "dependencies": {
     "@apollo/client": "^3.3.11",
@@ -44,6 +44,7 @@
     "jsonwebtoken": "^8.5.1",
     "next": "10.0.7",
     "next-auth": "^3.5.0",
+    "next-compose-plugins": "^2.2.1",
     "subscriptions-transport-ws": "^0.9.18",
     "tailwindcss": "^2.0.3"
   },
