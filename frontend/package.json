@@ -46,7 +46,9 @@
     "next-auth": "^3.5.0",
     "next-compose-plugins": "^2.2.1",
     "subscriptions-transport-ws": "^0.9.18",
-    "tailwindcss": "^2.0.3"
+    "tailwindcss": "^2.0.3",
+    "@acapela/config": "0.1.0",
+    "next-transpile-modules": "^6.3.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.7",

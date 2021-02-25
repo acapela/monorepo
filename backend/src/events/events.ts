@@ -1,14 +1,13 @@
-import { Router, Request, Response } from "express";
-import config from "../config";
+import { Request, Response, Router } from "express";
 import { extractToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError } from "../errors";
-import { EventHandler, handlers } from "./eventHandlers";
 import logger from "../logger";
+import { EventHandler, handlers } from "./eventHandlers";
 
 export const router = Router();
 const eventHandlers = groupHandlersByTriggerName(handlers);
 
-router.post("/v1/events", authenticateHasura, async (req: Request, res: Response) => {
+router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   const hasuraEvent = req.body as HasuraEvent<unknown>;
   const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
   if (!userId) {
@@ -41,9 +40,14 @@ router.post("/v1/events", authenticateHasura, async (req: Request, res: Response
   });
 });
 
-function authenticateHasura(req: Request, _: Response, next: () => unknown) {
+function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
   const token = extractToken(req.get("Authorization") || "");
-  if (token !== config.get("hasura.eventSecret")) {
+
+  if (!token) {
+    throw new AuthenticationError("Hasura events call done with invalid secret");
+  }
+
+  if (token !== process.env.HASURA_EVENT_SECRET) {
     throw new AuthenticationError("Hasura events call done with invalid secret");
   }
   next();

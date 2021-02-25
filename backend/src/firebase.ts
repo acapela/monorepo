@@ -1,10 +1,9 @@
 import admin from "firebase-admin";
-import { UnprocessableEntityError, InternalServerError } from "./errors";
-import config from "./config";
+import { InternalServerError } from "./errors";
 
 admin.initializeApp({
   credential: admin.credential.applicationDefault(),
-  databaseURL: config.get("firebase.databaseUrl"),
+  databaseURL: process.env.FIREBASE_DB_URL,
 });
 
 /**
@@ -30,21 +29,21 @@ export async function assertHasFirebaseAdminAccess(): Promise<boolean> {
   }
 }
 
-export async function getFirebaseUser(id: string): Promise<FirebaseUser | null> {
-  const user = await admin.auth().getUser(id);
-  if (!user) {
-    return null;
-  }
-  if (user.email && !user.emailVerified) {
-    throw new UnprocessableEntityError("Email of the user is not yet verified");
-  }
-  return {
-    id: user.uid,
-    verifiedEmail: user.email,
-    name: user.displayName || user.email,
-    avatarUrl: user.photoURL,
-  };
-}
+// export async function getFirebaseUser(id: string): Promise<FirebaseUser | null> {
+//   const user = await admin.auth().getUser(id);
+//   if (!user) {
+//     return null;
+//   }
+//   if (user.email && !user.emailVerified) {
+//     throw new UnprocessableEntityError("Email of the user is not yet verified");
+//   }
+//   return {
+//     id: user.uid,
+//     verifiedEmail: user.email,
+//     name: user.displayName || user.email,
+//     avatarUrl: user.photoURL,
+//   };
+// }
 
 export interface FirebaseUser {
   id: string;

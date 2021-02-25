@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    ".env.local": "env",
+    ".env.production": "env",
+    ".env.sample": "env"
+  },
+  "editor.rulers": [
+    // Matching prettier breakline length config
+    120
+  ]
+}

@@ -7,7 +7,7 @@ import { HttpStatus } from "../http";
 import logger from "../logger";
 import { AxiosError } from "axios";
 import { NotificationName } from "./UserNotification";
-import { validateSecret } from "../utils";
+import { middlewareRequreBearerToken } from "../utils";
 
 export const router = Router();
 
@@ -27,7 +27,10 @@ export interface ScheduleRequest {
 
 router.post(
   "/v1/notifications/schedule",
-  validateSecret("backend.authToken", "Invalid secret provided for scheduling notifications"),
+  middlewareRequreBearerToken(
+    process.env.BACKEND_AUTH_TOKEN as string,
+    "Invalid secret provided for scheduling notifications"
+  ),
   async (req: Request, res: Response) => {
     const scheduleReq: ScheduleRequest = req.body as ScheduleRequest;
 
@@ -71,7 +74,10 @@ type SendNotificationTriggerPayload = {
 
 router.post(
   "/v1/notifications",
-  validateSecret("hasura.notificationSecret", "Invalid secret provided for sending notifications"),
+  middlewareRequreBearerToken(
+    process.env.HASURA_NOTIFICATION_SECRET as string,
+    "Invalid secret provided for sending notifications"
+  ),
   async (req: Request, res: Response) => {
     const triggerRequest = req.body as HasuraWebhook<SendNotificationTriggerPayload>;
     const trigger: SendNotificationTriggerPayload = triggerRequest.payload;

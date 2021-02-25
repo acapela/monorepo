@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import config from "../config";
 import { extractToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError } from "../errors";
 import { ActionHandler, handlers } from "./actionHandlers";
@@ -10,7 +9,7 @@ export const router = Router();
 
 const actionHandlers = groupHandlersByActionName(handlers);
 
-router.post("/v1/actions", authenticateHasura, async (req: Request, res: Response) => {
+router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
   if (!userId) {
@@ -49,9 +48,14 @@ router.post("/v1/actions", authenticateHasura, async (req: Request, res: Respons
   }
 });
 
-function authenticateHasura(req: Request, _: Response, next: () => unknown) {
+function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
   const token = extractToken(req.get("Authorization") || "");
-  if (token !== config.get("hasura.actionSecret")) {
+
+  if (!token) {
+    throw new AuthenticationError("Hasura action call done with invalid secret");
+  }
+
+  if (token !== process.env.HASURA_ACTION_SECRET) {
     throw new AuthenticationError("Hasura action call done with invalid secret");
   }
   next();

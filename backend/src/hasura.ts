@@ -1,4 +1,3 @@
-import config from "./config";
 import Axios, { AxiosResponse } from "axios";
 
 type HasuraRequestPayload = {
@@ -21,9 +20,9 @@ export type HasuraHeader = {
 };
 
 export default abstract class Hasura {
-  static apiUrl: string = config.get("hasura.queryApi.url");
-  static apiSecret: string = config.get("hasura.queryApi.secret");
-  static apiRole: string = config.get("hasura.queryApi.role");
+  static apiUrl = process.env.HASURA_API_URL as string;
+  static apiSecret = process.env.HASURA_API_SECRET as string;
+  static apiRole = process.env.HASURA_API_ADMIN_ROLE as string;
 
   static async authenticatedRequest(
     requestPayload: HasuraRequestPayload,

@@ -1,8 +1,7 @@
 import sendgrid, { MailDataRequired } from "@sendgrid/mail";
-import config from "../config";
 import { InternalServerError } from "../errors";
 
-sendgrid.setApiKey(config.get("sendgrid.apiKey"));
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 export async function sendEmail(email: MailDataRequired, isMultiple?: boolean): Promise<void> {
   try {

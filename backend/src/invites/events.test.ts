@@ -6,7 +6,6 @@ import { createUser, User } from "../users/users";
 import { HasuraEventOperation } from "../events/events";
 import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";
-import config from "../config";
 
 jest.mock("@sendgrid/mail", () => ({
   send: jest.fn(() => Promise.resolve()),
@@ -45,7 +44,7 @@ describe("Invite events", () => {
     expect(mailParams.to).toEqual("test@example.com");
     expect(mailParams.subject).toContain("Test");
     expect(mailParams.subject).toContain(room.name);
-    expect(mailParams.html).toContain(`${config.get("app.url")}/invites/${code}`);
+    expect(mailParams.html).toContain(`${process.env.FRONTEND_URL}/invites/${code}`);
   });
 
   it("fails if the invite creator does not match the event creator", async () => {

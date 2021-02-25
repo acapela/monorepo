@@ -1,5 +1,5 @@
 import { UserNotification, NotificationAgentName, NotificationName, NotificationMeta } from "./UserNotification";
-import { isRoomExpired, getUnreadMessages, UnreadMessagesInThread, generateMagicLinkToRoom } from "./utils";
+import { isRoomExpired, getUnreadMessages, UnreadMessagesInThread, getRoomLink } from "./utils";
 import { MailData } from "@sendgrid/helpers/classes/mail";
 import { Thread, Message } from "./domain";
 
@@ -56,7 +56,7 @@ export default class UnseenMessagesNotification extends UserNotification {
   }
 
   async buildNotificationContent(agent: NotificationAgentName): Promise<MailData> {
-    const magicLink: string = await generateMagicLinkToRoom(this.participant.email, this.room.id);
+    const magicLink: string = await getRoomLink(this.room.id);
     const unreadMessages: Array<UnreadMessagesInThread> = getUnreadMessages(this.room, this.participant.userId);
     const summary: string = this.generateUnreadSummary(unreadMessages);
 

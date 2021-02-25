@@ -1,14 +1,13 @@
 import pino from "pino";
 import { ServerResponse } from "http";
 import { Request } from "express";
-import config from "./config";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 
 const logger = pino({
   messageKey: "message",
   prettyPrint: process.env.NODE_ENV !== "production",
-  level: config.get("logging.level"),
+  level: process.env.LOGGING_LEVEL,
   formatters: {
     // formatting severity to integrate into google cloud logging
     // https://cloud.google.com/logging/docs/agent/configuration#special-fields

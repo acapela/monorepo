@@ -1,5 +1,0 @@
-# test-specific configuration
-
-# do not spam test logs with request info
-logging:
-  level: warn

@@ -1,6 +1,5 @@
 import { AxiosResponse } from "axios";
 import logger from "../logger";
-import config from "../config";
 
 import Hasura, { ScheduleRequestResponse } from "../hasura";
 import { NotificationName } from "./UserNotification";
@@ -8,7 +7,7 @@ import { NotificationName } from "./UserNotification";
 export async function scheduleNotifications(roomId: string): Promise<ScheduleRequestResponse> {
   logger.info(`Scheduling notification cron task`, { roomId });
   // TODO: should we somehow authenticate the request coming from the web app?
-  const rootUrl: string = config.get("backend.rootUrl");
+  const rootUrl = process.env.BACKEND_ROOT_URL;
 
   const notificationsToSchedule: Array<NotificationName> = ["Invite", "RoomExpired", "UnseenMessages", "RoomUnchecked"];
 
@@ -25,7 +24,7 @@ export async function scheduleNotifications(roomId: string): Promise<ScheduleReq
     headers: [
       {
         name: "Authorization",
-        value: `Bearer ${config.get("hasura.notificationSecret")}`,
+        value: `Bearer ${process.env.HASURA_NOTIFICATION_SECRET}`,
       },
     ],
   });

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
 const bundleAnalyzer = require("@next/bundle-analyzer");
+const withTranspileModules = require("next-transpile-modules");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
@@ -44,6 +45,33 @@ const apiRewrites = (nextConfig = {}) => {
 };
 
 /**
+ * Let's tell next.js to compile TypeScript files from other packages of monorepo.
+ * eg. `frontend/node_modules/@acapela/some-package/file.ts` will be compiled the same way as any other ts file
+ * included directly in frontend.
+ *
+ * This allows us to have hot-reloading experience of other packages working the same as with frontend files itself.
+ */
+const createTsPackagesPlugin = () => {
+  // We'll read all @acapela namespace dependencies and tell next.js to transpile them.
+
+  // Load and parse package.json file content as json
+  const packageJsonPath = path.resolve(__dirname, "package.json");
+  const packageJsonRawContent = fs.readFileSync(packageJsonPath);
+  const packageInfo = JSON.parse(packageJsonRawContent);
+
+  // Get all dependencies and dev dependencies
+  const dependenciesMap = { ...packageInfo.dependencies, ...packageInfo.devDependencies };
+
+  // Filter dependencies names to leave only @acapela namespace
+  const monorepoDependencies = Object.keys(dependenciesMap).filter((dependencyName) =>
+    dependencyName.startsWith("@acapela/")
+  );
+
+  // Return plugin that will transpile those dependencies using default next.js config
+  return withTranspileModules([...monorepoDependencies]);
+};
+
+/**
  * This plugin allows passing variables from .env file into server/client runtime using process.env.VAR_NAME.
  *
  * By default next.js is handling it, but it requires .env file to be present in the root folder of
@@ -62,7 +90,7 @@ const envVariables = (nextConfig = {}) => {
       // This function is called twice, once for server side and once for client side webpack.
       const isServer = options.isServer;
       const envFilePath = options.config.envFilePath;
-      const fileStats = fs.statSync(options.config.envFilePath);
+      const fileStats = fs.statSync(envFilePath);
 
       if (!fileStats.isFile()) {
         return config;
@@ -116,5 +144,6 @@ module.exports = withPlugins([
     },
   ],
   //
+  createTsPackagesPlugin(),
   apiRewrites,
 ]);

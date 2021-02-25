@@ -1,7 +1,7 @@
 import { MailData } from "@sendgrid/helpers/classes/mail";
 import { NotificationName, NotificationMeta, NotificationAgentName, UserNotification } from "./UserNotification";
 import { Thread, Participant, Room } from "./domain";
-import { generateMagicLinkToRoom } from "./utils";
+import { getRoomLink } from "./utils";
 import { firestore } from "firebase-admin";
 
 export default class InviteNotification extends UserNotification {
@@ -12,7 +12,7 @@ export default class InviteNotification extends UserNotification {
   };
 
   async buildNotificationContent(agentName: NotificationAgentName): Promise<MailData> {
-    const magicLink = await generateMagicLinkToRoom(this.participant.email, this.room.id);
+    const magicLink = await getRoomLink(this.room.id);
 
     switch (agentName) {
       case "email":

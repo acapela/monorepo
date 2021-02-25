@@ -1,17 +1,16 @@
 import knex from "knex";
-import config from "./config";
 import * as logger from "./logger";
 
-const socketPath: string = config.get("database.host.socketPath");
-const connection: string = config.get("database.host.connection");
+const socketPath = process.env.DATABASE_HOST_SOCKET_PATH;
+const connection = process.env.DATABASE_HOST_CONNECTION;
 const host = connection ? `${socketPath}/${connection}` : socketPath;
 
 const database = knex({
   client: "pg",
   connection: {
-    user: config.get("database.user"),
-    password: config.get("database.password"),
-    database: config.get("database.name"),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     host,
   },
 });

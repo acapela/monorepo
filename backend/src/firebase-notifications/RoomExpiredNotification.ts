@@ -1,7 +1,7 @@
 import { MailData } from "@sendgrid/helpers/classes/mail";
 import logger from "../logger";
 import { UserNotification, NotificationName, NotificationMeta, NotificationAgentName } from "./UserNotification";
-import { isRoomExpired, generateMagicLinkToRoom } from "./utils";
+import { isRoomExpired, getRoomLink } from "./utils";
 import Hasura from "../hasura";
 
 export default class RoomExpiredNotification extends UserNotification {
@@ -18,7 +18,7 @@ export default class RoomExpiredNotification extends UserNotification {
     return this.isAuthor() && isRoomExpired(this.room);
   }
   async buildNotificationContent(agentName: NotificationAgentName): Promise<MailData> {
-    const magicLink: string = await generateMagicLinkToRoom(this.participant.email, this.room.id);
+    const magicLink: string = await getRoomLink(this.room.id);
 
     switch (agentName) {
       case "email":

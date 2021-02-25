@@ -4,37 +4,13 @@ import knex from "knex";
 import Providers from "next-auth/providers";
 import { Adapter, AdapterInstance } from "next-auth/adapters";
 import jwt from "jsonwebtoken";
+import { initializeSecrets } from "@acapela/config";
 
 /**
  * In this file we manage authorization integration using next-auth.
  *
  * It makes it easy to define integration once and than add new providers (fb, twitter, etc) easily.
  */
-
-// Let's throw early if we have missing config.
-assert(process.env.DB_USER, "Environment variable DB_USER is not provided. It is required to run auth endpoint.");
-assert(
-  process.env.DB_PASSWORD,
-  "Environment variable DB_PASSWORD is not provided. It is required to run auth endpoint."
-);
-assert(process.env.DB_NAME, "Environment variable DB_NAME is not provided. It is required to run auth endpoint.");
-assert(process.env.DB_HOST, "Environment variable DB_HOST is not provided. It is required to run auth endpoint.");
-assert(
-  process.env.AUTH_SECRET,
-  "Environment variable AUTH_SECRET is not provided. It is required to run auth endpoint."
-);
-assert(
-  process.env.AUTH_JWT_TOKEN_SECRET,
-  "Environment variable AUTH_JWT_TOKEN_SECRET is not provided. It is required to run auth endpoint."
-);
-assert(
-  process.env.GOOGLE_CLIENT_ID,
-  "Environment variable GOOGLE_CLIENT_ID is not provided. It is required to run auth endpoint."
-);
-assert(
-  process.env.GOOGLE_CLIENT_SECRET,
-  "Environment variable GOOGLE_CLIENT_SECRET is not provided. It is required to run auth endpoint."
-);
 
 // DB table interfaces used inside db auth adapter.
 
@@ -84,18 +60,20 @@ declare module "knex/types/tables" {
   }
 }
 
-const database = knex({
-  client: "pg",
-  connection: {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-  },
-});
-
 const authAdapterProvider: Adapter = {
   async getAdapter(): Promise<AuthAdapter> {
+    await initializeSecrets();
+
+    const database = knex({
+      client: "pg",
+      connection: {
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        host: process.env.DB_HOST,
+      },
+    });
+
     return {
       async createUser(profile) {
         const [user] = await database("user")
@@ -210,122 +188,115 @@ const authAdapterProvider: Adapter = {
   },
 };
 
-const authInitOptions: InitOptions = {
-  secret: process.env.AUTH_SECRET,
-  jwt: {
-    secret: process.env.AUTH_JWT_TOKEN_SECRET,
-    encryption: false,
-    // By default the JSON Web Token is signed with SHA256 and encrypted with AES.
-    // We use HS256 token signature in order to make it compatible with hasura JWT
-    encode: async ({ secret, token }) => {
-      const encodedToken = jwt.sign(token, secret, { algorithm: "HS256" });
-      return encodedToken;
-    },
-    decode: async ({ secret, token }) => {
-      const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
+async function getAuthInitOptions() {
+  await initializeSecrets();
+  const authInitOptions: InitOptions = {
+    secret: process.env.AUTH_SECRET,
+    jwt: {
+      secret: process.env.AUTH_JWT_TOKEN_SECRET,
+      encryption: false,
+      // By default the JSON Web Token is signed with SHA256 and encrypted with AES.
+      // We use HS256 token signature in order to make it compatible with hasura JWT
+      encode: async ({ secret, token }) => {
+        const encodedToken = jwt.sign(token, secret, { algorithm: "HS256" });
+        return encodedToken;
+      },
+      decode: async ({ secret, token }) => {
+        const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
 
-      return decodedToken as Record<string, unknown>;
-    },
-  },
-  session: {
-    // Use JSON Web Tokens for session instead of database sessions.
-    jwt: true,
-  },
-  useSecureCookies: false,
-  debug: process.env.NODE_ENV === "development",
-  callbacks: {
-    jwt: async (token, user: User, account: Account, profile: Profile) => {
-      if (!user) {
-        return token;
-      }
-
-      return {
-        ...token,
-        // Add some useful informations we might use in the frontend.
-        picture: user.avatar_url,
-        name: profile.name,
-        // Make JWT token compatible with hasura
-        "https://hasura.io/jwt/claims": {
-          "x-hasura-allowed-roles": ["user"],
-          "x-hasura-default-role": "user",
-          "x-hasura-user-id": user.id,
-        },
-      };
-    },
-    // As we're not using sessions (but JWT), let's make session simply return token data.
-    // Note: Next-auth will return token data only if token is validated and valid.
-    session: async (session, tokenData) => {
-      return tokenData;
-    },
-  },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        /**
-         * !!!
-         * We make session cookie accessable on client side.
-         *
-         * This is because it seems to be the only way to make it work with hasura.
-         *
-         * Context:
-         * Hasura requires token to be present in request header using Bearer token.
-         * In order to provide this header, we need to know token on client side.
-         *
-         * By default next-auth uses http-only cookies to store token. This means token is only
-         * accessable for server during request and is 'invisible' on client side. This is more
-         * secure as it makes it impossible for evil scripts to 'steal' the token on client side.
-         *
-         * Workaround could be to create proxy server that 'translates' request moving token from
-         * cookie to header of the request.
-         *
-         * We've decided to use client side token for sake of faster development now and consider
-         * adding proxy later.
-         *
-         * The perfect solution would be configurable option in hasura that allows reading JWT from
-         * cookie. But seems its not possible right now (https://github.com/hasura/graphql-engine/issues/2183)
-         */
-        httpOnly: false, // <-- ! We make this cookie accessable on client side.
-        sameSite: "lax",
-        path: "/",
-        secure: false,
+        return decodedToken as Record<string, unknown>;
       },
     },
-  },
+    session: {
+      // Use JSON Web Tokens for session instead of database sessions.
+      jwt: true,
+    },
+    useSecureCookies: false,
+    debug: process.env.NODE_ENV === "development",
+    callbacks: {
+      jwt: async (token, user: User, account: Account, profile: Profile) => {
+        if (!user) {
+          return token;
+        }
 
-  // Configure one or more authentication providers
-  providers: [
-    Providers.Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // Beside default scope, we need calendar access.
-      // scope: "https://www.googleapis.com/auth/calendar.readonly",
-      scope:
-        "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
-    }),
-  ],
-  // Adding our custom db adapter.
-  adapter: authAdapterProvider,
-};
+        return {
+          ...token,
+          // Add some useful informations we might use in the frontend.
+          picture: user.avatar_url,
+          name: profile.name,
+          // Make JWT token compatible with hasura
+          "https://hasura.io/jwt/claims": {
+            "x-hasura-allowed-roles": ["user"],
+            "x-hasura-default-role": "user",
+            "x-hasura-user-id": user.id,
+          },
+        };
+      },
+      // As we're not using sessions (but JWT), let's make session simply return token data.
+      // Note: Next-auth will return token data only if token is validated and valid.
+      session: async (session, tokenData) => {
+        return tokenData;
+      },
+    },
+    cookies: {
+      sessionToken: {
+        name: `next-auth.session-token`,
+        options: {
+          /**
+           * !!!
+           * We make session cookie accessable on client side.
+           *
+           * This is because it seems to be the only way to make it work with hasura.
+           *
+           * Context:
+           * Hasura requires token to be present in request header using Bearer token.
+           * In order to provide this header, we need to know token on client side.
+           *
+           * By default next-auth uses http-only cookies to store token. This means token is only
+           * accessable for server during request and is 'invisible' on client side. This is more
+           * secure as it makes it impossible for evil scripts to 'steal' the token on client side.
+           *
+           * Workaround could be to create proxy server that 'translates' request moving token from
+           * cookie to header of the request.
+           *
+           * We've decided to use client side token for sake of faster development now and consider
+           * adding proxy later.
+           *
+           * The perfect solution would be configurable option in hasura that allows reading JWT from
+           * cookie. But seems its not possible right now (https://github.com/hasura/graphql-engine/issues/2183)
+           */
+          httpOnly: false, // <-- ! We make this cookie accessable on client side.
+          sameSite: "lax",
+          path: "/",
+          secure: false,
+        },
+      },
+    },
 
+    // Configure one or more authentication providers
+    providers: [
+      Providers.Google({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        // Beside default scope, we need calendar access.
+        // scope: "https://www.googleapis.com/auth/calendar.readonly",
+        scope:
+          "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
+      }),
+    ],
+    // Adding our custom db adapter.
+    adapter: authAdapterProvider,
+  };
+
+  return authInitOptions;
+}
 class EmailAuthNotSupportedError extends Error {
   constructor() {
     super("Internal server error");
   }
 }
 
-export default (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
-  return NextAuth(req, res, authInitOptions);
+export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+  const authOptions = await getAuthInitOptions();
+  return NextAuth(req, res, authOptions);
 };
-
-class AssertError extends Error {
-  constructor(message: string) {
-    super(`Assert error - ${message}`);
-  }
-}
-
-function assert(input: unknown, message: string): asserts input {
-  if (input === undefined || input === null) {
-    throw new AssertError(message);
-  }
-}
