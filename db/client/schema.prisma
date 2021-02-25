@@ -1,0 +1,104 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+model account {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  user_id              String    @db.Uuid
+  provider_id          String
+  provider_type        String
+  provider_account_id  String
+  refresh_token        String?
+  access_token         String?
+  access_token_expires DateTime? @db.Timestamptz(6)
+  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
+  user                 user      @relation(fields: [user_id], references: [id])
+}
+
+model message {
+  thread_id     String       @db.Uuid
+  user_id       String       @db.Uuid
+  created_at    DateTime     @default(now()) @db.Timestamptz(6)
+  type          String
+  media_url     String?
+  text          String?
+  transcription String?
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  thread        thread       @relation(fields: [thread_id], references: [id])
+  message_type  message_type @relation(fields: [type], references: [value])
+  user          user         @relation(fields: [user_id], references: [id])
+}
+
+model message_type {
+  value   String    @id
+  message message[]
+}
+
+model room {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  creator_id          String              @db.Uuid
+  name                String?
+  created_at          DateTime            @default(now()) @db.Timestamptz(6)
+  deadline            DateTime            @default(now()) @db.Timestamptz(6)
+  notification_job_id String?
+  summary             String?
+  finished_at         DateTime?           @db.Timestamptz(6)
+  user                user                @relation(fields: [creator_id], references: [id])
+  room_invites        room_invites[]
+  room_participants   room_participants[]
+  thread              thread[]
+}
+
+model room_invites {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id    String    @db.Uuid
+  inviter_id String    @db.Uuid
+  code       String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  used_at    DateTime? @db.Timestamptz(6)
+  user       user      @relation(fields: [inviter_id], references: [id])
+  room       room      @relation(fields: [room_id], references: [id])
+
+  @@unique([room_id, email], name: "room_invites_room_id_email_key")
+}
+
+model room_participants {
+  room_id String @db.Uuid
+  user_id String @db.Uuid
+  room    room   @relation(fields: [room_id], references: [id])
+  user    user   @relation(fields: [user_id], references: [id])
+
+  @@id([room_id, user_id])
+  @@unique([room_id, user_id], name: "room_participants_room_id_user_id_key")
+}
+
+model thread {
+  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id String    @db.Uuid
+  name    String?
+  index   String
+  room    room      @relation(fields: [room_id], references: [id])
+  message message[]
+}
+
+model user {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email             String?             @unique
+  firebase_id       String?             @unique
+  name              String?
+  avatar_url        String?
+  created_at        DateTime            @default(now()) @db.Timestamptz(6)
+  account           account[]
+  message           message[]
+  room              room[]
+  room_invites      room_invites[]
+  room_participants room_participants[]
+}

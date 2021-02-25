@@ -6,7 +6,8 @@
     "packages": [
       "frontend",
       "backend",
-      "config"
+      "config",
+      "db"
     ]
   },
   "scripts": {
@@ -21,6 +22,7 @@
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
     "frontend": "cd frontend && npm --",
     "backend": "cd backend && npm --",
+    "db": "cd db && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev"
   },
