@@ -67,7 +67,11 @@ const createTsPackagesPlugin = () => {
   );
 
   // Return plugin that will transpile those dependencies using default next.js config
-  return withTranspileModules([...monorepoDependencies]);
+  return withTranspileModules([
+    ...monorepoDependencies,
+    // Add this package itself too to allow @acapela/frontend imports inside this package
+    packageInfo.name,
+  ]);
 };
 
 /**

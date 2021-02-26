@@ -7,5 +7,17 @@
   "editor.rulers": [
     // Matching prettier breakline length config
     120
-  ]
+  ],
+  "search.exclude": {
+    "**/node_modules": true,
+    ".next/**/*": true,
+    // DB client is auto generated, huge file that could pollute search easily
+    "db/client/**/*": true
+  },
+  "prettier.requireConfig": true,
+  // Will use auto-imports @acapela/package instead of ../../package if import is from different package
+  "typescript.preferences.importModuleSpecifier": "project-relative",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

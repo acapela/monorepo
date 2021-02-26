@@ -2,7 +2,7 @@ import { EventHandler } from "../events/eventHandlers";
 import { findRoomById } from "../rooms/rooms";
 import { findUserById, User } from "../users/users";
 import { UnprocessableEntityError } from "../errors";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { InviteNotification } from "./InviteNotification";
 import { sendNotification } from "../notifications/sendNotification";
 

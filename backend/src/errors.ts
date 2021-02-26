@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "./http";
-import logger from "./logger";
+import logger from "@acapela/shared/logger";
 
 export function notFoundRouteHandling(): void {
   throw new NotFoundError();

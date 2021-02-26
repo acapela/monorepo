@@ -1,5 +1,5 @@
 import knex from "knex";
-import * as logger from "./logger";
+import logger from "@acapela/shared/logger";
 
 const socketPath = process.env.DATABASE_HOST_SOCKET_PATH;
 const connection = process.env.DATABASE_HOST_CONNECTION;

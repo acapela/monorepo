@@ -20,9 +20,9 @@ export type HasuraHeader = {
 };
 
 export default abstract class Hasura {
-  static apiUrl = process.env.HASURA_API_URL as string;
-  static apiSecret = process.env.HASURA_API_SECRET as string;
-  static apiRole = process.env.HASURA_API_ADMIN_ROLE as string;
+  static apiUrl = process.env.HASURA_API_URL;
+  static apiSecret = process.env.HASURA_API_SECRET;
+  static apiRole = process.env.HASURA_API_ADMIN_ROLE;
 
   static async authenticatedRequest(
     requestPayload: HasuraRequestPayload,

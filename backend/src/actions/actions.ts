@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { extractToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError } from "../errors";
 import { ActionHandler, handlers } from "./actionHandlers";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { HasuraSessionVariables } from "../events/events";
 
 export const router = Router();

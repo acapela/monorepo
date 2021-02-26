@@ -5,16 +5,18 @@ import { useRouter } from "next/router";
 import { Button, ButtonVariant } from "../design/Button";
 import { Field, FieldType } from "../design/Field";
 import { Dialog } from "../design/Dialog";
-import { Room, useRoomCreation } from "./Room";
+import { useCreateRoomMutation, Room } from "../gql";
 
-export const RoomCreationForm: React.FC<{ onCreate?: (room: Room) => unknown }> = ({ onCreate }) => {
-  const { createRoom, loading } = useRoomCreation();
+export const RoomCreationForm: React.FC<{ onCreate?: (room: { id: string }) => unknown }> = ({ onCreate }) => {
+  const [createRoom, { loading }] = useCreateRoomMutation();
   return (
     <Formik
       initialValues={{ name: "" }}
       // TODO: validate
       onSubmit={async ({ name }) => {
-        const room = await createRoom({ name });
+        const {
+          data: { room },
+        } = await createRoom({ variables: { name } });
         if (onCreate) {
           onCreate(room);
         }

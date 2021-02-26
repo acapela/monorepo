@@ -1,0 +1,3472 @@
+schema {
+  query: query_root
+  mutation: mutation_root
+  subscription: subscription_root
+}
+
+input InviteAcceptCommand {
+  code: String!
+}
+
+type InviteAcceptResponse {
+  invite: room_invites
+  invite_id: ID!
+  room: room
+  room_id: ID!
+}
+
+"""
+expression to compare columns of type String. All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+  _ilike: String
+  _in: [String!]
+  _is_null: Boolean
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+  _nilike: String
+  _nin: [String!]
+  _nlike: String
+  _nsimilar: String
+  _similar: String
+}
+
+type UpgradeUserResponse {
+  user: user
+  user_id: ID!
+}
+
+"""
+Account represents 3rd party login methods used by given user.
+
+
+columns and relationships of "account"
+
+"""
+type account {
+  access_token: String
+  access_token_expires: timestamptz
+  created_at: timestamptz!
+  id: uuid!
+  provider_account_id: String!
+  provider_id: String!
+  provider_type: String!
+  refresh_token: String
+  updated_at: timestamptz!
+
+  """An object relationship"""
+  user: user!
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "account"
+"""
+type account_aggregate {
+  aggregate: account_aggregate_fields
+  nodes: [account!]!
+}
+
+"""
+aggregate fields of "account"
+"""
+type account_aggregate_fields {
+  count(columns: [account_select_column!], distinct: Boolean): Int
+  max: account_max_fields
+  min: account_min_fields
+}
+
+"""
+order by aggregate values of table "account"
+"""
+input account_aggregate_order_by {
+  count: order_by
+  max: account_max_order_by
+  min: account_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "account"
+"""
+input account_arr_rel_insert_input {
+  data: [account_insert_input!]!
+  on_conflict: account_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "account". All fields are combined with a logical 'AND'.
+"""
+input account_bool_exp {
+  _and: [account_bool_exp]
+  _not: account_bool_exp
+  _or: [account_bool_exp]
+  access_token: String_comparison_exp
+  access_token_expires: timestamptz_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  provider_account_id: String_comparison_exp
+  provider_id: String_comparison_exp
+  provider_type: String_comparison_exp
+  refresh_token: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user: user_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "account"
+"""
+enum account_constraint {
+  """unique or primary key constraint"""
+  account_pkey
+}
+
+"""
+input type for inserting data into table "account"
+"""
+input account_insert_input {
+  access_token: String
+  access_token_expires: timestamptz
+  created_at: timestamptz
+  id: uuid
+  provider_account_id: String
+  provider_id: String
+  provider_type: String
+  refresh_token: String
+  updated_at: timestamptz
+  user: user_obj_rel_insert_input
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type account_max_fields {
+  access_token: String
+  access_token_expires: timestamptz
+  created_at: timestamptz
+  id: uuid
+  provider_account_id: String
+  provider_id: String
+  provider_type: String
+  refresh_token: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "account"
+"""
+input account_max_order_by {
+  access_token: order_by
+  access_token_expires: order_by
+  created_at: order_by
+  id: order_by
+  provider_account_id: order_by
+  provider_id: order_by
+  provider_type: order_by
+  refresh_token: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type account_min_fields {
+  access_token: String
+  access_token_expires: timestamptz
+  created_at: timestamptz
+  id: uuid
+  provider_account_id: String
+  provider_id: String
+  provider_type: String
+  refresh_token: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "account"
+"""
+input account_min_order_by {
+  access_token: order_by
+  access_token_expires: order_by
+  created_at: order_by
+  id: order_by
+  provider_account_id: order_by
+  provider_id: order_by
+  provider_type: order_by
+  refresh_token: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "account"
+"""
+type account_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [account!]!
+}
+
+"""
+input type for inserting object relation for remote table "account"
+"""
+input account_obj_rel_insert_input {
+  data: account_insert_input!
+  on_conflict: account_on_conflict
+}
+
+"""
+on conflict condition type for table "account"
+"""
+input account_on_conflict {
+  constraint: account_constraint!
+  update_columns: [account_update_column!]!
+  where: account_bool_exp
+}
+
+"""
+ordering options when selecting data from "account"
+"""
+input account_order_by {
+  access_token: order_by
+  access_token_expires: order_by
+  created_at: order_by
+  id: order_by
+  provider_account_id: order_by
+  provider_id: order_by
+  provider_type: order_by
+  refresh_token: order_by
+  updated_at: order_by
+  user: user_order_by
+  user_id: order_by
+}
+
+"""
+primary key columns input for table: "account"
+"""
+input account_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "account"
+"""
+enum account_select_column {
+  """column name"""
+  access_token
+
+  """column name"""
+  access_token_expires
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  provider_account_id
+
+  """column name"""
+  provider_id
+
+  """column name"""
+  provider_type
+
+  """column name"""
+  refresh_token
+
+  """column name"""
+  updated_at
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "account"
+"""
+input account_set_input {
+  access_token: String
+  access_token_expires: timestamptz
+  created_at: timestamptz
+  id: uuid
+  provider_account_id: String
+  provider_id: String
+  provider_type: String
+  refresh_token: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+update columns of table "account"
+"""
+enum account_update_column {
+  """column name"""
+  access_token
+
+  """column name"""
+  access_token_expires
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  provider_account_id
+
+  """column name"""
+  provider_id
+
+  """column name"""
+  provider_type
+
+  """column name"""
+  refresh_token
+
+  """column name"""
+  updated_at
+
+  """column name"""
+  user_id
+}
+
+scalar json
+
+"""
+columns and relationships of "message"
+"""
+type message {
+  created_at: timestamptz!
+  id: uuid!
+  media_url: String
+
+  """An object relationship"""
+  message_type: message_type!
+  text: String
+
+  """An object relationship"""
+  thread: thread!
+  thread_id: uuid!
+  transcription: String
+  type: message_type_enum!
+
+  """An object relationship"""
+  user: user!
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "message"
+"""
+type message_aggregate {
+  aggregate: message_aggregate_fields
+  nodes: [message!]!
+}
+
+"""
+aggregate fields of "message"
+"""
+type message_aggregate_fields {
+  count(columns: [message_select_column!], distinct: Boolean): Int
+  max: message_max_fields
+  min: message_min_fields
+}
+
+"""
+order by aggregate values of table "message"
+"""
+input message_aggregate_order_by {
+  count: order_by
+  max: message_max_order_by
+  min: message_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "message"
+"""
+input message_arr_rel_insert_input {
+  data: [message_insert_input!]!
+  on_conflict: message_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "message". All fields are combined with a logical 'AND'.
+"""
+input message_bool_exp {
+  _and: [message_bool_exp]
+  _not: message_bool_exp
+  _or: [message_bool_exp]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  media_url: String_comparison_exp
+  message_type: message_type_bool_exp
+  text: String_comparison_exp
+  thread: thread_bool_exp
+  thread_id: uuid_comparison_exp
+  transcription: String_comparison_exp
+  type: message_type_enum_comparison_exp
+  user: user_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "message"
+"""
+enum message_constraint {
+  """unique or primary key constraint"""
+  message_id_key
+
+  """unique or primary key constraint"""
+  message_pkey
+}
+
+"""
+input type for inserting data into table "message"
+"""
+input message_insert_input {
+  created_at: timestamptz
+  id: uuid
+  media_url: String
+  message_type: message_type_obj_rel_insert_input
+  text: String
+  thread: thread_obj_rel_insert_input
+  thread_id: uuid
+  transcription: String
+  type: message_type_enum
+  user: user_obj_rel_insert_input
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type message_max_fields {
+  created_at: timestamptz
+  id: uuid
+  media_url: String
+  text: String
+  thread_id: uuid
+  transcription: String
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "message"
+"""
+input message_max_order_by {
+  created_at: order_by
+  id: order_by
+  media_url: order_by
+  text: order_by
+  thread_id: order_by
+  transcription: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type message_min_fields {
+  created_at: timestamptz
+  id: uuid
+  media_url: String
+  text: String
+  thread_id: uuid
+  transcription: String
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "message"
+"""
+input message_min_order_by {
+  created_at: order_by
+  id: order_by
+  media_url: order_by
+  text: order_by
+  thread_id: order_by
+  transcription: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "message"
+"""
+type message_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [message!]!
+}
+
+"""
+input type for inserting object relation for remote table "message"
+"""
+input message_obj_rel_insert_input {
+  data: message_insert_input!
+  on_conflict: message_on_conflict
+}
+
+"""
+on conflict condition type for table "message"
+"""
+input message_on_conflict {
+  constraint: message_constraint!
+  update_columns: [message_update_column!]!
+  where: message_bool_exp
+}
+
+"""
+ordering options when selecting data from "message"
+"""
+input message_order_by {
+  created_at: order_by
+  id: order_by
+  media_url: order_by
+  message_type: message_type_order_by
+  text: order_by
+  thread: thread_order_by
+  thread_id: order_by
+  transcription: order_by
+  type: order_by
+  user: user_order_by
+  user_id: order_by
+}
+
+"""
+primary key columns input for table: "message"
+"""
+input message_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "message"
+"""
+enum message_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  media_url
+
+  """column name"""
+  text
+
+  """column name"""
+  thread_id
+
+  """column name"""
+  transcription
+
+  """column name"""
+  type
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "message"
+"""
+input message_set_input {
+  created_at: timestamptz
+  id: uuid
+  media_url: String
+  text: String
+  thread_id: uuid
+  transcription: String
+  type: message_type_enum
+  user_id: uuid
+}
+
+"""
+Used as an ENUM for the message type field constraint.
+
+
+columns and relationships of "message_type"
+
+"""
+type message_type {
+  value: String!
+}
+
+"""
+aggregated selection of "message_type"
+"""
+type message_type_aggregate {
+  aggregate: message_type_aggregate_fields
+  nodes: [message_type!]!
+}
+
+"""
+aggregate fields of "message_type"
+"""
+type message_type_aggregate_fields {
+  count(columns: [message_type_select_column!], distinct: Boolean): Int
+  max: message_type_max_fields
+  min: message_type_min_fields
+}
+
+"""
+order by aggregate values of table "message_type"
+"""
+input message_type_aggregate_order_by {
+  count: order_by
+  max: message_type_max_order_by
+  min: message_type_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "message_type"
+"""
+input message_type_arr_rel_insert_input {
+  data: [message_type_insert_input!]!
+  on_conflict: message_type_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "message_type". All fields are combined with a logical 'AND'.
+"""
+input message_type_bool_exp {
+  _and: [message_type_bool_exp]
+  _not: message_type_bool_exp
+  _or: [message_type_bool_exp]
+  value: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "message_type"
+"""
+enum message_type_constraint {
+  """unique or primary key constraint"""
+  message_type_pkey
+}
+
+enum message_type_enum {
+  AUDIO
+  FILE
+  TEXT
+  VIDEO
+}
+
+"""
+expression to compare columns of type message_type_enum. All fields are combined with logical 'AND'.
+"""
+input message_type_enum_comparison_exp {
+  _eq: message_type_enum
+  _in: [message_type_enum!]
+  _is_null: Boolean
+  _neq: message_type_enum
+  _nin: [message_type_enum!]
+}
+
+"""
+input type for inserting data into table "message_type"
+"""
+input message_type_insert_input {
+  value: String
+}
+
+"""aggregate max on columns"""
+type message_type_max_fields {
+  value: String
+}
+
+"""
+order by max() on columns of table "message_type"
+"""
+input message_type_max_order_by {
+  value: order_by
+}
+
+"""aggregate min on columns"""
+type message_type_min_fields {
+  value: String
+}
+
+"""
+order by min() on columns of table "message_type"
+"""
+input message_type_min_order_by {
+  value: order_by
+}
+
+"""
+response of any mutation on the table "message_type"
+"""
+type message_type_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [message_type!]!
+}
+
+"""
+input type for inserting object relation for remote table "message_type"
+"""
+input message_type_obj_rel_insert_input {
+  data: message_type_insert_input!
+  on_conflict: message_type_on_conflict
+}
+
+"""
+on conflict condition type for table "message_type"
+"""
+input message_type_on_conflict {
+  constraint: message_type_constraint!
+  update_columns: [message_type_update_column!]!
+  where: message_type_bool_exp
+}
+
+"""
+ordering options when selecting data from "message_type"
+"""
+input message_type_order_by {
+  value: order_by
+}
+
+"""
+primary key columns input for table: "message_type"
+"""
+input message_type_pk_columns_input {
+  value: String!
+}
+
+"""
+select columns of table "message_type"
+"""
+enum message_type_select_column {
+  """column name"""
+  value
+}
+
+"""
+input type for updating data in table "message_type"
+"""
+input message_type_set_input {
+  value: String
+}
+
+"""
+update columns of table "message_type"
+"""
+enum message_type_update_column {
+  """column name"""
+  value
+}
+
+"""
+update columns of table "message"
+"""
+enum message_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  media_url
+
+  """column name"""
+  text
+
+  """column name"""
+  thread_id
+
+  """column name"""
+  transcription
+
+  """column name"""
+  type
+
+  """column name"""
+  user_id
+}
+
+"""mutation root"""
+type mutation_root {
+  """
+  perform the action: "accept_invite"
+  """
+  accept_invite(code: String!): InviteAcceptResponse
+
+  """
+  delete data from the table: "account"
+  """
+  delete_account(
+    """filter the rows which have to be deleted"""
+    where: account_bool_exp!
+  ): account_mutation_response
+
+  """
+  delete single row from the table: "account"
+  """
+  delete_account_by_pk(id: uuid!): account
+
+  """
+  delete data from the table: "message"
+  """
+  delete_message(
+    """filter the rows which have to be deleted"""
+    where: message_bool_exp!
+  ): message_mutation_response
+
+  """
+  delete single row from the table: "message"
+  """
+  delete_message_by_pk(id: uuid!): message
+
+  """
+  delete data from the table: "message_type"
+  """
+  delete_message_type(
+    """filter the rows which have to be deleted"""
+    where: message_type_bool_exp!
+  ): message_type_mutation_response
+
+  """
+  delete single row from the table: "message_type"
+  """
+  delete_message_type_by_pk(value: String!): message_type
+
+  """
+  delete data from the table: "room"
+  """
+  delete_room(
+    """filter the rows which have to be deleted"""
+    where: room_bool_exp!
+  ): room_mutation_response
+
+  """
+  delete single row from the table: "room"
+  """
+  delete_room_by_pk(id: uuid!): room
+
+  """
+  delete data from the table: "room_invites"
+  """
+  delete_room_invites(
+    """filter the rows which have to be deleted"""
+    where: room_invites_bool_exp!
+  ): room_invites_mutation_response
+
+  """
+  delete single row from the table: "room_invites"
+  """
+  delete_room_invites_by_pk(id: uuid!): room_invites
+
+  """
+  delete data from the table: "room_participants"
+  """
+  delete_room_participants(
+    """filter the rows which have to be deleted"""
+    where: room_participants_bool_exp!
+  ): room_participants_mutation_response
+
+  """
+  delete single row from the table: "room_participants"
+  """
+  delete_room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
+
+  """
+  delete data from the table: "thread"
+  """
+  delete_thread(
+    """filter the rows which have to be deleted"""
+    where: thread_bool_exp!
+  ): thread_mutation_response
+
+  """
+  delete single row from the table: "thread"
+  """
+  delete_thread_by_pk(id: uuid!): thread
+
+  """
+  delete data from the table: "user"
+  """
+  delete_user(
+    """filter the rows which have to be deleted"""
+    where: user_bool_exp!
+  ): user_mutation_response
+
+  """
+  delete single row from the table: "user"
+  """
+  delete_user_by_pk(id: uuid!): user
+
+  """
+  insert data into the table: "account"
+  """
+  insert_account(
+    """the rows to be inserted"""
+    objects: [account_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: account_on_conflict
+  ): account_mutation_response
+
+  """
+  insert a single row into the table: "account"
+  """
+  insert_account_one(
+    """the row to be inserted"""
+    object: account_insert_input!
+
+    """on conflict condition"""
+    on_conflict: account_on_conflict
+  ): account
+
+  """
+  insert data into the table: "message"
+  """
+  insert_message(
+    """the rows to be inserted"""
+    objects: [message_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: message_on_conflict
+  ): message_mutation_response
+
+  """
+  insert a single row into the table: "message"
+  """
+  insert_message_one(
+    """the row to be inserted"""
+    object: message_insert_input!
+
+    """on conflict condition"""
+    on_conflict: message_on_conflict
+  ): message
+
+  """
+  insert data into the table: "message_type"
+  """
+  insert_message_type(
+    """the rows to be inserted"""
+    objects: [message_type_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: message_type_on_conflict
+  ): message_type_mutation_response
+
+  """
+  insert a single row into the table: "message_type"
+  """
+  insert_message_type_one(
+    """the row to be inserted"""
+    object: message_type_insert_input!
+
+    """on conflict condition"""
+    on_conflict: message_type_on_conflict
+  ): message_type
+
+  """
+  insert data into the table: "room"
+  """
+  insert_room(
+    """the rows to be inserted"""
+    objects: [room_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: room_on_conflict
+  ): room_mutation_response
+
+  """
+  insert data into the table: "room_invites"
+  """
+  insert_room_invites(
+    """the rows to be inserted"""
+    objects: [room_invites_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: room_invites_on_conflict
+  ): room_invites_mutation_response
+
+  """
+  insert a single row into the table: "room_invites"
+  """
+  insert_room_invites_one(
+    """the row to be inserted"""
+    object: room_invites_insert_input!
+
+    """on conflict condition"""
+    on_conflict: room_invites_on_conflict
+  ): room_invites
+
+  """
+  insert a single row into the table: "room"
+  """
+  insert_room_one(
+    """the row to be inserted"""
+    object: room_insert_input!
+
+    """on conflict condition"""
+    on_conflict: room_on_conflict
+  ): room
+
+  """
+  insert data into the table: "room_participants"
+  """
+  insert_room_participants(
+    """the rows to be inserted"""
+    objects: [room_participants_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: room_participants_on_conflict
+  ): room_participants_mutation_response
+
+  """
+  insert a single row into the table: "room_participants"
+  """
+  insert_room_participants_one(
+    """the row to be inserted"""
+    object: room_participants_insert_input!
+
+    """on conflict condition"""
+    on_conflict: room_participants_on_conflict
+  ): room_participants
+
+  """
+  insert data into the table: "thread"
+  """
+  insert_thread(
+    """the rows to be inserted"""
+    objects: [thread_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: thread_on_conflict
+  ): thread_mutation_response
+
+  """
+  insert a single row into the table: "thread"
+  """
+  insert_thread_one(
+    """the row to be inserted"""
+    object: thread_insert_input!
+
+    """on conflict condition"""
+    on_conflict: thread_on_conflict
+  ): thread
+
+  """
+  insert data into the table: "user"
+  """
+  insert_user(
+    """the rows to be inserted"""
+    objects: [user_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: user_on_conflict
+  ): user_mutation_response
+
+  """
+  insert a single row into the table: "user"
+  """
+  insert_user_one(
+    """the row to be inserted"""
+    object: user_insert_input!
+
+    """on conflict condition"""
+    on_conflict: user_on_conflict
+  ): user
+
+  """
+  update data of the table: "account"
+  """
+  update_account(
+    """sets the columns of the filtered rows to the given values"""
+    _set: account_set_input
+
+    """filter the rows which have to be updated"""
+    where: account_bool_exp!
+  ): account_mutation_response
+
+  """
+  update single row of the table: "account"
+  """
+  update_account_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: account_set_input
+    pk_columns: account_pk_columns_input!
+  ): account
+
+  """
+  update data of the table: "message"
+  """
+  update_message(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_set_input
+
+    """filter the rows which have to be updated"""
+    where: message_bool_exp!
+  ): message_mutation_response
+
+  """
+  update single row of the table: "message"
+  """
+  update_message_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_set_input
+    pk_columns: message_pk_columns_input!
+  ): message
+
+  """
+  update data of the table: "message_type"
+  """
+  update_message_type(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_type_set_input
+
+    """filter the rows which have to be updated"""
+    where: message_type_bool_exp!
+  ): message_type_mutation_response
+
+  """
+  update single row of the table: "message_type"
+  """
+  update_message_type_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_type_set_input
+    pk_columns: message_type_pk_columns_input!
+  ): message_type
+
+  """
+  update data of the table: "room"
+  """
+  update_room(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_set_input
+
+    """filter the rows which have to be updated"""
+    where: room_bool_exp!
+  ): room_mutation_response
+
+  """
+  update single row of the table: "room"
+  """
+  update_room_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_set_input
+    pk_columns: room_pk_columns_input!
+  ): room
+
+  """
+  update data of the table: "room_invites"
+  """
+  update_room_invites(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_invites_set_input
+
+    """filter the rows which have to be updated"""
+    where: room_invites_bool_exp!
+  ): room_invites_mutation_response
+
+  """
+  update single row of the table: "room_invites"
+  """
+  update_room_invites_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_invites_set_input
+    pk_columns: room_invites_pk_columns_input!
+  ): room_invites
+
+  """
+  update data of the table: "room_participants"
+  """
+  update_room_participants(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_participants_set_input
+
+    """filter the rows which have to be updated"""
+    where: room_participants_bool_exp!
+  ): room_participants_mutation_response
+
+  """
+  update single row of the table: "room_participants"
+  """
+  update_room_participants_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: room_participants_set_input
+    pk_columns: room_participants_pk_columns_input!
+  ): room_participants
+
+  """
+  update data of the table: "thread"
+  """
+  update_thread(
+    """sets the columns of the filtered rows to the given values"""
+    _set: thread_set_input
+
+    """filter the rows which have to be updated"""
+    where: thread_bool_exp!
+  ): thread_mutation_response
+
+  """
+  update single row of the table: "thread"
+  """
+  update_thread_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: thread_set_input
+    pk_columns: thread_pk_columns_input!
+  ): thread
+
+  """
+  update data of the table: "user"
+  """
+  update_user(
+    """sets the columns of the filtered rows to the given values"""
+    _set: user_set_input
+
+    """filter the rows which have to be updated"""
+    where: user_bool_exp!
+  ): user_mutation_response
+
+  """
+  update single row of the table: "user"
+  """
+  update_user_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: user_set_input
+    pk_columns: user_pk_columns_input!
+  ): user
+
+  """
+  perform the action: "upgrade_current_user"
+  """
+  upgrade_current_user: UpgradeUserResponse
+}
+
+"""column ordering options"""
+enum order_by {
+  """in the ascending order, nulls last"""
+  asc
+
+  """in the ascending order, nulls first"""
+  asc_nulls_first
+
+  """in the ascending order, nulls last"""
+  asc_nulls_last
+
+  """in the descending order, nulls first"""
+  desc
+
+  """in the descending order, nulls first"""
+  desc_nulls_first
+
+  """in the descending order, nulls last"""
+  desc_nulls_last
+}
+
+"""query root"""
+type query_root {
+  """
+  fetch data from the table: "account"
+  """
+  account(
+    """distinct select on columns"""
+    distinct_on: [account_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [account_order_by!]
+
+    """filter the rows returned"""
+    where: account_bool_exp
+  ): [account!]!
+
+  """
+  fetch aggregated fields from the table: "account"
+  """
+  account_aggregate(
+    """distinct select on columns"""
+    distinct_on: [account_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [account_order_by!]
+
+    """filter the rows returned"""
+    where: account_bool_exp
+  ): account_aggregate!
+
+  """fetch data from the table: "account" using primary key columns"""
+  account_by_pk(id: uuid!): account
+
+  """
+  fetch data from the table: "message"
+  """
+  message(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): [message!]!
+
+  """
+  fetch aggregated fields from the table: "message"
+  """
+  message_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): message_aggregate!
+
+  """fetch data from the table: "message" using primary key columns"""
+  message_by_pk(id: uuid!): message
+
+  """
+  fetch data from the table: "message_type"
+  """
+  message_type(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): [message_type!]!
+
+  """
+  fetch aggregated fields from the table: "message_type"
+  """
+  message_type_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): message_type_aggregate!
+
+  """fetch data from the table: "message_type" using primary key columns"""
+  message_type_by_pk(value: String!): message_type
+
+  """
+  fetch data from the table: "room"
+  """
+  room(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): [room!]!
+
+  """
+  fetch aggregated fields from the table: "room"
+  """
+  room_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): room_aggregate!
+
+  """fetch data from the table: "room" using primary key columns"""
+  room_by_pk(id: uuid!): room
+
+  """
+  fetch data from the table: "room_invites"
+  """
+  room_invites(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): [room_invites!]!
+
+  """
+  fetch aggregated fields from the table: "room_invites"
+  """
+  room_invites_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): room_invites_aggregate!
+
+  """fetch data from the table: "room_invites" using primary key columns"""
+  room_invites_by_pk(id: uuid!): room_invites
+
+  """
+  fetch data from the table: "room_participants"
+  """
+  room_participants(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): [room_participants!]!
+
+  """
+  fetch aggregated fields from the table: "room_participants"
+  """
+  room_participants_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): room_participants_aggregate!
+
+  """
+  fetch data from the table: "room_participants" using primary key columns
+  """
+  room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
+
+  """
+  fetch data from the table: "thread"
+  """
+  thread(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): [thread!]!
+
+  """
+  fetch aggregated fields from the table: "thread"
+  """
+  thread_aggregate(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): thread_aggregate!
+
+  """fetch data from the table: "thread" using primary key columns"""
+  thread_by_pk(id: uuid!): thread
+
+  """
+  fetch data from the table: "user"
+  """
+  user(
+    """distinct select on columns"""
+    distinct_on: [user_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_order_by!]
+
+    """filter the rows returned"""
+    where: user_bool_exp
+  ): [user!]!
+
+  """
+  fetch aggregated fields from the table: "user"
+  """
+  user_aggregate(
+    """distinct select on columns"""
+    distinct_on: [user_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_order_by!]
+
+    """filter the rows returned"""
+    where: user_bool_exp
+  ): user_aggregate!
+
+  """fetch data from the table: "user" using primary key columns"""
+  user_by_pk(id: uuid!): user
+}
+
+"""
+columns and relationships of "room"
+"""
+type room {
+  created_at: timestamptz!
+
+  """An object relationship"""
+  creator: user!
+  creator_id: uuid!
+  deadline: timestamptz!
+  finished_at: timestamptz
+  id: uuid!
+  name: String
+  notification_job_id: String
+
+  """An array relationship"""
+  participants(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): [room_participants!]!
+
+  """An aggregated array relationship"""
+  participants_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): room_participants_aggregate!
+
+  """An array relationship"""
+  room_invites(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): [room_invites!]!
+
+  """An aggregated array relationship"""
+  room_invites_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): room_invites_aggregate!
+  summary: String
+
+  """An array relationship"""
+  threads(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): [thread!]!
+
+  """An aggregated array relationship"""
+  threads_aggregate(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): thread_aggregate!
+}
+
+"""
+aggregated selection of "room"
+"""
+type room_aggregate {
+  aggregate: room_aggregate_fields
+  nodes: [room!]!
+}
+
+"""
+aggregate fields of "room"
+"""
+type room_aggregate_fields {
+  count(columns: [room_select_column!], distinct: Boolean): Int
+  max: room_max_fields
+  min: room_min_fields
+}
+
+"""
+order by aggregate values of table "room"
+"""
+input room_aggregate_order_by {
+  count: order_by
+  max: room_max_order_by
+  min: room_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "room"
+"""
+input room_arr_rel_insert_input {
+  data: [room_insert_input!]!
+  on_conflict: room_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "room". All fields are combined with a logical 'AND'.
+"""
+input room_bool_exp {
+  _and: [room_bool_exp]
+  _not: room_bool_exp
+  _or: [room_bool_exp]
+  created_at: timestamptz_comparison_exp
+  creator: user_bool_exp
+  creator_id: uuid_comparison_exp
+  deadline: timestamptz_comparison_exp
+  finished_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  name: String_comparison_exp
+  notification_job_id: String_comparison_exp
+  participants: room_participants_bool_exp
+  room_invites: room_invites_bool_exp
+  summary: String_comparison_exp
+  threads: thread_bool_exp
+}
+
+"""
+unique or primary key constraints on table "room"
+"""
+enum room_constraint {
+  """unique or primary key constraint"""
+  room_pkey
+}
+
+"""
+input type for inserting data into table "room"
+"""
+input room_insert_input {
+  created_at: timestamptz
+  creator: user_obj_rel_insert_input
+  creator_id: uuid
+  deadline: timestamptz
+  finished_at: timestamptz
+  id: uuid
+  name: String
+  notification_job_id: String
+  participants: room_participants_arr_rel_insert_input
+  room_invites: room_invites_arr_rel_insert_input
+  summary: String
+  threads: thread_arr_rel_insert_input
+}
+
+"""
+columns and relationships of "room_invites"
+"""
+type room_invites {
+  code: uuid!
+  created_at: timestamptz!
+  email: String!
+  id: uuid!
+
+  """An object relationship"""
+  inviter: user!
+  inviter_id: uuid!
+
+  """An object relationship"""
+  room: room!
+  room_id: uuid!
+  used_at: timestamptz
+}
+
+"""
+aggregated selection of "room_invites"
+"""
+type room_invites_aggregate {
+  aggregate: room_invites_aggregate_fields
+  nodes: [room_invites!]!
+}
+
+"""
+aggregate fields of "room_invites"
+"""
+type room_invites_aggregate_fields {
+  count(columns: [room_invites_select_column!], distinct: Boolean): Int
+  max: room_invites_max_fields
+  min: room_invites_min_fields
+}
+
+"""
+order by aggregate values of table "room_invites"
+"""
+input room_invites_aggregate_order_by {
+  count: order_by
+  max: room_invites_max_order_by
+  min: room_invites_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "room_invites"
+"""
+input room_invites_arr_rel_insert_input {
+  data: [room_invites_insert_input!]!
+  on_conflict: room_invites_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "room_invites". All fields are combined with a logical 'AND'.
+"""
+input room_invites_bool_exp {
+  _and: [room_invites_bool_exp]
+  _not: room_invites_bool_exp
+  _or: [room_invites_bool_exp]
+  code: uuid_comparison_exp
+  created_at: timestamptz_comparison_exp
+  email: String_comparison_exp
+  id: uuid_comparison_exp
+  inviter: user_bool_exp
+  inviter_id: uuid_comparison_exp
+  room: room_bool_exp
+  room_id: uuid_comparison_exp
+  used_at: timestamptz_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "room_invites"
+"""
+enum room_invites_constraint {
+  """unique or primary key constraint"""
+  room_invites_code_key
+
+  """unique or primary key constraint"""
+  room_invites_pkey
+
+  """unique or primary key constraint"""
+  room_invites_room_id_email_key
+}
+
+"""
+input type for inserting data into table "room_invites"
+"""
+input room_invites_insert_input {
+  code: uuid
+  created_at: timestamptz
+  email: String
+  id: uuid
+  inviter: user_obj_rel_insert_input
+  inviter_id: uuid
+  room: room_obj_rel_insert_input
+  room_id: uuid
+  used_at: timestamptz
+}
+
+"""aggregate max on columns"""
+type room_invites_max_fields {
+  code: uuid
+  created_at: timestamptz
+  email: String
+  id: uuid
+  inviter_id: uuid
+  room_id: uuid
+  used_at: timestamptz
+}
+
+"""
+order by max() on columns of table "room_invites"
+"""
+input room_invites_max_order_by {
+  code: order_by
+  created_at: order_by
+  email: order_by
+  id: order_by
+  inviter_id: order_by
+  room_id: order_by
+  used_at: order_by
+}
+
+"""aggregate min on columns"""
+type room_invites_min_fields {
+  code: uuid
+  created_at: timestamptz
+  email: String
+  id: uuid
+  inviter_id: uuid
+  room_id: uuid
+  used_at: timestamptz
+}
+
+"""
+order by min() on columns of table "room_invites"
+"""
+input room_invites_min_order_by {
+  code: order_by
+  created_at: order_by
+  email: order_by
+  id: order_by
+  inviter_id: order_by
+  room_id: order_by
+  used_at: order_by
+}
+
+"""
+response of any mutation on the table "room_invites"
+"""
+type room_invites_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [room_invites!]!
+}
+
+"""
+input type for inserting object relation for remote table "room_invites"
+"""
+input room_invites_obj_rel_insert_input {
+  data: room_invites_insert_input!
+  on_conflict: room_invites_on_conflict
+}
+
+"""
+on conflict condition type for table "room_invites"
+"""
+input room_invites_on_conflict {
+  constraint: room_invites_constraint!
+  update_columns: [room_invites_update_column!]!
+  where: room_invites_bool_exp
+}
+
+"""
+ordering options when selecting data from "room_invites"
+"""
+input room_invites_order_by {
+  code: order_by
+  created_at: order_by
+  email: order_by
+  id: order_by
+  inviter: user_order_by
+  inviter_id: order_by
+  room: room_order_by
+  room_id: order_by
+  used_at: order_by
+}
+
+"""
+primary key columns input for table: "room_invites"
+"""
+input room_invites_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "room_invites"
+"""
+enum room_invites_select_column {
+  """column name"""
+  code
+
+  """column name"""
+  created_at
+
+  """column name"""
+  email
+
+  """column name"""
+  id
+
+  """column name"""
+  inviter_id
+
+  """column name"""
+  room_id
+
+  """column name"""
+  used_at
+}
+
+"""
+input type for updating data in table "room_invites"
+"""
+input room_invites_set_input {
+  code: uuid
+  created_at: timestamptz
+  email: String
+  id: uuid
+  inviter_id: uuid
+  room_id: uuid
+  used_at: timestamptz
+}
+
+"""
+update columns of table "room_invites"
+"""
+enum room_invites_update_column {
+  """column name"""
+  code
+
+  """column name"""
+  created_at
+
+  """column name"""
+  email
+
+  """column name"""
+  id
+
+  """column name"""
+  inviter_id
+
+  """column name"""
+  room_id
+
+  """column name"""
+  used_at
+}
+
+"""aggregate max on columns"""
+type room_max_fields {
+  created_at: timestamptz
+  creator_id: uuid
+  deadline: timestamptz
+  finished_at: timestamptz
+  id: uuid
+  name: String
+  notification_job_id: String
+  summary: String
+}
+
+"""
+order by max() on columns of table "room"
+"""
+input room_max_order_by {
+  created_at: order_by
+  creator_id: order_by
+  deadline: order_by
+  finished_at: order_by
+  id: order_by
+  name: order_by
+  notification_job_id: order_by
+  summary: order_by
+}
+
+"""aggregate min on columns"""
+type room_min_fields {
+  created_at: timestamptz
+  creator_id: uuid
+  deadline: timestamptz
+  finished_at: timestamptz
+  id: uuid
+  name: String
+  notification_job_id: String
+  summary: String
+}
+
+"""
+order by min() on columns of table "room"
+"""
+input room_min_order_by {
+  created_at: order_by
+  creator_id: order_by
+  deadline: order_by
+  finished_at: order_by
+  id: order_by
+  name: order_by
+  notification_job_id: order_by
+  summary: order_by
+}
+
+"""
+response of any mutation on the table "room"
+"""
+type room_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [room!]!
+}
+
+"""
+input type for inserting object relation for remote table "room"
+"""
+input room_obj_rel_insert_input {
+  data: room_insert_input!
+  on_conflict: room_on_conflict
+}
+
+"""
+on conflict condition type for table "room"
+"""
+input room_on_conflict {
+  constraint: room_constraint!
+  update_columns: [room_update_column!]!
+  where: room_bool_exp
+}
+
+"""
+ordering options when selecting data from "room"
+"""
+input room_order_by {
+  created_at: order_by
+  creator: user_order_by
+  creator_id: order_by
+  deadline: order_by
+  finished_at: order_by
+  id: order_by
+  name: order_by
+  notification_job_id: order_by
+  participants_aggregate: room_participants_aggregate_order_by
+  room_invites_aggregate: room_invites_aggregate_order_by
+  summary: order_by
+  threads_aggregate: thread_aggregate_order_by
+}
+
+"""
+columns and relationships of "room_participants"
+"""
+type room_participants {
+  """An object relationship"""
+  room: room!
+  room_id: uuid!
+
+  """An object relationship"""
+  user: user!
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "room_participants"
+"""
+type room_participants_aggregate {
+  aggregate: room_participants_aggregate_fields
+  nodes: [room_participants!]!
+}
+
+"""
+aggregate fields of "room_participants"
+"""
+type room_participants_aggregate_fields {
+  count(columns: [room_participants_select_column!], distinct: Boolean): Int
+  max: room_participants_max_fields
+  min: room_participants_min_fields
+}
+
+"""
+order by aggregate values of table "room_participants"
+"""
+input room_participants_aggregate_order_by {
+  count: order_by
+  max: room_participants_max_order_by
+  min: room_participants_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "room_participants"
+"""
+input room_participants_arr_rel_insert_input {
+  data: [room_participants_insert_input!]!
+  on_conflict: room_participants_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "room_participants". All fields are combined with a logical 'AND'.
+"""
+input room_participants_bool_exp {
+  _and: [room_participants_bool_exp]
+  _not: room_participants_bool_exp
+  _or: [room_participants_bool_exp]
+  room: room_bool_exp
+  room_id: uuid_comparison_exp
+  user: user_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "room_participants"
+"""
+enum room_participants_constraint {
+  """unique or primary key constraint"""
+  room_participants_pkey
+
+  """unique or primary key constraint"""
+  room_participants_room_id_user_id_key
+}
+
+"""
+input type for inserting data into table "room_participants"
+"""
+input room_participants_insert_input {
+  room: room_obj_rel_insert_input
+  room_id: uuid
+  user: user_obj_rel_insert_input
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type room_participants_max_fields {
+  room_id: uuid
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "room_participants"
+"""
+input room_participants_max_order_by {
+  room_id: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type room_participants_min_fields {
+  room_id: uuid
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "room_participants"
+"""
+input room_participants_min_order_by {
+  room_id: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "room_participants"
+"""
+type room_participants_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [room_participants!]!
+}
+
+"""
+input type for inserting object relation for remote table "room_participants"
+"""
+input room_participants_obj_rel_insert_input {
+  data: room_participants_insert_input!
+  on_conflict: room_participants_on_conflict
+}
+
+"""
+on conflict condition type for table "room_participants"
+"""
+input room_participants_on_conflict {
+  constraint: room_participants_constraint!
+  update_columns: [room_participants_update_column!]!
+  where: room_participants_bool_exp
+}
+
+"""
+ordering options when selecting data from "room_participants"
+"""
+input room_participants_order_by {
+  room: room_order_by
+  room_id: order_by
+  user: user_order_by
+  user_id: order_by
+}
+
+"""
+primary key columns input for table: "room_participants"
+"""
+input room_participants_pk_columns_input {
+  room_id: uuid!
+  user_id: uuid!
+}
+
+"""
+select columns of table "room_participants"
+"""
+enum room_participants_select_column {
+  """column name"""
+  room_id
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "room_participants"
+"""
+input room_participants_set_input {
+  room_id: uuid
+  user_id: uuid
+}
+
+"""
+update columns of table "room_participants"
+"""
+enum room_participants_update_column {
+  """column name"""
+  room_id
+
+  """column name"""
+  user_id
+}
+
+"""
+primary key columns input for table: "room"
+"""
+input room_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "room"
+"""
+enum room_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  creator_id
+
+  """column name"""
+  deadline
+
+  """column name"""
+  finished_at
+
+  """column name"""
+  id
+
+  """column name"""
+  name
+
+  """column name"""
+  notification_job_id
+
+  """column name"""
+  summary
+}
+
+"""
+input type for updating data in table "room"
+"""
+input room_set_input {
+  created_at: timestamptz
+  creator_id: uuid
+  deadline: timestamptz
+  finished_at: timestamptz
+  id: uuid
+  name: String
+  notification_job_id: String
+  summary: String
+}
+
+"""
+update columns of table "room"
+"""
+enum room_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  creator_id
+
+  """column name"""
+  deadline
+
+  """column name"""
+  finished_at
+
+  """column name"""
+  id
+
+  """column name"""
+  name
+
+  """column name"""
+  notification_job_id
+
+  """column name"""
+  summary
+}
+
+"""subscription root"""
+type subscription_root {
+  """
+  fetch data from the table: "account"
+  """
+  account(
+    """distinct select on columns"""
+    distinct_on: [account_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [account_order_by!]
+
+    """filter the rows returned"""
+    where: account_bool_exp
+  ): [account!]!
+
+  """
+  fetch aggregated fields from the table: "account"
+  """
+  account_aggregate(
+    """distinct select on columns"""
+    distinct_on: [account_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [account_order_by!]
+
+    """filter the rows returned"""
+    where: account_bool_exp
+  ): account_aggregate!
+
+  """fetch data from the table: "account" using primary key columns"""
+  account_by_pk(id: uuid!): account
+
+  """
+  fetch data from the table: "message"
+  """
+  message(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): [message!]!
+
+  """
+  fetch aggregated fields from the table: "message"
+  """
+  message_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): message_aggregate!
+
+  """fetch data from the table: "message" using primary key columns"""
+  message_by_pk(id: uuid!): message
+
+  """
+  fetch data from the table: "message_type"
+  """
+  message_type(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): [message_type!]!
+
+  """
+  fetch aggregated fields from the table: "message_type"
+  """
+  message_type_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_type_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_type_order_by!]
+
+    """filter the rows returned"""
+    where: message_type_bool_exp
+  ): message_type_aggregate!
+
+  """fetch data from the table: "message_type" using primary key columns"""
+  message_type_by_pk(value: String!): message_type
+
+  """
+  fetch data from the table: "room"
+  """
+  room(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): [room!]!
+
+  """
+  fetch aggregated fields from the table: "room"
+  """
+  room_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): room_aggregate!
+
+  """fetch data from the table: "room" using primary key columns"""
+  room_by_pk(id: uuid!): room
+
+  """
+  fetch data from the table: "room_invites"
+  """
+  room_invites(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): [room_invites!]!
+
+  """
+  fetch aggregated fields from the table: "room_invites"
+  """
+  room_invites_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): room_invites_aggregate!
+
+  """fetch data from the table: "room_invites" using primary key columns"""
+  room_invites_by_pk(id: uuid!): room_invites
+
+  """
+  fetch data from the table: "room_participants"
+  """
+  room_participants(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): [room_participants!]!
+
+  """
+  fetch aggregated fields from the table: "room_participants"
+  """
+  room_participants_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): room_participants_aggregate!
+
+  """
+  fetch data from the table: "room_participants" using primary key columns
+  """
+  room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
+
+  """
+  fetch data from the table: "thread"
+  """
+  thread(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): [thread!]!
+
+  """
+  fetch aggregated fields from the table: "thread"
+  """
+  thread_aggregate(
+    """distinct select on columns"""
+    distinct_on: [thread_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [thread_order_by!]
+
+    """filter the rows returned"""
+    where: thread_bool_exp
+  ): thread_aggregate!
+
+  """fetch data from the table: "thread" using primary key columns"""
+  thread_by_pk(id: uuid!): thread
+
+  """
+  fetch data from the table: "user"
+  """
+  user(
+    """distinct select on columns"""
+    distinct_on: [user_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_order_by!]
+
+    """filter the rows returned"""
+    where: user_bool_exp
+  ): [user!]!
+
+  """
+  fetch aggregated fields from the table: "user"
+  """
+  user_aggregate(
+    """distinct select on columns"""
+    distinct_on: [user_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [user_order_by!]
+
+    """filter the rows returned"""
+    where: user_bool_exp
+  ): user_aggregate!
+
+  """fetch data from the table: "user" using primary key columns"""
+  user_by_pk(id: uuid!): user
+}
+
+"""
+columns and relationships of "thread"
+"""
+type thread {
+  id: uuid!
+  index: String!
+
+  """An array relationship"""
+  messages(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): [message!]!
+
+  """An aggregated array relationship"""
+  messages_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): message_aggregate!
+  name: String
+
+  """An object relationship"""
+  room: room!
+  room_id: uuid!
+}
+
+"""
+aggregated selection of "thread"
+"""
+type thread_aggregate {
+  aggregate: thread_aggregate_fields
+  nodes: [thread!]!
+}
+
+"""
+aggregate fields of "thread"
+"""
+type thread_aggregate_fields {
+  count(columns: [thread_select_column!], distinct: Boolean): Int
+  max: thread_max_fields
+  min: thread_min_fields
+}
+
+"""
+order by aggregate values of table "thread"
+"""
+input thread_aggregate_order_by {
+  count: order_by
+  max: thread_max_order_by
+  min: thread_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "thread"
+"""
+input thread_arr_rel_insert_input {
+  data: [thread_insert_input!]!
+  on_conflict: thread_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "thread". All fields are combined with a logical 'AND'.
+"""
+input thread_bool_exp {
+  _and: [thread_bool_exp]
+  _not: thread_bool_exp
+  _or: [thread_bool_exp]
+  id: uuid_comparison_exp
+  index: String_comparison_exp
+  messages: message_bool_exp
+  name: String_comparison_exp
+  room: room_bool_exp
+  room_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "thread"
+"""
+enum thread_constraint {
+  """unique or primary key constraint"""
+  thread_pkey
+}
+
+"""
+input type for inserting data into table "thread"
+"""
+input thread_insert_input {
+  id: uuid
+  index: String
+  messages: message_arr_rel_insert_input
+  name: String
+  room: room_obj_rel_insert_input
+  room_id: uuid
+}
+
+"""aggregate max on columns"""
+type thread_max_fields {
+  id: uuid
+  index: String
+  name: String
+  room_id: uuid
+}
+
+"""
+order by max() on columns of table "thread"
+"""
+input thread_max_order_by {
+  id: order_by
+  index: order_by
+  name: order_by
+  room_id: order_by
+}
+
+"""aggregate min on columns"""
+type thread_min_fields {
+  id: uuid
+  index: String
+  name: String
+  room_id: uuid
+}
+
+"""
+order by min() on columns of table "thread"
+"""
+input thread_min_order_by {
+  id: order_by
+  index: order_by
+  name: order_by
+  room_id: order_by
+}
+
+"""
+response of any mutation on the table "thread"
+"""
+type thread_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [thread!]!
+}
+
+"""
+input type for inserting object relation for remote table "thread"
+"""
+input thread_obj_rel_insert_input {
+  data: thread_insert_input!
+  on_conflict: thread_on_conflict
+}
+
+"""
+on conflict condition type for table "thread"
+"""
+input thread_on_conflict {
+  constraint: thread_constraint!
+  update_columns: [thread_update_column!]!
+  where: thread_bool_exp
+}
+
+"""
+ordering options when selecting data from "thread"
+"""
+input thread_order_by {
+  id: order_by
+  index: order_by
+  messages_aggregate: message_aggregate_order_by
+  name: order_by
+  room: room_order_by
+  room_id: order_by
+}
+
+"""
+primary key columns input for table: "thread"
+"""
+input thread_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "thread"
+"""
+enum thread_select_column {
+  """column name"""
+  id
+
+  """column name"""
+  index
+
+  """column name"""
+  name
+
+  """column name"""
+  room_id
+}
+
+"""
+input type for updating data in table "thread"
+"""
+input thread_set_input {
+  id: uuid
+  index: String
+  name: String
+  room_id: uuid
+}
+
+"""
+update columns of table "thread"
+"""
+enum thread_update_column {
+  """column name"""
+  id
+
+  """column name"""
+  index
+
+  """column name"""
+  name
+
+  """column name"""
+  room_id
+}
+
+scalar timestamptz
+
+"""
+expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
+"""
+input timestamptz_comparison_exp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _is_null: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "user"
+"""
+type user {
+  avatar_url: String
+  created_at: timestamptz!
+
+  """An array relationship"""
+  created_rooms(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): [room!]!
+
+  """An aggregated array relationship"""
+  created_rooms_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_order_by!]
+
+    """filter the rows returned"""
+    where: room_bool_exp
+  ): room_aggregate!
+  email: String
+  firebase_id: String
+  id: uuid!
+
+  """An array relationship"""
+  invites(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): [room_invites!]!
+
+  """An aggregated array relationship"""
+  invites_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_invites_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_invites_order_by!]
+
+    """filter the rows returned"""
+    where: room_invites_bool_exp
+  ): room_invites_aggregate!
+
+  """An array relationship"""
+  messages(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): [message!]!
+
+  """An aggregated array relationship"""
+  messages_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_order_by!]
+
+    """filter the rows returned"""
+    where: message_bool_exp
+  ): message_aggregate!
+  name: String
+
+  """An array relationship"""
+  rooms(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): [room_participants!]!
+
+  """An aggregated array relationship"""
+  rooms_aggregate(
+    """distinct select on columns"""
+    distinct_on: [room_participants_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [room_participants_order_by!]
+
+    """filter the rows returned"""
+    where: room_participants_bool_exp
+  ): room_participants_aggregate!
+}
+
+"""
+aggregated selection of "user"
+"""
+type user_aggregate {
+  aggregate: user_aggregate_fields
+  nodes: [user!]!
+}
+
+"""
+aggregate fields of "user"
+"""
+type user_aggregate_fields {
+  count(columns: [user_select_column!], distinct: Boolean): Int
+  max: user_max_fields
+  min: user_min_fields
+}
+
+"""
+order by aggregate values of table "user"
+"""
+input user_aggregate_order_by {
+  count: order_by
+  max: user_max_order_by
+  min: user_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "user"
+"""
+input user_arr_rel_insert_input {
+  data: [user_insert_input!]!
+  on_conflict: user_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "user". All fields are combined with a logical 'AND'.
+"""
+input user_bool_exp {
+  _and: [user_bool_exp]
+  _not: user_bool_exp
+  _or: [user_bool_exp]
+  avatar_url: String_comparison_exp
+  created_at: timestamptz_comparison_exp
+  created_rooms: room_bool_exp
+  email: String_comparison_exp
+  firebase_id: String_comparison_exp
+  id: uuid_comparison_exp
+  invites: room_invites_bool_exp
+  messages: message_bool_exp
+  name: String_comparison_exp
+  rooms: room_participants_bool_exp
+}
+
+"""
+unique or primary key constraints on table "user"
+"""
+enum user_constraint {
+  """unique or primary key constraint"""
+  user_email_key
+
+  """unique or primary key constraint"""
+  user_firebase_id_key
+
+  """unique or primary key constraint"""
+  user_pkey
+}
+
+"""
+input type for inserting data into table "user"
+"""
+input user_insert_input {
+  avatar_url: String
+  created_at: timestamptz
+  created_rooms: room_arr_rel_insert_input
+  email: String
+  firebase_id: String
+  id: uuid
+  invites: room_invites_arr_rel_insert_input
+  messages: message_arr_rel_insert_input
+  name: String
+  rooms: room_participants_arr_rel_insert_input
+}
+
+"""aggregate max on columns"""
+type user_max_fields {
+  avatar_url: String
+  created_at: timestamptz
+  email: String
+  firebase_id: String
+  id: uuid
+  name: String
+}
+
+"""
+order by max() on columns of table "user"
+"""
+input user_max_order_by {
+  avatar_url: order_by
+  created_at: order_by
+  email: order_by
+  firebase_id: order_by
+  id: order_by
+  name: order_by
+}
+
+"""aggregate min on columns"""
+type user_min_fields {
+  avatar_url: String
+  created_at: timestamptz
+  email: String
+  firebase_id: String
+  id: uuid
+  name: String
+}
+
+"""
+order by min() on columns of table "user"
+"""
+input user_min_order_by {
+  avatar_url: order_by
+  created_at: order_by
+  email: order_by
+  firebase_id: order_by
+  id: order_by
+  name: order_by
+}
+
+"""
+response of any mutation on the table "user"
+"""
+type user_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [user!]!
+}
+
+"""
+input type for inserting object relation for remote table "user"
+"""
+input user_obj_rel_insert_input {
+  data: user_insert_input!
+  on_conflict: user_on_conflict
+}
+
+"""
+on conflict condition type for table "user"
+"""
+input user_on_conflict {
+  constraint: user_constraint!
+  update_columns: [user_update_column!]!
+  where: user_bool_exp
+}
+
+"""
+ordering options when selecting data from "user"
+"""
+input user_order_by {
+  avatar_url: order_by
+  created_at: order_by
+  created_rooms_aggregate: room_aggregate_order_by
+  email: order_by
+  firebase_id: order_by
+  id: order_by
+  invites_aggregate: room_invites_aggregate_order_by
+  messages_aggregate: message_aggregate_order_by
+  name: order_by
+  rooms_aggregate: room_participants_aggregate_order_by
+}
+
+"""
+primary key columns input for table: "user"
+"""
+input user_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "user"
+"""
+enum user_select_column {
+  """column name"""
+  avatar_url
+
+  """column name"""
+  created_at
+
+  """column name"""
+  email
+
+  """column name"""
+  firebase_id
+
+  """column name"""
+  id
+
+  """column name"""
+  name
+}
+
+"""
+input type for updating data in table "user"
+"""
+input user_set_input {
+  avatar_url: String
+  created_at: timestamptz
+  email: String
+  firebase_id: String
+  id: uuid
+  name: String
+}
+
+"""
+update columns of table "user"
+"""
+enum user_update_column {
+  """column name"""
+  avatar_url
+
+  """column name"""
+  created_at
+
+  """column name"""
+  email
+
+  """column name"""
+  firebase_id
+
+  """column name"""
+  id
+
+  """column name"""
+  name
+}
+
+scalar uuid
+
+"""
+expression to compare columns of type uuid. All fields are combined with logical 'AND'.
+"""
+input uuid_comparison_exp {
+  _eq: uuid
+  _gt: uuid
+  _gte: uuid
+  _in: [uuid!]
+  _is_null: Boolean
+  _lt: uuid
+  _lte: uuid
+  _neq: uuid
+  _nin: [uuid!]
+}

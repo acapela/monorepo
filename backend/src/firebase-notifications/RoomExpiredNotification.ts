@@ -1,5 +1,5 @@
 import { MailData } from "@sendgrid/helpers/classes/mail";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { UserNotification, NotificationName, NotificationMeta, NotificationAgentName } from "./UserNotification";
 import { isRoomExpired, getRoomLink } from "./utils";
 import Hasura from "../hasura";

@@ -1,5 +1,5 @@
 import { Form, Formik, Field as FormikField, ErrorMessage } from "formik";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { AvatarList } from "../design/Avatar";
 import { Button, ButtonVariant } from "../design/Button";
 import { Dialog } from "../design/Dialog";
@@ -8,9 +8,14 @@ import { SidebarLayout } from "../design/Layout";
 import { NavLink } from "../design/NavLink";
 import { createNextIndex } from "./order";
 import { InviteButton } from "./invites";
-import { Room, Thread, useThreadCreation } from "./Room";
+import { RoomDetailedInfoFragment, useCreateThreadMutation } from "../gql";
 
-export const RoomLayout: React.FC<{ room: Room; children?: React.ReactNode }> = ({ room, children }) => {
+interface Props {
+  room: RoomDetailedInfoFragment;
+  children: ReactNode;
+}
+
+export const RoomLayout: React.FC<Props> = ({ room, children }) => {
   return (
     <SidebarLayout
       sidebar={{
@@ -69,19 +74,24 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
 
 export const ThreadCreationForm: React.FC<{
   roomId: string;
-  onCreate?: (thread: Thread) => unknown;
+  onCreate?: (thread: { id: string }) => unknown;
   lastThreadIndex?: string;
 }> = ({ onCreate, roomId, lastThreadIndex }) => {
-  const { loading, createThread } = useThreadCreation(roomId);
+  const [createThread, { loading }] = useCreateThreadMutation();
   return (
     <Formik
       initialValues={{ name: "" }}
       // TODO: validate
       onSubmit={async ({ name }) => {
         const index = createNextIndex(lastThreadIndex);
-        const thread = await createThread({
-          name,
-          index,
+        const {
+          data: { thread },
+        } = await createThread({
+          variables: {
+            name,
+            index,
+            roomId,
+          },
         });
         if (onCreate) {
           onCreate(thread);

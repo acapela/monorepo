@@ -1,5 +1,5 @@
 import { MailDataRequired } from "@sendgrid/helpers/classes/mail";
-import logger from "../../logger";
+import logger from "@acapela/shared/logger";
 import { NotificationMeta } from "../UserNotification";
 import { sendEmail } from "../../notifications/emailSender";
 

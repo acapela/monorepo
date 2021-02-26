@@ -1,10 +1,11 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { graphql, rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "next-auth/client";
 import { GoogleLoginButton, useCurrentUser } from "./authentication/authentication";
 import { Provider as ApolloProvider } from "./apollo";
+import { useGetRoomsQuery } from "./gql";
 
 jest.mock(
   "next-auth/client",
@@ -16,7 +17,9 @@ jest.mock(
       useSession() {
         return [{}, false];
       },
-      signIn(method: string) {},
+      signIn(method: string) {
+        //
+      },
     };
   },
   { virtual: true }
@@ -51,8 +54,8 @@ describe("Apollo setup", () => {
   });
 });
 
-const GET_ROOMS = gql`
-  query GetRooms {
+gql`
+  query GetRoomsTestQuery {
     room {
       id
     }
@@ -68,7 +71,7 @@ function TestComponent() {
 }
 
 function TestQueryComponent() {
-  const { data } = useQuery(GET_ROOMS);
+  const { data } = useGetRoomsQuery();
   return <>Rooms: {data ? data.room.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
 }
 
