@@ -1,0 +1,10 @@
+{
+  "name": "@acapela/ui",
+  "version": "0.1.0",
+  "peerDependencies": {
+    "styled-components": "*"
+  },
+  "dependencies": {
+    "@acapela/shared": "0.1.0"
+  }
+}

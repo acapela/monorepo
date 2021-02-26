@@ -48,6 +48,8 @@
     "subscriptions-transport-ws": "^0.9.18",
     "tailwindcss": "^2.0.3",
     "@acapela/config": "0.1.0",
+    "@acapela/shared": "0.1.0",
+    "@acapela/ui": "0.1.0",
     "next-transpile-modules": "^6.3.0"
   },
   "devDependencies": {
@@ -65,6 +67,7 @@
     "postcss": "^8.2.6",
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
-    "whatwg-fetch": "^3.6.1"
+    "whatwg-fetch": "^3.6.1",
+    "babel-plugin-styled-components": "^1.12.0"
   }
 }

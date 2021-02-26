@@ -1,10 +1,9 @@
-import { useSession } from "next-auth/client";
 import Head from "next/head";
 import Link from "next/link";
 import { GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
 import { Logo } from "../src/design/Logo";
 
-export default function LandingPage() {
+export default function LandingPage(): JSX.Element {
   const { user } = useCurrentUser();
 
   return (

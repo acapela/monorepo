@@ -1,4 +1,6 @@
 const openSansSystemStack = [
+  "Kumbh Sans",
+  "Inter",
   "Open Sans",
   "-apple-system",
   "BlinkMacSystemFont",

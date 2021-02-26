@@ -6,7 +6,7 @@ import { GoogleLoginButton, useCurrentUser } from "../src/authentication/authent
 import { DEFAULT_REDIRECT_URL } from "../src/config";
 import { Logo } from "../src/design/Logo";
 
-export default function LoginPage() {
+export default function LoginPage(): JSX.Element {
   useRedirectWhenAuthenticated();
 
   return (

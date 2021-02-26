@@ -1,6 +1,6 @@
 import { signIn, useSession } from "next-auth/client";
 import React from "react";
-import { Button } from "../design/Button";
+import { Button } from "@acapela/ui/button";
 
 export const GoogleLoginButton = ({
   className,
@@ -14,7 +14,7 @@ export const GoogleLoginButton = ({
   }
 
   return (
-    <Button className={className} onClick={() => handleLogin()} loading={false}>
+    <Button className={className} onClick={() => handleLogin()} isLoading={false}>
       {children || "Log in with Google"}
     </Button>
   );
@@ -23,10 +23,16 @@ export const GoogleLoginButton = ({
 export function useCurrentUser() {
   const [session, isLoading] = useSession();
 
-  const user = {
-    ...session,
-    id: session?.sub,
-  };
+  function getUser() {
+    if (session) {
+      return {
+        ...session,
+        id: session?.sub,
+      };
+    }
 
-  return { loading: isLoading, user: user };
+    return null;
+  }
+
+  return { loading: isLoading, user: getUser() };
 }

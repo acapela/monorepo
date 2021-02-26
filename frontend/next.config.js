@@ -27,7 +27,6 @@ const apiRewrites = (nextConfig = {}) => {
 
   return Object.assign({}, nextConfig, {
     async rewrites() {
-      console.log("lols");
       const backendHost = getBackendHost();
       const hasuraHost = getHasuraHost();
       return [

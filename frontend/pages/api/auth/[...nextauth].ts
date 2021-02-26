@@ -5,6 +5,7 @@ import Providers from "next-auth/providers";
 import { Adapter, AdapterInstance } from "next-auth/adapters";
 import jwt from "jsonwebtoken";
 import { initializeSecrets } from "@acapela/config";
+import { assert } from "@acapela/shared/assert";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -12,8 +13,22 @@ import { initializeSecrets } from "@acapela/config";
  * It makes it easy to define integration once and than add new providers (fb, twitter, etc) easily.
  */
 
-// DB table interfaces used inside db auth adapter.
+// Fail quickly in case of missing env variables
 
+function assertEnvVariable(value: unknown, varName: string) {
+  assert(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
+}
+
+assertEnvVariable(process.env.DB_USER, "DB_USER");
+assertEnvVariable(process.env.DB_PASSWORD, "DB_PASSWORD");
+assertEnvVariable(process.env.DB_NAME, "DB_NAME");
+assertEnvVariable(process.env.DB_HOST, "DB_HOST");
+assertEnvVariable(process.env.AUTH_SECRET, "AUTH_SECRET");
+assertEnvVariable(process.env.AUTH_JWT_TOKEN_SECRET, "AUTH_JWT_TOKEN_SECRET");
+assertEnvVariable(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID");
+assertEnvVariable(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET");
+
+// DB table interfaces used inside db auth adapter.
 interface User {
   id: string;
   email: string;
