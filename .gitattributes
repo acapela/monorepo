@@ -1,0 +1,4 @@
+# DB Client is auto-generated, lets not include it in 'languages' stats in github as it's huge file and will
+# mark 90% of languages to be js (while majority is ts).
+db/client/* linguist-vendored
+db/client/**/*.* linguist-vendored
