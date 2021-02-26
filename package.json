@@ -2,6 +2,9 @@
   "name": "@acapela/root",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "npm": ">=7.0.0"
+  },
   "workspaces": {
     "packages": [
       "frontend",
