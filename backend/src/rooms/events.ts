@@ -1,7 +1,7 @@
 import { addParticipant, getIfParticipantExists } from "./rooms";
 import { EventHandler } from "../events/eventHandlers";
 import { UnprocessableEntityError } from "../errors";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 
 interface HasuraRoom {
   id: string;

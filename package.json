@@ -12,7 +12,8 @@
       "config",
       "ui",
       "shared",
-      "db"
+      "db",
+      "tooling"
     ]
   },
   "scripts": {
@@ -24,17 +25,19 @@
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
     "docker:up:detach": "npm run docker:up -- -d",
-    "docker:up": "docker-compose -f ./infrastructure/docker-compose.yaml --env-file ./.env up ",
+    "docker:up": "docker-compose -f ./infrastructure/docker-compose.yaml --env-file ./.env up --force-recreate",
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
     "frontend": "cd frontend && npm --",
     "backend": "cd backend && npm --",
     "db": "cd db && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
-    "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev"
+    "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
+    "frontend:gql-types": "tooling gql frontend --watch"
   },
   "ntl": {
     "descriptions": {
       "frontned:dev": "Start frontend dev server",
+      "frontend:gql-types": "Generate graphql types for frontend",
       "backend:dev": "Start backend dev server",
       "docker:up:detach": "Start docker infrastructure in detached mode",
       "docker:up": "Start docker infrastructure in interactive mode",
@@ -43,6 +46,7 @@
     }
   },
   "dependencies": {
+    "@acapela/tooling": "0.1.0",
     "axios": "^0.21.1",
     "color": "^3.1.3",
     "date-fns": "^2.17.0",
@@ -75,6 +79,7 @@
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.3.0",
     "@vercel/ncc": "^0.27.0",
+    "dotenv": "^8.2.0",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.0.0",
     "husky": "^5.1.1",
@@ -83,7 +88,9 @@
     "ntl": "^5.1.0",
     "prettier": "^2.2.1",
     "ts-jest": "^26.5.1",
+    "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.1",
-    "tsc-watch": "^4.2.9"
+    "tsc-watch": "^4.2.9",
+    "yargs": "^16.2.0"
   }
 }

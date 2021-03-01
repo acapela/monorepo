@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { extractToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError } from "../errors";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { EventHandler, handlers } from "./eventHandlers";
 
 export const router = Router();

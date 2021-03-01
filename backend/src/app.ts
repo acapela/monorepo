@@ -5,12 +5,10 @@ import { Server, createServer } from "http";
 import securityMiddleware from "helmet";
 import { assertSecretsLoaded } from "@acapela/config";
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
-
-import * as logger from "./logger";
+import logger from "@acapela/shared/logger";
 import database from "./database";
 import { errorHandling, notFoundRouteHandling } from "./errors";
 import "./firebase";
-
 import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
 import { router as firebaseNotificationRoutes } from "./firebase-notifications/api";

@@ -1,59 +1,66 @@
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql } from "@apollo/client";
 import classNames from "classnames";
-import { Formik, Form, Field as FormikField } from "formik";
-import React, { useEffect, useRef } from "react";
 import { format } from "date-fns";
+import { Field as FormikField, Form, Formik } from "formik";
+import { motion } from "framer-motion";
+import React from "react";
+import { useCurrentUser } from "../authentication/authentication";
 import { Avatar } from "../design/Avatar";
 import { Field, FieldType } from "../design/Field";
-import { Room, User } from "../rooms/Room";
-import { useCurrentUser } from "../authentication/authentication";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  RoomDetailedInfoFragment,
+  ThreadMessageBasicInfoFragment,
+  useCreateTextMessageMutation,
+  useThreadMessagesSubscription,
+} from "../gql";
 
-const MESSAGE_SUBSCRIPTION = gql`
+gql`
+  fragment ThreadMessageBasicInfo on message {
+    id
+    text
+    createdAt: created_at
+    user {
+      id
+      name
+      avatarUrl: avatar_url
+    }
+  }
+`;
+
+interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
+  isOwnMessage: boolean;
+}
+
+gql`
   subscription ThreadMessages($threadId: uuid!) {
     messages: message(where: { thread_id: { _eq: $threadId } }, order_by: [{ created_at: asc }]) {
-      id
-      text
-      createdAt: created_at
-      user {
-        id
-        name
-        avatarUrl: avatar_url
-      }
+      ...ThreadMessageBasicInfo
     }
   }
 `;
 
-const CREATE_TEXT_MESSAGE = gql`
+gql`
   mutation CreateTextMessage($text: String!, $threadId: uuid!) {
     message: insert_message_one(object: { text: $text, thread_id: $threadId, type: TEXT }) {
-      id
-      text
-      createdAt: created_at
-      user {
-        id
-        name
-        avatarUrl: avatar_url
-      }
+      ...ThreadMessageBasicInfo
     }
   }
 `;
 
-const useThreadMessages = (threadId: string): { loading: boolean; messages: TextMessage[] } => {
+const useThreadMessages = (threadId: string): { loading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: loadingUser, user } = useCurrentUser();
-  const { data: { messages = [] } = {}, loading: loadingMessages } = useSubscription(MESSAGE_SUBSCRIPTION, {
-    variables: { threadId },
-  });
+  const { data, loading: loadingMessages } = useThreadMessagesSubscription({ variables: { threadId } });
+
   if (loadingUser || loadingMessages) {
     return { loading: true, messages: [] };
   }
   return {
     loading: false,
-    messages: messages.map((message) => ({ ...message, isOwnMessage: message.user.id === user.id })),
+    messages: data.messages?.map((message) => ({ ...message, isOwnMessage: message.user.id === user.id })),
   };
 };
 
-export const Thread: React.FC<{ id: string; room: Room }> = ({ id }) => {
+export const Thread: React.FC<{ id: string; room: RoomDetailedInfoFragment }> = ({ id }) => {
   const { loading, messages } = useThreadMessages(id);
   return (
     <div className="relative h-full">
@@ -83,15 +90,7 @@ export const Thread: React.FC<{ id: string; room: Room }> = ({ id }) => {
   );
 };
 
-interface TextMessage {
-  id: string;
-  text: string;
-  createdAt: string;
-  user: User;
-  isOwnMessage: boolean;
-}
-
-const TextMessage: React.FC<{ message: TextMessage }> = ({ message }) => {
+const TextMessage: React.FC<{ message: MessageWithUserInfo }> = ({ message }) => {
   return (
     <motion.div
       className={classNames("flex", { "self-end": message.isOwnMessage })}
@@ -130,7 +129,7 @@ const TextMessage: React.FC<{ message: TextMessage }> = ({ message }) => {
 };
 
 const Composer: React.FC<{ threadId: string }> = ({ threadId }) => {
-  const [createTextMessage] = useMutation(CREATE_TEXT_MESSAGE);
+  const [createTextMessage] = useCreateTextMessageMutation();
   return (
     <Formik
       initialValues={{ text: "" }}

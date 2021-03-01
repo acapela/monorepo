@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 
 import Hasura, { ScheduleRequestResponse } from "../hasura";
 import { NotificationName } from "./UserNotification";

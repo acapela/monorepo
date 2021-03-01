@@ -1,6 +1,6 @@
 import admin from "../firebase";
 import { Firestore, DocumentSnapshot, DocumentData, QuerySnapshot } from "@google-cloud/firestore";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { Thread, Room } from "./domain";
 import { NotificationName } from "./UserNotification";
 import Notifications, { Notification } from "./Notifications.domain";

@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "peerDependencies": {
     "color": "*"
+  },
+  "dependencies": {
+    "pino": "^6.11.1"
   }
 }

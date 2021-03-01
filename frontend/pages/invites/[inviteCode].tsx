@@ -1,10 +1,10 @@
-import { gql, useMutation } from "@apollo/client";
+import { useAcceptInviteMutation } from "@acapela/frontend/gql";
+import { gql } from "@apollo/client";
 import { useRouter } from "next/router";
-import React, { Fragment, useEffect, useState } from "react";
-import { useCurrentUser } from "../../src/authentication/authentication";
-// import { useAuthentication, LoginMethod } from "../../src/authentication/authentication";
-import { Logo } from "../../src/design/Logo";
-import { usePathParameter } from "../../src/utils";
+import React, { Fragment, useEffect } from "react";
+import { useCurrentUser } from "@acapela/frontend/authentication/authentication";
+import { Logo } from "@acapela/frontend/design/Logo";
+import { usePathParameter } from "@acapela/frontend/utils";
 
 export default function InvitePage() {
   const inviteCode = usePathParameter("inviteCode");
@@ -47,7 +47,7 @@ const InviteAcceptor = ({ code }: { code: string }): JSX.Element => {
   return <Fragment />;
 };
 
-const ACCEPT_INVITE = gql`
+gql`
   mutation AcceptInvite($code: String!) {
     invite: accept_invite(code: $code) {
       roomId: room_id
@@ -56,7 +56,7 @@ const ACCEPT_INVITE = gql`
 `;
 
 const useInviteAcceptance = () => {
-  const [acceptInvite, { loading, error }] = useMutation(ACCEPT_INVITE);
+  const [acceptInvite, { loading, error }] = useAcceptInviteMutation();
 
   return {
     loading,

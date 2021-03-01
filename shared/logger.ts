@@ -72,9 +72,11 @@ export function middleware(req: Request, res: ServerResponse, next: () => void):
   next();
 }
 
-export default {
+export const log = {
   info,
   warn,
   error,
   middleware,
 };
+
+export default log;

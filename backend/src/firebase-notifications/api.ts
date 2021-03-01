@@ -4,7 +4,7 @@ import { sendNotifcations } from "./sendNotification";
 import { scheduleNotifications } from "./scheduleNotifications";
 import { ScheduleRequestResponse } from "../hasura";
 import { HttpStatus } from "../http";
-import logger from "../logger";
+import logger from "@acapela/shared/logger";
 import { AxiosError } from "axios";
 import { NotificationName } from "./UserNotification";
 import { middlewareRequreBearerToken } from "../utils";
