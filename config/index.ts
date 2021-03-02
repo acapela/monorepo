@@ -6,17 +6,12 @@ export const ROOT_PATH = path.resolve(__dirname, "..");
 
 const DOTENV_PATH = path.resolve(__dirname, "..", ".env");
 
-// To avoid requiring `GOOGLE_APPLICATION_CREDENTIALS` in `.bashrc` etc, let's fill it automatically before initializing firebase-admin
-// It assumes `credentials.json` is present in root of the repo.
-process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(__dirname, "..", "credentials.json");
-
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     // Let's extend ProcessEnv to provide process.env autocompletion
     export interface ProcessEnv {
       GOOGLE_APPLICATION_CREDENTIALS: string;
-      FIREBASE_DB_URL: string;
       HASURA_GRAPHQL_URL: string;
       DB_HOST: string;
       DB_USER: string;

@@ -20,11 +20,11 @@ When you create a pr, it will run tests and linting automatically. When you get 
 ## Stack
 
 We use:
+
 - next.js, but we may revisit and move to create react app instead, as our application is a full-blown SPA not focused on static content.
 - typescript
 - tailwind for css
 - jest + react testing library for tests
-- firebase for authentication
+- next-auth for authentication
 - apollo for graphql
 - prettier + eslint
-

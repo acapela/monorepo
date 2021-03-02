@@ -20,12 +20,10 @@ describe("Accepting invites", () => {
     [firstUser, secondUser] = await Promise.all([
       createUser({
         email: "test@example.com",
-        firebaseId: "test-firebase-id",
         name: "Test user",
       }),
       createUser({
         email: "test-2@example.com",
-        firebaseId: "test-2-firebase-id",
         name: "Test user 2",
       }),
     ]);

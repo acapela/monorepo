@@ -26,6 +26,7 @@
     "backend:test:watch": "npm run backend -- run test:watch",
     "docker:up:detach": "npm run docker:up -- -d",
     "docker:up": "docker-compose --env-file .env -f ./infrastructure/docker-compose.yaml up --force-recreate",
+    "docker:up:m1": "docker-compose up --force-recreate",
     "docker:config": "docker-compose --env-file .env -f ./infrastructure/docker-compose.yaml config",
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
     "frontend": "cd frontend && npm --",
