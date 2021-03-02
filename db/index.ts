@@ -1,5 +1,4 @@
-import { assertSecretsLoaded } from "@acapela/config";
-import { PrismaClient } from "./client";
+import { PrismaClient } from "@prisma/client";
 export type {
   // Let's export entities types
   account as Account,
@@ -10,9 +9,8 @@ export type {
   message_type as MessageType,
   room_invites as RoomInvites,
   room_participants as RoomParticipants,
-} from "./client";
-
-assertSecretsLoaded("You cannot import prisma db before secrets are loaded.");
+  verification_requests as VerificationRequest,
+} from "@prisma/client";
 
 if (!process.env.PRISMA_DATABASE_URL) {
   throw new Error("PRISMA_DATABASE_URL is required when importing @acaplea/db");

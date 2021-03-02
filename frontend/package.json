@@ -50,6 +50,7 @@
     "@acapela/config": "0.1.0",
     "@acapela/shared": "0.1.0",
     "@acapela/ui": "0.1.0",
+    "@acapela/db": "0.1.0",
     "next-transpile-modules": "^6.3.0"
   },
   "devDependencies": {

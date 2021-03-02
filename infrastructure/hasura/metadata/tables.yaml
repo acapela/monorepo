@@ -304,3 +304,6 @@
       - name
       filter: {}
       limit: 1
+- table:
+    schema: public
+    name: verification_requests

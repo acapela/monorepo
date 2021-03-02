@@ -6,6 +6,8 @@ import Head from "next/head";
 import { Provider as ApolloProvider } from "../src/apollo";
 import { parseJWTWithoutValidation } from "../src/authentication/jwt";
 import "../styles/tailwind.css";
+import "@reach/dialog/styles.css";
+import { NextApiRequest } from "next";
 
 interface AddedProps {
   session: unknown;
@@ -15,7 +17,7 @@ export default function App({ Component, pageProps, session }: AppProps & AddedP
   // If you don't want the layout component of your page to unmount between page changes,
   // implement a getLayout function as a property of your components.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getLayout = (Component as any).getLayout || ((page) => page);
+  const getLayout = (Component as any).getLayout || ((page: any) => page);
 
   return (
     <>
@@ -55,7 +57,8 @@ const CommonMetadata = () => {
  * session provider value will update.
  */
 App.getInitialProps = ({ ctx }: AppContext) => {
-  const sessionToken = (ctx.req?.["cookies"]?.["next-auth.session-token"] as string) ?? null;
+  const req = ctx.req as NextApiRequest;
+  const sessionToken = (req?.cookies?.["next-auth.session-token"] as string) ?? null;
 
   if (!sessionToken) {
     return {

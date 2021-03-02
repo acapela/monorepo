@@ -9,10 +9,9 @@ import { usePathParameter } from "@acapela/frontend/utils";
 export default authenticated(() => {
   const { replace } = useRouter();
   const roomId = usePathParameter("roomId");
-  const {
-    loading,
-    data: { room },
-  } = useGetSingleRoomQuery({ variables: { id: roomId } });
+  const { loading, data } = useGetSingleRoomQuery({ variables: { id: roomId } });
+
+  const room = data?.room;
 
   useEffect(() => {
     if (room && room.threads && room.threads.length) {
@@ -21,14 +20,14 @@ export default authenticated(() => {
   }, [room]);
 
   // TODO: use a proper loader here
-  if (loading) {
+  if (loading || !room) {
     return <span>Loading...</span>;
   }
 
   return (
     <RoomLayout room={room}>
       <Head>
-        <title>{room.name} | Acapela</title>
+        <title>{room?.name} | Acapela</title>
       </Head>
       <div className="max-w-md mx-auto">
         <div className="mb-4">This room has no agenda points yet.</div>

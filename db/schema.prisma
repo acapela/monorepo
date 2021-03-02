@@ -1,15 +1,11 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("PRISMA_DATABASE_URL")
 }
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "./client"
-}
-
-// !IMPORTANT
-// Don't modify this schema manually. If there is some change in the db, run `introspect` command from `package.json`.
 
 model account {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -104,4 +100,13 @@ model user {
   room              room[]
   room_invites      room_invites[]
   room_participants room_participants[]
+}
+
+model verification_requests {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  identifier String
+  token      String
+  expires    DateTime @db.Timestamptz(6)
 }

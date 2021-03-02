@@ -1,5 +1,4 @@
 import { DialogOverlay, DialogContent } from "@reach/dialog";
-import "@reach/dialog/styles.css";
 import { AnimatePresence, motion } from "framer-motion";
 
 const MotionDialogOverlay = motion.custom(DialogOverlay);
