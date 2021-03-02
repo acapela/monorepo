@@ -11,7 +11,7 @@ import { errorHandling, notFoundRouteHandling } from "./errors";
 import "./firebase";
 import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
-import { router as firebaseNotificationRoutes } from "./firebase-notifications/api";
+// import { router as firebaseNotificationRoutes } from "./firebase-notifications/api";
 import { router as actionRoutes } from "./actions/actions";
 
 assertSecretsLoaded("Cannot import and initialize app");
@@ -37,7 +37,7 @@ function setupMiddleware(app: Application): void {
 function setupRoutes(app: Application): void {
   app.use("/api", authenticationRoutes);
   app.use("/api", eventRoutes);
-  app.use("/api", firebaseNotificationRoutes);
+  // app.use("/api", firebaseNotificationRoutes);
   app.use("/api", actionRoutes);
 }
 
