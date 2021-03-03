@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
+import { warn } from "@acapela/shared/logger";
 
 export const ROOT_PATH = path.resolve(__dirname, "..");
 
@@ -72,7 +73,7 @@ export async function initializeSecrets(): Promise<void> {
   // setting required env variables locally.
 
   if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined) {
-    console.warn(`Skipping google secrets initialization in dev mode. Use .env variables file instead`);
+    warn(`Skipping google secrets initialization in dev mode. Use .env variables file instead`);
     isLoaded = true;
     return;
   }

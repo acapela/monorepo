@@ -34,6 +34,7 @@
     "db": "cd db && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
+    "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "frontend:gql-types": "tooling gql frontend --watch"
   },
@@ -56,7 +57,7 @@
     "express": "^4.17.1",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
-    "hasura-cli": "^1.3.3",
+    "hasura-cli": "^1.4.0-alpha.2",
     "knex": "^0.21.18",
     "lodash": "^4.17.21",
     "pg": "^8.5.1",
