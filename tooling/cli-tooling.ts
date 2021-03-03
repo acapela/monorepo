@@ -3,8 +3,7 @@
 
 // 👆 this is required to allow typescript being directly called as sh cli script. (Read: Shebang ts-node)
 
-import { loadRootDotEnv } from "@acapela/config";
-loadRootDotEnv();
+import "@acapela/config/dotenv";
 
 import yargs from "yargs";
 import logger from "@acapela/shared/logger";
@@ -14,23 +13,26 @@ import { hideBin } from "yargs/helpers";
 
 const tooling = yargs(hideBin(process.argv));
 
-tooling.command(
-  "gql [package]",
-  "start the server",
-  (yargs) => {
-    return yargs
-      .positional("package", {
-        describe: "name of package to generate types for",
-        demandOption: true,
-        type: "string",
-      })
-      .option("watch", { type: "boolean", default: false });
-  },
-  async ({ package: packageName, watch }) => {
-    logger.info("Loading graphql types generator");
-    const { startGeneratingGraphqlTypes } = await import("./graphqlCodegen");
+tooling
+  .command(
+    "gql [package]",
+    "start the server",
+    (yargs) => {
+      return yargs
+        .positional("package", {
+          describe: "name of package to generate types for",
+          demandOption: true,
+          type: "string",
+        })
+        .option("watch", { type: "boolean", default: false });
+    },
+    async ({ package: packageName, watch }) => {
+      logger.info("Loading graphql types generator");
+      const { startGeneratingGraphqlTypes } = await import("./graphqlCodegen");
 
-    logger.info("Starting generation");
-    await startGeneratingGraphqlTypes({ packageName: packageName, watch });
-  }
-);
+      logger.info("Starting generation");
+      await startGeneratingGraphqlTypes({ packageName: packageName, watch });
+    }
+  )
+  .strict()
+  .parse();

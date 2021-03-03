@@ -1,11 +1,9 @@
 import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
-import { loadRootDotEnv } from "@acapela/config";
+import "@acapela/config/dotenv";
 import axios from "axios";
 import path from "path";
 import fs from "fs";
 import { log } from "@acapela/shared/logger";
-
-loadRootDotEnv();
 
 export interface ProcessEnv {
   [key: string]: string | undefined;

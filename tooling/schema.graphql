@@ -3105,7 +3105,6 @@ type user {
     where: room_bool_exp
   ): room_aggregate!
   email: String
-  firebase_id: String
   id: uuid!
 
   """An array relationship"""
@@ -3263,7 +3262,6 @@ input user_bool_exp {
   created_at: timestamptz_comparison_exp
   created_rooms: room_bool_exp
   email: String_comparison_exp
-  firebase_id: String_comparison_exp
   id: uuid_comparison_exp
   invites: room_invites_bool_exp
   messages: message_bool_exp
@@ -3279,9 +3277,6 @@ enum user_constraint {
   user_email_key
 
   """unique or primary key constraint"""
-  user_firebase_id_key
-
-  """unique or primary key constraint"""
   user_pkey
 }
 
@@ -3293,7 +3288,6 @@ input user_insert_input {
   created_at: timestamptz
   created_rooms: room_arr_rel_insert_input
   email: String
-  firebase_id: String
   id: uuid
   invites: room_invites_arr_rel_insert_input
   messages: message_arr_rel_insert_input
@@ -3306,7 +3300,6 @@ type user_max_fields {
   avatar_url: String
   created_at: timestamptz
   email: String
-  firebase_id: String
   id: uuid
   name: String
 }
@@ -3318,7 +3311,6 @@ input user_max_order_by {
   avatar_url: order_by
   created_at: order_by
   email: order_by
-  firebase_id: order_by
   id: order_by
   name: order_by
 }
@@ -3328,7 +3320,6 @@ type user_min_fields {
   avatar_url: String
   created_at: timestamptz
   email: String
-  firebase_id: String
   id: uuid
   name: String
 }
@@ -3340,7 +3331,6 @@ input user_min_order_by {
   avatar_url: order_by
   created_at: order_by
   email: order_by
-  firebase_id: order_by
   id: order_by
   name: order_by
 }
@@ -3381,7 +3371,6 @@ input user_order_by {
   created_at: order_by
   created_rooms_aggregate: room_aggregate_order_by
   email: order_by
-  firebase_id: order_by
   id: order_by
   invites_aggregate: room_invites_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
@@ -3410,9 +3399,6 @@ enum user_select_column {
   email
 
   """column name"""
-  firebase_id
-
-  """column name"""
   id
 
   """column name"""
@@ -3426,7 +3412,6 @@ input user_set_input {
   avatar_url: String
   created_at: timestamptz
   email: String
-  firebase_id: String
   id: uuid
   name: String
 }
@@ -3443,9 +3428,6 @@ enum user_update_column {
 
   """column name"""
   email
-
-  """column name"""
-  firebase_id
 
   """column name"""
   id

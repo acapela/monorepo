@@ -1,3 +1,4 @@
+import "@acapela/config/dotenv";
 import pino from "pino";
 import { ServerResponse } from "http";
 import { Request } from "express";
