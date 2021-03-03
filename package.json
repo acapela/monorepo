@@ -36,7 +36,8 @@
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
-    "frontend:gql-types": "tooling gql frontend --watch"
+    "frontend:gql-types": "tooling gql frontend --watch",
+    "postinstall": "npm run db -- run generate"
   },
   "ntl": {
     "descriptions": {

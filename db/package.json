@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "scripts": {
     "introspect": "dotenv -e ../.env prisma introspect",
-    "generate": "dotenv -e ../.env prisma generate"
+    "generate": "dotenv -e ../.env prisma generate",
+    "update": "npm run introspect && npm run generate",
+    "postinstall": "dotenv -e ../.env prisma generate"
   },
   "devDependencies": {
     "dotenv-cli": "^4.0.0",

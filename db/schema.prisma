@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./client"
 }
 
 datasource db {
@@ -95,9 +94,19 @@ model user {
   name              String?
   avatar_url        String?
   created_at        DateTime            @default(now()) @db.Timestamptz(6)
+  email_verified    DateTime?           @db.Timestamptz(6)
   account           account[]
   message           message[]
   room              room[]
   room_invites      room_invites[]
   room_participants room_participants[]
+}
+
+model verification_requests {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  identifier String
+  token      String
+  expires    DateTime @db.Timestamptz(6)
 }

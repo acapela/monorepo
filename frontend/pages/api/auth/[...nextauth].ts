@@ -1,11 +1,12 @@
-import NextAuth, { InitOptions } from "next-auth";
-import { NextApiRequest, NextApiResponse } from "next";
-import knex from "knex";
-import Providers from "next-auth/providers";
-import { Adapter, AdapterInstance } from "next-auth/adapters";
-import jwt from "jsonwebtoken";
 import { initializeSecrets } from "@acapela/config";
+import { Account, db, User, VerificationRequest } from "@acapela/db";
 import { assert } from "@acapela/shared/assert";
+import { sendEmail } from "@acapela/shared/email";
+import jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
+import NextAuth, { InitOptions } from "next-auth";
+import { Adapter, AdapterInstance } from "next-auth/adapters";
+import Providers from "next-auth/providers";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -28,27 +29,6 @@ assertEnvVariable(process.env.AUTH_JWT_TOKEN_SECRET, "AUTH_JWT_TOKEN_SECRET");
 assertEnvVariable(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID");
 assertEnvVariable(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET");
 
-// DB table interfaces used inside db auth adapter.
-interface User {
-  id: string;
-  email: string;
-  name: string | null;
-  avatar_url: string | null;
-}
-
-interface Account {
-  id: string;
-  created_at: Date;
-  user_id: string;
-  provider_id: string;
-  provider_type: string;
-  provider_account_id: string;
-  refresh_token: string;
-  access_token: string;
-  access_token_expires: number;
-  updated_at: string;
-}
-
 // Profile interface returned from OAuth
 interface Profile {
   name: string;
@@ -62,103 +42,84 @@ interface Session {}
 
 // Note: This is to be implemented when we'll want to add 'magic link' authorization with email.
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface EmailVerificationRequest {}
 
 // To make sure TypeScript guards us when defining auth <> db adapter, lets use types provided by next-auth
-type AuthAdapter = AdapterInstance<User, Profile, Session, EmailVerificationRequest>;
-
-declare module "knex/types/tables" {
-  interface Tables {
-    // This is same as specifying `const userDb = knex<User>('users')`
-    user: User;
-    account: Account;
-  }
-}
+type AuthAdapter = AdapterInstance<User, Profile, Session, VerificationRequest>;
 
 const authAdapterProvider: Adapter = {
-  async getAdapter(): Promise<AuthAdapter> {
+  async getAdapter(appOptions): Promise<AuthAdapter> {
     await initializeSecrets();
-
-    const database = knex({
-      client: "pg",
-      connection: {
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        host: process.env.DB_HOST,
-      },
-    });
 
     return {
       async createUser(profile) {
-        const [user] = await database("user")
-          .insert({
-            name: profile.name,
-            email: profile.email,
-            avatar_url: profile.image,
-          })
-          .returning("*");
+        const user = await db.user.create({
+          data: { name: profile.name, email: profile.email, avatar_url: profile.image },
+        });
 
         return user;
       },
 
       async updateUser(userData) {
-        const [user] = await database("user")
-          .where({ id: userData.id })
-          .update({ ...userData })
-          .returning("*");
+        const { name, avatar_url, email_verified } = userData;
+
+        // There is a bug in next-auth that might result in email verification date being kept in camel-case field.
+        // This field is not compatible with our db so let's re-map it.
+        const fixedEmailVerified: Date | null = email_verified ?? userData["emailVerified"];
+
+        const user = await db.user.update({
+          where: { id: userData.id },
+          data: {
+            // Never update email, user id and other critical data.
+            name,
+            avatar_url,
+            email_verified: fixedEmailVerified,
+          },
+        });
 
         return user;
       },
 
       async getUser(id) {
-        const [user] = await database("user").select("*").where({ id }).limit(1);
+        const user = await db.user.findFirst({ where: { id } });
 
         return user;
       },
 
       async getUserByProviderAccountId(providerId, providerAccountId) {
-        const [account] = await database("account")
-          .select("*")
-          .where({ provider_account_id: providerAccountId, provider_id: providerId })
-          .limit(1);
+        const accountWithUser = await db.account.findFirst({
+          where: { provider_account_id: providerAccountId, provider_id: providerId },
+          include: { user: true },
+        });
 
-        if (!account) {
-          return null;
-        }
-
-        // TODO: It could be solved with joins in query above.
-        const [user] = await database("user").select("*").where({ id: account.user_id });
-
-        return user ?? null;
+        return accountWithUser?.user ?? null;
       },
 
       async getUserByEmail(email) {
-        const [user] = await database("user").select("*").where({ email });
+        const user = await db.user.findFirst({ where: { email } });
 
         return user;
       },
 
       async linkAccount(
-        userId: string,
-        providerId: string,
-        providerType: string,
-        providerAccountId: string,
-        refreshToken: string,
-        accessToken: string,
-        accessTokenExpires: number
+        userId,
+        providerId,
+        providerType,
+        providerAccountId,
+        refreshToken,
+        accessToken,
+        accessTokenExpires
       ) {
-        await database("account")
-          .insert({
+        await db.account.create({
+          data: {
             user_id: userId,
             provider_id: providerId,
             provider_type: providerType,
             provider_account_id: providerAccountId,
             refresh_token: refreshToken,
             access_token: accessToken,
-            access_token_expires: accessTokenExpires,
-          })
-          .returning("*");
+            access_token_expires: new Date(accessTokenExpires),
+          },
+        });
       },
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -188,20 +149,45 @@ const authAdapterProvider: Adapter = {
       },
       // Those will have to be implemented to add support for 'magic link'
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async createVerificationRequest(email, url, token, secret, provider, options) {
-        throw new EmailAuthNotSupportedError();
+      async createVerificationRequest(identifier, url, token, secret, provider, options) {
+        const { sendVerificationRequest } = provider;
+        const ONE_DAY = 1000 * 24 * 60 * 60;
+        const expires = new Date(Date.now() + ONE_DAY);
+        const verificationRequest = await db.verification_requests.create({ data: { identifier, token, expires } });
+
+        await sendVerificationRequest({ identifier, url, token, baseUrl: appOptions.baseUrl, provider });
+        return verificationRequest;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async getVerificationRequest(email, verificationToken, secret, provider) {
-        throw new EmailAuthNotSupportedError();
+      async getVerificationRequest(identifier, token, secret, provider) {
+        const verificationRequest = await db.verification_requests.findFirst({ where: { identifier, token } });
+
+        return verificationRequest;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async deleteVerificationRequest(email, verificationToken, secret, provider) {
-        throw new EmailAuthNotSupportedError();
+      async deleteVerificationRequest(identifier, token, secret, provider) {
+        await db.verification_requests.deleteMany({ where: { identifier, token } });
       },
     };
   },
 };
+
+interface VerificationRequestParams {
+  identifier: string;
+  url: string;
+  baseUrl: string;
+  token: string;
+  // provider: ProviderEmailOptions;
+}
+
+async function sendVerificationRequest({ identifier: email, baseUrl, token, url }: VerificationRequestParams) {
+  await sendEmail({
+    from: "acapela@meetnomore.com",
+    subject: "Login to acapela",
+    to: email,
+    text: `Hello, click this link to log in - ${url}`,
+  });
+}
 
 async function getAuthInitOptions() {
   await initializeSecrets();
@@ -213,10 +199,16 @@ async function getAuthInitOptions() {
       // By default the JSON Web Token is signed with SHA256 and encrypted with AES.
       // We use HS256 token signature in order to make it compatible with hasura JWT
       encode: async ({ secret, token }) => {
+        if (!token) {
+          throw new Error("JWT Token not found");
+        }
         const encodedToken = jwt.sign(token, secret, { algorithm: "HS256" });
         return encodedToken;
       },
       decode: async ({ secret, token }) => {
+        if (!token) {
+          throw new Error("JWT Token not found");
+        }
         const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
 
         return decodedToken as Record<string, unknown>;
@@ -298,17 +290,15 @@ async function getAuthInitOptions() {
         scope:
           "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
       }),
+      Providers.Email({
+        sendVerificationRequest,
+      }),
     ],
     // Adding our custom db adapter.
     adapter: authAdapterProvider,
   };
 
   return authInitOptions;
-}
-class EmailAuthNotSupportedError extends Error {
-  constructor() {
-    super("Internal server error");
-  }
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
