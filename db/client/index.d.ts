@@ -107,7 +107,6 @@ export type thread = {
 export type user = {
   id: string
   email: string | null
-  firebase_id: string | null
   name: string | null
   avatar_url: string | null
   created_at: Date
@@ -5612,7 +5611,6 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: string | null
     email: string | null
-    firebase_id: string | null
     name: string | null
     avatar_url: string | null
     created_at: Date | null
@@ -5621,7 +5619,6 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: string | null
     email: string | null
-    firebase_id: string | null
     name: string | null
     avatar_url: string | null
     created_at: Date | null
@@ -5630,7 +5627,6 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number | null
     email: number | null
-    firebase_id: number | null
     name: number | null
     avatar_url: number | null
     created_at: number | null
@@ -5641,7 +5637,6 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     email?: true
-    firebase_id?: true
     name?: true
     avatar_url?: true
     created_at?: true
@@ -5650,7 +5645,6 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     email?: true
-    firebase_id?: true
     name?: true
     avatar_url?: true
     created_at?: true
@@ -5659,7 +5653,6 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     email?: true
-    firebase_id?: true
     name?: true
     avatar_url?: true
     created_at?: true
@@ -5728,7 +5721,6 @@ export namespace Prisma {
   export type userSelect = {
     id?: boolean
     email?: boolean
-    firebase_id?: boolean
     name?: boolean
     avatar_url?: boolean
     created_at?: boolean
@@ -6399,7 +6391,6 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     email: 'email',
-    firebase_id: 'firebase_id',
     name: 'name',
     avatar_url: 'avatar_url',
     created_at: 'created_at'
@@ -6634,7 +6625,6 @@ export namespace Prisma {
     NOT?: Enumerable<userWhereInput>
     id?: StringFilter | string
     email?: StringNullableFilter | string | null
-    firebase_id?: StringNullableFilter | string | null
     name?: StringNullableFilter | string | null
     avatar_url?: StringNullableFilter | string | null
     created_at?: DateTimeFilter | Date | string
@@ -6648,7 +6638,6 @@ export namespace Prisma {
   export type userOrderByInput = {
     id?: SortOrder
     email?: SortOrder
-    firebase_id?: SortOrder
     name?: SortOrder
     avatar_url?: SortOrder
     created_at?: SortOrder
@@ -6657,7 +6646,6 @@ export namespace Prisma {
   export type userWhereUniqueInput = {
     id?: string
     email?: string
-    firebase_id?: string
   }
 
   export type accountCreateInput = {
@@ -7040,7 +7028,6 @@ export namespace Prisma {
   export type userCreateInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7054,7 +7041,6 @@ export namespace Prisma {
   export type userUncheckedCreateInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7068,7 +7054,6 @@ export namespace Prisma {
   export type userUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7082,7 +7067,6 @@ export namespace Prisma {
   export type userUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7096,7 +7080,6 @@ export namespace Prisma {
   export type userUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7105,7 +7088,6 @@ export namespace Prisma {
   export type userUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7823,7 +7805,6 @@ export namespace Prisma {
   export type userCreateWithoutAccountInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7836,7 +7817,6 @@ export namespace Prisma {
   export type userUncheckedCreateWithoutAccountInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7859,7 +7839,6 @@ export namespace Prisma {
   export type userUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7872,7 +7851,6 @@ export namespace Prisma {
   export type userUncheckedUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7917,7 +7895,6 @@ export namespace Prisma {
   export type userCreateWithoutMessageInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7930,7 +7907,6 @@ export namespace Prisma {
   export type userUncheckedCreateWithoutMessageInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -7985,7 +7961,6 @@ export namespace Prisma {
   export type userUpdateWithoutMessageInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7998,7 +7973,6 @@ export namespace Prisma {
   export type userUncheckedUpdateWithoutMessageInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8066,7 +8040,6 @@ export namespace Prisma {
   export type userCreateWithoutRoomInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8079,7 +8052,6 @@ export namespace Prisma {
   export type userUncheckedCreateWithoutRoomInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8157,7 +8129,6 @@ export namespace Prisma {
   export type userUpdateWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8170,7 +8141,6 @@ export namespace Prisma {
   export type userUncheckedUpdateWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8262,7 +8232,6 @@ export namespace Prisma {
   export type userCreateWithoutRoom_invitesInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8275,7 +8244,6 @@ export namespace Prisma {
   export type userUncheckedCreateWithoutRoom_invitesInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8329,7 +8297,6 @@ export namespace Prisma {
   export type userUpdateWithoutRoom_invitesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8342,7 +8309,6 @@ export namespace Prisma {
   export type userUncheckedUpdateWithoutRoom_invitesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8417,7 +8383,6 @@ export namespace Prisma {
   export type userCreateWithoutRoom_participantsInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8430,7 +8395,6 @@ export namespace Prisma {
   export type userUncheckedCreateWithoutRoom_participantsInput = {
     id?: string
     email?: string | null
-    firebase_id?: string | null
     name?: string | null
     avatar_url?: string | null
     created_at?: Date | string
@@ -8484,7 +8448,6 @@ export namespace Prisma {
   export type userUpdateWithoutRoom_participantsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8497,7 +8460,6 @@ export namespace Prisma {
   export type userUncheckedUpdateWithoutRoom_participantsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
-    firebase_id?: NullableStringFieldUpdateOperationsInput | string | null
     name?: NullableStringFieldUpdateOperationsInput | string | null
     avatar_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string

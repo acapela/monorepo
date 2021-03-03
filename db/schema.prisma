@@ -1,15 +1,12 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("PRISMA_DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
   output   = "./client"
 }
 
-// !IMPORTANT
-// Don't modify this schema manually. If there is some change in the db, run `introspect` command from `package.json`.
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
 
 model account {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -95,7 +92,6 @@ model thread {
 model user {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email             String?             @unique
-  firebase_id       String?             @unique
   name              String?
   avatar_url        String?
   created_at        DateTime            @default(now()) @db.Timestamptz(6)

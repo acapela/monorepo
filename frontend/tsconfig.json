@@ -14,9 +14,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "baseUrl": "./src",
     "paths": {
-      // Skip src in self-imports
-      "@acapela/frontend/*": ["./src/*"]
+      "@acapela/frontend/*": ["*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

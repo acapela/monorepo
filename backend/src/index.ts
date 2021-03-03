@@ -1,8 +1,7 @@
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
-import { initializeSecrets, loadRootDotEnv } from "@acapela/config";
+import { initializeSecrets } from "@acapela/config";
 
 async function start(): Promise<void> {
-  loadRootDotEnv();
   // Note: We're lazy loading modules here to avoid requesting config too early.
   await initializeSecrets();
 

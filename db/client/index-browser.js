@@ -134,7 +134,6 @@ exports.Prisma.ThreadScalarFieldEnum = makeEnum({
 exports.Prisma.UserScalarFieldEnum = makeEnum({
   id: 'id',
   email: 'email',
-  firebase_id: 'firebase_id',
   name: 'name',
   avatar_url: 'avatar_url',
   created_at: 'created_at'

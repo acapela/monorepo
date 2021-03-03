@@ -30,14 +30,6 @@ In root of this repo, copy `.env.sample` to `.env`.
 
 After copying, your env is mostly ready for dev work. Ask other team members for missing values such as google oauth secrets etc.
 
-### Firebase credentials (will not be needed soon)
-
-Right now, backend needs access to firebase-admin. This is legacy and we will try to remove this dependency.
-
-firebase-admin works out of the box when deployed on GCP, but in order to make it work locally, you need to put `credentials.json` file in root of this repo.
-
-To get this file ask team members on Slack for it or for google firebase console access so you can download it from there yourself.
-
 ### Finally!
 
 After those steps, we should be good to go!
