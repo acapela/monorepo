@@ -27,7 +27,7 @@ export default authenticated(() => {
   return (
     <RoomLayout room={room}>
       <Head>
-        <title>{room?.name} | Acapela</title>
+        <title>{room.name} | Acapela</title>
       </Head>
       <div className="max-w-md mx-auto">
         <div className="mb-4">This room has no agenda points yet.</div>

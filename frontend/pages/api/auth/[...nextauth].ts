@@ -60,7 +60,21 @@ const authAdapterProvider: Adapter = {
       },
 
       async updateUser(userData) {
-        const user = await db.user.update({ where: { id: userData.id }, data: { ...userData } });
+        const { name, avatar_url, email_verified } = userData;
+
+        // There is a bug in next-auth that might result in email verification date being kept in camel-case field.
+        // This field is not compatible with our db so let's re-map it.
+        const fixedEmailVerified: Date | null = email_verified ?? userData["emailVerified"];
+
+        const user = await db.user.update({
+          where: { id: userData.id },
+          data: {
+            // Never update email, user id and other critical data.
+            name,
+            avatar_url,
+            email_verified: fixedEmailVerified,
+          },
+        });
 
         return user;
       },

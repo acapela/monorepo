@@ -2586,6 +2586,7 @@ export type User = {
   /** An aggregated array relationship */
   created_rooms_aggregate: Room_Aggregate;
   email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
   /** An array relationship */
   invites: Array<Room_Invites>;
@@ -2726,6 +2727,7 @@ export type User_Bool_Exp = {
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   created_rooms?: Maybe<Room_Bool_Exp>;
   email?: Maybe<String_Comparison_Exp>;
+  email_verified?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   invites?: Maybe<Room_Invites_Bool_Exp>;
   messages?: Maybe<Message_Bool_Exp>;
@@ -2747,6 +2749,7 @@ export type User_Insert_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   created_rooms?: Maybe<Room_Arr_Rel_Insert_Input>;
   email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   messages?: Maybe<Message_Arr_Rel_Insert_Input>;
@@ -2760,6 +2763,7 @@ export type User_Max_Fields = {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
 };
@@ -2769,6 +2773,7 @@ export type User_Max_Order_By = {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
+  email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
 };
@@ -2779,6 +2784,7 @@ export type User_Min_Fields = {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
 };
@@ -2788,6 +2794,7 @@ export type User_Min_Order_By = {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
+  email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
 };
@@ -2820,6 +2827,7 @@ export type User_Order_By = {
   created_at?: Maybe<Order_By>;
   created_rooms_aggregate?: Maybe<Room_Aggregate_Order_By>;
   email?: Maybe<Order_By>;
+  email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
@@ -2841,6 +2849,8 @@ export enum User_Select_Column {
   /** column name */
   Email = 'email',
   /** column name */
+  EmailVerified = 'email_verified',
+  /** column name */
   Id = 'id',
   /** column name */
   Name = 'name'
@@ -2851,6 +2861,7 @@ export type User_Set_Input = {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
+  email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
 };
@@ -2863,6 +2874,8 @@ export enum User_Update_Column {
   CreatedAt = 'created_at',
   /** column name */
   Email = 'email',
+  /** column name */
+  EmailVerified = 'email_verified',
   /** column name */
   Id = 'id',
   /** column name */
@@ -3485,13 +3498,14 @@ export type thread_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'email' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | userKeySpecifier)[];
+export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3512,19 +3526,21 @@ export type user_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'id' | 'name' | user_max_fieldsKeySpecifier)[];
+export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'email_verified' | 'id' | 'name' | user_max_fieldsKeySpecifier)[];
 export type user_max_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'id' | 'name' | user_min_fieldsKeySpecifier)[];
+export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'email_verified' | 'id' | 'name' | user_min_fieldsKeySpecifier)[];
 export type user_min_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };

@@ -94,6 +94,7 @@ model user {
   name              String?
   avatar_url        String?
   created_at        DateTime            @default(now()) @db.Timestamptz(6)
+  email_verified    DateTime?           @db.Timestamptz(6)
   account           account[]
   message           message[]
   room              room[]

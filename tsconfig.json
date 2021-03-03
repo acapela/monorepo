@@ -9,7 +9,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "module": "esnext",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "downlevelIteration": true,
     "resolveJsonModule": true,
