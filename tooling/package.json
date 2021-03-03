@@ -18,6 +18,9 @@
   "peerDependencies": {
     "graphql": "*"
   },
+  "scripts": {
+    "start": "ts-node ./cli-tooling.ts"
+  },
   "bin": {
     "tooling": "./cli-tooling.ts"
   }

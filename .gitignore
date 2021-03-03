@@ -119,3 +119,5 @@ dist
 .pnp.*
 
 .DS_Store
+
+credentials.json

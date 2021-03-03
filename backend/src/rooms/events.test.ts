@@ -12,7 +12,6 @@ describe("Room events", () => {
   beforeEach(async () => {
     user = await createUser({
       email: "some-test@example.com",
-      firebaseId: "test-some-firebase-id",
       name: "Test user",
     });
   });
@@ -39,7 +38,6 @@ describe("Room events", () => {
   it("fail if somehow the user creating the event differs from the room creator", async () => {
     const secondUser = await createUser({
       email: "some-other-test@example.com",
-      firebaseId: "firebase-id",
       name: "another test user",
     });
     const room = await createRoom({

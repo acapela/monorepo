@@ -20,7 +20,6 @@ describe("Invite events", () => {
   beforeEach(async () => {
     user = await createUser({
       email: "some-test@example.com",
-      firebaseId: "test-some-firebase-id",
       name: "Test user",
     });
     room = await createRoom({

@@ -12,22 +12,28 @@ services:
     ports:
       - "5432:5432"
   hasura:
-    image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
+    # image: hasura/graphql-engine:v1.3.3.cli-migrations-v2
+    # TEMP: This is modified version of hasura  engine that works on M1 macs.
+    # TODO: Not sure what to do about it. For sure we dont need it in production so it'll have to be resolved somehow
+    # when we'll plan to deploy it
+    image: fedormelexin/graphql-engine-arm64
+    command: ["/srv/graphql-engine", "serve"]
+
     ports:
       - "8080:8080"
     depends_on:
       - "postgres"
     restart: always
     volumes:
-      - ./hasura/migrations:/hasura-migrations
-      - ./hasura/metadata:/hasura-metadata
+      - ./infrastructure/hasura/migrations:/migrations
+      - ./infrastructure/hasura/metadata:/metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_NO_OF_RETRIES: 5
       HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
-      HASURA_GRAPHQL_METADATA_DIR: /hasura-metadata
-      HASURA_GRAPHQL_MIGRATIONS_DIR: /hasura-migrations
+      HASURA_GRAPHQL_MIGRATIONS_DIR: "/migrations"
+      HASURA_GRAPHQL_METADATA_DIR: "/metadata"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       # HASURA_GRAPHQL_JWT_SECRET: '{ "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com", "audience": "meetnomoreapp", "issuer": "https://securetoken.google.com/meetnomoreapp" }'
       HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS512", "key": "${AUTH_JWT_TOKEN_SECRET}"}'

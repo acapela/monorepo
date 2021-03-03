@@ -1,16 +1,28 @@
 ## Acapela Monorepo
 
-Docs for workspaces:
+Before setting up this repo, please read https://github.com/weareacapela/onboarding to get some better idea about our values and practices related to creating software.
 
-[Backend README](./backend/README.md)
+Now, please head to Getting started guide in order to set up this repo on your machine.
 
-[Frontend README](./backend/README.md)
+[GETTING STARTED](./GETTING-STARTED.md)
+
+---
+
+Part below describes how this repo is organized and how to work with it.
+
+README files for specific parts of this repo (frotnend, backend) sits in corresponding folders of this monorepo.
+
+README for packages:
+
+- [Backend README](./backend/README.md)
+
+- [Frontend README](./backend/README.md)
 
 ## Monorepo setup
 
 This repo is based on npm workspaces (https://docs.npmjs.com/cli/v7/using-npm/workspaces).
 
-### Dictionary
+### Terms
 
 **Package** - single, npm-based part of this repo eg `frontend` and `backend`.
 
@@ -78,6 +90,20 @@ and then `frontend/package.json`
 In such setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/@acapela/utils` is symlink to `./utils` (not clone!).
 
 It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/@acapela/utils`.
+
+### Dependencies typescript build pipeline
+
+Note that packages like `./shared` have only typescript files and are never built ts > js by itself. (There is no `build` script for `./shared` alone).
+
+Monorepo is organized in a way that forces package that uses `shared` to build it.
+
+It means there is build setup only for 'end' packages (currently only frontend and backend).
+
+In frontend (next.js) we use proper next.js plugin to tell it to compile monorepo packages (`next-transpile-modules` - check `next.config.js` for more details).
+
+In backend we use `@vercel/ncc` bundler for production build and `ts-node-dev` for development, both of which bundle correctly with zero additional config config.
+
+This setup means we have 'hot-reloading' experience when modifying any used monorepo package.
 
 ### Running scripts
 

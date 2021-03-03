@@ -37,7 +37,6 @@
     "@apollo/client": "^3.3.11",
     "@reach/dialog": "^0.13.2",
     "classnames": "^2.2.6",
-    "firebase": "^8.2.9",
     "focus-visible": "^5.2.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.6.7",
