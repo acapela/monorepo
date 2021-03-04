@@ -31,6 +31,7 @@
     "docker:stop": "docker-compose -f ./infrastructure/docker-compose.yaml stop",
     "frontend": "cd frontend && npm --",
     "backend": "cd backend && npm --",
+    "ui": "cd ui && npm --",
     "db": "cd db && npm --",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
