@@ -1,5 +1,5 @@
-export const Logo: React.FC = () => (
-  <svg viewBox="0 0 965 268">
+export const Logo: React.FC = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 965 268" {...props}>
     <title>Acapela logo</title>
     <defs>
       <linearGradient x1="0%" y1="50%" x2="99.9896276%" y2="50%" id="linearGradient-1">
