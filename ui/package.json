@@ -4,7 +4,17 @@
   "peerDependencies": {
     "styled-components": "*"
   },
+  "scripts": {
+    "icons:clear": "rimraf icons/fill icons/outline",
+    "icons:generate:fill": "svgr --config-file .icons.yml -d icons/fill ../node_modules/eva-icons/fill/svg",
+    "icons:generate:outline": "svgr --config-file .icons.yml -d icons/outline ../node_modules/eva-icons/outline/svg",
+    "icons:generate": "npm run icons:clear && npm run icons:generate:fill && npm run icons:generate:outline"
+  },
   "dependencies": {
-    "@acapela/shared": "0.1.0"
+    "@acapela/shared": "0.1.0",
+    "eva-icons": "^1.1.3"
+  },
+  "devDependencies": {
+    "@svgr/cli": "^5.5.0"
   }
 }
