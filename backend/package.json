@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest src --runInBand",
     "test:watch": "jest src --runInBand --watch",
-    "build": "rimraf dist && ncc build src/index.ts -o dist/index.js --source-map",
+    "build": "rimraf dist && ncc build src/index.ts -o dist/ --source-map",
     "start": "node dist",
     "dev": "ts-node-dev --transpile-only ./src/index.ts",
     "format": "prettier --write src",
