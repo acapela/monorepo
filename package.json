@@ -26,6 +26,7 @@
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
     "backend:lint": "npm run backend -- run lint",
+    "backend:build": "npm run backend -- run gcp-build",
     "docker:up:detach": "npm run docker:up -- -d",
     "docker:up": "docker-compose --env-file .env -f ./infrastructure/docker-compose.yaml up --force-recreate",
     "docker:up:m1": "docker-compose up --force-recreate",

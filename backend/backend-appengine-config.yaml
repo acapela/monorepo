@@ -1,5 +1,0 @@
-service: backend
-runtime: nodejs12
-instance_class: F1
-automatic_scaling:
-  min_instances: 1

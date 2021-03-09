@@ -19,9 +19,6 @@ payload="{\"ref\":\"master\", \"inputs\":{\"stage\":\"$STAGE\", \"app\":\"api\",
 
 echo $payload | jq
 
-echo "migrating hasura..."
-./scripts/migrate-hasura.sh
-
 echo "starting deployment..."
 curl -X POST \
   -H "Authorization: token $GH_BOT_TOKEN" \
