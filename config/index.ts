@@ -4,8 +4,6 @@ import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
 import { warn } from "@acapela/shared/logger";
 
-export const ROOT_PATH = path.resolve(__dirname, "..");
-
 let isLoaded = false;
 let loadingPromise: Promise<void> | null = null;
 
