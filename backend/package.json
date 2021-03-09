@@ -7,12 +7,13 @@
     "test": "jest src --runInBand",
     "test:watch": "jest src --runInBand --watch",
     "build": "rimraf dist && ncc build src/index.ts -o dist/ --source-map",
-    "start": "node dist",
+    "start": "npm run hasura:migrate && node dist",
     "dev": "ts-node-dev --transpile-only ./src/index.ts",
     "format": "prettier --write src",
     "lint": "eslint \"src/**/*.{js,ts}\"",
     "checkformat": "prettier --check src",
-    "gcp-build": "NODE_ENV=production npm run build"
+    "gcp-build": "NODE_ENV=production npm run build",
+    "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
   "husky": {
     "hooks": {
