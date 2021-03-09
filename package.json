@@ -21,9 +21,11 @@
     "frontend:dev": "npm run frontend -- run dev",
     "frontend:test": "npm run frontend -- run test",
     "frontend:test:watch": "npm run frontend -- run test:watch",
+    "frontend:lint": "npm run frontend -- run lint",
     "backend:dev": "npm run backend -- run dev",
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
+    "backend:lint": "npm run backend -- run lint",
     "docker:up:detach": "npm run docker:up -- -d",
     "docker:up": "docker-compose --env-file .env -f ./infrastructure/docker-compose.yaml up --force-recreate",
     "docker:up:m1": "docker-compose up --force-recreate",
@@ -38,7 +40,8 @@
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "frontend:gql-types": "tooling gql frontend --watch",
-    "postinstall": "npm run db -- run generate"
+    "postinstall": "npm run db -- run generate",
+    "lint": "npm run frontend:lint && npm run backend:lint"
   },
   "ntl": {
     "descriptions": {
