@@ -1,5 +1,4 @@
-#!/bin/sh
-//; exec /usr/bin/env ts-node --transpile-only "$0" "$@"
+#!/usr/bin/env ts-node
 
 // 👆 this is required to allow typescript being directly called as sh cli script. (Read: Shebang ts-node)
 
