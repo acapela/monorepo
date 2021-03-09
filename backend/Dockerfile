@@ -3,9 +3,8 @@ FROM node:15-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
 
-COPY ./config ./config
+COPY ./.env.production ./.env
 COPY ./dist ./dist
 
 EXPOSE 1337
