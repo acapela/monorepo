@@ -8,3 +8,5 @@ jest.mock("@sendgrid/mail", () => {
     },
   };
 });
+
+export {};
