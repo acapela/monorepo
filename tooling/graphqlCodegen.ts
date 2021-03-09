@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@acapela/config";
 import { generate } from "@graphql-codegen/cli";
 import { log } from "@acapela/shared/logger";
 import path from "path";
@@ -23,7 +22,7 @@ function isDir(dirPath: string): boolean {
 }
 
 export async function startGeneratingGraphqlTypes({ packageName, watch }: ToolingGenerateOptions): Promise<void> {
-  const packageDir = path.resolve(ROOT_PATH, packageName);
+  const packageDir = path.resolve(process.cwd(), packageName);
 
   if (!isDir(packageDir)) {
     throw new Error(`Provided package name is not found (path: ${packageDir}) `);
