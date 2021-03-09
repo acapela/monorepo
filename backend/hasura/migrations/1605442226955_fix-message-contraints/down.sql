@@ -5,7 +5,7 @@ alter table "public"."message" add constraint "message_user_id_key" unique ("use
 
 alter table "public"."message" drop constraint "message_pkey";
 alter table "public"."message"
-    add constraint "message_pkey" 
+    add constraint "message_pkey"
     primary key ( "user_id", "thread_id" );
 
 ALTER TABLE "public"."message" DROP COLUMN "id";
