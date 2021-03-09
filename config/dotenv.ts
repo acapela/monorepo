@@ -1,10 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
 
-export const ROOT_PATH = path.resolve(__dirname, "..");
-
-const DOTENV_PATH = path.resolve(__dirname, "..", ".env");
-
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
@@ -40,7 +36,7 @@ declare global {
 }
 
 function loadRootDotEnv(): void {
-  dotenv.config({ path: DOTENV_PATH });
+  dotenv.config();
 }
 
 loadRootDotEnv();
