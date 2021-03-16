@@ -11,8 +11,8 @@ module.exports = {
     "^.+\\.css$": "<rootDir>/src/testSupport/cssTransform.ts",
   },
   transformIgnorePatterns: [
-    "/node_modules/",
-    "^.+\\.module\\.(css|sass|scss)$",
+    "/node_modules/(?!@acapela).+\\.js$",
+    "^.+\\.module\\.(css|sass|scss)$"
   ],
   moduleNameMapper: {
     "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
