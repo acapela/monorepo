@@ -42,8 +42,9 @@ jobs:
       - name: Migrate postgres using hasura migrations
         run: |
           cd backend/hasura
-          npx hasura migrate status --skip-update-check --endpoint http://localhost:8080
-          npx hasura migrate apply --skip-update-check --endpoint http://localhost:8080
+          npm install hasura-cli -g
+          hasura migrate status --skip-update-check --endpoint http://localhost:8080
+          hasura migrate apply --skip-update-check --endpoint http://localhost:8080
       - name: Setup dotenv
         run: cp backend/.env.gh-test backend/.env
       - run: npm run backend:lint
