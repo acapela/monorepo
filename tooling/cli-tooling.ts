@@ -1,7 +1,3 @@
-#!/usr/bin/env ts-node
-
-// 👆 this is required to allow typescript being directly called as sh cli script. (Read: Shebang ts-node)
-
 import "@acapela/config/dotenv";
 
 import yargs from "yargs";
