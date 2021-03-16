@@ -10,8 +10,7 @@
     "start": "npm run hasura:migrate && node dist",
     "dev": "ts-node-dev --transpile-only ./src/index.ts",
     "format": "prettier --write src",
-    "lint": "eslint \"src/**/*.{js,ts}\"",
-    "checkformat": "prettier --check src",
+    "lint": "eslint \"src/**/*.{js,ts}\" && prettier --check src",
     "gcp-build": "NODE_ENV=production npm run build",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
