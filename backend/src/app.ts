@@ -3,7 +3,7 @@ import "express-async-errors"; // patches express to handle errors from async fu
 import { promisify } from "util";
 import { Server, createServer } from "http";
 import securityMiddleware from "helmet";
-import { assertSecretsLoaded } from "@acapela/config";
+import { initializeSecrets } from "@acapela/config";
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import logger from "@acapela/shared/logger";
 import database from "./database";
@@ -12,9 +12,8 @@ import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
 import { router as actionRoutes } from "./actions/actions";
 
-assertSecretsLoaded("Cannot import and initialize app");
-
-export function setupServer(): Server {
+export async function setupServer(): Promise<Server> {
+  await initializeSecrets();
   const app = express();
   setupMiddleware(app);
   setupRoutes(app);

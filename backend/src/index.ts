@@ -10,7 +10,7 @@ async function start(): Promise<void> {
   log.info("Secrets loaded");
   const serverModule = await import("./app");
 
-  const server = serverModule.setupServer();
+  const server = await serverModule.setupServer();
 
   const port = process.env.BACKEND_PORT;
 

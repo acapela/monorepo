@@ -1,5 +1,6 @@
 import request from "supertest";
 import { v4 as uuid } from "uuid";
+import { Server } from "http";
 
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
@@ -11,7 +12,12 @@ import { addParticipant, createRoom, getIfParticipantExists, Room } from "../roo
 import { createUser, User } from "../users/users";
 
 describe("Accepting invites", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
+
   let firstUser: User;
   let secondUser: User;
   let room: Room;
