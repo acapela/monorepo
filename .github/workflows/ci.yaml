@@ -44,6 +44,8 @@ jobs:
           cd backend/hasura
           npx hasura migrate status --skip-update-check --endpoint http://localhost:8080
           npx hasura migrate apply --skip-update-check --endpoint http://localhost:8080
+      - name: Setup dotenv
+        run: cp backend/.env.gh-test backend/.env
       - run: npm run backend:lint
       - run: npm run backend:build
       - run: npm run backend:test
