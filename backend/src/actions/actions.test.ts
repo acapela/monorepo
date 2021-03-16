@@ -1,5 +1,6 @@
 import request from "supertest";
 import { v4 as uuid } from "uuid";
+import { Server } from "http";
 
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
@@ -35,7 +36,11 @@ jest.mock("./actionHandlers", () => ({
 }));
 
 describe("Hasura action handling", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
 
   it("handles actions that have a handler", async () => {
     const input = { someData: uuid() };

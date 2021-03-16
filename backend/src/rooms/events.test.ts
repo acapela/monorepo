@@ -1,3 +1,5 @@
+import { Server } from "http";
+
 import { setupServer } from "../app";
 import { addParticipant, createRoom, getIfParticipantExists, Room } from "./rooms";
 import { createUser, User } from "../users/users";
@@ -6,7 +8,12 @@ import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";
 
 describe("Room events", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
+
   let user: User;
 
   beforeEach(async () => {

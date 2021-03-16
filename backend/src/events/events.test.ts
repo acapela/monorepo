@@ -1,5 +1,6 @@
 import request from "supertest";
 import { v4 as uuid } from "uuid";
+import { Server } from "http";
 
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
@@ -24,7 +25,11 @@ jest.mock("./eventHandlers", () => ({
 }));
 
 describe("Hasura event handling", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
 
   it("handles insert events", async () => {
     const newData = { someData: uuid() };

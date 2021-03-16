@@ -1,3 +1,4 @@
+import { Server } from "http";
 import { v4 as uuid } from "uuid";
 import sendgrid from "@sendgrid/mail";
 import { setupServer } from "../app";
@@ -13,7 +14,12 @@ jest.mock("@sendgrid/mail", () => ({
 }));
 
 describe("Invite events", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
+
   let user: User;
   let room: Room;
 

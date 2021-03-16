@@ -1,10 +1,15 @@
 import request from "supertest";
+import { Server } from "http";
 
 import { setupServer } from "./app";
 import { HttpStatus } from "./http";
 
 describe("Application", () => {
-  const app = setupServer();
+  let app: Server;
+
+  it("setup server", async () => {
+    app = await setupServer();
+  });
 
   it("has 404s set up correctly", async () => {
     await request(app)
