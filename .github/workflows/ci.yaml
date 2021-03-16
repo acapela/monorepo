@@ -4,8 +4,8 @@ on:
     branches:
       - "**"
 jobs:
-  test:
-    name: Test
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -28,36 +28,25 @@ jobs:
         env:
           HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-      - name: Setup node v15
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Cache node modules
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
       - name: Migrate postgres using hasura migrations
         run: |
-          cd infrastructure/hasura
+          cd backend/hasura
           npx hasura migrate status --skip-update-check --endpoint http://localhost:8080
           npx hasura migrate apply --skip-update-check --endpoint http://localhost:8080
-      - name: Build project
-        run: npm run build
-      - name: Run tests
-        run: npm run test
-      - name: Run tests for hasura schema
-        run: npm run test:hasura
-      - name: Lint
-        run: npm run lint
-      - name: Check formatting
-        run: npm run checkformat
+      - run: npm run backend:lint
+      - run: npm run backend:build
+      - run: npm run backend:test
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
@@ -70,19 +59,7 @@ jobs:
           project_id: meetnomoreapp
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
         if: steps.semrel.outputs.version != ''
-      - run: gcloud auth configure-docker eu.gcr.io
-        if: steps.semrel.outputs.version != ''
-      - run: ./scripts/build-and-push.sh ${{ steps.semrel.outputs.version }}
-        if: steps.semrel.outputs.version != ''
-      - run: ./scripts/trigger-deploy.sh staging ${{ steps.semrel.outputs.version }}
+      - run: ./scripts/build-deploy-backend.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
         env:
-          HASURA_ENDPOINT: ${{ secrets.HASURA_STAGING_ENDPOINT }}
-          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_STAGING_ADMIN_SECRET }}
-          GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-      - run: ./scripts/trigger-deploy.sh production ${{ steps.semrel.outputs.version }}
-        if: steps.semrel.outputs.version != ''
-        env:
-          HASURA_ENDPOINT: ${{ secrets.HASURA_ENDPOINT }}
-          HASURA_ADMIN_SECRET: ${{ secrets.HASURA_ADMIN_SECRET }}
           GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
