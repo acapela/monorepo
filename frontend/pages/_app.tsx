@@ -6,7 +6,6 @@ import Head from "next/head";
 import { Provider as ApolloProvider } from "../src/apollo";
 import { parseJWTWithoutValidation } from "../src/authentication/jwt";
 import "../styles/tailwind.css";
-import "../styles/fonts.css";
 import "@reach/dialog/styles.css";
 import { NextApiRequest } from "next";
 import { createGlobalStyle } from "styled-components";

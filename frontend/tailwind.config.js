@@ -1,5 +1,4 @@
 const openSansSystemStack = [
-  // "SF UI Text",
   "Kumbh Sans",
   "Inter",
   "Open Sans",
