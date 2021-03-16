@@ -4,6 +4,23 @@ on:
     branches:
       - "**"
 jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - run: npm run frontend:lint
+      - run: npm run frontend:test
   backend:
     name: Backend
     runs-on: ubuntu-latest
@@ -50,6 +67,23 @@ jobs:
       - run: npm run backend:lint
       - run: npm run backend:build
       - run: npm run backend:test
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - run: npm run backend:build
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
