@@ -46,38 +46,3 @@ To make changes to the hasura schema, follow these steps:
 7. When your PR is merged, the hasura migrations are automatically applied to production using github actions.
 
 If hasura is not updating metadata automatically through this workflow, try wiping your local hasura setup, by running `rm -rf ~/.hasura`.
-
-## Commit Message Convention
-
-This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
-That means it is necessary to stick to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention to trigger new releases.
-
-### How to trigger releases?
-
-#### Patch Release
-
-```
-fix(pencil): stop graphite breaking when too much pressure applied
-```
-
-#### ~~Minor~~ Feature Release
-
-```
-feat(pencil): add 'graphiteWidth' option
-```
-
-#### ~~Major~~ Breaking Release
-
-```
-perf(pencil): remove graphiteWidth option
-
-BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reason.
-```
-
-[_More info_](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular)
-
-### Using commitizen
-
-This repository uses [commitizen](https://github.com/commitizen/cz-cli) to automate commit message composition.
-
-All you need is to use `npx cz` command instead of `git commit` each time you are ready to commit anything. 
