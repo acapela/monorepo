@@ -18,9 +18,9 @@
   },
   "scripts": {
     "unstable:scope": "func() { ( npm \"$2\" --prefix \"$1\" --save --package-lock-only --no-package-lock \"$3\" ; ) && npm i;}; func",
-    "frontned:dev": "npm run frontend -- run dev",
-    "frontned:test": "npm run frontend -- run test",
-    "frontned:test:watch": "npm run frontend -- run test:watch",
+    "frontend:dev": "npm run frontend -- run dev",
+    "frontend:test": "npm run frontend -- run test",
+    "frontend:test:watch": "npm run frontend -- run test:watch",
     "backend:dev": "npm run backend -- run dev",
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
@@ -42,7 +42,7 @@
   },
   "ntl": {
     "descriptions": {
-      "frontned:dev": "Start frontend dev server",
+      "frontend:dev": "Start frontend dev server",
       "frontend:gql-types": "Generate graphql types for frontend",
       "backend:dev": "Start backend dev server",
       "docker:up:detach": "Start docker infrastructure in detached mode",
