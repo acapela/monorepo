@@ -75,3 +75,9 @@ BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite
 ```
 
 [_More info_](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular)
+
+### Using commitizen
+
+This repository uses [commitizen](https://github.com/commitizen/cz-cli) to automate commit message composition.
+
+All you need is to use `cz` command instead of `git commit` each time you are ready to commit anything. 

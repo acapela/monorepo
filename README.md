@@ -10,7 +10,7 @@ Now, please head to Getting started guide in order to set up this repo on your m
 
 Part below describes how this repo is organized and how to work with it.
 
-README files for specific parts of this repo (frotnend, backend) sits in corresponding folders of this monorepo.
+README files for specific parts of this repo (frontend, backend) sits in corresponding folders of this monorepo.
 
 README for packages:
 
@@ -46,7 +46,7 @@ Root `package.json`
   }
 ```
 
-And then `frontend/package.json`
+and then `frontend/package.json`
 
 ```json
   "peerDependencies": {
@@ -87,7 +87,7 @@ and then `frontend/package.json`
 }
 ```
 
-In such setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/@acapela/utils` is symlink to `./utils` (not clone!).
+In such a setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/@acapela/utils` is symlink to `./utils` (not clone!).
 
 It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/@acapela/utils`.
 
@@ -99,9 +99,9 @@ Monorepo is organized in a way that forces package that uses `shared` to build i
 
 It means there is build setup only for 'end' packages (currently only frontend and backend).
 
-In frontend (next.js) we use proper next.js plugin to tell it to compile monorepo packages (`next-transpile-modules` - check `next.config.js` for more details).
+In the frontend (next.js), we use proper next.js plugin to tell it to compile monorepo packages (`next-transpile-modules` - check `next.config.js` for more details).
 
-In backend we use `@vercel/ncc` bundler for production build and `ts-node-dev` for development, both of which bundle correctly with zero additional config config.
+In the backend, we use `@vercel/ncc` bundler for production build and `ts-node-dev` for development, both of which bundle correctly with zero additional config.
 
 This setup means we have 'hot-reloading' experience when modifying any used monorepo package.
 
@@ -109,28 +109,28 @@ This setup means we have 'hot-reloading' experience when modifying any used mono
 
 It is possible to run scripts of every package from root folder of this repo.
 
-run `npm start` at root level to see possible scripts helper:
+Run `npm start` at root level to see possible a list of available scripts:
 
 ![NPM START](./docs/npm-start.gif)
 
 ### Running commands in scope of single package
 
-If you want to manually run any command in scope of package.
+It's possible to manually run any command in the scope of a package.
 
-Those scripts are equal:
+The following script:
 
 ```bash
 npm run frontend -- add react -S
 ```
 
-It will be equal to
+is equal to
 
 ```bash
 cd frontend
 npm add react -S
 ```
 
-Other examples might be `npm run backend -- run test:watch` etc.
+Another example might be `npm run backend -- run test:watch`, etc.
 
 ## Shared configuration
 
