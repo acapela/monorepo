@@ -8,12 +8,11 @@ export const Field = styled.input`
   font-weight: 500;
   padding: 0.75rem 1rem;
   background-color: #fbfbfb;
-  ${borderRadius.medium}
-
+  border-radius: ${borderRadius.medium};
   outline: none;
 `;
 
-export function useFieldValue(initial: string) {
+export function useFieldValue(initial = "") {
   const [value, setValue] = useState(initial);
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(

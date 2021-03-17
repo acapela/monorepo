@@ -91,12 +91,16 @@ const useInviteCreation = (roomId: string): InviteCreation => {
     createInvite: async (args) => {
       const result = await createInvite({ variables: { ...args, roomId } });
 
-      if (!result?.data?.invite) return null;
+      const inviteData = result?.data?.invite;
+
+      if (!inviteData) {
+        return null;
+      }
 
       return {
-        id: result.data.invite.id,
-        email: result.data.invite.email,
-        used: !!result.data.invite.usedAt,
+        id: inviteData.id,
+        email: inviteData.email,
+        used: !!inviteData.usedAt,
       };
     },
     loading,

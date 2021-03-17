@@ -6,9 +6,7 @@ const BLACK = "#000";
 function createShadowCss(size: number, opacity = 0.2) {
   const shadowColor = setColorOpacity(BLACK, opacity);
 
-  return css`
-    box-shadow: 0 0 ${size}rem ${shadowColor};
-  `;
+  return `0 0 ${size}rem ${shadowColor};`;
 }
 
 export const shadow = {
@@ -17,14 +15,13 @@ export const shadow = {
   large: createShadowCss(4),
 };
 
-function createBorderRadiusCss(size: number) {
-  return css`
-    border-radius: ${size}rem;
-  `;
-}
-
 export const borderRadius = {
-  small: createBorderRadiusCss(0.25),
-  medium: createBorderRadiusCss(0.5),
-  large: createBorderRadiusCss(1),
+  small: "0.25rem",
+  medium: "0.5rem",
+  large: "1rem",
+};
+
+export const fontSize = {
+  copy: "1rem",
+  pageTitle: "2rem",
 };

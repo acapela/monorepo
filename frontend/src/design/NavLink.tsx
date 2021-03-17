@@ -30,7 +30,7 @@ const UILink = styled.a<{ isActive: boolean }>`
   font-weight: 500;
   padding: 0.75rem 1rem;
   margin: 0 -1rem;
-  ${borderRadius.medium}
+  border-radius: ${borderRadius.medium};
 
   ${boolPropStyles(
     "isActive",

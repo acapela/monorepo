@@ -2949,6 +2949,17 @@ export type RoomDetailedInfoFragment = (
   )> }
 );
 
+export type ThreadMessageBasicInfoFragment = (
+  { __typename?: 'message' }
+  & Pick<Message, 'id' | 'text'>
+  & { createdAt: Message['created_at'] }
+  & { user: (
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'name'>
+    & { avatarUrl: User['avatar_url'] }
+  ) }
+);
+
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3030,15 +3041,18 @@ export type CreateInviteMutation = (
   )> }
 );
 
-export type ThreadMessageBasicInfoFragment = (
-  { __typename?: 'message' }
-  & Pick<Message, 'id' | 'text'>
-  & { createdAt: Message['created_at'] }
-  & { user: (
-    { __typename?: 'user' }
-    & Pick<User, 'id' | 'name'>
-    & { avatarUrl: User['avatar_url'] }
-  ) }
+export type CreateTextMessageMutationVariables = Exact<{
+  text: Scalars['String'];
+  threadId: Scalars['uuid'];
+}>;
+
+
+export type CreateTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & ThreadMessageBasicInfoFragment
+  )> }
 );
 
 export type ThreadMessagesSubscriptionVariables = Exact<{
@@ -3049,20 +3063,6 @@ export type ThreadMessagesSubscriptionVariables = Exact<{
 export type ThreadMessagesSubscription = (
   { __typename?: 'subscription_root' }
   & { messages: Array<(
-    { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
-  )> }
-);
-
-export type CreateTextMessageMutationVariables = Exact<{
-  text: Scalars['String'];
-  threadId: Scalars['uuid'];
-}>;
-
-
-export type CreateTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
     { __typename?: 'message' }
     & ThreadMessageBasicInfoFragment
   )> }
@@ -4073,38 +4073,6 @@ export function useCreateInviteMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateInviteMutationHookResult = ReturnType<typeof useCreateInviteMutation>;
 export type CreateInviteMutationResult = Apollo.MutationResult<CreateInviteMutation>;
 export type CreateInviteMutationOptions = Apollo.BaseMutationOptions<CreateInviteMutation, CreateInviteMutationVariables>;
-export const ThreadMessagesDocument = gql`
-    subscription ThreadMessages($threadId: uuid!) {
-  messages: message(
-    where: {thread_id: {_eq: $threadId}}
-    order_by: [{created_at: asc}]
-  ) {
-    ...ThreadMessageBasicInfo
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-
-/**
- * __useThreadMessagesSubscription__
- *
- * To run a query within a React component, call `useThreadMessagesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useThreadMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useThreadMessagesSubscription({
- *   variables: {
- *      threadId: // value for 'threadId'
- *   },
- * });
- */
-export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>) {
-        return Apollo.useSubscription<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>(ThreadMessagesDocument, baseOptions);
-      }
-export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
-export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 export const CreateTextMessageDocument = gql`
     mutation CreateTextMessage($text: String!, $threadId: uuid!) {
   message: insert_message_one(
@@ -4140,6 +4108,38 @@ export function useCreateTextMessageMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateTextMessageMutationHookResult = ReturnType<typeof useCreateTextMessageMutation>;
 export type CreateTextMessageMutationResult = Apollo.MutationResult<CreateTextMessageMutation>;
 export type CreateTextMessageMutationOptions = Apollo.BaseMutationOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
+export const ThreadMessagesDocument = gql`
+    subscription ThreadMessages($threadId: uuid!) {
+  messages: message(
+    where: {thread_id: {_eq: $threadId}}
+    order_by: [{created_at: asc}]
+  ) {
+    ...ThreadMessageBasicInfo
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+
+/**
+ * __useThreadMessagesSubscription__
+ *
+ * To run a query within a React component, call `useThreadMessagesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useThreadMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useThreadMessagesSubscription({
+ *   variables: {
+ *      threadId: // value for 'threadId'
+ *   },
+ * });
+ */
+export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>) {
+        return Apollo.useSubscription<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>(ThreadMessagesDocument, baseOptions);
+      }
+export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
+export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 
       export interface PossibleTypesResultData {
         possibleTypes: {

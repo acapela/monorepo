@@ -30,7 +30,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
         textField.reset();
       }}
     >
-      <Field id="text-input" placeholder="Write a message" {...textField.bindProps} />
+      <Field placeholder="Write a message" {...textField.bindProps} />
     </form>
   );
 };
