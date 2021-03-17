@@ -20,6 +20,11 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
       onSubmit={async (event) => {
         event.preventDefault();
 
+        if (!textField.value) {
+          // TODO: Add proper validation UI
+          alert("Message content is required");
+        }
+
         await createTextMessage({
           variables: {
             text: textField.value,

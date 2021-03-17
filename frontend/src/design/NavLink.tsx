@@ -32,12 +32,11 @@ const UILink = styled.a<{ isActive: boolean }>`
   margin: 0 -1rem;
   border-radius: ${borderRadius.medium};
 
-  ${boolPropStyles(
-    "isActive",
+  ${(props) =>
+    props.isActive &&
     css`
       background-color: #efefef;
-    `
-  )}
+    `}
 `;
 
 const UIIcon = styled(CalendarOutline)`
