@@ -29,7 +29,7 @@ export const Avatar: React.FC<AvatarProps> = ({ url, name, className }) => {
 
   return (
     <span className={classNames(baseAvatarClasses, "bg-blue-400 font-semibold", className)}>
-      {name && getInitials(name)}
+      {!!name && getInitials(name)}
     </span>
   );
 };
