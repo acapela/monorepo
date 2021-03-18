@@ -63,7 +63,7 @@ First, we need to seed the database:
 
 In order to bring the project up, run these commands in different terminals:
 
-- `docker:up:m1`
+- `docker:up`
 - `frontend:dev`
 - `backend:dev`
 
