@@ -1,10 +1,8 @@
 import { useRouter } from "next/router";
-
 import Link from "next/link";
 import styled, { css } from "styled-components";
 import { CalendarOutline } from "@acapela/ui/icons";
 import { borderRadius } from "@acapela/ui/baseStyles";
-import { boolPropStyles } from "@acapela/ui/styleHelpers";
 
 export const NavLink: React.FC<{
   to?: string;

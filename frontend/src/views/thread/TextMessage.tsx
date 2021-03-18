@@ -38,9 +38,9 @@ export const TextMessage: React.FC<{ message: MessageWithUserInfo }> = ({ messag
         <div>
           <div className={classNames("mt-1", { "text-right": message.isOwnMessage })}>
             <span className="font-bold">{message.isOwnMessage ? "You" : message.user.name}</span>
-            {"&nbsp;"}
+            &nbsp;
             <span className="font-semibold text-sm text-gray-400">
-              ·{"&nbsp;"}
+              ·&nbsp;
               {format(new Date(message.createdAt), "p")}
             </span>
           </div>
