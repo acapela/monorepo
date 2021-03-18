@@ -11,6 +11,9 @@ VERSION=$1
 IMAGE_NAME="eu.gcr.io/meetnomoreapp/backend"
 IMAGE_NAME_VERSION="$IMAGE_NAME:$VERSION"
 
+echo "getting production config..."
+cp ../.env.production ./
+
 echo "building image..."
 docker build -t $IMAGE_NAME_VERSION .
 docker tag $IMAGE_NAME_VERSION $IMAGE_NAME
