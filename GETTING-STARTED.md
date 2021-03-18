@@ -18,9 +18,21 @@ Make sure that docker is properly installed by calling `docker-compose --version
 
 ### Node & NPM
 
-npm version 7.0+ is required (latest version is recommended) because this repo is based on npm workspaces.
+npm version 7.0+ is required (the latest version is recommended) because this repo is based on npm workspaces.
 
 Node version 15+ is recommended.
+
+You can rely on nvm to pick the correct versions:
+
+```shell
+nvm install
+```
+
+You can enforce the latest npm version with:
+
+```shell
+nvm install --latest-npm
+```
 
 ### `.env` file
 
@@ -38,25 +50,32 @@ First - install all dependencies by running
 
 `npm install`
 
-After installed, the only command you have to remember should be `npm start`
+After installed, the only command you have to remember should be `npm start`.
 
-It will show you all other avaliable commands as a console interactive select:
+It will show you all other available commands as a console interactive select:
 
 ![NPM START](./docs/npm-start.gif)
 
-In order to start working, run those commands
+First, we need to seed the database:
 
-`docker:up`, and then `frontend:dev` and `backend:dev`.
+- `hasura:migrations`
+- `hasura:meta`
 
-After that, go to http://localhost:3000 and you should see acapela app home.
+In order to bring the project up, run these commands in different terminals:
+
+- `docker:up:m1`
+- `frontend:dev`
+- `backend:dev`
+
+After that, go to http://localhost:3000, and you should see acapela app home.
 
 ## IDE
 
-VS Code is recommended IDE.
+VS Code is the recommended IDE.
 
 ### Extensions
 
-There are bunch of extensions that will make it easier to work with this repo
+There is a bunch of extensions that will make it easier to work with this repo
 
 #### ENV
 
@@ -86,9 +105,44 @@ VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=diegoli
 
 #### GraphQL
 
-This will provide validation and autocomplete when writing gql queries to make sure they match current schema.
+This will provide validation and autocomplete when writing gql queries to make sure they match the current schema.
 
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql
 
 ![NPM START](./docs/gql1.png)
 ![NPM START](./docs/gql2.png)
+
+## Commit Message Convention
+
+This repository uses [`semantic-release`](https://github.com/semantic-release/go-semantic-release#how-does-it-work) for automatic releases.
+That means it is necessary to stick to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention to trigger new releases.
+
+### How to trigger releases?
+
+#### Patch Release
+
+```
+fix(pencil): stop graphite breaking when too much pressure applied
+```
+
+#### ~~Minor~~ Feature Release
+
+```
+feat(pencil): add 'graphiteWidth' option
+```
+
+#### ~~Major~~ Breaking Release
+
+```
+perf(pencil): remove graphiteWidth option
+
+BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reason.
+```
+
+[_More info_](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular)
+
+### Using commitizen
+
+This repository uses [commitizen](https://github.com/commitizen/cz-cli) to automate commit message composition.
+
+All you need is to use `npx cz` command instead of `git commit` each time you are ready to commit anything. 
