@@ -22,7 +22,7 @@ function isDir(dirPath: string): boolean {
 }
 
 export async function startGeneratingGraphqlTypes({ packageName, watch }: ToolingGenerateOptions): Promise<void> {
-  const packageDir = path.resolve(process.cwd(), packageName);
+  const packageDir = path.resolve(__dirname, "..", packageName);
 
   if (!isDir(packageDir)) {
     throw new Error(`Provided package name is not found (path: ${packageDir}) `);
