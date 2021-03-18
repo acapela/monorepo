@@ -11,8 +11,9 @@ VERSION=$1
 IMAGE_NAME="eu.gcr.io/meetnomoreapp/backend"
 IMAGE_NAME_VERSION="$IMAGE_NAME:$VERSION"
 
-echo "getting production config..."
+echo "getting production env and hasura config..."
 cp ../.env.production ./
+cp -r ../infrastructure/hasura ./
 
 echo "building image..."
 docker build -t $IMAGE_NAME_VERSION .

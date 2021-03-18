@@ -25,8 +25,8 @@ services:
       - "postgres"
     restart: always
     volumes:
-      - ./backend/hasura/migrations:/migrations
-      - ./backend/hasura/metadata:/metadata
+      - ./infrastructure/hasura/migrations:/migrations
+      - ./infrastructure/hasura/metadata:/metadata
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       HASURA_GRAPHQL_DEV_MODE: "true"
