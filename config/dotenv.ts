@@ -36,7 +36,8 @@ declare global {
 }
 
 function loadRootDotEnv(): void {
-  dotenv.config();
+  const configPath = process.env.NODE_ENV === "production" ? process.cwd() : path.resolve(__dirname, "..", ".env");
+  dotenv.config({ path: configPath });
 }
 
 loadRootDotEnv();
