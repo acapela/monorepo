@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 
 describe("Avatar", () => {
   it("renders initials if url not provided", () => {
-    let { rerender } = render(<Avatar name="some person" />);
+    const { rerender } = render(<Avatar name="some person" />);
     expect(screen.getByText("SP")).toBeInTheDocument();
     rerender(<Avatar name="person" />);
     expect(screen.queryByText("SP")).not.toBeInTheDocument();
@@ -11,7 +11,7 @@ describe("Avatar", () => {
   });
 
   it("can receive custom classNames", () => {
-    let { rerender } = render(<Avatar name="a long name" />);
+    const { rerender } = render(<Avatar name="a long name" />);
     expect(screen.getByText("AL")).not.toHaveClass("some");
     expect(screen.getByText("AL")).not.toHaveClass("custom");
     expect(screen.getByText("AL")).not.toHaveClass("classes");
