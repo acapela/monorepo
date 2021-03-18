@@ -1,6 +1,9 @@
 import dotenv from "dotenv";
 import path from "path";
 
+const DOTENV_PATH =
+  process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), ".env") : path.resolve(__dirname, "..", ".env");
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
@@ -36,8 +39,7 @@ declare global {
 }
 
 function loadRootDotEnv(): void {
-  const configPath = process.env.NODE_ENV === "production" ? process.cwd() : path.resolve(__dirname, "..", ".env");
-  dotenv.config({ path: configPath });
+  dotenv.config({ path: DOTENV_PATH });
 }
 
 loadRootDotEnv();

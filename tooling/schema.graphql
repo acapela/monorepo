@@ -46,7 +46,6 @@ Account represents 3rd party login methods used by given user.
 
 
 columns and relationships of "account"
-
 """
 type account {
   access_token: String
@@ -59,7 +58,9 @@ type account {
   refresh_token: String
   updated_at: timestamptz!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   user: user!
   user_id: uuid!
 }
@@ -122,7 +123,9 @@ input account_bool_exp {
 unique or primary key constraints on table "account"
 """
 enum account_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   account_pkey
 }
 
@@ -143,7 +146,9 @@ input account_insert_input {
   user_id: uuid
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type account_max_fields {
   access_token: String
   access_token_expires: timestamptz
@@ -173,7 +178,9 @@ input account_max_order_by {
   user_id: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type account_min_fields {
   access_token: String
   access_token_expires: timestamptz
@@ -207,10 +214,14 @@ input account_min_order_by {
 response of any mutation on the table "account"
 """
 type account_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [account!]!
 }
 
@@ -259,34 +270,54 @@ input account_pk_columns_input {
 select columns of table "account"
 """
 enum account_select_column {
-  """column name"""
+  """
+  column name
+  """
   access_token
 
-  """column name"""
+  """
+  column name
+  """
   access_token_expires
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   provider_account_id
 
-  """column name"""
+  """
+  column name
+  """
   provider_id
 
-  """column name"""
+  """
+  column name
+  """
   provider_type
 
-  """column name"""
+  """
+  column name
+  """
   refresh_token
 
-  """column name"""
+  """
+  column name
+  """
   updated_at
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
@@ -310,34 +341,54 @@ input account_set_input {
 update columns of table "account"
 """
 enum account_update_column {
-  """column name"""
+  """
+  column name
+  """
   access_token
 
-  """column name"""
+  """
+  column name
+  """
   access_token_expires
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   provider_account_id
 
-  """column name"""
+  """
+  column name
+  """
   provider_id
 
-  """column name"""
+  """
+  column name
+  """
   provider_type
 
-  """column name"""
+  """
+  column name
+  """
   refresh_token
 
-  """column name"""
+  """
+  column name
+  """
   updated_at
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
@@ -351,17 +402,23 @@ type message {
   id: uuid!
   media_url: String
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   message_type: message_type!
   text: String
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   thread: thread!
   thread_id: uuid!
   transcription: String
   type: message_type_enum!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   user: user!
   user_id: uuid!
 }
@@ -424,10 +481,14 @@ input message_bool_exp {
 unique or primary key constraints on table "message"
 """
 enum message_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   message_id_key
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   message_pkey
 }
 
@@ -448,7 +509,9 @@ input message_insert_input {
   user_id: uuid
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type message_max_fields {
   created_at: timestamptz
   id: uuid
@@ -472,7 +535,9 @@ input message_max_order_by {
   user_id: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type message_min_fields {
   created_at: timestamptz
   id: uuid
@@ -500,10 +565,14 @@ input message_min_order_by {
 response of any mutation on the table "message"
 """
 type message_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [message!]!
 }
 
@@ -552,28 +621,44 @@ input message_pk_columns_input {
 select columns of table "message"
 """
 enum message_select_column {
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   media_url
 
-  """column name"""
+  """
+  column name
+  """
   text
 
-  """column name"""
+  """
+  column name
+  """
   thread_id
 
-  """column name"""
+  """
+  column name
+  """
   transcription
 
-  """column name"""
+  """
+  column name
+  """
   type
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
@@ -596,7 +681,6 @@ Used as an ENUM for the message type field constraint.
 
 
 columns and relationships of "message_type"
-
 """
 type message_type {
   value: String!
@@ -650,7 +734,9 @@ input message_type_bool_exp {
 unique or primary key constraints on table "message_type"
 """
 enum message_type_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   message_type_pkey
 }
 
@@ -679,7 +765,9 @@ input message_type_insert_input {
   value: String
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type message_type_max_fields {
   value: String
 }
@@ -691,7 +779,9 @@ input message_type_max_order_by {
   value: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type message_type_min_fields {
   value: String
 }
@@ -707,10 +797,14 @@ input message_type_min_order_by {
 response of any mutation on the table "message_type"
 """
 type message_type_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [message_type!]!
 }
 
@@ -749,7 +843,9 @@ input message_type_pk_columns_input {
 select columns of table "message_type"
 """
 enum message_type_select_column {
-  """column name"""
+  """
+  column name
+  """
   value
 }
 
@@ -764,7 +860,9 @@ input message_type_set_input {
 update columns of table "message_type"
 """
 enum message_type_update_column {
-  """column name"""
+  """
+  column name
+  """
   value
 }
 
@@ -772,32 +870,50 @@ enum message_type_update_column {
 update columns of table "message"
 """
 enum message_update_column {
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   media_url
 
-  """column name"""
+  """
+  column name
+  """
   text
 
-  """column name"""
+  """
+  column name
+  """
   thread_id
 
-  """column name"""
+  """
+  column name
+  """
   transcription
 
-  """column name"""
+  """
+  column name
+  """
   type
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
-"""mutation root"""
+"""
+mutation root
+"""
 type mutation_root {
   """
   perform the action: "accept_invite"
@@ -808,7 +924,9 @@ type mutation_root {
   delete data from the table: "account"
   """
   delete_account(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: account_bool_exp!
   ): account_mutation_response
 
@@ -821,7 +939,9 @@ type mutation_root {
   delete data from the table: "message"
   """
   delete_message(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: message_bool_exp!
   ): message_mutation_response
 
@@ -834,7 +954,9 @@ type mutation_root {
   delete data from the table: "message_type"
   """
   delete_message_type(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: message_type_bool_exp!
   ): message_type_mutation_response
 
@@ -847,7 +969,9 @@ type mutation_root {
   delete data from the table: "room"
   """
   delete_room(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: room_bool_exp!
   ): room_mutation_response
 
@@ -860,7 +984,9 @@ type mutation_root {
   delete data from the table: "room_invites"
   """
   delete_room_invites(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: room_invites_bool_exp!
   ): room_invites_mutation_response
 
@@ -873,7 +999,9 @@ type mutation_root {
   delete data from the table: "room_participants"
   """
   delete_room_participants(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: room_participants_bool_exp!
   ): room_participants_mutation_response
 
@@ -886,7 +1014,9 @@ type mutation_root {
   delete data from the table: "thread"
   """
   delete_thread(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: thread_bool_exp!
   ): thread_mutation_response
 
@@ -899,7 +1029,9 @@ type mutation_root {
   delete data from the table: "user"
   """
   delete_user(
-    """filter the rows which have to be deleted"""
+    """
+    filter the rows which have to be deleted
+    """
     where: user_bool_exp!
   ): user_mutation_response
 
@@ -912,10 +1044,14 @@ type mutation_root {
   insert data into the table: "account"
   """
   insert_account(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [account_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: account_on_conflict
   ): account_mutation_response
 
@@ -923,10 +1059,14 @@ type mutation_root {
   insert a single row into the table: "account"
   """
   insert_account_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: account_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: account_on_conflict
   ): account
 
@@ -934,10 +1074,14 @@ type mutation_root {
   insert data into the table: "message"
   """
   insert_message(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [message_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: message_on_conflict
   ): message_mutation_response
 
@@ -945,10 +1089,14 @@ type mutation_root {
   insert a single row into the table: "message"
   """
   insert_message_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: message_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: message_on_conflict
   ): message
 
@@ -956,10 +1104,14 @@ type mutation_root {
   insert data into the table: "message_type"
   """
   insert_message_type(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [message_type_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: message_type_on_conflict
   ): message_type_mutation_response
 
@@ -967,10 +1119,14 @@ type mutation_root {
   insert a single row into the table: "message_type"
   """
   insert_message_type_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: message_type_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: message_type_on_conflict
   ): message_type
 
@@ -978,10 +1134,14 @@ type mutation_root {
   insert data into the table: "room"
   """
   insert_room(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [room_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_on_conflict
   ): room_mutation_response
 
@@ -989,10 +1149,14 @@ type mutation_root {
   insert data into the table: "room_invites"
   """
   insert_room_invites(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [room_invites_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_invites_on_conflict
   ): room_invites_mutation_response
 
@@ -1000,10 +1164,14 @@ type mutation_root {
   insert a single row into the table: "room_invites"
   """
   insert_room_invites_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: room_invites_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_invites_on_conflict
   ): room_invites
 
@@ -1011,10 +1179,14 @@ type mutation_root {
   insert a single row into the table: "room"
   """
   insert_room_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: room_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_on_conflict
   ): room
 
@@ -1022,10 +1194,14 @@ type mutation_root {
   insert data into the table: "room_participants"
   """
   insert_room_participants(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [room_participants_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_participants_on_conflict
   ): room_participants_mutation_response
 
@@ -1033,10 +1209,14 @@ type mutation_root {
   insert a single row into the table: "room_participants"
   """
   insert_room_participants_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: room_participants_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: room_participants_on_conflict
   ): room_participants
 
@@ -1044,10 +1224,14 @@ type mutation_root {
   insert data into the table: "thread"
   """
   insert_thread(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [thread_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: thread_on_conflict
   ): thread_mutation_response
 
@@ -1055,10 +1239,14 @@ type mutation_root {
   insert a single row into the table: "thread"
   """
   insert_thread_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: thread_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: thread_on_conflict
   ): thread
 
@@ -1066,10 +1254,14 @@ type mutation_root {
   insert data into the table: "user"
   """
   insert_user(
-    """the rows to be inserted"""
+    """
+    the rows to be inserted
+    """
     objects: [user_insert_input!]!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: user_on_conflict
   ): user_mutation_response
 
@@ -1077,10 +1269,14 @@ type mutation_root {
   insert a single row into the table: "user"
   """
   insert_user_one(
-    """the row to be inserted"""
+    """
+    the row to be inserted
+    """
     object: user_insert_input!
 
-    """on conflict condition"""
+    """
+    on conflict condition
+    """
     on_conflict: user_on_conflict
   ): user
 
@@ -1088,10 +1284,14 @@ type mutation_root {
   update data of the table: "account"
   """
   update_account(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: account_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: account_bool_exp!
   ): account_mutation_response
 
@@ -1099,7 +1299,9 @@ type mutation_root {
   update single row of the table: "account"
   """
   update_account_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: account_set_input
     pk_columns: account_pk_columns_input!
   ): account
@@ -1108,10 +1310,14 @@ type mutation_root {
   update data of the table: "message"
   """
   update_message(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: message_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: message_bool_exp!
   ): message_mutation_response
 
@@ -1119,7 +1325,9 @@ type mutation_root {
   update single row of the table: "message"
   """
   update_message_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: message_set_input
     pk_columns: message_pk_columns_input!
   ): message
@@ -1128,10 +1336,14 @@ type mutation_root {
   update data of the table: "message_type"
   """
   update_message_type(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: message_type_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: message_type_bool_exp!
   ): message_type_mutation_response
 
@@ -1139,7 +1351,9 @@ type mutation_root {
   update single row of the table: "message_type"
   """
   update_message_type_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: message_type_set_input
     pk_columns: message_type_pk_columns_input!
   ): message_type
@@ -1148,10 +1362,14 @@ type mutation_root {
   update data of the table: "room"
   """
   update_room(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: room_bool_exp!
   ): room_mutation_response
 
@@ -1159,7 +1377,9 @@ type mutation_root {
   update single row of the table: "room"
   """
   update_room_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_set_input
     pk_columns: room_pk_columns_input!
   ): room
@@ -1168,10 +1388,14 @@ type mutation_root {
   update data of the table: "room_invites"
   """
   update_room_invites(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_invites_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: room_invites_bool_exp!
   ): room_invites_mutation_response
 
@@ -1179,7 +1403,9 @@ type mutation_root {
   update single row of the table: "room_invites"
   """
   update_room_invites_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_invites_set_input
     pk_columns: room_invites_pk_columns_input!
   ): room_invites
@@ -1188,10 +1414,14 @@ type mutation_root {
   update data of the table: "room_participants"
   """
   update_room_participants(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_participants_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: room_participants_bool_exp!
   ): room_participants_mutation_response
 
@@ -1199,7 +1429,9 @@ type mutation_root {
   update single row of the table: "room_participants"
   """
   update_room_participants_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: room_participants_set_input
     pk_columns: room_participants_pk_columns_input!
   ): room_participants
@@ -1208,10 +1440,14 @@ type mutation_root {
   update data of the table: "thread"
   """
   update_thread(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: thread_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: thread_bool_exp!
   ): thread_mutation_response
 
@@ -1219,7 +1455,9 @@ type mutation_root {
   update single row of the table: "thread"
   """
   update_thread_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: thread_set_input
     pk_columns: thread_pk_columns_input!
   ): thread
@@ -1228,10 +1466,14 @@ type mutation_root {
   update data of the table: "user"
   """
   update_user(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: user_set_input
 
-    """filter the rows which have to be updated"""
+    """
+    filter the rows which have to be updated
+    """
     where: user_bool_exp!
   ): user_mutation_response
 
@@ -1239,7 +1481,9 @@ type mutation_root {
   update single row of the table: "user"
   """
   update_user_by_pk(
-    """sets the columns of the filtered rows to the given values"""
+    """
+    sets the columns of the filtered rows to the given values
+    """
     _set: user_set_input
     pk_columns: user_pk_columns_input!
   ): user
@@ -1250,46 +1494,72 @@ type mutation_root {
   upgrade_current_user: UpgradeUserResponse
 }
 
-"""column ordering options"""
+"""
+column ordering options
+"""
 enum order_by {
-  """in the ascending order, nulls last"""
+  """
+  in the ascending order, nulls last
+  """
   asc
 
-  """in the ascending order, nulls first"""
+  """
+  in the ascending order, nulls first
+  """
   asc_nulls_first
 
-  """in the ascending order, nulls last"""
+  """
+  in the ascending order, nulls last
+  """
   asc_nulls_last
 
-  """in the descending order, nulls first"""
+  """
+  in the descending order, nulls first
+  """
   desc
 
-  """in the descending order, nulls first"""
+  """
+  in the descending order, nulls first
+  """
   desc_nulls_first
 
-  """in the descending order, nulls last"""
+  """
+  in the descending order, nulls last
+  """
   desc_nulls_last
 }
 
-"""query root"""
+"""
+query root
+"""
 type query_root {
   """
   fetch data from the table: "account"
   """
   account(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [account_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [account_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: account_bool_exp
   ): [account!]!
 
@@ -1297,42 +1567,64 @@ type query_root {
   fetch aggregated fields from the table: "account"
   """
   account_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [account_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [account_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: account_bool_exp
   ): account_aggregate!
 
-  """fetch data from the table: "account" using primary key columns"""
+  """
+  fetch data from the table: "account" using primary key columns
+  """
   account_by_pk(id: uuid!): account
 
   """
   fetch data from the table: "message"
   """
   message(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): [message!]!
 
@@ -1340,42 +1632,64 @@ type query_root {
   fetch aggregated fields from the table: "message"
   """
   message_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): message_aggregate!
 
-  """fetch data from the table: "message" using primary key columns"""
+  """
+  fetch data from the table: "message" using primary key columns
+  """
   message_by_pk(id: uuid!): message
 
   """
   fetch data from the table: "message_type"
   """
   message_type(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_type_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_type_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_type_bool_exp
   ): [message_type!]!
 
@@ -1383,42 +1697,64 @@ type query_root {
   fetch aggregated fields from the table: "message_type"
   """
   message_type_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_type_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_type_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_type_bool_exp
   ): message_type_aggregate!
 
-  """fetch data from the table: "message_type" using primary key columns"""
+  """
+  fetch data from the table: "message_type" using primary key columns
+  """
   message_type_by_pk(value: String!): message_type
 
   """
   fetch data from the table: "room"
   """
   room(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): [room!]!
 
@@ -1426,42 +1762,64 @@ type query_root {
   fetch aggregated fields from the table: "room"
   """
   room_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): room_aggregate!
 
-  """fetch data from the table: "room" using primary key columns"""
+  """
+  fetch data from the table: "room" using primary key columns
+  """
   room_by_pk(id: uuid!): room
 
   """
   fetch data from the table: "room_invites"
   """
   room_invites(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): [room_invites!]!
 
@@ -1469,42 +1827,64 @@ type query_root {
   fetch aggregated fields from the table: "room_invites"
   """
   room_invites_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): room_invites_aggregate!
 
-  """fetch data from the table: "room_invites" using primary key columns"""
+  """
+  fetch data from the table: "room_invites" using primary key columns
+  """
   room_invites_by_pk(id: uuid!): room_invites
 
   """
   fetch data from the table: "room_participants"
   """
   room_participants(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): [room_participants!]!
 
@@ -1512,19 +1892,29 @@ type query_root {
   fetch aggregated fields from the table: "room_participants"
   """
   room_participants_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): room_participants_aggregate!
 
@@ -1537,19 +1927,29 @@ type query_root {
   fetch data from the table: "thread"
   """
   thread(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): [thread!]!
 
@@ -1557,42 +1957,64 @@ type query_root {
   fetch aggregated fields from the table: "thread"
   """
   thread_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): thread_aggregate!
 
-  """fetch data from the table: "thread" using primary key columns"""
+  """
+  fetch data from the table: "thread" using primary key columns
+  """
   thread_by_pk(id: uuid!): thread
 
   """
   fetch data from the table: "user"
   """
   user(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [user_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [user_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: user_bool_exp
   ): [user!]!
 
@@ -1600,23 +2022,35 @@ type query_root {
   fetch aggregated fields from the table: "user"
   """
   user_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [user_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [user_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: user_bool_exp
   ): user_aggregate!
 
-  """fetch data from the table: "user" using primary key columns"""
+  """
+  fetch data from the table: "user" using primary key columns
+  """
   user_by_pk(id: uuid!): user
 }
 
@@ -1626,7 +2060,9 @@ columns and relationships of "room"
 type room {
   created_at: timestamptz!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   creator: user!
   creator_id: uuid!
   deadline: timestamptz!
@@ -1635,112 +2071,184 @@ type room {
   name: String
   notification_job_id: String
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   participants(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): [room_participants!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   participants_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): room_participants_aggregate!
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   room_invites(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): [room_invites!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   room_invites_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): room_invites_aggregate!
   summary: String
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   threads(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): [thread!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   threads_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): thread_aggregate!
 }
@@ -1804,7 +2312,9 @@ input room_bool_exp {
 unique or primary key constraints on table "room"
 """
 enum room_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_pkey
 }
 
@@ -1835,11 +2345,15 @@ type room_invites {
   email: String!
   id: uuid!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   inviter: user!
   inviter_id: uuid!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   room: room!
   room_id: uuid!
   used_at: timestamptz
@@ -1901,13 +2415,19 @@ input room_invites_bool_exp {
 unique or primary key constraints on table "room_invites"
 """
 enum room_invites_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_invites_code_key
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_invites_pkey
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_invites_room_id_email_key
 }
 
@@ -1926,7 +2446,9 @@ input room_invites_insert_input {
   used_at: timestamptz
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type room_invites_max_fields {
   code: uuid
   created_at: timestamptz
@@ -1950,7 +2472,9 @@ input room_invites_max_order_by {
   used_at: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type room_invites_min_fields {
   code: uuid
   created_at: timestamptz
@@ -1978,10 +2502,14 @@ input room_invites_min_order_by {
 response of any mutation on the table "room_invites"
 """
 type room_invites_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [room_invites!]!
 }
 
@@ -2028,25 +2556,39 @@ input room_invites_pk_columns_input {
 select columns of table "room_invites"
 """
 enum room_invites_select_column {
-  """column name"""
+  """
+  column name
+  """
   code
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   email
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   inviter_id
 
-  """column name"""
+  """
+  column name
+  """
   room_id
 
-  """column name"""
+  """
+  column name
+  """
   used_at
 }
 
@@ -2067,29 +2609,45 @@ input room_invites_set_input {
 update columns of table "room_invites"
 """
 enum room_invites_update_column {
-  """column name"""
+  """
+  column name
+  """
   code
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   email
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   inviter_id
 
-  """column name"""
+  """
+  column name
+  """
   room_id
 
-  """column name"""
+  """
+  column name
+  """
   used_at
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type room_max_fields {
   created_at: timestamptz
   creator_id: uuid
@@ -2115,7 +2673,9 @@ input room_max_order_by {
   summary: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type room_min_fields {
   created_at: timestamptz
   creator_id: uuid
@@ -2145,10 +2705,14 @@ input room_min_order_by {
 response of any mutation on the table "room"
 """
 type room_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [room!]!
 }
 
@@ -2191,11 +2755,15 @@ input room_order_by {
 columns and relationships of "room_participants"
 """
 type room_participants {
-  """An object relationship"""
+  """
+  An object relationship
+  """
   room: room!
   room_id: uuid!
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   user: user!
   user_id: uuid!
 }
@@ -2251,10 +2819,14 @@ input room_participants_bool_exp {
 unique or primary key constraints on table "room_participants"
 """
 enum room_participants_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_participants_pkey
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   room_participants_room_id_user_id_key
 }
 
@@ -2268,7 +2840,9 @@ input room_participants_insert_input {
   user_id: uuid
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type room_participants_max_fields {
   room_id: uuid
   user_id: uuid
@@ -2282,7 +2856,9 @@ input room_participants_max_order_by {
   user_id: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type room_participants_min_fields {
   room_id: uuid
   user_id: uuid
@@ -2300,10 +2876,14 @@ input room_participants_min_order_by {
 response of any mutation on the table "room_participants"
 """
 type room_participants_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [room_participants!]!
 }
 
@@ -2346,10 +2926,14 @@ input room_participants_pk_columns_input {
 select columns of table "room_participants"
 """
 enum room_participants_select_column {
-  """column name"""
+  """
+  column name
+  """
   room_id
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
@@ -2365,10 +2949,14 @@ input room_participants_set_input {
 update columns of table "room_participants"
 """
 enum room_participants_update_column {
-  """column name"""
+  """
+  column name
+  """
   room_id
 
-  """column name"""
+  """
+  column name
+  """
   user_id
 }
 
@@ -2383,28 +2971,44 @@ input room_pk_columns_input {
 select columns of table "room"
 """
 enum room_select_column {
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   creator_id
 
-  """column name"""
+  """
+  column name
+  """
   deadline
 
-  """column name"""
+  """
+  column name
+  """
   finished_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   name
 
-  """column name"""
+  """
+  column name
+  """
   notification_job_id
 
-  """column name"""
+  """
+  column name
+  """
   summary
 }
 
@@ -2426,50 +3030,78 @@ input room_set_input {
 update columns of table "room"
 """
 enum room_update_column {
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   creator_id
 
-  """column name"""
+  """
+  column name
+  """
   deadline
 
-  """column name"""
+  """
+  column name
+  """
   finished_at
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   name
 
-  """column name"""
+  """
+  column name
+  """
   notification_job_id
 
-  """column name"""
+  """
+  column name
+  """
   summary
 }
 
-"""subscription root"""
+"""
+subscription root
+"""
 type subscription_root {
   """
   fetch data from the table: "account"
   """
   account(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [account_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [account_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: account_bool_exp
   ): [account!]!
 
@@ -2477,42 +3109,64 @@ type subscription_root {
   fetch aggregated fields from the table: "account"
   """
   account_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [account_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [account_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: account_bool_exp
   ): account_aggregate!
 
-  """fetch data from the table: "account" using primary key columns"""
+  """
+  fetch data from the table: "account" using primary key columns
+  """
   account_by_pk(id: uuid!): account
 
   """
   fetch data from the table: "message"
   """
   message(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): [message!]!
 
@@ -2520,42 +3174,64 @@ type subscription_root {
   fetch aggregated fields from the table: "message"
   """
   message_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): message_aggregate!
 
-  """fetch data from the table: "message" using primary key columns"""
+  """
+  fetch data from the table: "message" using primary key columns
+  """
   message_by_pk(id: uuid!): message
 
   """
   fetch data from the table: "message_type"
   """
   message_type(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_type_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_type_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_type_bool_exp
   ): [message_type!]!
 
@@ -2563,42 +3239,64 @@ type subscription_root {
   fetch aggregated fields from the table: "message_type"
   """
   message_type_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_type_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_type_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_type_bool_exp
   ): message_type_aggregate!
 
-  """fetch data from the table: "message_type" using primary key columns"""
+  """
+  fetch data from the table: "message_type" using primary key columns
+  """
   message_type_by_pk(value: String!): message_type
 
   """
   fetch data from the table: "room"
   """
   room(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): [room!]!
 
@@ -2606,42 +3304,64 @@ type subscription_root {
   fetch aggregated fields from the table: "room"
   """
   room_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): room_aggregate!
 
-  """fetch data from the table: "room" using primary key columns"""
+  """
+  fetch data from the table: "room" using primary key columns
+  """
   room_by_pk(id: uuid!): room
 
   """
   fetch data from the table: "room_invites"
   """
   room_invites(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): [room_invites!]!
 
@@ -2649,42 +3369,64 @@ type subscription_root {
   fetch aggregated fields from the table: "room_invites"
   """
   room_invites_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): room_invites_aggregate!
 
-  """fetch data from the table: "room_invites" using primary key columns"""
+  """
+  fetch data from the table: "room_invites" using primary key columns
+  """
   room_invites_by_pk(id: uuid!): room_invites
 
   """
   fetch data from the table: "room_participants"
   """
   room_participants(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): [room_participants!]!
 
@@ -2692,19 +3434,29 @@ type subscription_root {
   fetch aggregated fields from the table: "room_participants"
   """
   room_participants_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): room_participants_aggregate!
 
@@ -2717,19 +3469,29 @@ type subscription_root {
   fetch data from the table: "thread"
   """
   thread(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): [thread!]!
 
@@ -2737,42 +3499,64 @@ type subscription_root {
   fetch aggregated fields from the table: "thread"
   """
   thread_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [thread_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [thread_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: thread_bool_exp
   ): thread_aggregate!
 
-  """fetch data from the table: "thread" using primary key columns"""
+  """
+  fetch data from the table: "thread" using primary key columns
+  """
   thread_by_pk(id: uuid!): thread
 
   """
   fetch data from the table: "user"
   """
   user(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [user_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [user_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: user_bool_exp
   ): [user!]!
 
@@ -2780,23 +3564,35 @@ type subscription_root {
   fetch aggregated fields from the table: "user"
   """
   user_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [user_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [user_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: user_bool_exp
   ): user_aggregate!
 
-  """fetch data from the table: "user" using primary key columns"""
+  """
+  fetch data from the table: "user" using primary key columns
+  """
   user_by_pk(id: uuid!): user
 }
 
@@ -2807,44 +3603,70 @@ type thread {
   id: uuid!
   index: String!
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   messages(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): [message!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   messages_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): message_aggregate!
   name: String
 
-  """An object relationship"""
+  """
+  An object relationship
+  """
   room: room!
   room_id: uuid!
 }
@@ -2902,7 +3724,9 @@ input thread_bool_exp {
 unique or primary key constraints on table "thread"
 """
 enum thread_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   thread_pkey
 }
 
@@ -2918,7 +3742,9 @@ input thread_insert_input {
   room_id: uuid
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type thread_max_fields {
   id: uuid
   index: String
@@ -2936,7 +3762,9 @@ input thread_max_order_by {
   room_id: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type thread_min_fields {
   id: uuid
   index: String
@@ -2958,10 +3786,14 @@ input thread_min_order_by {
 response of any mutation on the table "thread"
 """
 type thread_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [thread!]!
 }
 
@@ -3005,16 +3837,24 @@ input thread_pk_columns_input {
 select columns of table "thread"
 """
 enum thread_select_column {
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   index
 
-  """column name"""
+  """
+  column name
+  """
   name
 
-  """column name"""
+  """
+  column name
+  """
   room_id
 }
 
@@ -3032,16 +3872,24 @@ input thread_set_input {
 update columns of table "thread"
 """
 enum thread_update_column {
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   index
 
-  """column name"""
+  """
+  column name
+  """
   name
 
-  """column name"""
+  """
+  column name
+  """
   room_id
 }
 
@@ -3069,151 +3917,247 @@ type user {
   avatar_url: String
   created_at: timestamptz!
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   created_rooms(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): [room!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   created_rooms_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_bool_exp
   ): room_aggregate!
   email: String
   email_verified: timestamptz
   id: uuid!
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   invites(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): [room_invites!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   invites_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_invites_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_invites_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_invites_bool_exp
   ): room_invites_aggregate!
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   messages(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): [message!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   messages_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [message_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [message_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: message_bool_exp
   ): message_aggregate!
   name: String
 
-  """An array relationship"""
+  """
+  An array relationship
+  """
   rooms(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): [room_participants!]!
 
-  """An aggregated array relationship"""
+  """
+  An aggregated array relationship
+  """
   rooms_aggregate(
-    """distinct select on columns"""
+    """
+    distinct select on columns
+    """
     distinct_on: [room_participants_select_column!]
 
-    """limit the number of rows returned"""
+    """
+    limit the number of rows returned
+    """
     limit: Int
 
-    """skip the first n rows. Use only with order_by"""
+    """
+    skip the first n rows. Use only with order_by
+    """
     offset: Int
 
-    """sort the rows by one or more columns"""
+    """
+    sort the rows by one or more columns
+    """
     order_by: [room_participants_order_by!]
 
-    """filter the rows returned"""
+    """
+    filter the rows returned
+    """
     where: room_participants_bool_exp
   ): room_participants_aggregate!
 }
@@ -3275,10 +4219,14 @@ input user_bool_exp {
 unique or primary key constraints on table "user"
 """
 enum user_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   user_email_key
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint
+  """
   user_pkey
 }
 
@@ -3298,7 +4246,9 @@ input user_insert_input {
   rooms: room_participants_arr_rel_insert_input
 }
 
-"""aggregate max on columns"""
+"""
+aggregate max on columns
+"""
 type user_max_fields {
   avatar_url: String
   created_at: timestamptz
@@ -3320,7 +4270,9 @@ input user_max_order_by {
   name: order_by
 }
 
-"""aggregate min on columns"""
+"""
+aggregate min on columns
+"""
 type user_min_fields {
   avatar_url: String
   created_at: timestamptz
@@ -3346,10 +4298,14 @@ input user_min_order_by {
 response of any mutation on the table "user"
 """
 type user_mutation_response {
-  """number of affected rows by the mutation"""
+  """
+  number of affected rows by the mutation
+  """
   affected_rows: Int!
 
-  """data of the affected rows by the mutation"""
+  """
+  data of the affected rows by the mutation
+  """
   returning: [user!]!
 }
 
@@ -3397,22 +4353,34 @@ input user_pk_columns_input {
 select columns of table "user"
 """
 enum user_select_column {
-  """column name"""
+  """
+  column name
+  """
   avatar_url
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   email
 
-  """column name"""
+  """
+  column name
+  """
   email_verified
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   name
 }
 
@@ -3432,22 +4400,34 @@ input user_set_input {
 update columns of table "user"
 """
 enum user_update_column {
-  """column name"""
+  """
+  column name
+  """
   avatar_url
 
-  """column name"""
+  """
+  column name
+  """
   created_at
 
-  """column name"""
+  """
+  column name
+  """
   email
 
-  """column name"""
+  """
+  column name
+  """
   email_verified
 
-  """column name"""
+  """
+  column name
+  """
   id
 
-  """column name"""
+  """
+  column name
+  """
   name
 }
 

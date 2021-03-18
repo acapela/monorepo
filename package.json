@@ -43,13 +43,13 @@
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "frontend:gql-types": "tooling gql frontend --watch",
     "postinstall": "npm run db -- run generate",
-    "lint": "npm run frontend:lint && npm run backend:lint",
+    "lint": "eslint \"{frontend/src,frontend/pages,backend/src,ui,db,config,shared,tooling}/**/*.{js,ts,tsx}\" && prettier --check backend/src frontend/src frontend/pages ui db config shared tooling",
     "test": "npm run frontend:test && npm run backend:test",
-    "format": "prettier --write frontend/src frontend/pages backend/src",
+    "format": "prettier --write backend/src frontend/src frontend/pages ui db config shared tooling",
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.ts?(x)": [
       "prettier --write"
     ]
   },
