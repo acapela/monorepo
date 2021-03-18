@@ -26,8 +26,12 @@ export const Avatar: React.FC<AvatarProps> = ({ url, name, className }) => {
       </div>
     );
   }
-  const initials = getInitials(name);
-  return <span className={classNames(baseAvatarClasses, "bg-blue-400 font-semibold", className)}>{initials}</span>;
+
+  return (
+    <span className={classNames(baseAvatarClasses, "bg-blue-400 font-semibold", className)}>
+      {!!name && getInitials(name)}
+    </span>
+  );
 };
 
 export const AvatarList: React.FC<{ avatars: AvatarProps[] }> = ({ avatars }) => {

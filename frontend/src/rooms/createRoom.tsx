@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Formik, Form, Field as FormikField, ErrorMessage } from "formik";
 import { useRouter } from "next/router";
 
-import { Button, ButtonVariant } from "../design/Button";
-import { Field, FieldType } from "../design/Field";
+import { Button } from "@acapela/ui/button";
+import { Field } from "@acapela/ui/field";
 import { Dialog } from "../design/Dialog";
 import { useCreateRoomMutation, Room } from "../gql";
 
@@ -27,13 +27,11 @@ export const RoomCreationForm: React.FC<{ onCreate?: (room: { id: string }) => u
           <div className="mb-4">
             <label htmlFor="room-name">Title</label>
             <FormikField name="name">
-              {({ field }) => (
-                <Field id="room-name" type={FieldType.TEXT} {...field} placeholder="How do we get to mars?" />
-              )}
+              {({ field }) => <Field id="room-name" {...field} placeholder="How do we get to mars?" />}
             </FormikField>
             <ErrorMessage name="name" component="div" />
           </div>
-          <Button type={Button.Type.SUBMIT} disabled={loading || isSubmitting} variant={ButtonVariant.PRIMARY} block>
+          <Button disabled={loading || isSubmitting} wide>
             Create
           </Button>
         </Form>
@@ -59,7 +57,7 @@ export const RoomCreationButton: React.FC = () => {
         <h1 className="text-3xl mb-8">Create a new acapela</h1>
         <RoomCreationForm onCreate={handleRoomCreation} />
       </Dialog>
-      <Button variant={ButtonVariant.PRIMARY} block onClick={open} id="acapela-creation-button">
+      <Button wide onClick={open} id="acapela-creation-button">
         Create New Acapela
       </Button>
     </>

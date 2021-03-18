@@ -8,10 +8,21 @@ import { parseJWTWithoutValidation } from "../src/authentication/jwt";
 import "../styles/tailwind.css";
 import "@reach/dialog/styles.css";
 import { NextApiRequest } from "next";
+import { createGlobalStyle } from "styled-components";
 
 interface AddedProps {
   session: unknown;
 }
+
+const BuiltInStyles = createGlobalStyle`
+  html {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+  }
+`;
 
 export default function App({ Component, pageProps, session }: AppProps & AddedProps): JSX.Element {
   // If you don't want the layout component of your page to unmount between page changes,
@@ -21,6 +32,7 @@ export default function App({ Component, pageProps, session }: AppProps & AddedP
 
   return (
     <>
+      <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session as Session | null}>
         <ApolloProvider>{getLayout(<Component {...pageProps} />)}</ApolloProvider>

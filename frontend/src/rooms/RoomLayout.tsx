@@ -1,9 +1,9 @@
 import { Form, Formik, Field as FormikField, ErrorMessage } from "formik";
 import React, { ReactNode, useState } from "react";
 import { AvatarList } from "../design/Avatar";
-import { Button, ButtonVariant } from "../design/Button";
+import { Button } from "@acapela/ui/button";
 import { Dialog } from "../design/Dialog";
-import { Field, FieldType } from "../design/Field";
+import { Field } from "@acapela/ui/field";
 import { SidebarLayout } from "../design/Layout";
 import { NavLink } from "../design/NavLink";
 import { createNextIndex } from "./order";
@@ -65,7 +65,7 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
         <h1 className="text-3xl mb-8">Add agenda point</h1>
         <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreate={handleThreadCreation} />
       </Dialog>
-      <Button variant={ButtonVariant.SECONDARY} block onClick={open} id="thread-creation-button">
+      <Button wide onClick={open} id="thread-creation-button">
         Add agenda point
       </Button>
     </>
@@ -103,13 +103,11 @@ export const ThreadCreationForm: React.FC<{
           <div className="mb-4">
             <label htmlFor="thread-name">Name</label>
             <FormikField name="name">
-              {({ field }) => (
-                <Field id="thread-name" type={FieldType.TEXT} {...field} placeholder="How do we get to mars?" />
-              )}
+              {({ field }) => <Field id="thread-name" type="text" {...field} placeholder="How do we get to mars?" />}
             </FormikField>
             <ErrorMessage name="name" component="div" />
           </div>
-          <Button type={Button.Type.SUBMIT} disabled={loading || isSubmitting} variant={ButtonVariant.PRIMARY} block>
+          <Button disabled={loading || isSubmitting} wide>
             Create
           </Button>
         </Form>

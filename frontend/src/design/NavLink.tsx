@@ -1,23 +1,44 @@
 import { useRouter } from "next/router";
-import classNames from "classnames";
 import Link from "next/link";
+import styled, { css } from "styled-components";
+import { CalendarOutline } from "@acapela/ui/icons";
+import { borderRadius } from "@acapela/ui/baseStyles";
 
 export const NavLink: React.FC<{
   to?: string;
   children?: React.ReactNode;
-}> = ({ to, children }) => {
+  className?: string;
+}> = ({ to, children, className }) => {
   const router = useRouter();
   const isActive = router.asPath === to;
-  const className = classNames(
-    "block p-4 rounded-lg font-semibold transition duration-150 ease-in-out transform-gpu hover:-translate-y-0.5 mb-1 active:translate-y-0",
-    {
-      "bg-white shadow-lg hover:shadow-xl": isActive,
-      "hover:bg-white hover:bg-opacity-50 hover:shadow-sm": !isActive,
-    }
-  );
+
   return (
     <Link href={to}>
-      <a className={className}>{children}</a>
+      <UILink isActive={isActive} className={className}>
+        <UIIcon />
+        <UILabel>{children}</UILabel>
+      </UILink>
     </Link>
   );
 };
+
+const UILink = styled.a<{ isActive: boolean }>`
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  margin: 0 -1rem;
+  border-radius: ${borderRadius.medium};
+
+  ${(props) =>
+    props.isActive &&
+    css`
+      background-color: #efefef;
+    `}
+`;
+
+const UIIcon = styled(CalendarOutline)`
+  margin-right: 0.5rem;
+`;
+
+const UILabel = styled.span``;

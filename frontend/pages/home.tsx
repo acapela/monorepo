@@ -3,6 +3,7 @@ import React from "react";
 import { authenticated } from "../src/authentication/authenticated";
 import { MainLayout } from "../src/MainLayout";
 import { RoomList } from "../src/rooms/roomList";
+import { PageTitle } from "@acapela/ui/typo";
 
 const Page = authenticated(function HomePage() {
   return (
@@ -11,7 +12,7 @@ const Page = authenticated(function HomePage() {
         <title>Acapela</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="font-semibold text-4xl mb-8">Upcoming Acapelas</h1>
+      <PageTitle>Upcoming Acapelas</PageTitle>
       <RoomList />
     </>
   );

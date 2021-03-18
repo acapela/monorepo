@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
 import { ErrorMessage, Field as FormikField, Form, Formik } from "formik";
 import React, { useState } from "react";
-import { Button, ButtonVariant } from "../design/Button";
+import { Button } from "@acapela/ui/button";
 import { Dialog } from "../design/Dialog";
-import { Field, FieldType } from "../design/Field";
+import { Field } from "@acapela/ui/field";
 import { GetRoomInvitesDocument, useCreateInviteMutation, useGetRoomInvitesQuery } from "../gql";
 
 export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
@@ -18,13 +18,7 @@ export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({
         <InviteTable roomId={roomId} />
         <InviteCreationForm roomId={roomId} />
       </Dialog>
-      <Button
-        variant={ButtonVariant.SECONDARY}
-        block
-        onClick={open}
-        id="participant-management-button"
-        className={className}
-      >
+      <Button wide onClick={open} id="participant-management-button" className={className}>
         Invite
       </Button>
     </>
@@ -57,9 +51,11 @@ const InviteTable = ({ roomId }: { roomId: string }): JSX.Element => {
   if (loading) {
     return <>Loading...</>; // TODO: use loader
   }
-  if (!data.invites.length) {
+
+  if (!data?.invites.length) {
     return <>No invites yet. Invite someone below.</>;
   }
+
   return (
     <ul>
       {data.invites.map((invite) => (
@@ -82,7 +78,7 @@ gql`
 `;
 
 interface InviteCreation {
-  createInvite(invite: { email: string }): Promise<Invite>;
+  createInvite(invite: { email: string }): Promise<Invite | null>;
   loading: boolean;
   error?: Error;
 }
@@ -94,10 +90,17 @@ const useInviteCreation = (roomId: string): InviteCreation => {
   return {
     createInvite: async (args) => {
       const result = await createInvite({ variables: { ...args, roomId } });
+
+      const inviteData = result?.data?.invite;
+
+      if (!inviteData) {
+        return null;
+      }
+
       return {
-        id: result.data.invite.id,
-        email: result.data.invite.email,
-        used: !!result.data.invite.usedAt,
+        id: inviteData.id,
+        email: inviteData.email,
+        used: !!inviteData.usedAt,
       };
     },
     loading,
@@ -131,13 +134,11 @@ const InviteCreationForm = ({
           <div className="mb-4 mt-4">
             <label htmlFor="invite-email">Email</label>
             <FormikField name="email">
-              {({ field }) => (
-                <Field id="invite-email" type={FieldType.EMAIL} {...field} placeholder="friend@company.com" />
-              )}
+              {({ field }) => <Field id="invite-email" type="email" {...field} placeholder="friend@company.com" />}
             </FormikField>
             <ErrorMessage name="email" component="div" />
           </div>
-          <Button type={Button.Type.SUBMIT} disabled={loading || isSubmitting} variant={ButtonVariant.PRIMARY} block>
+          <Button disabled={loading || isSubmitting} wide>
             Invite
           </Button>
         </Form>
