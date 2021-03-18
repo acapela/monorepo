@@ -77,7 +77,7 @@ jobs:
       - run: npm ci
       - name: Migrate postgres using hasura migrations
         run: |
-          cd backend/hasura
+          cd infrastructure/hasura
           npm install hasura-cli -g
           hasura migrate status --skip-update-check --endpoint http://localhost:8080
           hasura migrate apply --skip-update-check --endpoint http://localhost:8080
