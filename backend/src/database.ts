@@ -1,9 +1,7 @@
 import knex from "knex";
 import logger from "@acapela/shared/logger";
 
-const socketPath = process.env.DATABASE_HOST_SOCKET_PATH;
-const connection = process.env.DATABASE_HOST_CONNECTION;
-const host = connection ? `${socketPath}/${connection}` : socketPath;
+const port = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432;
 
 const database = knex({
   client: "pg",
@@ -11,7 +9,8 @@ const database = knex({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    host,
+    host: process.env.DB_HOST,
+    port,
   },
 });
 

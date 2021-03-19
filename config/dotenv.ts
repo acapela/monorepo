@@ -12,9 +12,8 @@ declare global {
       GOOGLE_APPLICATION_CREDENTIALS: string;
       HASURA_GRAPHQL_URL: string;
       DB_HOST: string;
+      DB_PORT: string;
       DB_USER: string;
-      DATABASE_HOST_SOCKET_PATH: string;
-      DATABASE_HOST_CONNECTION: string;
       DB_PASSWORD: string;
       DB_NAME: string;
       PRISMA_DATABASE_URL: string;
