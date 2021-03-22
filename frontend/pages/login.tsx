@@ -7,7 +7,7 @@ import { DEFAULT_REDIRECT_URL } from "../src/config";
 import { Logo } from "../src/design/Logo";
 
 export default function LoginPage(): JSX.Element {
-  useRedirectWhenAuthenticated();
+  const { loading } = useRedirectWhenAuthenticated();
 
   return (
     <div>
@@ -19,7 +19,7 @@ export default function LoginPage(): JSX.Element {
         <div className="w-64 mx-auto mb-4">
           <Logo />
         </div>
-        <GoogleLoginButton />
+        {loading ? <GoogleLoginButton /> : <span>Loading...</span>}
       </div>
     </div>
   );
@@ -29,11 +29,14 @@ function useRedirectWhenAuthenticated() {
   const { query, replace } = useRouter();
   const { loading, user } = useCurrentUser();
   const redirectUrl = readRedirectUrl(query);
+
   useEffect(() => {
     if (!loading && user) {
       replace(redirectUrl);
     }
   }, [redirectUrl, loading, user]);
+
+  return { loading: loading && !user };
 }
 
 function readRedirectUrl(query: ParsedUrlQuery): string {
