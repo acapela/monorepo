@@ -2,13 +2,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useEffect } from "react";
-import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
+import { GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
 import { DEFAULT_REDIRECT_URL } from "../src/config";
 import { Logo } from "../src/design/Logo";
 
 export default function LoginPage(): JSX.Element {
-  const { loading, user } = useRedirectWhenAuthenticated();
-  const isAuthenticated = !loading && user;
+  const { loading } = useRedirectWhenAuthenticated();
 
   return (
     <div>
@@ -20,14 +19,7 @@ export default function LoginPage(): JSX.Element {
         <div className="w-64 mx-auto mb-4">
           <Logo />
         </div>
-        {!isAuthenticated && (
-          <>
-            <GoogleLoginButton />
-            &nbsp;
-            <EmailLoginButton />
-          </>
-        )}
-        {loading && <span>Loading...</span>}
+        {loading ? <GoogleLoginButton /> : <span>Loading...</span>}
       </div>
     </div>
   );
@@ -44,7 +36,7 @@ function useRedirectWhenAuthenticated() {
     }
   }, [redirectUrl, loading, user]);
 
-  return { loading, user };
+  return { loading: loading && !user };
 }
 
 function readRedirectUrl(query: ParsedUrlQuery): string {
