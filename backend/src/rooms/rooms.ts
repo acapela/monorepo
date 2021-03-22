@@ -60,7 +60,7 @@ interface DatabaseRoom {
   creator_id: string;
   name?: string;
   created_at: string;
-  deadline: Date;
+  deadline: string;
   notification_job_id?: string;
   summary?: string;
   finished_at?: string;
@@ -72,7 +72,7 @@ function convertDatabaseRoom(room: DatabaseRoom): Room {
     creatorId: room.creator_id,
     name: room.name,
     createdAt: new Date(room.created_at),
-    deadline: room.deadline,
+    deadline: new Date(room.deadline),
     notificationJobId: room.notification_job_id,
     summary: room.summary,
     finishedAt: room.finished_at ? new Date(room.finished_at) : undefined,
