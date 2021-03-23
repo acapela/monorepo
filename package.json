@@ -49,7 +49,8 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.ts?(x)": [
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --cache --fix",
       "prettier --write"
     ]
   },
