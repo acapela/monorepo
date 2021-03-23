@@ -121,7 +121,9 @@ jobs:
           project_id: meetnomoreapp
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
         if: steps.semrel.outputs.version != ''
-      - run: ./scripts/build-deploy-backend.sh ${{ steps.semrel.outputs.version }}
+      - run: gcloud auth configure-docker eu.gcr.io -q
+        if: steps.semrel.outputs.version != ''
+      - run: ./scripts/build-deploy.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
         env:
           GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
