@@ -1,27 +1,13 @@
 {
   "name": "@acapela/frontend",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "analyze": "ANALYZE=true next build",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "format": "prettier --write src pages",
-    "lint": "eslint \"{src,pages}/**/*.{js,ts}\"",
-    "checkformat": "prettier --check src pages"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run format"
-    ]
+    "test:watch": "jest --watch"
   },
   "peerDependencies": {
     "axios": "*",
@@ -62,7 +48,6 @@
     "babel-jest": "^26.6.3",
     "babel-plugin-graphql-tag": "^3.2.0",
     "identity-obj-proxy": "^3.0.0",
-    "lint-staged": "^10.5.4",
     "msw": "^0.26.2",
     "postcss": "^8.2.6",
     "postcss-focus-visible": "^5.0.0",
