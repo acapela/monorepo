@@ -1,26 +1,20 @@
 type Mutation {
-  accept_invite (
-    code: String!
-  ): InviteAcceptResponse
+  accept_invite(code: String!): InviteAcceptResponse
 }
-
 
 type Mutation {
-  upgrade_current_user : UpgradeUserResponse
+  upgrade_current_user: UpgradeUserResponse
 }
 
-
-
-
 input InviteAcceptCommand {
-  code : String!
+  code: String!
 }
 
 type InviteAcceptResponse {
-  room_id : ID!
-  invite_id : ID!
+  room_id: ID!
+  invite_id: ID!
 }
 
 type UpgradeUserResponse {
-  user_id : ID!
+  user_id: ID!
 }

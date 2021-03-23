@@ -145,4 +145,4 @@ BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite
 
 This repository uses [commitizen](https://github.com/commitizen/cz-cli) to automate commit message composition.
 
-All you need is to use `npx cz` command instead of `git commit` each time you are ready to commit anything. 
+All you need is to use `npx cz` command instead of `git commit` each time you are ready to commit anything.
