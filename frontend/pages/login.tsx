@@ -7,7 +7,8 @@ import { DEFAULT_REDIRECT_URL } from "../src/config";
 import { Logo } from "../src/design/Logo";
 
 export default function LoginPage(): JSX.Element {
-  const { loading } = useRedirectWhenAuthenticated();
+  const { loading, user } = useRedirectWhenAuthenticated();
+  const isAuthenticated = !loading && user;
 
   return (
     <div>
@@ -19,7 +20,8 @@ export default function LoginPage(): JSX.Element {
         <div className="w-64 mx-auto mb-4">
           <Logo />
         </div>
-        {loading ? <GoogleLoginButton /> : <span>Loading...</span>}
+        {!isAuthenticated && <GoogleLoginButton />}
+        {loading && <span>Loading...</span>}
       </div>
     </div>
   );
@@ -36,7 +38,7 @@ function useRedirectWhenAuthenticated() {
     }
   }, [redirectUrl, loading, user]);
 
-  return { loading: loading && !user };
+  return { loading, user };
 }
 
 function readRedirectUrl(query: ParsedUrlQuery): string {
