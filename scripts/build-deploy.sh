@@ -9,8 +9,7 @@ fi
 
 version=$1
 
-gcloud auth configure-docker eu.gcr.io
-
+echo "build and deploy: backend"
 cd backend
 ./scripts/build-and-push.sh $version
 
@@ -18,3 +17,8 @@ for stage in staging production; do
   echo "deploying to $version to $stage"
   ./scripts/trigger-deploy.sh $stage $version
 done
+
+cd -
+
+echo "build and deploy: frontend"
+cd frontend
