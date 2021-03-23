@@ -27,8 +27,8 @@ export default function LandingPage(): JSX.Element {
             Logout
           </div>
         )}
-
         <GoogleLoginButton />
+        &nbsp;
         <EmailLoginButton />
       </div>
     </div>
