@@ -1,5 +1,7 @@
+import React from "react";
 import styled from "styled-components";
 import { Logo } from "./Logo";
+import Link from "next/link";
 
 export const Sidebar: React.FC<{
   children?: React.ReactNode;
@@ -7,7 +9,11 @@ export const Sidebar: React.FC<{
 }> = ({ children, action }) => {
   return (
     <UISidebar>
-      <SidebarLogo />
+      <Link href="/home" passHref>
+        <UISidebarLogoWrapper>
+          <Logo />
+        </UISidebarLogoWrapper>
+      </Link>
 
       {children}
       <span className="mt-auto">{action}</span>
@@ -22,7 +28,8 @@ const UISidebar = styled.div`
   min-width: 360px;
 `;
 
-const SidebarLogo = styled(Logo)`
+const UISidebarLogoWrapper = styled.a`
+  display: block;
   width: 120px;
   margin-bottom: 4rem;
 `;

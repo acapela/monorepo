@@ -1,6 +1,5 @@
 import styled, { css } from "styled-components";
 import { borderRadius, fontSize } from "./baseStyles";
-import { boolPropStyles } from "./styleHelpers";
 
 interface Props {
   isLoading?: boolean;

@@ -1,4 +1,3 @@
-import { css } from "styled-components";
 import { setColorOpacity } from "@acapela/shared/colors";
 
 const BLACK = "#000";
