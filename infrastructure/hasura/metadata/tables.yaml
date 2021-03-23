@@ -2,305 +2,305 @@
     schema: public
     name: account
   object_relationships:
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
 - table:
     schema: public
     name: message
   object_relationships:
-  - name: message_type
-    using:
-      foreign_key_constraint_on: type
-  - name: thread
-    using:
-      foreign_key_constraint_on: thread_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+    - name: message_type
+      using:
+        foreign_key_constraint_on: type
+    - name: thread
+      using:
+        foreign_key_constraint_on: thread_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
   insert_permissions:
-  - role: user
-    permission:
-      check:
-        thread:
-          room:
-            finished_at:
-              _is_null: true
-      set:
-        user_id: x-hasura-User-Id
-      columns:
-      - media_url
-      - text
-      - thread_id
-      - transcription
-      - type
-      backend_only: false
+    - role: user
+      permission:
+        check:
+          thread:
+            room:
+              finished_at:
+                _is_null: true
+        set:
+          user_id: x-hasura-User-Id
+        columns:
+          - media_url
+          - text
+          - thread_id
+          - transcription
+          - type
+        backend_only: false
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - created_at
-      - id
-      - media_url
-      - text
-      - thread_id
-      - transcription
-      - type
-      - user_id
-      filter: {}
-      allow_aggregations: true
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - id
+          - media_url
+          - text
+          - thread_id
+          - transcription
+          - type
+          - user_id
+        filter: {}
+        allow_aggregations: true
 - table:
     schema: public
     name: message_type
   is_enum: true
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - value
-      filter: {}
+    - role: user
+      permission:
+        columns:
+          - value
+        filter: {}
 - table:
     schema: public
     name: room
   object_relationships:
-  - name: creator
-    using:
-      foreign_key_constraint_on: creator_id
+    - name: creator
+      using:
+        foreign_key_constraint_on: creator_id
   array_relationships:
-  - name: participants
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: room_participants
-        column_mapping:
-          id: room_id
-  - name: room_invites
-    using:
-      foreign_key_constraint_on:
-        column: room_id
-        table:
-          schema: public
-          name: room_invites
-  - name: threads
-    using:
-      foreign_key_constraint_on:
-        column: room_id
-        table:
-          schema: public
-          name: thread
+    - name: participants
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: room_participants
+          column_mapping:
+            id: room_id
+    - name: room_invites
+      using:
+        foreign_key_constraint_on:
+          column: room_id
+          table:
+            schema: public
+            name: room_invites
+    - name: threads
+      using:
+        foreign_key_constraint_on:
+          column: room_id
+          table:
+            schema: public
+            name: thread
   insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      set:
-        creator_id: x-hasura-User-Id
-      columns:
-      - deadline
-      - name
-      - summary
-      backend_only: false
+    - role: user
+      permission:
+        check: {}
+        set:
+          creator_id: x-hasura-User-Id
+        columns:
+          - deadline
+          - name
+          - summary
+        backend_only: false
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - created_at
-      - creator_id
-      - deadline
-      - finished_at
-      - id
-      - name
-      - summary
-      filter: {}
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - creator_id
+          - deadline
+          - finished_at
+          - id
+          - name
+          - summary
+        filter: {}
   update_permissions:
-  - role: user
-    permission:
-      columns:
-      - deadline
-      - finished_at
-      - name
-      - summary
-      filter:
-        creator_id:
-          _eq: X-Hasura-User-Id
-      check: null
+    - role: user
+      permission:
+        columns:
+          - deadline
+          - finished_at
+          - name
+          - summary
+        filter:
+          creator_id:
+            _eq: X-Hasura-User-Id
+        check: null
   event_triggers:
-  - name: room_created
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-    retry_conf:
-      num_retries: 5
-      interval_sec: 10
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-    - name: Authorization
-      value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    - name: room_created
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+      retry_conf:
+        num_retries: 5
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
     name: room_invites
   object_relationships:
-  - name: inviter
-    using:
-      foreign_key_constraint_on: inviter_id
-  - name: room
-    using:
-      foreign_key_constraint_on: room_id
+    - name: inviter
+      using:
+        foreign_key_constraint_on: inviter_id
+    - name: room
+      using:
+        foreign_key_constraint_on: room_id
   insert_permissions:
-  - role: user
-    permission:
-      check:
-        room:
-          creator_id:
-            _eq: X-Hasura-User-Id
-      set:
-        inviter_id: x-hasura-User-Id
-      columns:
-      - email
-      - room_id
-      backend_only: false
+    - role: user
+      permission:
+        check:
+          room:
+            creator_id:
+              _eq: X-Hasura-User-Id
+        set:
+          inviter_id: x-hasura-User-Id
+        columns:
+          - email
+          - room_id
+        backend_only: false
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - used_at
-      - created_at
-      - email
-      - id
-      - inviter_id
-      - room_id
-      filter:
-        room:
-          creator_id:
-            _eq: X-Hasura-User-Id
+    - role: user
+      permission:
+        columns:
+          - used_at
+          - created_at
+          - email
+          - id
+          - inviter_id
+          - room_id
+        filter:
+          room:
+            creator_id:
+              _eq: X-Hasura-User-Id
   event_triggers:
-  - name: invite_created
-    definition:
-      enable_manual: false
-      insert:
-        columns: '*'
-    retry_conf:
-      num_retries: 5
-      interval_sec: 100
-      timeout_sec: 600
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-    headers:
-    - name: Authorization
-      value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    - name: invite_created
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+      retry_conf:
+        num_retries: 5
+        interval_sec: 100
+        timeout_sec: 600
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
     name: room_participants
   object_relationships:
-  - name: room
-    using:
-      foreign_key_constraint_on: room_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+    - name: room
+      using:
+        foreign_key_constraint_on: room_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - room_id
-      - user_id
-      filter: {}
+    - role: user
+      permission:
+        columns:
+          - room_id
+          - user_id
+        filter: {}
 - table:
     schema: public
     name: thread
   object_relationships:
-  - name: room
-    using:
-      foreign_key_constraint_on: room_id
+    - name: room
+      using:
+        foreign_key_constraint_on: room_id
   array_relationships:
-  - name: messages
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: message
-        column_mapping:
-          id: thread_id
+    - name: messages
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: message
+          column_mapping:
+            id: thread_id
   insert_permissions:
-  - role: user
-    permission:
-      check:
-        room:
-          _and:
-          - creator_id:
-              _eq: X-Hasura-User-Id
-          - finished_at:
-              _is_null: true
-      columns:
-      - index
-      - name
-      - room_id
-      backend_only: false
+    - role: user
+      permission:
+        check:
+          room:
+            _and:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - finished_at:
+                  _is_null: true
+        columns:
+          - index
+          - name
+          - room_id
+        backend_only: false
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - index
-      - name
-      - room_id
-      filter: {}
-      allow_aggregations: true
+    - role: user
+      permission:
+        columns:
+          - id
+          - index
+          - name
+          - room_id
+        filter: {}
+        allow_aggregations: true
   update_permissions:
-  - role: user
-    permission:
-      columns:
-      - index
-      - name
-      filter:
-        room:
-          _and:
-          - creator_id:
-              _eq: X-Hasura-User-Id
-          - finished_at:
-              _is_null: true
-      check: null
+    - role: user
+      permission:
+        columns:
+          - index
+          - name
+        filter:
+          room:
+            _and:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - finished_at:
+                  _is_null: true
+        check: null
 - table:
     schema: public
     name: user
   array_relationships:
-  - name: created_rooms
-    using:
-      foreign_key_constraint_on:
-        column: creator_id
-        table:
-          schema: public
-          name: room
-  - name: invites
-    using:
-      foreign_key_constraint_on:
-        column: inviter_id
-        table:
-          schema: public
-          name: room_invites
-  - name: messages
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: message
-        column_mapping:
-          id: user_id
-  - name: rooms
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: room_participants
-        column_mapping:
-          id: user_id
+    - name: created_rooms
+      using:
+        foreign_key_constraint_on:
+          column: creator_id
+          table:
+            schema: public
+            name: room
+    - name: invites
+      using:
+        foreign_key_constraint_on:
+          column: inviter_id
+          table:
+            schema: public
+            name: room_invites
+    - name: messages
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: message
+          column_mapping:
+            id: user_id
+    - name: rooms
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: room_participants
+          column_mapping:
+            id: user_id
   select_permissions:
-  - role: user
-    permission:
-      columns:
-      - avatar_url
-      - id
-      - name
-      filter: {}
-      limit: 1
+    - role: user
+      permission:
+        columns:
+          - avatar_url
+          - id
+          - name
+        filter: {}
+        limit: 1

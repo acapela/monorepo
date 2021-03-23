@@ -16,13 +16,14 @@ const apiRewrites = (nextConfig = {}) => {
     return "https://backend.acape.la";
   }
 
+  //TODO: get the backend host from env every time and assert if this variable is set
   function getBackendHost() {
     if (typeof process.env.BACKEND_HOST === "string") {
       return process.env.BACKEND_HOST;
     } else if (process.env.NODE_ENV !== "production") {
       return "http://localhost:1337";
     }
-    return "https://backend-dot-meetnomoreapp.appspot.com";
+    return "https://api-staging.acape.la";
   }
 
   return Object.assign({}, nextConfig, {
