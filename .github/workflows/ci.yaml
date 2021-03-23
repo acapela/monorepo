@@ -38,6 +38,7 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npm run frontend:test
+      - run: npm run frontend:build
 
   backend:
     name: Backend

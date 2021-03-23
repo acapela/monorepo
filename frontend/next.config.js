@@ -132,22 +132,33 @@ const envVariables = (nextConfig = {}) => {
   });
 };
 
-module.exports = withPlugins([
-  //
+module.exports = withPlugins(
   [
-    bundleAnalyzer,
-    {
-      enabled: process.env.ANALYZE === "true",
-    },
+    //
+    [
+      bundleAnalyzer,
+      {
+        enabled: process.env.ANALYZE === "true",
+      },
+    ],
+    //
+    [
+      envVariables,
+      {
+        envFilePath: path.resolve(__dirname, "..", ".env"),
+      },
+    ],
+    //
+    createTsPackagesPlugin(),
+    apiRewrites,
   ],
-  //
-  [
-    envVariables,
-    {
-      envFilePath: path.resolve(__dirname, "..", ".env"),
+  {
+    typescript: {
+      // !! WARN !!
+      // Dangerously allow production builds to successfully complete even if
+      // your project has type errors.
+      // !! WARN !!
+      ignoreBuildErrors: true,
     },
-  ],
-  //
-  createTsPackagesPlugin(),
-  apiRewrites,
-]);
+  }
+);
