@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "@acapela/frontend/authentication/authentication";
+import { GoogleLoginButton, EmailLoginButton, useCurrentUser } from "@acapela/frontend/authentication/authentication";
 import { Logo } from "@acapela/frontend/design/Logo";
 import { signOut } from "next-auth/client";
 
@@ -17,23 +17,19 @@ export default function LandingPage(): JSX.Element {
         <div className="w-64 mx-auto mb-4">
           <Logo />
         </div>
-        <div>{user && <Link href="/home">Return to the app</Link>}</div>
-        {user ? (
-          <a
-            href="#"
+        <div>{user && <Link href="/home">Return to app</Link>}</div>
+        {user && (
+          <div
             onClick={() => {
               signOut();
             }}
           >
             Logout
-          </a>
-        ) : (
-          <>
-            <GoogleLoginButton />
-            &nbsp;
-            <EmailLoginButton />
-          </>
+          </div>
         )}
+        <GoogleLoginButton />
+        &nbsp;
+        <EmailLoginButton />
       </div>
     </div>
   );

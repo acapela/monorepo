@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useEffect } from "react";
-import { GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
+import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
 import { DEFAULT_REDIRECT_URL } from "../src/config";
 import { Logo } from "../src/design/Logo";
 
@@ -20,7 +20,13 @@ export default function LoginPage(): JSX.Element {
         <div className="w-64 mx-auto mb-4">
           <Logo />
         </div>
-        {!isAuthenticated && <GoogleLoginButton />}
+        {!isAuthenticated && (
+          <>
+            <GoogleLoginButton />
+            &nbsp;
+            <EmailLoginButton />
+          </>
+        )}
         {loading && <span>Loading...</span>}
       </div>
     </div>
