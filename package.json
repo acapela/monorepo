@@ -22,6 +22,7 @@
     "frontend:test": "npm run frontend -- run test",
     "frontend:test:watch": "npm run frontend -- run test:watch",
     "frontend:format": "npm run frontend -- run format",
+    "frontend:build": "npm run frontend -- run build",
     "backend:dev": "npm run backend -- run dev",
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
