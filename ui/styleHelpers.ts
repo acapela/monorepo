@@ -1,5 +1,4 @@
-import styled, { css, FlattenSimpleInterpolation } from "styled-components";
-import { borderRadius, shadow } from "./baseStyles";
+import { css, FlattenSimpleInterpolation } from "styled-components";
 
 export function propValueStyles<P, K extends keyof P>(
   name: K,

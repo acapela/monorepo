@@ -1,3 +1,4 @@
+import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import styled, { css } from "styled-components";
@@ -5,7 +6,7 @@ import { CalendarOutline } from "@acapela/ui/icons";
 import { borderRadius } from "@acapela/ui/baseStyles";
 
 export const NavLink: React.FC<{
-  to?: string;
+  to: string;
   children?: React.ReactNode;
   className?: string;
 }> = ({ to, children, className }) => {
@@ -13,7 +14,7 @@ export const NavLink: React.FC<{
   const isActive = router.asPath === to;
 
   return (
-    <Link href={to}>
+    <Link href={to} passHref>
       <UILink isActive={isActive} className={className}>
         <UIIcon />
         <UILabel>{children}</UILabel>
