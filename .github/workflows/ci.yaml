@@ -105,6 +105,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
+      - name: Setup dotenv
+        run: cp .env.production .env
+      - run: npm run frontend:build
       - run: npm run backend:build
       - name: semantic-release
         uses: go-semantic-release/action@v1
