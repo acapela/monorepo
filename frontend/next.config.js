@@ -16,6 +16,7 @@ const apiRewrites = (nextConfig = {}) => {
     return "https://backend.acape.la";
   }
 
+  //TODO: get the backend host from env every time and assert if this variable is set
   function getBackendHost() {
     if (typeof process.env.BACKEND_HOST === "string") {
       return process.env.BACKEND_HOST;
