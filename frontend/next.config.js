@@ -22,7 +22,7 @@ const apiRewrites = (nextConfig = {}) => {
     } else if (process.env.NODE_ENV !== "production") {
       return "http://localhost:1337";
     }
-    return "https://backend-dot-meetnomoreapp.appspot.com";
+    return "https://api-staging.acape.la";
   }
 
   return Object.assign({}, nextConfig, {
