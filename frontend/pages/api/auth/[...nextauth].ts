@@ -47,6 +47,7 @@ interface Session {}
 type AuthAdapter = AdapterInstance<User, Profile, Session, VerificationRequest>;
 
 const authAdapterProvider: Adapter = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAdapter(appOptions): Promise<AuthAdapter> {
     await initializeSecrets();
 
@@ -155,7 +156,7 @@ const authAdapterProvider: Adapter = {
         const expires = new Date(Date.now() + ONE_DAY);
         const verificationRequest = await db.verification_requests.create({ data: { identifier, token, expires } });
 
-        await sendVerificationRequest({ identifier, url, token, baseUrl: appOptions.baseUrl, provider });
+        await sendVerificationRequest({ identifier, url });
         return verificationRequest;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -175,12 +176,12 @@ const authAdapterProvider: Adapter = {
 interface VerificationRequestParams {
   identifier: string;
   url: string;
-  baseUrl: string;
-  token: string;
+  // baseUrl: string;
+  // token: string;
   // provider: ProviderEmailOptions;
 }
 
-async function sendVerificationRequest({ identifier: email, baseUrl, token, url }: VerificationRequestParams) {
+async function sendVerificationRequest({ identifier: email, url }: VerificationRequestParams) {
   await sendEmail({
     from: "acapela@meetnomore.com",
     subject: "Login to acapela",
