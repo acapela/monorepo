@@ -1,5 +1,4 @@
 import "./dotenv";
-import path from "path";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
 import { warn } from "@acapela/shared/logger";

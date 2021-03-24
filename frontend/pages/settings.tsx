@@ -18,7 +18,8 @@ const Page = authenticated(function ActivePage() {
   );
 });
 
-(Page as any).getLayout = (page) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(Page as any).getLayout = (page: any) => {
   return <MainLayout>{page}</MainLayout>;
 };
 

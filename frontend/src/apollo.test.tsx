@@ -17,7 +17,7 @@ jest.mock(
       useSession() {
         return [{}, false];
       },
-      signIn(method: string) {
+      signIn() {
         //
       },
     };
@@ -64,7 +64,7 @@ gql`
 `;
 
 function TestComponent() {
-  const { user, loading } = useCurrentUser();
+  const { user } = useCurrentUser();
   if (user) {
     return <TestQueryComponent />;
   }

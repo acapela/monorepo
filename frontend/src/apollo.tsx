@@ -1,8 +1,7 @@
-import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, split as splitLinks } from "@apollo/client";
+import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
-import { ApolloLink } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
