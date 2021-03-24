@@ -1,5 +1,6 @@
 {
   "name": "@acapela/tooling",
+  "private": "true",
   "version": "0.1.0",
   "main": "cli-tooling.ts",
   "devDependencies": {

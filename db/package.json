@@ -1,5 +1,6 @@
 {
   "name": "@acapela/db",
+  "private": "true",
   "version": "0.1.0",
   "scripts": {
     "introspect": "dotenv -e ../.env prisma introspect",
