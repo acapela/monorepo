@@ -1,4 +1,4 @@
-import Knex from "knex";
+import { Knex } from "knex";
 import database from "../database";
 
 export async function findInviteByCode(code: string): Promise<Invite | null> {
