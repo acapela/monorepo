@@ -4,8 +4,8 @@ import { assert } from "@acapela/shared/assert";
 import { sendEmail } from "@acapela/shared/email";
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { InitOptions } from "next-auth";
-import { Adapter, AdapterInstance } from "next-auth/adapters";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
 import Providers from "next-auth/providers";
 
 /**
@@ -65,6 +65,8 @@ const authAdapterProvider: Adapter = {
 
         // There is a bug in next-auth that might result in email verification date being kept in camel-case field.
         // This field is not compatible with our db so let's re-map it.
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const fixedEmailVerified: Date | null = email_verified ?? userData["emailVerified"];
 
         const user = await db.user.update({
@@ -156,7 +158,7 @@ const authAdapterProvider: Adapter = {
         const expires = new Date(Date.now() + ONE_DAY);
         const verificationRequest = await db.verification_requests.create({ data: { identifier, token, expires } });
 
-        await sendVerificationRequest({ identifier, url });
+        await sendVerificationRequest({ identifier, url } as SendVerificationRequestParams);
         return verificationRequest;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -192,7 +194,7 @@ async function sendVerificationRequest({ identifier: email, url }: VerificationR
 
 async function getAuthInitOptions() {
   await initializeSecrets();
-  const authInitOptions: InitOptions = {
+  const authInitOptions: NextAuthOptions = {
     secret: process.env.AUTH_SECRET,
     jwt: {
       secret: process.env.AUTH_JWT_TOKEN_SECRET,
@@ -222,6 +224,8 @@ async function getAuthInitOptions() {
     useSecureCookies: false,
     debug: process.env.NODE_ENV === "development",
     callbacks: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       jwt: async (token, user: User, account: Account, profile: Profile) => {
         if (!user) {
           return token;
@@ -242,6 +246,8 @@ async function getAuthInitOptions() {
       },
       // As we're not using sessions (but JWT), let's make session simply return token data.
       // Note: Next-auth will return token data only if token is validated and valid.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       session: async (session, tokenData) => {
         return tokenData;
       },

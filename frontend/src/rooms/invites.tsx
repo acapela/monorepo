@@ -79,6 +79,7 @@ gql`
 
 interface InviteCreation {
   createInvite(invite: { email: string }): Promise<Invite | null>;
+
   loading: boolean;
   error?: Error;
 }
@@ -123,7 +124,7 @@ const InviteCreationForm = ({
       // TODO: validate
       onSubmit={async ({ email }, { resetForm }) => {
         const invite = await createInvite({ email });
-        if (onCreate) {
+        if (invite && onCreate) {
           onCreate(invite);
         }
         resetForm();

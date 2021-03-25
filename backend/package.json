@@ -10,7 +10,6 @@
     "start": "npm run hasura:migrate && berglas exec -- node dist",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "format": "prettier --write src",
-    "lint": "eslint \"src/**/*.{js,ts}\" && prettier --check src",
     "gcp-build": "NODE_ENV=production npm run build",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
@@ -25,38 +24,38 @@
     ]
   },
   "peerDependencies": {
-    "express": "*",
     "axios": "*",
+    "express": "*",
     "graphql": "*",
-    "graphql-request": "*",
-    "knex": "*",
-    "lodash": "*",
-    "pg": "*",
-    "uuid": "*",
     "typescript": "*"
   },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.15.2",
-    "@typescript-eslint/parser": "^4.15.2",
-    "eslint": "^7.20.0",
-    "eslint-config-prettier": "^8.0.0",
-    "lint-staged": "^10.5.4",
-    "pino-pretty": "^4.5.0",
-    "supertest": "^6.1.3",
-    "@types/jest": "*",
-    "tsc-watch": "*",
-    "ts-node-dev": "*",
-    "@vercel/ncc": "*"
-  },
   "dependencies": {
-    "@godaddy/terminus": "^4.6.0",
-    "@google-cloud/secret-manager": "^3.4.0",
-    "deepmerge": "^4.2.2",
+    "@acapela/config": "0.1.0",
+    "@godaddy/terminus": "^4.7.1",
+    "@google-cloud/secret-manager": "^3.5.0",
     "express-async-errors": "^3.1.1",
-    "hasura-cli": "*",
+    "hasura-cli": "^1.4.0-alpha.2",
     "helmet": "^4.4.1",
-    "js-yaml": "^4.0.0",
-    "pino": "^6.11.1",
-    "@acapela/config": "0.1.0"
+    "knex": "^0.95.3",
+    "pg": "^8.5.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "*",
+    "@types/jest": "*",
+    "@types/supertest": "^2.0.10",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.19.0",
+    "@typescript-eslint/parser": "^4.19.0",
+    "@vercel/ncc": "^0.27.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "jest": "*",
+    "lint-staged": "^10.5.4",
+    "pino-pretty": "^4.7.1",
+    "supertest": "^6.1.3",
+    "ts-jest": "^26.5.4",
+    "ts-node-dev": "^1.1.6",
+    "tsc-watch": "^4.2.9"
   }
 }
