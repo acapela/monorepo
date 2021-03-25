@@ -5,19 +5,20 @@
   "main": "cli-tooling.ts",
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.1",
-    "@graphql-codegen/typescript": "^1.21.0",
-    "@graphql-codegen/typescript-operations": "^1.17.14",
-    "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.2",
-    "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "@graphql-codegen/fragment-matcher": "^2.0.1",
+    "@graphql-codegen/typescript": "^1.21.0",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.2",
+    "@graphql-codegen/typescript-operations": "^1.17.14",
+    "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "dotenv": "*",
     "ts-node": "*"
   },
   "dependencies": {
     "@acapela/config": "0.1.0",
-    "axios": "*"
+    "yargs": "^16.2.0"
   },
   "peerDependencies": {
+    "axios": "*",
     "graphql": "*"
   },
   "scripts": {

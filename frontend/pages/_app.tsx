@@ -1,14 +1,16 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
-import { Provider as SessionProvider, Session } from "next-auth/client";
+import { NextApiRequest } from "next";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
+import { WithAdditionalParams } from "next-auth/_utils";
+import { Session } from "next-auth";
+import { Provider as SessionProvider } from "next-auth/client";
+import { createGlobalStyle } from "styled-components";
 import { Provider as ApolloProvider } from "../src/apollo";
 import { parseJWTWithoutValidation } from "../src/authentication/jwt";
 import "../styles/tailwind.css";
 import "@reach/dialog/styles.css";
-import { NextApiRequest } from "next";
-import { createGlobalStyle } from "styled-components";
 
 interface AddedProps {
   session: unknown;
@@ -34,7 +36,7 @@ export default function App({ Component, pageProps, session }: AppProps & AddedP
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <SessionProvider session={session as Session | null}>
+      <SessionProvider session={session as WithAdditionalParams<Session> | null}>
         <ApolloProvider>{getLayout(<Component {...pageProps} />)}</ApolloProvider>
       </SessionProvider>
     </>
