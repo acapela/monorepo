@@ -13,7 +13,7 @@
     "server:start": "node ./next-server.js",
     "build": "npm run next:build && npm run server:build",
     "gcp-build": "NODE_ENV=production npm run build",
-    "start": "node dist",
+    "start": "berglas exec -- node dist",
     "test": "jest",
     "test:watch": "jest --watch"
   },

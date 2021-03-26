@@ -21,7 +21,7 @@
     "frontend:dev": "npm run frontend -- run dev",
     "frontend:test": "npm run frontend -- run test",
     "frontend:test:watch": "npm run frontend -- run test:watch",
-    "frontend:build": "npm run frontend -- run build",
+    "frontend:build": "npm run frontend -- run gcp-build",
     "backend:dev": "npm run backend -- run dev",
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
