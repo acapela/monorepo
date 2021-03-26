@@ -1,8 +1,15 @@
 import Head from "next/head";
 import React from "react";
+import styled from "styled-components";
 import { authenticated } from "../src/authentication/authenticated";
 import { LogoutButton } from "../src/authentication/logout";
 import { MainLayout } from "../src/MainLayout";
+
+const UIContentWrapper = styled.div`
+  display: flex;
+  padding: 4rem;
+  justify-content: center;
+`;
 
 const Page = authenticated(function ActivePage() {
   return (
@@ -11,9 +18,9 @@ const Page = authenticated(function ActivePage() {
         <title>Acapela</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="md:flex p-16 justify-center">
+      <UIContentWrapper>
         <LogoutButton />
-      </div>
+      </UIContentWrapper>
     </>
   );
 });

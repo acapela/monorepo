@@ -1,10 +1,18 @@
+import React, { useState } from "react";
+import styled from "styled-components";
 import { gql } from "@apollo/client";
 import { ErrorMessage, Field as FormikField, Form, Formik } from "formik";
-import React, { useState } from "react";
 import { Button } from "@acapela/ui/button";
-import { Dialog } from "../design/Dialog";
 import { Field } from "@acapela/ui/field";
+import { Dialog } from "../design/Dialog";
 import { GetRoomInvitesDocument, useCreateInviteMutation, useGetRoomInvitesQuery } from "../gql";
+
+// TODO: Repeating Dialog title
+const UIInvitationsDialogTitle = styled.h1`
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-bottom: 2rem;
+`;
 
 export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -14,7 +22,7 @@ export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({
   return (
     <>
       <Dialog open={dialogOpen} onClose={close} aria-labelledby="participant-management-button">
-        <h1 className="text-3xl mb-8">Manage invites</h1>
+        <UIInvitationsDialogTitle>Manage invites</UIInvitationsDialogTitle>
         <InviteTable roomId={roomId} />
         <InviteCreationForm roomId={roomId} />
       </Dialog>
@@ -109,6 +117,11 @@ const useInviteCreation = (roomId: string): InviteCreation => {
   };
 };
 
+const UIEmailFieldWrapper = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`;
+
 const InviteCreationForm = ({
   roomId,
   onCreate,
@@ -132,14 +145,14 @@ const InviteCreationForm = ({
     >
       {({ isSubmitting }) => (
         <Form>
-          <div className="mb-4 mt-4">
+          <UIEmailFieldWrapper>
             <label htmlFor="invite-email">Email</label>
             <FormikField name="email">
               {({ field }) => <Field id="invite-email" type="email" {...field} placeholder="friend@company.com" />}
             </FormikField>
             <ErrorMessage name="email" component="div" />
-          </div>
-          <Button disabled={loading || isSubmitting} wide>
+          </UIEmailFieldWrapper>
+          <Button type="submit" disabled={loading || isSubmitting} wide>
             Invite
           </Button>
         </Form>

@@ -7,8 +7,6 @@
     "next:build": "next build",
     "next:start": "next start",
     "next:build:analyze": "ANALYZE=true next build",
-    "next:build": "next build",
-    "next:start": "next start",
     "server:build": "rimraf dist && ncc build ./next-server.js -e next -o dist",
     "server:start": "node ./next-server.js",
     "build": "npm run next:build && npm run server:build",
@@ -19,10 +17,11 @@
   },
   "peerDependencies": {
     "axios": "*",
+    "express": "*",
     "graphql": "*",
     "react": "*",
     "styled-components": "*",
-    "express": "*"
+    "tslib": "*"
   },
   "dependencies": {
     "@acapela/config": "0.1.0",
@@ -51,6 +50,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@types/jsonwebtoken": "^8.5.1",
+    "@types/classnames": "^2.2.11",
     "@types/next-auth": "^3.7.2",
     "@types/styled-components": "*",
     "autoprefixer": "^10.2.5",
@@ -62,7 +62,6 @@
     "postcss": "^8.2.6",
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
-    "tslib": "*",
     "typescript": "*",
     "whatwg-fetch": "^3.6.2",
     "@vercel/ncc": "*"
