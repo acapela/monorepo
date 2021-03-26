@@ -9,9 +9,11 @@ By default, in development, if you run [the backend server locally as described 
 
 Use `npm run dev` to start the development frontend instance.
 
-Use `npm run analyze` to run a bundle analysis environment to investigate your bundle size.
+Use `npm run next:build:analyze` to run a bundle analysis environment to investigate your bundle size.
 
 Use `npm run test:watch` to start an interactive test environment.
+
+Use `npm run server:start` to start the custom next.js server.
 
 ## Deployment
 
