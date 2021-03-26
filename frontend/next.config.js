@@ -6,44 +6,6 @@ const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
 
-const apiRewrites = (nextConfig = {}) => {
-  function getHasuraHost() {
-    if (typeof process.env.HASURA_HOST === "string") {
-      return process.env.HASURA_HOST;
-    } else if (process.env.NODE_ENV !== "production") {
-      return "http://localhost:8080";
-    }
-    return "https://backend.acape.la";
-  }
-
-  //TODO: get the backend host from env every time and assert if this variable is set
-  function getBackendHost() {
-    if (typeof process.env.BACKEND_HOST === "string") {
-      return process.env.BACKEND_HOST;
-    } else if (process.env.NODE_ENV !== "production") {
-      return "http://localhost:1337";
-    }
-    return "https://api-staging.acape.la";
-  }
-
-  return Object.assign({}, nextConfig, {
-    async rewrites() {
-      const backendHost = getBackendHost();
-      const hasuraHost = getHasuraHost();
-      return [
-        {
-          source: "/api/backend/:path*",
-          destination: `${backendHost}/api/:path*`,
-        },
-        {
-          source: "/graphql",
-          destination: `${hasuraHost}/v1/graphql`,
-        },
-      ];
-    },
-  });
-};
-
 /**
  * Let's tell next.js to compile TypeScript files from other packages of monorepo.
  * eg. `frontend/node_modules/@acapela/some-package/file.ts` will be compiled the same way as any other ts file
@@ -150,7 +112,6 @@ module.exports = withPlugins(
     ],
     //
     createTsPackagesPlugin(),
-    apiRewrites,
   ],
   {
     typescript: {
