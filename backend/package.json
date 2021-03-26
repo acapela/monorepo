@@ -1,27 +1,16 @@
 {
   "name": "@acapela/backend",
+  "private": "true",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
   "scripts": {
     "test": "jest src --runInBand",
     "test:watch": "jest src --runInBand --watch",
     "build": "rimraf dist && ncc build src/index.ts -o dist/ --source-map",
     "start": "npm run hasura:migrate && berglas exec -- node dist",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
-    "format": "prettier --write src",
     "gcp-build": "NODE_ENV=production npm run build",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run format"
-    ]
   },
   "peerDependencies": {
     "axios": "*",
@@ -45,13 +34,8 @@
     "@types/jest": "*",
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.19.0",
-    "@typescript-eslint/parser": "^4.19.0",
     "@vercel/ncc": "^0.27.0",
-    "eslint": "^7.22.0",
-    "eslint-config-prettier": "^8.1.0",
     "jest": "*",
-    "lint-staged": "^10.5.4",
     "pino-pretty": "^4.7.1",
     "supertest": "^6.1.3",
     "ts-jest": "^26.5.4",
