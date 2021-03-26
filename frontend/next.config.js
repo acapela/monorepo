@@ -121,5 +121,17 @@ module.exports = withPlugins(
       // !! WARN !!
       ignoreBuildErrors: true,
     },
+    async rewrites() {
+      return [
+        {
+          source: "/api/backend/:path*",
+          destination: `http://localhost:1337/api/:path*`,
+        },
+        {
+          source: "/graphql",
+          destination: `http://localhost:8080/v1/graphql`,
+        },
+      ];
+    },
   }
 );
