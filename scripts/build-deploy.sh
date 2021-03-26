@@ -21,4 +21,3 @@ for app in backend frontend; do
   
   cd -
 done
-
