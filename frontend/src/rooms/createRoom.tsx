@@ -1,13 +1,17 @@
-import { useState } from "react";
-import { Formik, Form, Field as FormikField, ErrorMessage } from "formik";
+import React, { useState } from "react";
+import styled from "styled-components";
+import { ErrorMessage, Field as FormikField, Form, Formik } from "formik";
 import { useRouter } from "next/router";
-
 import { Button } from "@acapela/ui/button";
 import { Field } from "@acapela/ui/field";
 import { Dialog } from "../design/Dialog";
-import { useCreateRoomMutation, Room } from "../gql";
+import { Room, useCreateRoomMutation } from "../gql";
 
-export const RoomCreationForm: React.FC<{ onCreate?: (room: { id: string }) => unknown }> = ({ onCreate }) => {
+const UIRoomTitleFieldWrapper = styled.div`
+  margin-bottom: 1rem;
+`;
+
+export const RoomCreationForm: React.FC<{ onCreate?: (room: Room) => void }> = ({ onCreate }) => {
   const [createRoom, { loading }] = useCreateRoomMutation();
   return (
     <Formik
@@ -24,14 +28,14 @@ export const RoomCreationForm: React.FC<{ onCreate?: (room: { id: string }) => u
     >
       {({ isSubmitting }) => (
         <Form>
-          <div className="mb-4">
+          <UIRoomTitleFieldWrapper>
             <label htmlFor="room-name">Title</label>
             <FormikField name="name">
               {({ field }) => <Field id="room-name" {...field} placeholder="How do we get to mars?" />}
             </FormikField>
             <ErrorMessage name="name" component="div" />
-          </div>
-          <Button disabled={loading || isSubmitting} wide>
+          </UIRoomTitleFieldWrapper>
+          <Button type="submit" disabled={loading || isSubmitting} wide>
             Create
           </Button>
         </Form>
@@ -39,6 +43,12 @@ export const RoomCreationForm: React.FC<{ onCreate?: (room: { id: string }) => u
     </Formik>
   );
 };
+
+const UIRoomCreationDialogTitle = styled.h1`
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-bottom: 2rem;
+`;
 
 export const RoomCreationButton: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -54,7 +64,7 @@ export const RoomCreationButton: React.FC = () => {
   return (
     <>
       <Dialog open={dialogOpen} onClose={close} aria-labelledby="acapela-creation-button">
-        <h1 className="text-3xl mb-8">Create a new acapela</h1>
+        <UIRoomCreationDialogTitle>Create a new acapela</UIRoomCreationDialogTitle>
         <RoomCreationForm onCreate={handleRoomCreation} />
       </Dialog>
       <Button wide onClick={open} id="acapela-creation-button">

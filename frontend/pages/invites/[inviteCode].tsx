@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import styled from "styled-components";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAcceptInviteMutation } from "@acapela/frontend/gql";
@@ -7,6 +8,21 @@ import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { Logo } from "@acapela/frontend/design/Logo";
 import { usePathParameter } from "@acapela/frontend/utils";
 import { assert } from "@acapela/shared/assert";
+
+const UIContentWrapper = styled.div`
+  max-width: 28rem;
+  margin-top: 16rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+`;
+
+const UILogoWrapper = styled.div`
+  width: 16rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+`;
 
 export default authenticated(function InvitePage() {
   const inviteCode = usePathParameter("inviteCode");
@@ -19,13 +35,13 @@ export default authenticated(function InvitePage() {
         <title>Acapela</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="w-max-md mx-auto text-center mt-64">
-        <div className="w-64 mx-auto mb-4">
+      <UIContentWrapper>
+        <UILogoWrapper>
           <Logo />
           <InviteAcceptor code={inviteCode} />
           <span>Loading...</span>
-        </div>
-      </div>
+        </UILogoWrapper>
+      </UIContentWrapper>
     </div>
   );
 });

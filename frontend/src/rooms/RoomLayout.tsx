@@ -1,9 +1,10 @@
-import { Form, Formik, Field as FormikField, ErrorMessage } from "formik";
+import { ErrorMessage, Field as FormikField, Form, Formik } from "formik";
 import React, { ReactNode, useState } from "react";
-import { AvatarList } from "../design/Avatar";
+import styled from "styled-components";
 import { Button } from "@acapela/ui/button";
-import { Dialog } from "../design/Dialog";
 import { Field } from "@acapela/ui/field";
+import { AvatarList } from "../design/Avatar";
+import { Dialog } from "../design/Dialog";
 import { SidebarLayout } from "../design/Layout";
 import { NavLink } from "../design/NavLink";
 import { createNextIndex } from "./order";
@@ -14,6 +15,19 @@ interface Props {
   room: RoomDetailedInfoFragment;
   children: ReactNode;
 }
+
+const UIStyledInviteButton = styled(InviteButton)`
+  margin-top: 0.5rem;
+`;
+
+const UIThreadsWrapper = styled.div`
+  margin-top: 1rem;
+
+  /* ThreadCreationButton */
+  ${Button} {
+    margin-top: 0.5rem;
+  } ;
+`;
 
 export const RoomLayout: React.FC<Props> = ({ room, children }) => {
   return (
@@ -26,8 +40,8 @@ export const RoomLayout: React.FC<Props> = ({ room, children }) => {
                 .filter(({ user }) => user.avatarUrl || user.name)
                 .map(({ user }) => ({ name: user.name, url: user.avatarUrl }))}
             />
-            <InviteButton roomId={room.id} className="mt-2" />
-            <nav className="mt-4">
+            <UIStyledInviteButton roomId={room.id} />
+            <UIThreadsWrapper>
               {(room.threads || []).map(({ id, name }, index) => (
                 <NavLink key={id} to={`/rooms/${room.id}/threads/${id}`}>
                   {index + 1} {name}
@@ -37,7 +51,7 @@ export const RoomLayout: React.FC<Props> = ({ room, children }) => {
                 roomId={room.id}
                 lastThreadIndex={(room.threads || [])[room.threads.length - 1]?.index}
               />
-            </nav>
+            </UIThreadsWrapper>
           </>
         ),
       }}
@@ -46,6 +60,12 @@ export const RoomLayout: React.FC<Props> = ({ room, children }) => {
     </SidebarLayout>
   );
 };
+
+const UIThreadCreationDialogTitle = styled.h1`
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-bottom: 2rem;
+`;
 
 export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: string }> = ({
   roomId,
@@ -62,7 +82,7 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
   return (
     <>
       <Dialog open={dialogOpen} onClose={close} aria-labelledby="thread-creation-button">
-        <h1 className="text-3xl mb-8">Add agenda point</h1>
+        <UIThreadCreationDialogTitle>Add agenda point</UIThreadCreationDialogTitle>
         <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreate={handleThreadCreation} />
       </Dialog>
       <Button wide onClick={open} id="thread-creation-button">
@@ -71,6 +91,10 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
     </>
   );
 };
+
+const UIThreadNameFieldWrapper = styled.div`
+  margin-bottom: 1rem;
+`;
 
 export const ThreadCreationForm: React.FC<{
   roomId: string;
@@ -100,14 +124,14 @@ export const ThreadCreationForm: React.FC<{
     >
       {({ isSubmitting }) => (
         <Form>
-          <div className="mb-4">
+          <UIThreadNameFieldWrapper>
             <label htmlFor="thread-name">Name</label>
             <FormikField name="name">
               {({ field }) => <Field id="thread-name" type="text" {...field} placeholder="How do we get to mars?" />}
             </FormikField>
             <ErrorMessage name="name" component="div" />
-          </div>
-          <Button disabled={loading || isSubmitting} wide>
+          </UIThreadNameFieldWrapper>
+          <Button type="submit" disabled={loading || isSubmitting} wide>
             Create
           </Button>
         </Form>
