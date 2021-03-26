@@ -1,3 +1,4 @@
 backend/dist
 frontend/.next
 frontend/src/gql/generated.ts
+frontend/dist

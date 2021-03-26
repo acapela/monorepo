@@ -4,9 +4,15 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
-    "build": "next build",
-    "start": "next start",
-    "analyze": "ANALYZE=true next build",
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:build:analyze": "ANALYZE=true next build",
+    "next:build": "next build",
+    "next:start": "next start",
+    "server:build": "rimraf dist && ncc build ./next-server.js -o dist",
+    "build": "npm run next:build && npm run server:build",
+    "gcp-build": "NODE_ENV=production npm run build",
+    "start": "node dist",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -14,7 +20,8 @@
     "axios": "*",
     "graphql": "*",
     "react": "*",
-    "styled-components": "*"
+    "styled-components": "*",
+    "express": "*"
   },
   "dependencies": {
     "@acapela/config": "0.1.0",
@@ -35,7 +42,8 @@
     "next-transpile-modules": "^6.3.0",
     "react-dom": "^17.0.2",
     "subscriptions-transport-ws": "^0.9.18",
-    "tailwindcss": "^2.0.3"
+    "tailwindcss": "^2.0.3",
+    "express-http-proxy": "^1.6.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.9",
@@ -57,6 +65,7 @@
     "postcss-preset-env": "^6.7.0",
     "tslib": "*",
     "typescript": "*",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.2",
+    "@vercel/ncc": "*"
   }
 }
