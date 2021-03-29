@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { getInitials } from "@acapela/frontend/utils";
+
+// TODO: how should this work?
+import { getInitials } from "../utils";
 
 export interface AvatarProps {
   url?: string;

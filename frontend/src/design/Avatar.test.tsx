@@ -9,15 +9,4 @@ describe("Avatar", () => {
     expect(screen.queryByText("SP")).not.toBeInTheDocument();
     expect(screen.getByText("P")).toBeInTheDocument();
   });
-
-  it("can receive custom classNames", () => {
-    const { rerender } = render(<Avatar name="a long name" />);
-    expect(screen.getByText("AL")).not.toHaveClass("some");
-    expect(screen.getByText("AL")).not.toHaveClass("custom");
-    expect(screen.getByText("AL")).not.toHaveClass("classes");
-    rerender(<Avatar name="a long name" className="some custom classes" />);
-    expect(screen.getByText("AL")).toHaveClass("some");
-    expect(screen.getByText("AL")).toHaveClass("custom");
-    expect(screen.getByText("AL")).toHaveClass("classes");
-  });
 });
