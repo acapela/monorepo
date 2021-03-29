@@ -21,6 +21,8 @@
     "graphql": "*",
     "react": "*",
     "styled-components": "*",
+    "styled-normalize": "*",
+    "styled-reset": "*",
     "tslib": "*"
   },
   "dependencies": {
@@ -30,7 +32,6 @@
     "@acapela/ui": "0.1.0",
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
-    "classnames": "^2.2.6",
     "date-fns": "^2.19.0",
     "focus-visible": "^5.2.0",
     "formik": "^2.2.6",
@@ -42,7 +43,6 @@
     "next-transpile-modules": "^6.3.0",
     "react-dom": "^17.0.2",
     "subscriptions-transport-ws": "^0.9.18",
-    "tailwindcss": "^2.0.3",
     "express-http-proxy": "^1.6.2"
   },
   "devDependencies": {
@@ -50,7 +50,6 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@types/jsonwebtoken": "^8.5.1",
-    "@types/classnames": "^2.2.11",
     "@types/next-auth": "^3.7.2",
     "@types/styled-components": "*",
     "autoprefixer": "^10.2.5",

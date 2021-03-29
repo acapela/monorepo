@@ -25,7 +25,7 @@ We use:
 
 - next.js, but we may revisit and move to create react app instead, as our application is a full-blown SPA not focused on static content.
 - typescript
-- tailwind for css
+- styled-components for css
 - jest + react testing library for tests
 - next-auth for authentication
 - apollo for graphql
