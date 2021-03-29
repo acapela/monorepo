@@ -7,23 +7,17 @@ import { WithAdditionalParams } from "next-auth/_utils";
 import { Session } from "next-auth";
 import { Provider as SessionProvider } from "next-auth/client";
 import { createGlobalStyle } from "styled-components";
+import "@reach/dialog/styles.css";
+import { global } from "../styles/global";
 import { Provider as ApolloProvider } from "../src/apollo";
 import { parseJWTWithoutValidation } from "../src/authentication/jwt";
-import "../styles/tailwind.css";
-import "@reach/dialog/styles.css";
 
 interface AddedProps {
   session: unknown;
 }
 
 const BuiltInStyles = createGlobalStyle`
-  html {
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    -moz-osx-font-smoothing: grayscale;
-    -moz-font-smoothing: antialiased;
-    -webkit-font-smoothing: antialiased;
-  }
+  ${global}
 `;
 
 export default function App({ Component, pageProps, session }: AppProps & AddedProps): JSX.Element {
