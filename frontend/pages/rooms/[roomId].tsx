@@ -6,12 +6,7 @@ import styled from "styled-components";
 import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { RoomLayout, ThreadCreationButton } from "@acapela/frontend/rooms/RoomLayout";
 import { usePathParameter } from "@acapela/frontend/utils";
-
-const UIContentWrapper = styled.div`
-  max-width: 28rem;
-  margin-left: auto;
-  margin-right: auto;
-`;
+import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;

@@ -1,15 +1,9 @@
 import Head from "next/head";
 import React from "react";
-import styled from "styled-components";
+import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 import { authenticated } from "../src/authentication/authenticated";
 import { LogoutButton } from "../src/authentication/logout";
 import { MainLayout } from "../src/MainLayout";
-
-const UIContentWrapper = styled.div`
-  display: flex;
-  padding: 4rem;
-  justify-content: center;
-`;
 
 const Page = authenticated(function ActivePage() {
   return (

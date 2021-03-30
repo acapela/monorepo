@@ -10,10 +10,10 @@ export const base = css`
   *,
   ::before,
   ::after {
-    box-sizing: border-box; /* 1 */
-    border-width: 0; /* 2 */
-    border-style: solid; /* 2 */
-    border-color: #e5e7eb; /* 2 */
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
   }
 
   a {
