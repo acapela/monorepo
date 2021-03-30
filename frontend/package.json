@@ -21,8 +21,6 @@
     "graphql": "*",
     "react": "*",
     "styled-components": "*",
-    "styled-normalize": "*",
-    "styled-reset": "*",
     "tslib": "*"
   },
   "dependencies": {
@@ -42,6 +40,8 @@
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^6.3.0",
     "react-dom": "^17.0.2",
+    "styled-normalize": "^8.0.7",
+    "styled-reset": "^4.3.4",
     "subscriptions-transport-ws": "^0.9.18",
     "express-http-proxy": "^1.6.2"
   },

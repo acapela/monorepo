@@ -5,15 +5,8 @@ import React, { useEffect, useState } from "react";
 import { ParsedUrlQuery } from "querystring";
 import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "../src/authentication/authentication";
 import { DEFAULT_REDIRECT_URL } from "../src/config";
-import { Logo } from "../src/design/Logo";
-
-const UIContentWrapper = styled.div`
-  max-width: 28rem;
-  margin-top: 16rem;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-`;
+import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
+import { Logo } from "@acapela/frontend/design/Logo";
 
 const UILogoWrapper = styled.div`
   width: 16rem;
@@ -31,7 +24,7 @@ export default function LoginPage(): JSX.Element {
         <title>Acapela</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <UIContentWrapper>
+      <UIContentWrapper marginTop>
         <UILogoWrapper>
           <Logo />
         </UILogoWrapper>
