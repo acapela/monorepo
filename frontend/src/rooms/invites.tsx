@@ -7,13 +7,6 @@ import { Field } from "@acapela/ui/field";
 import { Dialog } from "../design/Dialog";
 import { GetRoomInvitesDocument, useCreateInviteMutation, useGetRoomInvitesQuery } from "../gql";
 
-// TODO: Repeating Dialog title
-const UIInvitationsDialogTitle = styled.h1`
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  margin-bottom: 2rem;
-`;
-
 export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const open = () => setDialogOpen(true);
@@ -21,8 +14,12 @@ export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({
 
   return (
     <>
-      <Dialog open={dialogOpen} onClose={close} aria-labelledby="participant-management-button">
-        <UIInvitationsDialogTitle>Manage invites</UIInvitationsDialogTitle>
+      <Dialog
+        title={"Manage invites"}
+        open={dialogOpen}
+        onClose={close}
+        aria-labelledby="participant-management-button"
+      >
         <InviteTable roomId={roomId} />
         <InviteCreationForm roomId={roomId} />
       </Dialog>

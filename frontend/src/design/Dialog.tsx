@@ -9,12 +9,20 @@ const UIDialogContent = styled(motion.div)`
   border-radius: 0.5rem;
 `;
 
+const UIRoomCreationDialogTitle = styled.h1`
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  margin-bottom: 2rem;
+`;
+
 export const Dialog = ({
+  title,
   open,
   onClose,
   children,
   ...rest
 }: {
+  title: string;
   open?: boolean;
   onClose?: () => void;
   children?: React.ReactNode;
@@ -34,7 +42,10 @@ export const Dialog = ({
             exit={{ opacity: 0, y: "-50%" }}
           >
             <DialogContent {...rest}>
-              <UIDialogContent>{children}</UIDialogContent>
+              <UIDialogContent>
+                <UIRoomCreationDialogTitle>{title}</UIRoomCreationDialogTitle>
+                {children}
+              </UIDialogContent>
             </DialogContent>
           </motion.div>
         </MotionDialogOverlay>

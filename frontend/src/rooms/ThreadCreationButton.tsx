@@ -7,12 +7,6 @@ import { createNextIndex } from "@acapela/frontend/rooms/order";
 import { Button } from "@acapela/ui/button";
 import { Field } from "@acapela/ui/field";
 
-const UIThreadCreationDialogTitle = styled.h1`
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  margin-bottom: 2rem;
-`;
-
 export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: string }> = ({
   roomId,
   lastThreadIndex,
@@ -27,8 +21,7 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
 
   return (
     <>
-      <Dialog open={dialogOpen} onClose={close} aria-labelledby="thread-creation-button">
-        <UIThreadCreationDialogTitle>Add agenda point</UIThreadCreationDialogTitle>
+      <Dialog title={"Add agenda point"} open={dialogOpen} onClose={close} aria-labelledby="thread-creation-button">
         <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreate={handleThreadCreation} />
       </Dialog>
       <Button wide onClick={open} id="thread-creation-button">
