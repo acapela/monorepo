@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { SidebarLayout } from "@acapela/frontend/design/Layout";
-import { AvatarList } from "@acapela/frontend/design/Avatar";
+import { AvatarList } from "@acapela/frontend/design/AvatarList";
 import { NavLink } from "@acapela/frontend/design/NavLink";
 import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { Button } from "@acapela/ui/button";
