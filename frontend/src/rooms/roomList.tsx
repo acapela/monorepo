@@ -11,7 +11,6 @@ const UIRoomsGrid = styled.ul`
   gap: 2rem;
 `;
 
-// TODO: Remove TW variables
 const UIRoomLink = styled.a`
   display: block;
   width: 100%;

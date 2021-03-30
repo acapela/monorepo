@@ -46,7 +46,6 @@ const UIThreadView = styled.div`
   height: 100%;
 `;
 
-// TODO: use flex
 const UIMessages = styled.div`
   flex: 1 1 100%;
   width: 100%;
