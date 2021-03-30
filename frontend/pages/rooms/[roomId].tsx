@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { authenticated } from "@acapela/frontend/authentication/authenticated";
-import { RoomLayout, ThreadCreationButton } from "@acapela/frontend/rooms/RoomLayout";
+import { RoomLayout } from "@acapela/frontend/rooms/RoomLayout";
+import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { usePathParameter } from "@acapela/frontend/utils";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 
