@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button } from "../design/Button";
 import { signOut } from "next-auth/client";
+import { Button } from "@acapela/ui/button";
 
 interface Logout {
   loading: boolean;
@@ -9,6 +9,7 @@ interface Logout {
 
 const useLogout = (): Logout => {
   const [loading, setLoading] = useState(false);
+
   async function logout() {
     setLoading(true);
     await signOut();
@@ -17,11 +18,11 @@ const useLogout = (): Logout => {
   return { loading, logout };
 };
 
-export const LogoutButton = ({ className }: { className?: string }) => {
+export const LogoutButton = () => {
   const { loading, logout } = useLogout();
 
   return (
-    <Button className={className} onClick={logout} loading={loading}>
+    <Button onClick={logout} isLoading={loading}>
       Log out
     </Button>
   );
