@@ -1,3 +1,5 @@
+import React from "react";
+
 export const Logo: React.FC = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 965 268" {...props}>
     <title>Acapela logo</title>

@@ -3,15 +3,9 @@ import Head from "next/head";
 import Link from "next/link";
 import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "@acapela/frontend/authentication/authentication";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
 import { Logo } from "@acapela/frontend/design/Logo";
 import { signOut } from "next-auth/client";
-
-const UILogoWrapper = styled.div`
-  width: 16rem;
-  margin-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-`;
 
 const AppLinkWrapper = styled.div``;
 
