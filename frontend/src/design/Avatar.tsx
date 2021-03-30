@@ -11,13 +11,27 @@ export interface AvatarProps {
   name: string;
 }
 
-const UIAvatarInner = styled.div<{ initials?: boolean }>`
+const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
+  const [failedToLoad, setFailedToLoad] = useState(false);
+
+  if (!url || failedToLoad) {
+    return <div className={className}>{!!name && getInitials(name)}</div>;
+  }
+
+  return (
+    <div className={className}>
+      <img src={url} alt={`${name}'s avatar`} onError={() => setFailedToLoad(true)} />
+    </div>
+  );
+};
+
+export const Avatar = styled(PureAvatar)`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
 
-  height: 100%;
-  width: 100%;
   font-weight: 600;
 
   background-color: rgba(96, 165, 250, 1);
@@ -29,29 +43,4 @@ const UIAvatarInner = styled.div<{ initials?: boolean }>`
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
   overflow: hidden;
-`;
-
-const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
-  const [failedToLoad, setFailedToLoad] = useState(false);
-
-  if (!url || failedToLoad) {
-    return (
-      <div className={className}>
-        <UIAvatarInner initials>{!!name && getInitials(name)}</UIAvatarInner>
-      </div>
-    );
-  }
-
-  return (
-    <div className={className}>
-      <UIAvatarInner>
-        <img src={url} alt={`${name}'s avatar`} onError={() => setFailedToLoad(true)} />
-      </UIAvatarInner>
-    </div>
-  );
-};
-
-export const Avatar = styled(PureAvatar)`
-  width: 2.75rem;
-  height: 2.75rem;
 `;
