@@ -20,24 +20,6 @@ const UIActionWrapper = styled.span`
   margin-top: auto;
 `;
 
-export const Sidebar: React.FC<{
-  children?: React.ReactNode;
-  action?: React.ReactNode;
-}> = ({ children, action }) => {
-  return (
-    <UISidebar>
-      <Link href="/home" passHref>
-        <UISidebarLogoWrapper>
-          <Logo />
-        </UISidebarLogoWrapper>
-      </Link>
-
-      {children}
-      <UIActionWrapper>{action}</UIActionWrapper>
-    </UISidebar>
-  );
-};
-
 const UIHolder = styled.div`
   display: flex;
   min-height: 100vh;
@@ -57,7 +39,16 @@ export const SidebarLayout: React.FC<{
 }> = ({ children, sidebar }) => {
   return (
     <UIHolder>
-      <Sidebar action={sidebar.action}>{sidebar.content}</Sidebar>
+      <UISidebar>
+        <Link href="/home" passHref>
+          <UISidebarLogoWrapper>
+            <Logo />
+          </UISidebarLogoWrapper>
+        </Link>
+
+        {sidebar.content}
+        <UIActionWrapper>{sidebar.action}</UIActionWrapper>
+      </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>
   );
