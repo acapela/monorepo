@@ -11,7 +11,7 @@ const UIRoomTitleFieldWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const RoomCreationForm: React.FC<{ onCreate?: (room: Room) => void }> = ({ onCreate }) => {
+const RoomCreationForm: React.FC<{ onCreate?: (room: Room) => void }> = ({ onCreate }) => {
   const [createRoom, { loading }] = useCreateRoomMutation();
   return (
     <Formik
@@ -44,12 +44,6 @@ export const RoomCreationForm: React.FC<{ onCreate?: (room: Room) => void }> = (
   );
 };
 
-const UIRoomCreationDialogTitle = styled.h1`
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  margin-bottom: 2rem;
-`;
-
 export const RoomCreationButton: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { push } = useRouter();
@@ -63,8 +57,12 @@ export const RoomCreationButton: React.FC = () => {
 
   return (
     <>
-      <Dialog open={dialogOpen} onClose={close} aria-labelledby="acapela-creation-button">
-        <UIRoomCreationDialogTitle>Create a new acapela</UIRoomCreationDialogTitle>
+      <Dialog
+        title={"Create a new acapela"}
+        open={dialogOpen}
+        onClose={close}
+        aria-labelledby="acapela-creation-button"
+      >
         <RoomCreationForm onCreate={handleRoomCreation} />
       </Dialog>
       <Button wide onClick={open} id="acapela-creation-button">
