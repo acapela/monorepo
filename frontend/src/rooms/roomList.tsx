@@ -8,7 +8,6 @@ const UIRoomsGrid = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 2rem;
-  gap: 2rem;
 `;
 
 const UIRoomLink = styled.a`

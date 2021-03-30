@@ -18,6 +18,7 @@ const PureAvatarList: React.FC<AvatarListProps> = ({ avatars, className }) => (
 export const AvatarList = styled(PureAvatarList)`
   display: flex;
 
+  /* Shifts each child Avatar starting from the second one a bit to the left for them to overlap */
   & > :not([hidden]) ~ :not([hidden]) {
     margin-left: -0.75rem;
   }

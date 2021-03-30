@@ -16,10 +16,6 @@ const UISidebarLogoWrapper = styled.a`
   margin-bottom: 4rem;
 `;
 
-const UIActionWrapper = styled.span`
-  margin-top: auto;
-`;
-
 const UIHolder = styled.div`
   display: flex;
   min-height: 100vh;
@@ -48,7 +44,7 @@ export const SidebarLayout: React.FC<{
         </Link>
 
         {sidebar.content}
-        <UIActionWrapper>{sidebar.action}</UIActionWrapper>
+        {sidebar.action}
       </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>
