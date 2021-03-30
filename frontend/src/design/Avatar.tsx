@@ -6,9 +6,9 @@ import styled from "styled-components";
 import { getInitials } from "../utils";
 
 export interface AvatarProps {
+  name: string;
   url?: string;
   className?: string;
-  name: string;
 }
 
 const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
