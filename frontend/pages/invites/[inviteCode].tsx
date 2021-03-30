@@ -1,21 +1,14 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAcceptInviteMutation } from "@acapela/frontend/gql";
 import { gql } from "@apollo/client";
 import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
 import { Logo } from "@acapela/frontend/design/Logo";
 import { usePathParameter } from "@acapela/frontend/utils";
 import { assert } from "@acapela/shared/assert";
-
-const UILogoWrapper = styled.div`
-  width: 16rem;
-  margin-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-`;
 
 export default authenticated(function InvitePage() {
   const inviteCode = usePathParameter("inviteCode");
