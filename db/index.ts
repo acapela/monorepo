@@ -13,7 +13,15 @@ export type {
 } from "@prisma/client";
 
 if (!process.env.PRISMA_DATABASE_URL) {
-  throw new Error("PRISMA_DATABASE_URL is required when importing @acaplea/db");
+  // trying to reconstruct PRISMA_DATABASE_URL,
+  // if DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME is set
+  if (
+    ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"].every((env) => Object.keys(process.env).includes(env))
+  ) {
+    process.env.PRISMA_DATABASE_URL = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
+  } else {
+    throw new Error("PRISMA_DATABASE_URL is required when importing @acaplea/db");
+  }
 }
 
 export const db = new PrismaClient({
