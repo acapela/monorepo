@@ -6,6 +6,7 @@ import { useCurrentUser } from "@acapela/frontend/authentication/authentication"
 import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "@acapela/frontend/gql";
 import { MessageComposer } from "./Composer";
 import { TextMessage } from "./TextMessage";
+import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
@@ -40,31 +41,25 @@ const useThreadMessages = (threadId: string): { loading: boolean; messages: Mess
 
 const UIThreadView = styled.div`
   position: relative;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
 `;
 
 // TODO: use flex
 const UIMessages = styled.div`
-  // flex: 1;
-  // flex-grow: 1;
-  position: absolute;
-  top: 0;
-  bottom: 2.75rem;
+  flex: 1 1 100%;
   width: 100%;
   overflow: auto;
 `;
 
 const UIMessageComposer = styled.div`
-  position: absolute;
-  bottom: 0;
-
+  flex: 1 0 auto;
   width: 100%;
   margin-top: 1rem;
 `;
 
-const UIMessageWrapper = styled(motion.div).attrs({
+const UIAnimatedMessagesWrapper = styled(motion.div).attrs({
   variants: {
     show: { transition: { staggerChildren: 0.04 } },
   },
@@ -73,12 +68,6 @@ const UIMessageWrapper = styled(motion.div).attrs({
 })`
   display: flex;
   flex-direction: column;
-`;
-
-const UIEmptyThreadBanner = styled.div`
-  max-width: 28rem;
-  margin-left: auto;
-  margin-right: auto;
 `;
 
 export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
@@ -92,14 +81,14 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
   return (
     <UIThreadView>
       <UIMessages>
-        <UIMessageWrapper>
+        <UIAnimatedMessagesWrapper>
           {messages.map((message) => (
             <TextMessage key={message.id} message={message} />
           ))}
           {!messages.length && (
-            <UIEmptyThreadBanner>Start the conversation and add your first message below.</UIEmptyThreadBanner>
+            <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
           )}
-        </UIMessageWrapper>
+        </UIAnimatedMessagesWrapper>
       </UIMessages>
       <UIMessageComposer>
         <MessageComposer threadId={id} />

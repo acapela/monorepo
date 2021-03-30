@@ -28,6 +28,7 @@ const UIHolder = styled.div`
 const UIMainContent = styled.div`
   padding: 120px 60px 60px 90px;
   flex-grow: 1;
+  max-height: 100vh;
 `;
 
 export const SidebarLayout: React.FC<{
