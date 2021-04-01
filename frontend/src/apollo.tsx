@@ -2,29 +2,13 @@ import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, spli
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import React from "react";
+import Cookie from "js-cookie";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
-// TODO: Eh? There are libraries for this
-function getCookieByName(cookieName: string): string | null {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const segmentedCookies = `; ${document.cookie}`;
-
-  const parts = segmentedCookies.split(`; ${cookieName}=`);
-
-  if (parts.length !== 2) {
-    return null;
-  }
-
-  return parts[1].split(";")[0] ?? null;
-}
-
 function readCurrentToken(): string | null {
-  return getCookieByName(TOKEN_COOKIE_NAME);
+  return Cookie.get(TOKEN_COOKIE_NAME) ?? null;
 }
 
 function isServerSide() {
