@@ -67,7 +67,6 @@
     "@acapela/tooling": "0.1.0",
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "graphql": "^15.5.0",
     "react": "^17.0.2",
     "styled-components": "^5.2.1"
   },
