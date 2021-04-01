@@ -54,7 +54,7 @@ const CommonMetadata = () => {
 };
 
 /**
- * In order to have current user data avaliable on the first render, let's parse cookie content
+ * In order to have current user data available on the first render, let's parse cookie content
  * on server side.
  *
  * We do it in a sync way for performance. It means we don't verify token signature and we 'trust'

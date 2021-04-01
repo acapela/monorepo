@@ -1,11 +1,12 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { useMemo } from "react";
+import React from "react";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
+// TODO: Eh? There are libraries for this
 function getCookieByName(cookieName: string): string | null {
   if (typeof document === "undefined") {
     return null;
@@ -26,6 +27,10 @@ function readCurrentToken(): string | null {
   return getCookieByName(TOKEN_COOKIE_NAME);
 }
 
+function isServerSide() {
+  return typeof window === "undefined";
+}
+
 const authorizationHeaderLink = new ApolloLink((operation, forward) => {
   const authToken = readCurrentToken();
 
@@ -42,17 +47,17 @@ const authorizationHeaderLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const createApolloClient = (): ApolloClient<unknown> => {
-  const httpLink = new HttpLink({
-    uri: "/graphql",
-  });
+const socketLink = (function createSocketLink() {
+  // Return dummy link for the server
+  if (isServerSide()) {
+    return new ApolloLink((operation, forward) => forward(operation));
+  }
 
-  const socketLink = new WebSocketLink({
+  return new WebSocketLink({
     uri: `${GRAPHQL_SUBSCRIPTION_HOST}/v1/graphql`,
-
     options: {
       reconnect: true,
-
+      lazy: true,
       connectionParams: () => {
         const authToken = readCurrentToken();
 
@@ -68,8 +73,12 @@ const createApolloClient = (): ApolloClient<unknown> => {
       },
     },
   });
+})();
 
-  const splitLink = splitLinks(
+const httpLink = new HttpLink({ uri: "/graphql" });
+
+const createApolloClient = (): ApolloClient<unknown> => {
+  const directionalLink = splitLinks(
     ({ query }) => {
       const definition = getMainDefinition(query);
       return definition.kind === "OperationDefinition" && definition.operation === "subscription";
@@ -79,33 +88,14 @@ const createApolloClient = (): ApolloClient<unknown> => {
   );
 
   return new ApolloClient({
-    link: splitLink,
+    ssrMode: isServerSide(),
+    link: directionalLink,
     cache: new InMemoryCache(),
   });
 };
 
-function useIsClientSide() {
-  return typeof window !== "undefined";
-}
-
-const useApolloClient = (): ApolloClient<unknown> | null => {
-  const isClientSide = useIsClientSide();
-
-  return useMemo(() => {
-    if (isClientSide) {
-      return createApolloClient();
-    }
-
-    return null;
-  }, [isClientSide]);
-};
-
 export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const client = useApolloClient();
+  const client = createApolloClient();
 
-  if (client) {
-    return <ApolloProvider client={client}>{children}</ApolloProvider>;
-  }
-
-  return <>{children}</>;
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
