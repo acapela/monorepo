@@ -72,7 +72,7 @@ const createApolloClient = (): ApolloClient<unknown> => {
   );
 
   return new ApolloClient({
-    ssrMode: isServerSide(),
+    ssrMode: true,
     link: directionalLink,
     cache: new InMemoryCache(),
   });
