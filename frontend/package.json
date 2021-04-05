@@ -31,6 +31,7 @@
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
+    "express-http-proxy": "^1.6.2",
     "focus-visible": "^5.2.0",
     "formik": "^2.2.6",
     "framer-motion": "^3.10.6",
@@ -42,8 +43,7 @@
     "react-dom": "^17.0.2",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
-    "subscriptions-transport-ws": "^0.9.18",
-    "express-http-proxy": "^1.6.2"
+    "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.9",
@@ -52,6 +52,7 @@
     "@types/jsonwebtoken": "^8.5.1",
     "@types/next-auth": "^3.7.2",
     "@types/styled-components": "*",
+    "@vercel/ncc": "*",
     "autoprefixer": "^10.2.5",
     "babel-jest": "^26.6.3",
     "babel-plugin-graphql-tag": "^3.2.0",
@@ -62,7 +63,6 @@
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
     "typescript": "*",
-    "whatwg-fetch": "^3.6.2",
-    "@vercel/ncc": "*"
+    "whatwg-fetch": "^3.6.2"
   }
 }
