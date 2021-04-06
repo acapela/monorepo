@@ -1,4 +1,6 @@
+import logger from "@acapela/shared/logger";
 import { PrismaClient } from "@prisma/client";
+
 export type {
   // Let's export entities types
   account as Account,
@@ -12,22 +14,30 @@ export type {
   verification_requests as VerificationRequest,
 } from "@prisma/client";
 
-if (!process.env.PRISMA_DATABASE_URL) {
-  // trying to reconstruct PRISMA_DATABASE_URL,
-  // if DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME is set
-  if (
-    ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"].every((env) => Object.keys(process.env).includes(env))
-  ) {
-    process.env.PRISMA_DATABASE_URL = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
-  } else {
-    throw new Error("PRISMA_DATABASE_URL is required when importing @acaplea/db");
-  }
+const DB_VARS = ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"];
+const ENV_VARS = Object.keys(process.env);
+
+if (DB_VARS.some((key) => !ENV_VARS.includes(key))) {
+  const error = new Error("Failed to construct database URL, check environment variables");
+  const missingStr = "<missing>";
+
+  logger.error(error.message, {
+    DB_USER: process.env.DB_USER || missingStr,
+    DB_PASSWORD: process.env.DB_PASSWORD || missingStr,
+    DB_HOST: process.env.DB_HOST || missingStr,
+    DB_PORT: process.env.DB_PORT || missingStr,
+    DB_NAME: process.env.DB_NAME || missingStr,
+  });
+
+  throw error;
 }
+
+const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
 
 export const db = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.PRISMA_DATABASE_URL,
+      url: prismaDatabaseUrl,
     },
   },
 });
