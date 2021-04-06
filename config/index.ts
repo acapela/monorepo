@@ -1,5 +1,4 @@
 import "./dotenv";
-import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
 import { warn } from "@acapela/shared/logger";
 
@@ -76,11 +75,17 @@ async function performInjectSecretsToEnv(): Promise<void> {
   }
 }
 
-const googleSecretsClient = new SecretManagerServiceClient();
+/* eslint-disable @typescript-eslint/no-explicit-any */
+let googleSecretsClient: any = null;
 
 const googleSecretEnvVarRegExp = /googleSecret\("(.+)"\)/;
 
 async function getGoogleSecretValue(secretName: string) {
+  if (!googleSecretsClient) {
+    /* eslint-disable @typescript-eslint/no-var-requires */
+    const gsm = require("@google-cloud/secret-manager");
+    googleSecretsClient = new gsm.SecretManagerServiceClient();
+  }
   const [version] = await googleSecretsClient.accessSecretVersion({
     name: `projects/meetnomoreapp/secrets/${secretName}/versions/latest`,
   });
