@@ -16,7 +16,6 @@ declare global {
       DB_USER: string;
       DB_PASSWORD: string;
       DB_NAME: string;
-      PRISMA_DATABASE_URL: string;
       FRONTEND_URL: string;
       AUTH_SECRET: string;
       AUTH_JWT_TOKEN_SECRET: string;
