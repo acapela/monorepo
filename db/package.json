@@ -3,10 +3,12 @@
   "private": "true",
   "version": "0.1.0",
   "scripts": {
-    "introspect": "dotenv -e ../.env prisma introspect",
-    "generate": "dotenv -e ../.env prisma generate",
+    "setup": "dotenv -e ../.env -- bash -c 'echo \"PRISMA_DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?schema=public\" > .env'",
+    "introspect": "npm run setup && prisma introspect",
+    "validate": "npm run setup && prisma validate",
+    "generate": "npm run setup && prisma generate",
     "update": "npm run introspect && npm run generate",
-    "postinstall": "dotenv -e ../.env prisma generate"
+    "postinstall": "npm run generate"
   },
   "devDependencies": {
     "dotenv-cli": "^4.0.0",
