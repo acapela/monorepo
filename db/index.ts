@@ -14,7 +14,7 @@ export type {
   verification_requests as VerificationRequest,
 } from "@prisma/client";
 
-const DB_VARS = ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"];
+const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];
 const ENV_VARS = Object.keys(process.env);
 
 if (DB_VARS.some((key) => !ENV_VARS.includes(key))) {
@@ -22,10 +22,10 @@ if (DB_VARS.some((key) => !ENV_VARS.includes(key))) {
   const missingStr = "<missing>";
 
   logger.error(error.message, {
-    DB_USER: process.env.DB_USER || missingStr,
-    DB_PASSWORD: process.env.DB_PASSWORD || missingStr,
     DB_HOST: process.env.DB_HOST || missingStr,
     DB_PORT: process.env.DB_PORT || missingStr,
+    DB_USER: process.env.DB_USER || missingStr,
+    DB_PASSWORD: process.env.DB_PASSWORD || missingStr,
     DB_NAME: process.env.DB_NAME || missingStr,
   });
 
