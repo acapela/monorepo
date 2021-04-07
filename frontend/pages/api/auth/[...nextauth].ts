@@ -53,11 +53,9 @@ const authAdapterProvider: Adapter = {
 
     return {
       async createUser(profile) {
-        const user = await db.user.create({
+        return await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
-
-        return user;
       },
 
       async updateUser(userData) {
@@ -69,7 +67,7 @@ const authAdapterProvider: Adapter = {
         // @ts-ignore
         const fixedEmailVerified: Date | null = email_verified ?? userData["emailVerified"];
 
-        const user = await db.user.update({
+        return await db.user.update({
           where: { id: userData.id },
           data: {
             // Never update email, user id and other critical data.
@@ -78,14 +76,10 @@ const authAdapterProvider: Adapter = {
             email_verified: fixedEmailVerified,
           },
         });
-
-        return user;
       },
 
       async getUser(id) {
-        const user = await db.user.findFirst({ where: { id } });
-
-        return user;
+        return await db.user.findFirst({ where: { id } });
       },
 
       async getUserByProviderAccountId(providerId, providerAccountId) {
@@ -98,9 +92,7 @@ const authAdapterProvider: Adapter = {
       },
 
       async getUserByEmail(email) {
-        const user = await db.user.findFirst({ where: { email } });
-
-        return user;
+        return await db.user.findFirst({ where: { email } });
       },
 
       async linkAccount(
@@ -163,9 +155,7 @@ const authAdapterProvider: Adapter = {
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async getVerificationRequest(identifier, token, secret, provider) {
-        const verificationRequest = await db.verification_requests.findFirst({ where: { identifier, token } });
-
-        return verificationRequest;
+        return await db.verification_requests.findFirst({ where: { identifier, token } });
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async deleteVerificationRequest(identifier, token, secret, provider) {
@@ -205,8 +195,7 @@ async function getAuthInitOptions() {
         if (!token) {
           throw new Error("JWT Token not found");
         }
-        const encodedToken = jwt.sign(token, secret, { algorithm: "HS256" });
-        return encodedToken;
+        return jwt.sign(token, secret, { algorithm: "HS256" });
       },
       decode: async ({ secret, token }) => {
         if (!token) {
@@ -258,7 +247,7 @@ async function getAuthInitOptions() {
         options: {
           /**
            * !!!
-           * We make session cookie accessable on client side.
+           * We make session cookie accessible on client side.
            *
            * This is because it seems to be the only way to make it work with hasura.
            *
@@ -279,7 +268,7 @@ async function getAuthInitOptions() {
            * The perfect solution would be configurable option in hasura that allows reading JWT from
            * cookie. But seems its not possible right now (https://github.com/hasura/graphql-engine/issues/2183)
            */
-          httpOnly: false, // <-- ! We make this cookie accessable on client side.
+          httpOnly: false, // <-- ! We make this cookie accessible on client side.
           sameSite: "lax",
           path: "/",
           secure: false,
@@ -293,7 +282,6 @@ async function getAuthInitOptions() {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         // Beside default scope, we need calendar access.
-        // scope: "https://www.googleapis.com/auth/calendar.readonly",
         scope:
           "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
       }),
