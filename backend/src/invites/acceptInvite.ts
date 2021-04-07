@@ -1,9 +1,8 @@
 import { validate as validateUuid } from "uuid";
 import { ActionHandler } from "../actions/actionHandlers";
-import { findInviteByCode, markInviteAsUsed } from "./invites";
-import { addParticipant, getIfParticipantExists } from "../rooms/rooms";
+import { findInviteByCode } from "./invites";
+import { addRoomParticipantAndInvalidateInvite, getIfParticipantExists } from "../rooms/rooms";
 import { NotFoundError, UnprocessableEntityError } from "../errors";
-import database from "../database";
 
 export interface AcceptInviteActionInputs {
   code: string;
@@ -29,28 +28,27 @@ export const acceptInvite: ActionHandler<
       throw new NotFoundError(`Invite not found for code: ${code}`);
     }
 
-    if (invite.inviterId === userId) {
+    if (invite.inviter_id === userId) {
       return {
-        room_id: invite.roomId,
+        room_id: invite.room_id,
         invite_id: invite.id,
       };
     }
 
-    if (invite.usedAt) {
+    if (invite.used_at) {
       throw new UnprocessableEntityError(`The invite for code ${code} has already been used`);
     }
-    const participantAlreadyExists = await getIfParticipantExists(invite.roomId, userId);
+
+    const participantAlreadyExists = await getIfParticipantExists(invite.room_id, userId);
 
     if (participantAlreadyExists) {
-      throw new UnprocessableEntityError(`The user ${userId} is already a participant in room ${invite.roomId}`);
+      throw new UnprocessableEntityError(`The user ${userId} is already a participant in room ${invite.room_id}`);
     }
 
-    await database.transaction((transaction) =>
-      Promise.all([addParticipant(invite.roomId, userId, transaction), markInviteAsUsed(invite, transaction)])
-    );
+    await addRoomParticipantAndInvalidateInvite(invite, userId);
 
     return {
-      room_id: invite.roomId,
+      room_id: invite.room_id,
       invite_id: invite.id,
     };
   },

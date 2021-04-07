@@ -1,4 +1,4 @@
-import { addParticipant, getIfParticipantExists } from "./rooms";
+import { addRoomParticipant, getIfParticipantExists } from "./rooms";
 import { EventHandler } from "../events/eventHandlers";
 import { UnprocessableEntityError } from "../errors";
 import logger from "@acapela/shared/logger";
@@ -20,7 +20,7 @@ export const handleRoomCreated: EventHandler<HasuraRoom> = {
         roomId: room.id,
         creatorId,
       });
-      await addParticipant(roomId, creatorId);
+      await addRoomParticipant(roomId, creatorId);
     } else {
       logger.info("Skipping adding creator as participant, as they are already there", {
         roomId: room.id,
