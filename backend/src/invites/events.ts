@@ -1,8 +1,9 @@
+import { User } from "@acapela/db";
+import logger from "@acapela/shared/logger";
 import { EventHandler } from "../events/eventHandlers";
 import { findRoomById } from "../rooms/rooms";
-import { findUserById, User } from "../users/users";
+import { findUserById } from "../users/users";
 import { UnprocessableEntityError } from "../errors";
-import logger from "@acapela/shared/logger";
 import { InviteNotification } from "./InviteNotification";
 import { sendNotification } from "../notifications/sendNotification";
 
@@ -18,6 +19,7 @@ export const handleInviteCreated: EventHandler<Invite> = {
   triggerName: "invite_created",
   handleInsert: async (userId: string, invite: Invite) => {
     const { room_id: roomId, inviter_id: inviterId } = invite;
+
     if (userId !== inviterId) {
       throw new UnprocessableEntityError(
         `Inviter id: ${inviterId} does not match user making the modification: ${userId}`
@@ -25,6 +27,7 @@ export const handleInviteCreated: EventHandler<Invite> = {
     }
 
     const [room, inviter] = await Promise.all([findRoomById(roomId), findUserById(inviterId)]);
+
     if (!room || !inviter) {
       throw new UnprocessableEntityError(`Room ${roomId} or inviter ${inviterId} does not exist`);
     }
@@ -35,7 +38,9 @@ export const handleInviteCreated: EventHandler<Invite> = {
       inviterName: getInviterName(inviter),
       inviteCode: invite.code,
     });
+
     await sendNotification(notification);
+
     logger.info("Sent invite notification", {
       userId,
       roomId,

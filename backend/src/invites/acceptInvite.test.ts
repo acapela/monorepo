@@ -5,11 +5,12 @@ import { Server } from "http";
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
 
+import { Room, User } from "@acapela/db";
 import { AcceptInviteActionInputs } from "./acceptInvite";
 import { HasuraAction } from "../actions/actions";
 import { createInviteForTests as createInvite, findInviteByCode } from "./invites";
-import { addParticipant, createRoom, getIfParticipantExists, Room } from "../rooms/rooms";
-import { createUser, User } from "../users/users";
+import { addRoomParticipant, createRoom, getIfParticipantExists } from "../rooms/rooms";
+import { createUser } from "../users/users";
 
 describe("Accepting invites", () => {
   let app: Server;
@@ -88,7 +89,7 @@ describe("Accepting invites", () => {
       inviterId: firstUser.id,
       email: secondUser.email!,
     });
-    await addParticipant(room.id, secondUser.id);
+    await addRoomParticipant(room.id, secondUser.id);
 
     await acceptInvite(secondUser.id, invite.code)
       .expect(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -117,7 +118,7 @@ describe("Accepting invites", () => {
 
 async function inviteUsedWithCode(code: string): Promise<boolean> {
   const invite = await findInviteByCode(code);
-  return !!invite!.usedAt;
+  return !!invite!.used_at;
 }
 
 function acceptInviteRequest(userId: string, code: string): HasuraAction<"accept_invite", AcceptInviteActionInputs> {

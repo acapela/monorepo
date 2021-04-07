@@ -1,9 +1,11 @@
-import { Server } from "http";
 import { v4 as uuid } from "uuid";
+import { Server } from "http";
 import sendgrid from "@sendgrid/mail";
+
+import { Room, User } from "@acapela/db";
 import { setupServer } from "../app";
-import { createRoom, Room } from "../rooms/rooms";
-import { createUser, User } from "../users/users";
+import { createRoom } from "../rooms/rooms";
+import { createUser } from "../users/users";
 import { HasuraEventOperation } from "../events/events";
 import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";

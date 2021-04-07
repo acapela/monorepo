@@ -1,8 +1,9 @@
 import { Server } from "http";
 
+import { Room, User } from "@acapela/db";
 import { setupServer } from "../app";
-import { addParticipant, createRoom, getIfParticipantExists, Room } from "./rooms";
-import { createUser, User } from "../users/users";
+import { addRoomParticipant, createRoom, getIfParticipantExists } from "./rooms";
+import { createUser } from "../users/users";
 import { HasuraEventOperation } from "../events/events";
 import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";
@@ -38,7 +39,7 @@ describe("Room events", () => {
       creatorId: user.id,
       name: "test room",
     });
-    await addParticipant(room.id, user.id);
+    await addRoomParticipant(room.id, user.id);
     await sendRoomCreation(user.id, room).expect(HttpStatus.OK);
   });
 
@@ -59,7 +60,7 @@ describe("Room events", () => {
       op: HasuraEventOperation.INSERT,
       newData: {
         id: room.id,
-        creator_id: room.creatorId,
+        creator_id: room.creator_id,
       },
       userId,
     });
