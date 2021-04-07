@@ -24,7 +24,6 @@
     "express-async-errors": "^3.1.1",
     "hasura-cli": "^1.4.0-alpha.2",
     "helmet": "^4.4.1",
-    "knex": "^0.95.3",
     "pg": "^8.5.1",
     "uuid": "^8.3.2"
   },
