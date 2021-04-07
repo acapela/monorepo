@@ -35,6 +35,7 @@ export async function addRoomParticipant(roomId: string, participantId: string):
   });
 }
 
+// Transactional
 export async function addRoomParticipantAndInvalidateInvite(invite: RoomInvites, participantId: string): Promise<Room> {
   return await db.room.update({
     where: {
@@ -61,7 +62,7 @@ export async function addRoomParticipantAndInvalidateInvite(invite: RoomInvites,
 }
 
 export async function getIfParticipantExists(roomId: string, participantId: string): Promise<boolean> {
-  const entry = await db.room_participants.findFirst({
+  const entry = await db.room_participants.count({
     where: { room_id: roomId, user_id: participantId },
   });
 
