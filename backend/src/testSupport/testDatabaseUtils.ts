@@ -1,5 +1,5 @@
-import database from "../database";
+import { db } from "@acapela/db";
 
-export async function cleanupDatabase(): Promise<unknown[]> {
-  return Promise.all([database.raw(`TRUNCATE TABLE "user" CASCADE`)]);
+export async function cleanupDatabase(): Promise<void> {
+  await db.$executeRaw`TRUNCATE TABLE "user" CASCADE`;
 }

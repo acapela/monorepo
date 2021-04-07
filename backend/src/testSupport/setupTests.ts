@@ -1,5 +1,5 @@
+import { db } from "@acapela/db";
 import { cleanupDatabase } from "./testDatabaseUtils";
-import database from "../database";
 
 beforeEach(async () => {
   await cleanupDatabase();
@@ -7,5 +7,5 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await cleanupDatabase();
-  await database.destroy();
+  await db.$disconnect();
 });
