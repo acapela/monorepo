@@ -8,6 +8,8 @@ function SvgSmilingFace(props: React.SVGProps<SVGSVGElement>) {
       </defs>
       <g id="smiling-face_svg__Layer_2" data-name="Layer 2">
         <g id="smiling-face_svg__smiling-face">
+          <circle cx={9} cy={9} r={1.5} />
+          <circle cx={15} cy={9} r={1.5} />
           <g id="smiling-face_svg__smiling-face" data-name="smiling-face">
             <path
               d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm5 9a5 5 0 01-10 0z"
