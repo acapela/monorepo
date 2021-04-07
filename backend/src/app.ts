@@ -6,7 +6,6 @@ import securityMiddleware from "helmet";
 import { initializeSecrets } from "@acapela/config";
 import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import logger from "@acapela/shared/logger";
-import database from "./database";
 import { errorHandling, notFoundRouteHandling } from "./errors";
 import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
@@ -47,7 +46,7 @@ function setupGracefulShutdown(server: Server) {
 
   gracefulShutdown(server, {
     onSignal: () => {
-      return Promise.all([database.destroy(), closeServer()]);
+      return closeServer();
     },
     beforeShutdown: () => {
       return new Promise((resolve) => {
