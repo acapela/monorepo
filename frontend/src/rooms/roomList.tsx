@@ -62,8 +62,8 @@ export const RoomList: React.FC<unknown> = () => {
     return <span>Loading...</span>;
   }
 
-  if (!data) {
-    return null;
+  if (!data?.room.length) {
+    return <span>Start by creating new Acapela</span>;
   }
 
   return (
