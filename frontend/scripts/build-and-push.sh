@@ -11,6 +11,7 @@ VERSION=$1
 IMAGE_NAME="eu.gcr.io/meetnomoreapp/frontend"
 IMAGE_NAME_VERSION="$IMAGE_NAME:$VERSION"
 
+./scripts/generate-dependencies.sh > dependencies-to-install.txt
 cp ../.env.production ./
 
 echo "building image..."

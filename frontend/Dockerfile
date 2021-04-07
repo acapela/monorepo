@@ -4,7 +4,8 @@ RUN wget https://storage.googleapis.com/berglas/main/linux_amd64/berglas -O /bin
 
 WORKDIR /app
 
-RUN npm install --no-package-lock --no-save next
+COPY ./dependencies-to-install.txt ./
+RUN cat dependencies-to-install.txt | xargs npm install --no-package-lock --no-save
 
 COPY package.json ./
 COPY ./.env.production ./.env
