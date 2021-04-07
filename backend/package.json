@@ -15,6 +15,7 @@
   "peerDependencies": {
     "axios": "*",
     "express": "*",
+    "hasura-cli": "*",
     "typescript": "*"
   },
   "dependencies": {
@@ -22,7 +23,6 @@
     "@godaddy/terminus": "^4.7.1",
     "@google-cloud/secret-manager": "^3.5.0",
     "express-async-errors": "^3.1.1",
-    "hasura-cli": "^1.4.0-alpha.2",
     "helmet": "^4.4.1",
     "pg": "^8.5.1",
     "uuid": "^8.3.2"
