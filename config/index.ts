@@ -75,8 +75,7 @@ async function performInjectSecretsToEnv(): Promise<void> {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-let googleSecretsClient: any = null;
+let googleSecretsClient: InstanceType<typeof import("@google-cloud/secret-manager")["SecretManagerServiceClient"]>;
 
 const googleSecretEnvVarRegExp = /googleSecret\("(.+)"\)/;
 
@@ -86,7 +85,8 @@ async function getGoogleSecretValue(secretName: string) {
     const gsm = require("@google-cloud/secret-manager");
     googleSecretsClient = new gsm.SecretManagerServiceClient();
   }
-  const [version] = await googleSecretsClient.accessSecretVersion({
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  const [version] = await googleSecretsClient!.accessSecretVersion({
     name: `projects/meetnomoreapp/secrets/${secretName}/versions/latest`,
   });
 
