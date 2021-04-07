@@ -83,7 +83,7 @@ describe("Accepting invites", () => {
       });
   });
 
-  it("does not let you accept an invite where you are already in the room", async () => {
+  it("lets you accept an invite where you are already in the room", async () => {
     const invite = await createInvite({
       roomId: room.id,
       inviterId: firstUser.id,
@@ -92,11 +92,13 @@ describe("Accepting invites", () => {
     await addRoomParticipant(room.id, secondUser.id);
 
     await acceptInvite(secondUser.id, invite.code)
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expect(HttpStatus.OK)
       .expect(({ body }) => {
-        expect(body.code).toBe("422");
-        expect(body.message).toMatch(/already a participant/gi);
+        expect(body.invite_id).toEqual(invite.id);
+        expect(body.room_id).toEqual(room.id);
       });
+
+    expect(await inviteUsedWithCode(invite.code)).toBe(true);
   });
 
   it("handles malformed invite codes", async () => {

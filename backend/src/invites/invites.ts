@@ -15,6 +15,17 @@ export async function findInviteByCode(code: string): Promise<RoomInvites | null
   });
 }
 
+export async function invalidateInvite(invite: RoomInvites): Promise<RoomInvites> {
+  return await db.room_invites.update({
+    where: {
+      id: invite.id,
+    },
+    data: {
+      used_at: new Date(),
+    },
+  });
+}
+
 export interface InviteCreationParameters {
   inviterId: string;
   roomId: string;

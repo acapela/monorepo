@@ -1,6 +1,6 @@
 import { validate as validateUuid } from "uuid";
 import { ActionHandler } from "../actions/actionHandlers";
-import { findInviteByCode } from "./invites";
+import { findInviteByCode, invalidateInvite } from "./invites";
 import { addRoomParticipantAndInvalidateInvite, getIfParticipantExists } from "../rooms/rooms";
 import { NotFoundError, UnprocessableEntityError } from "../errors";
 
@@ -42,7 +42,12 @@ export const acceptInvite: ActionHandler<
     const participantAlreadyExists = await getIfParticipantExists(invite.room_id, userId);
 
     if (participantAlreadyExists) {
-      throw new UnprocessableEntityError(`The user ${userId} is already a participant in room ${invite.room_id}`);
+      await invalidateInvite(invite);
+
+      return {
+        room_id: invite.room_id,
+        invite_id: invite.id,
+      };
     }
 
     await addRoomParticipantAndInvalidateInvite(invite, userId);
