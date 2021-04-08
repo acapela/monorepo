@@ -53,9 +53,12 @@ const authAdapterProvider: Adapter = {
 
     return {
       async createUser(profile) {
-        return await db.user.create({
+        // noinspection UnnecessaryLocalVariableJS
+        const user = await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
+
+        return user;
       },
 
       async updateUser(userData) {
@@ -67,7 +70,8 @@ const authAdapterProvider: Adapter = {
         // @ts-ignore
         const fixedEmailVerified: Date | null = email_verified ?? userData["emailVerified"];
 
-        return await db.user.update({
+        // noinspection UnnecessaryLocalVariableJS
+        const user = await db.user.update({
           where: { id: userData.id },
           data: {
             // Never update email, user id and other critical data.
@@ -76,6 +80,8 @@ const authAdapterProvider: Adapter = {
             email_verified: fixedEmailVerified,
           },
         });
+
+        return user;
       },
 
       async getUser(id) {
