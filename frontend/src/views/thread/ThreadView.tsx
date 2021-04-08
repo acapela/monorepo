@@ -7,6 +7,7 @@ import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "@
 import { MessageComposer } from "./Composer";
 import { TextMessage } from "./TextMessage";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
+import ScrollableMessages from "@acapela/frontend/views/thread/ScrollableMessages";
 
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
@@ -44,12 +45,12 @@ const UIThreadView = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-`;
 
-const UIMessages = styled.div`
-  flex: 1 1 100%;
-  width: 100%;
-  overflow: auto;
+  ${ScrollableMessages} {
+    flex: 1 1 100%;
+    width: 100%;
+    overflow: auto;
+  }
 `;
 
 const UIMessageComposer = styled.div`
@@ -79,7 +80,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
 
   return (
     <UIThreadView>
-      <UIMessages>
+      <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           {messages.map((message) => (
             <TextMessage key={message.id} message={message} />
@@ -88,7 +89,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
             <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
           )}
         </UIAnimatedMessagesWrapper>
-      </UIMessages>
+      </ScrollableMessages>
       <UIMessageComposer>
         <MessageComposer threadId={id} />
       </UIMessageComposer>
