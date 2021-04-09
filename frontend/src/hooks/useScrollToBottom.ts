@@ -1,19 +1,20 @@
-import { DependencyList, useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
+import { useIsomorphicLayoutEffect } from "@acapela/frontend/hooks/useIsomorphicLayoutEffect";
 
-interface Props {
-  dependencies: DependencyList;
+interface ScrollToBottomConfig {
+  ref: RefObject<HTMLElement>;
   /**
-   * The gap ensures you don't need to be precisely at the very end of the scroll for auto scroll to work
+   * This gives additional margin from the bottom
+   * So you don't need to be precisely at the very end of the scroll for auto scroll to work
    */
-  gap: number;
+  bottomMargin: number;
 }
 
 function scrollToBottom(node: HTMLElement) {
   node.scrollTop = node.scrollHeight - node.clientHeight;
 }
 
-export const useScrollToBottom = ({ dependencies, gap = 0 }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
+export const useScrollToBottom = ({ ref, bottomMargin = 0 }: ScrollToBottomConfig) => {
   const shouldAutoScroll = useRef<boolean>(false);
 
   // Tracking scroll position
@@ -24,7 +25,7 @@ export const useScrollToBottom = ({ dependencies, gap = 0 }: Props) => {
 
     const scrollTop = ref.current.scrollTop;
     const rawVisibleHeight = ref.current.scrollHeight - ref.current.clientHeight;
-    const adjustedVisibleHeight = rawVisibleHeight - gap;
+    const adjustedVisibleHeight = rawVisibleHeight - bottomMargin;
 
     shouldAutoScroll.current = scrollTop >= adjustedVisibleHeight;
   };
@@ -38,14 +39,17 @@ export const useScrollToBottom = ({ dependencies, gap = 0 }: Props) => {
     if (shouldAutoScroll.current) {
       scrollToBottom(ref.current);
     }
-  }, [dependencies]);
+  });
 
   // Scroll to bottom on initial render
-  useEffect(() => {
-    if (ref.current) {
-      scrollToBottom(ref.current);
+  useIsomorphicLayoutEffect(() => {
+    if (!ref.current) {
+      return;
     }
-  }, []);
 
-  return { ref, onScroll };
+    scrollToBottom(ref.current);
+    ref.current.addEventListener("scroll", onScroll);
+
+    return () => ref.current?.removeEventListener("scroll", onScroll);
+  }, [ref]);
 };
