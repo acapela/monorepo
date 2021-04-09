@@ -1,4 +1,4 @@
-import React, { DependencyList } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { useScrollToBottom } from "@acapela/frontend/hooks/useScrollToBottom";
 
@@ -7,14 +7,16 @@ interface Props {
   className?: string;
 }
 
-const ScrollableMessages = ({ children, className }: Props) => {
-  const { ref, onScroll } = useScrollToBottom({ dependencies: children as DependencyList, gap: 80 });
+const PureScrollableMessages = ({ children, className }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useScrollToBottom({ ref, bottomMargin: 80 });
 
   return (
-    <div className={className} ref={ref} onScroll={onScroll}>
+    <div className={className} ref={ref}>
       {children}
     </div>
   );
 };
 
-export default styled(ScrollableMessages)``;
+export const ScrollableMessages = styled(PureScrollableMessages)``;

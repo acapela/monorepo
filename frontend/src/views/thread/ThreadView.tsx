@@ -7,7 +7,7 @@ import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "@
 import { MessageComposer } from "./Composer";
 import { TextMessage } from "./TextMessage";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import ScrollableMessages from "@acapela/frontend/views/thread/ScrollableMessages";
+import { ScrollableMessages } from "@acapela/frontend/views/thread/ScrollableMessages";
 
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
