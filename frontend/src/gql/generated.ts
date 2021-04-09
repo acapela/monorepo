@@ -5,6 +5,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions = {};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -2803,9 +2804,31 @@ export type RoomDetailedInfoFragment = { __typename?: "room" } & Pick<Room, "id"
     threads: Array<{ __typename?: "thread" } & Pick<Thread, "id" | "name" | "index">>;
   };
 
+export type ParticipantBasicInfoFragment = { __typename?: "room_participants" } & {
+  user: { __typename?: "user" } & Pick<User, "name"> & { avatarUrl: User["avatar_url"] };
+};
+
+export type ThreadDetailedInfoFragment = { __typename?: "thread" } & Pick<Thread, "id" | "name" | "index">;
+
 export type ThreadMessageBasicInfoFragment = { __typename?: "message" } & Pick<Message, "id" | "text"> & {
     createdAt: Message["created_at"];
   } & { user: { __typename?: "user" } & Pick<User, "id" | "name"> & { avatarUrl: User["avatar_url"] } };
+
+export type RoomThreadsSubscriptionVariables = Exact<{
+  roomId: Scalars["uuid"];
+}>;
+
+export type RoomThreadsSubscription = { __typename?: "subscription_root" } & {
+  threads: Array<{ __typename?: "thread" } & ThreadDetailedInfoFragment>;
+};
+
+export type RoomParticipantsSubscriptionVariables = Exact<{
+  roomId: Scalars["uuid"];
+}>;
+
+export type RoomParticipantsSubscription = { __typename?: "subscription_root" } & {
+  participants: Array<{ __typename?: "room_participants" } & ParticipantBasicInfoFragment>;
+};
 
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -3972,6 +3995,21 @@ export const RoomDetailedInfoFragmentDoc = gql`
     }
   }
 `;
+export const ParticipantBasicInfoFragmentDoc = gql`
+  fragment ParticipantBasicInfo on room_participants {
+    user {
+      name
+      avatarUrl: avatar_url
+    }
+  }
+`;
+export const ThreadDetailedInfoFragmentDoc = gql`
+  fragment ThreadDetailedInfo on thread {
+    id
+    name
+    index
+  }
+`;
 export const ThreadMessageBasicInfoFragmentDoc = gql`
   fragment ThreadMessageBasicInfo on message {
     id
@@ -4013,7 +4051,8 @@ export type AcceptInviteMutationFn = Apollo.MutationFunction<AcceptInviteMutatio
 export function useAcceptInviteMutation(
   baseOptions?: Apollo.MutationHookOptions<AcceptInviteMutation, AcceptInviteMutationVariables>
 ) {
-  return Apollo.useMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(AcceptInviteDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(AcceptInviteDocument, options);
 }
 export type AcceptInviteMutationHookResult = ReturnType<typeof useAcceptInviteMutation>;
 export type AcceptInviteMutationResult = Apollo.MutationResult<AcceptInviteMutation>;
@@ -4047,22 +4086,93 @@ export const GetRoomsTestQueryDocument = gql`
 export function useGetRoomsTestQueryQuery(
   baseOptions?: Apollo.QueryHookOptions<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>
 ) {
-  return Apollo.useQuery<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>(
-    GetRoomsTestQueryDocument,
-    baseOptions
-  );
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>(GetRoomsTestQueryDocument, options);
 }
 export function useGetRoomsTestQueryLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>(
     GetRoomsTestQueryDocument,
-    baseOptions
+    options
   );
 }
 export type GetRoomsTestQueryQueryHookResult = ReturnType<typeof useGetRoomsTestQueryQuery>;
 export type GetRoomsTestQueryLazyQueryHookResult = ReturnType<typeof useGetRoomsTestQueryLazyQuery>;
 export type GetRoomsTestQueryQueryResult = Apollo.QueryResult<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>;
+export const RoomThreadsDocument = gql`
+  subscription RoomThreads($roomId: uuid!) {
+    threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
+      ...ThreadDetailedInfo
+    }
+  }
+  ${ThreadDetailedInfoFragmentDoc}
+`;
+
+/**
+ * __useRoomThreadsSubscription__
+ *
+ * To run a query within a React component, call `useRoomThreadsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRoomThreadsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoomThreadsSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useRoomThreadsSubscription(
+  baseOptions: Apollo.SubscriptionHookOptions<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSubscription<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>(
+    RoomThreadsDocument,
+    options
+  );
+}
+export type RoomThreadsSubscriptionHookResult = ReturnType<typeof useRoomThreadsSubscription>;
+export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThreadsSubscription>;
+export const RoomParticipantsDocument = gql`
+  subscription RoomParticipants($roomId: uuid!) {
+    participants: room_participants(where: { room_id: { _eq: $roomId } }) {
+      ...ParticipantBasicInfo
+    }
+  }
+  ${ParticipantBasicInfoFragmentDoc}
+`;
+
+/**
+ * __useRoomParticipantsSubscription__
+ *
+ * To run a query within a React component, call `useRoomParticipantsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRoomParticipantsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoomParticipantsSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useRoomParticipantsSubscription(
+  baseOptions: Apollo.SubscriptionHookOptions<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSubscription<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>(
+    RoomParticipantsDocument,
+    options
+  );
+}
+export type RoomParticipantsSubscriptionHookResult = ReturnType<typeof useRoomParticipantsSubscription>;
+export type RoomParticipantsSubscriptionResult = Apollo.SubscriptionResult<RoomParticipantsSubscription>;
 export const GetRoomsDocument = gql`
   query GetRooms {
     room {
@@ -4088,10 +4198,12 @@ export const GetRoomsDocument = gql`
  * });
  */
 export function useGetRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetRoomsQuery, GetRoomsQueryVariables>) {
-  return Apollo.useQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, options);
 }
 export function useGetRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomsQuery, GetRoomsQueryVariables>) {
-  return Apollo.useLazyQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, options);
 }
 export type GetRoomsQueryHookResult = ReturnType<typeof useGetRoomsQuery>;
 export type GetRoomsLazyQueryHookResult = ReturnType<typeof useGetRoomsLazyQuery>;
@@ -4124,12 +4236,14 @@ export const GetSingleRoomDocument = gql`
 export function useGetSingleRoomQuery(
   baseOptions: Apollo.QueryHookOptions<GetSingleRoomQuery, GetSingleRoomQueryVariables>
 ) {
-  return Apollo.useQuery<GetSingleRoomQuery, GetSingleRoomQueryVariables>(GetSingleRoomDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetSingleRoomQuery, GetSingleRoomQueryVariables>(GetSingleRoomDocument, options);
 }
 export function useGetSingleRoomLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<GetSingleRoomQuery, GetSingleRoomQueryVariables>
 ) {
-  return Apollo.useLazyQuery<GetSingleRoomQuery, GetSingleRoomQueryVariables>(GetSingleRoomDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetSingleRoomQuery, GetSingleRoomQueryVariables>(GetSingleRoomDocument, options);
 }
 export type GetSingleRoomQueryHookResult = ReturnType<typeof useGetSingleRoomQuery>;
 export type GetSingleRoomLazyQueryHookResult = ReturnType<typeof useGetSingleRoomLazyQuery>;
@@ -4163,7 +4277,8 @@ export type CreateRoomMutationFn = Apollo.MutationFunction<CreateRoomMutation, C
 export function useCreateRoomMutation(
   baseOptions?: Apollo.MutationHookOptions<CreateRoomMutation, CreateRoomMutationVariables>
 ) {
-  return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, options);
 }
 export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
 export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
@@ -4199,7 +4314,8 @@ export type CreateThreadMutationFn = Apollo.MutationFunction<CreateThreadMutatio
 export function useCreateThreadMutation(
   baseOptions?: Apollo.MutationHookOptions<CreateThreadMutation, CreateThreadMutationVariables>
 ) {
-  return Apollo.useMutation<CreateThreadMutation, CreateThreadMutationVariables>(CreateThreadDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateThreadMutation, CreateThreadMutationVariables>(CreateThreadDocument, options);
 }
 export type CreateThreadMutationHookResult = ReturnType<typeof useCreateThreadMutation>;
 export type CreateThreadMutationResult = Apollo.MutationResult<CreateThreadMutation>;
@@ -4236,12 +4352,14 @@ export const GetRoomInvitesDocument = gql`
 export function useGetRoomInvitesQuery(
   baseOptions: Apollo.QueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>
 ) {
-  return Apollo.useQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
 }
 export function useGetRoomInvitesLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>
 ) {
-  return Apollo.useLazyQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
 }
 export type GetRoomInvitesQueryHookResult = ReturnType<typeof useGetRoomInvitesQuery>;
 export type GetRoomInvitesLazyQueryHookResult = ReturnType<typeof useGetRoomInvitesLazyQuery>;
@@ -4278,7 +4396,8 @@ export type CreateInviteMutationFn = Apollo.MutationFunction<CreateInviteMutatio
 export function useCreateInviteMutation(
   baseOptions?: Apollo.MutationHookOptions<CreateInviteMutation, CreateInviteMutationVariables>
 ) {
-  return Apollo.useMutation<CreateInviteMutation, CreateInviteMutationVariables>(CreateInviteDocument, baseOptions);
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateInviteMutation, CreateInviteMutationVariables>(CreateInviteDocument, options);
 }
 export type CreateInviteMutationHookResult = ReturnType<typeof useCreateInviteMutation>;
 export type CreateInviteMutationResult = Apollo.MutationResult<CreateInviteMutation>;
@@ -4320,9 +4439,10 @@ export type CreateTextMessageMutationFn = Apollo.MutationFunction<
 export function useCreateTextMessageMutation(
   baseOptions?: Apollo.MutationHookOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<CreateTextMessageMutation, CreateTextMessageMutationVariables>(
     CreateTextMessageDocument,
-    baseOptions
+    options
   );
 }
 export type CreateTextMessageMutationHookResult = ReturnType<typeof useCreateTextMessageMutation>;
@@ -4359,9 +4479,10 @@ export const ThreadMessagesDocument = gql`
 export function useThreadMessagesSubscription(
   baseOptions: Apollo.SubscriptionHookOptions<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>
 ) {
+  const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useSubscription<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>(
     ThreadMessagesDocument,
-    baseOptions
+    options
   );
 }
 export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
