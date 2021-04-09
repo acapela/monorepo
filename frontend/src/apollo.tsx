@@ -11,10 +11,6 @@ function readCurrentToken(): string | null {
   return Cookie.get(TOKEN_COOKIE_NAME) ?? null;
 }
 
-function isServerSide() {
-  return typeof window === "undefined";
-}
-
 const authorizationHeaderLink = new ApolloLink((operation, forward) => {
   const authToken = readCurrentToken();
 
@@ -31,12 +27,7 @@ const authorizationHeaderLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const socketLink = (function createSocketLink() {
-  // Return dummy link for the server
-  if (isServerSide()) {
-    return new ApolloLink((operation, forward) => forward(operation));
-  }
-
+function createSocketLink() {
   return new WebSocketLink({
     uri: `${GRAPHQL_SUBSCRIPTION_HOST}/v1/graphql`,
     options: {
@@ -57,23 +48,27 @@ const socketLink = (function createSocketLink() {
       },
     },
   });
-})();
+}
 
 const httpLink = new HttpLink({ uri: "/graphql" });
 
 const createApolloClient = (): ApolloClient<unknown> => {
-  const directionalLink = splitLinks(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return definition.kind === "OperationDefinition" && definition.operation === "subscription";
-    },
-    socketLink,
-    authorizationHeaderLink.concat(httpLink)
-  );
+  const ssrMode = typeof window === "undefined";
+
+  const link = ssrMode
+    ? authorizationHeaderLink.concat(httpLink)
+    : splitLinks(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+        },
+        createSocketLink(),
+        authorizationHeaderLink.concat(httpLink)
+      );
 
   return new ApolloClient({
-    ssrMode: true,
-    link: directionalLink,
+    ssrMode,
+    link,
     cache: new InMemoryCache(),
   });
 };
