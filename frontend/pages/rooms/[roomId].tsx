@@ -22,7 +22,7 @@ export default authenticated(() => {
   const room = data?.room;
 
   useEffect(() => {
-    if (room && room.threads && room.threads.length) {
+    if (room?.threads?.length) {
       setRedirecting(true);
       replace(`/rooms/${room.id}/threads/${room.threads[0].id}`).then(() => setRedirecting(false));
     }
@@ -34,7 +34,7 @@ export default authenticated(() => {
   }
 
   return (
-    <RoomLayout room={room}>
+    <RoomLayout roomId={room.id}>
       <Head>
         <title>{room.name} | Acapela</title>
       </Head>
