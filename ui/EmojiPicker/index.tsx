@@ -22,7 +22,6 @@ export function EmojiPicker({ onPicked, className }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
   useClickAway(holderRef, () => {
     setIsOpened(false);
-    //
   });
 
   const exitStyle: Target = { y: 10, opacity: 0 };
