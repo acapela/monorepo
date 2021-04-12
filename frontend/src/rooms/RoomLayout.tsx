@@ -6,10 +6,17 @@ import { NavLink } from "@acapela/frontend/design/NavLink";
 import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { Button } from "@acapela/ui/button";
 import { InviteButton } from "./invites";
-import { RoomDetailedInfoFragment } from "../gql";
+import {
+  ParticipantBasicInfoFragment,
+  ThreadDetailedInfoFragment,
+  useRoomParticipantsSubscription,
+  useRoomThreadsSubscription,
+} from "../gql";
+import { gql } from "@apollo/client";
+import { AvatarProps } from "@acapela/frontend/design/Avatar";
 
 interface Props {
-  room: RoomDetailedInfoFragment;
+  roomId: string;
   children: ReactNode;
 }
 
@@ -26,28 +33,56 @@ const UIThreadsWrapper = styled.div`
   } ;
 `;
 
-export const RoomLayout: React.FC<Props> = ({ room, children }) => {
+gql`
+  subscription RoomThreads($roomId: uuid!) {
+    threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
+      ...ThreadDetailedInfo
+    }
+  }
+`;
+
+gql`
+  subscription RoomParticipants($roomId: uuid!) {
+    participants: room_participants(where: { room_id: { _eq: $roomId } }) {
+      ...ParticipantBasicInfo
+    }
+  }
+`;
+
+const useThreads = (roomId: string): { loading: boolean; threads: ThreadDetailedInfoFragment[] } => {
+  const { data, loading } = useRoomThreadsSubscription({ variables: { roomId } });
+
+  return { loading, threads: data?.threads ?? [] };
+};
+
+const useParticipants = (roomId: string): { loading: boolean; participants: ParticipantBasicInfoFragment[] } => {
+  const { data, loading } = useRoomParticipantsSubscription({ variables: { roomId } });
+
+  return { loading, participants: data?.participants ?? [] };
+};
+
+export const RoomLayout: React.FC<Props> = ({ roomId, children }) => {
+  const { threads } = useThreads(roomId);
+  const { participants } = useParticipants(roomId);
+
   return (
     <SidebarLayout
       sidebar={{
         content: (
           <>
             <AvatarList
-              avatars={(room.participants || [])
+              avatars={participants
                 .filter(({ user }) => user.avatarUrl || user.name)
-                .map(({ user }) => ({ name: user.name, url: user.avatarUrl }))}
+                .map(({ user }) => ({ name: user.name, url: user.avatarUrl } as AvatarProps))}
             />
-            <UIStyledInviteButton roomId={room.id} />
+            <UIStyledInviteButton roomId={roomId} />
             <UIThreadsWrapper>
-              {(room.threads || []).map(({ id, name }, index) => (
-                <NavLink key={id} to={`/rooms/${room.id}/threads/${id}`}>
+              {threads.map(({ id, name }, index) => (
+                <NavLink key={id} to={`/rooms/${roomId}/threads/${id}`}>
                   {index + 1} {name}
                 </NavLink>
               ))}
-              <ThreadCreationButton
-                roomId={room.id}
-                lastThreadIndex={(room.threads || [])[room.threads.length - 1]?.index}
-              />
+              <ThreadCreationButton roomId={roomId} lastThreadIndex={threads[threads.length - 1]?.index ?? 0} />
             </UIThreadsWrapper>
           </>
         ),

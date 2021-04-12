@@ -20,7 +20,7 @@ const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
 
   return (
     <div className={className}>
-      <img src={url} alt={`${name}'s avatar`} onError={() => setFailedToLoad(true)} />
+      <img src={url} alt={`${name}'s avatar`} title={name} onError={() => setFailedToLoad(true)} />
     </div>
   );
 };
