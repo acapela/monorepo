@@ -2897,6 +2897,46 @@ export type Uuid_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['uuid']>>;
 };
 
+export type GetRoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRoomsTestQueryQuery = (
+  { __typename?: 'query_root' }
+  & { room: Array<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id'>
+  )> }
+);
+
+export type CreateInviteMutationVariables = Exact<{
+  email: Scalars['String'];
+  roomId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateInviteMutation = (
+  { __typename?: 'mutation_root' }
+  & { invite?: Maybe<(
+    { __typename?: 'room_invites' }
+    & Pick<Room_Invites, 'id' | 'email'>
+    & { usedAt: Room_Invites['used_at'] }
+  )> }
+);
+
+export type GetRoomInvitesQueryVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type GetRoomInvitesQuery = (
+  { __typename?: 'query_root' }
+  & { invites: Array<(
+    { __typename?: 'room_invites' }
+    & Pick<Room_Invites, 'id' | 'email'>
+    & { usedAt: Room_Invites['used_at'] }
+  )> }
+);
+
 export type AcceptInviteMutationVariables = Exact<{
   code: Scalars['String'];
 }>;
@@ -2907,17 +2947,6 @@ export type AcceptInviteMutation = (
   & { invite?: Maybe<(
     { __typename?: 'InviteAcceptResponse' }
     & { roomId: InviteAcceptResponse['room_id'] }
-  )> }
-);
-
-export type GetRoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetRoomsTestQueryQuery = (
-  { __typename?: 'query_root' }
-  & { room: Array<(
-    { __typename?: 'room' }
-    & Pick<Room, 'id'>
   )> }
 );
 
@@ -2975,6 +3004,42 @@ export type ThreadMessageBasicInfoFragment = (
   ) }
 );
 
+export type CreateTextMessageMutationVariables = Exact<{
+  text: Scalars['String'];
+  threadId: Scalars['uuid'];
+}>;
+
+
+export type CreateTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & ThreadMessageBasicInfoFragment
+  )> }
+);
+
+export type ThreadMessagesSubscriptionVariables = Exact<{
+  threadId: Scalars['uuid'];
+}>;
+
+
+export type ThreadMessagesSubscription = (
+  { __typename?: 'subscription_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & ThreadMessageBasicInfoFragment
+  )> }
+);
+
+export type RoomParticipantBasicInfoFragment = (
+  { __typename?: 'room_participants' }
+  & { user: (
+    { __typename?: 'user' }
+    & Pick<User, 'name'>
+    & { avatarUrl: User['avatar_url'] }
+  ) }
+);
+
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3012,6 +3077,19 @@ export type CreateRoomMutation = (
   )> }
 );
 
+export type RoomParticipantsSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type RoomParticipantsSubscription = (
+  { __typename?: 'subscription_root' }
+  & { participants: Array<(
+    { __typename?: 'room_participants' }
+    & ParticipantBasicInfoFragment
+  )> }
+);
+
 export type CreateThreadMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -3027,21 +3105,6 @@ export type CreateThreadMutation = (
   )> }
 );
 
-export type CreateInviteMutationVariables = Exact<{
-  email: Scalars['String'];
-  roomId?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateInviteMutation = (
-  { __typename?: 'mutation_root' }
-  & { invite?: Maybe<(
-    { __typename?: 'room_invites' }
-    & Pick<Room_Invites, 'id' | 'email'>
-    & { usedAt: Room_Invites['used_at'] }
-  )> }
-);
-
 export type RoomThreadsSubscriptionVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
@@ -3052,60 +3115,6 @@ export type RoomThreadsSubscription = (
   & { threads: Array<(
     { __typename?: 'thread' }
     & ThreadDetailedInfoFragment
-  )> }
-);
-
-export type GetRoomInvitesQueryVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type GetRoomInvitesQuery = (
-  { __typename?: 'query_root' }
-  & { invites: Array<(
-    { __typename?: 'room_invites' }
-    & Pick<Room_Invites, 'id' | 'email'>
-    & { usedAt: Room_Invites['used_at'] }
-  )> }
-);
-
-export type RoomParticipantsSubscriptionVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type RoomParticipantsSubscription = (
-  { __typename?: 'subscription_root' }
-  & { participants: Array<(
-    { __typename?: 'room_participants' }
-    & ParticipantBasicInfoFragment
-  )> }
-);
-
-export type CreateTextMessageMutationVariables = Exact<{
-  text: Scalars['String'];
-  threadId: Scalars['uuid'];
-}>;
-
-
-export type CreateTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
-  )> }
-);
-
-export type ThreadMessagesSubscriptionVariables = Exact<{
-  threadId: Scalars['uuid'];
-}>;
-
-
-export type ThreadMessagesSubscription = (
-  { __typename?: 'subscription_root' }
-  & { messages: Array<(
-    { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
   )> }
 );
 
@@ -3862,39 +3871,14 @@ export const ThreadMessageBasicInfoFragmentDoc = gql`
   }
 }
     `;
-export const AcceptInviteDocument = gql`
-    mutation AcceptInvite($code: String!) {
-  invite: accept_invite(code: $code) {
-    roomId: room_id
+export const RoomParticipantBasicInfoFragmentDoc = gql`
+    fragment RoomParticipantBasicInfo on room_participants {
+  user {
+    name
+    avatarUrl: avatar_url
   }
 }
     `;
-export type AcceptInviteMutationFn = Apollo.MutationFunction<AcceptInviteMutation, AcceptInviteMutationVariables>;
-
-/**
- * __useAcceptInviteMutation__
- *
- * To run a mutation, you first call `useAcceptInviteMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAcceptInviteMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [acceptInviteMutation, { data, loading, error }] = useAcceptInviteMutation({
- *   variables: {
- *      code: // value for 'code'
- *   },
- * });
- */
-export function useAcceptInviteMutation(baseOptions?: Apollo.MutationHookOptions<AcceptInviteMutation, AcceptInviteMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(AcceptInviteDocument, options);
-      }
-export type AcceptInviteMutationHookResult = ReturnType<typeof useAcceptInviteMutation>;
-export type AcceptInviteMutationResult = Apollo.MutationResult<AcceptInviteMutation>;
-export type AcceptInviteMutationOptions = Apollo.BaseMutationOptions<AcceptInviteMutation, AcceptInviteMutationVariables>;
 export const GetRoomsTestQueryDocument = gql`
     query GetRoomsTestQuery {
   room {
@@ -3929,6 +3913,181 @@ export function useGetRoomsTestQueryLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type GetRoomsTestQueryQueryHookResult = ReturnType<typeof useGetRoomsTestQueryQuery>;
 export type GetRoomsTestQueryLazyQueryHookResult = ReturnType<typeof useGetRoomsTestQueryLazyQuery>;
 export type GetRoomsTestQueryQueryResult = Apollo.QueryResult<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>;
+export const CreateInviteDocument = gql`
+    mutation CreateInvite($email: String!, $roomId: uuid) {
+  invite: insert_room_invites_one(object: {email: $email, room_id: $roomId}) {
+    id
+    email
+    usedAt: used_at
+  }
+}
+    `;
+export type CreateInviteMutationFn = Apollo.MutationFunction<CreateInviteMutation, CreateInviteMutationVariables>;
+
+/**
+ * __useCreateInviteMutation__
+ *
+ * To run a mutation, you first call `useCreateInviteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateInviteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createInviteMutation, { data, loading, error }] = useCreateInviteMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useCreateInviteMutation(baseOptions?: Apollo.MutationHookOptions<CreateInviteMutation, CreateInviteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateInviteMutation, CreateInviteMutationVariables>(CreateInviteDocument, options);
+      }
+export type CreateInviteMutationHookResult = ReturnType<typeof useCreateInviteMutation>;
+export type CreateInviteMutationResult = Apollo.MutationResult<CreateInviteMutation>;
+export type CreateInviteMutationOptions = Apollo.BaseMutationOptions<CreateInviteMutation, CreateInviteMutationVariables>;
+export const GetRoomInvitesDocument = gql`
+    query GetRoomInvites($roomId: uuid!) {
+  invites: room_invites(where: {room_id: {_eq: $roomId}}) {
+    id
+    email
+    usedAt: used_at
+  }
+}
+    `;
+
+/**
+ * __useGetRoomInvitesQuery__
+ *
+ * To run a query within a React component, call `useGetRoomInvitesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomInvitesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomInvitesQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetRoomInvitesQuery(baseOptions: Apollo.QueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
+      }
+export function useGetRoomInvitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
+        }
+export type GetRoomInvitesQueryHookResult = ReturnType<typeof useGetRoomInvitesQuery>;
+export type GetRoomInvitesLazyQueryHookResult = ReturnType<typeof useGetRoomInvitesLazyQuery>;
+export type GetRoomInvitesQueryResult = Apollo.QueryResult<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>;
+export const AcceptInviteDocument = gql`
+    mutation AcceptInvite($code: String!) {
+  invite: accept_invite(code: $code) {
+    roomId: room_id
+  }
+}
+    `;
+export type AcceptInviteMutationFn = Apollo.MutationFunction<AcceptInviteMutation, AcceptInviteMutationVariables>;
+
+/**
+ * __useAcceptInviteMutation__
+ *
+ * To run a mutation, you first call `useAcceptInviteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptInviteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [acceptInviteMutation, { data, loading, error }] = useAcceptInviteMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *   },
+ * });
+ */
+export function useAcceptInviteMutation(baseOptions?: Apollo.MutationHookOptions<AcceptInviteMutation, AcceptInviteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(AcceptInviteDocument, options);
+      }
+export type AcceptInviteMutationHookResult = ReturnType<typeof useAcceptInviteMutation>;
+export type AcceptInviteMutationResult = Apollo.MutationResult<AcceptInviteMutation>;
+export type AcceptInviteMutationOptions = Apollo.BaseMutationOptions<AcceptInviteMutation, AcceptInviteMutationVariables>;
+export const CreateTextMessageDocument = gql`
+    mutation CreateTextMessage($text: String!, $threadId: uuid!) {
+  message: insert_message_one(
+    object: {text: $text, thread_id: $threadId, type: TEXT}
+  ) {
+    ...ThreadMessageBasicInfo
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+export type CreateTextMessageMutationFn = Apollo.MutationFunction<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
+
+/**
+ * __useCreateTextMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateTextMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTextMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTextMessageMutation, { data, loading, error }] = useCreateTextMessageMutation({
+ *   variables: {
+ *      text: // value for 'text'
+ *      threadId: // value for 'threadId'
+ *   },
+ * });
+ */
+export function useCreateTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTextMessageMutation, CreateTextMessageMutationVariables>(CreateTextMessageDocument, options);
+      }
+export type CreateTextMessageMutationHookResult = ReturnType<typeof useCreateTextMessageMutation>;
+export type CreateTextMessageMutationResult = Apollo.MutationResult<CreateTextMessageMutation>;
+export type CreateTextMessageMutationOptions = Apollo.BaseMutationOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
+export const ThreadMessagesDocument = gql`
+    subscription ThreadMessages($threadId: uuid!) {
+  messages: message(
+    where: {thread_id: {_eq: $threadId}}
+    order_by: [{created_at: asc}]
+  ) {
+    ...ThreadMessageBasicInfo
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+
+/**
+ * __useThreadMessagesSubscription__
+ *
+ * To run a query within a React component, call `useThreadMessagesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useThreadMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useThreadMessagesSubscription({
+ *   variables: {
+ *      threadId: // value for 'threadId'
+ *   },
+ * });
+ */
+export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>(ThreadMessagesDocument, options);
+      }
+export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
+export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 export const GetRoomsDocument = gql`
     query GetRooms {
   room {
@@ -4031,6 +4190,36 @@ export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
 export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
 export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
+export const RoomParticipantsDocument = gql`
+    subscription RoomParticipants($roomId: uuid!) {
+  participants: room_participants(where: {room_id: {_eq: $roomId}}) {
+    ...ParticipantBasicInfo
+  }
+}
+    ${ParticipantBasicInfoFragmentDoc}`;
+
+/**
+ * __useRoomParticipantsSubscription__
+ *
+ * To run a query within a React component, call `useRoomParticipantsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRoomParticipantsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoomParticipantsSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useRoomParticipantsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>(RoomParticipantsDocument, options);
+      }
+export type RoomParticipantsSubscriptionHookResult = ReturnType<typeof useRoomParticipantsSubscription>;
+export type RoomParticipantsSubscriptionResult = Apollo.SubscriptionResult<RoomParticipantsSubscription>;
 export const CreateThreadDocument = gql`
     mutation CreateThread($name: String!, $roomId: uuid!, $index: String!) {
   thread: insert_thread_one(
@@ -4068,42 +4257,6 @@ export function useCreateThreadMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateThreadMutationHookResult = ReturnType<typeof useCreateThreadMutation>;
 export type CreateThreadMutationResult = Apollo.MutationResult<CreateThreadMutation>;
 export type CreateThreadMutationOptions = Apollo.BaseMutationOptions<CreateThreadMutation, CreateThreadMutationVariables>;
-export const CreateInviteDocument = gql`
-    mutation CreateInvite($email: String!, $roomId: uuid) {
-  invite: insert_room_invites_one(object: {email: $email, room_id: $roomId}) {
-    id
-    email
-    usedAt: used_at
-  }
-}
-    `;
-export type CreateInviteMutationFn = Apollo.MutationFunction<CreateInviteMutation, CreateInviteMutationVariables>;
-
-/**
- * __useCreateInviteMutation__
- *
- * To run a mutation, you first call `useCreateInviteMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateInviteMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createInviteMutation, { data, loading, error }] = useCreateInviteMutation({
- *   variables: {
- *      email: // value for 'email'
- *      roomId: // value for 'roomId'
- *   },
- * });
- */
-export function useCreateInviteMutation(baseOptions?: Apollo.MutationHookOptions<CreateInviteMutation, CreateInviteMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateInviteMutation, CreateInviteMutationVariables>(CreateInviteDocument, options);
-      }
-export type CreateInviteMutationHookResult = ReturnType<typeof useCreateInviteMutation>;
-export type CreateInviteMutationResult = Apollo.MutationResult<CreateInviteMutation>;
-export type CreateInviteMutationOptions = Apollo.BaseMutationOptions<CreateInviteMutation, CreateInviteMutationVariables>;
 export const RoomThreadsDocument = gql`
     subscription RoomThreads($roomId: uuid!) {
   threads: thread(where: {room_id: {_eq: $roomId}}, order_by: [{index: asc}]) {
@@ -4134,142 +4287,6 @@ export function useRoomThreadsSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type RoomThreadsSubscriptionHookResult = ReturnType<typeof useRoomThreadsSubscription>;
 export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThreadsSubscription>;
-export const GetRoomInvitesDocument = gql`
-    query GetRoomInvites($roomId: uuid!) {
-  invites: room_invites(where: {room_id: {_eq: $roomId}}) {
-    id
-    email
-    usedAt: used_at
-  }
-}
-    `;
-
-/**
- * __useGetRoomInvitesQuery__
- *
- * To run a query within a React component, call `useGetRoomInvitesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRoomInvitesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetRoomInvitesQuery({
- *   variables: {
- *      roomId: // value for 'roomId'
- *   },
- * });
- */
-export function useGetRoomInvitesQuery(baseOptions: Apollo.QueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
-      }
-export function useGetRoomInvitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(GetRoomInvitesDocument, options);
-        }
-export type GetRoomInvitesQueryHookResult = ReturnType<typeof useGetRoomInvitesQuery>;
-export type GetRoomInvitesLazyQueryHookResult = ReturnType<typeof useGetRoomInvitesLazyQuery>;
-export type GetRoomInvitesQueryResult = Apollo.QueryResult<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>;
-export const RoomParticipantsDocument = gql`
-    subscription RoomParticipants($roomId: uuid!) {
-  participants: room_participants(where: {room_id: {_eq: $roomId}}) {
-    ...ParticipantBasicInfo
-  }
-}
-    ${ParticipantBasicInfoFragmentDoc}`;
-
-/**
- * __useRoomParticipantsSubscription__
- *
- * To run a query within a React component, call `useRoomParticipantsSubscription` and pass it any options that fit your needs.
- * When your component renders, `useRoomParticipantsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRoomParticipantsSubscription({
- *   variables: {
- *      roomId: // value for 'roomId'
- *   },
- * });
- */
-export function useRoomParticipantsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>(RoomParticipantsDocument, options);
-      }
-export type RoomParticipantsSubscriptionHookResult = ReturnType<typeof useRoomParticipantsSubscription>;
-export type RoomParticipantsSubscriptionResult = Apollo.SubscriptionResult<RoomParticipantsSubscription>;
-export const CreateTextMessageDocument = gql`
-    mutation CreateTextMessage($text: String!, $threadId: uuid!) {
-  message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: TEXT}
-  ) {
-    ...ThreadMessageBasicInfo
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-export type CreateTextMessageMutationFn = Apollo.MutationFunction<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
-
-/**
- * __useCreateTextMessageMutation__
- *
- * To run a mutation, you first call `useCreateTextMessageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTextMessageMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTextMessageMutation, { data, loading, error }] = useCreateTextMessageMutation({
- *   variables: {
- *      text: // value for 'text'
- *      threadId: // value for 'threadId'
- *   },
- * });
- */
-export function useCreateTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTextMessageMutation, CreateTextMessageMutationVariables>(CreateTextMessageDocument, options);
-      }
-export type CreateTextMessageMutationHookResult = ReturnType<typeof useCreateTextMessageMutation>;
-export type CreateTextMessageMutationResult = Apollo.MutationResult<CreateTextMessageMutation>;
-export type CreateTextMessageMutationOptions = Apollo.BaseMutationOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
-export const ThreadMessagesDocument = gql`
-    subscription ThreadMessages($threadId: uuid!) {
-  messages: message(
-    where: {thread_id: {_eq: $threadId}}
-    order_by: [{created_at: asc}]
-  ) {
-    ...ThreadMessageBasicInfo
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-
-/**
- * __useThreadMessagesSubscription__
- *
- * To run a query within a React component, call `useThreadMessagesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useThreadMessagesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useThreadMessagesSubscription({
- *   variables: {
- *      threadId: // value for 'threadId'
- *   },
- * });
- */
-export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHookOptions<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ThreadMessagesSubscription, ThreadMessagesSubscriptionVariables>(ThreadMessagesDocument, options);
-      }
-export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
-export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 
       export interface PossibleTypesResultData {
         possibleTypes: {

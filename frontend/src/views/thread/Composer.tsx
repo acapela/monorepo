@@ -1,17 +1,8 @@
 import { useCreateTextMessageMutation } from "@acapela/frontend/gql";
 import { EmojiPicker } from "@acapela/ui/EmojiPicker";
 import { Field, useFieldValue } from "@acapela/ui/field";
-import { gql } from "@apollo/client";
 import React, { useRef } from "react";
 import styled from "styled-components";
-
-gql`
-  mutation CreateTextMessage($text: String!, $threadId: uuid!) {
-    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: TEXT }) {
-      ...ThreadMessageBasicInfo
-    }
-  }
-`;
 
 export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
   const [createTextMessage] = useCreateTextMessageMutation();
