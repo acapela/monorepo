@@ -12,19 +12,19 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
   roomId,
   lastThreadIndex,
 }) => {
-  const [isDialogOpened, { set: open, unset: close }] = useBoolean(false);
+  const [isDialogOpened, { set: openDialog, unset: closeDialog }] = useBoolean(false);
 
   return (
     <>
       <Dialog
         title={"Add agenda point"}
         isOpened={isDialogOpened}
-        onClose={close}
+        onClose={closeDialog}
         aria-labelledby="thread-creation-button"
       >
-        <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreated={close} />
+        <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreated={closeDialog} />
       </Dialog>
-      <Button wide onClick={open} id="thread-creation-button">
+      <Button wide onClick={openDialog} id="thread-creation-button">
         Add agenda point
       </Button>
     </>
