@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { SidebarLayout } from "./design/Layout";
 import { NavLink } from "./design/NavLink";
-import { RoomCreationButton } from "./rooms/createRoom";
+import { RoomCreationButton } from "./rooms/RoomCreationButton";
 
 export const MainLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (

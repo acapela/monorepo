@@ -5,7 +5,6 @@ import { AvatarList } from "@acapela/frontend/design/AvatarList";
 import { NavLink } from "@acapela/frontend/design/NavLink";
 import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { Button } from "@acapela/ui/button";
-import { InviteButton } from "./invites";
 import {
   ParticipantBasicInfoFragment,
   ThreadDetailedInfoFragment,
@@ -14,6 +13,7 @@ import {
 } from "../gql";
 import { gql } from "@apollo/client";
 import { AvatarProps } from "@acapela/frontend/design/Avatar";
+import { InviteButton } from "./InviteButton";
 
 interface Props {
   roomId: string;
