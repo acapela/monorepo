@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { SidebarLayout } from "@acapela/frontend/design/Layout";
 import { AvatarList } from "@acapela/frontend/design/AvatarList";
