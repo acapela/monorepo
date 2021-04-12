@@ -17,19 +17,19 @@ const UIRoomCreationDialogTitle = styled.h1`
 
 export const Dialog = ({
   title,
-  open,
+  isOpened,
   onClose,
   children,
   ...rest
 }: {
   title: string;
-  open?: boolean;
+  isOpened?: boolean;
   onClose?: () => void;
   children?: React.ReactNode;
 }) => {
   return (
     <AnimatePresence>
-      {open && (
+      {isOpened && (
         <MotionDialogOverlay
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
