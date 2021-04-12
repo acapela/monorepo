@@ -1,9 +1,10 @@
 import Head from "next/head";
 import React from "react";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { authenticated } from "../src/authentication/authenticated";
-import { LogoutButton } from "../src/authentication/logout";
-import { MainLayout } from "../src/MainLayout";
+import { authenticated } from "@acapela/frontend/authentication/authenticated";
+import { LogoutButton } from "@acapela/frontend/authentication/logout";
+import { MainLayout } from "@acapela/frontend/MainLayout";
+import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
 
 const Page = authenticated(function ActivePage() {
   return (
@@ -19,9 +20,6 @@ const Page = authenticated(function ActivePage() {
   );
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(Page as any).getLayout = (page: any) => {
-  return <MainLayout>{page}</MainLayout>;
-};
+assignPageLayout(Page, MainLayout);
 
 export default Page;

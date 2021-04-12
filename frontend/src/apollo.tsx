@@ -1,7 +1,7 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import React from "react";
+import React, { useMemo } from "react";
 import Cookie from "js-cookie";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
@@ -74,7 +74,8 @@ const createApolloClient = (): ApolloClient<unknown> => {
 };
 
 export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const client = createApolloClient();
+  // Memoize apollo client so data cache persists across pages when navigating
+  const client = useMemo(createApolloClient, []);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

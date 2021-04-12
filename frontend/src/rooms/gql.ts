@@ -43,11 +43,27 @@ gql`
 `;
 
 gql`
+  subscription RoomThreads($roomId: uuid!) {
+    threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
+      ...ThreadDetailedInfo
+    }
+  }
+`;
+
+gql`
   query GetRoomInvites($roomId: uuid!) {
     invites: room_invites(where: { room_id: { _eq: $roomId } }) {
       id
       email
       usedAt: used_at
+    }
+  }
+`;
+
+gql`
+  subscription RoomParticipants($roomId: uuid!) {
+    participants: room_participants(where: { room_id: { _eq: $roomId } }) {
+      ...ParticipantBasicInfo
     }
   }
 `;

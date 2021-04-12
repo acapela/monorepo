@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { Logo } from "./Logo";
@@ -27,13 +27,13 @@ const UIMainContent = styled.div`
   max-height: 100vh;
 `;
 
-export const SidebarLayout: React.FC<{
-  children?: React.ReactNode;
-  sidebar: {
-    content?: React.ReactNode;
-    action?: React.ReactNode;
-  };
-}> = ({ children, sidebar }) => {
+interface Props {
+  children?: ReactNode;
+  sidebarContent?: ReactNode;
+  sidebarAction?: ReactNode;
+}
+
+export const SidebarLayout: FC<Props> = ({ children, sidebarContent, sidebarAction }) => {
   return (
     <UIHolder>
       <UISidebar>
@@ -43,8 +43,8 @@ export const SidebarLayout: React.FC<{
           </UISidebarLogoWrapper>
         </Link>
 
-        {sidebar.content}
-        {sidebar.action}
+        {sidebarContent}
+        {sidebarAction}
       </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>

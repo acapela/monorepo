@@ -2975,32 +2975,6 @@ export type ThreadMessageBasicInfoFragment = (
   ) }
 );
 
-export type RoomThreadsSubscriptionVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type RoomThreadsSubscription = (
-  { __typename?: 'subscription_root' }
-  & { threads: Array<(
-    { __typename?: 'thread' }
-    & ThreadDetailedInfoFragment
-  )> }
-);
-
-export type RoomParticipantsSubscriptionVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type RoomParticipantsSubscription = (
-  { __typename?: 'subscription_root' }
-  & { participants: Array<(
-    { __typename?: 'room_participants' }
-    & ParticipantBasicInfoFragment
-  )> }
-);
-
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3068,6 +3042,19 @@ export type CreateInviteMutation = (
   )> }
 );
 
+export type RoomThreadsSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type RoomThreadsSubscription = (
+  { __typename?: 'subscription_root' }
+  & { threads: Array<(
+    { __typename?: 'thread' }
+    & ThreadDetailedInfoFragment
+  )> }
+);
+
 export type GetRoomInvitesQueryVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
@@ -3079,6 +3066,19 @@ export type GetRoomInvitesQuery = (
     { __typename?: 'room_invites' }
     & Pick<Room_Invites, 'id' | 'email'>
     & { usedAt: Room_Invites['used_at'] }
+  )> }
+);
+
+export type RoomParticipantsSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type RoomParticipantsSubscription = (
+  { __typename?: 'subscription_root' }
+  & { participants: Array<(
+    { __typename?: 'room_participants' }
+    & ParticipantBasicInfoFragment
   )> }
 );
 
@@ -3929,66 +3929,6 @@ export function useGetRoomsTestQueryLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type GetRoomsTestQueryQueryHookResult = ReturnType<typeof useGetRoomsTestQueryQuery>;
 export type GetRoomsTestQueryLazyQueryHookResult = ReturnType<typeof useGetRoomsTestQueryLazyQuery>;
 export type GetRoomsTestQueryQueryResult = Apollo.QueryResult<GetRoomsTestQueryQuery, GetRoomsTestQueryQueryVariables>;
-export const RoomThreadsDocument = gql`
-    subscription RoomThreads($roomId: uuid!) {
-  threads: thread(where: {room_id: {_eq: $roomId}}, order_by: [{index: asc}]) {
-    ...ThreadDetailedInfo
-  }
-}
-    ${ThreadDetailedInfoFragmentDoc}`;
-
-/**
- * __useRoomThreadsSubscription__
- *
- * To run a query within a React component, call `useRoomThreadsSubscription` and pass it any options that fit your needs.
- * When your component renders, `useRoomThreadsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRoomThreadsSubscription({
- *   variables: {
- *      roomId: // value for 'roomId'
- *   },
- * });
- */
-export function useRoomThreadsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>(RoomThreadsDocument, options);
-      }
-export type RoomThreadsSubscriptionHookResult = ReturnType<typeof useRoomThreadsSubscription>;
-export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThreadsSubscription>;
-export const RoomParticipantsDocument = gql`
-    subscription RoomParticipants($roomId: uuid!) {
-  participants: room_participants(where: {room_id: {_eq: $roomId}}) {
-    ...ParticipantBasicInfo
-  }
-}
-    ${ParticipantBasicInfoFragmentDoc}`;
-
-/**
- * __useRoomParticipantsSubscription__
- *
- * To run a query within a React component, call `useRoomParticipantsSubscription` and pass it any options that fit your needs.
- * When your component renders, `useRoomParticipantsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRoomParticipantsSubscription({
- *   variables: {
- *      roomId: // value for 'roomId'
- *   },
- * });
- */
-export function useRoomParticipantsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>(RoomParticipantsDocument, options);
-      }
-export type RoomParticipantsSubscriptionHookResult = ReturnType<typeof useRoomParticipantsSubscription>;
-export type RoomParticipantsSubscriptionResult = Apollo.SubscriptionResult<RoomParticipantsSubscription>;
 export const GetRoomsDocument = gql`
     query GetRooms {
   room {
@@ -4164,6 +4104,36 @@ export function useCreateInviteMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateInviteMutationHookResult = ReturnType<typeof useCreateInviteMutation>;
 export type CreateInviteMutationResult = Apollo.MutationResult<CreateInviteMutation>;
 export type CreateInviteMutationOptions = Apollo.BaseMutationOptions<CreateInviteMutation, CreateInviteMutationVariables>;
+export const RoomThreadsDocument = gql`
+    subscription RoomThreads($roomId: uuid!) {
+  threads: thread(where: {room_id: {_eq: $roomId}}, order_by: [{index: asc}]) {
+    ...ThreadDetailedInfo
+  }
+}
+    ${ThreadDetailedInfoFragmentDoc}`;
+
+/**
+ * __useRoomThreadsSubscription__
+ *
+ * To run a query within a React component, call `useRoomThreadsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRoomThreadsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoomThreadsSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useRoomThreadsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RoomThreadsSubscription, RoomThreadsSubscriptionVariables>(RoomThreadsDocument, options);
+      }
+export type RoomThreadsSubscriptionHookResult = ReturnType<typeof useRoomThreadsSubscription>;
+export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThreadsSubscription>;
 export const GetRoomInvitesDocument = gql`
     query GetRoomInvites($roomId: uuid!) {
   invites: room_invites(where: {room_id: {_eq: $roomId}}) {
@@ -4201,6 +4171,36 @@ export function useGetRoomInvitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetRoomInvitesQueryHookResult = ReturnType<typeof useGetRoomInvitesQuery>;
 export type GetRoomInvitesLazyQueryHookResult = ReturnType<typeof useGetRoomInvitesLazyQuery>;
 export type GetRoomInvitesQueryResult = Apollo.QueryResult<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>;
+export const RoomParticipantsDocument = gql`
+    subscription RoomParticipants($roomId: uuid!) {
+  participants: room_participants(where: {room_id: {_eq: $roomId}}) {
+    ...ParticipantBasicInfo
+  }
+}
+    ${ParticipantBasicInfoFragmentDoc}`;
+
+/**
+ * __useRoomParticipantsSubscription__
+ *
+ * To run a query within a React component, call `useRoomParticipantsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRoomParticipantsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRoomParticipantsSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useRoomParticipantsSubscription(baseOptions: Apollo.SubscriptionHookOptions<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RoomParticipantsSubscription, RoomParticipantsSubscriptionVariables>(RoomParticipantsDocument, options);
+      }
+export type RoomParticipantsSubscriptionHookResult = ReturnType<typeof useRoomParticipantsSubscription>;
+export type RoomParticipantsSubscriptionResult = Apollo.SubscriptionResult<RoomParticipantsSubscription>;
 export const CreateTextMessageDocument = gql`
     mutation CreateTextMessage($text: String!, $threadId: uuid!) {
   message: insert_message_one(
