@@ -23,7 +23,10 @@ gql`
 
 const useThreadMessages = (threadId: string): { loading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: loadingUser, user } = useCurrentUser();
-  const { data, loading: loadingMessages } = useThreadMessagesSubscription({ variables: { threadId } });
+  const { data, loading: loadingMessages } = useThreadMessagesSubscription({
+    variables: { threadId },
+    fetchPolicy: "cache-first",
+  });
 
   if (loadingUser || loadingMessages || !data) {
     return { loading: true, messages: [] };

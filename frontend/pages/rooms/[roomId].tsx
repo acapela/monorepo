@@ -8,12 +8,13 @@ import { RoomLayout } from "@acapela/frontend/rooms/RoomLayout";
 import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { usePathParameter } from "@acapela/frontend/utils";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
+import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;
 `;
 
-export default authenticated(() => {
+const Page = authenticated(() => {
   const { replace } = useRouter();
   const roomId = usePathParameter("roomId");
   const { loading, data } = useGetSingleRoomQuery({ variables: { id: roomId } });
@@ -34,7 +35,7 @@ export default authenticated(() => {
   }
 
   return (
-    <RoomLayout roomId={room.id}>
+    <>
       <Head>
         <title>{room.name} | Acapela</title>
       </Head>
@@ -42,6 +43,10 @@ export default authenticated(() => {
         <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>
         <ThreadCreationButton roomId={room.id} />
       </UIContentWrapper>
-    </RoomLayout>
+    </>
   );
 });
+
+assignPageLayout(Page, RoomLayout);
+
+export default Page;

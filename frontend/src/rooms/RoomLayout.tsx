@@ -8,15 +8,17 @@ import { Button } from "@acapela/ui/button";
 import {
   ParticipantBasicInfoFragment,
   ThreadDetailedInfoFragment,
+  useGetSingleRoomQuery,
   useRoomParticipantsSubscription,
   useRoomThreadsSubscription,
-} from "../gql";
-import { gql } from "@apollo/client";
+} from "@acapela/frontend/gql";
 import { AvatarProps } from "@acapela/frontend/design/Avatar";
 import { InviteButton } from "./InviteButton";
+import { usePathParameter } from "@acapela/frontend/utils";
+import { assert } from "@acapela/shared/assert";
+import Head from "next/head";
 
 interface Props {
-  roomId: string;
   children: ReactNode;
 }
 
@@ -33,22 +35,6 @@ const UIThreadsWrapper = styled.div`
   } ;
 `;
 
-gql`
-  subscription RoomThreads($roomId: uuid!) {
-    threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
-      ...ThreadDetailedInfo
-    }
-  }
-`;
-
-gql`
-  subscription RoomParticipants($roomId: uuid!) {
-    participants: room_participants(where: { room_id: { _eq: $roomId } }) {
-      ...ParticipantBasicInfo
-    }
-  }
-`;
-
 const useThreads = (roomId: string): { loading: boolean; threads: ThreadDetailedInfoFragment[] } => {
   const { data, loading } = useRoomThreadsSubscription({ variables: { roomId } });
 
@@ -61,14 +47,25 @@ const useParticipants = (roomId: string): { loading: boolean; participants: Part
   return { loading, participants: data?.participants ?? [] };
 };
 
-export const RoomLayout: React.FC<Props> = ({ roomId, children }) => {
+export const RoomLayout: React.FC<Props> = ({ children }) => {
+  const roomId = usePathParameter("roomId");
+
+  assert(roomId, "Room ID Required");
+
   const { threads } = useThreads(roomId);
+
+  console.log({ threads, roomId });
   const { participants } = useParticipants(roomId);
 
+  const { data } = useGetSingleRoomQuery({ variables: { id: roomId } });
+
+  const room = data?.room;
+
   return (
-    <SidebarLayout
-      sidebar={{
-        content: (
+    <>
+      <Head>{room && <title>{room.name} | Acapela</title>}</Head>
+      <SidebarLayout
+        sidebarContent={
           <>
             <AvatarList
               avatars={participants
@@ -85,10 +82,10 @@ export const RoomLayout: React.FC<Props> = ({ roomId, children }) => {
               <ThreadCreationButton roomId={roomId} lastThreadIndex={threads[threads.length - 1]?.index ?? 0} />
             </UIThreadsWrapper>
           </>
-        ),
-      }}
-    >
-      {children}
-    </SidebarLayout>
+        }
+      >
+        {children}
+      </SidebarLayout>
+    </>
   );
 };
