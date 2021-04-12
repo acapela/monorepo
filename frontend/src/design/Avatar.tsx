@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
-// TODO: how should this work in unit tests?
 import { getInitials } from "@acapela/frontend/utils";
 
 export interface AvatarProps {
