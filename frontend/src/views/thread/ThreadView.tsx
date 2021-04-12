@@ -25,7 +25,6 @@ const useThreadMessages = (threadId: string): { loading: boolean; messages: Mess
   const { loading: loadingUser, user } = useCurrentUser();
   const { data, loading: loadingMessages } = useThreadMessagesSubscription({
     variables: { threadId },
-    fetchPolicy: "cache-first",
   });
 
   if (loadingUser || loadingMessages || !data) {

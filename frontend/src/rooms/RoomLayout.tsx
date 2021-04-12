@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import styled from "styled-components";
 import { SidebarLayout } from "@acapela/frontend/design/Layout";
 import { AvatarList } from "@acapela/frontend/design/AvatarList";
@@ -54,7 +54,6 @@ export const RoomLayout: React.FC<Props> = ({ children }) => {
 
   const { threads } = useThreads(roomId);
 
-  console.log({ threads, roomId });
   const { participants } = useParticipants(roomId);
 
   const { data } = useGetSingleRoomQuery({ variables: { id: roomId } });
