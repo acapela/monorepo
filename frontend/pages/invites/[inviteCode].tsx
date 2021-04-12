@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAcceptInviteMutation } from "@acapela/frontend/gql";
-import { gql } from "@apollo/client";
 import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
@@ -56,14 +55,6 @@ const InviteAcceptor = ({ code }: { code: string }): JSX.Element | null => {
 
   return null;
 };
-
-gql`
-  mutation AcceptInvite($code: String!) {
-    invite: accept_invite(code: $code) {
-      roomId: room_id
-    }
-  }
-`;
 
 const useInviteAcceptance = () => {
   const [acceptInvite, { loading, error }] = useAcceptInviteMutation();

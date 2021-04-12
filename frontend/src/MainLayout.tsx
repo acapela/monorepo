@@ -1,24 +1,20 @@
 import styled from "styled-components";
 import { SidebarLayout } from "./design/Layout";
 import { NavLink } from "./design/NavLink";
-import { RoomCreationButton } from "./rooms/createRoom";
 
 export const MainLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
     <SidebarLayout
-      sidebar={{
-        content: (
-          <>
-            <UINavItems>
-              <SpacedNavLink to="/home">Upcoming Acapelas</SpacedNavLink>
-              <SpacedNavLink to="/active">Active Acapelas</SpacedNavLink>
-              <SpacedNavLink to="/past">Past Acapelas</SpacedNavLink>
-              <SpacedNavLink to="/settings">Settings</SpacedNavLink>
-            </UINavItems>
-          </>
-        ),
-        action: <RoomCreationButton />,
-      }}
+      sidebarContent={
+        <>
+          <UINavItems>
+            <SpacedNavLink to="/home">Upcoming Acapelas</SpacedNavLink>
+            <SpacedNavLink to="/active">Active Acapelas</SpacedNavLink>
+            <SpacedNavLink to="/past">Past Acapelas</SpacedNavLink>
+            <SpacedNavLink to="/settings">Settings</SpacedNavLink>
+          </UINavItems>
+        </>
+      }
     >
       {children}
     </SidebarLayout>

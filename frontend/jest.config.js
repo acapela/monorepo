@@ -9,5 +9,6 @@ module.exports = {
   transformIgnorePatterns: ["/node_modules/(?!@acapela).+\\.js$", "^.+\\.module\\.(css|sass|scss)$"],
   moduleNameMapper: {
     "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
+    "@acapela/frontend/(.*)": "<rootDir>/src/$1",
   },
 };

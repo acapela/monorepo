@@ -8,9 +8,10 @@ import { Session } from "next-auth";
 import { Provider as SessionProvider } from "next-auth/client";
 import { createGlobalStyle } from "styled-components";
 import "@reach/dialog/styles.css";
-import { global } from "../styles/global";
-import { Provider as ApolloProvider } from "../src/apollo";
-import { parseJWTWithoutValidation } from "../src/authentication/jwt";
+import { global } from "@acapela/frontend/styles/global";
+import { Provider as ApolloProvider } from "@acapela/frontend/apollo";
+import { parseJWTWithoutValidation } from "@acapela/frontend/authentication/jwt";
+import { renderWithPageLayout } from "@acapela/frontend/utils/pageLayout";
 
 interface AddedProps {
   session: unknown;
@@ -21,17 +22,12 @@ const BuiltInStyles = createGlobalStyle`
 `;
 
 export default function App({ Component, pageProps, session }: AppProps & AddedProps): JSX.Element {
-  // If you don't want the layout component of your page to unmount between page changes,
-  // implement a getLayout function as a property of your components.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getLayout = (Component as any).getLayout || ((page: any) => page);
-
   return (
     <>
       <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session as WithAdditionalParams<Session> | null}>
-        <ApolloProvider>{getLayout(<Component {...pageProps} />)}</ApolloProvider>
+        <ApolloProvider>{renderWithPageLayout(Component, pageProps)}</ApolloProvider>
       </SessionProvider>
     </>
   );

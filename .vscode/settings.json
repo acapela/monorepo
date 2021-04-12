@@ -11,6 +11,7 @@
   "search.exclude": {
     "**/node_modules": true,
     ".next/**/*": true,
+    "**/.next/**/*": true,
     // DB client is auto generated, huge file that could pollute search easily
     "db/client/**/*": true
   },
