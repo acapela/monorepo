@@ -6,12 +6,13 @@ import { Provider } from "next-auth/client";
 import { GoogleLoginButton, useCurrentUser } from "./authentication/authentication";
 import { Provider as ApolloProvider } from "./apollo";
 import { useGetRoomsQuery } from "./gql";
+import { PropsWithChildren } from "react";
 
 jest.mock(
   "next-auth/client",
   () => {
     return {
-      Provider({ children }) {
+      Provider({ children }: PropsWithChildren<unknown>) {
         return <>{children}</>;
       },
       useSession() {

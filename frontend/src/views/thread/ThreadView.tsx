@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { gql } from "@apollo/client";
 import { useCurrentUser } from "@acapela/frontend/authentication/authentication";
 import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "@acapela/frontend/gql";
 import { MessageComposer } from "./Composer";
@@ -12,14 +11,6 @@ import { ScrollableMessages } from "@acapela/frontend/views/thread/ScrollableMes
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
 }
-
-gql`
-  subscription ThreadMessages($threadId: uuid!) {
-    messages: message(where: { thread_id: { _eq: $threadId } }, order_by: [{ created_at: asc }]) {
-      ...ThreadMessageBasicInfo
-    }
-  }
-`;
 
 const useThreadMessages = (threadId: string): { loading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: loadingUser, user } = useCurrentUser();
