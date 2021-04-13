@@ -1,12 +1,12 @@
-import { initializeSecrets } from "@acapela/config";
-import { Account, db, User, VerificationRequest } from "@acapela/db";
-import { assert } from "@acapela/shared/assert";
-import { sendEmail } from "@acapela/shared/email";
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
 import Providers from "next-auth/providers";
+import { initializeSecrets } from "~config";
+import { Account, db, User, VerificationRequest } from "~db";
+import { assert } from "~shared/assert";
+import { sendEmail } from "~shared/email";
 
 /**
  * In this file we manage authorization integration using next-auth.

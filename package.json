@@ -1,5 +1,5 @@
 {
-  "name": "@acapela/root",
+  "name": "~root",
   "private": true,
   "version": "0.1.0",
   "engines": {
@@ -64,7 +64,7 @@
     }
   },
   "dependencies": {
-    "@acapela/tooling": "0.1.0",
+    "~tooling": "0.1.0",
     "axios": "^0.21.1",
     "express": "^4.17.1",
     "hasura-cli": "^1.4.0-alpha.2",

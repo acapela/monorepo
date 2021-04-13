@@ -1,12 +1,11 @@
 import { Server } from "http";
-
-import { Room, User } from "@acapela/db";
+import { Room, User } from "~db";
 import { setupServer } from "../app";
-import { addRoomParticipant, createRoom, getIfParticipantExists } from "./rooms";
-import { createUser } from "../users/users";
 import { HasuraEventOperation } from "../events/events";
-import { HttpStatus } from "../http";
 import { sendEvent } from "../events/eventTestSupport";
+import { HttpStatus } from "../http";
+import { createUser } from "../users/users";
+import { addRoomParticipant, createRoom, getIfParticipantExists } from "./rooms";
 
 describe("Room events", () => {
   let app: Server;

@@ -1,5 +1,5 @@
 {
-  "name": "@acapela/config",
+  "name": "~config",
   "private": "true",
   "version": "0.1.0"
 }

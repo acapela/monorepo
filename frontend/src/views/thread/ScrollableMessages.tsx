@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { useScrollToBottom } from "@acapela/frontend/hooks/useScrollToBottom";
+import { useScrollToBottom } from "~frontend/hooks/useScrollToBottom";
 
 interface Props {
   children: React.ReactNode;

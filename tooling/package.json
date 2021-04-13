@@ -1,5 +1,5 @@
 {
-  "name": "@acapela/tooling",
+  "name": "~tooling",
   "private": "true",
   "version": "0.1.0",
   "main": "cli-tooling.ts",
@@ -14,7 +14,7 @@
     "ts-node": "*"
   },
   "dependencies": {
-    "@acapela/config": "0.1.0",
+    "~config": "0.1.0",
     "graphql": "^15.5.0",
     "yargs": "^16.2.0"
   },

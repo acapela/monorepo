@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@acapela/frontend/*": ["./*"]
+      "~frontend/*": ["./*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

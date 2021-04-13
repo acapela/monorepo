@@ -1,9 +1,9 @@
-import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
-import "@acapela/config/dotenv";
 import axios from "axios";
-import path from "path";
 import fs from "fs";
-import { log } from "@acapela/shared/logger";
+import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
+import path from "path";
+import "~config/dotenv";
+import { log } from "~shared/logger";
 
 export interface ProcessEnv {
   [key: string]: string | undefined;

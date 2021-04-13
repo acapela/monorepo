@@ -1,5 +1,5 @@
 {
-  "name": "@acapela/backend",
+  "name": "~backend",
   "private": "true",
   "version": "1.0.0",
   "main": "index.js",
@@ -19,7 +19,7 @@
     "typescript": "*"
   },
   "dependencies": {
-    "@acapela/config": "0.1.0",
+    "~config": "0.1.0",
     "@godaddy/terminus": "^4.7.1",
     "@google-cloud/secret-manager": "^3.5.0",
     "express-async-errors": "^3.1.1",

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { getInitials } from "@acapela/frontend/utils";
+import { getInitials } from "~frontend/utils";
 
 export interface AvatarProps {
   name: string;

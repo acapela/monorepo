@@ -1,4 +1,4 @@
-import { setColorOpacity } from "@acapela/shared/colors";
+import { setColorOpacity } from "~shared/colors";
 
 const BLACK = "#000";
 

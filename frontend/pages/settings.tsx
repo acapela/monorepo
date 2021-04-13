@@ -1,10 +1,10 @@
 import Head from "next/head";
 import React from "react";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { LogoutButton } from "@acapela/frontend/authentication/logout";
-import { MainLayout } from "@acapela/frontend/MainLayout";
-import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
-import { withServerSideAuthRedirect } from "@acapela/frontend/authentication/withServerSideAuthRedirect";
+import { LogoutButton } from "~frontend/authentication/logout";
+import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { MainLayout } from "~frontend/MainLayout";
+import { assignPageLayout } from "~frontend/utils/pageLayout";
 
 export const getServerSideProps = withServerSideAuthRedirect();
 

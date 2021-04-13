@@ -16,7 +16,7 @@
     "db/client/**/*": true
   },
   "prettier.requireConfig": true,
-  // Will use auto-imports @acapela/package instead of ../../package if import is from different package
+  // Will use auto-imports ~package instead of ../../package if import is from different package
   "typescript.preferences.importModuleSpecifier": "shortest",
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

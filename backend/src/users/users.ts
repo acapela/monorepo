@@ -1,4 +1,4 @@
-import { db, User } from "@acapela/db";
+import { db, User } from "~db";
 
 // TODO: Not used?
 export async function updateUser(user: User): Promise<User> {

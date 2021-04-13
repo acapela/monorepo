@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef } from "react";
-import { useIsomorphicLayoutEffect } from "@acapela/frontend/hooks/useIsomorphicLayoutEffect";
+import { useIsomorphicLayoutEffect } from "~frontend/hooks/useIsomorphicLayoutEffect";
 
 interface ScrollToBottomConfig {
   ref: RefObject<HTMLElement>;

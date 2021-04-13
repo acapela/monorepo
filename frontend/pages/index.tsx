@@ -1,11 +1,13 @@
-import styled from "styled-components";
+import { signOut } from "next-auth/client";
 import Head from "next/head";
 import Link from "next/link";
-import { EmailLoginButton, GoogleLoginButton, useCurrentUser } from "@acapela/frontend/authentication/authentication";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
-import { Logo } from "@acapela/frontend/design/Logo";
-import { signOut } from "next-auth/client";
+import styled from "styled-components";
+import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
+import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { Logo } from "~frontend/design/Logo";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
 
 const AppLinkWrapper = styled.div``;
 

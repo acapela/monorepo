@@ -1,16 +1,14 @@
+import { Server } from "http";
 import request from "supertest";
 import { v4 as uuid } from "uuid";
-import { Server } from "http";
-
+import { Room, User } from "~db";
+import { HasuraAction } from "../actions/actions";
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
-
-import { Room, User } from "@acapela/db";
-import { AcceptInviteActionInputs } from "./acceptInvite";
-import { HasuraAction } from "../actions/actions";
-import { createInviteForTests as createInvite, findInviteByCode } from "./invites";
 import { addRoomParticipant, createRoom, getIfParticipantExists } from "../rooms/rooms";
 import { createUser } from "../users/users";
+import { AcceptInviteActionInputs } from "./acceptInvite";
+import { createInviteForTests as createInvite, findInviteByCode } from "./invites";
 
 describe("Accepting invites", () => {
   let app: Server;

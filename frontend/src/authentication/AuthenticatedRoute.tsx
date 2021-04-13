@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 
 export const AuthenticatedRoute: React.FC<{
   children: React.ReactNode;

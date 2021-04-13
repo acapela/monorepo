@@ -1,8 +1,8 @@
+import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
-import Link from "next/link";
-import { AvatarList } from "@acapela/frontend/design/AvatarList";
-import { RoomBasicInfoFragment, useGetRoomsQuery } from "@acapela/frontend/gql";
+import { AvatarList } from "~frontend/design/AvatarList";
+import { RoomBasicInfoFragment, useGetRoomsQuery } from "~frontend/gql";
 
 const UIRoomsGrid = styled.ul`
   display: grid;

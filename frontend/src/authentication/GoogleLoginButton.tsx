@@ -1,6 +1,6 @@
-import { signIn, useSession } from "next-auth/client";
+import { signIn } from "next-auth/client";
 import React from "react";
-import { Button } from "@acapela/ui/button";
+import { Button } from "~ui/button";
 
 export const GoogleLoginButton = ({
   className,

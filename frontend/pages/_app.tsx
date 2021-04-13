@@ -1,17 +1,17 @@
 // Polyfill for :focus-visible pseudo-selector.
+import "@reach/dialog/styles.css";
 import "focus-visible";
 import { NextApiRequest } from "next";
-import { AppContext, AppProps } from "next/app";
-import Head from "next/head";
-import { WithAdditionalParams } from "next-auth/_utils";
 import { Session } from "next-auth";
 import { Provider as SessionProvider } from "next-auth/client";
+import { WithAdditionalParams } from "next-auth/_utils";
+import { AppContext, AppProps } from "next/app";
+import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
-import "@reach/dialog/styles.css";
-import { global } from "@acapela/frontend/styles/global";
-import { Provider as ApolloProvider } from "@acapela/frontend/apollo";
-import { parseJWTWithoutValidation } from "@acapela/frontend/authentication/jwt";
-import { renderWithPageLayout } from "@acapela/frontend/utils/pageLayout";
+import { Provider as ApolloProvider } from "~frontend/apollo";
+import { parseJWTWithoutValidation } from "~frontend/authentication/jwt";
+import { global } from "~frontend/styles/global";
+import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 
 interface AddedProps {
   session: unknown;

@@ -1,15 +1,14 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 import { ParsedUrlQuery } from "querystring";
-
-import { DEFAULT_REDIRECT_URL } from "@acapela/frontend/config";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
-import { Logo } from "@acapela/frontend/design/Logo";
-import { GoogleLoginButton } from "@acapela/frontend/authentication/GoogleLoginButton";
-import { EmailLoginButton } from "@acapela/frontend/authentication/EmailLoginButton";
-import { useCurrentUser } from "@acapela/frontend/authentication/useCurrentUser";
+import React, { useEffect, useState } from "react";
+import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
+import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { DEFAULT_REDIRECT_URL } from "~frontend/config";
+import { Logo } from "~frontend/design/Logo";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
 
 export default function LoginPage(): JSX.Element {
   const { loading, isAuthenticated } = useRedirectWhenAuthenticated();

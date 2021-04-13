@@ -1,7 +1,7 @@
-import "@acapela/config/dotenv";
-import pino from "pino";
-import { ServerResponse } from "http";
 import { Request } from "express";
+import { ServerResponse } from "http";
+import pino from "pino";
+import "~config/dotenv";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 

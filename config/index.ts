@@ -1,6 +1,5 @@
+import { warn } from "~shared/logger";
 import "./dotenv";
-
-import { warn } from "@acapela/shared/logger";
 
 let isLoaded = false;
 let loadingPromise: Promise<void> | null = null;
@@ -11,7 +10,7 @@ export function assertSecretsLoaded(message: string): void {
   }
 
   throw new Error(`
-    ${message} (Secrets not initialized. import {initializeSecrets} from @acapela/config and await it, then lazily import the rest of the app.)
+    ${message} (Secrets not initialized. import {initializeSecrets} from ~config and await it, then lazily import the rest of the app.)
   `);
 }
 

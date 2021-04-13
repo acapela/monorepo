@@ -1,8 +1,8 @@
 import { validate as validateUuid } from "uuid";
 import { ActionHandler } from "../actions/actionHandlers";
-import { findInviteByCode, invalidateInvite } from "./invites";
-import { addRoomParticipantAndInvalidateInvite, getIfParticipantExists } from "../rooms/rooms";
 import { NotFoundError, UnprocessableEntityError } from "../errors";
+import { addRoomParticipantAndInvalidateInvite, getIfParticipantExists } from "../rooms/rooms";
+import { findInviteByCode, invalidateInvite } from "./invites";
 
 export interface AcceptInviteActionInputs {
   code: string;
