@@ -94,19 +94,3 @@ gql`
     }
   }
 `;
-
-gql`
-  mutation CreateTextMessage($text: String!, $threadId: uuid!) {
-    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: TEXT }) {
-      ...ThreadMessageBasicInfo
-    }
-  }
-`;
-
-gql`
-  subscription ThreadMessages($threadId: uuid!) {
-    messages: message(where: { thread_id: { _eq: $threadId } }, order_by: [{ created_at: asc }]) {
-      ...ThreadMessageBasicInfo
-    }
-  }
-`;
