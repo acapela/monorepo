@@ -5,7 +5,9 @@ import { setupServer } from "msw/node";
 import { Provider } from "next-auth/client";
 import { PropsWithChildren } from "react";
 import { Provider as ApolloProvider } from "./apollo";
-import { GoogleLoginButton, useCurrentUser } from "./authentication/authentication";
+import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
+import { useCurrentUser } from "./authentication/useCurrentUser";
+
 import { useGetRoomsQuery } from "./gql";
 
 jest.mock(
