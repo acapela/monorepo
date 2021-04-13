@@ -33,11 +33,7 @@ export const Avatar = styled(PureAvatar)`
 
   background-color: rgba(96, 165, 250, 1);
 
-  border-width: 2px;
-  border-style: solid;
-  border-color: rgba(229, 231, 235, 1);
   border-radius: 50%;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
   overflow: hidden;
 `;

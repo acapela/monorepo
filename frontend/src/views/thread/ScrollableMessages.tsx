@@ -7,15 +7,21 @@ interface Props {
   className?: string;
 }
 
+const UIHolder = styled.div`
+  overflow-y: scroll;
+  /* Avoid scrollbar handle to fly over messages */
+  padding-right: 20px;
+`;
+
 const PureScrollableMessages = ({ children, className }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useScrollToBottom({ ref, bottomMargin: 80 });
 
   return (
-    <div className={className} ref={ref}>
+    <UIHolder className={className} ref={ref}>
       {children}
-    </div>
+    </UIHolder>
   );
 };
 

@@ -23,4 +23,5 @@ export const borderRadius = {
 export const fontSize = {
   copy: "1rem",
   pageTitle: "2rem",
+  label: "0.8rem",
 };

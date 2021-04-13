@@ -1,16 +1,13 @@
 import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
-import { ScrollableMessages } from "~frontend/views/thread/ScrollableMessages";
-import { useCurrentUser } from "../../authentication/useCurrentUser";
-import { MessageComposer } from "./Composer";
-import { TextMessage } from "./TextMessage";
 
-interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
-  isOwnMessage: boolean;
-}
+import { MessageComposer } from "./Composer";
+import { Message, MessageWithUserInfo } from "./Message";
+import { ScrollableMessages } from "./ScrollableMessages";
 
 const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
@@ -69,7 +66,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           {messages.map((message) => (
-            <TextMessage key={message.id} message={message} />
+            <Message key={message.id} message={message} />
           ))}
           {!messages.length && (
             <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>

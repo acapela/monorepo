@@ -20,5 +20,7 @@
   "typescript.preferences.importModuleSpecifier": "shortest",
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "importSorter.importStringConfiguration.quoteMark": "double",
+  "importSorter.generalConfiguration.sortOnBeforeSave": true
 }

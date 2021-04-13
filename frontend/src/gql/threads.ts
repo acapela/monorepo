@@ -52,3 +52,23 @@ gql`
     }
   }
 `;
+
+gql`
+  mutation UpdateTextMessage($id: uuid!, $text: String!) {
+    update_message(where: { id: { _eq: $id } }, _set: { text: $text }) {
+      message: returning {
+        ...ThreadMessageBasicInfo
+      }
+    }
+  }
+`;
+
+gql`
+  mutation DeleteTextMessage($id: uuid!) {
+    delete_message(where: { id: { _eq: $id } }) {
+      message: returning {
+        id
+      }
+    }
+  }
+`;
