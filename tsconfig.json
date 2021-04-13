@@ -22,6 +22,9 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "assumeChangesOnlyAffectDirectDependencies": true,
     "checkJs": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "~*": ["./*"]
+    }
   }
 }
