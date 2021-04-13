@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimateSharedLayout, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -65,9 +65,11 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
     <UIThreadView>
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
-          {messages.map((message) => (
-            <Message key={message.id} message={message} />
-          ))}
+          <AnimateSharedLayout>
+            {messages.map((message) => (
+              <Message key={message.id} message={message} />
+            ))}
+          </AnimateSharedLayout>
           {!messages.length && (
             <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
           )}
