@@ -13,7 +13,7 @@ const UIHolder = styled.div`
   padding-right: 20px;
 `;
 
-const PureScrollableMessages = ({ children, className }: Props) => {
+export const ScrollableMessages = ({ children, className }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useScrollToBottom({ ref, bottomMargin: 80 });
@@ -24,5 +24,3 @@ const PureScrollableMessages = ({ children, className }: Props) => {
     </UIHolder>
   );
 };
-
-export const ScrollableMessages = styled(PureScrollableMessages)``;
