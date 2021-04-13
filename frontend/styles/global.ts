@@ -11,7 +11,6 @@ export const global = css`
     -moz-font-smoothing: antialiased;
     -webkit-font-smoothing: antialiased;
 
-    font-family: "Kumbh Sans", "Inter", "Open Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto",
-      "Helvetica", "Arial", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Kumbh Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
   }
 `;
