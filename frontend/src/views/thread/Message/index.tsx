@@ -11,8 +11,8 @@ import {
 } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 
+import { MessageActions } from "./MessageActions";
 import { MessageText } from "./MessageText";
-import { MessageTools } from "./MessageTools";
 
 export interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
@@ -112,7 +112,13 @@ export const Message = ({ message }: Props) => {
   const shouldShowTools = getShouldShowTools();
 
   return (
-    <UIAnimatedMessageWrapper ref={holderRef} message={message} onMouseEnter={setHovered} onMouseLeave={unsetHovered}>
+    <UIAnimatedMessageWrapper
+      layoutId={`message-${message.id}`}
+      ref={holderRef}
+      message={message}
+      onMouseEnter={setHovered}
+      onMouseLeave={unsetHovered}
+    >
       <UIMessageAvatar url={message.user.avatarUrl ?? ""} name={getUserOrGuestName(message)} />
       <UIMessageBody>
         <UIMessageHead>
@@ -133,7 +139,7 @@ export const Message = ({ message }: Props) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <MessageTools
+            <MessageActions
               isActive={isActive}
               onActiveChange={setIsActive}
               onEditRequest={() => setIsInEditMode(true)}

@@ -8,6 +8,8 @@ interface Props {
 }
 
 export function MessageText({ currentContent, isInEditMode, onEditRequest }: Props) {
+  // We want to allow editing the text before we'll submit changes to save it. Therefore let's keep 'dynamic' aka dirty
+  // version of content as a local state.
   const [dirtyContent, setDirtyContent] = useState(currentContent);
 
   useEffect(() => {

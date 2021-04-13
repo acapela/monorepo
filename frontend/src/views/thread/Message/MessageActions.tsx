@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { DANGER_COLOR } from "~ui/colors";
 import { MoreVertical } from "~ui/icons";
-import { Label } from "~ui/typo";
+import { SecondaryText } from "~ui/typo";
 
 interface Props {
   isActive: boolean;
@@ -13,7 +13,7 @@ interface Props {
   onEditRequest: () => void;
 }
 
-export const MessageTools = ({ isActive, onActiveChange, onEditRequest, onRemoveRequest }: Props) => {
+export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemoveRequest }: Props) => {
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
 
@@ -102,7 +102,7 @@ const UIPopupBody = styled(motion.div)`
 
 const UIPopupContent = styled(motion.div)``;
 
-const UILabel = styled(Label)<{ isDanger?: boolean }>`
+const UILabel = styled(SecondaryText)<{ isDanger?: boolean }>`
   white-space: nowrap;
   display: block;
   cursor: pointer;

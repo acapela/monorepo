@@ -7,7 +7,7 @@ export const PageTitle = styled.h1`
   font-weight: 600;
 `;
 
-export const Label = styled.span`
+export const SecondaryText = styled.span`
   font-size: ${fontSize.label};
   font-weight: 600;
 `;
