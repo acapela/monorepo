@@ -1,12 +1,14 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { gql } from "@apollo/client";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { graphql, rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "next-auth/client";
-import { GoogleLoginButton, useCurrentUser } from "./authentication/authentication";
-import { Provider as ApolloProvider } from "./apollo";
-import { useGetRoomsQuery } from "./gql";
 import { PropsWithChildren } from "react";
+import { Provider as ApolloProvider } from "./apollo";
+import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
+import { useCurrentUser } from "./authentication/useCurrentUser";
+
+import { useGetRoomsQuery } from "./gql";
 
 jest.mock(
   "next-auth/client",

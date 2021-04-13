@@ -1,6 +1,6 @@
-import React, { useState } from "react";
 import { signOut } from "next-auth/client";
-import { Button } from "@acapela/ui/button";
+import React, { useState } from "react";
+import { Button } from "~ui/button";
 
 interface Logout {
   loading: boolean;

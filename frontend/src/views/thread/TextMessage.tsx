@@ -1,9 +1,9 @@
-import React from "react";
-import styled from "styled-components";
 import { format } from "date-fns";
 import { motion, MotionProps } from "framer-motion";
-import { Avatar } from "@acapela/frontend/design/Avatar";
-import { ThreadMessageBasicInfoFragment } from "@acapela/frontend/gql";
+import React from "react";
+import styled from "styled-components";
+import { Avatar } from "~frontend/design/Avatar";
+import { ThreadMessageBasicInfoFragment } from "~frontend/gql";
 
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;

@@ -1,16 +1,15 @@
-import logger from "@acapela/shared/logger";
 import { PrismaClient } from "@prisma/client";
+import logger from "~shared/logger";
 
 export type {
-  // Let's export entities types
   account as Account,
-  user as User,
   message as Message,
-  room as Room,
-  thread as Thread,
   message_type as MessageType,
+  room as Room,
   room_invites as RoomInvites,
   room_participants as RoomParticipants,
+  thread as Thread,
+  user as User,
   verification_requests as VerificationRequest,
 } from "@prisma/client";
 

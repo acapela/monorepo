@@ -1,5 +1,5 @@
 #!/bin/bash
 
-TOOLING_CLI=$(node -e 'console.log(require.resolve("@acapela/tooling"))')
+TOOLING_CLI=$(node -e 'console.log(require.resolve("~tooling"))')
 
 exec /usr/bin/env ts-node --transpile-only $TOOLING_CLI "$@"

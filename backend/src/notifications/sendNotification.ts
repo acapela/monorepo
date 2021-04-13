@@ -1,5 +1,5 @@
+import { sendEmail } from "~shared/email";
 import { Notification } from "./Notification";
-import { sendEmail } from "@acapela/shared/email";
 
 export function sendNotification(notification: Notification): Promise<void> {
   return sendEmail({

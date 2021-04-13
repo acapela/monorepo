@@ -1,5 +1,5 @@
-import { handleRoomCreated } from "../rooms/events";
 import { handleInviteCreated } from "../invites/events";
+import { handleRoomCreated } from "../rooms/events";
 
 export interface EventHandler<DataT> {
   triggerName: string;

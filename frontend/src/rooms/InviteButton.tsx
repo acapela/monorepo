@@ -1,8 +1,8 @@
-import { Button } from "@acapela/ui/button";
-import { Field } from "@acapela/ui/field";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import { Button } from "~ui/button";
+import { Field } from "~ui/field";
 import { Dialog } from "../design/Dialog";
 import { useCreateInviteMutation, useGetRoomInvitesQuery } from "../gql";
 

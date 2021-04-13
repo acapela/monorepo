@@ -1,14 +1,13 @@
-import { v4 as uuid } from "uuid";
-import { Server } from "http";
 import sendgrid from "@sendgrid/mail";
-
-import { Room, User } from "@acapela/db";
+import { Server } from "http";
+import { v4 as uuid } from "uuid";
+import { Room, User } from "~db";
 import { setupServer } from "../app";
+import { HasuraEventOperation } from "../events/events";
+import { sendEvent } from "../events/eventTestSupport";
+import { HttpStatus } from "../http";
 import { createRoom } from "../rooms/rooms";
 import { createUser } from "../users/users";
-import { HasuraEventOperation } from "../events/events";
-import { HttpStatus } from "../http";
-import { sendEvent } from "../events/eventTestSupport";
 
 jest.mock("@sendgrid/mail", () => ({
   send: jest.fn(() => Promise.resolve()),

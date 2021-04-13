@@ -1,5 +1,5 @@
 {
-  "name": "@acapela/frontend",
+  "name": "~frontend",
   "private": "true",
   "version": "1.0.0",
   "scripts": {
@@ -23,10 +23,10 @@
     "tslib": "*"
   },
   "dependencies": {
-    "@acapela/config": "0.1.0",
-    "@acapela/db": "0.1.0",
-    "@acapela/shared": "0.1.0",
-    "@acapela/ui": "0.1.0",
+    "~config": "0.1.0",
+    "~db": "0.1.0",
+    "~shared": "0.1.0",
+    "~ui": "0.1.0",
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",

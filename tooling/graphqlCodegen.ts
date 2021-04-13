@@ -1,7 +1,7 @@
 import { generate } from "@graphql-codegen/cli";
-import { log } from "@acapela/shared/logger";
-import path from "path";
 import fs from "fs";
+import path from "path";
+import { log } from "~shared/logger";
 import { SCHEMA_FILE_PATH, updateSchemaFile } from "./fetchSchema";
 
 interface ToolingGenerateOptions {

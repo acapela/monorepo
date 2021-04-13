@@ -1,4 +1,4 @@
-import { db } from "@acapela/db";
+import { db } from "~db";
 import { cleanupDatabase } from "./testDatabaseUtils";
 
 beforeEach(async () => {

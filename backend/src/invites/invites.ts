@@ -1,4 +1,4 @@
-import { db, RoomInvites } from "@acapela/db";
+import { db, RoomInvites } from "~db";
 
 export async function findInviteByCode(code: string): Promise<RoomInvites | null> {
   return await db.room_invites.findUnique({

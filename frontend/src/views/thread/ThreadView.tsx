@@ -1,35 +1,34 @@
+import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useCurrentUser } from "@acapela/frontend/authentication/authentication";
-import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "@acapela/frontend/gql";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
+import { ScrollableMessages } from "~frontend/views/thread/ScrollableMessages";
+import { useCurrentUser } from "../../authentication/useCurrentUser";
 import { MessageComposer } from "./Composer";
 import { TextMessage } from "./TextMessage";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { ScrollableMessages } from "@acapela/frontend/views/thread/ScrollableMessages";
 
 interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
   isOwnMessage: boolean;
 }
 
-const useThreadMessages = (threadId: string): { loading: boolean; messages: MessageWithUserInfo[] } => {
-  const { loading: loadingUser, user } = useCurrentUser();
-  const { data, loading: loadingMessages } = useThreadMessagesSubscription({
+const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
+  const { loading: isLoadingUser, user } = useCurrentUser();
+  const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
     variables: { threadId },
   });
 
-  if (loadingUser || loadingMessages || !data) {
-    return { loading: true, messages: [] };
-  }
-
-  const messagesList: ThreadMessageBasicInfoFragment[] = data.messages ?? [];
+  const isLoading = isLoadingUser || isLoadingMessages || !data;
+  const messagesList: ThreadMessageBasicInfoFragment[] = data?.messages ?? [];
 
   return {
-    loading: false,
-    messages: messagesList.map((message) => ({
-      ...message,
-      isOwnMessage: message.user.id === user?.id,
-    })),
+    isLoading,
+    messages: isLoading
+      ? []
+      : messagesList.map((message) => ({
+          ...message,
+          isOwnMessage: message.user.id === user?.id,
+        })),
   };
 };
 
@@ -52,21 +51,15 @@ const UIMessageComposer = styled.div`
   margin-top: 1rem;
 `;
 
-const UIAnimatedMessagesWrapper = styled(motion.div).attrs({
-  variants: {
-    show: { transition: { staggerChildren: 0.04 } },
-  },
-  initial: "hidden",
-  animate: "show",
-})`
+const UIAnimatedMessagesWrapper = styled(motion.div)`
   display: flex;
   flex-direction: column;
 `;
 
 export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
-  const { loading, messages } = useThreadMessages(id);
+  const { isLoading, messages } = useThreadMessages(id);
 
-  if (loading) {
+  if (isLoading) {
     // TODO: Add proper loading UI
     return <div>loading...</div>;
   }

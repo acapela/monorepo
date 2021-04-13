@@ -1,2 +1,2 @@
-// This is needed to allow resolving `@acapela/shared'
+// This is needed to allow resolving `~shared'
 export default null;
