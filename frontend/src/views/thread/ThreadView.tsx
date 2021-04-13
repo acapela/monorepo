@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import { useCurrentUser } from "~frontend/authentication/authentication";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
 import { ScrollableMessages } from "~frontend/views/thread/ScrollableMessages";
+import { useCurrentUser } from "../../authentication/useCurrentUser";
 import { MessageComposer } from "./Composer";
 import { TextMessage } from "./TextMessage";
 
