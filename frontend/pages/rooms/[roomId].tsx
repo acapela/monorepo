@@ -3,18 +3,18 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { RoomLayout } from "@acapela/frontend/rooms/RoomLayout";
 import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
 import { usePathParameter } from "@acapela/frontend/utils";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
 import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
+import { withServerSideAuthRedirect } from "@acapela/frontend/authentication/withServerSideAuthRedirect";
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;
 `;
 
-const Page = authenticated(() => {
+const Page = () => {
   const { replace } = useRouter();
   const roomId = usePathParameter("roomId");
   const { loading, data } = useGetSingleRoomQuery({ variables: { id: roomId } });
@@ -45,7 +45,9 @@ const Page = authenticated(() => {
       </UIContentWrapper>
     </>
   );
-});
+};
+
+export const getServerSideProps = withServerSideAuthRedirect();
 
 assignPageLayout(Page, RoomLayout);
 

@@ -1,12 +1,14 @@
 import Head from "next/head";
 import React from "react";
 import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { authenticated } from "@acapela/frontend/authentication/authenticated";
 import { LogoutButton } from "@acapela/frontend/authentication/logout";
 import { MainLayout } from "@acapela/frontend/MainLayout";
 import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
+import { withServerSideAuthRedirect } from "@acapela/frontend/authentication/withServerSideAuthRedirect";
 
-const Page = authenticated(function ActivePage() {
+export const getServerSideProps = withServerSideAuthRedirect();
+
+const Page = function ActivePage() {
   return (
     <>
       <Head>
@@ -18,7 +20,7 @@ const Page = authenticated(function ActivePage() {
       </UIContentWrapper>
     </>
   );
-});
+};
 
 assignPageLayout(Page, MainLayout);
 
