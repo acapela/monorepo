@@ -1,4 +1,4 @@
-import { db } from "@acapela/db";
+import { db } from "~db";
 
 export async function cleanupDatabase(): Promise<void> {
   /* CASCADE follows foreign keys, therefore, truncating all the tables starting from `user` */

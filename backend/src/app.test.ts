@@ -1,6 +1,5 @@
-import request from "supertest";
 import { Server } from "http";
-
+import request from "supertest";
 import { setupServer } from "./app";
 import { HttpStatus } from "./http";
 

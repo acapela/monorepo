@@ -72,7 +72,7 @@ eg.
 
 ```json
 {
-  "name": "@acapela/utils",
+  "name": "~utils",
   "version": "0.1.0"
 }
 ```
@@ -82,14 +82,14 @@ and then `frontend/package.json`
 ```json
 {
   "dependencies": {
-    "@acapela/utils": "0.1.0"
+    "~utils": "0.1.0"
   }
 }
 ```
 
-In such a setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/@acapela/utils` is symlink to `./utils` (not clone!).
+In such a setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/~utils` is symlink to `./utils` (not clone!).
 
-It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/@acapela/utils`.
+It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/~utils`.
 
 ### Dependencies typescript build pipeline
 

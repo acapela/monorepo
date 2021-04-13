@@ -1,8 +1,8 @@
-import { useCreateTextMessageMutation } from "@acapela/frontend/gql";
-import { EmojiPicker } from "@acapela/ui/EmojiPicker";
-import { Field, useFieldValue } from "@acapela/ui/field";
 import React, { useRef } from "react";
 import styled from "styled-components";
+import { useCreateTextMessageMutation } from "~frontend/gql";
+import { EmojiPicker } from "~ui/EmojiPicker";
+import { Field, useFieldValue } from "~ui/field";
 
 export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
   const [createTextMessage] = useCreateTextMessageMutation();

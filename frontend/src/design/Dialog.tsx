@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
+import styled from "styled-components";
 
 const MotionDialogOverlay = motion(DialogOverlay);
 

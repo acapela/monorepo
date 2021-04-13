@@ -1,11 +1,9 @@
+import { Server } from "http";
 import request from "supertest";
 import { v4 as uuid } from "uuid";
-import { Server } from "http";
-
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
 import { handlers as fakeHandlers } from "./actionHandlers";
-
 import { HasuraAction } from "./actions";
 
 jest.mock("./actionHandlers", () => ({

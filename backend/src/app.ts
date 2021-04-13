@@ -1,15 +1,15 @@
+import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import express, { Application, json } from "express";
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
-import { promisify } from "util";
-import { Server, createServer } from "http";
 import securityMiddleware from "helmet";
-import { initializeSecrets } from "@acapela/config";
-import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
-import logger from "@acapela/shared/logger";
-import { errorHandling, notFoundRouteHandling } from "./errors";
-import { router as authenticationRoutes } from "./authentication";
-import { router as eventRoutes } from "./events/events";
+import { createServer, Server } from "http";
+import { promisify } from "util";
+import { initializeSecrets } from "~config";
+import logger from "~shared/logger";
 import { router as actionRoutes } from "./actions/actions";
+import { router as authenticationRoutes } from "./authentication";
+import { errorHandling, notFoundRouteHandling } from "./errors";
+import { router as eventRoutes } from "./events/events";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();

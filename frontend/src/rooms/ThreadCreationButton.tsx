@@ -1,12 +1,12 @@
-import { Dialog } from "@acapela/frontend/design/Dialog";
-import { useBoolean } from "@acapela/frontend/hooks/useBoolean";
-import { useCreateThreadMutation } from "@acapela/frontend/gql";
-import { createNextIndex } from "@acapela/frontend/rooms/order";
-import { Button } from "@acapela/ui/button";
-import { Field } from "@acapela/ui/field";
 import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import { Dialog } from "~frontend/design/Dialog";
+import { useCreateThreadMutation } from "~frontend/gql";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { createNextIndex } from "~frontend/rooms/order";
+import { Button } from "~ui/button";
+import { Field } from "~ui/field";
 
 export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: string }> = ({
   roomId,

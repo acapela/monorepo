@@ -1,10 +1,10 @@
-import { Suspense, useEffect, useRef, useState } from "react";
 import type { BaseEmoji } from "emoji-mart";
+import { AnimatePresence, motion, Target, TargetAndTransition } from "framer-motion";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { AnimatePresence, motion, Target, TargetAndTransition } from "framer-motion";
-import { namedLazy } from "@acapela/shared/namedLazy";
-import { SmilingFace } from "@acapela/ui/icons";
+import { namedLazy } from "~shared/namedLazy";
+import { SmilingFace } from "~ui/icons";
 import { EmojiMartStyles } from "./styles";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.

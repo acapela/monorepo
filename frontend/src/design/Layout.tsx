@@ -1,6 +1,6 @@
+import Link from "next/link";
 import React, { FC, ReactNode } from "react";
 import styled from "styled-components";
-import Link from "next/link";
 import { Logo } from "./Logo";
 
 const UISidebar = styled.div`

@@ -1,2 +1,2 @@
-// This is needed to allow resolving `@acapela/ui'
+// This is needed to allow resolving `~ui'
 export default null;

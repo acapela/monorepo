@@ -1,6 +1,6 @@
-import { v4 as uuid } from "uuid";
 import request from "supertest";
-import { HasuraEventOperation, BaseHasuraEvent } from "./events";
+import { v4 as uuid } from "uuid";
+import { BaseHasuraEvent, HasuraEventOperation } from "./events";
 
 export function sendEvent(
   app: Express.Application,

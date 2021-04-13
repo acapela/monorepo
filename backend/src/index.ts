@@ -1,11 +1,11 @@
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
-import { initializeSecrets } from "@acapela/config";
+import { initializeSecrets } from "~config";
 
 async function start(): Promise<void> {
   // Note: We're lazy loading modules here to avoid requesting config too early.
   await initializeSecrets();
 
-  const { log } = await import("@acapela/shared/logger");
+  const { log } = await import("~shared/logger");
   log.info("Environment variables loaded");
   log.info("Secrets loaded");
   const serverModule = await import("./app");

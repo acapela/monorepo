@@ -1,22 +1,22 @@
+import Head from "next/head";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { SidebarLayout } from "@acapela/frontend/design/Layout";
-import { AvatarList } from "@acapela/frontend/design/AvatarList";
-import { NavLink } from "@acapela/frontend/design/NavLink";
-import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
-import { Button } from "@acapela/ui/button";
+import { AvatarProps } from "~frontend/design/Avatar";
+import { AvatarList } from "~frontend/design/AvatarList";
+import { SidebarLayout } from "~frontend/design/Layout";
+import { NavLink } from "~frontend/design/NavLink";
 import {
   ParticipantBasicInfoFragment,
   ThreadDetailedInfoFragment,
   useGetSingleRoomQuery,
   useRoomParticipantsSubscription,
   useRoomThreadsSubscription,
-} from "@acapela/frontend/gql";
-import { AvatarProps } from "@acapela/frontend/design/Avatar";
+} from "~frontend/gql";
+import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
+import { usePathParameter } from "~frontend/utils";
+import { assert } from "~shared/assert";
+import { Button } from "~ui/button";
 import { InviteButton } from "./InviteButton";
-import { usePathParameter } from "@acapela/frontend/utils";
-import { assert } from "@acapela/shared/assert";
-import Head from "next/head";
 
 interface Props {
   children: ReactNode;

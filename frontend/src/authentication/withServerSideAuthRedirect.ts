@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { getSession } from "next-auth/client";
 
 export function withServerSideAuthRedirect<P>(propsFactory?: (context: GetServerSidePropsContext) => Promise<P>) {

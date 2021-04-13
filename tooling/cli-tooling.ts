@@ -1,10 +1,9 @@
-import "@acapela/config/dotenv";
-
 import yargs from "yargs";
-import logger from "@acapela/shared/logger";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { hideBin } from "yargs/helpers";
+import "~config/dotenv";
+import logger from "~shared/logger";
 
 const tooling = yargs(hideBin(process.argv));
 

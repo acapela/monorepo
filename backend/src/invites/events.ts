@@ -1,11 +1,11 @@
-import { User } from "@acapela/db";
-import logger from "@acapela/shared/logger";
+import { User } from "~db";
+import logger from "~shared/logger";
+import { UnprocessableEntityError } from "../errors";
 import { EventHandler } from "../events/eventHandlers";
+import { sendNotification } from "../notifications/sendNotification";
 import { findRoomById } from "../rooms/rooms";
 import { findUserById } from "../users/users";
-import { UnprocessableEntityError } from "../errors";
 import { InviteNotification } from "./InviteNotification";
-import { sendNotification } from "../notifications/sendNotification";
 
 interface Invite {
   id: string;

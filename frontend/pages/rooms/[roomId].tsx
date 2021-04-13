@@ -1,14 +1,14 @@
-import { useGetSingleRoomQuery } from "@acapela/frontend/gql";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { RoomLayout } from "@acapela/frontend/rooms/RoomLayout";
-import { ThreadCreationButton } from "@acapela/frontend/rooms/ThreadCreationButton";
-import { usePathParameter } from "@acapela/frontend/utils";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { assignPageLayout } from "@acapela/frontend/utils/pageLayout";
-import { withServerSideAuthRedirect } from "@acapela/frontend/authentication/withServerSideAuthRedirect";
+import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { useGetSingleRoomQuery } from "~frontend/gql";
+import { RoomLayout } from "~frontend/rooms/RoomLayout";
+import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
+import { usePathParameter } from "~frontend/utils";
+import { assignPageLayout } from "~frontend/utils/pageLayout";
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;

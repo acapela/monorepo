@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useAcceptInviteMutation } from "@acapela/frontend/gql";
-import { UIContentWrapper } from "@acapela/frontend/design/UIContentWrapper";
-import { UILogoWrapper } from "@acapela/frontend/design/UILogoWrapper";
-import { Logo } from "@acapela/frontend/design/Logo";
-import { usePathParameter } from "@acapela/frontend/utils";
-import { assert } from "@acapela/shared/assert";
-
-import { withServerSideAuthRedirect } from "@acapela/frontend/authentication/withServerSideAuthRedirect";
+import React, { useEffect } from "react";
+import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
+import { Logo } from "~frontend/design/Logo";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
+import { useAcceptInviteMutation } from "~frontend/gql";
+import { usePathParameter } from "~frontend/utils";
+import { assert } from "~shared/assert";
 
 export default function InvitePage() {
   const inviteCode = usePathParameter("inviteCode");
