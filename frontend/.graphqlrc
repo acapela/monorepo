@@ -1,0 +1,3 @@
+
+schema: "../tooling/schema.graphql"
+documents: "**/*.{ts,tsx}"
