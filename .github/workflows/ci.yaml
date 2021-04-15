@@ -94,20 +94,6 @@ jobs:
     needs: [frontend, backend]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "15"
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm ci
-      - name: Setup dotenv
-        run: cp .env.production .env
-      - run: npm run frontend:build
-      - run: npm run backend:build
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
