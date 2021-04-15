@@ -21,11 +21,10 @@
     "frontend:dev": "npm run frontend -- run dev",
     "frontend:test": "npm run frontend -- run test",
     "frontend:test:watch": "npm run frontend -- run test:watch",
-    "frontend:build": "npm run frontend -- run gcp-build",
+    "frontend:build": "npm run frontend -- run next:build",
     "backend:dev": "npm run backend -- run dev",
     "backend:test": "npm run backend -- run test",
     "backend:test:watch": "npm run backend -- run test:watch",
-    "backend:build": "npm run backend -- run gcp-build",
     "docker:up:detach": "npm run docker:up -- -d",
     "docker:up": "docker-compose --env-file .env up --force-recreate",
     "docker:config": "docker-compose --env-file .env config",
@@ -43,7 +42,10 @@
     "lint": "eslint . && prettier --check .",
     "test": "npm run frontend:test && npm run backend:test",
     "format": "eslint --fix . && prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start:backend": "npm run backend -- start",
+    "start:frontend": "npm run frontend -- start",
+    "build": "npm run frontend:build"
   },
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json}": "prettier --write",
@@ -71,6 +73,8 @@
     "react": "^17.0.2",
     "react-use": "^17.2.3",
     "styled-components": "^5.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3",
     "utility-types": "^3.10.0"
   },
   "devDependencies": {
@@ -91,9 +95,7 @@
     "lint-staged": "^10.5.4",
     "ntl": "^5.1.0",
     "prettier": "^2.2.1",
-    "ts-node": "^9.1.1",
-    "tslib": "^1.14.1",
-    "typescript": "^4.2.3"
+    "tslib": "^1.14.1"
   },
   "config": {
     "commitizen": {
