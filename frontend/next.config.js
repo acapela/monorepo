@@ -54,6 +54,11 @@ const envVariables = (nextConfig = {}) => {
       // This function is called twice, once for server side and once for client side webpack.
       const isServer = options.isServer;
       const envFilePath = options.config.envFilePath;
+
+      if (!fs.existsSync(envFilePath)) {
+        return config;
+      }
+
       const fileStats = fs.statSync(envFilePath);
 
       if (!fileStats.isFile()) {

@@ -12,7 +12,7 @@ set -eu
   exit 1
 }
 
-cd hasura
+cd ../infrastructure/hasura
 hasura migrate apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 cd -
