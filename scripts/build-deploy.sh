@@ -9,15 +9,12 @@ fi
 
 version=$1
 
-for app in backend frontend; do
-  echo "[$app]: build and deploy"
-  cd $app
-  ./scripts/build-and-push.sh $version
+./scripts/build-and-push.sh $version
 
+for app in backend frontend; do
+  echo "[$app]: trigger deploy"
   for stage in staging production; do
     echo "[$app]: deploying to $version to $stage"
-    ./scripts/trigger-deploy.sh $stage $version
+    ./scripts/trigger-deploy.sh $stage $app $version
   done
-  
-  cd -
 done
