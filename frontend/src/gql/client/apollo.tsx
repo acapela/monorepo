@@ -1,9 +1,10 @@
+import Cookie from "js-cookie";
+import React from "react";
+import { GRAPHQL_SUBSCRIPTION_HOST } from "~frontend/config";
+
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import Cookie from "js-cookie";
-import React, { useMemo } from "react";
-import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -28,7 +29,7 @@ const authorizationHeaderLink = new ApolloLink((operation, forward) => {
 });
 
 function createSocketLink() {
-  return new WebSocketLink({
+  const socketLink = new WebSocketLink({
     uri: `${GRAPHQL_SUBSCRIPTION_HOST}/v1/graphql`,
     options: {
       reconnect: true,
@@ -48,6 +49,8 @@ function createSocketLink() {
       },
     },
   });
+
+  return socketLink;
 }
 
 const httpLink = new HttpLink({ uri: "/graphql" });
@@ -73,9 +76,8 @@ const createApolloClient = (): ApolloClient<unknown> => {
   });
 };
 
-export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Memoize apollo client so data cache persists across pages when navigating
-  const client = useMemo(createApolloClient, []);
+export const apolloClient = createApolloClient();
 
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
 };

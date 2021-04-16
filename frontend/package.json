@@ -43,7 +43,8 @@
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
     "subscriptions-transport-ws": "^0.9.18",
-    "react-hook-form": "^7.0.6"
+    "react-hook-form": "^7.0.6",
+    "immer": "^9.0.1"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.9",

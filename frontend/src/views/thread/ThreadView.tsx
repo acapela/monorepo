@@ -1,5 +1,5 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
@@ -9,23 +9,53 @@ import { MessageComposer } from "./Composer";
 import { Message, MessageWithUserInfo } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 
-const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
+const useThreadMessages = (threadId: string) => {
   const { loading: isLoadingUser, user } = useCurrentUser();
+  /**
+   * We want to be able to add 'optimistic' new messages before they're returned from socket subscribtion.
+   * This is because currently socket subscribtion has 1s interval which might cause visible delay.
+   *
+   * This is array of additional messages to be added at the end of list of messages.
+   *
+   * This list is automatically cleared each time new data arrives from original subscribtion.
+   */
+  const [optimisticMessages, setOptimisticMessages] = useState<ThreadMessageBasicInfoFragment[]>([]);
+
   const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
     variables: { threadId },
   });
 
+  // Each time new data is received, clear optimistic messages
+  useEffect(() => {
+    if (optimisticMessages.length === 0) return;
+
+    setOptimisticMessages([]);
+  }, [data]);
+
+  function addOptimisticNewMessage(message: ThreadMessageBasicInfoFragment) {
+    setOptimisticMessages((currentMessages) => {
+      return [...currentMessages, { ...message, __typename: "message" }];
+    });
+  }
+
   const isLoading = isLoadingUser || isLoadingMessages || !data;
-  const messagesList: ThreadMessageBasicInfoFragment[] = data?.messages ?? [];
+
+  function getMessages(): MessageWithUserInfo[] {
+    // Add optimistic messages to original messages.
+    const rawMessages = [...(data?.messages ?? []), ...optimisticMessages];
+
+    return rawMessages.map(
+      (message): MessageWithUserInfo => ({
+        ...message,
+        isOwnMessage: message.user.id === user?.id,
+      })
+    );
+  }
 
   return {
     isLoading,
-    messages: isLoading
-      ? []
-      : messagesList.map((message) => ({
-          ...message,
-          isOwnMessage: message.user.id === user?.id,
-        })),
+    addOptimisticNewMessage,
+    messages: getMessages(),
   };
 };
 
@@ -54,11 +84,18 @@ const UIAnimatedMessagesWrapper = styled(motion.div)`
 `;
 
 export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
-  const { isLoading, messages } = useThreadMessages(id);
+  const { isLoading, messages, addOptimisticNewMessage } = useThreadMessages(id);
 
   if (isLoading) {
     // TODO: Add proper loading UI
     return <div>loading...</div>;
+  }
+
+  function handleNewMessageRequestSent(data: ThreadMessageBasicInfoFragment) {
+    addOptimisticNewMessage({
+      ...data,
+      id: "_optimistic" + data.id,
+    });
   }
 
   return (
@@ -76,7 +113,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
         </UIAnimatedMessagesWrapper>
       </ScrollableMessages>
       <UIMessageComposer>
-        <MessageComposer threadId={id} />
+        <MessageComposer threadId={id} onMessageAdded={handleNewMessageRequestSent} />
       </UIMessageComposer>
     </UIThreadView>
   );

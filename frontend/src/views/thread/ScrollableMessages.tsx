@@ -13,7 +13,7 @@ const UIHolder = styled.div`
   padding-right: 20px;
 `;
 
-export const ScrollableMessages = ({ children, className }: Props) => {
+const ScrollableMessagesRaw = ({ children, className }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useScrollToBottom({ ref, bottomMargin: 80 });
@@ -24,3 +24,6 @@ export const ScrollableMessages = ({ children, className }: Props) => {
     </UIHolder>
   );
 };
+
+// Allow ScrollableMessages to be used as nested selector.
+export const ScrollableMessages = styled(ScrollableMessagesRaw)``;

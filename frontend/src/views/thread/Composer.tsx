@@ -1,10 +1,15 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { useCreateTextMessageMutation } from "~frontend/gql";
+import { ThreadMessageBasicInfoFragment, useCreateTextMessageMutation } from "~frontend/gql";
 import { EmojiPicker } from "~ui/EmojiPicker";
 import { Field, useFieldValue } from "~ui/field";
 
-export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
+interface Props {
+  threadId: string;
+  onMessageAdded?: (data: ThreadMessageBasicInfoFragment) => void;
+}
+
+export const MessageComposer = ({ threadId, onMessageAdded }: Props) => {
   const [createTextMessage] = useCreateTextMessageMutation();
   const inputRef = useRef<HTMLInputElement>(null);
   const textField = useFieldValue("", inputRef);
@@ -19,12 +24,20 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           alert("Message content is required");
         }
 
-        await createTextMessage({
+        const newMessageResponse = await createTextMessage({
           variables: {
             text: textField.value,
             threadId,
           },
         });
+
+        const newMessage = newMessageResponse.data?.message;
+
+        if (!newMessage) {
+          return;
+        }
+
+        onMessageAdded?.(newMessage);
 
         textField.reset();
       }}

@@ -8,7 +8,7 @@ import { WithAdditionalParams } from "next-auth/_utils";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
-import { Provider as ApolloProvider } from "~frontend/apollo";
+import { Provider as ApolloProvider } from "~frontend/gql/client/apollo";
 import { parseJWTWithoutValidation } from "~frontend/authentication/jwt";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
