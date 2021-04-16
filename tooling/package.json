@@ -9,9 +9,7 @@
     "@graphql-codegen/typescript": "^1.21.0",
     "@graphql-codegen/typescript-apollo-client-helpers": "^1.1.2",
     "@graphql-codegen/typescript-operations": "^1.17.14",
-    "@graphql-codegen/typescript-react-apollo": "^2.2.1",
-    "dotenv": "*",
-    "ts-node": "*"
+    "@graphql-codegen/typescript-react-apollo": "^2.2.1"
   },
   "dependencies": {
     "~config": "0.1.0",
@@ -19,7 +17,9 @@
     "yargs": "^16.2.0"
   },
   "peerDependencies": {
-    "axios": "*"
+    "axios": "*",
+    "dotenv": "*",
+    "ts-node": "*"
   },
   "scripts": {
     "start": "ts-node ./cli-tooling.ts"
