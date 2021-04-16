@@ -88,10 +88,17 @@ jobs:
         run: cp .env.sample .env
       - run: npm run backend:test
 
+  docker:
+    name: Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t test .
+
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: [frontend, backend]
+    needs: [frontend, backend, docker]
     steps:
       - uses: actions/checkout@v2
       - name: semantic-release
