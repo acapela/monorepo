@@ -8,8 +8,9 @@ import { initializeSecrets } from "~config";
 import logger from "~shared/logger";
 import { router as actionRoutes } from "./actions/actions";
 import { router as authenticationRoutes } from "./authentication";
-import { errorHandling, notFoundRouteHandling } from "./errors";
 import { router as eventRoutes } from "./events/events";
+import { router as attachmentsRouter } from "./attachments/attachments";
+import { errorHandling, notFoundRouteHandling } from "./errors";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
@@ -34,6 +35,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", authenticationRoutes);
   app.use("/api", eventRoutes);
   app.use("/api", actionRoutes);
+  app.use("/api", attachmentsRouter);
 }
 
 function setupErrorHandling(app: Application): void {
