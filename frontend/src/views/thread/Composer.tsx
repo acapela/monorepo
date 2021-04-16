@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useCreateTextMessageMutation } from "~frontend/gql";
 import { EmojiPicker } from "~ui/EmojiPicker";
 import { Field, useFieldValue } from "~ui/field";
+import { FileUpload } from "~frontend/views/thread/FileUpload";
 
 export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
   const [createTextMessage] = useCreateTextMessageMutation();
@@ -10,32 +11,38 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
   const textField = useFieldValue("", inputRef);
 
   return (
-    <UIForm
-      onSubmit={async (event) => {
-        event.preventDefault();
+    <>
+      <UIForm
+        onSubmit={async (event) => {
+          event.preventDefault();
 
-        if (!textField.value) {
-          // TODO: Add proper validation UI
-          alert("Message content is required");
-        }
+          if (!textField.value) {
+            // TODO: Add proper validation UI
+            alert("Message content is required");
+          }
 
-        await createTextMessage({
-          variables: {
-            text: textField.value,
-            threadId,
-          },
-        });
+          await createTextMessage({
+            variables: {
+              text: textField.value,
+              threadId,
+            },
+          });
 
-        textField.reset();
-      }}
-    >
-      <EmojiPicker
-        onPicked={(emoji) => {
-          textField.appendAtCursor(emoji);
+          textField.reset();
         }}
-      />
-      <Field ref={inputRef} placeholder="Write a message" {...textField.bindProps} />
-    </UIForm>
+      >
+        <EmojiPicker
+          onPicked={(emoji) => {
+            textField.appendAtCursor(emoji);
+          }}
+        />
+        <Field ref={inputRef} placeholder="Write a message" {...textField.bindProps} />
+      </UIForm>
+      <div>
+        <FileUpload />
+        <FileUpload />
+      </div>
+    </>
   );
 };
 
