@@ -22,9 +22,7 @@ router.post("/v1/attachments", async (req: Request, res: Response) => {
   }
 
   try {
-    const storage = new Storage({
-      keyFilename: path.resolve(__dirname, "..", "..", "meetnomoreapp-26b862628558.json"),
-    });
+    const storage = new Storage();
 
     const filePath = `${directory}${fileName}`;
     // TODO: make as small as possible
