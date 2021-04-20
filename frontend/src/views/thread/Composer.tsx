@@ -1,21 +1,55 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { Attachment, Message_Type_Enum, useCreateMessageMutation } from "~frontend/gql";
+import { AttachmentDetailedInfoFragment, Message_Type_Enum, useCreateMessageMutation } from "~frontend/gql";
 import { EmojiPicker } from "~ui/EmojiPicker";
 import { Field, useFieldValue } from "~ui/field";
 import { FileUpload } from "~frontend/views/thread/FileUpload";
 
-function chooseMessageType(mime: string) {
-  return Message_Type_Enum.Text;
+function chooseType(mimeType: string): Message_Type_Enum {
+  const category = mimeType.split("/")[0].toLowerCase();
+
+  switch (category) {
+    case "audio":
+      return Message_Type_Enum.Audio;
+    case "video":
+      return Message_Type_Enum.Video;
+    default:
+      // Message_Type_Enum.File is not used
+      return Message_Type_Enum.Text;
+  }
 }
+
+const Attachments = ({
+  shouldTranscribe,
+  onAttachmentAdded,
+}: {
+  shouldTranscribe: boolean;
+  onAttachmentAdded: (attachment: AttachmentDetailedInfoFragment) => void;
+}) => {
+  if (shouldTranscribe) {
+    return <FileUpload onFileAttached={onAttachmentAdded} />;
+  }
+
+  return (
+    <>
+      <FileUpload onFileAttached={onAttachmentAdded} />
+      <br />
+      <FileUpload onFileAttached={onAttachmentAdded} />
+      <br />
+      <FileUpload onFileAttached={onAttachmentAdded} />
+    </>
+  );
+};
 
 export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
   const [createMessage] = useCreateMessageMutation();
   const inputRef = useRef<HTMLInputElement>(null);
   const textField = useFieldValue("", inputRef);
-  const [attachments, setAttachments] = useState<{ [key: string]: Attachment }>({});
+  const [attachments, setAttachments] = useState<{ [key: string]: AttachmentDetailedInfoFragment }>({});
+  const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
 
-  const onAttachmentAdded = (attachment: Attachment) => setAttachments({ ...attachments, [attachment.id]: attachment });
+  const onAttachmentAdded = (attachment: AttachmentDetailedInfoFragment) =>
+    setAttachments({ ...attachments, [attachment.id]: attachment });
 
   return (
     <>
@@ -28,12 +62,16 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
             alert("Message content is required");
           }
 
+          const attachmentsIds = Object.keys(attachments);
+
           await createMessage({
             variables: {
               threadId: threadId,
-              type: Message_Type_Enum.Text,
+              type: shouldTranscribe
+                ? chooseType(attachments[Object.keys(attachments)[0]].mimeType)
+                : Message_Type_Enum.Text,
               text: textField.value,
-              attachments: Object.keys(attachments).map((attachmentId) => ({
+              attachments: attachmentsIds.map((attachmentId) => ({
                 attachment_id: attachmentId,
               })),
             },
@@ -51,8 +89,16 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
         <Field ref={inputRef} placeholder="Write a message" {...textField.bindProps} />
       </UIForm>
       <div>
-        <FileUpload onFileAttached={onAttachmentAdded} />
-        <FileUpload onFileAttached={onAttachmentAdded} />
+        <label>
+          Transcribe
+          <input
+            type="checkbox"
+            defaultChecked={shouldTranscribe}
+            onChange={(event) => setShouldTranscribe(event.target.checked)}
+          />
+        </label>
+        <br />
+        <Attachments onAttachmentAdded={onAttachmentAdded} shouldTranscribe={shouldTranscribe} />
       </div>
     </>
   );

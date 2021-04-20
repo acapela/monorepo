@@ -1,18 +1,18 @@
 import React, { ChangeEvent, InputHTMLAttributes, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { Attachment } from "~frontend/gql";
+import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 
 interface FileUploadParameters extends InputHTMLAttributes<HTMLInputElement> {
-  onFileAttached: (attachment: Attachment) => void;
+  onFileAttached: (attachment: AttachmentDetailedInfoFragment) => void;
 }
 
 function useUploadFile() {
   const [progress, setProgress] = useState<number>(0);
   const [publicUrl, setPublicUrl] = useState<string | null>(null);
-  const [attachment, setAttachment] = useState<Attachment>();
+  const [attachment, setAttachment] = useState<AttachmentDetailedInfoFragment>();
 
   async function doUpload(file: File) {
-    const { name, type } = file;
+    const { name, type: mimeType } = file;
 
     const {
       data: { uploadUrl, uuid },
@@ -22,14 +22,14 @@ function useUploadFile() {
       headers: {
         // Authentication: `Bearer ${process.env.HASURA_API_SECRET}`
       },
-      data: { name, type },
+      data: { name, mimeType },
     });
 
     await axios({
       method: "PUT",
       url: decodeURIComponent(uploadUrl),
       headers: {
-        "Content-Type": type,
+        "Content-Type": mimeType,
       },
       data: file,
       onUploadProgress: (e) => setProgress(Math.round((e.loaded * 100) / e.total)),
@@ -94,17 +94,27 @@ export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParamete
   }
 
   if (attachment && publicUrl) {
+    const type = attachment.mimeType.split("/")[0].toLowerCase();
+
+    if (type === "image") {
+      return (
+        <img
+          src={publicUrl}
+          height={100}
+          alt={attachment.originalName || "Attachment"}
+          style={{
+            display: "inline-block",
+            maxWidth: "none",
+            height: "100px",
+          }}
+        />
+      );
+    }
+
     return (
-      <img
-        src={publicUrl}
-        height={100}
-        alt={attachment.original_name || "Attachment"}
-        style={{
-          display: "inline-block",
-          maxWidth: "none",
-          height: "100px",
-        }}
-      />
+      <div>
+        {type}:&nbsp;{attachment.originalName}
+      </div>
     );
   }
 

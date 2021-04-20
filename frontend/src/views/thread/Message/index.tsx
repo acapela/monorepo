@@ -17,7 +17,6 @@ import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachm
 
 export interface MessageWithUserInfoAndAttachments extends ThreadMessageDetailedInfoFragment {
   isOwnMessage: boolean;
-  // message_attachments: { attachment: Attachment }[];
 }
 
 interface Props extends MotionProps {
@@ -133,7 +132,7 @@ export const Message = ({ message }: Props) => {
           onEditRequest={handleEditContentRequest}
         />
         {message.message_attachments?.map(({ attachment }) => (
-          <MessageAttachment key={attachment.id} attachment={attachment} />
+          <MessageAttachment key={attachment.id} messageType={message.type} attachment={attachment} />
         ))}
       </UIMessageBody>
       <AnimatePresence>

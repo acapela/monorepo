@@ -22,10 +22,19 @@ gql`
 `;
 
 gql`
+  fragment AttachmentDetailedInfo on attachment {
+    id
+    originalName: original_name
+    mimeType: mime_type
+  }
+`;
+
+gql`
   fragment ThreadMessageDetailedInfo on message {
     id
     text
     createdAt: created_at
+    type
     user {
       id
       name
@@ -33,8 +42,7 @@ gql`
     }
     message_attachments {
       attachment {
-        id
-        original_name
+        ...AttachmentDetailedInfo
       }
     }
   }

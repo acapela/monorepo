@@ -331,6 +331,7 @@ export type Attachment = {
   __typename?: 'attachment';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
+  mime_type: Scalars['String'];
   original_name?: Maybe<Scalars['String']>;
 };
 
@@ -376,6 +377,7 @@ export type Attachment_Bool_Exp = {
   _or?: Maybe<Array<Maybe<Attachment_Bool_Exp>>>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  mime_type?: Maybe<String_Comparison_Exp>;
   original_name?: Maybe<String_Comparison_Exp>;
 };
 
@@ -389,6 +391,7 @@ export enum Attachment_Constraint {
 export type Attachment_Insert_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
 };
 
@@ -397,6 +400,7 @@ export type Attachment_Max_Fields = {
   __typename?: 'attachment_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
 };
 
@@ -404,6 +408,7 @@ export type Attachment_Max_Fields = {
 export type Attachment_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
 };
 
@@ -412,6 +417,7 @@ export type Attachment_Min_Fields = {
   __typename?: 'attachment_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
 };
 
@@ -419,6 +425,7 @@ export type Attachment_Min_Fields = {
 export type Attachment_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
 };
 
@@ -448,6 +455,7 @@ export type Attachment_On_Conflict = {
 export type Attachment_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
 };
 
@@ -463,6 +471,8 @@ export enum Attachment_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
+  MimeType = 'mime_type',
+  /** column name */
   OriginalName = 'original_name'
 }
 
@@ -470,6 +480,7 @@ export enum Attachment_Select_Column {
 export type Attachment_Set_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
 };
 
@@ -479,6 +490,8 @@ export enum Attachment_Update_Column {
   CreatedAt = 'created_at',
   /** column name */
   Id = 'id',
+  /** column name */
+  MimeType = 'mime_type',
   /** column name */
   OriginalName = 'original_name'
 }
@@ -3646,9 +3659,15 @@ export type ThreadMessageBasicInfoFragment = (
   ) }
 );
 
+export type AttachmentDetailedInfoFragment = (
+  { __typename?: 'attachment' }
+  & Pick<Attachment, 'id'>
+  & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
+);
+
 export type ThreadMessageDetailedInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'text'>
+  & Pick<Message, 'id' | 'text' | 'type'>
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
@@ -3658,7 +3677,7 @@ export type ThreadMessageDetailedInfoFragment = (
     { __typename?: 'message_attachments' }
     & { attachment: (
       { __typename?: 'attachment' }
-      & Pick<Attachment, 'id' | 'original_name'>
+      & AttachmentDetailedInfoFragment
     ) }
   )> }
 );
@@ -3870,10 +3889,11 @@ export type account_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachmentKeySpecifier = ('created_at' | 'id' | 'original_name' | attachmentKeySpecifier)[];
+export type attachmentKeySpecifier = ('created_at' | 'id' | 'mime_type' | 'original_name' | attachmentKeySpecifier)[];
 export type attachmentFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	mime_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type attachment_aggregateKeySpecifier = ('aggregate' | 'nodes' | attachment_aggregateKeySpecifier)[];
@@ -3887,16 +3907,18 @@ export type attachment_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachment_max_fieldsKeySpecifier = ('created_at' | 'id' | 'original_name' | attachment_max_fieldsKeySpecifier)[];
+export type attachment_max_fieldsKeySpecifier = ('created_at' | 'id' | 'mime_type' | 'original_name' | attachment_max_fieldsKeySpecifier)[];
 export type attachment_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	mime_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachment_min_fieldsKeySpecifier = ('created_at' | 'id' | 'original_name' | attachment_min_fieldsKeySpecifier)[];
+export type attachment_min_fieldsKeySpecifier = ('created_at' | 'id' | 'mime_type' | 'original_name' | attachment_min_fieldsKeySpecifier)[];
 export type attachment_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	mime_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type attachment_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | attachment_mutation_responseKeySpecifier)[];
@@ -4702,11 +4724,19 @@ export const ThreadMessageBasicInfoFragmentDoc = gql`
   }
 }
     `;
+export const AttachmentDetailedInfoFragmentDoc = gql`
+    fragment AttachmentDetailedInfo on attachment {
+  id
+  originalName: original_name
+  mimeType: mime_type
+}
+    `;
 export const ThreadMessageDetailedInfoFragmentDoc = gql`
     fragment ThreadMessageDetailedInfo on message {
   id
   text
   createdAt: created_at
+  type
   user {
     id
     name
@@ -4714,12 +4744,11 @@ export const ThreadMessageDetailedInfoFragmentDoc = gql`
   }
   message_attachments {
     attachment {
-      id
-      original_name
+      ...AttachmentDetailedInfo
     }
   }
 }
-    `;
+    ${AttachmentDetailedInfoFragmentDoc}`;
 export const GetRoomsTestQueryDocument = gql`
     query GetRoomsTestQuery {
   room {
