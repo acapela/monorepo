@@ -82,6 +82,10 @@ const UIHolder = styled.div`
   .emoji-mart-preview {
     display: none;
   }
+
+  .emoji-mart-anchors svg {
+    margin: auto;
+  }
 `;
 
 const UIOpenIcon = styled(SmilingFace)`
@@ -100,5 +104,5 @@ const UIPopupHolder = styled(motion.div)`
   margin-bottom: 10px;
   will-change: transform, opacity;
   /* Tell browser none of 100s of emojis can impact outside layout to improve rendering performance */
-  contain: content, layout;
+  contain: layout;
 `;

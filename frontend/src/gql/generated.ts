@@ -3707,10 +3707,27 @@ export type ThreadMessagesSubscription = (
 export type CreateMessageDraftMutationVariables = Exact<{
   threadId: Scalars['uuid'];
   text: Scalars['String'];
+  type?: Maybe<Message_Type_Enum>;
 }>;
 
 
 export type CreateMessageDraftMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  threadId: Scalars['uuid'];
+  text: Scalars['String'];
+  type: Message_Type_Enum;
+  attachments: Array<Message_Attachments_Insert_Input> | Message_Attachments_Insert_Input;
+}>;
+
+
+export type CreateMessageMutation = (
   { __typename?: 'mutation_root' }
   & { message?: Maybe<(
     { __typename?: 'message' }
@@ -5076,9 +5093,9 @@ export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHo
 export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
 export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 export const CreateMessageDraftDocument = gql`
-    mutation CreateMessageDraft($threadId: uuid!, $text: String!) {
+    mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
   message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: TEXT, is_draft: true}
+    object: {text: $text, thread_id: $threadId, type: $type, is_draft: true}
   ) {
     id
   }
@@ -5101,6 +5118,7 @@ export type CreateMessageDraftMutationFn = Apollo.MutationFunction<CreateMessage
  *   variables: {
  *      threadId: // value for 'threadId'
  *      text: // value for 'text'
+ *      type: // value for 'type'
  *   },
  * });
  */
@@ -5111,6 +5129,44 @@ export function useCreateMessageDraftMutation(baseOptions?: Apollo.MutationHookO
 export type CreateMessageDraftMutationHookResult = ReturnType<typeof useCreateMessageDraftMutation>;
 export type CreateMessageDraftMutationResult = Apollo.MutationResult<CreateMessageDraftMutation>;
 export type CreateMessageDraftMutationOptions = Apollo.BaseMutationOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($threadId: uuid!, $text: String!, $type: message_type_enum!, $attachments: [message_attachments_insert_input!]!) {
+  message: insert_message_one(
+    object: {text: $text, thread_id: $threadId, type: $type, message_attachments: {data: $attachments}, is_draft: false}
+  ) {
+    id
+  }
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      threadId: // value for 'threadId'
+ *      text: // value for 'text'
+ *      type: // value for 'type'
+ *      attachments: // value for 'attachments'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const GetMessageDraftDocument = gql`
     query GetMessageDraft($threadId: uuid!) {
   message: message(

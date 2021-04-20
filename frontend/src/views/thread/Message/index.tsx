@@ -85,7 +85,7 @@ function getUserOrGuestName(message: MessageWithUserInfoAndAttachments): string 
 
 export const Message = ({ message }: Props) => {
   const [deleteMessage] = useDeleteTextMessageMutation();
-  const [updateMessaage] = useUpdateTextMessageMutation();
+  const [updateMessage] = useUpdateTextMessageMutation();
   const [isInEditMode, setIsInEditMode] = useState(false);
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
   const [isActive, setIsActive] = useState(false);
@@ -101,7 +101,7 @@ export const Message = ({ message }: Props) => {
 
   async function handleEditContentRequest(newContent: string) {
     setIsInEditMode(false);
-    await updateMessaage({ variables: { id: message.id, text: newContent } });
+    await updateMessage({ variables: { id: message.id, text: newContent } });
   }
 
   function getShouldShowTools() {
