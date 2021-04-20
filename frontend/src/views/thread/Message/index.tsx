@@ -5,7 +5,7 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { Avatar } from "~frontend/design/Avatar";
 import {
-  ThreadMessageBasicInfoFragment,
+  ThreadMessageDetailedInfoFragment,
   useDeleteTextMessageMutation,
   useUpdateTextMessageMutation,
 } from "~frontend/gql";
@@ -13,13 +13,15 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 
 import { MessageActions } from "./MessageActions";
 import { MessageText } from "./MessageText";
+import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
 
-export interface MessageWithUserInfo extends ThreadMessageBasicInfoFragment {
+export interface MessageWithUserInfoAndAttachments extends ThreadMessageDetailedInfoFragment {
   isOwnMessage: boolean;
+  // message_attachments: { attachment: Attachment }[];
 }
 
 interface Props extends MotionProps {
-  message: MessageWithUserInfo;
+  message: MessageWithUserInfoAndAttachments;
 }
 
 const UIMessageAvatar = styled(Avatar)`
@@ -77,7 +79,7 @@ const UITools = styled(motion.div)`
   margin-top: 0.25rem;
 `;
 
-function getUserOrGuestName(message: MessageWithUserInfo): string {
+function getUserOrGuestName(message: MessageWithUserInfoAndAttachments): string {
   return message.user.name || "Guest";
 }
 
@@ -130,6 +132,9 @@ export const Message = ({ message }: Props) => {
           isInEditMode={isInEditMode}
           onEditRequest={handleEditContentRequest}
         />
+        {message.message_attachments?.map(({ attachment }) => (
+          <MessageAttachment key={attachment.id} attachment={attachment} />
+        ))}
       </UIMessageBody>
       <AnimatePresence>
         {shouldShowTools && (

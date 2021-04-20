@@ -3,20 +3,20 @@ import React from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
-import { ThreadMessageBasicInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
+import { ThreadMessageDetailedInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
 
 import { MessageComposer } from "./Composer";
-import { Message, MessageWithUserInfo } from "./Message";
+import { Message, MessageWithUserInfoAndAttachments } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 
-const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
+const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfoAndAttachments[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
   const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
     variables: { threadId },
   });
 
   const isLoading = isLoadingUser || isLoadingMessages || !data;
-  const messagesList: ThreadMessageBasicInfoFragment[] = data?.messages ?? [];
+  const messagesList: ThreadMessageDetailedInfoFragment[] = data?.messages ?? [];
 
   return {
     isLoading,

@@ -4,6 +4,21 @@ schema {
   subscription: subscription_root
 }
 
+"""
+expression to compare columns of type Boolean. All fields are combined with logical 'AND'.
+"""
+input Boolean_comparison_exp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _is_null: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
 input InviteAcceptCommand {
   code: String!
 }
@@ -341,6 +356,191 @@ enum account_update_column {
   user_id
 }
 
+"""
+columns and relationships of "attachment"
+"""
+type attachment {
+  created_at: timestamptz!
+  id: uuid!
+  original_name: String
+}
+
+"""
+aggregated selection of "attachment"
+"""
+type attachment_aggregate {
+  aggregate: attachment_aggregate_fields
+  nodes: [attachment!]!
+}
+
+"""
+aggregate fields of "attachment"
+"""
+type attachment_aggregate_fields {
+  count(columns: [attachment_select_column!], distinct: Boolean): Int
+  max: attachment_max_fields
+  min: attachment_min_fields
+}
+
+"""
+order by aggregate values of table "attachment"
+"""
+input attachment_aggregate_order_by {
+  count: order_by
+  max: attachment_max_order_by
+  min: attachment_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "attachment"
+"""
+input attachment_arr_rel_insert_input {
+  data: [attachment_insert_input!]!
+  on_conflict: attachment_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'.
+"""
+input attachment_bool_exp {
+  _and: [attachment_bool_exp]
+  _not: attachment_bool_exp
+  _or: [attachment_bool_exp]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  original_name: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "attachment"
+"""
+enum attachment_constraint {
+  """unique or primary key constraint"""
+  attachment_pkey
+}
+
+"""
+input type for inserting data into table "attachment"
+"""
+input attachment_insert_input {
+  created_at: timestamptz
+  id: uuid
+  original_name: String
+}
+
+"""aggregate max on columns"""
+type attachment_max_fields {
+  created_at: timestamptz
+  id: uuid
+  original_name: String
+}
+
+"""
+order by max() on columns of table "attachment"
+"""
+input attachment_max_order_by {
+  created_at: order_by
+  id: order_by
+  original_name: order_by
+}
+
+"""aggregate min on columns"""
+type attachment_min_fields {
+  created_at: timestamptz
+  id: uuid
+  original_name: String
+}
+
+"""
+order by min() on columns of table "attachment"
+"""
+input attachment_min_order_by {
+  created_at: order_by
+  id: order_by
+  original_name: order_by
+}
+
+"""
+response of any mutation on the table "attachment"
+"""
+type attachment_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [attachment!]!
+}
+
+"""
+input type for inserting object relation for remote table "attachment"
+"""
+input attachment_obj_rel_insert_input {
+  data: attachment_insert_input!
+  on_conflict: attachment_on_conflict
+}
+
+"""
+on conflict condition type for table "attachment"
+"""
+input attachment_on_conflict {
+  constraint: attachment_constraint!
+  update_columns: [attachment_update_column!]!
+  where: attachment_bool_exp
+}
+
+"""
+ordering options when selecting data from "attachment"
+"""
+input attachment_order_by {
+  created_at: order_by
+  id: order_by
+  original_name: order_by
+}
+
+"""
+primary key columns input for table: "attachment"
+"""
+input attachment_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "attachment"
+"""
+enum attachment_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  original_name
+}
+
+"""
+input type for updating data in table "attachment"
+"""
+input attachment_set_input {
+  created_at: timestamptz
+  id: uuid
+  original_name: String
+}
+
+"""
+update columns of table "attachment"
+"""
+enum attachment_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  original_name
+}
+
 scalar json
 
 """
@@ -349,7 +549,43 @@ columns and relationships of "message"
 type message {
   created_at: timestamptz!
   id: uuid!
-  media_url: String
+  is_draft: Boolean
+
+  """An array relationship"""
+  message_attachments(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): [message_attachments!]!
+
+  """An aggregated array relationship"""
+  message_attachments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): message_attachments_aggregate!
 
   """An object relationship"""
   message_type: message_type!
@@ -401,6 +637,188 @@ input message_arr_rel_insert_input {
 }
 
 """
+columns and relationships of "message_attachments"
+"""
+type message_attachments {
+  """An object relationship"""
+  attachment: attachment!
+  attachment_id: uuid!
+
+  """An object relationship"""
+  message: message!
+  message_id: uuid!
+}
+
+"""
+aggregated selection of "message_attachments"
+"""
+type message_attachments_aggregate {
+  aggregate: message_attachments_aggregate_fields
+  nodes: [message_attachments!]!
+}
+
+"""
+aggregate fields of "message_attachments"
+"""
+type message_attachments_aggregate_fields {
+  count(columns: [message_attachments_select_column!], distinct: Boolean): Int
+  max: message_attachments_max_fields
+  min: message_attachments_min_fields
+}
+
+"""
+order by aggregate values of table "message_attachments"
+"""
+input message_attachments_aggregate_order_by {
+  count: order_by
+  max: message_attachments_max_order_by
+  min: message_attachments_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "message_attachments"
+"""
+input message_attachments_arr_rel_insert_input {
+  data: [message_attachments_insert_input!]!
+  on_conflict: message_attachments_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "message_attachments". All fields are combined with a logical 'AND'.
+"""
+input message_attachments_bool_exp {
+  _and: [message_attachments_bool_exp]
+  _not: message_attachments_bool_exp
+  _or: [message_attachments_bool_exp]
+  attachment: attachment_bool_exp
+  attachment_id: uuid_comparison_exp
+  message: message_bool_exp
+  message_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "message_attachments"
+"""
+enum message_attachments_constraint {
+  """unique or primary key constraint"""
+  message_attachments_pkey
+}
+
+"""
+input type for inserting data into table "message_attachments"
+"""
+input message_attachments_insert_input {
+  attachment: attachment_obj_rel_insert_input
+  attachment_id: uuid
+  message: message_obj_rel_insert_input
+  message_id: uuid
+}
+
+"""aggregate max on columns"""
+type message_attachments_max_fields {
+  attachment_id: uuid
+  message_id: uuid
+}
+
+"""
+order by max() on columns of table "message_attachments"
+"""
+input message_attachments_max_order_by {
+  attachment_id: order_by
+  message_id: order_by
+}
+
+"""aggregate min on columns"""
+type message_attachments_min_fields {
+  attachment_id: uuid
+  message_id: uuid
+}
+
+"""
+order by min() on columns of table "message_attachments"
+"""
+input message_attachments_min_order_by {
+  attachment_id: order_by
+  message_id: order_by
+}
+
+"""
+response of any mutation on the table "message_attachments"
+"""
+type message_attachments_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [message_attachments!]!
+}
+
+"""
+input type for inserting object relation for remote table "message_attachments"
+"""
+input message_attachments_obj_rel_insert_input {
+  data: message_attachments_insert_input!
+  on_conflict: message_attachments_on_conflict
+}
+
+"""
+on conflict condition type for table "message_attachments"
+"""
+input message_attachments_on_conflict {
+  constraint: message_attachments_constraint!
+  update_columns: [message_attachments_update_column!]!
+  where: message_attachments_bool_exp
+}
+
+"""
+ordering options when selecting data from "message_attachments"
+"""
+input message_attachments_order_by {
+  attachment: attachment_order_by
+  attachment_id: order_by
+  message: message_order_by
+  message_id: order_by
+}
+
+"""
+primary key columns input for table: "message_attachments"
+"""
+input message_attachments_pk_columns_input {
+  attachment_id: uuid!
+  message_id: uuid!
+}
+
+"""
+select columns of table "message_attachments"
+"""
+enum message_attachments_select_column {
+  """column name"""
+  attachment_id
+
+  """column name"""
+  message_id
+}
+
+"""
+input type for updating data in table "message_attachments"
+"""
+input message_attachments_set_input {
+  attachment_id: uuid
+  message_id: uuid
+}
+
+"""
+update columns of table "message_attachments"
+"""
+enum message_attachments_update_column {
+  """column name"""
+  attachment_id
+
+  """column name"""
+  message_id
+}
+
+"""
 Boolean expression to filter rows from the table "message". All fields are combined with a logical 'AND'.
 """
 input message_bool_exp {
@@ -409,7 +827,8 @@ input message_bool_exp {
   _or: [message_bool_exp]
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
-  media_url: String_comparison_exp
+  is_draft: Boolean_comparison_exp
+  message_attachments: message_attachments_bool_exp
   message_type: message_type_bool_exp
   text: String_comparison_exp
   thread: thread_bool_exp
@@ -437,7 +856,8 @@ input type for inserting data into table "message"
 input message_insert_input {
   created_at: timestamptz
   id: uuid
-  media_url: String
+  is_draft: Boolean
+  message_attachments: message_attachments_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
   text: String
   thread: thread_obj_rel_insert_input
@@ -452,7 +872,6 @@ input message_insert_input {
 type message_max_fields {
   created_at: timestamptz
   id: uuid
-  media_url: String
   text: String
   thread_id: uuid
   transcription: String
@@ -465,7 +884,6 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
-  media_url: order_by
   text: order_by
   thread_id: order_by
   transcription: order_by
@@ -476,7 +894,6 @@ input message_max_order_by {
 type message_min_fields {
   created_at: timestamptz
   id: uuid
-  media_url: String
   text: String
   thread_id: uuid
   transcription: String
@@ -489,7 +906,6 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
-  media_url: order_by
   text: order_by
   thread_id: order_by
   transcription: order_by
@@ -530,7 +946,8 @@ ordering options when selecting data from "message"
 input message_order_by {
   created_at: order_by
   id: order_by
-  media_url: order_by
+  is_draft: order_by
+  message_attachments_aggregate: message_attachments_aggregate_order_by
   message_type: message_type_order_by
   text: order_by
   thread: thread_order_by
@@ -559,7 +976,7 @@ enum message_select_column {
   id
 
   """column name"""
-  media_url
+  is_draft
 
   """column name"""
   text
@@ -583,7 +1000,7 @@ input type for updating data in table "message"
 input message_set_input {
   created_at: timestamptz
   id: uuid
-  media_url: String
+  is_draft: Boolean
   text: String
   thread_id: uuid
   transcription: String
@@ -779,7 +1196,7 @@ enum message_update_column {
   id
 
   """column name"""
-  media_url
+  is_draft
 
   """column name"""
   text
@@ -818,12 +1235,38 @@ type mutation_root {
   delete_account_by_pk(id: uuid!): account
 
   """
+  delete data from the table: "attachment"
+  """
+  delete_attachment(
+    """filter the rows which have to be deleted"""
+    where: attachment_bool_exp!
+  ): attachment_mutation_response
+
+  """
+  delete single row from the table: "attachment"
+  """
+  delete_attachment_by_pk(id: uuid!): attachment
+
+  """
   delete data from the table: "message"
   """
   delete_message(
     """filter the rows which have to be deleted"""
     where: message_bool_exp!
   ): message_mutation_response
+
+  """
+  delete data from the table: "message_attachments"
+  """
+  delete_message_attachments(
+    """filter the rows which have to be deleted"""
+    where: message_attachments_bool_exp!
+  ): message_attachments_mutation_response
+
+  """
+  delete single row from the table: "message_attachments"
+  """
+  delete_message_attachments_by_pk(attachment_id: uuid!, message_id: uuid!): message_attachments
 
   """
   delete single row from the table: "message"
@@ -931,6 +1374,28 @@ type mutation_root {
   ): account
 
   """
+  insert data into the table: "attachment"
+  """
+  insert_attachment(
+    """the rows to be inserted"""
+    objects: [attachment_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: attachment_on_conflict
+  ): attachment_mutation_response
+
+  """
+  insert a single row into the table: "attachment"
+  """
+  insert_attachment_one(
+    """the row to be inserted"""
+    object: attachment_insert_input!
+
+    """on conflict condition"""
+    on_conflict: attachment_on_conflict
+  ): attachment
+
+  """
   insert data into the table: "message"
   """
   insert_message(
@@ -940,6 +1405,28 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: message_on_conflict
   ): message_mutation_response
+
+  """
+  insert data into the table: "message_attachments"
+  """
+  insert_message_attachments(
+    """the rows to be inserted"""
+    objects: [message_attachments_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: message_attachments_on_conflict
+  ): message_attachments_mutation_response
+
+  """
+  insert a single row into the table: "message_attachments"
+  """
+  insert_message_attachments_one(
+    """the row to be inserted"""
+    object: message_attachments_insert_input!
+
+    """on conflict condition"""
+    on_conflict: message_attachments_on_conflict
+  ): message_attachments
 
   """
   insert a single row into the table: "message"
@@ -1105,6 +1592,26 @@ type mutation_root {
   ): account
 
   """
+  update data of the table: "attachment"
+  """
+  update_attachment(
+    """sets the columns of the filtered rows to the given values"""
+    _set: attachment_set_input
+
+    """filter the rows which have to be updated"""
+    where: attachment_bool_exp!
+  ): attachment_mutation_response
+
+  """
+  update single row of the table: "attachment"
+  """
+  update_attachment_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: attachment_set_input
+    pk_columns: attachment_pk_columns_input!
+  ): attachment
+
+  """
   update data of the table: "message"
   """
   update_message(
@@ -1114,6 +1621,26 @@ type mutation_root {
     """filter the rows which have to be updated"""
     where: message_bool_exp!
   ): message_mutation_response
+
+  """
+  update data of the table: "message_attachments"
+  """
+  update_message_attachments(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_attachments_set_input
+
+    """filter the rows which have to be updated"""
+    where: message_attachments_bool_exp!
+  ): message_attachments_mutation_response
+
+  """
+  update single row of the table: "message_attachments"
+  """
+  update_message_attachments_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: message_attachments_set_input
+    pk_columns: message_attachments_pk_columns_input!
+  ): message_attachments
 
   """
   update single row of the table: "message"
@@ -1317,6 +1844,49 @@ type query_root {
   account_by_pk(id: uuid!): account
 
   """
+  fetch data from the table: "attachment"
+  """
+  attachment(
+    """distinct select on columns"""
+    distinct_on: [attachment_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [attachment_order_by!]
+
+    """filter the rows returned"""
+    where: attachment_bool_exp
+  ): [attachment!]!
+
+  """
+  fetch aggregated fields from the table: "attachment"
+  """
+  attachment_aggregate(
+    """distinct select on columns"""
+    distinct_on: [attachment_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [attachment_order_by!]
+
+    """filter the rows returned"""
+    where: attachment_bool_exp
+  ): attachment_aggregate!
+
+  """fetch data from the table: "attachment" using primary key columns"""
+  attachment_by_pk(id: uuid!): attachment
+
+  """
   fetch data from the table: "message"
   """
   message(
@@ -1355,6 +1925,51 @@ type query_root {
     """filter the rows returned"""
     where: message_bool_exp
   ): message_aggregate!
+
+  """
+  fetch data from the table: "message_attachments"
+  """
+  message_attachments(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): [message_attachments!]!
+
+  """
+  fetch aggregated fields from the table: "message_attachments"
+  """
+  message_attachments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): message_attachments_aggregate!
+
+  """
+  fetch data from the table: "message_attachments" using primary key columns
+  """
+  message_attachments_by_pk(attachment_id: uuid!, message_id: uuid!): message_attachments
 
   """fetch data from the table: "message" using primary key columns"""
   message_by_pk(id: uuid!): message
@@ -2497,6 +3112,49 @@ type subscription_root {
   account_by_pk(id: uuid!): account
 
   """
+  fetch data from the table: "attachment"
+  """
+  attachment(
+    """distinct select on columns"""
+    distinct_on: [attachment_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [attachment_order_by!]
+
+    """filter the rows returned"""
+    where: attachment_bool_exp
+  ): [attachment!]!
+
+  """
+  fetch aggregated fields from the table: "attachment"
+  """
+  attachment_aggregate(
+    """distinct select on columns"""
+    distinct_on: [attachment_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [attachment_order_by!]
+
+    """filter the rows returned"""
+    where: attachment_bool_exp
+  ): attachment_aggregate!
+
+  """fetch data from the table: "attachment" using primary key columns"""
+  attachment_by_pk(id: uuid!): attachment
+
+  """
   fetch data from the table: "message"
   """
   message(
@@ -2535,6 +3193,51 @@ type subscription_root {
     """filter the rows returned"""
     where: message_bool_exp
   ): message_aggregate!
+
+  """
+  fetch data from the table: "message_attachments"
+  """
+  message_attachments(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): [message_attachments!]!
+
+  """
+  fetch aggregated fields from the table: "message_attachments"
+  """
+  message_attachments_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_attachments_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_attachments_order_by!]
+
+    """filter the rows returned"""
+    where: message_attachments_bool_exp
+  ): message_attachments_aggregate!
+
+  """
+  fetch data from the table: "message_attachments" using primary key columns
+  """
+  message_attachments_by_pk(attachment_id: uuid!, message_id: uuid!): message_attachments
 
   """fetch data from the table: "message" using primary key columns"""
   message_by_pk(id: uuid!): message
