@@ -12,10 +12,7 @@
     - role: user
       permission:
         check: {}
-        columns:
-          - created_at
-          - id
-          - original_name
+        columns: []
         backend_only: false
   select_permissions:
     - role: user
@@ -23,15 +20,13 @@
         columns:
           - created_at
           - id
+          - mime_type
           - original_name
         filter: {}
   update_permissions:
     - role: user
       permission:
-        columns:
-          - created_at
-          - id
-          - original_name
+        columns: []
         filter: {}
         check: null
   delete_permissions:

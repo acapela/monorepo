@@ -1,4 +1,3 @@
-import path from "path";
 import { Request, Response, Router } from "express";
 import { v4 as uuid } from "uuid";
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
@@ -16,11 +15,11 @@ const directory = "acapela/attachments/";
 
 // Creates signed link and writes attachment to the DB
 router.post("/v1/attachments", async (req: Request, res: Response) => {
-  const { name, type } = req.body;
+  const { name, mimeType } = req.body;
   const id = uuid();
 
-  if (!type) {
-    return res.status(400).send("File type is not provided");
+  if (!mimeType) {
+    return res.status(400).send("Attachment type is not provided");
   }
 
   try {
@@ -34,7 +33,7 @@ router.post("/v1/attachments", async (req: Request, res: Response) => {
       version: "v4",
       action: "write",
       expires: Date.now() + 60 * 1000 * mins,
-      contentType: type,
+      contentType: mimeType,
       virtualHostedStyle: true,
     };
 
@@ -44,6 +43,7 @@ router.post("/v1/attachments", async (req: Request, res: Response) => {
       data: {
         id: id,
         original_name: name,
+        mime_type: mimeType,
       },
     });
 
@@ -86,7 +86,20 @@ router.get("/v1/attachments/:uuid", async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json({ publicUrl, attachment });
+    if (!attachment) {
+      return res.status(404).send("Not found");
+    }
+
+    res.status(200).json({
+      publicUrl,
+      // This is stupid, but it is better to match GraphQL schema which uses aliases
+      attachment: {
+        id: attachment.id,
+        createdAt: attachment.created_at,
+        originalName: attachment.original_name,
+        mimeType: attachment.mime_type,
+      },
+    });
   } catch (err) {
     logger.error("Failed to create signed link for attachment read", {
       message: err.message,

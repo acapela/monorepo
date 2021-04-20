@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { Attachment } from "~frontend/gql";
+import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
 import styled from "styled-components";
 import { useIsomorphicLayoutEffect } from "react-use";
 import axios from "axios";
 
 interface AttachmentProps {
-  attachment: Pick<Attachment, "id" | "original_name">;
+  attachment: AttachmentDetailedInfoFragment;
+  messageType: Message_Type_Enum;
   className?: string;
 }
 
-const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
+const PureMessageAttachment = ({ attachment, messageType, className }: AttachmentProps) => {
   const [url, setUrl] = useState();
 
   useIsomorphicLayoutEffect(() => {
@@ -23,11 +24,32 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
     return <div className={className}>Fetching</div>;
   }
 
-  return (
-    <a href={url} target="_blank">
-      <img className={className} src={url} alt={attachment.original_name || ""} />
-    </a>
-  );
+  if (messageType === Message_Type_Enum.Video) {
+    return (
+      <video className={className} src={url} controls>
+        Sorry, your browser doesn't support embedded videos.
+      </video>
+    );
+  }
+
+  /* !!! Not tested */
+  if (messageType === Message_Type_Enum.Audio) {
+    return (
+      <audio className={className} src={url} controls>
+        Sorry, your browser doesn't support embedded audios.
+      </audio>
+    );
+  }
+
+  if (messageType === Message_Type_Enum.Text) {
+    const type = attachment.mimeType.split("/")[0];
+
+    if (type === "image") {
+      return <img className={className} src={url} alt={attachment.originalName || ""} />;
+    }
+  }
+
+  return null;
 };
 
 export const MessageAttachment = styled(PureMessageAttachment)`
