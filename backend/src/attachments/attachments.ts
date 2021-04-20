@@ -66,9 +66,7 @@ router.get("/v1/attachments/:uuid", async (req: Request, res: Response) => {
   }
 
   try {
-    const storage = new Storage({
-      keyFilename: path.resolve(__dirname, "..", "..", "meetnomoreapp-26b862628558.json"),
-    });
+    const storage = new Storage();
 
     const filePath = `${directory}${uuid}`;
     const mins = 0.5; // 30 seconds should be enough

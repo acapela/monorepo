@@ -68,8 +68,29 @@ gql`
 `;
 
 gql`
-  mutation CreateMessageDraft($threadId: uuid!, $text: String!) {
-    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: TEXT, is_draft: true }) {
+  mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
+    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: $type, is_draft: true }) {
+      id
+    }
+  }
+`;
+
+gql`
+  mutation CreateMessage(
+    $threadId: uuid!
+    $text: String!
+    $type: message_type_enum!
+    $attachments: [message_attachments_insert_input!]!
+  ) {
+    message: insert_message_one(
+      object: {
+        text: $text
+        thread_id: $threadId
+        type: $type
+        message_attachments: { data: $attachments }
+        is_draft: false
+      }
+    ) {
       id
     }
   }
@@ -84,24 +105,12 @@ gql`
 `;
 
 gql`
-  mutation UpdateTextMessage(
-    $id: uuid!
-    $text: String!
-    $isDraft: Boolean #    $attachments: [message_attachments_insert_input!]!
-  ) {
+  mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
     update_message(where: { id: { _eq: $id } }, _set: { text: $text, is_draft: $isDraft }) {
       message: returning {
         ...ThreadMessageBasicInfo
       }
     }
-    #    insert_message_attachments(objects: $attachments) {
-    #      attachments: returning {
-    #        attachment {
-    #          id
-    #          original_name
-    #        }
-    #      }
-    #    }
   }
 `;
 
