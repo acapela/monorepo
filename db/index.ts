@@ -11,6 +11,8 @@ export type {
   thread as Thread,
   user as User,
   verification_requests as VerificationRequest,
+  attachment as Attachment,
+  message_attachments as MessageAttachments,
 } from "@prisma/client";
 
 const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];

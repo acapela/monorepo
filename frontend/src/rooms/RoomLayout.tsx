@@ -62,7 +62,9 @@ export const RoomLayout: React.FC<Props> = ({ children }) => {
 
   return (
     <>
-      <Head>{room && <title>{room.name} | Acapela</title>}</Head>
+      <Head>
+        <title>{room?.name} | Acapela</title>
+      </Head>
       <SidebarLayout
         sidebarContent={
           <>

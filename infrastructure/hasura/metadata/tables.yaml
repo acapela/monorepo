@@ -7,6 +7,39 @@
         foreign_key_constraint_on: user_id
 - table:
     schema: public
+    name: attachment
+  insert_permissions:
+    - role: user
+      permission:
+        check: {}
+        columns:
+          - created_at
+          - id
+          - original_name
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - id
+          - original_name
+        filter: {}
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - id
+          - original_name
+        filter: {}
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter: {}
+- table:
+    schema: public
     name: message
   object_relationships:
     - name: message_type
@@ -18,6 +51,15 @@
     - name: user
       using:
         foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: message_attachments
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: message_attachments
+          column_mapping:
+            id: message_id
   insert_permissions:
     - role: user
       permission:
@@ -29,7 +71,7 @@
         set:
           user_id: x-hasura-User-Id
         columns:
-          - media_url
+          - is_draft
           - text
           - thread_id
           - transcription
@@ -41,7 +83,7 @@
         columns:
           - created_at
           - id
-          - media_url
+          - is_draft
           - text
           - thread_id
           - transcription
@@ -53,6 +95,7 @@
     - role: user
       permission:
         columns:
+          - is_draft
           - text
         filter:
           user_id:
@@ -64,6 +107,43 @@
         filter:
           user_id:
             _eq: X-Hasura-User-Id
+- table:
+    schema: public
+    name: message_attachments
+  object_relationships:
+    - name: attachment
+      using:
+        foreign_key_constraint_on: attachment_id
+    - name: message
+      using:
+        foreign_key_constraint_on: message_id
+  insert_permissions:
+    - role: user
+      permission:
+        check: {}
+        columns:
+          - message_id
+          - attachment_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - attachment_id
+          - message_id
+        filter: {}
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - attachment_id
+          - message_id
+        filter: {}
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter: {}
 - table:
     schema: public
     name: message_type

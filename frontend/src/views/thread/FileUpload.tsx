@@ -1,21 +1,18 @@
 import React, { ChangeEvent, InputHTMLAttributes, useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { Attachment } from "~frontend/gql";
 
 interface FileUploadParameters extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  updateFilesCb?: () => void;
-  maxFileSizeInBytes?: number;
+  onFileAttached: (attachment: Attachment) => void;
 }
 
 function useUploadFile() {
   const [progress, setProgress] = useState<number>(0);
   const [publicUrl, setPublicUrl] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [attachment, setAttachment] = useState<Attachment>();
 
   async function doUpload(file: File) {
     const { name, type } = file;
-
-    setName(name);
 
     const {
       data: { uploadUrl, uuid },
@@ -39,27 +36,27 @@ function useUploadFile() {
     });
 
     const {
-      data: { publicUrl },
+      data: { publicUrl, attachment },
     } = await axios({
       method: "GET",
       url: `/api/backend/v1/attachments/${uuid}`,
     });
 
+    // TODO: Merge?
     setPublicUrl(publicUrl);
+    setAttachment(attachment);
   }
 
-  return { doUpload, progress, publicUrl, name };
+  return { doUpload, progress, publicUrl, attachment };
 }
 
-export const FileUpload = ({ ...otherProps }: FileUploadParameters) => {
+export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParameters) => {
   const fileInputField = useRef(null);
   const [files, setFiles] = useState<FileList | []>([]); // should be an object when done properly
-  const { doUpload, progress, publicUrl, name } = useUploadFile();
+  const { doUpload, progress, publicUrl, attachment } = useUploadFile();
 
   const handleNewFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-
-    console.log(files);
 
     if (files) {
       setFiles(files);
@@ -71,6 +68,12 @@ export const FileUpload = ({ ...otherProps }: FileUploadParameters) => {
       doUpload(file);
     }
   }, [files]);
+
+  useEffect(() => {
+    if (attachment) {
+      onFileAttached(attachment);
+    }
+  }, [attachment]);
 
   if (!files.length) {
     return (
@@ -86,16 +89,16 @@ export const FileUpload = ({ ...otherProps }: FileUploadParameters) => {
     );
   }
 
-  if (!publicUrl) {
+  if (!attachment) {
     return <span>Uploading: {progress}%</span>;
   }
 
-  if (publicUrl) {
+  if (attachment && publicUrl) {
     return (
       <img
         src={publicUrl}
         height={100}
-        alt={name || "Attachment"}
+        alt={attachment.original_name || "Attachment"}
         style={{
           display: "inline-block",
           maxWidth: "none",

@@ -18,6 +18,19 @@ export type Scalars = {
   uuid: any;
 };
 
+/** expression to compare columns of type Boolean. All fields are combined with logical 'AND'. */
+export type Boolean_Comparison_Exp = {
+  _eq?: Maybe<Scalars['Boolean']>;
+  _gt?: Maybe<Scalars['Boolean']>;
+  _gte?: Maybe<Scalars['Boolean']>;
+  _in?: Maybe<Array<Scalars['Boolean']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['Boolean']>;
+  _lte?: Maybe<Scalars['Boolean']>;
+  _neq?: Maybe<Scalars['Boolean']>;
+  _nin?: Maybe<Array<Scalars['Boolean']>>;
+};
+
 export type InviteAcceptCommand = {
   code: Scalars['String'];
 };
@@ -313,13 +326,174 @@ export enum Account_Update_Column {
   UserId = 'user_id'
 }
 
+/** columns and relationships of "attachment" */
+export type Attachment = {
+  __typename?: 'attachment';
+  created_at: Scalars['timestamptz'];
+  id: Scalars['uuid'];
+  original_name?: Maybe<Scalars['String']>;
+};
+
+/** aggregated selection of "attachment" */
+export type Attachment_Aggregate = {
+  __typename?: 'attachment_aggregate';
+  aggregate?: Maybe<Attachment_Aggregate_Fields>;
+  nodes: Array<Attachment>;
+};
+
+/** aggregate fields of "attachment" */
+export type Attachment_Aggregate_Fields = {
+  __typename?: 'attachment_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Attachment_Max_Fields>;
+  min?: Maybe<Attachment_Min_Fields>;
+};
+
+
+/** aggregate fields of "attachment" */
+export type Attachment_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Attachment_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "attachment" */
+export type Attachment_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Attachment_Max_Order_By>;
+  min?: Maybe<Attachment_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "attachment" */
+export type Attachment_Arr_Rel_Insert_Input = {
+  data: Array<Attachment_Insert_Input>;
+  on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'. */
+export type Attachment_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Attachment_Bool_Exp>>>;
+  _not?: Maybe<Attachment_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Attachment_Bool_Exp>>>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  original_name?: Maybe<String_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "attachment" */
+export enum Attachment_Constraint {
+  /** unique or primary key constraint */
+  AttachmentPkey = 'attachment_pkey'
+}
+
+/** input type for inserting data into table "attachment" */
+export type Attachment_Insert_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  original_name?: Maybe<Scalars['String']>;
+};
+
+/** aggregate max on columns */
+export type Attachment_Max_Fields = {
+  __typename?: 'attachment_max_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  original_name?: Maybe<Scalars['String']>;
+};
+
+/** order by max() on columns of table "attachment" */
+export type Attachment_Max_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  original_name?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Attachment_Min_Fields = {
+  __typename?: 'attachment_min_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  original_name?: Maybe<Scalars['String']>;
+};
+
+/** order by min() on columns of table "attachment" */
+export type Attachment_Min_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  original_name?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "attachment" */
+export type Attachment_Mutation_Response = {
+  __typename?: 'attachment_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Attachment>;
+};
+
+/** input type for inserting object relation for remote table "attachment" */
+export type Attachment_Obj_Rel_Insert_Input = {
+  data: Attachment_Insert_Input;
+  on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+/** on conflict condition type for table "attachment" */
+export type Attachment_On_Conflict = {
+  constraint: Attachment_Constraint;
+  update_columns: Array<Attachment_Update_Column>;
+  where?: Maybe<Attachment_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "attachment" */
+export type Attachment_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  original_name?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "attachment" */
+export type Attachment_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** select columns of table "attachment" */
+export enum Attachment_Select_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  OriginalName = 'original_name'
+}
+
+/** input type for updating data in table "attachment" */
+export type Attachment_Set_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  original_name?: Maybe<Scalars['String']>;
+};
+
+/** update columns of table "attachment" */
+export enum Attachment_Update_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  OriginalName = 'original_name'
+}
+
 
 /** columns and relationships of "message" */
 export type Message = {
   __typename?: 'message';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
-  media_url?: Maybe<Scalars['String']>;
+  is_draft?: Maybe<Scalars['Boolean']>;
+  /** An array relationship */
+  message_attachments: Array<Message_Attachments>;
+  /** An aggregated array relationship */
+  message_attachments_aggregate: Message_Attachments_Aggregate;
   /** An object relationship */
   message_type: Message_Type;
   text?: Maybe<Scalars['String']>;
@@ -331,6 +505,26 @@ export type Message = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
+};
+
+
+/** columns and relationships of "message" */
+export type MessageMessage_AttachmentsArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+
+/** columns and relationships of "message" */
+export type MessageMessage_Attachments_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
 };
 
 /** aggregated selection of "message" */
@@ -368,6 +562,161 @@ export type Message_Arr_Rel_Insert_Input = {
   on_conflict?: Maybe<Message_On_Conflict>;
 };
 
+/** columns and relationships of "message_attachments" */
+export type Message_Attachments = {
+  __typename?: 'message_attachments';
+  /** An object relationship */
+  attachment: Attachment;
+  attachment_id: Scalars['uuid'];
+  /** An object relationship */
+  message: Message;
+  message_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "message_attachments" */
+export type Message_Attachments_Aggregate = {
+  __typename?: 'message_attachments_aggregate';
+  aggregate?: Maybe<Message_Attachments_Aggregate_Fields>;
+  nodes: Array<Message_Attachments>;
+};
+
+/** aggregate fields of "message_attachments" */
+export type Message_Attachments_Aggregate_Fields = {
+  __typename?: 'message_attachments_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Message_Attachments_Max_Fields>;
+  min?: Maybe<Message_Attachments_Min_Fields>;
+};
+
+
+/** aggregate fields of "message_attachments" */
+export type Message_Attachments_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Message_Attachments_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "message_attachments" */
+export type Message_Attachments_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Message_Attachments_Max_Order_By>;
+  min?: Maybe<Message_Attachments_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "message_attachments" */
+export type Message_Attachments_Arr_Rel_Insert_Input = {
+  data: Array<Message_Attachments_Insert_Input>;
+  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "message_attachments". All fields are combined with a logical 'AND'. */
+export type Message_Attachments_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Message_Attachments_Bool_Exp>>>;
+  _not?: Maybe<Message_Attachments_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Message_Attachments_Bool_Exp>>>;
+  attachment?: Maybe<Attachment_Bool_Exp>;
+  attachment_id?: Maybe<Uuid_Comparison_Exp>;
+  message?: Maybe<Message_Bool_Exp>;
+  message_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "message_attachments" */
+export enum Message_Attachments_Constraint {
+  /** unique or primary key constraint */
+  MessageAttachmentsPkey = 'message_attachments_pkey'
+}
+
+/** input type for inserting data into table "message_attachments" */
+export type Message_Attachments_Insert_Input = {
+  attachment?: Maybe<Attachment_Obj_Rel_Insert_Input>;
+  attachment_id?: Maybe<Scalars['uuid']>;
+  message?: Maybe<Message_Obj_Rel_Insert_Input>;
+  message_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Message_Attachments_Max_Fields = {
+  __typename?: 'message_attachments_max_fields';
+  attachment_id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "message_attachments" */
+export type Message_Attachments_Max_Order_By = {
+  attachment_id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Message_Attachments_Min_Fields = {
+  __typename?: 'message_attachments_min_fields';
+  attachment_id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "message_attachments" */
+export type Message_Attachments_Min_Order_By = {
+  attachment_id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "message_attachments" */
+export type Message_Attachments_Mutation_Response = {
+  __typename?: 'message_attachments_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Message_Attachments>;
+};
+
+/** input type for inserting object relation for remote table "message_attachments" */
+export type Message_Attachments_Obj_Rel_Insert_Input = {
+  data: Message_Attachments_Insert_Input;
+  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+};
+
+/** on conflict condition type for table "message_attachments" */
+export type Message_Attachments_On_Conflict = {
+  constraint: Message_Attachments_Constraint;
+  update_columns: Array<Message_Attachments_Update_Column>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "message_attachments" */
+export type Message_Attachments_Order_By = {
+  attachment?: Maybe<Attachment_Order_By>;
+  attachment_id?: Maybe<Order_By>;
+  message?: Maybe<Message_Order_By>;
+  message_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "message_attachments" */
+export type Message_Attachments_Pk_Columns_Input = {
+  attachment_id: Scalars['uuid'];
+  message_id: Scalars['uuid'];
+};
+
+/** select columns of table "message_attachments" */
+export enum Message_Attachments_Select_Column {
+  /** column name */
+  AttachmentId = 'attachment_id',
+  /** column name */
+  MessageId = 'message_id'
+}
+
+/** input type for updating data in table "message_attachments" */
+export type Message_Attachments_Set_Input = {
+  attachment_id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "message_attachments" */
+export enum Message_Attachments_Update_Column {
+  /** column name */
+  AttachmentId = 'attachment_id',
+  /** column name */
+  MessageId = 'message_id'
+}
+
 /** Boolean expression to filter rows from the table "message". All fields are combined with a logical 'AND'. */
 export type Message_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
@@ -375,7 +724,8 @@ export type Message_Bool_Exp = {
   _or?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
-  media_url?: Maybe<String_Comparison_Exp>;
+  is_draft?: Maybe<Boolean_Comparison_Exp>;
+  message_attachments?: Maybe<Message_Attachments_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
   text?: Maybe<String_Comparison_Exp>;
   thread?: Maybe<Thread_Bool_Exp>;
@@ -398,7 +748,8 @@ export enum Message_Constraint {
 export type Message_Insert_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  media_url?: Maybe<Scalars['String']>;
+  is_draft?: Maybe<Scalars['Boolean']>;
+  message_attachments?: Maybe<Message_Attachments_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
   text?: Maybe<Scalars['String']>;
   thread?: Maybe<Thread_Obj_Rel_Insert_Input>;
@@ -414,7 +765,6 @@ export type Message_Max_Fields = {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  media_url?: Maybe<Scalars['String']>;
   text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
@@ -425,7 +775,6 @@ export type Message_Max_Fields = {
 export type Message_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  media_url?: Maybe<Order_By>;
   text?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
@@ -437,7 +786,6 @@ export type Message_Min_Fields = {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  media_url?: Maybe<Scalars['String']>;
   text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
@@ -448,7 +796,6 @@ export type Message_Min_Fields = {
 export type Message_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  media_url?: Maybe<Order_By>;
   text?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
@@ -481,7 +828,8 @@ export type Message_On_Conflict = {
 export type Message_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  media_url?: Maybe<Order_By>;
+  is_draft?: Maybe<Order_By>;
+  message_attachments_aggregate?: Maybe<Message_Attachments_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
   text?: Maybe<Order_By>;
   thread?: Maybe<Thread_Order_By>;
@@ -504,7 +852,7 @@ export enum Message_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  MediaUrl = 'media_url',
+  IsDraft = 'is_draft',
   /** column name */
   Text = 'text',
   /** column name */
@@ -521,7 +869,7 @@ export enum Message_Select_Column {
 export type Message_Set_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  media_url?: Maybe<Scalars['String']>;
+  is_draft?: Maybe<Scalars['Boolean']>;
   text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
@@ -688,7 +1036,7 @@ export enum Message_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  MediaUrl = 'media_url',
+  IsDraft = 'is_draft',
   /** column name */
   Text = 'text',
   /** column name */
@@ -710,8 +1058,16 @@ export type Mutation_Root = {
   delete_account?: Maybe<Account_Mutation_Response>;
   /** delete single row from the table: "account" */
   delete_account_by_pk?: Maybe<Account>;
+  /** delete data from the table: "attachment" */
+  delete_attachment?: Maybe<Attachment_Mutation_Response>;
+  /** delete single row from the table: "attachment" */
+  delete_attachment_by_pk?: Maybe<Attachment>;
   /** delete data from the table: "message" */
   delete_message?: Maybe<Message_Mutation_Response>;
+  /** delete data from the table: "message_attachments" */
+  delete_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
+  /** delete single row from the table: "message_attachments" */
+  delete_message_attachments_by_pk?: Maybe<Message_Attachments>;
   /** delete single row from the table: "message" */
   delete_message_by_pk?: Maybe<Message>;
   /** delete data from the table: "message_type" */
@@ -742,8 +1098,16 @@ export type Mutation_Root = {
   insert_account?: Maybe<Account_Mutation_Response>;
   /** insert a single row into the table: "account" */
   insert_account_one?: Maybe<Account>;
+  /** insert data into the table: "attachment" */
+  insert_attachment?: Maybe<Attachment_Mutation_Response>;
+  /** insert a single row into the table: "attachment" */
+  insert_attachment_one?: Maybe<Attachment>;
   /** insert data into the table: "message" */
   insert_message?: Maybe<Message_Mutation_Response>;
+  /** insert data into the table: "message_attachments" */
+  insert_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
+  /** insert a single row into the table: "message_attachments" */
+  insert_message_attachments_one?: Maybe<Message_Attachments>;
   /** insert a single row into the table: "message" */
   insert_message_one?: Maybe<Message>;
   /** insert data into the table: "message_type" */
@@ -774,8 +1138,16 @@ export type Mutation_Root = {
   update_account?: Maybe<Account_Mutation_Response>;
   /** update single row of the table: "account" */
   update_account_by_pk?: Maybe<Account>;
+  /** update data of the table: "attachment" */
+  update_attachment?: Maybe<Attachment_Mutation_Response>;
+  /** update single row of the table: "attachment" */
+  update_attachment_by_pk?: Maybe<Attachment>;
   /** update data of the table: "message" */
   update_message?: Maybe<Message_Mutation_Response>;
+  /** update data of the table: "message_attachments" */
+  update_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
+  /** update single row of the table: "message_attachments" */
+  update_message_attachments_by_pk?: Maybe<Message_Attachments>;
   /** update single row of the table: "message" */
   update_message_by_pk?: Maybe<Message>;
   /** update data of the table: "message_type" */
@@ -826,8 +1198,33 @@ export type Mutation_RootDelete_Account_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDelete_AttachmentArgs = {
+  where: Attachment_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Attachment_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDelete_MessageArgs = {
   where: Message_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Message_AttachmentsArgs = {
+  where: Message_Attachments_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Message_Attachments_By_PkArgs = {
+  attachment_id: Scalars['uuid'];
+  message_id: Scalars['uuid'];
 };
 
 
@@ -925,9 +1322,37 @@ export type Mutation_RootInsert_Account_OneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsert_AttachmentArgs = {
+  objects: Array<Attachment_Insert_Input>;
+  on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Attachment_OneArgs = {
+  object: Attachment_Insert_Input;
+  on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_MessageArgs = {
   objects: Array<Message_Insert_Input>;
   on_conflict?: Maybe<Message_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Message_AttachmentsArgs = {
+  objects: Array<Message_Attachments_Insert_Input>;
+  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Message_Attachments_OneArgs = {
+  object: Message_Attachments_Insert_Input;
+  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
 };
 
 
@@ -1037,9 +1462,37 @@ export type Mutation_RootUpdate_Account_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_AttachmentArgs = {
+  _set?: Maybe<Attachment_Set_Input>;
+  where: Attachment_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Attachment_By_PkArgs = {
+  _set?: Maybe<Attachment_Set_Input>;
+  pk_columns: Attachment_Pk_Columns_Input;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_MessageArgs = {
   _set?: Maybe<Message_Set_Input>;
   where: Message_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Message_AttachmentsArgs = {
+  _set?: Maybe<Message_Attachments_Set_Input>;
+  where: Message_Attachments_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Message_Attachments_By_PkArgs = {
+  _set?: Maybe<Message_Attachments_Set_Input>;
+  pk_columns: Message_Attachments_Pk_Columns_Input;
 };
 
 
@@ -1158,10 +1611,22 @@ export type Query_Root = {
   account_aggregate: Account_Aggregate;
   /** fetch data from the table: "account" using primary key columns */
   account_by_pk?: Maybe<Account>;
+  /** fetch data from the table: "attachment" */
+  attachment: Array<Attachment>;
+  /** fetch aggregated fields from the table: "attachment" */
+  attachment_aggregate: Attachment_Aggregate;
+  /** fetch data from the table: "attachment" using primary key columns */
+  attachment_by_pk?: Maybe<Attachment>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
+  /** fetch data from the table: "message_attachments" */
+  message_attachments: Array<Message_Attachments>;
+  /** fetch aggregated fields from the table: "message_attachments" */
+  message_attachments_aggregate: Message_Attachments_Aggregate;
+  /** fetch data from the table: "message_attachments" using primary key columns */
+  message_attachments_by_pk?: Maybe<Message_Attachments>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
   /** fetch data from the table: "message_type" */
@@ -1230,6 +1695,32 @@ export type Query_RootAccount_By_PkArgs = {
 
 
 /** query root */
+export type Query_RootAttachmentArgs = {
+  distinct_on?: Maybe<Array<Attachment_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Attachment_Order_By>>;
+  where?: Maybe<Attachment_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootAttachment_AggregateArgs = {
+  distinct_on?: Maybe<Array<Attachment_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Attachment_Order_By>>;
+  where?: Maybe<Attachment_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootAttachment_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** query root */
 export type Query_RootMessageArgs = {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -1246,6 +1737,33 @@ export type Query_RootMessage_AggregateArgs = {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMessage_AttachmentsArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMessage_Attachments_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMessage_Attachments_By_PkArgs = {
+  attachment_id: Scalars['uuid'];
+  message_id: Scalars['uuid'];
 };
 
 
@@ -2108,10 +2626,22 @@ export type Subscription_Root = {
   account_aggregate: Account_Aggregate;
   /** fetch data from the table: "account" using primary key columns */
   account_by_pk?: Maybe<Account>;
+  /** fetch data from the table: "attachment" */
+  attachment: Array<Attachment>;
+  /** fetch aggregated fields from the table: "attachment" */
+  attachment_aggregate: Attachment_Aggregate;
+  /** fetch data from the table: "attachment" using primary key columns */
+  attachment_by_pk?: Maybe<Attachment>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
+  /** fetch data from the table: "message_attachments" */
+  message_attachments: Array<Message_Attachments>;
+  /** fetch aggregated fields from the table: "message_attachments" */
+  message_attachments_aggregate: Message_Attachments_Aggregate;
+  /** fetch data from the table: "message_attachments" using primary key columns */
+  message_attachments_by_pk?: Maybe<Message_Attachments>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
   /** fetch data from the table: "message_type" */
@@ -2180,6 +2710,32 @@ export type Subscription_RootAccount_By_PkArgs = {
 
 
 /** subscription root */
+export type Subscription_RootAttachmentArgs = {
+  distinct_on?: Maybe<Array<Attachment_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Attachment_Order_By>>;
+  where?: Maybe<Attachment_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootAttachment_AggregateArgs = {
+  distinct_on?: Maybe<Array<Attachment_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Attachment_Order_By>>;
+  where?: Maybe<Attachment_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootAttachment_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** subscription root */
 export type Subscription_RootMessageArgs = {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -2196,6 +2752,33 @@ export type Subscription_RootMessage_AggregateArgs = {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMessage_AttachmentsArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMessage_Attachments_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
+  where?: Maybe<Message_Attachments_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMessage_Attachments_By_PkArgs = {
+  attachment_id: Scalars['uuid'];
+  message_id: Scalars['uuid'];
 };
 
 
@@ -2993,17 +3576,6 @@ export type ThreadDetailedInfoFragment = (
   & Pick<Thread, 'id' | 'name' | 'index'>
 );
 
-export type ThreadMessageBasicInfoFragment = (
-  { __typename?: 'message' }
-  & Pick<Message, 'id' | 'text'>
-  & { createdAt: Message['created_at'] }
-  & { user: (
-    { __typename?: 'user' }
-    & Pick<User, 'id' | 'name'>
-    & { avatarUrl: User['avatar_url'] }
-  ) }
-);
-
 export type RoomParticipantBasicInfoFragment = (
   { __typename?: 'room_participants' }
   & { user: (
@@ -3063,6 +3635,34 @@ export type RoomParticipantsSubscription = (
   )> }
 );
 
+export type ThreadMessageBasicInfoFragment = (
+  { __typename?: 'message' }
+  & Pick<Message, 'id' | 'text'>
+  & { createdAt: Message['created_at'] }
+  & { user: (
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'name'>
+    & { avatarUrl: User['avatar_url'] }
+  ) }
+);
+
+export type ThreadMessageDetailedInfoFragment = (
+  { __typename?: 'message' }
+  & Pick<Message, 'id' | 'text'>
+  & { createdAt: Message['created_at'] }
+  & { user: (
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'name'>
+    & { avatarUrl: User['avatar_url'] }
+  ), message_attachments: Array<(
+    { __typename?: 'message_attachments' }
+    & { attachment: (
+      { __typename?: 'attachment' }
+      & Pick<Attachment, 'id' | 'original_name'>
+    ) }
+  )> }
+);
+
 export type CreateThreadMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -3100,19 +3700,32 @@ export type ThreadMessagesSubscription = (
   { __typename?: 'subscription_root' }
   & { messages: Array<(
     { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
+    & ThreadMessageDetailedInfoFragment
   )> }
 );
 
-export type CreateTextMessageMutationVariables = Exact<{
+export type CreateMessageDraftMutationVariables = Exact<{
+  threadId: Scalars['uuid'];
   text: Scalars['String'];
+}>;
+
+
+export type CreateMessageDraftMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
+export type GetMessageDraftQueryVariables = Exact<{
   threadId: Scalars['uuid'];
 }>;
 
 
-export type CreateTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
+export type GetMessageDraftQuery = (
+  { __typename?: 'query_root' }
+  & { message: Array<(
     { __typename?: 'message' }
     & ThreadMessageBasicInfoFragment
   )> }
@@ -3121,6 +3734,7 @@ export type CreateTextMessageMutation = (
 export type UpdateTextMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
   text: Scalars['String'];
+  isDraft?: Maybe<Scalars['Boolean']>;
 }>;
 
 
@@ -3132,6 +3746,26 @@ export type UpdateTextMessageMutation = (
       { __typename?: 'message' }
       & ThreadMessageBasicInfoFragment
     )> }
+  )> }
+);
+
+export type LinkAttachmentMutationVariables = Exact<{
+  messageId: Scalars['uuid'];
+  attachmentId: Scalars['uuid'];
+}>;
+
+
+export type LinkAttachmentMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_message_attachments_one?: Maybe<(
+    { __typename?: 'message_attachments' }
+    & { attachment: (
+      { __typename?: 'attachment' }
+      & Pick<Attachment, 'id' | 'original_name'>
+    ), message: (
+      { __typename?: 'message' }
+      & ThreadMessageBasicInfoFragment
+    ) }
   )> }
 );
 
@@ -3219,11 +3853,47 @@ export type account_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('created_at' | 'id' | 'media_url' | 'message_type' | 'text' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type attachmentKeySpecifier = ('created_at' | 'id' | 'original_name' | attachmentKeySpecifier)[];
+export type attachmentFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	original_name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type attachment_aggregateKeySpecifier = ('aggregate' | 'nodes' | attachment_aggregateKeySpecifier)[];
+export type attachment_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type attachment_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | attachment_aggregate_fieldsKeySpecifier)[];
+export type attachment_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type attachment_max_fieldsKeySpecifier = ('created_at' | 'id' | 'original_name' | attachment_max_fieldsKeySpecifier)[];
+export type attachment_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	original_name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type attachment_min_fieldsKeySpecifier = ('created_at' | 'id' | 'original_name' | attachment_min_fieldsKeySpecifier)[];
+export type attachment_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	original_name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type attachment_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | attachment_mutation_responseKeySpecifier)[];
+export type attachment_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type messageKeySpecifier = ('created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'text' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	media_url?: FieldPolicy<any> | FieldReadFunction<any>,
+	is_draft?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3244,21 +3914,52 @@ export type message_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'media_url' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_attachmentsKeySpecifier = ('attachment' | 'attachment_id' | 'message' | 'message_id' | message_attachmentsKeySpecifier)[];
+export type message_attachmentsFieldPolicy = {
+	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_attachments_aggregateKeySpecifier = ('aggregate' | 'nodes' | message_attachments_aggregateKeySpecifier)[];
+export type message_attachments_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_attachments_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | message_attachments_aggregate_fieldsKeySpecifier)[];
+export type message_attachments_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_attachments_max_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachments_max_fieldsKeySpecifier)[];
+export type message_attachments_max_fieldsFieldPolicy = {
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_attachments_min_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachments_min_fieldsKeySpecifier)[];
+export type message_attachments_min_fieldsFieldPolicy = {
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_attachments_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_attachments_mutation_responseKeySpecifier)[];
+export type message_attachments_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	media_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'media_url' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	media_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3297,12 +3998,16 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_thread' | 'delete_thread_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_message' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_thread' | 'insert_thread_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_thread' | 'update_thread_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_thread' | 'delete_thread_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_thread' | 'insert_thread_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_thread' | 'update_thread_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3318,7 +4023,11 @@ export type mutation_rootFieldPolicy = {
 	delete_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_account_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_attachment_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_message_attachments_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type_one?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3334,7 +4043,11 @@ export type mutation_rootFieldPolicy = {
 	insert_user_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3350,13 +4063,19 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3514,13 +4233,19 @@ export type room_participants_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -3665,6 +4390,30 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | account_mutation_responseKeySpecifier | (() => undefined | account_mutation_responseKeySpecifier),
 		fields?: account_mutation_responseFieldPolicy,
 	},
+	attachment?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachmentKeySpecifier | (() => undefined | attachmentKeySpecifier),
+		fields?: attachmentFieldPolicy,
+	},
+	attachment_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachment_aggregateKeySpecifier | (() => undefined | attachment_aggregateKeySpecifier),
+		fields?: attachment_aggregateFieldPolicy,
+	},
+	attachment_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachment_aggregate_fieldsKeySpecifier | (() => undefined | attachment_aggregate_fieldsKeySpecifier),
+		fields?: attachment_aggregate_fieldsFieldPolicy,
+	},
+	attachment_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachment_max_fieldsKeySpecifier | (() => undefined | attachment_max_fieldsKeySpecifier),
+		fields?: attachment_max_fieldsFieldPolicy,
+	},
+	attachment_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachment_min_fieldsKeySpecifier | (() => undefined | attachment_min_fieldsKeySpecifier),
+		fields?: attachment_min_fieldsFieldPolicy,
+	},
+	attachment_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | attachment_mutation_responseKeySpecifier | (() => undefined | attachment_mutation_responseKeySpecifier),
+		fields?: attachment_mutation_responseFieldPolicy,
+	},
 	message?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | messageKeySpecifier | (() => undefined | messageKeySpecifier),
 		fields?: messageFieldPolicy,
@@ -3676,6 +4425,30 @@ export type TypedTypePolicies = TypePolicies & {
 	message_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | message_aggregate_fieldsKeySpecifier | (() => undefined | message_aggregate_fieldsKeySpecifier),
 		fields?: message_aggregate_fieldsFieldPolicy,
+	},
+	message_attachments?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachmentsKeySpecifier | (() => undefined | message_attachmentsKeySpecifier),
+		fields?: message_attachmentsFieldPolicy,
+	},
+	message_attachments_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachments_aggregateKeySpecifier | (() => undefined | message_attachments_aggregateKeySpecifier),
+		fields?: message_attachments_aggregateFieldPolicy,
+	},
+	message_attachments_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachments_aggregate_fieldsKeySpecifier | (() => undefined | message_attachments_aggregate_fieldsKeySpecifier),
+		fields?: message_attachments_aggregate_fieldsFieldPolicy,
+	},
+	message_attachments_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachments_max_fieldsKeySpecifier | (() => undefined | message_attachments_max_fieldsKeySpecifier),
+		fields?: message_attachments_max_fieldsFieldPolicy,
+	},
+	message_attachments_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachments_min_fieldsKeySpecifier | (() => undefined | message_attachments_min_fieldsKeySpecifier),
+		fields?: message_attachments_min_fieldsFieldPolicy,
+	},
+	message_attachments_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachments_mutation_responseKeySpecifier | (() => undefined | message_attachments_mutation_responseKeySpecifier),
+		fields?: message_attachments_mutation_responseFieldPolicy,
 	},
 	message_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | message_max_fieldsKeySpecifier | (() => undefined | message_max_fieldsKeySpecifier),
@@ -3892,6 +4665,14 @@ export const ThreadDetailedInfoFragmentDoc = gql`
   index
 }
     `;
+export const RoomParticipantBasicInfoFragmentDoc = gql`
+    fragment RoomParticipantBasicInfo on room_participants {
+  user {
+    name
+    avatarUrl: avatar_url
+  }
+}
+    `;
 export const ThreadMessageBasicInfoFragmentDoc = gql`
     fragment ThreadMessageBasicInfo on message {
   id
@@ -3904,11 +4685,21 @@ export const ThreadMessageBasicInfoFragmentDoc = gql`
   }
 }
     `;
-export const RoomParticipantBasicInfoFragmentDoc = gql`
-    fragment RoomParticipantBasicInfo on room_participants {
+export const ThreadMessageDetailedInfoFragmentDoc = gql`
+    fragment ThreadMessageDetailedInfo on message {
+  id
+  text
+  createdAt: created_at
   user {
+    id
     name
     avatarUrl: avatar_url
+  }
+  message_attachments {
+    attachment {
+      id
+      original_name
+    }
   }
 }
     `;
@@ -4254,13 +5045,13 @@ export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThread
 export const ThreadMessagesDocument = gql`
     subscription ThreadMessages($threadId: uuid!) {
   messages: message(
-    where: {thread_id: {_eq: $threadId}}
+    where: {_or: [{is_draft: {_eq: false}}, {is_draft: {_is_null: true}}], thread_id: {_eq: $threadId}}
     order_by: [{created_at: asc}]
   ) {
-    ...ThreadMessageBasicInfo
+    ...ThreadMessageDetailedInfo
   }
 }
-    ${ThreadMessageBasicInfoFragmentDoc}`;
+    ${ThreadMessageDetailedInfoFragmentDoc}`;
 
 /**
  * __useThreadMessagesSubscription__
@@ -4284,45 +5075,83 @@ export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHo
       }
 export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
 export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
-export const CreateTextMessageDocument = gql`
-    mutation CreateTextMessage($text: String!, $threadId: uuid!) {
+export const CreateMessageDraftDocument = gql`
+    mutation CreateMessageDraft($threadId: uuid!, $text: String!) {
   message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: TEXT}
+    object: {text: $text, thread_id: $threadId, type: TEXT, is_draft: true}
   ) {
-    ...ThreadMessageBasicInfo
+    id
   }
 }
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-export type CreateTextMessageMutationFn = Apollo.MutationFunction<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
+    `;
+export type CreateMessageDraftMutationFn = Apollo.MutationFunction<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
 
 /**
- * __useCreateTextMessageMutation__
+ * __useCreateMessageDraftMutation__
  *
- * To run a mutation, you first call `useCreateTextMessageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTextMessageMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCreateMessageDraftMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageDraftMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createTextMessageMutation, { data, loading, error }] = useCreateTextMessageMutation({
+ * const [createMessageDraftMutation, { data, loading, error }] = useCreateMessageDraftMutation({
  *   variables: {
+ *      threadId: // value for 'threadId'
  *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useCreateMessageDraftMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>(CreateMessageDraftDocument, options);
+      }
+export type CreateMessageDraftMutationHookResult = ReturnType<typeof useCreateMessageDraftMutation>;
+export type CreateMessageDraftMutationResult = Apollo.MutationResult<CreateMessageDraftMutation>;
+export type CreateMessageDraftMutationOptions = Apollo.BaseMutationOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
+export const GetMessageDraftDocument = gql`
+    query GetMessageDraft($threadId: uuid!) {
+  message: message(
+    where: {thread_id: {_eq: $threadId}, is_draft: {_eq: true}}
+    limit: 1
+  ) {
+    ...ThreadMessageBasicInfo
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+
+/**
+ * __useGetMessageDraftQuery__
+ *
+ * To run a query within a React component, call `useGetMessageDraftQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessageDraftQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessageDraftQuery({
+ *   variables: {
  *      threadId: // value for 'threadId'
  *   },
  * });
  */
-export function useCreateTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>) {
+export function useGetMessageDraftQuery(baseOptions: Apollo.QueryHookOptions<GetMessageDraftQuery, GetMessageDraftQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTextMessageMutation, CreateTextMessageMutationVariables>(CreateTextMessageDocument, options);
+        return Apollo.useQuery<GetMessageDraftQuery, GetMessageDraftQueryVariables>(GetMessageDraftDocument, options);
       }
-export type CreateTextMessageMutationHookResult = ReturnType<typeof useCreateTextMessageMutation>;
-export type CreateTextMessageMutationResult = Apollo.MutationResult<CreateTextMessageMutation>;
-export type CreateTextMessageMutationOptions = Apollo.BaseMutationOptions<CreateTextMessageMutation, CreateTextMessageMutationVariables>;
+export function useGetMessageDraftLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessageDraftQuery, GetMessageDraftQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessageDraftQuery, GetMessageDraftQueryVariables>(GetMessageDraftDocument, options);
+        }
+export type GetMessageDraftQueryHookResult = ReturnType<typeof useGetMessageDraftQuery>;
+export type GetMessageDraftLazyQueryHookResult = ReturnType<typeof useGetMessageDraftLazyQuery>;
+export type GetMessageDraftQueryResult = Apollo.QueryResult<GetMessageDraftQuery, GetMessageDraftQueryVariables>;
 export const UpdateTextMessageDocument = gql`
-    mutation UpdateTextMessage($id: uuid!, $text: String!) {
-  update_message(where: {id: {_eq: $id}}, _set: {text: $text}) {
+    mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
+  update_message(where: {id: {_eq: $id}}, _set: {text: $text, is_draft: $isDraft}) {
     message: returning {
       ...ThreadMessageBasicInfo
     }
@@ -4346,6 +5175,7 @@ export type UpdateTextMessageMutationFn = Apollo.MutationFunction<UpdateTextMess
  *   variables: {
  *      id: // value for 'id'
  *      text: // value for 'text'
+ *      isDraft: // value for 'isDraft'
  *   },
  * });
  */
@@ -4356,6 +5186,48 @@ export function useUpdateTextMessageMutation(baseOptions?: Apollo.MutationHookOp
 export type UpdateTextMessageMutationHookResult = ReturnType<typeof useUpdateTextMessageMutation>;
 export type UpdateTextMessageMutationResult = Apollo.MutationResult<UpdateTextMessageMutation>;
 export type UpdateTextMessageMutationOptions = Apollo.BaseMutationOptions<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>;
+export const LinkAttachmentDocument = gql`
+    mutation LinkAttachment($messageId: uuid!, $attachmentId: uuid!) {
+  insert_message_attachments_one(
+    object: {message_id: $messageId, attachment_id: $attachmentId}
+  ) {
+    attachment {
+      id
+      original_name
+    }
+    message {
+      ...ThreadMessageBasicInfo
+    }
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+export type LinkAttachmentMutationFn = Apollo.MutationFunction<LinkAttachmentMutation, LinkAttachmentMutationVariables>;
+
+/**
+ * __useLinkAttachmentMutation__
+ *
+ * To run a mutation, you first call `useLinkAttachmentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLinkAttachmentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [linkAttachmentMutation, { data, loading, error }] = useLinkAttachmentMutation({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *      attachmentId: // value for 'attachmentId'
+ *   },
+ * });
+ */
+export function useLinkAttachmentMutation(baseOptions?: Apollo.MutationHookOptions<LinkAttachmentMutation, LinkAttachmentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LinkAttachmentMutation, LinkAttachmentMutationVariables>(LinkAttachmentDocument, options);
+      }
+export type LinkAttachmentMutationHookResult = ReturnType<typeof useLinkAttachmentMutation>;
+export type LinkAttachmentMutationResult = Apollo.MutationResult<LinkAttachmentMutation>;
+export type LinkAttachmentMutationOptions = Apollo.BaseMutationOptions<LinkAttachmentMutation, LinkAttachmentMutationVariables>;
 export const DeleteTextMessageDocument = gql`
     mutation DeleteTextMessage($id: uuid!) {
   delete_message(where: {id: {_eq: $id}}) {
