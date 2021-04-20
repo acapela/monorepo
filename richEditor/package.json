@@ -1,0 +1,13 @@
+{
+  "name": "~richEditor",
+  "private": "true",
+  "version": "0.1.0",
+  "main": "index.tsx",
+  "devDependencies": {},
+  "dependencies": {
+    "react-quill": "2.0.0-beta.2"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}
