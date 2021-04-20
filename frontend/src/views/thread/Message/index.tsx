@@ -15,12 +15,12 @@ import { MessageActions } from "./MessageActions";
 import { MessageText } from "./MessageText";
 import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
 
-export interface MessageWithUserInfoAndAttachments extends ThreadMessageDetailedInfoFragment {
+export interface MessageWithUserInfo extends ThreadMessageDetailedInfoFragment {
   isOwnMessage: boolean;
 }
 
 interface Props extends MotionProps {
-  message: MessageWithUserInfoAndAttachments;
+  message: MessageWithUserInfo;
 }
 
 const UIMessageAvatar = styled(Avatar)`
@@ -78,7 +78,7 @@ const UITools = styled(motion.div)`
   margin-top: 0.25rem;
 `;
 
-function getUserOrGuestName(message: MessageWithUserInfoAndAttachments): string {
+function getUserOrGuestName(message: MessageWithUserInfo): string {
   return message.user.name || "Guest";
 }
 

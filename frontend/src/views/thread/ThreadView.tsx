@@ -4,12 +4,11 @@ import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { ThreadMessageDetailedInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
-
 import { MessageComposer } from "./Composer";
-import { Message, MessageWithUserInfoAndAttachments } from "./Message";
+import { Message, MessageWithUserInfo } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 
-const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfoAndAttachments[] } => {
+const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
   const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
     variables: { threadId },

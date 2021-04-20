@@ -16,10 +16,16 @@
     "axios": "*",
     "express": "*",
     "react": "*",
+    "react-dom": "*",
     "styled-components": "*",
     "tslib": "*"
   },
   "dependencies": {
+    "~config": "0.1.0",
+    "~db": "0.1.0",
+    "~richEditor": "0.1.0",
+    "~shared": "0.1.0",
+    "~ui": "0.1.0",
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
@@ -30,15 +36,9 @@
     "jsonwebtoken": "^8.5.1",
     "next": "^10.0.9",
     "next-auth": "^3.13.3",
-    "react-dom": "^17.0.2",
-    "react-hook-form": "^7.0.6",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
-    "subscriptions-transport-ws": "^0.9.18",
-    "~config": "0.1.0",
-    "~db": "0.1.0",
-    "~shared": "0.1.0",
-    "~ui": "0.1.0"
+    "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.9",

@@ -97,6 +97,39 @@ const envVariables = (nextConfig = {}) => {
   });
 };
 
+const ensureSinglePackageVersion = (nextConfig = {}) => {
+  return Object.assign({}, nextConfig, {
+    webpack: (config, options) => {
+      /**
+       * This is a bit hacky, but should be very reliable.
+       *
+       * It is here to make sure there is only one version of react or any other package that we want to make sure
+       * we only use one version of (including nested packages useage)
+       *
+       * Why do we need it?
+       *
+       * Sadly, npm has no feature of package.json > 'resolutions' field which forces version of some package at install
+       * level.
+       *
+       * There are some packages (like quill) that has outdated react peerDependency (^16.0.0) which results in both v16
+       * and v17 of react being installed and used.
+       *
+       * This in turn crashes as soon as we render first element from different version into already rendered tree.
+       */
+
+      const packageNames = nextConfig.packages;
+
+      packageNames.forEach((packageName) => {
+        // Let's just take path of module respected by frontend and force it for everything runnign as part of frontend.
+        const packageModuleDirPath = path.dirname(require.resolve(packageName));
+        config.resolve.alias[packageName] = packageModuleDirPath;
+      });
+
+      return config;
+    },
+  });
+};
+
 module.exports = withPlugins(
   [
     //
@@ -113,6 +146,7 @@ module.exports = withPlugins(
         envFilePath: path.resolve(__dirname, "..", ".env"),
       },
     ],
+    [ensureSinglePackageVersion, { packages: ["react", "react-dom"] }],
     //
     createTsPackagesPlugin(),
   ],
@@ -123,6 +157,9 @@ module.exports = withPlugins(
       // your project has type errors.
       // !! WARN !!
       ignoreBuildErrors: true,
+    },
+    future: {
+      webpack5: true,
     },
     async rewrites() {
       return [
