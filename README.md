@@ -18,13 +18,19 @@ README for packages:
 
 - [Frontend README](./backend/README.md)
 
+## yarn
+
+This repo is using yarn for linking monorepo packages.
+
+To install yarn, call `npm install --global yarn` (https://classic.yarnpkg.com/en/docs/install/#mac-stable)
+
 ## Monorepo setup
 
-This repo is based on npm workspaces (https://docs.npmjs.com/cli/v7/using-npm/workspaces).
+This repo is based on workspaces (https://classic.yarnpkg.com/en/docs/workspaces/).
 
 ### Terms
 
-**Package** - single, npm-based part of this repo eg `frontend` and `backend`.
+**Package** - single, package.json-based part of this repo eg `frontend` and `backend`.
 
 **Shared dependency** - Dependency which is used in the same version in every package.
 
@@ -32,7 +38,7 @@ This repo is based on npm workspaces (https://docs.npmjs.com/cli/v7/using-npm/wo
 
 It is possible that the same dependency (eg `lodash`) is used across multiple packages using the same version.
 
-In such case, dependency is added to root `package.json` (using `npm install package -S or -D`) at root folder and then added as `peer dependency` to packages using it with version `*`.
+In such case, dependency is added to root `package.json` (using `yarn add package -S or -D`) at root folder and then added as `peer dependency` to packages using it with version `*`.
 
 For example:
 
@@ -87,7 +93,7 @@ and then `frontend/package.json`
 }
 ```
 
-In such a setup, after calling `npm install` - **symlink** will be created, meaning `./frontend/node_modules/~utils` is symlink to `./utils` (not clone!).
+In such a setup, after calling `yarn install` - **symlink** will be created, meaning `./frontend/node_modules/~utils` is symlink to `./utils` (not clone!).
 
 It also means that each change made inside `./utils` would be instantly reflected inside `./frontend/node_modules/~utils`.
 
@@ -109,28 +115,19 @@ This setup means we have 'hot-reloading' experience when modifying any used mono
 
 It is possible to run scripts of every package from root folder of this repo.
 
-Run `npm start` at root level to see possible a list of available scripts:
+Run `yarn start` at root level to see possible a list of available scripts:
 
-![NPM START](./docs/npm-start.gif)
+![YARN START](./docs/yarn-start.gif)
 
 ### Running commands in scope of single package
 
 It's possible to manually run any command in the scope of a package.
 
-The following script:
-
 ```bash
-npm run frontend -- add react -S
+yarn frontend add react
 ```
 
-is equal to
-
-```bash
-cd frontend
-npm add react -S
-```
-
-Another example might be `npm run backend -- run test:watch`, etc.
+Another example might be `yarn backend test:watch`, etc.
 
 ## Shared configuration
 

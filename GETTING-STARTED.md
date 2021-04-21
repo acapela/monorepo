@@ -16,11 +16,13 @@ You need to have docker and docker-compose installed on your machine. https://do
 
 Make sure that docker is properly installed by calling `docker-compose --version` in your console.
 
-### Node & NPM
+### Node & Yarn
 
-npm version 7.0+ is required (the latest version is recommended) because this repo is based on npm workspaces.
+yarn version 1.22.0+ is required because this repo is based on workspaces. (https://classic.yarnpkg.com/en/docs/workspaces/)
 
-Node version 15+ is recommended.
+We're not using npm because it has no mechanism for `resolutions` across workspaces to make sure there is only one version of some package in entire project and it gave us a bit of pain before we used npm and had packages with outdated peerDependencies.
+
+Node version 16+ is recommended.
 
 You can rely on nvm to pick the correct versions:
 
@@ -48,20 +50,20 @@ After those steps, we should be good to go!
 
 First - install all dependencies by running
 
-`npm install`
+`yarn install`
 
-After installed, the only command you have to remember should be `npm start`.
+After installed, the only command you have to remember should be `yarn start`.
 
 It will show you all other available commands as a console interactive select:
 
-![NPM START](./docs/npm-start.gif)
+![YARN START](./docs/yarn-start.gif)
 
 First, we need to seed the database:
 
 - `hasura:migrations`
 - `hasura:meta`
 
-In order to bring the project up, run these commands in different terminals:
+In order to bring the project up, run these commands in different terminals (using `yarn start` and selecting them):
 
 - `docker:up`
 - `frontend:dev`
@@ -101,7 +103,7 @@ We're using styled-components for styling our UI. This will add syntax-highlight
 
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=diegolincoln.vscode-styled-components
 
-![NPM START](./docs/styled-components.png)
+![Styled Components](./docs/styled-components.png)
 
 #### GraphQL
 
@@ -109,8 +111,8 @@ This will provide validation and autocomplete when writing gql queries to make s
 
 VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql
 
-![NPM START](./docs/gql1.png)
-![NPM START](./docs/gql2.png)
+![GraphQL](./docs/gql1.png)
+![GraphQL](./docs/gql2.png)
 
 ## Commit Message Convention
 
