@@ -2,7 +2,6 @@ FROM node:15-buster
 
 RUN wget https://storage.googleapis.com/berglas/main/linux_amd64/berglas -O /bin/berglas && chmod +x /bin/berglas
 RUN npm install hasura-cli -g
-RUN npm install yarn -g
 
 WORKDIR /app
 
