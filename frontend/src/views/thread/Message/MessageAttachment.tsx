@@ -1,24 +1,17 @@
-import React, { useState } from "react";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
+import React from "react";
+import { AttachmentDetailedInfoFragment, Message_Type_Enum, useGetDownloadUrlQuery } from "~frontend/gql";
 import styled from "styled-components";
-import { useIsomorphicLayoutEffect } from "react-use";
-import axios from "axios";
+import { chooseType } from "~frontend/utils/chooseMessageType";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
-  messageType: Message_Type_Enum;
   className?: string;
 }
 
-const PureMessageAttachment = ({ attachment, messageType, className }: AttachmentProps) => {
-  const [url, setUrl] = useState();
-
-  useIsomorphicLayoutEffect(() => {
-    axios({
-      method: "GET",
-      url: `/api/backend/v1/attachments/${attachment.id}`,
-    }).then(({ data: { publicUrl } }) => setUrl(publicUrl));
-  }, []);
+const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
+  const { data: downloadUrlData } = useGetDownloadUrlQuery({ variables: { id: attachment.id } });
+  const url = downloadUrlData?.get_download_url?.downloadUrl;
+  const messageType = chooseType(attachment.mimeType);
 
   if (!url) {
     return <div className={className}>Fetching</div>;

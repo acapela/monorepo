@@ -1,30 +1,18 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum, useCreateMessageMutation } from "~frontend/gql";
+
+import { Message_Type_Enum, useCreateMessageMutation } from "~frontend/gql";
 import { EmojiPicker } from "~ui/EmojiPicker";
 import { Field, useFieldValue } from "~ui/field";
 import { FileUpload } from "~frontend/views/thread/FileUpload";
-
-function chooseType(mimeType: string): Message_Type_Enum {
-  const category = mimeType.split("/")[0].toLowerCase();
-
-  switch (category) {
-    case "audio":
-      return Message_Type_Enum.Audio;
-    case "video":
-      return Message_Type_Enum.Video;
-    default:
-      // Message_Type_Enum.File is not used
-      return Message_Type_Enum.Text;
-  }
-}
+import { chooseType } from "~frontend/utils/chooseMessageType";
 
 const Attachments = ({
   shouldTranscribe,
   onAttachmentAdded,
 }: {
   shouldTranscribe: boolean;
-  onAttachmentAdded: (attachment: AttachmentDetailedInfoFragment) => void;
+  onAttachmentAdded: ({ uuid, mimeType }: { uuid: string; mimeType: string }) => void;
 }) => {
   if (shouldTranscribe) {
     return <FileUpload onFileAttached={onAttachmentAdded} />;
@@ -45,11 +33,11 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
   const [createMessage] = useCreateMessageMutation();
   const inputRef = useRef<HTMLInputElement>(null);
   const textField = useFieldValue("", inputRef);
-  const [attachments, setAttachments] = useState<{ [key: string]: AttachmentDetailedInfoFragment }>({});
+  const [attachments, setAttachments] = useState<{ [key: string]: string }>({});
   const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
 
-  const onAttachmentAdded = (attachment: AttachmentDetailedInfoFragment) =>
-    setAttachments({ ...attachments, [attachment.id]: attachment });
+  const onAttachmentAdded = ({ uuid, mimeType }: { uuid: string; mimeType: string }) =>
+    setAttachments({ ...attachments, [uuid]: mimeType });
 
   return (
     <>
@@ -67,9 +55,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           await createMessage({
             variables: {
               threadId: threadId,
-              type: shouldTranscribe
-                ? chooseType(attachments[Object.keys(attachments)[0]].mimeType)
-                : Message_Type_Enum.Text,
+              type: shouldTranscribe ? chooseType(attachments[Object.keys(attachments)[0]]) : Message_Type_Enum.Text,
               text: textField.value,
               attachments: attachmentsIds.map((attachmentId) => ({
                 attachment_id: attachmentId,

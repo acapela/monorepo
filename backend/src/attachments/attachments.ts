@@ -1,28 +1,31 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { v4 as uuid } from "uuid";
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
 
 import { db } from "~db";
-import logger from "~shared/logger";
-
-import { extractToken } from "../authentication";
-import { AuthenticationError } from "../errors";
+import { ActionHandler } from "~backend/src/actions/actionHandlers";
 
 export const router = Router();
 
 const bucketName = `meetnomoreapp.appspot.com`;
 const directory = "acapela/attachments/";
 
-// Creates signed link and writes attachment to the DB
-router.post("/v1/attachments", async (req: Request, res: Response) => {
-  const { name, mimeType } = req.body;
-  const id = uuid();
+interface GetUploadUrlParams {
+  fileName: string;
+  mimeType: string;
+}
 
-  if (!mimeType) {
-    return res.status(400).send("Attachment type is not provided");
-  }
+interface GetUploadUrlResponse {
+  uploadUrl: string;
+  uuid: string;
+}
 
-  try {
+export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlResponse> = {
+  actionName: "get_upload_url",
+
+  async handle(_userId, { fileName, mimeType }) {
+    const id = uuid();
+
     const storage = new Storage();
 
     const filePath = `${directory}${id}`;
@@ -42,34 +45,39 @@ router.post("/v1/attachments", async (req: Request, res: Response) => {
     await db.attachment.create({
       data: {
         id: id,
-        original_name: name,
+        original_name: fileName,
         mime_type: mimeType,
       },
     });
 
-    res.status(200).json({ uploadUrl, uuid: id });
-  } catch (err) {
-    logger.error("Failed to create signed link for attachment write", {
-      message: err.message,
-      stack: err.stack,
+    return { uploadUrl, uuid: id };
+  },
+};
+
+interface GetDownloadUrlParams {
+  uuid: string;
+}
+
+interface GetDownloadUrlResponse {
+  downloadUrl: string;
+}
+
+export const getDownloadUrl: ActionHandler<GetDownloadUrlParams, GetDownloadUrlResponse> = {
+  actionName: "get_download_url",
+
+  async handle(_userId, { uuid }) {
+    const attachment = await db.attachment.findUnique({
+      where: {
+        id: uuid,
+      },
     });
-    return res.status(500).send(err.message);
-  }
-});
 
-// Gets read link
-router.get("/v1/attachments/:uuid", async (req: Request, res: Response) => {
-  const { uuid } = req.params;
-
-  if (!uuid) {
-    return res.status(400).send("UUID is not provided");
-  }
-
-  try {
-    const storage = new Storage();
+    if (!attachment) {
+      throw new Error("Not found");
+    }
 
     const filePath = `${directory}${uuid}`;
-    const mins = 0.5; // 30 seconds should be enough
+    const mins = 60;
 
     const options: GetSignedUrlConfig = {
       version: "v4",
@@ -78,47 +86,11 @@ router.get("/v1/attachments/:uuid", async (req: Request, res: Response) => {
       virtualHostedStyle: true,
     };
 
-    const [publicUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
+    const storage = new Storage();
+    const [downloadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
 
-    const attachment = await db.attachment.findUnique({
-      where: {
-        id: uuid,
-      },
-    });
-
-    if (!attachment) {
-      return res.status(404).send("Not found");
-    }
-
-    res.status(200).json({
-      publicUrl,
-      // This is stupid, but it is better to match GraphQL schema which uses aliases
-      attachment: {
-        id: attachment.id,
-        createdAt: attachment.created_at,
-        originalName: attachment.original_name,
-        mimeType: attachment.mime_type,
-      },
-    });
-  } catch (err) {
-    logger.error("Failed to create signed link for attachment read", {
-      message: err.message,
-      stack: err.stack,
-    });
-    return res.status(500).send(err.message);
-  }
-});
-
-// TODO: enable
-function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
-  const token = extractToken(req.get("Authorization") || "");
-
-  if (!token) {
-    throw new AuthenticationError("Hasura action call done with invalid secret");
-  }
-
-  if (token !== process.env.HASURA_ACTION_SECRET) {
-    throw new AuthenticationError("Hasura action call done with invalid secret");
-  }
-  next();
-}
+    return {
+      downloadUrl,
+    };
+  },
+};
