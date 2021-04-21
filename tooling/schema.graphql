@@ -427,6 +427,9 @@ unique or primary key constraints on table "attachment"
 """
 enum attachment_constraint {
   """unique or primary key constraint"""
+  attachment_id_key
+
+  """unique or primary key constraint"""
   attachment_pkey
 }
 
@@ -582,10 +585,45 @@ input json_comparison_exp {
   _nin: [json!]
 }
 
+scalar jsonb
+
+"""
+expression to compare columns of type jsonb. All fields are combined with logical 'AND'.
+"""
+input jsonb_comparison_exp {
+  """is the column contained in the given json value"""
+  _contained_in: jsonb
+
+  """does the column contain the given json value at the top level"""
+  _contains: jsonb
+  _eq: jsonb
+  _gt: jsonb
+  _gte: jsonb
+
+  """does the string exist as a top-level key in the column"""
+  _has_key: String
+
+  """do all of these strings exist as top-level keys in the column"""
+  _has_keys_all: [String!]
+
+  """do any of these strings exist as top-level keys in the column"""
+  _has_keys_any: [String!]
+  _in: [jsonb!]
+  _is_null: Boolean
+  _lt: jsonb
+  _lte: jsonb
+  _neq: jsonb
+  _nin: [jsonb!]
+}
+
 """
 columns and relationships of "message"
 """
 type message {
+  content(
+    """JSON select path"""
+    path: String
+  ): jsonb!
   created_at: timestamptz!
   id: uuid!
   is_draft: Boolean!
@@ -628,7 +666,6 @@ type message {
 
   """An object relationship"""
   message_type: message_type!
-  text: String
 
   """An object relationship"""
   thread: thread!
@@ -665,6 +702,11 @@ input message_aggregate_order_by {
   count: order_by
   max: message_max_order_by
   min: message_min_order_by
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input message_append_input {
+  content: jsonb
 }
 
 """
@@ -864,12 +906,12 @@ input message_bool_exp {
   _and: [message_bool_exp]
   _not: message_bool_exp
   _or: [message_bool_exp]
+  content: jsonb_comparison_exp
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
   is_draft: Boolean_comparison_exp
   message_attachments: message_attachments_bool_exp
   message_type: message_type_bool_exp
-  text: String_comparison_exp
   thread: thread_bool_exp
   thread_id: uuid_comparison_exp
   transcription: String_comparison_exp
@@ -890,15 +932,36 @@ enum message_constraint {
 }
 
 """
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input message_delete_at_path_input {
+  content: [String]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input message_delete_elem_input {
+  content: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input message_delete_key_input {
+  content: String
+}
+
+"""
 input type for inserting data into table "message"
 """
 input message_insert_input {
+  content: jsonb
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
   message_attachments: message_attachments_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
-  text: String
   thread: thread_obj_rel_insert_input
   thread_id: uuid
   transcription: String
@@ -911,7 +974,6 @@ input message_insert_input {
 type message_max_fields {
   created_at: timestamptz
   id: uuid
-  text: String
   thread_id: uuid
   transcription: String
   user_id: uuid
@@ -923,7 +985,6 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
-  text: order_by
   thread_id: order_by
   transcription: order_by
   user_id: order_by
@@ -933,7 +994,6 @@ input message_max_order_by {
 type message_min_fields {
   created_at: timestamptz
   id: uuid
-  text: String
   thread_id: uuid
   transcription: String
   user_id: uuid
@@ -945,7 +1005,6 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
-  text: order_by
   thread_id: order_by
   transcription: order_by
   user_id: order_by
@@ -983,12 +1042,12 @@ input message_on_conflict {
 ordering options when selecting data from "message"
 """
 input message_order_by {
+  content: order_by
   created_at: order_by
   id: order_by
   is_draft: order_by
   message_attachments_aggregate: message_attachments_aggregate_order_by
   message_type: message_type_order_by
-  text: order_by
   thread: thread_order_by
   thread_id: order_by
   transcription: order_by
@@ -1004,10 +1063,18 @@ input message_pk_columns_input {
   id: uuid!
 }
 
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input message_prepend_input {
+  content: jsonb
+}
+
 """
 select columns of table "message"
 """
 enum message_select_column {
+  """column name"""
+  content
+
   """column name"""
   created_at
 
@@ -1016,9 +1083,6 @@ enum message_select_column {
 
   """column name"""
   is_draft
-
-  """column name"""
-  text
 
   """column name"""
   thread_id
@@ -1037,10 +1101,10 @@ enum message_select_column {
 input type for updating data in table "message"
 """
 input message_set_input {
+  content: jsonb
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
-  text: String
   thread_id: uuid
   transcription: String
   type: message_type_enum
@@ -1229,6 +1293,9 @@ update columns of table "message"
 """
 enum message_update_column {
   """column name"""
+  content
+
+  """column name"""
   created_at
 
   """column name"""
@@ -1236,9 +1303,6 @@ enum message_update_column {
 
   """column name"""
   is_draft
-
-  """column name"""
-  text
 
   """column name"""
   thread_id
@@ -1654,6 +1718,27 @@ type mutation_root {
   update data of the table: "message"
   """
   update_message(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: message_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: message_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: message_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: message_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: message_prepend_input
+
     """sets the columns of the filtered rows to the given values"""
     _set: message_set_input
 
@@ -1685,6 +1770,27 @@ type mutation_root {
   update single row of the table: "message"
   """
   update_message_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: message_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: message_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: message_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: message_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: message_prepend_input
+
     """sets the columns of the filtered rows to the given values"""
     _set: message_set_input
     pk_columns: message_pk_columns_input!

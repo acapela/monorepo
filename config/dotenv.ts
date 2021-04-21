@@ -1,8 +1,18 @@
 import dotenv from "dotenv";
 import path from "path";
 
-const DOTENV_PATH =
-  process.env.NODE_ENV === "production" ? path.resolve(process.cwd(), ".env") : path.resolve(__dirname, "..", ".env");
+function getDotEnvPath() {
+  if (!__dirname) {
+    // It is possible that __dirname is not avaliable (in next.js it is by design to disable access to file system)
+    return null;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return path.resolve(process.cwd(), ".env");
+  }
+
+  return path.resolve(__dirname, "..", ".env");
+}
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -38,7 +48,19 @@ declare global {
 }
 
 function loadRootDotEnv(): void {
-  dotenv.config({ path: DOTENV_PATH });
+  const dotEnvPath = getDotEnvPath();
+
+  if (!dotEnvPath) {
+    return;
+  }
+
+  if (!process.env.DB_NAME) {
+    console.warn(
+      `It was not possible to load dotenv file and env variables were not loaded in other way. It might lead to bugs or crashes.`
+    );
+  }
+
+  dotenv.config({ path: dotEnvPath });
 }
 
 loadRootDotEnv();

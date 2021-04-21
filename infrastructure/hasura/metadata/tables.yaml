@@ -67,7 +67,8 @@
           user_id: x-hasura-User-Id
         columns:
           - is_draft
-          - text
+          - content
+          - media_url
           - thread_id
           - transcription
           - type
@@ -76,10 +77,10 @@
     - role: user
       permission:
         columns:
+          - content
           - created_at
           - id
           - is_draft
-          - text
           - thread_id
           - transcription
           - type
@@ -91,7 +92,7 @@
       permission:
         columns:
           - is_draft
-          - text
+          - content
         filter:
           user_id:
             _eq: X-Hasura-User-Id

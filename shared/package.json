@@ -1,6 +1,5 @@
 {
   "name": "~shared",
-  "private": "true",
   "version": "0.1.0",
   "dependencies": {
     "@sendgrid/mail": "^7.4.2",

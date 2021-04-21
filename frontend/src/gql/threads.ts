@@ -11,8 +11,8 @@ gql`
 gql`
   fragment ThreadMessageBasicInfo on message {
     id
-    text
     createdAt: created_at
+    content
     user {
       id
       name
@@ -32,7 +32,7 @@ gql`
 gql`
   fragment ThreadMessageDetailedInfo on message {
     id
-    text
+    content
     createdAt: created_at
     type
     user {
@@ -78,13 +78,13 @@ gql`
 gql`
   mutation CreateMessage(
     $threadId: uuid!
-    $text: String!
+    $content: jsonb!
     $type: message_type_enum!
     $attachments: [message_attachments_insert_input!]!
   ) {
     message: insert_message_one(
       object: {
-        text: $text
+        content: $content
         thread_id: $threadId
         type: $type
         message_attachments: { data: $attachments }
@@ -97,8 +97,8 @@ gql`
 `;
 
 gql`
-  mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
-    update_message(where: { id: { _eq: $id } }, _set: { text: $text, is_draft: $isDraft }) {
+  mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean) {
+    update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
       message: returning {
         ...ThreadMessageBasicInfo
       }
