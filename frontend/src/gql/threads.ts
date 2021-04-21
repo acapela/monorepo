@@ -76,14 +76,6 @@ gql`
 `;
 
 gql`
-  mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
-    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: $type, is_draft: true }) {
-      id
-    }
-  }
-`;
-
-gql`
   mutation CreateMessage(
     $threadId: uuid!
     $text: String!
@@ -105,31 +97,9 @@ gql`
 `;
 
 gql`
-  query GetMessageDraft($threadId: uuid!) {
-    message: message(where: { thread_id: { _eq: $threadId }, is_draft: { _eq: true } }, limit: 1) {
-      ...ThreadMessageBasicInfo
-    }
-  }
-`;
-
-gql`
   mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
     update_message(where: { id: { _eq: $id } }, _set: { text: $text, is_draft: $isDraft }) {
       message: returning {
-        ...ThreadMessageBasicInfo
-      }
-    }
-  }
-`;
-
-gql`
-  mutation LinkAttachment($messageId: uuid!, $attachmentId: uuid!) {
-    insert_message_attachments_one(object: { message_id: $messageId, attachment_id: $attachmentId }) {
-      attachment {
-        id
-        original_name
-      }
-      message {
         ...ThreadMessageBasicInfo
       }
     }
@@ -142,6 +112,47 @@ gql`
       message: returning {
         id
       }
+    }
+  }
+`;
+
+gql`
+  mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
+    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: $type, is_draft: true }) {
+      id
+    }
+  }
+`;
+
+gql`
+  query GetMessageDraft($threadId: uuid!) {
+    message: message(where: { thread_id: { _eq: $threadId }, is_draft: { _eq: true } }, limit: 1) {
+      ...ThreadMessageBasicInfo
+    }
+  }
+`;
+
+gql`
+  query GetUploadUrl($fileName: String!, $mimeType: String!) {
+    get_upload_url(fileName: $fileName, mimeType: $mimeType) {
+      uploadUrl
+      uuid
+    }
+  }
+`;
+
+gql`
+  query GetDownloadUrl($id: uuid!) {
+    get_download_url(uuid: $id) {
+      downloadUrl
+    }
+  }
+`;
+
+gql`
+  query GetAttachment($id: uuid!) {
+    attachment: attachment_by_pk(id: $id) {
+      ...AttachmentDetailedInfo
     }
   }
 `;

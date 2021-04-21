@@ -31,6 +31,17 @@ export type Boolean_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['Boolean']>>;
 };
 
+export type GetDownloadUrlResponse = {
+  __typename?: 'GetDownloadUrlResponse';
+  downloadUrl: Scalars['String'];
+};
+
+export type GetUploadUrlResponse = {
+  __typename?: 'GetUploadUrlResponse';
+  uploadUrl: Scalars['String'];
+  uuid: Scalars['ID'];
+};
+
 export type InviteAcceptCommand = {
   code: Scalars['String'];
 };
@@ -496,6 +507,19 @@ export enum Attachment_Update_Column {
   OriginalName = 'original_name'
 }
 
+
+/** expression to compare columns of type json. All fields are combined with logical 'AND'. */
+export type Json_Comparison_Exp = {
+  _eq?: Maybe<Scalars['json']>;
+  _gt?: Maybe<Scalars['json']>;
+  _gte?: Maybe<Scalars['json']>;
+  _in?: Maybe<Array<Scalars['json']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['json']>;
+  _lte?: Maybe<Scalars['json']>;
+  _neq?: Maybe<Scalars['json']>;
+  _nin?: Maybe<Array<Scalars['json']>>;
+};
 
 /** columns and relationships of "message" */
 export type Message = {
@@ -1630,6 +1654,10 @@ export type Query_Root = {
   attachment_aggregate: Attachment_Aggregate;
   /** fetch data from the table: "attachment" using primary key columns */
   attachment_by_pk?: Maybe<Attachment>;
+  /** perform the action: "get_download_url" */
+  get_download_url?: Maybe<GetDownloadUrlResponse>;
+  /** perform the action: "get_upload_url" */
+  get_upload_url?: Maybe<GetUploadUrlResponse>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
@@ -1730,6 +1758,19 @@ export type Query_RootAttachment_AggregateArgs = {
 /** query root */
 export type Query_RootAttachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootGet_Download_UrlArgs = {
+  uuid: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootGet_Upload_UrlArgs = {
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
 };
 
 
@@ -2645,6 +2686,10 @@ export type Subscription_Root = {
   attachment_aggregate: Attachment_Aggregate;
   /** fetch data from the table: "attachment" using primary key columns */
   attachment_by_pk?: Maybe<Attachment>;
+  /** perform the action: "get_download_url" */
+  get_download_url?: Maybe<GetDownloadUrlResponse>;
+  /** perform the action: "get_upload_url" */
+  get_upload_url?: Maybe<GetUploadUrlResponse>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
@@ -2745,6 +2790,19 @@ export type Subscription_RootAttachment_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootAttachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootGet_Download_UrlArgs = {
+  uuid: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootGet_Upload_UrlArgs = {
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
 };
 
 
@@ -3723,21 +3781,6 @@ export type ThreadMessagesSubscription = (
   )> }
 );
 
-export type CreateMessageDraftMutationVariables = Exact<{
-  threadId: Scalars['uuid'];
-  text: Scalars['String'];
-  type?: Maybe<Message_Type_Enum>;
-}>;
-
-
-export type CreateMessageDraftMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id'>
-  )> }
-);
-
 export type CreateMessageMutationVariables = Exact<{
   threadId: Scalars['uuid'];
   text: Scalars['String'];
@@ -3751,19 +3794,6 @@ export type CreateMessageMutation = (
   & { message?: Maybe<(
     { __typename?: 'message' }
     & Pick<Message, 'id'>
-  )> }
-);
-
-export type GetMessageDraftQueryVariables = Exact<{
-  threadId: Scalars['uuid'];
-}>;
-
-
-export type GetMessageDraftQuery = (
-  { __typename?: 'query_root' }
-  & { message: Array<(
-    { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
   )> }
 );
 
@@ -3785,26 +3815,6 @@ export type UpdateTextMessageMutation = (
   )> }
 );
 
-export type LinkAttachmentMutationVariables = Exact<{
-  messageId: Scalars['uuid'];
-  attachmentId: Scalars['uuid'];
-}>;
-
-
-export type LinkAttachmentMutation = (
-  { __typename?: 'mutation_root' }
-  & { insert_message_attachments_one?: Maybe<(
-    { __typename?: 'message_attachments' }
-    & { attachment: (
-      { __typename?: 'attachment' }
-      & Pick<Attachment, 'id' | 'original_name'>
-    ), message: (
-      { __typename?: 'message' }
-      & ThreadMessageBasicInfoFragment
-    ) }
-  )> }
-);
-
 export type DeleteTextMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
 }>;
@@ -3821,6 +3831,83 @@ export type DeleteTextMessageMutation = (
   )> }
 );
 
+export type CreateMessageDraftMutationVariables = Exact<{
+  threadId: Scalars['uuid'];
+  text: Scalars['String'];
+  type?: Maybe<Message_Type_Enum>;
+}>;
+
+
+export type CreateMessageDraftMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
+export type GetMessageDraftQueryVariables = Exact<{
+  threadId: Scalars['uuid'];
+}>;
+
+
+export type GetMessageDraftQuery = (
+  { __typename?: 'query_root' }
+  & { message: Array<(
+    { __typename?: 'message' }
+    & ThreadMessageBasicInfoFragment
+  )> }
+);
+
+export type GetUploadUrlQueryVariables = Exact<{
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
+}>;
+
+
+export type GetUploadUrlQuery = (
+  { __typename?: 'query_root' }
+  & { get_upload_url?: Maybe<(
+    { __typename?: 'GetUploadUrlResponse' }
+    & Pick<GetUploadUrlResponse, 'uploadUrl' | 'uuid'>
+  )> }
+);
+
+export type GetDownloadUrlQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type GetDownloadUrlQuery = (
+  { __typename?: 'query_root' }
+  & { get_download_url?: Maybe<(
+    { __typename?: 'GetDownloadUrlResponse' }
+    & Pick<GetDownloadUrlResponse, 'downloadUrl'>
+  )> }
+);
+
+export type GetAttachmentQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type GetAttachmentQuery = (
+  { __typename?: 'query_root' }
+  & { attachment?: Maybe<(
+    { __typename?: 'attachment' }
+    & AttachmentDetailedInfoFragment
+  )> }
+);
+
+export type GetDownloadUrlResponseKeySpecifier = ('downloadUrl' | GetDownloadUrlResponseKeySpecifier)[];
+export type GetDownloadUrlResponseFieldPolicy = {
+	downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type GetUploadUrlResponseKeySpecifier = ('uploadUrl' | 'uuid' | GetUploadUrlResponseKeySpecifier)[];
+export type GetUploadUrlResponseFieldPolicy = {
+	uploadUrl?: FieldPolicy<any> | FieldReadFunction<any>,
+	uuid?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type InviteAcceptResponseKeySpecifier = ('invite' | 'invite_id' | 'room' | 'room_id' | InviteAcceptResponseKeySpecifier)[];
 export type InviteAcceptResponseFieldPolicy = {
 	invite?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4102,7 +4189,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4110,6 +4197,8 @@ export type query_rootFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
+	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4272,7 +4361,7 @@ export type room_participants_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4280,6 +4369,8 @@ export type subscription_rootFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
+	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4397,6 +4488,14 @@ export type user_mutation_responseFieldPolicy = {
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type TypedTypePolicies = TypePolicies & {
+	GetDownloadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | GetDownloadUrlResponseKeySpecifier | (() => undefined | GetDownloadUrlResponseKeySpecifier),
+		fields?: GetDownloadUrlResponseFieldPolicy,
+	},
+	GetUploadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | GetUploadUrlResponseKeySpecifier | (() => undefined | GetUploadUrlResponseKeySpecifier),
+		fields?: GetUploadUrlResponseFieldPolicy,
+	},
 	InviteAcceptResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | InviteAcceptResponseKeySpecifier | (() => undefined | InviteAcceptResponseKeySpecifier),
 		fields?: InviteAcceptResponseFieldPolicy,
@@ -5121,43 +5220,6 @@ export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHo
       }
 export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
 export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
-export const CreateMessageDraftDocument = gql`
-    mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
-  message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: $type, is_draft: true}
-  ) {
-    id
-  }
-}
-    `;
-export type CreateMessageDraftMutationFn = Apollo.MutationFunction<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
-
-/**
- * __useCreateMessageDraftMutation__
- *
- * To run a mutation, you first call `useCreateMessageDraftMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateMessageDraftMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createMessageDraftMutation, { data, loading, error }] = useCreateMessageDraftMutation({
- *   variables: {
- *      threadId: // value for 'threadId'
- *      text: // value for 'text'
- *      type: // value for 'type'
- *   },
- * });
- */
-export function useCreateMessageDraftMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>(CreateMessageDraftDocument, options);
-      }
-export type CreateMessageDraftMutationHookResult = ReturnType<typeof useCreateMessageDraftMutation>;
-export type CreateMessageDraftMutationResult = Apollo.MutationResult<CreateMessageDraftMutation>;
-export type CreateMessageDraftMutationOptions = Apollo.BaseMutationOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
 export const CreateMessageDocument = gql`
     mutation CreateMessage($threadId: uuid!, $text: String!, $type: message_type_enum!, $attachments: [message_attachments_insert_input!]!) {
   message: insert_message_one(
@@ -5196,6 +5258,115 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const UpdateTextMessageDocument = gql`
+    mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
+  update_message(where: {id: {_eq: $id}}, _set: {text: $text, is_draft: $isDraft}) {
+    message: returning {
+      ...ThreadMessageBasicInfo
+    }
+  }
+}
+    ${ThreadMessageBasicInfoFragmentDoc}`;
+export type UpdateTextMessageMutationFn = Apollo.MutationFunction<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>;
+
+/**
+ * __useUpdateTextMessageMutation__
+ *
+ * To run a mutation, you first call `useUpdateTextMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTextMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTextMessageMutation, { data, loading, error }] = useUpdateTextMessageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      text: // value for 'text'
+ *      isDraft: // value for 'isDraft'
+ *   },
+ * });
+ */
+export function useUpdateTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>(UpdateTextMessageDocument, options);
+      }
+export type UpdateTextMessageMutationHookResult = ReturnType<typeof useUpdateTextMessageMutation>;
+export type UpdateTextMessageMutationResult = Apollo.MutationResult<UpdateTextMessageMutation>;
+export type UpdateTextMessageMutationOptions = Apollo.BaseMutationOptions<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>;
+export const DeleteTextMessageDocument = gql`
+    mutation DeleteTextMessage($id: uuid!) {
+  delete_message(where: {id: {_eq: $id}}) {
+    message: returning {
+      id
+    }
+  }
+}
+    `;
+export type DeleteTextMessageMutationFn = Apollo.MutationFunction<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>;
+
+/**
+ * __useDeleteTextMessageMutation__
+ *
+ * To run a mutation, you first call `useDeleteTextMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTextMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTextMessageMutation, { data, loading, error }] = useDeleteTextMessageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(DeleteTextMessageDocument, options);
+      }
+export type DeleteTextMessageMutationHookResult = ReturnType<typeof useDeleteTextMessageMutation>;
+export type DeleteTextMessageMutationResult = Apollo.MutationResult<DeleteTextMessageMutation>;
+export type DeleteTextMessageMutationOptions = Apollo.BaseMutationOptions<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>;
+export const CreateMessageDraftDocument = gql`
+    mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
+  message: insert_message_one(
+    object: {text: $text, thread_id: $threadId, type: $type, is_draft: true}
+  ) {
+    id
+  }
+}
+    `;
+export type CreateMessageDraftMutationFn = Apollo.MutationFunction<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
+
+/**
+ * __useCreateMessageDraftMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageDraftMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageDraftMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageDraftMutation, { data, loading, error }] = useCreateMessageDraftMutation({
+ *   variables: {
+ *      threadId: // value for 'threadId'
+ *      text: // value for 'text'
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useCreateMessageDraftMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>(CreateMessageDraftDocument, options);
+      }
+export type CreateMessageDraftMutationHookResult = ReturnType<typeof useCreateMessageDraftMutation>;
+export type CreateMessageDraftMutationResult = Apollo.MutationResult<CreateMessageDraftMutation>;
+export type CreateMessageDraftMutationOptions = Apollo.BaseMutationOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
 export const GetMessageDraftDocument = gql`
     query GetMessageDraft($threadId: uuid!) {
   message: message(
@@ -5234,120 +5405,113 @@ export function useGetMessageDraftLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetMessageDraftQueryHookResult = ReturnType<typeof useGetMessageDraftQuery>;
 export type GetMessageDraftLazyQueryHookResult = ReturnType<typeof useGetMessageDraftLazyQuery>;
 export type GetMessageDraftQueryResult = Apollo.QueryResult<GetMessageDraftQuery, GetMessageDraftQueryVariables>;
-export const UpdateTextMessageDocument = gql`
-    mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
-  update_message(where: {id: {_eq: $id}}, _set: {text: $text, is_draft: $isDraft}) {
-    message: returning {
-      ...ThreadMessageBasicInfo
-    }
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-export type UpdateTextMessageMutationFn = Apollo.MutationFunction<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>;
-
-/**
- * __useUpdateTextMessageMutation__
- *
- * To run a mutation, you first call `useUpdateTextMessageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTextMessageMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTextMessageMutation, { data, loading, error }] = useUpdateTextMessageMutation({
- *   variables: {
- *      id: // value for 'id'
- *      text: // value for 'text'
- *      isDraft: // value for 'isDraft'
- *   },
- * });
- */
-export function useUpdateTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>(UpdateTextMessageDocument, options);
-      }
-export type UpdateTextMessageMutationHookResult = ReturnType<typeof useUpdateTextMessageMutation>;
-export type UpdateTextMessageMutationResult = Apollo.MutationResult<UpdateTextMessageMutation>;
-export type UpdateTextMessageMutationOptions = Apollo.BaseMutationOptions<UpdateTextMessageMutation, UpdateTextMessageMutationVariables>;
-export const LinkAttachmentDocument = gql`
-    mutation LinkAttachment($messageId: uuid!, $attachmentId: uuid!) {
-  insert_message_attachments_one(
-    object: {message_id: $messageId, attachment_id: $attachmentId}
-  ) {
-    attachment {
-      id
-      original_name
-    }
-    message {
-      ...ThreadMessageBasicInfo
-    }
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-export type LinkAttachmentMutationFn = Apollo.MutationFunction<LinkAttachmentMutation, LinkAttachmentMutationVariables>;
-
-/**
- * __useLinkAttachmentMutation__
- *
- * To run a mutation, you first call `useLinkAttachmentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLinkAttachmentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [linkAttachmentMutation, { data, loading, error }] = useLinkAttachmentMutation({
- *   variables: {
- *      messageId: // value for 'messageId'
- *      attachmentId: // value for 'attachmentId'
- *   },
- * });
- */
-export function useLinkAttachmentMutation(baseOptions?: Apollo.MutationHookOptions<LinkAttachmentMutation, LinkAttachmentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LinkAttachmentMutation, LinkAttachmentMutationVariables>(LinkAttachmentDocument, options);
-      }
-export type LinkAttachmentMutationHookResult = ReturnType<typeof useLinkAttachmentMutation>;
-export type LinkAttachmentMutationResult = Apollo.MutationResult<LinkAttachmentMutation>;
-export type LinkAttachmentMutationOptions = Apollo.BaseMutationOptions<LinkAttachmentMutation, LinkAttachmentMutationVariables>;
-export const DeleteTextMessageDocument = gql`
-    mutation DeleteTextMessage($id: uuid!) {
-  delete_message(where: {id: {_eq: $id}}) {
-    message: returning {
-      id
-    }
+export const GetUploadUrlDocument = gql`
+    query GetUploadUrl($fileName: String!, $mimeType: String!) {
+  get_upload_url(fileName: $fileName, mimeType: $mimeType) {
+    uploadUrl
+    uuid
   }
 }
     `;
-export type DeleteTextMessageMutationFn = Apollo.MutationFunction<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>;
 
 /**
- * __useDeleteTextMessageMutation__
+ * __useGetUploadUrlQuery__
  *
- * To run a mutation, you first call `useDeleteTextMessageMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTextMessageMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetUploadUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [deleteTextMessageMutation, { data, loading, error }] = useDeleteTextMessageMutation({
+ * const { data, loading, error } = useGetUploadUrlQuery({
+ *   variables: {
+ *      fileName: // value for 'fileName'
+ *      mimeType: // value for 'mimeType'
+ *   },
+ * });
+ */
+export function useGetUploadUrlQuery(baseOptions: Apollo.QueryHookOptions<GetUploadUrlQuery, GetUploadUrlQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUploadUrlQuery, GetUploadUrlQueryVariables>(GetUploadUrlDocument, options);
+      }
+export function useGetUploadUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUploadUrlQuery, GetUploadUrlQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUploadUrlQuery, GetUploadUrlQueryVariables>(GetUploadUrlDocument, options);
+        }
+export type GetUploadUrlQueryHookResult = ReturnType<typeof useGetUploadUrlQuery>;
+export type GetUploadUrlLazyQueryHookResult = ReturnType<typeof useGetUploadUrlLazyQuery>;
+export type GetUploadUrlQueryResult = Apollo.QueryResult<GetUploadUrlQuery, GetUploadUrlQueryVariables>;
+export const GetDownloadUrlDocument = gql`
+    query GetDownloadUrl($id: uuid!) {
+  get_download_url(uuid: $id) {
+    downloadUrl
+  }
+}
+    `;
+
+/**
+ * __useGetDownloadUrlQuery__
+ *
+ * To run a query within a React component, call `useGetDownloadUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDownloadUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDownloadUrlQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useDeleteTextMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>) {
+export function useGetDownloadUrlQuery(baseOptions: Apollo.QueryHookOptions<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(DeleteTextMessageDocument, options);
+        return Apollo.useQuery<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>(GetDownloadUrlDocument, options);
       }
-export type DeleteTextMessageMutationHookResult = ReturnType<typeof useDeleteTextMessageMutation>;
-export type DeleteTextMessageMutationResult = Apollo.MutationResult<DeleteTextMessageMutation>;
-export type DeleteTextMessageMutationOptions = Apollo.BaseMutationOptions<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>;
+export function useGetDownloadUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>(GetDownloadUrlDocument, options);
+        }
+export type GetDownloadUrlQueryHookResult = ReturnType<typeof useGetDownloadUrlQuery>;
+export type GetDownloadUrlLazyQueryHookResult = ReturnType<typeof useGetDownloadUrlLazyQuery>;
+export type GetDownloadUrlQueryResult = Apollo.QueryResult<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>;
+export const GetAttachmentDocument = gql`
+    query GetAttachment($id: uuid!) {
+  attachment: attachment_by_pk(id: $id) {
+    ...AttachmentDetailedInfo
+  }
+}
+    ${AttachmentDetailedInfoFragmentDoc}`;
+
+/**
+ * __useGetAttachmentQuery__
+ *
+ * To run a query within a React component, call `useGetAttachmentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAttachmentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAttachmentQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetAttachmentQuery(baseOptions: Apollo.QueryHookOptions<GetAttachmentQuery, GetAttachmentQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(GetAttachmentDocument, options);
+      }
+export function useGetAttachmentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAttachmentQuery, GetAttachmentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(GetAttachmentDocument, options);
+        }
+export type GetAttachmentQueryHookResult = ReturnType<typeof useGetAttachmentQuery>;
+export type GetAttachmentLazyQueryHookResult = ReturnType<typeof useGetAttachmentLazyQuery>;
+export type GetAttachmentQueryResult = Apollo.QueryResult<GetAttachmentQuery, GetAttachmentQueryVariables>;
 
       export interface PossibleTypesResultData {
         possibleTypes: {

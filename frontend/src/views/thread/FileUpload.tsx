@@ -1,59 +1,62 @@
 import React, { ChangeEvent, InputHTMLAttributes, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { AttachmentDetailedInfoFragment } from "~frontend/gql";
+import { useGetAttachmentQuery, useGetUploadUrlQuery } from "~frontend/gql";
+import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
 
 interface FileUploadParameters extends InputHTMLAttributes<HTMLInputElement> {
-  onFileAttached: (attachment: AttachmentDetailedInfoFragment) => void;
+  onFileAttached: ({ uuid, mimeType }: { uuid: string; mimeType: string }) => void;
 }
 
 function useUploadFile() {
   const [progress, setProgress] = useState<number>(0);
-  const [publicUrl, setPublicUrl] = useState<string | null>(null);
-  const [attachment, setAttachment] = useState<AttachmentDetailedInfoFragment>();
+  const [file, setFile] = useState<File>();
+  const [uuid, setUuid] = useState<string>();
+  const [uploaded, setUploaded] = useState<boolean>(false);
+  const { name: fileName, type: mimeType } = file || ({} as File);
+  const { data } = useGetUploadUrlQuery({
+    variables: {
+      fileName,
+      mimeType,
+    },
+  });
 
-  async function doUpload(file: File) {
-    const { name, type: mimeType } = file;
+  useEffect(() => {
+    // TODO: prettier prop name?
+    const uploadUrl = data?.get_upload_url?.uploadUrl;
+    const uuid = data?.get_upload_url?.uuid;
 
-    const {
-      data: { uploadUrl, uuid },
-    } = await axios({
-      method: "POST",
-      url: "/api/backend/v1/attachments",
-      headers: {
-        // Authentication: `Bearer ${process.env.HASURA_API_SECRET}`
-      },
-      data: { name, mimeType },
-    });
+    setUuid(uuid);
 
-    await axios({
-      method: "PUT",
-      url: decodeURIComponent(uploadUrl),
-      headers: {
-        "Content-Type": mimeType,
-      },
-      data: file,
-      onUploadProgress: (e) => setProgress(Math.round((e.loaded * 100) / e.total)),
-    });
+    if (uploadUrl) {
+      axios({
+        method: "PUT",
+        url: decodeURIComponent(uploadUrl),
+        headers: {
+          "Content-Type": mimeType,
+        },
+        data: file,
+        onUploadProgress: (e) => setProgress(Math.round((e.loaded * 100) / e.total)),
+      }).then(() => setUploaded(true));
+    }
+  }, [data]);
 
-    const {
-      data: { publicUrl, attachment },
-    } = await axios({
-      method: "GET",
-      url: `/api/backend/v1/attachments/${uuid}`,
-    });
+  return { setFile, progress, uuid, mimeType, uploaded };
+}
 
-    // TODO: Merge?
-    setPublicUrl(publicUrl);
-    setAttachment(attachment);
+const AttachmentPreview = ({ id }: { id: string }) => {
+  const { data } = useGetAttachmentQuery({ variables: { id } });
+
+  if (data?.attachment) {
+    return <MessageAttachment attachment={data.attachment} />;
   }
 
-  return { doUpload, progress, publicUrl, attachment };
-}
+  return null;
+};
 
 export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParameters) => {
   const fileInputField = useRef(null);
   const [files, setFiles] = useState<FileList | []>([]); // should be an object when done properly
-  const { doUpload, progress, publicUrl, attachment } = useUploadFile();
+  const { setFile, progress, uuid, mimeType, uploaded } = useUploadFile();
 
   const handleNewFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -65,15 +68,15 @@ export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParamete
 
   useEffect(() => {
     for (const file of files) {
-      doUpload(file);
+      setFile(file);
     }
   }, [files]);
 
   useEffect(() => {
-    if (attachment) {
-      onFileAttached(attachment);
+    if (uploaded && uuid && mimeType) {
+      onFileAttached({ uuid, mimeType });
     }
-  }, [attachment]);
+  }, [uploaded, uuid, mimeType]);
 
   if (!files.length) {
     return (
@@ -89,33 +92,12 @@ export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParamete
     );
   }
 
-  if (!attachment) {
+  if (!uploaded) {
     return <span>Uploading: {progress}%</span>;
   }
 
-  if (attachment && publicUrl) {
-    const type = attachment.mimeType.split("/")[0].toLowerCase();
-
-    if (type === "image") {
-      return (
-        <img
-          src={publicUrl}
-          height={100}
-          alt={attachment.originalName || "Attachment"}
-          style={{
-            display: "inline-block",
-            maxWidth: "none",
-            height: "100px",
-          }}
-        />
-      );
-    }
-
-    return (
-      <div>
-        {type}:&nbsp;{attachment.originalName}
-      </div>
-    );
+  if (uploaded && uuid) {
+    return <AttachmentPreview id={uuid} />;
   }
 
   return null;

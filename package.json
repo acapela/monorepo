@@ -97,7 +97,7 @@
     "lint-staged": "^10.5.4",
     "ntl": "^5.1.0",
     "prettier": "^2.2.1",
-    "tslib": "^1.14.1"
+    "tslib": "^2.2.0"
   },
   "config": {
     "commitizen": {

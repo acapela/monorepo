@@ -19,6 +19,15 @@ input Boolean_comparison_exp {
   _nin: [Boolean!]
 }
 
+type GetDownloadUrlResponse {
+  downloadUrl: String!
+}
+
+type GetUploadUrlResponse {
+  uploadUrl: String!
+  uuid: ID!
+}
+
 input InviteAcceptCommand {
   code: String!
 }
@@ -557,6 +566,21 @@ enum attachment_update_column {
 }
 
 scalar json
+
+"""
+expression to compare columns of type json. All fields are combined with logical 'AND'.
+"""
+input json_comparison_exp {
+  _eq: json
+  _gt: json
+  _gte: json
+  _in: [json!]
+  _is_null: Boolean
+  _lt: json
+  _lte: json
+  _neq: json
+  _nin: [json!]
+}
 
 """
 columns and relationships of "message"
@@ -1902,6 +1926,16 @@ type query_root {
   attachment_by_pk(id: uuid!): attachment
 
   """
+  perform the action: "get_download_url"
+  """
+  get_download_url(uuid: uuid!): GetDownloadUrlResponse
+
+  """
+  perform the action: "get_upload_url"
+  """
+  get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
+
+  """
   fetch data from the table: "message"
   """
   message(
@@ -3168,6 +3202,16 @@ type subscription_root {
 
   """fetch data from the table: "attachment" using primary key columns"""
   attachment_by_pk(id: uuid!): attachment
+
+  """
+  perform the action: "get_download_url"
+  """
+  get_download_url(uuid: uuid!): GetDownloadUrlResponse
+
+  """
+  perform the action: "get_upload_url"
+  """
+  get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
 
   """
   fetch data from the table: "message"
