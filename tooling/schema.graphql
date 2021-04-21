@@ -588,7 +588,7 @@ columns and relationships of "message"
 type message {
   created_at: timestamptz!
   id: uuid!
-  is_draft: Boolean
+  is_draft: Boolean!
 
   """An array relationship"""
   message_attachments(
