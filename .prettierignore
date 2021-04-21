@@ -3,3 +3,4 @@ frontend/.next
 frontend/dist
 frontend/src/gql/generated.ts
 tooling/schema.graphql
+.yarn/**/*.*
