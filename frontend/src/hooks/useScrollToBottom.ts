@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef } from "react";
-import { useIsomorphicLayoutEffect } from "~frontend/hooks/useIsomorphicLayoutEffect";
+import { useIsomorphicLayoutEffect } from "react-use";
 
 interface ScrollToBottomConfig {
   ref: RefObject<HTMLElement>;
