@@ -29,7 +29,7 @@ model message {
   text                String?
   transcription       String?
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  is_draft            Boolean?
+  is_draft            Boolean               @default(false)
   thread              thread                @relation(fields: [thread_id], references: [id])
   message_type        message_type          @relation(fields: [type], references: [value])
   user                user                  @relation(fields: [user_id], references: [id])

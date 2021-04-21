@@ -526,7 +526,7 @@ export type Message = {
   __typename?: 'message';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
-  is_draft?: Maybe<Scalars['Boolean']>;
+  is_draft: Scalars['Boolean'];
   /** An array relationship */
   message_attachments: Array<Message_Attachments>;
   /** An aggregated array relationship */
