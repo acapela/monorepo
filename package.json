@@ -41,7 +41,7 @@
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "frontend:gql-types": "tooling gql frontend --watch",
-    "postinstall": "npm run db -- run generate && patch-package",
+    "postinstall": "yarn workspace ~db generate",
     "lint": "eslint . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
@@ -69,25 +69,28 @@
     }
   },
   "dependencies": {
-    "~tooling": "0.1.0",
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "hasura-cli": "^1.4.0-alpha.2",
+    "hasura-cli": "^2.0.0-alpha.7",
     "husky": "^5.2.0",
     "patch-package": "^6.4.7",
     "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-use": "^17.2.3",
     "styled-components": "^5.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "~tooling": "0.1.0"
   },
   "resolutions": {
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "tslib": "2.2.0"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.35",

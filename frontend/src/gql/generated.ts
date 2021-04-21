@@ -14,6 +14,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   json: any;
+  jsonb: any;
   timestamptz: any;
   uuid: any;
 };
@@ -395,6 +396,8 @@ export type Attachment_Bool_Exp = {
 /** unique or primary key constraints on table "attachment" */
 export enum Attachment_Constraint {
   /** unique or primary key constraint */
+  AttachmentIdKey = 'attachment_id_key',
+  /** unique or primary key constraint */
   AttachmentPkey = 'attachment_pkey'
 }
 
@@ -521,9 +524,34 @@ export type Json_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['json']>>;
 };
 
+
+/** expression to compare columns of type jsonb. All fields are combined with logical 'AND'. */
+export type Jsonb_Comparison_Exp = {
+  /** is the column contained in the given json value */
+  _contained_in?: Maybe<Scalars['jsonb']>;
+  /** does the column contain the given json value at the top level */
+  _contains?: Maybe<Scalars['jsonb']>;
+  _eq?: Maybe<Scalars['jsonb']>;
+  _gt?: Maybe<Scalars['jsonb']>;
+  _gte?: Maybe<Scalars['jsonb']>;
+  /** does the string exist as a top-level key in the column */
+  _has_key?: Maybe<Scalars['String']>;
+  /** do all of these strings exist as top-level keys in the column */
+  _has_keys_all?: Maybe<Array<Scalars['String']>>;
+  /** do any of these strings exist as top-level keys in the column */
+  _has_keys_any?: Maybe<Array<Scalars['String']>>;
+  _in?: Maybe<Array<Scalars['jsonb']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['jsonb']>;
+  _lte?: Maybe<Scalars['jsonb']>;
+  _neq?: Maybe<Scalars['jsonb']>;
+  _nin?: Maybe<Array<Scalars['jsonb']>>;
+};
+
 /** columns and relationships of "message" */
 export type Message = {
   __typename?: 'message';
+  content: Scalars['jsonb'];
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
   is_draft: Scalars['Boolean'];
@@ -533,7 +561,6 @@ export type Message = {
   message_attachments_aggregate: Message_Attachments_Aggregate;
   /** An object relationship */
   message_type: Message_Type;
-  text?: Maybe<Scalars['String']>;
   /** An object relationship */
   thread: Thread;
   thread_id: Scalars['uuid'];
@@ -542,6 +569,12 @@ export type Message = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
+};
+
+
+/** columns and relationships of "message" */
+export type MessageContentArgs = {
+  path?: Maybe<Scalars['String']>;
 };
 
 
@@ -591,6 +624,11 @@ export type Message_Aggregate_Order_By = {
   count?: Maybe<Order_By>;
   max?: Maybe<Message_Max_Order_By>;
   min?: Maybe<Message_Min_Order_By>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Message_Append_Input = {
+  content?: Maybe<Scalars['jsonb']>;
 };
 
 /** input type for inserting array relation for remote table "message" */
@@ -759,12 +797,12 @@ export type Message_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
   _not?: Maybe<Message_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
+  content?: Maybe<Jsonb_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   is_draft?: Maybe<Boolean_Comparison_Exp>;
   message_attachments?: Maybe<Message_Attachments_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
-  text?: Maybe<String_Comparison_Exp>;
   thread?: Maybe<Thread_Bool_Exp>;
   thread_id?: Maybe<Uuid_Comparison_Exp>;
   transcription?: Maybe<String_Comparison_Exp>;
@@ -781,14 +819,29 @@ export enum Message_Constraint {
   MessagePkey = 'message_pkey'
 }
 
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Message_Delete_At_Path_Input = {
+  content?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Message_Delete_Elem_Input = {
+  content?: Maybe<Scalars['Int']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Message_Delete_Key_Input = {
+  content?: Maybe<Scalars['String']>;
+};
+
 /** input type for inserting data into table "message" */
 export type Message_Insert_Input = {
+  content?: Maybe<Scalars['jsonb']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
   message_attachments?: Maybe<Message_Attachments_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
-  text?: Maybe<Scalars['String']>;
   thread?: Maybe<Thread_Obj_Rel_Insert_Input>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
@@ -802,7 +855,6 @@ export type Message_Max_Fields = {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -812,7 +864,6 @@ export type Message_Max_Fields = {
 export type Message_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  text?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -823,7 +874,6 @@ export type Message_Min_Fields = {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -833,7 +883,6 @@ export type Message_Min_Fields = {
 export type Message_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  text?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -863,12 +912,12 @@ export type Message_On_Conflict = {
 
 /** ordering options when selecting data from "message" */
 export type Message_Order_By = {
+  content?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   is_draft?: Maybe<Order_By>;
   message_attachments_aggregate?: Maybe<Message_Attachments_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
-  text?: Maybe<Order_By>;
   thread?: Maybe<Thread_Order_By>;
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
@@ -882,16 +931,21 @@ export type Message_Pk_Columns_Input = {
   id: Scalars['uuid'];
 };
 
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Message_Prepend_Input = {
+  content?: Maybe<Scalars['jsonb']>;
+};
+
 /** select columns of table "message" */
 export enum Message_Select_Column {
+  /** column name */
+  Content = 'content',
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
   Id = 'id',
   /** column name */
   IsDraft = 'is_draft',
-  /** column name */
-  Text = 'text',
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
@@ -904,10 +958,10 @@ export enum Message_Select_Column {
 
 /** input type for updating data in table "message" */
 export type Message_Set_Input = {
+  content?: Maybe<Scalars['jsonb']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
-  text?: Maybe<Scalars['String']>;
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   type?: Maybe<Message_Type_Enum>;
@@ -1069,13 +1123,13 @@ export enum Message_Type_Update_Column {
 /** update columns of table "message" */
 export enum Message_Update_Column {
   /** column name */
+  Content = 'content',
+  /** column name */
   CreatedAt = 'created_at',
   /** column name */
   Id = 'id',
   /** column name */
   IsDraft = 'is_draft',
-  /** column name */
-  Text = 'text',
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
@@ -1514,6 +1568,11 @@ export type Mutation_RootUpdate_Attachment_By_PkArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_MessageArgs = {
+  _append?: Maybe<Message_Append_Input>;
+  _delete_at_path?: Maybe<Message_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Message_Delete_Elem_Input>;
+  _delete_key?: Maybe<Message_Delete_Key_Input>;
+  _prepend?: Maybe<Message_Prepend_Input>;
   _set?: Maybe<Message_Set_Input>;
   where: Message_Bool_Exp;
 };
@@ -1535,6 +1594,11 @@ export type Mutation_RootUpdate_Message_Attachments_By_PkArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_Message_By_PkArgs = {
+  _append?: Maybe<Message_Append_Input>;
+  _delete_at_path?: Maybe<Message_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Message_Delete_Elem_Input>;
+  _delete_key?: Maybe<Message_Delete_Key_Input>;
+  _prepend?: Maybe<Message_Prepend_Input>;
   _set?: Maybe<Message_Set_Input>;
   pk_columns: Message_Pk_Columns_Input;
 };
@@ -3642,11 +3706,6 @@ export type ParticipantBasicInfoFragment = (
   ) }
 );
 
-export type ThreadDetailedInfoFragment = (
-  { __typename?: 'thread' }
-  & Pick<Thread, 'id' | 'name' | 'index'>
-);
-
 export type RoomParticipantBasicInfoFragment = (
   { __typename?: 'room_participants' }
   & { user: (
@@ -3706,9 +3765,14 @@ export type RoomParticipantsSubscription = (
   )> }
 );
 
+export type ThreadDetailedInfoFragment = (
+  { __typename?: 'thread' }
+  & Pick<Thread, 'id' | 'name' | 'index'>
+);
+
 export type ThreadMessageBasicInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'text'>
+  & Pick<Message, 'id' | 'content'>
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
@@ -3725,7 +3789,7 @@ export type AttachmentDetailedInfoFragment = (
 
 export type ThreadMessageDetailedInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'text' | 'type'>
+  & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
@@ -3783,7 +3847,7 @@ export type ThreadMessagesSubscription = (
 
 export type CreateMessageMutationVariables = Exact<{
   threadId: Scalars['uuid'];
-  text: Scalars['String'];
+  content: Scalars['jsonb'];
   type: Message_Type_Enum;
   attachments: Array<Message_Attachments_Insert_Input> | Message_Attachments_Insert_Input;
 }>;
@@ -3799,7 +3863,7 @@ export type CreateMessageMutation = (
 
 export type UpdateTextMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
-  text: Scalars['String'];
+  content: Scalars['jsonb'];
   isDraft?: Maybe<Scalars['Boolean']>;
 }>;
 
@@ -3985,15 +4049,15 @@ export type attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'text' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
+	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	is_draft?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
-	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4045,20 +4109,18 @@ export type message_attachments_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'text' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	text?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
@@ -4768,13 +4830,6 @@ export const ParticipantBasicInfoFragmentDoc = gql`
   }
 }
     `;
-export const ThreadDetailedInfoFragmentDoc = gql`
-    fragment ThreadDetailedInfo on thread {
-  id
-  name
-  index
-}
-    `;
 export const RoomParticipantBasicInfoFragmentDoc = gql`
     fragment RoomParticipantBasicInfo on room_participants {
   user {
@@ -4783,11 +4838,18 @@ export const RoomParticipantBasicInfoFragmentDoc = gql`
   }
 }
     `;
+export const ThreadDetailedInfoFragmentDoc = gql`
+    fragment ThreadDetailedInfo on thread {
+  id
+  name
+  index
+}
+    `;
 export const ThreadMessageBasicInfoFragmentDoc = gql`
     fragment ThreadMessageBasicInfo on message {
   id
-  text
   createdAt: created_at
+  content
   user {
     id
     name
@@ -4805,7 +4867,7 @@ export const AttachmentDetailedInfoFragmentDoc = gql`
 export const ThreadMessageDetailedInfoFragmentDoc = gql`
     fragment ThreadMessageDetailedInfo on message {
   id
-  text
+  content
   createdAt: created_at
   type
   user {
@@ -5193,9 +5255,9 @@ export function useThreadMessagesSubscription(baseOptions: Apollo.SubscriptionHo
 export type ThreadMessagesSubscriptionHookResult = ReturnType<typeof useThreadMessagesSubscription>;
 export type ThreadMessagesSubscriptionResult = Apollo.SubscriptionResult<ThreadMessagesSubscription>;
 export const CreateMessageDocument = gql`
-    mutation CreateMessage($threadId: uuid!, $text: String!, $type: message_type_enum!, $attachments: [message_attachments_insert_input!]!) {
+    mutation CreateMessage($threadId: uuid!, $content: jsonb!, $type: message_type_enum!, $attachments: [message_attachments_insert_input!]!) {
   message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: $type, message_attachments: {data: $attachments}, is_draft: false}
+    object: {content: $content, thread_id: $threadId, type: $type, message_attachments: {data: $attachments}, is_draft: false}
   ) {
     id
   }
@@ -5217,7 +5279,7 @@ export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutat
  * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
  *   variables: {
  *      threadId: // value for 'threadId'
- *      text: // value for 'text'
+ *      content: // value for 'content'
  *      type: // value for 'type'
  *      attachments: // value for 'attachments'
  *   },
@@ -5231,8 +5293,11 @@ export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessage
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const UpdateTextMessageDocument = gql`
-    mutation UpdateTextMessage($id: uuid!, $text: String!, $isDraft: Boolean) {
-  update_message(where: {id: {_eq: $id}}, _set: {text: $text, is_draft: $isDraft}) {
+    mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean) {
+  update_message(
+    where: {id: {_eq: $id}}
+    _set: {content: $content, is_draft: $isDraft}
+  ) {
     message: returning {
       ...ThreadMessageBasicInfo
     }
@@ -5255,7 +5320,7 @@ export type UpdateTextMessageMutationFn = Apollo.MutationFunction<UpdateTextMess
  * const [updateTextMessageMutation, { data, loading, error }] = useUpdateTextMessageMutation({
  *   variables: {
  *      id: // value for 'id'
- *      text: // value for 'text'
+ *      content: // value for 'content'
  *      isDraft: // value for 'isDraft'
  *   },
  * });

@@ -73,11 +73,3 @@ gql`
     }
   }
 `;
-
-gql`
-  fragment ThreadDetailedInfo on thread {
-    id
-    name
-    index
-  }
-`;

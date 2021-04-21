@@ -1,38 +1,63 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
+import { ThreadMessageBasicInfoFragment } from "~frontend/gql";
+import { RichEditor, EditorContent } from "~richEditor/RichEditor";
 
 interface Props {
-  currentContent: string;
+  message: ThreadMessageBasicInfoFragment;
   isInEditMode: boolean;
-  onEditRequest(newContent: string): void;
+  onEditRequest(newContent: EditorContent): void;
 }
 
-export function MessageText({ currentContent, isInEditMode, onEditRequest }: Props) {
+function renderMessageContent(message: ThreadMessageBasicInfoFragment) {
+  const converter = new QuillDeltaToHtmlConverter(message.content, {});
+
+  const htmlContent = converter.convert();
+
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>;
+}
+
+export function MessageText({ message, isInEditMode, onEditRequest }: Props) {
   // We want to allow editing the text before we'll submit changes to save it. Therefore let's keep 'dynamic' aka dirty
   // version of content as a local state.
-  const [dirtyContent, setDirtyContent] = useState(currentContent);
+  const [dirtyContent, setDirtyContent] = useState<EditorContent>(message.content);
 
   useEffect(() => {
-    setDirtyContent(currentContent);
-  }, [currentContent]);
+    setDirtyContent(message.content);
+  }, [message.content]);
 
   if (!isInEditMode) {
-    return <UIHolder>{dirtyContent}</UIHolder>;
+    return <UIHolder>{renderMessageContent(message)}</UIHolder>;
   }
 
   return (
-    <UIEditTextarea
-      onBlur={() => {
-        onEditRequest(dirtyContent);
-      }}
-      autoFocus
-      value={dirtyContent}
-      onChange={(event) => setDirtyContent(event.target.value)}
-    />
+    <>
+      <RichEditor value={dirtyContent} onChange={setDirtyContent} />
+      <button
+        onClick={() => {
+          onEditRequest(dirtyContent);
+        }}
+      >
+        Save
+      </button>
+    </>
   );
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+`;
 
 const UIEditTextarea = styled.textarea`
   border: none;

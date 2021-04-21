@@ -1,6 +1,5 @@
 {
   "name": "~tooling",
-  "private": "true",
   "version": "0.1.0",
   "main": "cli-tooling.ts",
   "devDependencies": {
@@ -12,12 +11,13 @@
     "@graphql-codegen/typescript-react-apollo": "^2.2.1"
   },
   "dependencies": {
-    "~config": "0.1.0",
     "graphql": "^15.5.0",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.0",
+    "~config": "0.1.0"
   },
   "peerDependencies": {
     "axios": "*",
+    "chalk": "*",
     "dotenv": "*",
     "ts-node": "*"
   },

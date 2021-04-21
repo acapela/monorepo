@@ -51,17 +51,22 @@ const envVariables = (nextConfig = {}) => {
 
   return Object.assign({}, nextConfig, {
     webpack: (config, options) => {
+      if (typeof nextConfig.webpack === "function") {
+        return nextConfig.webpack(config, options);
+      }
       // This function is called twice, once for server side and once for client side webpack.
       const isServer = options.isServer;
       const envFilePath = options.config.envFilePath;
 
       if (!fs.existsSync(envFilePath)) {
+        console.warn(`Not able to load .env file path provided in next.config.js envVariables plugin`);
         return config;
       }
 
       const fileStats = fs.statSync(envFilePath);
 
       if (!fileStats.isFile()) {
+        console.warn(`.env file path provided in next.config.js is not a file.`);
         return config;
       }
 
@@ -100,6 +105,9 @@ const envVariables = (nextConfig = {}) => {
 const ensureSinglePackageVersion = (nextConfig = {}) => {
   return Object.assign({}, nextConfig, {
     webpack: (config, options) => {
+      if (typeof nextConfig.webpack === "function") {
+        return nextConfig.webpack(config, options);
+      }
       /**
        * This is a bit hacky, but should be very reliable.
        *
@@ -117,7 +125,7 @@ const ensureSinglePackageVersion = (nextConfig = {}) => {
        * This in turn crashes as soon as we render first element from different version into already rendered tree.
        */
 
-      const packageNames = nextConfig.packages;
+      const packageNames = nextConfig.packageNames;
 
       packageNames.forEach((packageName) => {
         // Let's just take path of module respected by frontend and force it for everything runnign as part of frontend.
@@ -146,7 +154,8 @@ module.exports = withPlugins(
         envFilePath: path.resolve(__dirname, "..", ".env"),
       },
     ],
-    [ensureSinglePackageVersion, { packages: ["react", "react-dom"] }],
+    //
+    [ensureSinglePackageVersion, { packageNames: ["react", "react-dom"] }],
     //
     createTsPackagesPlugin(),
   ],

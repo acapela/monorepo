@@ -1,6 +1,5 @@
 {
   "name": "~ui",
-  "private": "true",
   "version": "0.1.0",
   "peerDependencies": {
     "react": "*",
@@ -13,9 +12,9 @@
     "icons:generate": "yarn icons:clear && yarn icons:generate:fill && yarn icons:generate:outline"
   },
   "dependencies": {
-    "~shared": "0.1.0",
+    "emoji-mart": "^3.0.1",
     "eva-icons": "^1.1.3",
-    "emoji-mart": "^3.0.1"
+    "~shared": "0.1.0"
   },
   "devDependencies": {
     "@svgr/cli": "^5.5.0",

@@ -1,6 +1,5 @@
 {
   "name": "~frontend",
-  "private": "true",
   "version": "1.0.0",
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
@@ -21,11 +20,6 @@
     "tslib": "*"
   },
   "dependencies": {
-    "~config": "0.1.0",
-    "~db": "0.1.0",
-    "~richEditor": "0.1.0",
-    "~shared": "0.1.0",
-    "~ui": "0.1.0",
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
@@ -36,9 +30,15 @@
     "jsonwebtoken": "^8.5.1",
     "next": "^10.0.9",
     "next-auth": "^3.13.3",
+    "react-hook-form": "^7.0.6",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
-    "subscriptions-transport-ws": "^0.9.18"
+    "subscriptions-transport-ws": "^0.9.18",
+    "~config": "0.1.0",
+    "~db": "0.1.0",
+    "~richEditor": "0.1.0",
+    "~shared": "0.1.0",
+    "~ui": "0.1.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^10.0.9",
@@ -49,13 +49,13 @@
     "@types/next-auth": "^3.7.2",
     "@types/styled-components": "*",
     "autoprefixer": "^10.2.5",
-    "next-transpile-modules": "^6.3.0",
-    "next-compose-plugins": "^2.2.1",
     "babel-jest": "^26.6.3",
     "babel-plugin-graphql-tag": "^3.2.0",
     "babel-plugin-styled-components": "^1.12.0",
     "identity-obj-proxy": "^3.0.0",
     "msw": "^0.26.2",
+    "next-compose-plugins": "^2.2.1",
+    "next-transpile-modules": "^6.3.0",
     "postcss": "^8.2.6",
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",

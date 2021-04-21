@@ -1,9 +1,17 @@
+import "~config/dotenv";
+
 import { Request } from "express";
 import { ServerResponse } from "http";
 import pino from "pino";
-import "~config/dotenv";
+
+import { assert } from "./assert";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
+
+assert(
+  process.env.LOGGING_LEVEL,
+  `LOGGING_LEVEL env variable is required. ('fatal', 'error', 'warn', 'info', 'debug', 'trace')`
+);
 
 const logger = pino({
   messageKey: "message",
