@@ -13,7 +13,8 @@
     ".next/**/*": true,
     "**/.next/**/*": true,
     // DB client is auto generated, huge file that could pollute search easily
-    "db/client/**/*": true
+    "db/client/**/*": true,
+    ".yarn/**/*": true
   },
   "prettier.requireConfig": true,
   // Will use auto-imports ~package instead of ../../package if import is from different package

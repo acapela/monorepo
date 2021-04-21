@@ -1,12 +1,10 @@
 # Backend
 
-This is our main backend repository, it contains our hasura setup and API server.
+This is bakcend package of our monorepo, it contains our hasura setup and API server.
 
 ## Usage
 
-After cloning, run `npm install` to install the dependencies. After that, use `docker-compose up` to spin up your local hasura and postgres instance to work with.
-
-Use `npm run test:watch` to start running tests.
+For main setup instructions check root readme file.
 
 # Architecture
 
