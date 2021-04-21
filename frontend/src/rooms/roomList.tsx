@@ -3,6 +3,8 @@ import React from "react";
 import styled from "styled-components";
 import { AvatarList } from "~frontend/design/AvatarList";
 import { RoomBasicInfoFragment, useGetRoomsQuery } from "~frontend/gql";
+import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 
 const UIRoomsGrid = styled.ul`
   display: grid;
@@ -63,7 +65,14 @@ export const RoomList: React.FC<unknown> = () => {
   }
 
   if (!data?.room.length) {
-    return <span>Start by creating new Acapela</span>;
+    return (
+      <>
+        <span>Start by creating new Acapela</span>
+        <UIContentWrapper marginTop>
+          <RoomCreationButton />
+        </UIContentWrapper>
+      </>
+    );
   }
 
   return (
