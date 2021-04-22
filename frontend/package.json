@@ -23,6 +23,7 @@
     "@apollo/client": "^3.3.13",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
+    "escape-html": "^1.0.3",
     "express-http-proxy": "^1.6.2",
     "focus-visible": "^5.2.0",
     "framer-motion": "^3.10.6",

@@ -974,6 +974,10 @@ input message_insert_input {
 type message_max_fields {
   created_at: timestamptz
   id: uuid
+<<<<<<< HEAD
+=======
+  media_url: String
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id: uuid
   transcription: String
   user_id: uuid
@@ -985,6 +989,10 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
+<<<<<<< HEAD
+=======
+  media_url: order_by
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id: order_by
   transcription: order_by
   user_id: order_by
@@ -994,6 +1002,10 @@ input message_max_order_by {
 type message_min_fields {
   created_at: timestamptz
   id: uuid
+<<<<<<< HEAD
+=======
+  media_url: String
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id: uuid
   transcription: String
   user_id: uuid
@@ -1005,6 +1017,10 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
+<<<<<<< HEAD
+=======
+  media_url: order_by
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id: order_by
   transcription: order_by
   user_id: order_by
@@ -1082,7 +1098,11 @@ enum message_select_column {
   id
 
   """column name"""
+<<<<<<< HEAD
   is_draft
+=======
+  media_url
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
 
   """column name"""
   thread_id
@@ -1104,7 +1124,11 @@ input message_set_input {
   content: jsonb
   created_at: timestamptz
   id: uuid
+<<<<<<< HEAD
   is_draft: Boolean
+=======
+  media_url: String
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id: uuid
   transcription: String
   type: message_type_enum
@@ -1302,7 +1326,11 @@ enum message_update_column {
   id
 
   """column name"""
+<<<<<<< HEAD
   is_draft
+=======
+  media_url
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
 
   """column name"""
   thread_id
