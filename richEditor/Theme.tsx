@@ -957,7 +957,7 @@ export const QuillTheme = createGlobalStyle`
 
 /* Custom */
 .ql-editor {
-  strong: {
+  strong {
     font-weight: bold;
   }
 }
