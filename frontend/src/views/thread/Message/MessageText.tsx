@@ -46,12 +46,34 @@ export function MessageText({ message, isInEditMode, onEditRequest }: Props) {
 }
 
 const UIHolder = styled.div`
+  line-height: 1.25;
+
   ol {
     list-style-type: decimal;
   }
 
   ul {
     list-style-type: disc;
+  }
+
+  ul,
+  ol {
+    list-style-position: inside;
+  }
+
+  li {
+    ::marker {
+      margin-right: 0.25rem;
+    }
+    ul,
+    ol {
+      padding-left: 1rem;
+    }
+  }
+
+  blockquote {
+    border-left: 2px solid #888;
+    padding: 0.5rem 0 0.5rem 0.5rem;
   }
 
   strong {
