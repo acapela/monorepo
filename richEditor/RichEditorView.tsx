@@ -15,7 +15,6 @@ export const RichEditor = ({ value, onChange }: RichEditorProps) => {
   function handleChange() {
     const content = ref.current?.editor?.getContents().ops;
 
-    console.log({ content });
     if (!content) {
       return;
     }
