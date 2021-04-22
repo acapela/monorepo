@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
 
 import { db } from "~db";
@@ -26,7 +25,13 @@ export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlRespons
   actionName: "get_upload_url",
 
   async handle(_userId, { fileName, mimeType }) {
-    const id = uuid();
+    const { id } = await db.attachment.create({
+      data: {
+        original_name: fileName,
+        mime_type: mimeType,
+      },
+    });
+
     const filePath = getFilePath(id);
     const expiresInMinutes = 0.5; // 30 seconds should be enough
 
@@ -40,14 +45,6 @@ export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlRespons
 
     const storage = new Storage();
     const [uploadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
-
-    await db.attachment.create({
-      data: {
-        id: id,
-        original_name: fileName,
-        mime_type: mimeType,
-      },
-    });
 
     return { uploadUrl, uuid: id };
   },
