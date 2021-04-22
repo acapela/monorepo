@@ -1,14 +1,16 @@
-import { Router } from "express";
 import { v4 as uuid } from "uuid";
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
 
 import { db } from "~db";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 
-export const router = Router();
-
 const bucketName = `meetnomoreapp.appspot.com`;
 const directory = "acapela/attachments/";
+
+/* We can have thread subdirectories if needed */
+function getFilePath(fileId: string) {
+  return `${directory}${fileId}`;
+}
 
 interface GetUploadUrlParams {
   fileName: string;
@@ -25,21 +27,18 @@ export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlRespons
 
   async handle(_userId, { fileName, mimeType }) {
     const id = uuid();
-
-    const storage = new Storage();
-
-    const filePath = `${directory}${id}`;
-    // TODO: make as small as possible
-    const mins = 0.5; // 30 seconds should be enough
+    const filePath = getFilePath(id);
+    const expiresInMinutes = 0.5; // 30 seconds should be enough
 
     const options: GetSignedUrlConfig = {
       version: "v4",
       action: "write",
-      expires: Date.now() + 60 * 1000 * mins,
+      expires: Date.now() + 60 * 1000 * expiresInMinutes,
       contentType: mimeType,
       virtualHostedStyle: true,
     };
 
+    const storage = new Storage();
     const [uploadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
 
     await db.attachment.create({
@@ -76,21 +75,19 @@ export const getDownloadUrl: ActionHandler<GetDownloadUrlParams, GetDownloadUrlR
       throw new Error("Not found");
     }
 
-    const filePath = `${directory}${uuid}`;
-    const mins = 60;
+    const filePath = getFilePath(uuid);
+    const expiresInMinutes = 60;
 
     const options: GetSignedUrlConfig = {
       version: "v4",
       action: "read",
-      expires: Date.now() + 60 * 1000 * mins,
+      expires: Date.now() + 60 * 1000 * expiresInMinutes,
       virtualHostedStyle: true,
     };
 
     const storage = new Storage();
     const [downloadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
 
-    return {
-      downloadUrl,
-    };
+    return { downloadUrl };
   },
 };

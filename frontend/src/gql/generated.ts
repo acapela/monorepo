@@ -3831,34 +3831,6 @@ export type DeleteTextMessageMutation = (
   )> }
 );
 
-export type CreateMessageDraftMutationVariables = Exact<{
-  threadId: Scalars['uuid'];
-  text: Scalars['String'];
-  type?: Maybe<Message_Type_Enum>;
-}>;
-
-
-export type CreateMessageDraftMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id'>
-  )> }
-);
-
-export type GetMessageDraftQueryVariables = Exact<{
-  threadId: Scalars['uuid'];
-}>;
-
-
-export type GetMessageDraftQuery = (
-  { __typename?: 'query_root' }
-  & { message: Array<(
-    { __typename?: 'message' }
-    & ThreadMessageBasicInfoFragment
-  )> }
-);
-
 export type GetUploadUrlQueryVariables = Exact<{
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
@@ -5190,7 +5162,7 @@ export type RoomThreadsSubscriptionResult = Apollo.SubscriptionResult<RoomThread
 export const ThreadMessagesDocument = gql`
     subscription ThreadMessages($threadId: uuid!) {
   messages: message(
-    where: {_or: [{is_draft: {_eq: false}}, {is_draft: {_is_null: true}}], thread_id: {_eq: $threadId}}
+    where: {thread_id: {_eq: $threadId}, is_draft: {_eq: false}}
     order_by: [{created_at: asc}]
   ) {
     ...ThreadMessageDetailedInfo
@@ -5330,81 +5302,6 @@ export function useDeleteTextMessageMutation(baseOptions?: Apollo.MutationHookOp
 export type DeleteTextMessageMutationHookResult = ReturnType<typeof useDeleteTextMessageMutation>;
 export type DeleteTextMessageMutationResult = Apollo.MutationResult<DeleteTextMessageMutation>;
 export type DeleteTextMessageMutationOptions = Apollo.BaseMutationOptions<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>;
-export const CreateMessageDraftDocument = gql`
-    mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
-  message: insert_message_one(
-    object: {text: $text, thread_id: $threadId, type: $type, is_draft: true}
-  ) {
-    id
-  }
-}
-    `;
-export type CreateMessageDraftMutationFn = Apollo.MutationFunction<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
-
-/**
- * __useCreateMessageDraftMutation__
- *
- * To run a mutation, you first call `useCreateMessageDraftMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateMessageDraftMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createMessageDraftMutation, { data, loading, error }] = useCreateMessageDraftMutation({
- *   variables: {
- *      threadId: // value for 'threadId'
- *      text: // value for 'text'
- *      type: // value for 'type'
- *   },
- * });
- */
-export function useCreateMessageDraftMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>(CreateMessageDraftDocument, options);
-      }
-export type CreateMessageDraftMutationHookResult = ReturnType<typeof useCreateMessageDraftMutation>;
-export type CreateMessageDraftMutationResult = Apollo.MutationResult<CreateMessageDraftMutation>;
-export type CreateMessageDraftMutationOptions = Apollo.BaseMutationOptions<CreateMessageDraftMutation, CreateMessageDraftMutationVariables>;
-export const GetMessageDraftDocument = gql`
-    query GetMessageDraft($threadId: uuid!) {
-  message: message(
-    where: {thread_id: {_eq: $threadId}, is_draft: {_eq: true}}
-    limit: 1
-  ) {
-    ...ThreadMessageBasicInfo
-  }
-}
-    ${ThreadMessageBasicInfoFragmentDoc}`;
-
-/**
- * __useGetMessageDraftQuery__
- *
- * To run a query within a React component, call `useGetMessageDraftQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMessageDraftQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMessageDraftQuery({
- *   variables: {
- *      threadId: // value for 'threadId'
- *   },
- * });
- */
-export function useGetMessageDraftQuery(baseOptions: Apollo.QueryHookOptions<GetMessageDraftQuery, GetMessageDraftQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMessageDraftQuery, GetMessageDraftQueryVariables>(GetMessageDraftDocument, options);
-      }
-export function useGetMessageDraftLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessageDraftQuery, GetMessageDraftQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMessageDraftQuery, GetMessageDraftQueryVariables>(GetMessageDraftDocument, options);
-        }
-export type GetMessageDraftQueryHookResult = ReturnType<typeof useGetMessageDraftQuery>;
-export type GetMessageDraftLazyQueryHookResult = ReturnType<typeof useGetMessageDraftLazyQuery>;
-export type GetMessageDraftQueryResult = Apollo.QueryResult<GetMessageDraftQuery, GetMessageDraftQueryVariables>;
 export const GetUploadUrlDocument = gql`
     query GetUploadUrl($fileName: String!, $mimeType: String!) {
   get_upload_url(fileName: $fileName, mimeType: $mimeType) {
