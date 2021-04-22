@@ -80,12 +80,3 @@ const UIHolder = styled.div`
     font-weight: bold;
   }
 `;
-
-const UIEditTextarea = styled.textarea`
-  border: none;
-  width: 100%;
-  background-color: #00000005;
-  border-radius: 5px;
-  padding: 0.5rem;
-  outline: none;
-`;

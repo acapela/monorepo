@@ -1,11 +1,8 @@
-import { DeltaStatic, DeltaOperation } from "quill";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import ReactQuill, { Quill } from "react-quill";
-
+import { DeltaOperation } from "quill";
 import Delta from "quill-delta";
+import React, { useMemo, useRef } from "react";
+import ReactQuill from "react-quill";
 import { QuillTheme } from "./Theme";
-
-console.log(React);
 
 export interface RichEditorProps {
   value: DeltaOperation[];
@@ -15,7 +12,7 @@ export interface RichEditorProps {
 export const RichEditor = ({ value, onChange }: RichEditorProps) => {
   const ref = useRef<ReactQuill>(null);
 
-  function handleChange(value: string, delta: DeltaStatic) {
+  function handleChange() {
     const content = ref.current?.editor?.getContents().ops;
 
     console.log({ content });
@@ -35,10 +32,9 @@ export const RichEditor = ({ value, onChange }: RichEditorProps) => {
         <ReactQuill
           ref={ref}
           theme="snow"
-          value={valueDelta}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          value={valueDelta as any}
           onChange={handleChange}
-          // value={[{ text: "Hello" }, { text: "World", bold: true }]}
-
           modules={{
             toolbar: [
               ["bold", "italic", "strike"], // toggled buttons

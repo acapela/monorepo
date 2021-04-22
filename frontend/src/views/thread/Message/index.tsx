@@ -47,7 +47,7 @@ export const Message = ({ message }: Props) => {
 
   async function handleEditContentRequest(newContent: EditorContent) {
     setIsInEditMode(false);
-    await updateMessage({ variables: { id: message.id, text: newContent } });
+    await updateMessage({ variables: { id: message.id, content: newContent } });
   }
 
   function getShouldShowTools() {
