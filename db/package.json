@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "scripts": {
     "dbenv": "dotenv -e ../.env",
-    "introspect": "npm run dbenv prisma introspect",
-    "validate": "npm run dbenv prisma validate",
-    "generate": "npm run dbenv prisma generate",
-    "update": "npm run introspect && npm run generate",
-    "postinstall": "npm run generate"
+    "introspect": "yarn dbenv prisma introspect",
+    "validate": "yarn dbenv prisma validate",
+    "generate": "yarn dbenv prisma generate",
+    "update": "yarn introspect && yarn generate",
+    "postinstall": "yarn generate"
   },
   "devDependencies": {
     "cross-env": "7.0.3"
