@@ -47,6 +47,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
 
           if (!textField.value) {
             // TODO: Add proper validation UI
+            // Should still be possible to send a file without text content
             alert("Message content is required");
           }
 
