@@ -10,6 +10,7 @@ declare global {
     // Let's extend ProcessEnv to provide process.env autocompletion
     export interface ProcessEnv {
       GOOGLE_APPLICATION_CREDENTIALS: string;
+      GOOGLE_STORAGE_BUCKET: string;
       HASURA_GRAPHQL_URL: string;
       DB_HOST: string;
       DB_PORT: string;

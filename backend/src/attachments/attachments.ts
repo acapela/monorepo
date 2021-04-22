@@ -4,12 +4,12 @@ import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
 import { db } from "~db";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 
-const bucketName = `meetnomoreapp.appspot.com`;
-const directory = "acapela/attachments/";
+const bucketName = process.env.GOOGLE_STORAGE_BUCKET;
+const directory = "attachments";
 
 /* We can have thread subdirectories if needed */
 function getFilePath(fileId: string) {
-  return `${directory}${fileId}`;
+  return `${directory}/${fileId}`;
 }
 
 interface GetUploadUrlParams {
