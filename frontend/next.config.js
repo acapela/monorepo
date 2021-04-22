@@ -154,7 +154,7 @@ module.exports = withPlugins(
         envFilePath: path.resolve(__dirname, "..", ".env"),
       },
     ],
-    //
+    // TODO: We probably dont need it now as we have yarn 'resolutions' which force same version at yarn install level.
     [ensureSinglePackageVersion, { packageNames: ["react", "react-dom"] }],
     //
     createTsPackagesPlugin(),
