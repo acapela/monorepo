@@ -13,6 +13,7 @@ function useUploadFile() {
   const [uuid, setUuid] = useState<string>();
   const [uploaded, setUploaded] = useState<boolean>(false);
   const { name: fileName, type: mimeType } = file || ({} as File);
+  // TODO: invoke only when there's a file
   const { data } = useGetUploadUrlQuery({
     variables: {
       fileName,
@@ -55,22 +56,15 @@ const AttachmentPreview = ({ id }: { id: string }) => {
 
 export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParameters) => {
   const fileInputField = useRef(null);
-  const [files, setFiles] = useState<FileList | []>([]); // should be an object when done properly
   const { setFile, progress, uuid, mimeType, uploaded } = useUploadFile();
 
   const handleNewFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
 
     if (files) {
-      setFiles(files);
+      setFile(files[0]);
     }
   };
-
-  useEffect(() => {
-    for (const file of files) {
-      setFile(file);
-    }
-  }, [files]);
 
   useEffect(() => {
     if (uploaded && uuid && mimeType) {
@@ -78,7 +72,7 @@ export const FileUpload = ({ onFileAttached, ...otherProps }: FileUploadParamete
     }
   }, [uploaded, uuid, mimeType]);
 
-  if (!files.length) {
+  if (!progress) {
     return (
       <input
         type="file"

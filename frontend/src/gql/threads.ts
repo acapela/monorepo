@@ -67,7 +67,7 @@ gql`
 gql`
   subscription ThreadMessages($threadId: uuid!) {
     messages: message(
-      where: { _or: [{ is_draft: { _eq: false } }, { is_draft: { _is_null: true } }], thread_id: { _eq: $threadId } }
+      where: { thread_id: { _eq: $threadId }, is_draft: { _eq: false } }
       order_by: [{ created_at: asc }]
     ) {
       ...ThreadMessageDetailedInfo
@@ -112,22 +112,6 @@ gql`
       message: returning {
         id
       }
-    }
-  }
-`;
-
-gql`
-  mutation CreateMessageDraft($threadId: uuid!, $text: String!, $type: message_type_enum) {
-    message: insert_message_one(object: { text: $text, thread_id: $threadId, type: $type, is_draft: true }) {
-      id
-    }
-  }
-`;
-
-gql`
-  query GetMessageDraft($threadId: uuid!) {
-    message: message(where: { thread_id: { _eq: $threadId }, is_draft: { _eq: true } }, limit: 1) {
-      ...ThreadMessageBasicInfo
     }
   }
 `;
