@@ -33,11 +33,11 @@ async function start() {
   app.get("/healthz", (req, res) => res.send({ ok: true }));
 
   app.use(
-    "/graphql/*",
+    "/graphql/?*",
     proxy(config.hasuraEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/v1/graphql/") })
   );
   app.use(
-    "/api/backend/*",
+    "/api/backend/?*",
     proxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/api/") })
   );
 

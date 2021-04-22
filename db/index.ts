@@ -31,7 +31,9 @@ if (DB_VARS.some((key) => !ENV_VARS.includes(key))) {
   throw error;
 }
 
-const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
+const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@${
+  process.env.DB_HOST
+}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`;
 
 export const db = new PrismaClient({
   datasources: {
