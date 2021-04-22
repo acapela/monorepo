@@ -855,6 +855,10 @@ export type Message_Max_Fields = {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+<<<<<<< HEAD
+=======
+  media_url?: Maybe<Scalars['String']>;
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -864,6 +868,10 @@ export type Message_Max_Fields = {
 export type Message_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+<<<<<<< HEAD
+=======
+  media_url?: Maybe<Order_By>;
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -874,6 +882,10 @@ export type Message_Min_Fields = {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+<<<<<<< HEAD
+=======
+  media_url?: Maybe<Scalars['String']>;
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -883,6 +895,10 @@ export type Message_Min_Fields = {
 export type Message_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+<<<<<<< HEAD
+=======
+  media_url?: Maybe<Order_By>;
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id?: Maybe<Order_By>;
   transcription?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -945,7 +961,11 @@ export enum Message_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
+<<<<<<< HEAD
   IsDraft = 'is_draft',
+=======
+  MediaUrl = 'media_url',
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
@@ -961,7 +981,11 @@ export type Message_Set_Input = {
   content?: Maybe<Scalars['jsonb']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+<<<<<<< HEAD
   is_draft?: Maybe<Scalars['Boolean']>;
+=======
+  media_url?: Maybe<Scalars['String']>;
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   thread_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Scalars['String']>;
   type?: Maybe<Message_Type_Enum>;
@@ -1129,7 +1153,11 @@ export enum Message_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
+<<<<<<< HEAD
   IsDraft = 'is_draft',
+=======
+  MediaUrl = 'media_url',
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
@@ -4012,6 +4040,7 @@ export type account_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
+<<<<<<< HEAD
 export type attachmentKeySpecifier = ('created_at' | 'id' | 'mime_type' | 'original_name' | attachmentKeySpecifier)[];
 export type attachmentFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4050,6 +4079,9 @@ export type attachment_mutation_responseFieldPolicy = {
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+=======
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'media_url' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4076,6 +4108,7 @@ export type message_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
+<<<<<<< HEAD
 export type message_attachmentsKeySpecifier = ('attachment' | 'attachment_id' | 'message' | 'message_id' | message_attachmentsKeySpecifier)[];
 export type message_attachmentsFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4113,14 +4146,29 @@ export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' 
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+=======
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'media_url' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	media_url?: FieldPolicy<any> | FieldReadFunction<any>,
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
+<<<<<<< HEAD
 export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+=======
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'media_url' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	media_url?: FieldPolicy<any> | FieldReadFunction<any>,
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>

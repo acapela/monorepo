@@ -80,7 +80,11 @@
           - content
           - created_at
           - id
+<<<<<<< HEAD
           - is_draft
+=======
+          - media_url
+>>>>>>> chore: removed outdated text field in message table, addressed pr feedback
           - thread_id
           - transcription
           - type
