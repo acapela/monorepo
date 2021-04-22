@@ -10,7 +10,7 @@
     "icons:clear": "rimraf icons/fill icons/outline",
     "icons:generate:fill": "svgr --config-file .icons.yml -d icons/fill ../node_modules/eva-icons/fill/svg",
     "icons:generate:outline": "svgr --config-file .icons.yml -d icons/outline ../node_modules/eva-icons/outline/svg",
-    "icons:generate": "npm run icons:clear && npm run icons:generate:fill && npm run icons:generate:outline"
+    "icons:generate": "yarn icons:clear && yarn icons:generate:fill && yarn icons:generate:outline"
   },
   "dependencies": {
     "~shared": "0.1.0",

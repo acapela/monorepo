@@ -7,13 +7,13 @@ This repo contains the application that powers acapela's web frontend.
 To run the frontend, you need a working backend server and hasura instance.
 By default, in development, if you run [the backend server locally as described here](https://github.com/weareacapela/backend), it will connect and work with your local backend and hasura instances. You can override this by overriding the `BACKEND_HOST` and `HASURA_HOST` environment variables.
 
-Use `npm run dev` to start the development frontend instance.
+Use `yarn dev` to start the development frontend instance.
 
-Use `npm run next:build:analyze` to run a bundle analysis environment to investigate your bundle size.
+Use `yarn next:build:analyze` to run a bundle analysis environment to investigate your bundle size.
 
-Use `npm run test:watch` to start an interactive test environment.
+Use `yarn test:watch` to start an interactive test environment.
 
-Use `npm run server:start` to start the custom next.js server.
+Use `yarn server:start` to start the custom next.js server.
 
 ## Deployment
 
