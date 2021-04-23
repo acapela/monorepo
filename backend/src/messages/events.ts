@@ -1,6 +1,7 @@
 import { EventHandler } from "~backend/src/events/eventHandlers";
 import { Message_Type_Enum } from "~frontend/src/gql";
 import { sendForTranscription } from "../transcriptions/transcriptionService";
+import { db } from "~db";
 
 interface HasuraMessage {
   id: string;
@@ -23,6 +24,24 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
       return;
     }
 
-    await sendForTranscription(message.id);
+    await db.message.update({
+      where: {
+        id: message.id,
+      },
+      data: {
+        transcription: "Transcribing...",
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    await db.message.update({
+      where: {
+        id: message.id,
+      },
+      data: {
+        transcription: "TRANSCRIBED!",
+      },
+    });
   },
 };
