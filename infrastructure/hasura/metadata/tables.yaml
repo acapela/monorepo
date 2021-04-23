@@ -105,6 +105,20 @@
         filter:
           user_id:
             _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: message_created
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+      retry_conf:
+        num_retries: 5
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
     name: message_attachments
