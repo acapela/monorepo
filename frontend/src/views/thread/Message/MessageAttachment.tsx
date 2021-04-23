@@ -39,7 +39,17 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
     const type = attachment.mimeType.split("/")[0];
 
     if (type === "image") {
-      return <img className={className} src={url} alt={attachment.originalName || ""} />;
+      return (
+        <a href={url} target="_blank">
+          <img className={className} src={url} alt={attachment.originalName || ""} />
+        </a>
+      );
+    } else {
+      return (
+        <a href={url} target="_blank">
+          <span>{attachment.originalName}</span>
+        </a>
+      );
     }
   }
 
