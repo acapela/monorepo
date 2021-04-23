@@ -5,13 +5,13 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { Avatar } from "~frontend/design/Avatar";
 import { ThreadMessageDetailedInfoFragment } from "~frontend/gql";
+import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/threads";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { EditorContent } from "~richEditor/RichEditor";
-
-import { MessageActions } from "./MessageActions";
-import { MessageText } from "./MessageText";
+import { MessageText } from "~frontend/views/thread/Message/MessageText";
+import { MessageActions } from "~frontend/views/thread/Message/MessageActions";
 import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
-import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/threads";
+import { MessageTranscription } from "~frontend/views/thread/Message/MessageTranscription";
 
 export interface MessageWithUserInfo extends ThreadMessageDetailedInfoFragment {
   isOwnMessage: boolean;
@@ -73,6 +73,7 @@ export const Message = ({ message }: Props) => {
         {message.message_attachments?.map(({ attachment }) => (
           <MessageAttachment key={attachment.id} attachment={attachment} />
         ))}
+        {message.transcription && <MessageTranscription transcription={message.transcription} />}
       </UIMessageBody>
       <AnimatePresence>
         {shouldShowTools && (
