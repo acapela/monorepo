@@ -1,5 +1,6 @@
 import { handleInviteCreated } from "../invites/events";
 import { handleRoomCreated } from "../rooms/events";
+import { handleMessageCreated } from "../messages/events";
 
 export interface EventHandler<DataT> {
   triggerName: string;
@@ -10,4 +11,4 @@ export interface EventHandler<DataT> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handlers: EventHandler<any>[] = [handleRoomCreated, handleInviteCreated];
+export const handlers: EventHandler<any>[] = [handleRoomCreated, handleInviteCreated, handleMessageCreated];
