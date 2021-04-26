@@ -34,6 +34,7 @@ gql`
     id
     content
     createdAt: created_at
+    content
     type
     user {
       id
