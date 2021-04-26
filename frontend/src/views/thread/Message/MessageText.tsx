@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { ThreadMessageBasicInfoFragment } from "~frontend/gql";
+import { ThreadMessageBasicInfoFragment, ThreadMessageDetailedInfoFragment } from "~frontend/gql";
 import { RichEditor, EditorContent } from "~richEditor/RichEditor";
 
 interface Props {
-  message: ThreadMessageBasicInfoFragment;
+  message: ThreadMessageDetailedInfoFragment;
   isInEditMode: boolean;
   onEditRequest(newContent: EditorContent): void;
 }
 
 function renderMessageContent(message: ThreadMessageBasicInfoFragment) {
-  const converter = new QuillDeltaToHtmlConverter(message.content, {});
+  try {
+    const converter = new QuillDeltaToHtmlConverter(message.content, {});
 
-  const htmlContent = converter.convert();
+    const htmlContent = converter.convert();
 
-  return <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>;
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>;
+  } catch (error) {
+    return <div>Failed to display message content</div>;
+  }
 }
 
 export function MessageText({ message, isInEditMode, onEditRequest }: Props) {
