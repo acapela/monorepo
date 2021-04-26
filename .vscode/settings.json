@@ -8,6 +8,7 @@
     // Matching prettier breakline length config
     120
   ],
+  "files.insertFinalNewline": true,
   "search.exclude": {
     "**/node_modules": true,
     ".next/**/*": true,
@@ -23,5 +24,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "importSorter.importStringConfiguration.quoteMark": "double",
-  "importSorter.generalConfiguration.sortOnBeforeSave": true
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "cSpell.words": ["Acapela"]
 }
