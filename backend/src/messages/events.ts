@@ -41,7 +41,7 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
     const media = await sonix.submitNewMedia({
       messageId: message.id,
       fileUrl: attachmentUrl,
-      fileName: attachment.original_name || attachmentUrl,
+      fileName: attachment.original_name,
       language,
     });
 

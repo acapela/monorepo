@@ -344,7 +344,7 @@ export type Attachment = {
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
   mime_type: Scalars['String'];
-  original_name?: Maybe<Scalars['String']>;
+  original_name: Scalars['String'];
 };
 
 /** aggregated selection of "attachment" */
