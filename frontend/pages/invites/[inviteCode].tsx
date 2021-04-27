@@ -65,7 +65,7 @@ const useInviteAcceptance = () => {
     loading,
     error,
     async acceptInvite(code: string): Promise<string | null> {
-      const result = await acceptInvite({ variables: { code } });
+      const result = await acceptInvite({ code });
 
       return result?.data?.invite?.roomId ?? null;
     },

@@ -1,6 +1,7 @@
 import {
   DocumentNode,
   gql,
+  MutationFunctionOptions,
   MutationHookOptions,
   MutationOptions,
   QueryHookOptions,
@@ -9,6 +10,7 @@ import {
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
+import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { useRef } from "react";
 import { assert } from "~shared/assert";
@@ -57,7 +59,7 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
 }
 
 function getQueryNodeFromSubscriptionNode(subscriptionNode: DocumentNode): DocumentNode {
-  const subscriptionSource = subscriptionNode.loc?.source.body;
+  const subscriptionSource = print(subscriptionNode);
 
   assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
   assert(
@@ -114,13 +116,38 @@ export function createSubscription<Data, Variables>(subscription: DocumentNode) 
   return [useSubscription, manager] as const;
 }
 
-export function createMutation<Data, Variables>(mutation: DocumentNode) {
+interface MutationDefinitionOptions<Data, Variables> {
+  onSuccess?: (data: Data, variables: Variables) => void;
+}
+
+export function createMutation<Data, Variables>(
+  mutation: DocumentNode,
+  mutationDefinitionOptions?: MutationDefinitionOptions<Data, Variables>
+) {
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
-    return useRawMutation<Data, Variables>(mutation, options);
+    const [runMutationRaw, result] = useRawMutation<Data, Variables>(mutation, options);
+
+    async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
+      const rawResult = await runMutationRaw({ ...options, variables });
+
+      if (rawResult.data) {
+        mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
+      }
+
+      return rawResult;
+    }
+
+    return [runMutation, result] as const;
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    return await apolloClient.mutate<Data, Variables>({ ...options, mutation, variables });
+    const rawResult = await apolloClient.mutate<Data, Variables>({ ...options, mutation, variables });
+
+    if (rawResult.data) {
+      mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
+    }
+
+    return rawResult;
   }
 
   const manager = {

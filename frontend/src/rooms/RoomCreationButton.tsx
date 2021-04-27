@@ -29,7 +29,7 @@ const RoomCreationForm: React.FC<Props> = ({ onCreated }) => {
   } = useForm<FormData>({ defaultValues: { name: "" } });
 
   const onSubmit = handleSubmit(async (formData) => {
-    const { data } = await createRoom({ variables: { name: formData.name } });
+    const { data } = await createRoom({ name: formData.name });
 
     if (!data?.room) {
       return;

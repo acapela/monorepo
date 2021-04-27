@@ -93,7 +93,7 @@ export const [useRoomThreadsSubscription] = createSubscription<
   }
 `);
 
-export const [useThreadMessagesSubscription] = createSubscription<
+export const [useThreadMessagesSubscription, threadMessagesSubscriptionManager] = createSubscription<
   ThreadMessagesSubscription,
   ThreadMessagesSubscriptionVariables
 >(gql`
@@ -109,13 +109,16 @@ export const [useThreadMessagesSubscription] = createSubscription<
   }
 `);
 
-export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, CreateMessageMutationVariables>(gql`
+export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, CreateMessageMutationVariables>(
+  gql`
   mutation CreateMessage(
     $threadId: uuid!
     $content: jsonb!
     $type: message_type_enum!
     $attachments: [message_attachments_insert_input!]!
   ) {
+    ${ThreadMessageDetailedInfoFragment}
+
     message: insert_message_one(
       object: {
         content: $content
@@ -125,10 +128,21 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
         is_draft: false
       }
     ) {
-      id
+      ...ThreadMessageDetailedInfo
     }
   }
-`);
+`,
+  {
+    onSuccess: (data, variables) => {
+      threadMessagesSubscriptionManager.update({ threadId: variables.threadId }, (current) => {
+        if (!data.message) {
+          return;
+        }
+        current.messages.push(data.message);
+      });
+    },
+  }
+);
 
 export const [useUpdateTextMessageMutation] = createMutation<
   UpdateTextMessageMutation,

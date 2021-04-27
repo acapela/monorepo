@@ -3694,15 +3694,6 @@ export type RoomDetailedInfoFragment = (
   )> }
 );
 
-export type ParticipantBasicInfoFragment = (
-  { __typename?: 'room_participants' }
-  & { user: (
-    { __typename?: 'user' }
-    & Pick<User, 'name'>
-    & { avatarUrl: User['avatar_url'] }
-  ) }
-);
-
 export type RoomParticipantBasicInfoFragment = (
   { __typename?: 'room_participants' }
   & { user: (
@@ -3758,7 +3749,7 @@ export type RoomParticipantsSubscription = (
   { __typename?: 'subscription_root' }
   & { participants: Array<(
     { __typename?: 'room_participants' }
-    & ParticipantBasicInfoFragment
+    & RoomParticipantBasicInfoFragment
   )> }
 );
 
@@ -3854,7 +3845,7 @@ export type CreateMessageMutation = (
   { __typename?: 'mutation_root' }
   & { message?: Maybe<(
     { __typename?: 'message' }
-    & Pick<Message, 'id'>
+    & ThreadMessageDetailedInfoFragment
   )> }
 );
 
