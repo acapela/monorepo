@@ -74,7 +74,7 @@ function TestComponent() {
 }
 
 function TestQueryComponent() {
-  const { data } = useGetRoomsQuery({});
+  const { data } = useGetRoomsQuery();
   return <>Rooms: {data ? data.room.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
 }
 
