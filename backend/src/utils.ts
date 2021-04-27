@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { extractToken } from "./authentication";
 import { AuthenticationError } from "./errors";
 
-export function middlewareRequreBearerToken(secretValue: string, errorMessage: string) {
+export function middlewareRequireBearerToken(secretValue: string, errorMessage: string) {
   return function (req: Request, _: Response, next: () => unknown): void {
     const token = extractToken(req.get("Authorization") || "");
 
@@ -15,4 +15,8 @@ export function middlewareRequreBearerToken(secretValue: string, errorMessage: s
     }
     next();
   };
+}
+
+export function isDev() {
+  return !["staging", "production"].includes(process.env.STAGE);
 }

@@ -2,6 +2,7 @@ import axios, { Method } from "axios";
 import querystring from "querystring";
 import { assert } from "~shared/assert";
 import { getTunnelPublicUrl } from "../localtunnel";
+import { isDev } from "../utils";
 
 interface SonixOptions {
   key?: string;
@@ -48,7 +49,7 @@ export class Sonix {
   }
 
   private async getCallbackUrl() {
-    const domain = process.env.NODE_ENV === "production" ? process.env.BACKEND_HOST : await getTunnelPublicUrl();
+    const domain = isDev() ? await getTunnelPublicUrl() : process.env.BACKEND_HOST;
     const endpoint = "/api/v1/transcriptions";
 
     assert(domain, "Failed to build callback URL");
