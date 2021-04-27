@@ -116,7 +116,7 @@ model verification_requests {
 model attachment {
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  original_name       String?
+  original_name       String
   mime_type           String
   message_attachments message_attachments[]
 }
