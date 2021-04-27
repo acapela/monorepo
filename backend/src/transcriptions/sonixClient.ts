@@ -2,7 +2,6 @@ import axios, { Method } from "axios";
 import querystring from "querystring";
 import { assert } from "~shared/assert";
 import { getTunnelPublicUrl } from "../localtunnel";
-import { isDev } from "../utils";
 
 interface SonixOptions {
   key?: string;
@@ -38,9 +37,7 @@ export interface JsonTranscriptResponse {
   }[];
 }
 
-let sonixClient: Sonix;
-
-class Sonix {
+export class Sonix {
   private url = "https://api.sonix.ai/v1";
   private key: string;
 
@@ -51,7 +48,10 @@ class Sonix {
   }
 
   private async getCallbackUrl() {
-    const domain = isDev() ? await getTunnelPublicUrl() : process.env.BACKEND_HOST;
+    const domain =
+      process.env.NODE_ENV === "production"
+        ? process.env.BACKEND_HOST // TODO: double-check for production
+        : await getTunnelPublicUrl();
     const endpoint = "/api/v1/transcriptions";
 
     assert(domain, "Failed to build callback URL");
@@ -60,16 +60,21 @@ class Sonix {
   }
 
   private async doRequest({ method, path, formData }: SonixRequestOptions) {
-    const { data } = await axios({
-      method,
-      url: `${this.url}${path}`,
-      headers: {
-        Authorization: `Bearer ${this.key}`,
-      },
-      data: querystring.encode(formData),
-    });
+    try {
+      const { data } = await axios({
+        method,
+        url: `${this.url}${path}`,
+        headers: {
+          Authorization: `Bearer ${this.key}`,
+        },
+        data: querystring.encode(formData),
+      });
 
-    return data;
+      return data;
+    } catch (err) {
+      // TODO: log
+      console.log(err);
+    }
   }
 
   public async submitNewMedia({
@@ -105,12 +110,4 @@ class Sonix {
       path: `/media/${mediaId}/transcript.json`,
     });
   }
-}
-
-export function getSonixClient() {
-  if (!sonixClient) {
-    sonixClient = new Sonix();
-  }
-
-  return sonixClient;
 }

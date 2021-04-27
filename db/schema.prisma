@@ -21,6 +21,14 @@ model account {
   user                 user      @relation(fields: [user_id], references: [id])
 }
 
+model attachment {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  original_name       String
+  mime_type           String
+  message_attachments message_attachments[]
+}
+
 model message {
   thread_id           String                @db.Uuid
   user_id             String                @db.Uuid
@@ -28,13 +36,22 @@ model message {
   type                String
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   is_draft            Boolean               @default(false)
-  transcription_id    String?               @db.Uuid
   content             Json                  @default(dbgenerated("jsonb_build_array()"))
+  transcription_id    String?               @db.Uuid
   thread              thread                @relation(fields: [thread_id], references: [id])
   transcription       transcription?        @relation(fields: [transcription_id], references: [id])
   message_type        message_type          @relation(fields: [type], references: [value])
   user                user                  @relation(fields: [user_id], references: [id])
   message_attachments message_attachments[]
+}
+
+model message_attachments {
+  message_id    String     @db.Uuid
+  attachment_id String     @db.Uuid
+  attachment    attachment @relation(fields: [attachment_id], references: [id])
+  message       message    @relation(fields: [message_id], references: [id])
+
+  @@id([message_id, attachment_id])
 }
 
 model message_type {
@@ -90,6 +107,22 @@ model thread {
   message message[]
 }
 
+model transcription {
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at           DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime             @default(now()) @db.Timestamptz(6)
+  sonix_media_id       String               @unique
+  transcript           Json?
+  status               String
+  transcription_status transcription_status @relation(fields: [status], references: [value])
+  message              message[]
+}
+
+model transcription_status {
+  value         String          @id
+  transcription transcription[]
+}
+
 model user {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email             String?             @unique
@@ -111,37 +144,4 @@ model verification_requests {
   identifier String
   token      String
   expires    DateTime @db.Timestamptz(6)
-}
-
-model attachment {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  original_name       String
-  mime_type           String
-  message_attachments message_attachments[]
-}
-
-model message_attachments {
-  message_id    String     @db.Uuid
-  attachment_id String     @db.Uuid
-  attachment    attachment @relation(fields: [attachment_id], references: [id])
-  message       message    @relation(fields: [message_id], references: [id])
-
-  @@id([message_id, attachment_id])
-}
-
-model transcription {
-  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at           DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime             @default(now()) @db.Timestamptz(6)
-  sonix_media_id       String               @unique
-  transcript           Json?
-  status               String
-  transcription_status transcription_status @relation(fields: [status], references: [value])
-  message              message[]
-}
-
-model transcription_status {
-  value         String          @id
-  transcription transcription[]
 }
