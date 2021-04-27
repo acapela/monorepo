@@ -59,7 +59,10 @@ const ThreadMessageDetailedInfoFragment = gql`
     createdAt: created_at
     content
     type
-    transcription
+    transcription {
+      status
+      transcript
+    }
     user {
       id
       name

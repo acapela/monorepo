@@ -43,6 +43,9 @@
     - name: thread
       using:
         foreign_key_constraint_on: thread_id
+    - name: transcription
+      using:
+        foreign_key_constraint_on: transcription_id
     - name: user
       using:
         foreign_key_constraint_on: user_id
@@ -71,7 +74,6 @@
           - media_url
           - is_draft
           - thread_id
-          - transcription
           - type
         backend_only: false
   select_permissions:
@@ -84,7 +86,6 @@
           - is_draft
           - media_url
           - thread_id
-          - transcription
           - type
           - user_id
         filter: {}
@@ -368,6 +369,23 @@
               - finished_at:
                   _is_null: true
         check: null
+- table:
+    schema: public
+    name: transcription
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - id
+          - status
+          - transcript
+          - updated_at
+        filter: {}
+- table:
+    schema: public
+    name: transcription_status
+  is_enum: true
 - table:
     schema: public
     name: user

@@ -20,9 +20,13 @@
   "prettier.requireConfig": true,
   // Will use auto-imports ~package instead of ../../package if import is from different package
   "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.suggest.autoImports": true,
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["Acapela"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "importSorter.importStringConfiguration.quoteMark": "double",
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["markdown", "plaintext", "typescript"]
 }

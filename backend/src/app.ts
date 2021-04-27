@@ -9,6 +9,7 @@ import logger from "~shared/logger";
 import { router as actionRoutes } from "./actions/actions";
 import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
+import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
 import { errorHandling, notFoundRouteHandling } from "./errors";
 
 export async function setupServer(): Promise<Server> {
@@ -34,6 +35,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", authenticationRoutes);
   app.use("/api", eventRoutes);
   app.use("/api", actionRoutes);
+  app.use("/api", transcriptionRoutes);
 }
 
 function setupErrorHandling(app: Application): void {

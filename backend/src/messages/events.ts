@@ -1,6 +1,9 @@
 import { EventHandler } from "~backend/src/events/eventHandlers";
-import { Message_Type_Enum } from "~frontend/src/gql";
 import { db } from "~db";
+import { Message_Type_Enum } from "~frontend/src/gql";
+import { assert } from "~shared/assert";
+import { getSignedDownloadUrl } from "../attachments/googleStorage";
+import { Sonix } from "../transcriptions/sonixClient";
 
 interface HasuraMessage {
   id: string;
@@ -23,23 +26,34 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
       return;
     }
 
-    await db.message.update({
-      where: {
-        id: message.id,
-      },
-      data: {
-        transcription: "Transcribing...",
-      },
+    const messageAttachment = await db.message_attachments.findFirst({
+      where: { message_id: message.id },
+      include: { attachment: true },
+    });
+    const attachment = messageAttachment?.attachment;
+
+    assert(attachment, "Media message has no attachment");
+
+    const sonix = new Sonix();
+    const attachmentUrl = await getSignedDownloadUrl(attachment.id);
+    const language = "en";
+
+    const media = await sonix.submitNewMedia({
+      messageId: message.id,
+      fileUrl: attachmentUrl,
+      fileName: attachment.original_name || attachmentUrl,
+      language,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
     await db.message.update({
-      where: {
-        id: message.id,
-      },
+      where: { id: message.id },
       data: {
-        transcription: "TRANSCRIBED!",
+        transcription: {
+          create: {
+            sonix_media_id: media.id,
+            status: media.status,
+          },
+        },
       },
     });
   },

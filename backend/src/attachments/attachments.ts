@@ -1,15 +1,6 @@
-import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
-
-import { db } from "~db";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-
-const bucketName = process.env.GOOGLE_STORAGE_BUCKET;
-const directory = "attachments";
-
-/* We can have thread subdirectories if needed */
-function getFilePath(fileId: string) {
-  return `${directory}/${fileId}`;
-}
+import { db } from "~db";
+import { getSignedDownloadUrl, getSignedUploadUrl } from "./googleStorage";
 
 interface GetUploadUrlParams {
   fileName: string;
@@ -25,28 +16,16 @@ export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlRespons
   actionName: "get_upload_url",
 
   async handle(_userId, { fileName, mimeType }) {
-    const { id } = await db.attachment.create({
+    const { id: uuid } = await db.attachment.create({
       data: {
         original_name: fileName,
         mime_type: mimeType,
       },
     });
 
-    const filePath = getFilePath(id);
-    const expiresInMinutes = 0.5; // 30 seconds should be enough
+    const uploadUrl = await getSignedUploadUrl(uuid, mimeType);
 
-    const options: GetSignedUrlConfig = {
-      version: "v4",
-      action: "write",
-      expires: Date.now() + 60 * 1000 * expiresInMinutes,
-      contentType: mimeType,
-      virtualHostedStyle: true,
-    };
-
-    const storage = new Storage();
-    const [uploadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
-
-    return { uploadUrl, uuid: id };
+    return { uploadUrl, uuid };
   },
 };
 
@@ -72,18 +51,7 @@ export const getDownloadUrl: ActionHandler<GetDownloadUrlParams, GetDownloadUrlR
       throw new Error("Not found");
     }
 
-    const filePath = getFilePath(uuid);
-    const expiresInMinutes = 60;
-
-    const options: GetSignedUrlConfig = {
-      version: "v4",
-      action: "read",
-      expires: Date.now() + 60 * 1000 * expiresInMinutes,
-      virtualHostedStyle: true,
-    };
-
-    const storage = new Storage();
-    const [downloadUrl] = await storage.bucket(bucketName).file(filePath).getSignedUrl(options);
+    const downloadUrl = await getSignedDownloadUrl(uuid);
 
     return { downloadUrl };
   },

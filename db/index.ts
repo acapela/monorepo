@@ -13,6 +13,8 @@ export type {
   verification_requests as VerificationRequest,
   attachment as Attachment,
   message_attachments as MessageAttachments,
+  transcription_status as TranscriptionStatus,
+  transcription as Transcription,
 } from "@prisma/client";
 
 const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];
