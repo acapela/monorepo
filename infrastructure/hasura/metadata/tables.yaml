@@ -71,7 +71,6 @@
         columns:
           - is_draft
           - content
-          - media_url
           - is_draft
           - thread_id
           - type
@@ -84,7 +83,6 @@
           - created_at
           - id
           - is_draft
-          - media_url
           - thread_id
           - type
           - user_id
@@ -115,7 +113,7 @@
       retry_conf:
         num_retries: 5
         interval_sec: 10
-        timeout_sec: 60
+        timeout_sec: 30
       webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
       headers:
         - name: Authorization
