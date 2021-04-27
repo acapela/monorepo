@@ -48,10 +48,7 @@ export class Sonix {
   }
 
   private async getCallbackUrl() {
-    const domain =
-      process.env.NODE_ENV === "production"
-        ? process.env.BACKEND_HOST // TODO: double-check for production
-        : await getTunnelPublicUrl();
+    const domain = process.env.NODE_ENV === "production" ? process.env.BACKEND_HOST : await getTunnelPublicUrl();
     const endpoint = "/api/v1/transcriptions";
 
     assert(domain, "Failed to build callback URL");
