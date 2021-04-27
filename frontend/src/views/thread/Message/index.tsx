@@ -101,6 +101,7 @@ const UIMessageAvatar = styled(Avatar)`
   width: 40px;
   height: 40px;
   margin-top: 5px;
+  flex-shrink: 0;
 `;
 
 const UIAnimatedMessageWrapper = styled.div<Props>`
@@ -130,6 +131,7 @@ const UIMessageBody = styled.div`
   padding: 1rem;
   border-radius: 1rem;
   min-width: 280px;
+  max-width: 80%;
 `;
 
 const UIMessageHead = styled.div`

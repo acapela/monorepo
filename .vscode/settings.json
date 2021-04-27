@@ -25,8 +25,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "importSorter.importStringConfiguration.quoteMark": "double",
-  "importSorter.generalConfiguration.sortOnBeforeSave": true,
   "spellright.language": ["en"],
   "spellright.documentTypes": ["markdown", "plaintext", "typescript"]
 }
