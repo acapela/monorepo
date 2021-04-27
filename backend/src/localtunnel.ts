@@ -1,5 +1,7 @@
-import { hostname } from "os";
+import os from "os";
 import localtunnel, { Tunnel } from "localtunnel";
+
+const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 
 let tunnel: Tunnel | null = null;
 
