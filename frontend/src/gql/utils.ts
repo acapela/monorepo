@@ -16,9 +16,13 @@ import { useRef } from "react";
 import { assert } from "~shared/assert";
 import { apolloClient } from "~frontend/apollo";
 
+type EmptyObject = Record<string, never>;
+
+type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
+
 export function createQuery<Data, Variables>(query: DocumentNode) {
-  function useQuery(variables: Variables, options?: QueryHookOptions<Data, Variables>) {
-    return useRawQuery(query, { ...options, variables });
+  function useQuery(variables: VoidableIfEmpty<Variables>, options?: QueryHookOptions<Data, Variables>) {
+    return useRawQuery(query, { ...options, variables: variables as Variables });
   }
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
@@ -92,9 +96,9 @@ export function createSubscription<Data, Variables>(subscription: DocumentNode) 
   // Create query with manager that will be used to update query if needed
   const [useQuery, queryManager] = createQuery<Data, Variables>(queryNode);
 
-  function useSubscription(variables: Variables, options?: SubscriptionHookOptions<Data, Variables>) {
+  function useSubscription(variables: VoidableIfEmpty<Variables>, options?: SubscriptionHookOptions<Data, Variables>) {
     const queryResult = useQuery(variables);
-    const subscriptionResult = useRawSubscription(subscription, { ...options, variables });
+    const subscriptionResult = useRawSubscription(subscription, { ...options, variables: variables as Variables });
 
     const data = useLatest(queryResult.data, subscriptionResult.data);
 
