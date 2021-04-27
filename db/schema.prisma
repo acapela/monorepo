@@ -38,6 +38,7 @@ model message {
   is_draft            Boolean               @default(false)
   content             Json                  @default(dbgenerated("jsonb_build_array()"))
   transcription_id    String?               @db.Uuid
+  content             Json                  @default(dbgenerated("jsonb_build_array()"))
   thread              thread                @relation(fields: [thread_id], references: [id])
   transcription       transcription?        @relation(fields: [transcription_id], references: [id])
   message_type        message_type          @relation(fields: [type], references: [value])
