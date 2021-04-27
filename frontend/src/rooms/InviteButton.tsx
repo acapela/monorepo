@@ -71,7 +71,7 @@ const InviteCreationForm = ({ roomId, onCreated }: FormProps): JSX.Element => {
   } = useForm<{ email: string }>({ defaultValues: { email: "" } });
 
   const onSubmit = handleSubmit(async (formData) => {
-    const createResult = await createInvite({ variables: { email: formData.email, roomId } });
+    const createResult = await createInvite({ email: formData.email, roomId });
 
     if (!createResult.data?.invite) return;
 

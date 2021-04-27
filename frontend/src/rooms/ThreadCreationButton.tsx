@@ -57,11 +57,9 @@ const ThreadCreationForm: React.FC<Props> = ({ onCreated, roomId, lastThreadInde
   const onSubmit = handleSubmit(async (formData) => {
     const index = createNextIndex(lastThreadIndex);
     const { data } = await createThread({
-      variables: {
-        name: formData.name,
-        index,
-        roomId,
-      },
+      name: formData.name,
+      index,
+      roomId,
     });
 
     if (!data?.thread) return;

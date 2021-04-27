@@ -38,12 +38,12 @@ export const Message = ({ message }: Props) => {
   });
 
   async function handleRemove() {
-    await deleteMessage({ variables: { id: message.id } });
+    await deleteMessage({ id: message.id });
   }
 
   async function handleEditContentRequest(newContent: EditorContent) {
     setIsInEditMode(false);
-    await updateMessage({ variables: { id: message.id, content: newContent } });
+    await updateMessage({ id: message.id, content: newContent });
   }
 
   function getShouldShowTools() {

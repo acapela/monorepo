@@ -44,14 +44,12 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           const attachmentsIds = Object.keys(attachments);
 
           await createMessage({
-            variables: {
-              threadId: threadId,
-              type: shouldTranscribe ? chooseType(attachments[Object.keys(attachments)[0]]) : Message_Type_Enum.Text,
-              content: value,
-              attachments: attachmentsIds.map((attachmentId) => ({
-                attachment_id: attachmentId,
-              })),
-            },
+            threadId: threadId,
+            type: shouldTranscribe ? chooseType(attachments[Object.keys(attachments)[0]]) : Message_Type_Enum.Text,
+            content: value,
+            attachments: attachmentsIds.map((attachmentId) => ({
+              attachment_id: attachmentId,
+            })),
           });
 
           setAttachments({});
