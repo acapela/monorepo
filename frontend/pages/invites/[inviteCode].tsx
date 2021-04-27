@@ -5,7 +5,7 @@ import { withServerSideAuthRedirect } from "~frontend/authentication/withServerS
 import { Logo } from "~frontend/design/Logo";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
-import { useAcceptInviteMutation } from "~frontend/gql";
+import { useAcceptInviteMutation } from "~frontend/gql/invitations";
 import { usePathParameter } from "~frontend/utils";
 import { assert } from "~shared/assert";
 

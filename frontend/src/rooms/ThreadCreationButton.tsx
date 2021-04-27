@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Dialog } from "~frontend/design/Dialog";
-import { useCreateThreadMutation } from "~frontend/gql";
+import { useCreateThreadMutation } from "~frontend/gql/threads";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { createNextIndex } from "~frontend/rooms/order";
 import { Button } from "~ui/button";

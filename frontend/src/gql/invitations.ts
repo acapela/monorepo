@@ -1,6 +1,16 @@
 import { gql } from "@apollo/client";
+import {
+  AcceptInviteMutation,
+  AcceptInviteMutationVariables,
+  CreateInviteMutation,
+  CreateInviteMutationVariables,
+  GetRoomInvitesQuery,
+  GetRoomInvitesQueryVariables,
+} from "./generated";
 
-gql`
+import { createMutation, createQuery } from "./utils";
+
+export const [useCreateInviteMutation] = createMutation<CreateInviteMutation, CreateInviteMutationVariables>(gql`
   mutation CreateInvite($email: String!, $roomId: uuid) {
     invite: insert_room_invites_one(object: { email: $email, room_id: $roomId }) {
       id
@@ -8,9 +18,9 @@ gql`
       usedAt: used_at
     }
   }
-`;
+`);
 
-gql`
+export const [useGetRoomInvitesQuery] = createQuery<GetRoomInvitesQuery, GetRoomInvitesQueryVariables>(gql`
   query GetRoomInvites($roomId: uuid!) {
     invites: room_invites(where: { room_id: { _eq: $roomId } }) {
       id
@@ -18,58 +28,12 @@ gql`
       usedAt: used_at
     }
   }
-`;
+`);
 
-gql`
+export const [useAcceptInviteMutation] = createMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(gql`
   mutation AcceptInvite($code: String!) {
     invite: accept_invite(code: $code) {
       roomId: room_id
     }
   }
-`;
-
-// Fragments
-
-gql`
-  fragment RoomBasicInfo on room {
-    id
-    name
-    participants {
-      user {
-        id
-        name
-        avatarUrl: avatar_url
-      }
-    }
-  }
-`;
-
-gql`
-  fragment RoomDetailedInfo on room {
-    id
-    name
-
-    participants {
-      user {
-        id
-        name
-        avatarUrl: avatar_url
-      }
-    }
-
-    threads {
-      id
-      name
-      index
-    }
-  }
-`;
-
-gql`
-  fragment ParticipantBasicInfo on room_participants {
-    user {
-      name
-      avatarUrl: avatar_url
-    }
-  }
-`;
+`);

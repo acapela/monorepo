@@ -44,13 +44,7 @@ export async function startGeneratingGraphqlTypes({ packageName, watch }: Toolin
 
     generates: {
       [path.resolve(packageDir, "src/gql/generated.ts")]: {
-        plugins: [
-          "typescript",
-          "typescript-operations",
-          "typescript-apollo-client-helpers",
-          "typescript-react-apollo",
-          "fragment-matcher",
-        ],
+        plugins: ["typescript", "typescript-operations", "typescript-apollo-client-helpers", "fragment-matcher"],
       },
     },
   });

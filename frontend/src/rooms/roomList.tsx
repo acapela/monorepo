@@ -2,9 +2,10 @@ import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 import { AvatarList } from "~frontend/design/AvatarList";
-import { RoomBasicInfoFragment, useGetRoomsQuery } from "~frontend/gql";
+import { RoomBasicInfoFragment } from "~frontend/gql";
 import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { useGetRoomsQuery } from "~frontend/gql/rooms";
 
 const UIRoomsGrid = styled.ul`
   display: grid;
@@ -57,7 +58,9 @@ const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
 };
 
 export const RoomList: React.FC<unknown> = () => {
-  const { loading, data } = useGetRoomsQuery();
+  const { loading, data, error } = useGetRoomsQuery({});
+
+  console.log(loading, data, error);
 
   // TODO: Loader
   if (loading) {

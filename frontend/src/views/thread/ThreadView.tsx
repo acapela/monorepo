@@ -3,7 +3,8 @@ import React from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
-import { ThreadMessageDetailedInfoFragment, useThreadMessagesSubscription } from "~frontend/gql";
+import { ThreadMessageDetailedInfoFragment } from "~frontend/gql";
+import { useThreadMessagesSubscription } from "~frontend/gql/threads";
 import { MessageComposer } from "./Composer";
 import { Message, MessageWithUserInfo } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
@@ -11,7 +12,7 @@ import { ScrollableMessages } from "./ScrollableMessages";
 const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
   const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
-    variables: { threadId },
+    threadId,
   });
 
   const isLoading = isLoadingUser || isLoadingMessages || !data;

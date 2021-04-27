@@ -2,7 +2,7 @@ import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, spli
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookie from "js-cookie";
-import React, { useMemo } from "react";
+import React from "react";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
@@ -73,9 +73,8 @@ const createApolloClient = (): ApolloClient<unknown> => {
   });
 };
 
-export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Memoize apollo client so data cache persists across pages when navigating
-  const client = useMemo(createApolloClient, []);
+export const apolloClient = createApolloClient();
 
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
 };

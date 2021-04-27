@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Message_Type_Enum, useCreateMessageMutation } from "~frontend/gql";
+import { Message_Type_Enum } from "~frontend/gql";
+import { useCreateMessageMutation } from "~frontend/gql/threads";
 import { chooseType } from "~frontend/utils/chooseMessageType";
 import { FileUpload } from "~frontend/views/thread/FileUpload";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";

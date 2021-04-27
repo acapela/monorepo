@@ -2,10 +2,11 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
-import { Dialog } from "../design/Dialog";
-import { RoomBasicInfoFragment, useCreateRoomMutation } from "../gql";
+import { Dialog } from "~frontend/design/Dialog";
+import { RoomBasicInfoFragment } from "~frontend/gql";
 
 const UIRoomTitleFieldWrapper = styled.div`
   margin-bottom: 1rem;
