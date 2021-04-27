@@ -1,6 +1,7 @@
 {
   "name": "~ui",
   "version": "0.1.0",
+  "license": "UNLICENSED",
   "peerDependencies": {
     "react": "*",
     "styled-components": "*"

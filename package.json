@@ -2,6 +2,7 @@
   "name": "~root",
   "private": true,
   "version": "0.1.0",
+  "license": "UNLICENSED",
   "engines": {
     "yarn": "^1.22.0"
   },
