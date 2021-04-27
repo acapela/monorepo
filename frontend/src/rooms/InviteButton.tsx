@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import { useCreateInviteMutation, useGetRoomInvitesQuery } from "~frontend/gql/invitations";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
 import { Dialog } from "../design/Dialog";
-import { useCreateInviteMutation, useGetRoomInvitesQuery } from "../gql";
 
 export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,7 +30,7 @@ export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({
 };
 
 const InviteTable = ({ roomId }: { roomId: string }): JSX.Element => {
-  const { loading, data } = useGetRoomInvitesQuery({ variables: { roomId } });
+  const { loading, data } = useGetRoomInvitesQuery({ roomId });
   if (loading) {
     return <>Loading...</>; // TODO: use loader
   }

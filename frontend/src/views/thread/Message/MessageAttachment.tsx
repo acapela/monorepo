@@ -1,7 +1,8 @@
 import React from "react";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum, useGetDownloadUrlQuery } from "~frontend/gql";
+import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
 import styled from "styled-components";
 import { chooseType } from "~frontend/utils/chooseMessageType";
+import { useGetDownloadUrlQuery } from "~frontend/gql/threads";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -9,7 +10,7 @@ interface AttachmentProps {
 }
 
 const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
-  const { data: downloadUrlData } = useGetDownloadUrlQuery({ variables: { id: attachment.id } });
+  const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
   const url = downloadUrlData?.get_download_url?.downloadUrl;
   const messageType = chooseType(attachment.mimeType);
 

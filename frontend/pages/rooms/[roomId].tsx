@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
-import { useGetSingleRoomQuery } from "~frontend/gql";
+import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
 import { RoomLayout } from "~frontend/rooms/RoomLayout";
 import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
 import { usePathParameter } from "~frontend/utils";
@@ -17,7 +17,7 @@ const UINoAgendaMessage = styled.div`
 const Page = () => {
   const { replace } = useRouter();
   const roomId = usePathParameter("roomId");
-  const { loading, data } = useGetSingleRoomQuery({ variables: { id: roomId } });
+  const { loading, data } = useGetSingleRoomQuery({ id: roomId });
   const [redirecting, setRedirecting] = useState(false);
 
   const room = data?.room;

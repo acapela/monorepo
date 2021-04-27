@@ -4,18 +4,14 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { Avatar } from "~frontend/design/Avatar";
-import {
-  ThreadMessageDetailedInfoFragment,
-  useDeleteTextMessageMutation,
-  useUpdateTextMessageMutation,
-} from "~frontend/gql";
+import { ThreadMessageDetailedInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { EditorContent } from "~richEditor/RichEditor";
 
 import { MessageActions } from "./MessageActions";
 import { MessageText } from "./MessageText";
 import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
+import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/threads";
 
 export interface MessageWithUserInfo extends ThreadMessageDetailedInfoFragment {
   isOwnMessage: boolean;

@@ -1,6 +1,27 @@
 import { gql } from "@apollo/client";
+import {
+  CreateMessageMutation,
+  CreateMessageMutationVariables,
+  CreateThreadMutation,
+  CreateThreadMutationVariables,
+  DeleteTextMessageMutation,
+  DeleteTextMessageMutationVariables,
+  GetAttachmentQuery,
+  GetAttachmentQueryVariables,
+  GetDownloadUrlQuery,
+  GetDownloadUrlQueryVariables,
+  GetUploadUrlQuery,
+  GetUploadUrlQueryVariables,
+  RoomThreadsSubscription,
+  RoomThreadsSubscriptionVariables,
+  ThreadMessagesSubscription,
+  ThreadMessagesSubscriptionVariables,
+  UpdateTextMessageMutation,
+  UpdateTextMessageMutationVariables,
+} from "./generated";
+import { createMutation, createSubscription, createQuery } from "./utils";
 
-gql`
+const ThreadDetailedInfoFragment = gql`
   fragment ThreadDetailedInfo on thread {
     id
     name
@@ -8,7 +29,7 @@ gql`
   }
 `;
 
-gql`
+const ThreadMessageBasicInfoFragment = gql`
   fragment ThreadMessageBasicInfo on message {
     id
     createdAt: created_at
@@ -21,7 +42,7 @@ gql`
   }
 `;
 
-gql`
+const AttachmentDetailedInfoFragment = gql`
   fragment AttachmentDetailedInfo on attachment {
     id
     originalName: original_name
@@ -29,7 +50,9 @@ gql`
   }
 `;
 
-gql`
+const ThreadMessageDetailedInfoFragment = gql`
+  ${AttachmentDetailedInfoFragment}
+
   fragment ThreadMessageDetailedInfo on message {
     id
     content
@@ -49,23 +72,33 @@ gql`
   }
 `;
 
-gql`
+export const [useCreateThreadMutation] = createMutation<CreateThreadMutation, CreateThreadMutationVariables>(gql`
   mutation CreateThread($name: String!, $roomId: uuid!, $index: String!) {
     thread: insert_thread_one(object: { name: $name, room_id: $roomId, index: $index }) {
       id
     }
   }
-`;
+`);
 
-gql`
+export const [useRoomThreadsSubscription] = createSubscription<
+  RoomThreadsSubscription,
+  RoomThreadsSubscriptionVariables
+>(gql`
+  ${ThreadDetailedInfoFragment}
+
   subscription RoomThreads($roomId: uuid!) {
     threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
       ...ThreadDetailedInfo
     }
   }
-`;
+`);
 
-gql`
+export const [useThreadMessagesSubscription] = createSubscription<
+  ThreadMessagesSubscription,
+  ThreadMessagesSubscriptionVariables
+>(gql`
+  ${ThreadMessageDetailedInfoFragment}
+
   subscription ThreadMessages($threadId: uuid!) {
     messages: message(
       where: { thread_id: { _eq: $threadId }, is_draft: { _eq: false } }
@@ -74,9 +107,9 @@ gql`
       ...ThreadMessageDetailedInfo
     }
   }
-`;
+`);
 
-gql`
+export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, CreateMessageMutationVariables>(gql`
   mutation CreateMessage(
     $threadId: uuid!
     $content: jsonb!
@@ -95,9 +128,14 @@ gql`
       id
     }
   }
-`;
+`);
 
-gql`
+export const [useUpdateTextMessageMutation] = createMutation<
+  UpdateTextMessageMutation,
+  UpdateTextMessageMutationVariables
+>(gql`
+  ${ThreadMessageBasicInfoFragment}
+
   mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean) {
     update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
       message: returning {
@@ -105,9 +143,12 @@ gql`
       }
     }
   }
-`;
+`);
 
-gql`
+export const [useDeleteTextMessageMutation] = createMutation<
+  DeleteTextMessageMutation,
+  DeleteTextMessageMutationVariables
+>(gql`
   mutation DeleteTextMessage($id: uuid!) {
     delete_message(where: { id: { _eq: $id } }) {
       message: returning {
@@ -115,29 +156,31 @@ gql`
       }
     }
   }
-`;
+`);
 
-gql`
+export const [useGetUploadUrlQuery] = createQuery<GetUploadUrlQuery, GetUploadUrlQueryVariables>(gql`
   query GetUploadUrl($fileName: String!, $mimeType: String!) {
     get_upload_url(fileName: $fileName, mimeType: $mimeType) {
       uploadUrl
       uuid
     }
   }
-`;
+`);
 
-gql`
+export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>(gql`
   query GetDownloadUrl($id: uuid!) {
     get_download_url(uuid: $id) {
       downloadUrl
     }
   }
-`;
+`);
 
-gql`
+export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(gql`
   query GetAttachment($id: uuid!) {
+    ${AttachmentDetailedInfoFragment}
+
     attachment: attachment_by_pk(id: $id) {
       ...AttachmentDetailedInfo
     }
   }
-`;
+`);

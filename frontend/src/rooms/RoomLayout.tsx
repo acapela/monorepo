@@ -5,13 +5,9 @@ import { AvatarProps } from "~frontend/design/Avatar";
 import { AvatarList } from "~frontend/design/AvatarList";
 import { SidebarLayout } from "~frontend/design/Layout";
 import { NavLink } from "~frontend/design/NavLink";
-import {
-  ParticipantBasicInfoFragment,
-  ThreadDetailedInfoFragment,
-  useGetSingleRoomQuery,
-  useRoomParticipantsSubscription,
-  useRoomThreadsSubscription,
-} from "~frontend/gql";
+import { ParticipantBasicInfoFragment, ThreadDetailedInfoFragment } from "~frontend/gql";
+import { useGetSingleRoomQuery, useRoomParticipantsSubscription } from "~frontend/gql/rooms";
+import { useRoomThreadsSubscription } from "~frontend/gql/threads";
 import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assert } from "~shared/assert";
@@ -36,13 +32,13 @@ const UIThreadsWrapper = styled.div`
 `;
 
 const useThreads = (roomId: string): { loading: boolean; threads: ThreadDetailedInfoFragment[] } => {
-  const { data, loading } = useRoomThreadsSubscription({ variables: { roomId } });
+  const { data, loading } = useRoomThreadsSubscription({ roomId });
 
   return { loading, threads: data?.threads ?? [] };
 };
 
 const useParticipants = (roomId: string): { loading: boolean; participants: ParticipantBasicInfoFragment[] } => {
-  const { data, loading } = useRoomParticipantsSubscription({ variables: { roomId } });
+  const { data, loading } = useRoomParticipantsSubscription({ roomId });
 
   return { loading, participants: data?.participants ?? [] };
 };
@@ -56,7 +52,7 @@ export const RoomLayout: React.FC<Props> = ({ children }) => {
 
   const { participants } = useParticipants(roomId);
 
-  const { data } = useGetSingleRoomQuery({ variables: { id: roomId } });
+  const { data } = useGetSingleRoomQuery({ id: roomId });
 
   const room = data?.room;
 

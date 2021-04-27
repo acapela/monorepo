@@ -1,7 +1,7 @@
 import React, { ChangeEvent, InputHTMLAttributes, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useGetAttachmentQuery, useGetUploadUrlQuery } from "~frontend/gql";
 import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
+import { useGetAttachmentQuery, useGetUploadUrlQuery } from "~frontend/gql/threads";
 
 interface FileUploadParameters extends InputHTMLAttributes<HTMLInputElement> {
   onFileAttached: ({ uuid, mimeType }: { uuid: string; mimeType: string }) => void;
@@ -15,10 +15,8 @@ function useUploadFile() {
   const { name: fileName, type: mimeType } = file || ({} as File);
   // TODO: invoke only when there's a file
   const { data } = useGetUploadUrlQuery({
-    variables: {
-      fileName,
-      mimeType,
-    },
+    fileName,
+    mimeType,
   });
 
   useEffect(() => {
@@ -45,7 +43,7 @@ function useUploadFile() {
 }
 
 const AttachmentPreview = ({ id }: { id: string }) => {
-  const { data } = useGetAttachmentQuery({ variables: { id } });
+  const { data } = useGetAttachmentQuery({ id });
 
   if (data?.attachment) {
     return <MessageAttachment attachment={data.attachment} />;

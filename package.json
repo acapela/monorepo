@@ -34,6 +34,7 @@
     "backend": "yarn workspace ~backend",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
+    "shared": "yarn workspace ~shared",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "func(){ hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev; }; func",
