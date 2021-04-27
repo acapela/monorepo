@@ -19,6 +19,7 @@ declare global {
   namespace NodeJS {
     // Let's extend ProcessEnv to provide process.env autocompletion
     export interface ProcessEnv {
+      STAGE: "development" | "staging" | "production";
       GOOGLE_APPLICATION_CREDENTIALS: string;
       GOOGLE_STORAGE_BUCKET: string;
       HASURA_GRAPHQL_URL: string;
