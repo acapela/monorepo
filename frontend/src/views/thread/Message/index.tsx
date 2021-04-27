@@ -76,6 +76,7 @@ export const Message = ({ message }: Props) => {
         {message.transcription && <MessageTranscription transcription={message.transcription} />}
       </UIMessageBody>
       <AnimatePresence>
+        {/* TODO: For consistent layout, needs to be always present and hidden with `visibility` */}
         {shouldShowTools && (
           <UITools
             initial={{ opacity: 0 }}

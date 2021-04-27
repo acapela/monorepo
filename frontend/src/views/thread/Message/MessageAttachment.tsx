@@ -20,18 +20,22 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
 
   if (messageType === Message_Type_Enum.Video) {
     return (
-      <video className={className} src={url} controls>
-        Sorry, your browser doesn't support embedded videos.
-      </video>
+      <PlayableMediaWrapper>
+        <video className={className} src={url} controls>
+          Sorry, your browser doesn't support embedded videos.
+        </video>
+      </PlayableMediaWrapper>
     );
   }
 
   /* !!! Not tested */
   if (messageType === Message_Type_Enum.Audio) {
     return (
-      <audio className={className} src={url} controls>
-        Sorry, your browser doesn't support embedded audios.
-      </audio>
+      <PlayableMediaWrapper>
+        <audio className={className} src={url} controls>
+          Sorry, your browser doesn't support embedded audios.
+        </audio>
+      </PlayableMediaWrapper>
     );
   }
 
@@ -40,9 +44,9 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
 
     if (type === "image") {
       return (
-        <a href={url} target="_blank">
+        <ImageWrapper href={url} target="_blank">
           <img className={className} src={url} alt={attachment.originalName || ""} />
-        </a>
+        </ImageWrapper>
       );
     } else {
       return (
@@ -56,7 +60,19 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
   return null;
 };
 
-export const MessageAttachment = styled(PureMessageAttachment)`
+const ImageWrapper = styled.a`
+  display: inline-block;
   max-height: 100px;
   max-width: 100px;
 `;
+
+const PlayableMediaWrapper = styled.div`
+  max-width: 100%;
+
+  audio,
+  video {
+    max-width: 100%;
+  }
+`;
+
+export const MessageAttachment = styled(PureMessageAttachment)``;

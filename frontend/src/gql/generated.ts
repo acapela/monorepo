@@ -564,7 +564,9 @@ export type Message = {
   /** An object relationship */
   thread: Thread;
   thread_id: Scalars['uuid'];
-  transcription?: Maybe<Scalars['String']>;
+  /** An object relationship */
+  transcription?: Maybe<Transcription>;
+  transcription_id?: Maybe<Scalars['uuid']>;
   type: Message_Type_Enum;
   /** An object relationship */
   user: User;
@@ -805,7 +807,8 @@ export type Message_Bool_Exp = {
   message_type?: Maybe<Message_Type_Bool_Exp>;
   thread?: Maybe<Thread_Bool_Exp>;
   thread_id?: Maybe<Uuid_Comparison_Exp>;
-  transcription?: Maybe<String_Comparison_Exp>;
+  transcription?: Maybe<Transcription_Bool_Exp>;
+  transcription_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
@@ -844,7 +847,8 @@ export type Message_Insert_Input = {
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
   thread?: Maybe<Thread_Obj_Rel_Insert_Input>;
   thread_id?: Maybe<Scalars['uuid']>;
-  transcription?: Maybe<Scalars['String']>;
+  transcription?: Maybe<Transcription_Obj_Rel_Insert_Input>;
+  transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -856,7 +860,7 @@ export type Message_Max_Fields = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   thread_id?: Maybe<Scalars['uuid']>;
-  transcription?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 };
 
@@ -865,7 +869,7 @@ export type Message_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
-  transcription?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 };
 
@@ -875,7 +879,7 @@ export type Message_Min_Fields = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   thread_id?: Maybe<Scalars['uuid']>;
-  transcription?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 };
 
@@ -884,7 +888,7 @@ export type Message_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   thread_id?: Maybe<Order_By>;
-  transcription?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 };
 
@@ -920,7 +924,8 @@ export type Message_Order_By = {
   message_type?: Maybe<Message_Type_Order_By>;
   thread?: Maybe<Thread_Order_By>;
   thread_id?: Maybe<Order_By>;
-  transcription?: Maybe<Order_By>;
+  transcription?: Maybe<Transcription_Order_By>;
+  transcription_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
@@ -949,7 +954,7 @@ export enum Message_Select_Column {
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
-  Transcription = 'transcription',
+  TranscriptionId = 'transcription_id',
   /** column name */
   Type = 'type',
   /** column name */
@@ -963,7 +968,7 @@ export type Message_Set_Input = {
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
   thread_id?: Maybe<Scalars['uuid']>;
-  transcription?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
   user_id?: Maybe<Scalars['uuid']>;
 };
@@ -1133,7 +1138,7 @@ export enum Message_Update_Column {
   /** column name */
   ThreadId = 'thread_id',
   /** column name */
-  Transcription = 'transcription',
+  TranscriptionId = 'transcription_id',
   /** column name */
   Type = 'type',
   /** column name */
@@ -1181,6 +1186,14 @@ export type Mutation_Root = {
   delete_thread?: Maybe<Thread_Mutation_Response>;
   /** delete single row from the table: "thread" */
   delete_thread_by_pk?: Maybe<Thread>;
+  /** delete data from the table: "transcription" */
+  delete_transcription?: Maybe<Transcription_Mutation_Response>;
+  /** delete single row from the table: "transcription" */
+  delete_transcription_by_pk?: Maybe<Transcription>;
+  /** delete data from the table: "transcription_status" */
+  delete_transcription_status?: Maybe<Transcription_Status_Mutation_Response>;
+  /** delete single row from the table: "transcription_status" */
+  delete_transcription_status_by_pk?: Maybe<Transcription_Status>;
   /** delete data from the table: "user" */
   delete_user?: Maybe<User_Mutation_Response>;
   /** delete single row from the table: "user" */
@@ -1221,6 +1234,14 @@ export type Mutation_Root = {
   insert_thread?: Maybe<Thread_Mutation_Response>;
   /** insert a single row into the table: "thread" */
   insert_thread_one?: Maybe<Thread>;
+  /** insert data into the table: "transcription" */
+  insert_transcription?: Maybe<Transcription_Mutation_Response>;
+  /** insert a single row into the table: "transcription" */
+  insert_transcription_one?: Maybe<Transcription>;
+  /** insert data into the table: "transcription_status" */
+  insert_transcription_status?: Maybe<Transcription_Status_Mutation_Response>;
+  /** insert a single row into the table: "transcription_status" */
+  insert_transcription_status_one?: Maybe<Transcription_Status>;
   /** insert data into the table: "user" */
   insert_user?: Maybe<User_Mutation_Response>;
   /** insert a single row into the table: "user" */
@@ -1261,6 +1282,14 @@ export type Mutation_Root = {
   update_thread?: Maybe<Thread_Mutation_Response>;
   /** update single row of the table: "thread" */
   update_thread_by_pk?: Maybe<Thread>;
+  /** update data of the table: "transcription" */
+  update_transcription?: Maybe<Transcription_Mutation_Response>;
+  /** update single row of the table: "transcription" */
+  update_transcription_by_pk?: Maybe<Transcription>;
+  /** update data of the table: "transcription_status" */
+  update_transcription_status?: Maybe<Transcription_Status_Mutation_Response>;
+  /** update single row of the table: "transcription_status" */
+  update_transcription_status_by_pk?: Maybe<Transcription_Status>;
   /** update data of the table: "user" */
   update_user?: Maybe<User_Mutation_Response>;
   /** update single row of the table: "user" */
@@ -1383,6 +1412,30 @@ export type Mutation_RootDelete_ThreadArgs = {
 /** mutation root */
 export type Mutation_RootDelete_Thread_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_TranscriptionArgs = {
+  where: Transcription_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Transcription_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Transcription_StatusArgs = {
+  where: Transcription_Status_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Transcription_Status_By_PkArgs = {
+  value: Scalars['String'];
 };
 
 
@@ -1521,6 +1574,34 @@ export type Mutation_RootInsert_ThreadArgs = {
 export type Mutation_RootInsert_Thread_OneArgs = {
   object: Thread_Insert_Input;
   on_conflict?: Maybe<Thread_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_TranscriptionArgs = {
+  objects: Array<Transcription_Insert_Input>;
+  on_conflict?: Maybe<Transcription_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Transcription_OneArgs = {
+  object: Transcription_Insert_Input;
+  on_conflict?: Maybe<Transcription_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Transcription_StatusArgs = {
+  objects: Array<Transcription_Status_Insert_Input>;
+  on_conflict?: Maybe<Transcription_Status_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Transcription_Status_OneArgs = {
+  object: Transcription_Status_Insert_Input;
+  on_conflict?: Maybe<Transcription_Status_On_Conflict>;
 };
 
 
@@ -1675,6 +1756,44 @@ export type Mutation_RootUpdate_Thread_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_TranscriptionArgs = {
+  _append?: Maybe<Transcription_Append_Input>;
+  _delete_at_path?: Maybe<Transcription_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Transcription_Delete_Elem_Input>;
+  _delete_key?: Maybe<Transcription_Delete_Key_Input>;
+  _prepend?: Maybe<Transcription_Prepend_Input>;
+  _set?: Maybe<Transcription_Set_Input>;
+  where: Transcription_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Transcription_By_PkArgs = {
+  _append?: Maybe<Transcription_Append_Input>;
+  _delete_at_path?: Maybe<Transcription_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Transcription_Delete_Elem_Input>;
+  _delete_key?: Maybe<Transcription_Delete_Key_Input>;
+  _prepend?: Maybe<Transcription_Prepend_Input>;
+  _set?: Maybe<Transcription_Set_Input>;
+  pk_columns: Transcription_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Transcription_StatusArgs = {
+  _set?: Maybe<Transcription_Status_Set_Input>;
+  where: Transcription_Status_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Transcription_Status_By_PkArgs = {
+  _set?: Maybe<Transcription_Status_Set_Input>;
+  pk_columns: Transcription_Status_Pk_Columns_Input;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_UserArgs = {
   _set?: Maybe<User_Set_Input>;
   where: User_Bool_Exp;
@@ -1764,6 +1883,18 @@ export type Query_Root = {
   thread_aggregate: Thread_Aggregate;
   /** fetch data from the table: "thread" using primary key columns */
   thread_by_pk?: Maybe<Thread>;
+  /** fetch data from the table: "transcription" */
+  transcription: Array<Transcription>;
+  /** fetch aggregated fields from the table: "transcription" */
+  transcription_aggregate: Transcription_Aggregate;
+  /** fetch data from the table: "transcription" using primary key columns */
+  transcription_by_pk?: Maybe<Transcription>;
+  /** fetch data from the table: "transcription_status" */
+  transcription_status: Array<Transcription_Status>;
+  /** fetch aggregated fields from the table: "transcription_status" */
+  transcription_status_aggregate: Transcription_Status_Aggregate;
+  /** fetch data from the table: "transcription_status" using primary key columns */
+  transcription_status_by_pk?: Maybe<Transcription_Status>;
   /** fetch data from the table: "user" */
   user: Array<User>;
   /** fetch aggregated fields from the table: "user" */
@@ -2019,6 +2150,58 @@ export type Query_RootThread_AggregateArgs = {
 /** query root */
 export type Query_RootThread_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTranscriptionArgs = {
+  distinct_on?: Maybe<Array<Transcription_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Order_By>>;
+  where?: Maybe<Transcription_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTranscription_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Order_By>>;
+  where?: Maybe<Transcription_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTranscription_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTranscription_StatusArgs = {
+  distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Status_Order_By>>;
+  where?: Maybe<Transcription_Status_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTranscription_Status_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Status_Order_By>>;
+  where?: Maybe<Transcription_Status_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTranscription_Status_By_PkArgs = {
+  value: Scalars['String'];
 };
 
 
@@ -2796,6 +2979,18 @@ export type Subscription_Root = {
   thread_aggregate: Thread_Aggregate;
   /** fetch data from the table: "thread" using primary key columns */
   thread_by_pk?: Maybe<Thread>;
+  /** fetch data from the table: "transcription" */
+  transcription: Array<Transcription>;
+  /** fetch aggregated fields from the table: "transcription" */
+  transcription_aggregate: Transcription_Aggregate;
+  /** fetch data from the table: "transcription" using primary key columns */
+  transcription_by_pk?: Maybe<Transcription>;
+  /** fetch data from the table: "transcription_status" */
+  transcription_status: Array<Transcription_Status>;
+  /** fetch aggregated fields from the table: "transcription_status" */
+  transcription_status_aggregate: Transcription_Status_Aggregate;
+  /** fetch data from the table: "transcription_status" using primary key columns */
+  transcription_status_by_pk?: Maybe<Transcription_Status>;
   /** fetch data from the table: "user" */
   user: Array<User>;
   /** fetch aggregated fields from the table: "user" */
@@ -3055,6 +3250,58 @@ export type Subscription_RootThread_By_PkArgs = {
 
 
 /** subscription root */
+export type Subscription_RootTranscriptionArgs = {
+  distinct_on?: Maybe<Array<Transcription_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Order_By>>;
+  where?: Maybe<Transcription_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Order_By>>;
+  where?: Maybe<Transcription_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_StatusArgs = {
+  distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Status_Order_By>>;
+  where?: Maybe<Transcription_Status_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_Status_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Status_Order_By>>;
+  where?: Maybe<Transcription_Status_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_Status_By_PkArgs = {
+  value: Scalars['String'];
+};
+
+
+/** subscription root */
 export type Subscription_RootUserArgs = {
   distinct_on?: Maybe<Array<User_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -3294,6 +3541,375 @@ export type Timestamptz_Comparison_Exp = {
   _neq?: Maybe<Scalars['timestamptz']>;
   _nin?: Maybe<Array<Scalars['timestamptz']>>;
 };
+
+/** columns and relationships of "transcription" */
+export type Transcription = {
+  __typename?: 'transcription';
+  created_at: Scalars['timestamptz'];
+  id: Scalars['uuid'];
+  sonix_media_id: Scalars['String'];
+  status: Transcription_Status_Enum;
+  transcript?: Maybe<Scalars['jsonb']>;
+  updated_at: Scalars['timestamptz'];
+};
+
+
+/** columns and relationships of "transcription" */
+export type TranscriptionTranscriptArgs = {
+  path?: Maybe<Scalars['String']>;
+};
+
+/** aggregated selection of "transcription" */
+export type Transcription_Aggregate = {
+  __typename?: 'transcription_aggregate';
+  aggregate?: Maybe<Transcription_Aggregate_Fields>;
+  nodes: Array<Transcription>;
+};
+
+/** aggregate fields of "transcription" */
+export type Transcription_Aggregate_Fields = {
+  __typename?: 'transcription_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Transcription_Max_Fields>;
+  min?: Maybe<Transcription_Min_Fields>;
+};
+
+
+/** aggregate fields of "transcription" */
+export type Transcription_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Transcription_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "transcription" */
+export type Transcription_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Transcription_Max_Order_By>;
+  min?: Maybe<Transcription_Min_Order_By>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Transcription_Append_Input = {
+  transcript?: Maybe<Scalars['jsonb']>;
+};
+
+/** input type for inserting array relation for remote table "transcription" */
+export type Transcription_Arr_Rel_Insert_Input = {
+  data: Array<Transcription_Insert_Input>;
+  on_conflict?: Maybe<Transcription_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "transcription". All fields are combined with a logical 'AND'. */
+export type Transcription_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Transcription_Bool_Exp>>>;
+  _not?: Maybe<Transcription_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Transcription_Bool_Exp>>>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  sonix_media_id?: Maybe<String_Comparison_Exp>;
+  status?: Maybe<Transcription_Status_Enum_Comparison_Exp>;
+  transcript?: Maybe<Jsonb_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "transcription" */
+export enum Transcription_Constraint {
+  /** unique or primary key constraint */
+  TranscriptionPkey = 'transcription_pkey',
+  /** unique or primary key constraint */
+  TranscriptionSonixMediaIdKey = 'transcription_sonix_media_id_key'
+}
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Transcription_Delete_At_Path_Input = {
+  transcript?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Transcription_Delete_Elem_Input = {
+  transcript?: Maybe<Scalars['Int']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Transcription_Delete_Key_Input = {
+  transcript?: Maybe<Scalars['String']>;
+};
+
+/** input type for inserting data into table "transcription" */
+export type Transcription_Insert_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  sonix_media_id?: Maybe<Scalars['String']>;
+  status?: Maybe<Transcription_Status_Enum>;
+  transcript?: Maybe<Scalars['jsonb']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+};
+
+/** aggregate max on columns */
+export type Transcription_Max_Fields = {
+  __typename?: 'transcription_max_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  sonix_media_id?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+};
+
+/** order by max() on columns of table "transcription" */
+export type Transcription_Max_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  sonix_media_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Transcription_Min_Fields = {
+  __typename?: 'transcription_min_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  sonix_media_id?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+};
+
+/** order by min() on columns of table "transcription" */
+export type Transcription_Min_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  sonix_media_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "transcription" */
+export type Transcription_Mutation_Response = {
+  __typename?: 'transcription_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Transcription>;
+};
+
+/** input type for inserting object relation for remote table "transcription" */
+export type Transcription_Obj_Rel_Insert_Input = {
+  data: Transcription_Insert_Input;
+  on_conflict?: Maybe<Transcription_On_Conflict>;
+};
+
+/** on conflict condition type for table "transcription" */
+export type Transcription_On_Conflict = {
+  constraint: Transcription_Constraint;
+  update_columns: Array<Transcription_Update_Column>;
+  where?: Maybe<Transcription_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "transcription" */
+export type Transcription_Order_By = {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  sonix_media_id?: Maybe<Order_By>;
+  status?: Maybe<Order_By>;
+  transcript?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "transcription" */
+export type Transcription_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Transcription_Prepend_Input = {
+  transcript?: Maybe<Scalars['jsonb']>;
+};
+
+/** select columns of table "transcription" */
+export enum Transcription_Select_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  SonixMediaId = 'sonix_media_id',
+  /** column name */
+  Status = 'status',
+  /** column name */
+  Transcript = 'transcript',
+  /** column name */
+  UpdatedAt = 'updated_at'
+}
+
+/** input type for updating data in table "transcription" */
+export type Transcription_Set_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  sonix_media_id?: Maybe<Scalars['String']>;
+  status?: Maybe<Transcription_Status_Enum>;
+  transcript?: Maybe<Scalars['jsonb']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+};
+
+/** columns and relationships of "transcription_status" */
+export type Transcription_Status = {
+  __typename?: 'transcription_status';
+  value: Scalars['String'];
+};
+
+/** aggregated selection of "transcription_status" */
+export type Transcription_Status_Aggregate = {
+  __typename?: 'transcription_status_aggregate';
+  aggregate?: Maybe<Transcription_Status_Aggregate_Fields>;
+  nodes: Array<Transcription_Status>;
+};
+
+/** aggregate fields of "transcription_status" */
+export type Transcription_Status_Aggregate_Fields = {
+  __typename?: 'transcription_status_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Transcription_Status_Max_Fields>;
+  min?: Maybe<Transcription_Status_Min_Fields>;
+};
+
+
+/** aggregate fields of "transcription_status" */
+export type Transcription_Status_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Transcription_Status_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "transcription_status" */
+export type Transcription_Status_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Transcription_Status_Max_Order_By>;
+  min?: Maybe<Transcription_Status_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "transcription_status" */
+export type Transcription_Status_Arr_Rel_Insert_Input = {
+  data: Array<Transcription_Status_Insert_Input>;
+  on_conflict?: Maybe<Transcription_Status_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "transcription_status". All fields are combined with a logical 'AND'. */
+export type Transcription_Status_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Transcription_Status_Bool_Exp>>>;
+  _not?: Maybe<Transcription_Status_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Transcription_Status_Bool_Exp>>>;
+  value?: Maybe<String_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "transcription_status" */
+export enum Transcription_Status_Constraint {
+  /** unique or primary key constraint */
+  TranscriptionStatusPkey = 'transcription_status_pkey'
+}
+
+export enum Transcription_Status_Enum {
+  Blocked = 'blocked',
+  Completed = 'completed',
+  Failed = 'failed',
+  Preparing = 'preparing',
+  Transcribing = 'transcribing'
+}
+
+/** expression to compare columns of type transcription_status_enum. All fields are combined with logical 'AND'. */
+export type Transcription_Status_Enum_Comparison_Exp = {
+  _eq?: Maybe<Transcription_Status_Enum>;
+  _in?: Maybe<Array<Transcription_Status_Enum>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _neq?: Maybe<Transcription_Status_Enum>;
+  _nin?: Maybe<Array<Transcription_Status_Enum>>;
+};
+
+/** input type for inserting data into table "transcription_status" */
+export type Transcription_Status_Insert_Input = {
+  value?: Maybe<Scalars['String']>;
+};
+
+/** aggregate max on columns */
+export type Transcription_Status_Max_Fields = {
+  __typename?: 'transcription_status_max_fields';
+  value?: Maybe<Scalars['String']>;
+};
+
+/** order by max() on columns of table "transcription_status" */
+export type Transcription_Status_Max_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Transcription_Status_Min_Fields = {
+  __typename?: 'transcription_status_min_fields';
+  value?: Maybe<Scalars['String']>;
+};
+
+/** order by min() on columns of table "transcription_status" */
+export type Transcription_Status_Min_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "transcription_status" */
+export type Transcription_Status_Mutation_Response = {
+  __typename?: 'transcription_status_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Transcription_Status>;
+};
+
+/** input type for inserting object relation for remote table "transcription_status" */
+export type Transcription_Status_Obj_Rel_Insert_Input = {
+  data: Transcription_Status_Insert_Input;
+  on_conflict?: Maybe<Transcription_Status_On_Conflict>;
+};
+
+/** on conflict condition type for table "transcription_status" */
+export type Transcription_Status_On_Conflict = {
+  constraint: Transcription_Status_Constraint;
+  update_columns: Array<Transcription_Status_Update_Column>;
+  where?: Maybe<Transcription_Status_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "transcription_status" */
+export type Transcription_Status_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "transcription_status" */
+export type Transcription_Status_Pk_Columns_Input = {
+  value: Scalars['String'];
+};
+
+/** select columns of table "transcription_status" */
+export enum Transcription_Status_Select_Column {
+  /** column name */
+  Value = 'value'
+}
+
+/** input type for updating data in table "transcription_status" */
+export type Transcription_Status_Set_Input = {
+  value?: Maybe<Scalars['String']>;
+};
+
+/** update columns of table "transcription_status" */
+export enum Transcription_Status_Update_Column {
+  /** column name */
+  Value = 'value'
+}
+
+/** update columns of table "transcription" */
+export enum Transcription_Update_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  SonixMediaId = 'sonix_media_id',
+  /** column name */
+  Status = 'status',
+  /** column name */
+  Transcript = 'transcript',
+  /** column name */
+  UpdatedAt = 'updated_at'
+}
 
 /** columns and relationships of "user" */
 export type User = {
@@ -3780,9 +4396,12 @@ export type AttachmentDetailedInfoFragment = (
 
 export type ThreadMessageDetailedInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content' | 'type' | 'transcription'>
+  & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
-  & { user: (
+  & { transcription?: Maybe<(
+    { __typename?: 'transcription' }
+    & Pick<Transcription, 'status' | 'transcript'>
+  )>, user: (
     { __typename?: 'user' }
     & Pick<User, 'id' | 'name'>
     & { avatarUrl: User['avatar_url'] }
@@ -4040,7 +4659,7 @@ export type attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4052,6 +4671,7 @@ export type messageFieldPolicy = {
 	thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
@@ -4100,20 +4720,20 @@ export type message_attachments_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type message_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_mutation_responseKeySpecifier)[];
@@ -4149,7 +4769,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_thread' | 'delete_thread_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_thread' | 'insert_thread_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_thread' | 'update_thread_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_thread' | 'delete_thread_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_thread' | 'insert_thread_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_thread' | 'update_thread_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4170,6 +4790,10 @@ export type mutation_rootFieldPolicy = {
 	delete_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4190,6 +4814,10 @@ export type mutation_rootFieldPolicy = {
 	insert_room_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_thread_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_transcription_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_transcription_status_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_user_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4210,11 +4838,15 @@ export type mutation_rootFieldPolicy = {
 	update_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4245,6 +4877,12 @@ export type query_rootFieldPolicy = {
 	thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
@@ -4386,7 +5024,7 @@ export type room_participants_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4417,6 +5055,12 @@ export type subscription_rootFieldPolicy = {
 	thread?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
@@ -4458,6 +5102,73 @@ export type thread_min_fieldsFieldPolicy = {
 };
 export type thread_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | thread_mutation_responseKeySpecifier)[];
 export type thread_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcriptionKeySpecifier = ('created_at' | 'id' | 'sonix_media_id' | 'status' | 'transcript' | 'updated_at' | transcriptionKeySpecifier)[];
+export type transcriptionFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	sonix_media_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	status?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_aggregateKeySpecifier = ('aggregate' | 'nodes' | transcription_aggregateKeySpecifier)[];
+export type transcription_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | transcription_aggregate_fieldsKeySpecifier)[];
+export type transcription_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_max_fieldsKeySpecifier = ('created_at' | 'id' | 'sonix_media_id' | 'updated_at' | transcription_max_fieldsKeySpecifier)[];
+export type transcription_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	sonix_media_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_min_fieldsKeySpecifier = ('created_at' | 'id' | 'sonix_media_id' | 'updated_at' | transcription_min_fieldsKeySpecifier)[];
+export type transcription_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	sonix_media_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | transcription_mutation_responseKeySpecifier)[];
+export type transcription_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_statusKeySpecifier = ('value' | transcription_statusKeySpecifier)[];
+export type transcription_statusFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_status_aggregateKeySpecifier = ('aggregate' | 'nodes' | transcription_status_aggregateKeySpecifier)[];
+export type transcription_status_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_status_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | transcription_status_aggregate_fieldsKeySpecifier)[];
+export type transcription_status_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_status_max_fieldsKeySpecifier = ('value' | transcription_status_max_fieldsKeySpecifier)[];
+export type transcription_status_max_fieldsFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_status_min_fieldsKeySpecifier = ('value' | transcription_status_min_fieldsKeySpecifier)[];
+export type transcription_status_min_fieldsFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_status_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | transcription_status_mutation_responseKeySpecifier)[];
+export type transcription_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -4757,6 +5468,54 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | thread_mutation_responseKeySpecifier | (() => undefined | thread_mutation_responseKeySpecifier),
 		fields?: thread_mutation_responseFieldPolicy,
 	},
+	transcription?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcriptionKeySpecifier | (() => undefined | transcriptionKeySpecifier),
+		fields?: transcriptionFieldPolicy,
+	},
+	transcription_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_aggregateKeySpecifier | (() => undefined | transcription_aggregateKeySpecifier),
+		fields?: transcription_aggregateFieldPolicy,
+	},
+	transcription_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_aggregate_fieldsKeySpecifier | (() => undefined | transcription_aggregate_fieldsKeySpecifier),
+		fields?: transcription_aggregate_fieldsFieldPolicy,
+	},
+	transcription_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_max_fieldsKeySpecifier | (() => undefined | transcription_max_fieldsKeySpecifier),
+		fields?: transcription_max_fieldsFieldPolicy,
+	},
+	transcription_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_min_fieldsKeySpecifier | (() => undefined | transcription_min_fieldsKeySpecifier),
+		fields?: transcription_min_fieldsFieldPolicy,
+	},
+	transcription_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_mutation_responseKeySpecifier | (() => undefined | transcription_mutation_responseKeySpecifier),
+		fields?: transcription_mutation_responseFieldPolicy,
+	},
+	transcription_status?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_statusKeySpecifier | (() => undefined | transcription_statusKeySpecifier),
+		fields?: transcription_statusFieldPolicy,
+	},
+	transcription_status_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_status_aggregateKeySpecifier | (() => undefined | transcription_status_aggregateKeySpecifier),
+		fields?: transcription_status_aggregateFieldPolicy,
+	},
+	transcription_status_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_status_aggregate_fieldsKeySpecifier | (() => undefined | transcription_status_aggregate_fieldsKeySpecifier),
+		fields?: transcription_status_aggregate_fieldsFieldPolicy,
+	},
+	transcription_status_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_status_max_fieldsKeySpecifier | (() => undefined | transcription_status_max_fieldsKeySpecifier),
+		fields?: transcription_status_max_fieldsFieldPolicy,
+	},
+	transcription_status_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_status_min_fieldsKeySpecifier | (() => undefined | transcription_status_min_fieldsKeySpecifier),
+		fields?: transcription_status_min_fieldsFieldPolicy,
+	},
+	transcription_status_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_status_mutation_responseKeySpecifier | (() => undefined | transcription_status_mutation_responseKeySpecifier),
+		fields?: transcription_status_mutation_responseFieldPolicy,
+	},
 	user?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | userKeySpecifier | (() => undefined | userKeySpecifier),
 		fields?: userFieldPolicy,
@@ -4854,7 +5613,10 @@ export const ThreadMessageDetailedInfoFragmentDoc = gql`
   createdAt: created_at
   content
   type
-  transcription
+  transcription {
+    status
+    transcript
+  }
   user {
     id
     name

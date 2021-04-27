@@ -670,7 +670,10 @@ type message {
   """An object relationship"""
   thread: thread!
   thread_id: uuid!
-  transcription: String
+
+  """An object relationship"""
+  transcription: transcription
+  transcription_id: uuid
   type: message_type_enum!
 
   """An object relationship"""
@@ -914,7 +917,8 @@ input message_bool_exp {
   message_type: message_type_bool_exp
   thread: thread_bool_exp
   thread_id: uuid_comparison_exp
-  transcription: String_comparison_exp
+  transcription: transcription_bool_exp
+  transcription_id: uuid_comparison_exp
   type: message_type_enum_comparison_exp
   user: user_bool_exp
   user_id: uuid_comparison_exp
@@ -964,7 +968,8 @@ input message_insert_input {
   message_type: message_type_obj_rel_insert_input
   thread: thread_obj_rel_insert_input
   thread_id: uuid
-  transcription: String
+  transcription: transcription_obj_rel_insert_input
+  transcription_id: uuid
   type: message_type_enum
   user: user_obj_rel_insert_input
   user_id: uuid
@@ -975,7 +980,7 @@ type message_max_fields {
   created_at: timestamptz
   id: uuid
   thread_id: uuid
-  transcription: String
+  transcription_id: uuid
   user_id: uuid
 }
 
@@ -986,7 +991,7 @@ input message_max_order_by {
   created_at: order_by
   id: order_by
   thread_id: order_by
-  transcription: order_by
+  transcription_id: order_by
   user_id: order_by
 }
 
@@ -995,7 +1000,7 @@ type message_min_fields {
   created_at: timestamptz
   id: uuid
   thread_id: uuid
-  transcription: String
+  transcription_id: uuid
   user_id: uuid
 }
 
@@ -1006,7 +1011,7 @@ input message_min_order_by {
   created_at: order_by
   id: order_by
   thread_id: order_by
-  transcription: order_by
+  transcription_id: order_by
   user_id: order_by
 }
 
@@ -1050,7 +1055,8 @@ input message_order_by {
   message_type: message_type_order_by
   thread: thread_order_by
   thread_id: order_by
-  transcription: order_by
+  transcription: transcription_order_by
+  transcription_id: order_by
   type: order_by
   user: user_order_by
   user_id: order_by
@@ -1088,7 +1094,7 @@ enum message_select_column {
   thread_id
 
   """column name"""
-  transcription
+  transcription_id
 
   """column name"""
   type
@@ -1106,7 +1112,7 @@ input message_set_input {
   id: uuid
   is_draft: Boolean
   thread_id: uuid
-  transcription: String
+  transcription_id: uuid
   type: message_type_enum
   user_id: uuid
 }
@@ -1308,7 +1314,7 @@ enum message_update_column {
   thread_id
 
   """column name"""
-  transcription
+  transcription_id
 
   """column name"""
   type
@@ -1440,6 +1446,32 @@ type mutation_root {
   delete single row from the table: "thread"
   """
   delete_thread_by_pk(id: uuid!): thread
+
+  """
+  delete data from the table: "transcription"
+  """
+  delete_transcription(
+    """filter the rows which have to be deleted"""
+    where: transcription_bool_exp!
+  ): transcription_mutation_response
+
+  """
+  delete single row from the table: "transcription"
+  """
+  delete_transcription_by_pk(id: uuid!): transcription
+
+  """
+  delete data from the table: "transcription_status"
+  """
+  delete_transcription_status(
+    """filter the rows which have to be deleted"""
+    where: transcription_status_bool_exp!
+  ): transcription_status_mutation_response
+
+  """
+  delete single row from the table: "transcription_status"
+  """
+  delete_transcription_status_by_pk(value: String!): transcription_status
 
   """
   delete data from the table: "user"
@@ -1651,6 +1683,50 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: thread_on_conflict
   ): thread
+
+  """
+  insert data into the table: "transcription"
+  """
+  insert_transcription(
+    """the rows to be inserted"""
+    objects: [transcription_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: transcription_on_conflict
+  ): transcription_mutation_response
+
+  """
+  insert a single row into the table: "transcription"
+  """
+  insert_transcription_one(
+    """the row to be inserted"""
+    object: transcription_insert_input!
+
+    """on conflict condition"""
+    on_conflict: transcription_on_conflict
+  ): transcription
+
+  """
+  insert data into the table: "transcription_status"
+  """
+  insert_transcription_status(
+    """the rows to be inserted"""
+    objects: [transcription_status_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: transcription_status_on_conflict
+  ): transcription_status_mutation_response
+
+  """
+  insert a single row into the table: "transcription_status"
+  """
+  insert_transcription_status_one(
+    """the row to be inserted"""
+    object: transcription_status_insert_input!
+
+    """on conflict condition"""
+    on_conflict: transcription_status_on_conflict
+  ): transcription_status
 
   """
   insert data into the table: "user"
@@ -1895,6 +1971,88 @@ type mutation_root {
     _set: thread_set_input
     pk_columns: thread_pk_columns_input!
   ): thread
+
+  """
+  update data of the table: "transcription"
+  """
+  update_transcription(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: transcription_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: transcription_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: transcription_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: transcription_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: transcription_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: transcription_set_input
+
+    """filter the rows which have to be updated"""
+    where: transcription_bool_exp!
+  ): transcription_mutation_response
+
+  """
+  update single row of the table: "transcription"
+  """
+  update_transcription_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: transcription_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: transcription_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: transcription_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: transcription_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: transcription_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: transcription_set_input
+    pk_columns: transcription_pk_columns_input!
+  ): transcription
+
+  """
+  update data of the table: "transcription_status"
+  """
+  update_transcription_status(
+    """sets the columns of the filtered rows to the given values"""
+    _set: transcription_status_set_input
+
+    """filter the rows which have to be updated"""
+    where: transcription_status_bool_exp!
+  ): transcription_status_mutation_response
+
+  """
+  update single row of the table: "transcription_status"
+  """
+  update_transcription_status_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: transcription_status_set_input
+    pk_columns: transcription_status_pk_columns_input!
+  ): transcription_status
 
   """
   update data of the table: "user"
@@ -2345,6 +2503,94 @@ type query_root {
 
   """fetch data from the table: "thread" using primary key columns"""
   thread_by_pk(id: uuid!): thread
+
+  """
+  fetch data from the table: "transcription"
+  """
+  transcription(
+    """distinct select on columns"""
+    distinct_on: [transcription_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_bool_exp
+  ): [transcription!]!
+
+  """
+  fetch aggregated fields from the table: "transcription"
+  """
+  transcription_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_bool_exp
+  ): transcription_aggregate!
+
+  """fetch data from the table: "transcription" using primary key columns"""
+  transcription_by_pk(id: uuid!): transcription
+
+  """
+  fetch data from the table: "transcription_status"
+  """
+  transcription_status(
+    """distinct select on columns"""
+    distinct_on: [transcription_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_status_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_status_bool_exp
+  ): [transcription_status!]!
+
+  """
+  fetch aggregated fields from the table: "transcription_status"
+  """
+  transcription_status_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_status_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_status_bool_exp
+  ): transcription_status_aggregate!
+
+  """
+  fetch data from the table: "transcription_status" using primary key columns
+  """
+  transcription_status_by_pk(value: String!): transcription_status
 
   """
   fetch data from the table: "user"
@@ -3625,6 +3871,94 @@ type subscription_root {
   thread_by_pk(id: uuid!): thread
 
   """
+  fetch data from the table: "transcription"
+  """
+  transcription(
+    """distinct select on columns"""
+    distinct_on: [transcription_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_bool_exp
+  ): [transcription!]!
+
+  """
+  fetch aggregated fields from the table: "transcription"
+  """
+  transcription_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_bool_exp
+  ): transcription_aggregate!
+
+  """fetch data from the table: "transcription" using primary key columns"""
+  transcription_by_pk(id: uuid!): transcription
+
+  """
+  fetch data from the table: "transcription_status"
+  """
+  transcription_status(
+    """distinct select on columns"""
+    distinct_on: [transcription_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_status_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_status_bool_exp
+  ): [transcription_status!]!
+
+  """
+  fetch aggregated fields from the table: "transcription_status"
+  """
+  transcription_status_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_status_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_status_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_status_bool_exp
+  ): transcription_status_aggregate!
+
+  """
+  fetch data from the table: "transcription_status" using primary key columns
+  """
+  transcription_status_by_pk(value: String!): transcription_status
+
+  """
   fetch data from the table: "user"
   """
   user(
@@ -3928,6 +4262,439 @@ input timestamptz_comparison_exp {
   _lte: timestamptz
   _neq: timestamptz
   _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "transcription"
+"""
+type transcription {
+  created_at: timestamptz!
+  id: uuid!
+  sonix_media_id: String!
+  status: transcription_status_enum!
+  transcript(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  updated_at: timestamptz!
+}
+
+"""
+aggregated selection of "transcription"
+"""
+type transcription_aggregate {
+  aggregate: transcription_aggregate_fields
+  nodes: [transcription!]!
+}
+
+"""
+aggregate fields of "transcription"
+"""
+type transcription_aggregate_fields {
+  count(columns: [transcription_select_column!], distinct: Boolean): Int
+  max: transcription_max_fields
+  min: transcription_min_fields
+}
+
+"""
+order by aggregate values of table "transcription"
+"""
+input transcription_aggregate_order_by {
+  count: order_by
+  max: transcription_max_order_by
+  min: transcription_min_order_by
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input transcription_append_input {
+  transcript: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "transcription"
+"""
+input transcription_arr_rel_insert_input {
+  data: [transcription_insert_input!]!
+  on_conflict: transcription_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "transcription". All fields are combined with a logical 'AND'.
+"""
+input transcription_bool_exp {
+  _and: [transcription_bool_exp]
+  _not: transcription_bool_exp
+  _or: [transcription_bool_exp]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  sonix_media_id: String_comparison_exp
+  status: transcription_status_enum_comparison_exp
+  transcript: jsonb_comparison_exp
+  updated_at: timestamptz_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "transcription"
+"""
+enum transcription_constraint {
+  """unique or primary key constraint"""
+  transcription_pkey
+
+  """unique or primary key constraint"""
+  transcription_sonix_media_id_key
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input transcription_delete_at_path_input {
+  transcript: [String]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input transcription_delete_elem_input {
+  transcript: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input transcription_delete_key_input {
+  transcript: String
+}
+
+"""
+input type for inserting data into table "transcription"
+"""
+input transcription_insert_input {
+  created_at: timestamptz
+  id: uuid
+  sonix_media_id: String
+  status: transcription_status_enum
+  transcript: jsonb
+  updated_at: timestamptz
+}
+
+"""aggregate max on columns"""
+type transcription_max_fields {
+  created_at: timestamptz
+  id: uuid
+  sonix_media_id: String
+  updated_at: timestamptz
+}
+
+"""
+order by max() on columns of table "transcription"
+"""
+input transcription_max_order_by {
+  created_at: order_by
+  id: order_by
+  sonix_media_id: order_by
+  updated_at: order_by
+}
+
+"""aggregate min on columns"""
+type transcription_min_fields {
+  created_at: timestamptz
+  id: uuid
+  sonix_media_id: String
+  updated_at: timestamptz
+}
+
+"""
+order by min() on columns of table "transcription"
+"""
+input transcription_min_order_by {
+  created_at: order_by
+  id: order_by
+  sonix_media_id: order_by
+  updated_at: order_by
+}
+
+"""
+response of any mutation on the table "transcription"
+"""
+type transcription_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [transcription!]!
+}
+
+"""
+input type for inserting object relation for remote table "transcription"
+"""
+input transcription_obj_rel_insert_input {
+  data: transcription_insert_input!
+  on_conflict: transcription_on_conflict
+}
+
+"""
+on conflict condition type for table "transcription"
+"""
+input transcription_on_conflict {
+  constraint: transcription_constraint!
+  update_columns: [transcription_update_column!]!
+  where: transcription_bool_exp
+}
+
+"""
+ordering options when selecting data from "transcription"
+"""
+input transcription_order_by {
+  created_at: order_by
+  id: order_by
+  sonix_media_id: order_by
+  status: order_by
+  transcript: order_by
+  updated_at: order_by
+}
+
+"""
+primary key columns input for table: "transcription"
+"""
+input transcription_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input transcription_prepend_input {
+  transcript: jsonb
+}
+
+"""
+select columns of table "transcription"
+"""
+enum transcription_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  sonix_media_id
+
+  """column name"""
+  status
+
+  """column name"""
+  transcript
+
+  """column name"""
+  updated_at
+}
+
+"""
+input type for updating data in table "transcription"
+"""
+input transcription_set_input {
+  created_at: timestamptz
+  id: uuid
+  sonix_media_id: String
+  status: transcription_status_enum
+  transcript: jsonb
+  updated_at: timestamptz
+}
+
+"""
+columns and relationships of "transcription_status"
+"""
+type transcription_status {
+  value: String!
+}
+
+"""
+aggregated selection of "transcription_status"
+"""
+type transcription_status_aggregate {
+  aggregate: transcription_status_aggregate_fields
+  nodes: [transcription_status!]!
+}
+
+"""
+aggregate fields of "transcription_status"
+"""
+type transcription_status_aggregate_fields {
+  count(columns: [transcription_status_select_column!], distinct: Boolean): Int
+  max: transcription_status_max_fields
+  min: transcription_status_min_fields
+}
+
+"""
+order by aggregate values of table "transcription_status"
+"""
+input transcription_status_aggregate_order_by {
+  count: order_by
+  max: transcription_status_max_order_by
+  min: transcription_status_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "transcription_status"
+"""
+input transcription_status_arr_rel_insert_input {
+  data: [transcription_status_insert_input!]!
+  on_conflict: transcription_status_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "transcription_status". All fields are combined with a logical 'AND'.
+"""
+input transcription_status_bool_exp {
+  _and: [transcription_status_bool_exp]
+  _not: transcription_status_bool_exp
+  _or: [transcription_status_bool_exp]
+  value: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "transcription_status"
+"""
+enum transcription_status_constraint {
+  """unique or primary key constraint"""
+  transcription_status_pkey
+}
+
+enum transcription_status_enum {
+  blocked
+  completed
+  failed
+  preparing
+  transcribing
+}
+
+"""
+expression to compare columns of type transcription_status_enum. All fields are combined with logical 'AND'.
+"""
+input transcription_status_enum_comparison_exp {
+  _eq: transcription_status_enum
+  _in: [transcription_status_enum!]
+  _is_null: Boolean
+  _neq: transcription_status_enum
+  _nin: [transcription_status_enum!]
+}
+
+"""
+input type for inserting data into table "transcription_status"
+"""
+input transcription_status_insert_input {
+  value: String
+}
+
+"""aggregate max on columns"""
+type transcription_status_max_fields {
+  value: String
+}
+
+"""
+order by max() on columns of table "transcription_status"
+"""
+input transcription_status_max_order_by {
+  value: order_by
+}
+
+"""aggregate min on columns"""
+type transcription_status_min_fields {
+  value: String
+}
+
+"""
+order by min() on columns of table "transcription_status"
+"""
+input transcription_status_min_order_by {
+  value: order_by
+}
+
+"""
+response of any mutation on the table "transcription_status"
+"""
+type transcription_status_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [transcription_status!]!
+}
+
+"""
+input type for inserting object relation for remote table "transcription_status"
+"""
+input transcription_status_obj_rel_insert_input {
+  data: transcription_status_insert_input!
+  on_conflict: transcription_status_on_conflict
+}
+
+"""
+on conflict condition type for table "transcription_status"
+"""
+input transcription_status_on_conflict {
+  constraint: transcription_status_constraint!
+  update_columns: [transcription_status_update_column!]!
+  where: transcription_status_bool_exp
+}
+
+"""
+ordering options when selecting data from "transcription_status"
+"""
+input transcription_status_order_by {
+  value: order_by
+}
+
+"""
+primary key columns input for table: "transcription_status"
+"""
+input transcription_status_pk_columns_input {
+  value: String!
+}
+
+"""
+select columns of table "transcription_status"
+"""
+enum transcription_status_select_column {
+  """column name"""
+  value
+}
+
+"""
+input type for updating data in table "transcription_status"
+"""
+input transcription_status_set_input {
+  value: String
+}
+
+"""
+update columns of table "transcription_status"
+"""
+enum transcription_status_update_column {
+  """column name"""
+  value
+}
+
+"""
+update columns of table "transcription"
+"""
+enum transcription_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  sonix_media_id
+
+  """column name"""
+  status
+
+  """column name"""
+  transcript
+
+  """column name"""
+  updated_at
 }
 
 """

@@ -43,6 +43,8 @@ declare global {
       BACKEND_ROOT_URL: string;
       BACKEND_AUTH_TOKEN: string;
       SENDGRID_API_KEY: string;
+      SONIX_API_KEY: string;
+      SONIX_CALLBACK_SECRET: string;
     }
   }
 }
