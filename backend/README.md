@@ -1,6 +1,6 @@
 # Backend
 
-This is bakcend package of our monorepo, it contains our hasura setup and API server.
+This is backend package of our monorepo, it contains our hasura setup and API server.
 
 ## Usage
 
