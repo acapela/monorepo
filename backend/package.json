@@ -1,6 +1,7 @@
 {
   "name": "~backend",
   "version": "1.0.0",
+  "license": "UNLICENSED",
   "main": "index.js",
   "scripts": {
     "test": "jest src --runInBand",

@@ -1,6 +1,7 @@
 {
   "name": "~frontend",
   "version": "1.0.0",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "next:build": "next build",
