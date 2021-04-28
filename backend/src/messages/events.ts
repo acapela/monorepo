@@ -3,7 +3,7 @@ import { db } from "~db";
 import { Message_Type_Enum } from "~frontend/src/gql";
 import { assert } from "~shared/assert";
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
-import { Sonix } from "../transcriptions/sonixClient";
+import { getSonixClient } from "../transcriptions/sonixClient";
 
 interface HasuraMessage {
   id: string;
@@ -34,7 +34,7 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
 
     assert(attachment, "Media message has no attachment");
 
-    const sonix = new Sonix();
+    const sonix = getSonixClient();
     const attachmentUrl = await getSignedDownloadUrl(attachment.id);
     const language = "en";
 

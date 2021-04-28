@@ -38,7 +38,9 @@ export interface JsonTranscriptResponse {
   }[];
 }
 
-export class Sonix {
+let sonixClient: Sonix;
+
+class Sonix {
   private url = "https://api.sonix.ai/v1";
   private key: string;
 
@@ -108,4 +110,12 @@ export class Sonix {
       path: `/media/${mediaId}/transcript.json`,
     });
   }
+}
+
+export function getSonixClient() {
+  if (!sonixClient) {
+    sonixClient = new Sonix();
+  }
+
+  return sonixClient;
 }
