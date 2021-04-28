@@ -1,12 +1,15 @@
 import { Request, Response, Router } from "express";
-import { db } from "~db";
 import { Transcription_Status_Enum } from "~frontend/src/gql";
 import { assert } from "~shared/assert";
 import logger from "~shared/logger";
-import { getSonixClient, MediaResponse } from "./sonixClient";
+import { MediaResponse } from "./sonixClient";
+import { updateMessageTranscription } from "./transcriptionService";
 
 export const router = Router();
 
+/**
+ * This endpoint handles webhooks from Sonix once transcription completes or fails
+ */
 router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   const { secret } = req.query;
 
@@ -21,20 +24,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   assert(media, "Sonix call has no body");
 
   if (media.status === Transcription_Status_Enum.Completed) {
-    const sonix = getSonixClient();
-    const transcript = await sonix.getJsonTranscript({ mediaId: media.id });
-
-    await db.message.update({
-      where: { id: media.custom_data.messageId },
-      data: {
-        transcription: {
-          update: {
-            status: media.status,
-            transcript: transcript.transcript,
-          },
-        },
-      },
-    });
+    await updateMessageTranscription(media);
   }
 
   res.status(204).end();
