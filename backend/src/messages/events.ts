@@ -1,9 +1,6 @@
 import { EventHandler } from "~backend/src/events/eventHandlers";
-import { db } from "~db";
 import { Message_Type_Enum } from "~frontend/src/gql";
-import { assert } from "~shared/assert";
-import { getSignedDownloadUrl } from "../attachments/googleStorage";
-import { getSonixClient } from "../transcriptions/sonixClient";
+import { sendForTranscription } from "../transcriptions/transcriptionService";
 
 interface HasuraMessage {
   id: string;
@@ -26,35 +23,6 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
       return;
     }
 
-    const messageAttachment = await db.message_attachments.findFirst({
-      where: { message_id: message.id },
-      include: { attachment: true },
-    });
-    const attachment = messageAttachment?.attachment;
-
-    assert(attachment, "Media message has no attachment");
-
-    const sonix = getSonixClient();
-    const attachmentUrl = await getSignedDownloadUrl(attachment.id);
-    const language = "en";
-
-    const media = await sonix.submitNewMedia({
-      messageId: message.id,
-      fileUrl: attachmentUrl,
-      fileName: attachment.original_name,
-      language,
-    });
-
-    await db.message.update({
-      where: { id: message.id },
-      data: {
-        transcription: {
-          create: {
-            sonix_media_id: media.id,
-            status: media.status,
-          },
-        },
-      },
-    });
+    await sendForTranscription(message.id);
   },
 };
