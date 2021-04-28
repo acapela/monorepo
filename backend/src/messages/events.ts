@@ -3,7 +3,7 @@ import { db } from "~db";
 import { Message_Type_Enum } from "~frontend/src/gql";
 import { assert } from "~shared/assert";
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
-import { Sonix } from "../transcriptions/sonixClient";
+import { getSonixClient } from "../transcriptions/sonixClient";
 
 interface HasuraMessage {
   id: string;
@@ -16,13 +16,13 @@ interface HasuraMessage {
   transcription: string | null;
 }
 
-const SUPPORTED_MESSAGE_TYPES = [Message_Type_Enum.Audio, Message_Type_Enum.Video];
+const MESSAGE_TYPES_TO_BE_PROCESSED = [Message_Type_Enum.Audio, Message_Type_Enum.Video];
 
 export const handleMessageCreated: EventHandler<HasuraMessage> = {
   triggerName: "message_created",
 
   handleInsert: async (userId: string, message: HasuraMessage) => {
-    if (!SUPPORTED_MESSAGE_TYPES.includes(message.type)) {
+    if (!MESSAGE_TYPES_TO_BE_PROCESSED.includes(message.type)) {
       return;
     }
 
@@ -34,7 +34,7 @@ export const handleMessageCreated: EventHandler<HasuraMessage> = {
 
     assert(attachment, "Media message has no attachment");
 
-    const sonix = new Sonix();
+    const sonix = getSonixClient();
     const attachmentUrl = await getSignedDownloadUrl(attachment.id);
     const language = "en";
 

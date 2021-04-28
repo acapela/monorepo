@@ -3,7 +3,7 @@ import { db } from "~db";
 import { Transcription_Status_Enum } from "~frontend/src/gql";
 import { assert } from "~shared/assert";
 import logger from "~shared/logger";
-import { MediaResponse, Sonix } from "./sonixClient";
+import { getSonixClient, MediaResponse } from "./sonixClient";
 
 export const router = Router();
 
@@ -21,7 +21,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   assert(media, "Sonix call has no body");
 
   if (media.status === Transcription_Status_Enum.Completed) {
-    const sonix = new Sonix();
+    const sonix = getSonixClient();
     const transcript = await sonix.getJsonTranscript({ mediaId: media.id });
 
     await db.message.update({

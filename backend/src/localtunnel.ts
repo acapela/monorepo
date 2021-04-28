@@ -5,7 +5,11 @@ const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 
 let tunnel: Tunnel | null = null;
 
-export async function getTunnelPublicUrl() {
+/**
+ * localtunnel creates a tunnel from localhost to a publicly available URL
+ * This way it's possible to receive webhooks to the dev environment
+ */
+export async function getTunnelPublicUrl(): Promise<string> {
   if (!tunnel) {
     tunnel = await localtunnel({
       subdomain: `acapela-dev-${hostname}`,

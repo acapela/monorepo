@@ -28,7 +28,6 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
     );
   }
 
-  /* !!! Not tested */
   if (messageType === Message_Type_Enum.Audio) {
     return (
       <PlayableMediaWrapper>
@@ -48,13 +47,13 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
           <img className={className} src={url} alt={attachment.originalName || ""} />
         </ImageWrapper>
       );
-    } else {
-      return (
-        <a href={url} target="_blank">
-          <span>{attachment.originalName}</span>
-        </a>
-      );
     }
+
+    return (
+      <a href={url} target="_blank">
+        <span>{attachment.originalName}</span>
+      </a>
+    );
   }
 
   return null;
