@@ -14,5 +14,6 @@ set -eu
 
 cd ../infrastructure/hasura
 hasura migrate apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura seed apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 cd -
