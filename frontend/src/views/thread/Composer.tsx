@@ -6,6 +6,7 @@ import { useCreateMessageMutation } from "~frontend/gql/threads";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
 import { uploadFile } from "./uploadFile";
+import { Recorder } from "./Recorder";
 
 interface ComposerAttachment {
   uuid: string;
@@ -56,6 +57,8 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           setValue([]);
         }}
       />
+
+      <Recorder />
 
       {attachments.length > 0 && (
         <UIAttachmentsPreviews>
