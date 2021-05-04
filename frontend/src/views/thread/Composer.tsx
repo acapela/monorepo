@@ -1,63 +1,64 @@
 import React, { useState } from "react";
+import { useList } from "react-use";
+import styled from "styled-components";
 import { Message_Type_Enum } from "~frontend/gql";
 import { useCreateMessageMutation } from "~frontend/gql/threads";
-import { chooseType } from "~frontend/utils/chooseMessageType";
-import { FileUpload } from "~frontend/views/thread/FileUpload";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
+import { AttachmentPreview } from "./AttachmentPreview";
+import { uploadFile } from "./uploadFile";
 
-const Attachments = ({
-  shouldTranscribe,
-  onAttachmentAdded,
-}: {
-  shouldTranscribe: boolean;
-  onAttachmentAdded: ({ uuid, mimeType }: { uuid: string; mimeType: string }) => void;
-}) => {
-  if (shouldTranscribe) {
-    return <FileUpload onFileAttached={onAttachmentAdded} />;
+interface ComposerAttachment {
+  uuid: string;
+  mimeType: string;
+}
+
+export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
+  const [createMessage] = useCreateMessageMutation();
+
+  const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
+  const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
+  const [value, setValue] = useState<EditorContent>([]);
+
+  async function handleNewFile(file: File) {
+    const uuid = await uploadFile(file);
+    attachmentsList.push({ mimeType: file.type, uuid });
   }
 
   return (
     <>
-      <FileUpload onFileAttached={onAttachmentAdded} />
-      <br />
-      <FileUpload onFileAttached={onAttachmentAdded} />
-      <br />
-      <FileUpload onFileAttached={onAttachmentAdded} />
-    </>
-  );
-};
-
-export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
-  const [createMessage] = useCreateMessageMutation();
-  const [attachments, setAttachments] = useState<{ [key: string]: string }>({});
-  const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
-  const [value, setValue] = useState<EditorContent>([]);
-
-  const onAttachmentAdded = ({ uuid, mimeType }: { uuid: string; mimeType: string }) =>
-    setAttachments({ ...attachments, [uuid]: mimeType });
-
-  return (
-    <>
-      <RichEditor value={value} onChange={setValue} />
-      <button
-        onClick={async () => {
-          const attachmentsIds = Object.keys(attachments);
-
+      <RichEditor
+        value={value}
+        onChange={setValue}
+        onFileSelected={handleNewFile}
+        onSubmit={async () => {
           await createMessage({
             threadId: threadId,
-            type: shouldTranscribe ? chooseType(attachments[Object.keys(attachments)[0]]) : Message_Type_Enum.Text,
+            type: Message_Type_Enum.Text,
             content: value,
-            attachments: attachmentsIds.map((attachmentId) => ({
-              attachment_id: attachmentId,
+            attachments: attachments.map((attachment) => ({
+              attachment_id: attachment.uuid,
             })),
           });
 
-          setAttachments({});
+          attachmentsList.clear();
           setValue([]);
         }}
-      >
-        Send
-      </button>
+      />
+
+      {attachments.length > 0 && (
+        <UIAttachmentsPreviews>
+          {attachments.map((attachment, index) => {
+            return (
+              <AttachmentPreview
+                id={attachment.uuid}
+                key={attachment.uuid}
+                onRemoveRequest={() => attachmentsList.removeAt(index)}
+              />
+            );
+          })}
+        </UIAttachmentsPreviews>
+      )}
+
       {/* TODO: Restore emoji picker inside rich editor */}
       {/* <EmojiPicker
           onPicked={(emoji) => {
@@ -67,16 +68,16 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
 
       <div>
         <label>
-          Transcribe
+          Is recording?
           <input
             type="checkbox"
             defaultChecked={shouldTranscribe}
             onChange={(event) => setShouldTranscribe(event.target.checked)}
           />
         </label>
-        <br />
-        <Attachments onAttachmentAdded={onAttachmentAdded} shouldTranscribe={shouldTranscribe} />
       </div>
     </>
   );
 };
+
+const UIAttachmentsPreviews = styled.div``;

@@ -176,7 +176,10 @@ export const [useDeleteTextMessageMutation] = createMutation<
   }
 `);
 
-export const [useGetUploadUrlQuery] = createQuery<GetUploadUrlQuery, GetUploadUrlQueryVariables>(gql`
+export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
+  GetUploadUrlQuery,
+  GetUploadUrlQueryVariables
+>(gql`
   query GetUploadUrl($fileName: String!, $mimeType: String!) {
     get_upload_url(fileName: $fileName, mimeType: $mimeType) {
       uploadUrl
