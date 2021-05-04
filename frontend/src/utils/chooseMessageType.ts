@@ -1,6 +1,6 @@
 import { Message_Type_Enum } from "~frontend/gql";
 
-export function chooseType(mimeType: string): Message_Type_Enum {
+export function chooseMessageTypeFromMimeType(mimeType: string): Message_Type_Enum {
   const category = mimeType?.split("/")[0].toLowerCase();
 
   switch (category) {

@@ -49,10 +49,21 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
     return apolloClient.readQuery<Data, Variables>({ query, variables });
   }
 
+  async function fetch(variables: Variables) {
+    const response = await apolloClient.query<Data, Variables>({ query, variables });
+
+    if (response.error) {
+      throw response.error;
+    }
+
+    return response.data;
+  }
+
   const manager = {
     update,
     write,
     read,
+    fetch,
   };
 
   return [useQuery, manager] as const;

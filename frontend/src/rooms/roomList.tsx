@@ -58,7 +58,7 @@ const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
 };
 
 export const RoomList: React.FC<unknown> = () => {
-  const { loading, data } = useGetRoomsQuery({});
+  const { loading, data } = useGetRoomsQuery();
 
   // TODO: Loader
   if (loading) {
