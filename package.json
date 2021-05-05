@@ -31,6 +31,7 @@
     "docker:up": "docker-compose --env-file .env up --force-recreate",
     "docker:config": "docker-compose --env-file .env config",
     "docker:stop": "docker-compose stop",
+    "docker:down": "docker-compose down -v",
     "frontend": "yarn workspace ~frontend",
     "backend": "yarn workspace ~backend",
     "ui": "yarn workspace ~ui",

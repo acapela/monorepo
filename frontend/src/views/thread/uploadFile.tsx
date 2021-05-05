@@ -7,15 +7,15 @@ interface UploadFileConfig {
 
 export async function uploadFile(file: File, config: UploadFileConfig = {}) {
   const { name: fileName, type: mimeType } = file;
-  const { get_upload_url } = await getUploadUrlQueryManager.fetch({ fileName, mimeType });
+  const { uploadUrlInfo } = await getUploadUrlQueryManager.fetch({ fileName, mimeType });
 
-  if (!get_upload_url) {
+  if (!uploadUrlInfo) {
     throw new Error("unable to upload file");
   }
 
   await axios({
     method: "PUT",
-    url: decodeURIComponent(get_upload_url.uploadUrl),
+    url: decodeURIComponent(uploadUrlInfo.uploadUrl),
     headers: {
       "Content-Type": mimeType,
     },
@@ -27,5 +27,5 @@ export async function uploadFile(file: File, config: UploadFileConfig = {}) {
     },
   });
 
-  return get_upload_url.uuid;
+  return uploadUrlInfo.uuid;
 }
