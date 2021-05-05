@@ -5,15 +5,16 @@ import ReactQuill from "react-quill";
 import { useIsomorphicLayoutEffect, useUpdate } from "react-use";
 import { QuillTheme } from "./Theme";
 import { Toolbar } from "./Toolbar";
+import { useFileDroppedInContext } from "./DropFileContext";
 
 export interface RichEditorProps {
   value: DeltaOperation[];
   onChange: (value: DeltaOperation[]) => void;
-  onFileSelected?: (file: File) => void;
+  onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
 }
 
-export const RichEditor = ({ value, onChange, onSubmit, onFileSelected }: RichEditorProps) => {
+export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichEditorProps) => {
   const ref = useRef<ReactQuill>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const update = useUpdate();
@@ -35,6 +36,10 @@ export const RichEditor = ({ value, onChange, onSubmit, onFileSelected }: RichEd
   }, []);
 
   const valueDelta = useMemo(() => new Delta(value), [value]);
+
+  useFileDroppedInContext((files) => {
+    onFilesSelected?.(files);
+  });
 
   return (
     <>
@@ -59,7 +64,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFileSelected }: RichEd
             }}
           />
         )}
-        <Toolbar ref={toolbarRef} onSubmit={onSubmit} onFileSelected={onFileSelected} />
+        <Toolbar ref={toolbarRef} onSubmit={onSubmit} onFilesSelected={onFilesSelected} />
       </div>
     </>
   );

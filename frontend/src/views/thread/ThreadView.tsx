@@ -8,6 +8,7 @@ import { useThreadMessagesSubscription } from "~frontend/gql/threads";
 import { MessageComposer } from "./Composer";
 import { Message, MessageWithUserInfo } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
+import { DropFileContext } from "~richEditor/DropFileContext";
 
 const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
@@ -29,7 +30,7 @@ const useThreadMessages = (threadId: string): { isLoading: boolean; messages: Me
   };
 };
 
-const UIThreadView = styled.div`
+const ThreadRoot = styled(DropFileContext)`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -62,7 +63,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
   }
 
   return (
-    <UIThreadView>
+    <ThreadRoot>
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           <AnimateSharedLayout>
@@ -78,6 +79,6 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
       <UIMessageComposer>
         <MessageComposer threadId={id} />
       </UIMessageComposer>
-    </UIThreadView>
+    </ThreadRoot>
   );
 };

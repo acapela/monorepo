@@ -3,11 +3,11 @@ import styled from "styled-components";
 import { FileInput } from "./FileInput";
 
 interface Props {
-  onFileSelected?: (file: File) => void;
+  onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
 }
 
-export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar({ onFileSelected, onSubmit }, ref) {
+export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar({ onFilesSelected, onSubmit }, ref) {
   return (
     <UIHolder ref={ref}>
       <UISection>
@@ -26,7 +26,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar({ onFi
 
       <UISection>
         <UIItem>
-          <FileInput onFileSelected={onFileSelected}>
+          <FileInput onFileSelected={(file) => onFilesSelected?.([file])}>
             <UICustomButton>Upload...</UICustomButton>
           </FileInput>
         </UIItem>
