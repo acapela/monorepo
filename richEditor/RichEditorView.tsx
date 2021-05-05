@@ -6,6 +6,7 @@ import { useIsomorphicLayoutEffect, useUpdate } from "react-use";
 import { QuillTheme } from "./Theme";
 import { Toolbar } from "./Toolbar";
 import { useFileDroppedInContext } from "./DropFileContext";
+import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 
 export interface RichEditorProps {
   value: DeltaOperation[];
@@ -38,6 +39,10 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
   const valueDelta = useMemo(() => new Delta(value), [value]);
 
   useFileDroppedInContext((files) => {
+    onFilesSelected?.(files);
+  });
+
+  useDocumentFilesPaste((files) => {
     onFilesSelected?.(files);
   });
 
