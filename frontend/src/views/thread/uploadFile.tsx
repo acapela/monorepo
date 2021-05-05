@@ -1,7 +1,5 @@
 import axios from "axios";
-import React from "react";
-import { getUploadUrlQueryManager, useGetAttachmentQuery } from "~frontend/gql/threads";
-import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
+import { getUploadUrlQueryManager } from "~frontend/gql/threads";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;
