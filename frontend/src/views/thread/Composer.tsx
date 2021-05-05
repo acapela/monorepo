@@ -19,9 +19,21 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
   const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
   const [value, setValue] = useState<EditorContent>([]);
 
-  async function handleNewFile(file: File) {
-    const uuid = await uploadFile(file);
-    attachmentsList.push({ mimeType: file.type, uuid });
+  async function handleNewFiles(files: File[]) {
+    const attachments = await Promise.all(
+      files.map(
+        async (file): Promise<ComposerAttachment> => {
+          const uuid = await uploadFile(file);
+
+          return {
+            uuid,
+            mimeType: file.type,
+          };
+        }
+      )
+    );
+
+    attachmentsList.push(...attachments);
   }
 
   return (
@@ -29,7 +41,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
       <RichEditor
         value={value}
         onChange={setValue}
-        onFileSelected={handleNewFile}
+        onFilesSelected={handleNewFiles}
         onSubmit={async () => {
           await createMessage({
             threadId: threadId,
