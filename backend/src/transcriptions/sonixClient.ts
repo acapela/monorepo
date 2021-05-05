@@ -60,21 +60,16 @@ class Sonix {
   }
 
   private async doRequest({ method, path, formData }: SonixRequestOptions) {
-    try {
-      const { data } = await axios({
-        method,
-        url: `${this.url}${path}`,
-        headers: {
-          Authorization: `Bearer ${this.key}`,
-        },
-        data: querystring.encode(formData),
-      });
+    const { data } = await axios({
+      method,
+      url: `${this.url}${path}`,
+      headers: {
+        Authorization: `Bearer ${this.key}`,
+      },
+      data: querystring.encode(formData),
+    });
 
-      return data;
-    } catch (err) {
-      // TODO: log
-      console.log(err);
-    }
+    return data;
   }
 
   public async submitNewMedia({

@@ -10,8 +10,14 @@ interface MessageTranscriptionProps {
 const PureMessageTranscription = ({ transcription, className }: MessageTranscriptionProps) => {
   if (transcription.status === Transcription_Status_Enum.Completed) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return transcription.transcript.map((t: any) =>
-      t.words.map((word: any) => <span key={word.start_time}>{word.text}</span>)
+    return (
+      <div className={className}>
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {transcription.transcript.map((t: any) =>
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          t.words.map((word: any) => <span key={word.start_time}>{word.text}</span>)
+        )}
+      </div>
     );
   }
 

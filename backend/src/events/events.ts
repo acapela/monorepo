@@ -25,23 +25,7 @@ router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res
     throw new UnprocessableEntityError(`Unknown trigger ${hasuraEvent.trigger.name}`);
   }
 
-  try {
-    await handleEvent(handler, hasuraEvent, userId);
-  } catch (err) {
-    logger.error("Failed to handle event", {
-      eventId: hasuraEvent.id,
-      triggerName: hasuraEvent.trigger.name,
-      userId,
-      error: err.message,
-    });
-    return res.status(500).end({
-      id: hasuraEvent.id,
-      trigger: {
-        name: hasuraEvent.trigger.name,
-      },
-      error: err.message,
-    });
-  }
+  await handleEvent(handler, hasuraEvent, userId);
 
   logger.info("Handled event", {
     eventId: hasuraEvent.id,
