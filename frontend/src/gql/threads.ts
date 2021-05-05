@@ -181,7 +181,7 @@ export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
   GetUploadUrlQueryVariables
 >(gql`
   query GetUploadUrl($fileName: String!, $mimeType: String!) {
-    get_upload_url(fileName: $fileName, mimeType: $mimeType) {
+    uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
       uploadUrl
       uuid
     }

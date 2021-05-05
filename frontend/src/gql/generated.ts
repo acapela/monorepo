@@ -4510,7 +4510,7 @@ export type GetUploadUrlQueryVariables = Exact<{
 
 export type GetUploadUrlQuery = (
   { __typename?: 'query_root' }
-  & { get_upload_url?: Maybe<(
+  & { uploadUrlInfo?: Maybe<(
     { __typename?: 'GetUploadUrlResponse' }
     & Pick<GetUploadUrlResponse, 'uploadUrl' | 'uuid'>
   )> }

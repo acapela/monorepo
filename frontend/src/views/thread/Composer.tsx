@@ -20,7 +20,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
   const [value, setValue] = useState<EditorContent>([]);
 
   async function handleNewFiles(files: File[]) {
-    const attachments = await Promise.all(
+    const uploadedAttachments = await Promise.all(
       files.map(
         async (file): Promise<ComposerAttachment> => {
           const uuid = await uploadFile(file);
@@ -33,7 +33,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
       )
     );
 
-    attachmentsList.push(...attachments);
+    attachmentsList.push(...uploadedAttachments);
   }
 
   return (
