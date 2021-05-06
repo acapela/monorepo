@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { MicOutline } from "~ui/icons";
-import { MediaDebugger } from "./MediaDebugger";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
@@ -16,7 +15,7 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
   const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
-  const { status, error, startRecording, stopRecording, getMediaStream, mediaBlobUrl } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording, getMediaStream } = useReactMediaRecorder({
     audio: true,
     acquireMediaOnDemand: true,
     onStop: (_url: string, blob: Blob) => setBlob(blob),
@@ -63,7 +62,6 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
       <RecordButton onClick={onRecordButtonClick} ref={setHandlerRef}>
         <MicOutline />
       </RecordButton>
-      <MediaDebugger status={status} error={error} mediaBlobUrl={mediaBlobUrl} />
       {areControlsVisible && (
         <RecorderControls
           isRecording={status === "recording"}

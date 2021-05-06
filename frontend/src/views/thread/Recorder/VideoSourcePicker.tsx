@@ -18,7 +18,17 @@ interface VideoSourcePickerParams {
 const PureVideoSourcePicker = ({ className, handlerRef, onStartRecording }: VideoSourcePickerParams) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>();
   const [isCameraSelected, { set: selectCamera, unset: selectScreen }] = useBoolean(false);
-  const { styles, attributes } = usePopper(handlerRef, popperElement, { placement: "top" });
+  const { styles, attributes } = usePopper(handlerRef, popperElement, {
+    placement: "top",
+    modifiers: [
+      {
+        name: "offset",
+        options: {
+          offset: [0, 5],
+        },
+      },
+    ],
+  });
 
   return (
     <div className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>

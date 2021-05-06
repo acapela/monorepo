@@ -12,6 +12,7 @@ const PureMessageTranscription = ({ transcription, className }: MessageTranscrip
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (
       <div className={className}>
+        {!transcription.transcript.length && <span>We couldn't transcribe this message, retry?</span>}
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {transcription.transcript.map((t: any) =>
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
