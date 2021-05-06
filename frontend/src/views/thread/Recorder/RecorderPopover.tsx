@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { usePopper } from "react-popper";
-import { useHarmonicIntervalFn } from "react-use";
+import { useInterval } from "react-use";
 import styled from "styled-components";
 import { CloseOutline, StopCircle } from "~ui/icons";
+import { VideoPreview } from "./VideoPreview";
 
 interface RecorderPopoverProps {
   handlerRef: HTMLElement | null;
   isRecording: boolean;
   onStop: () => void;
   onClose: () => void;
+  previewStream?: MediaStream | null;
   className?: string;
+  cornered?: boolean;
 }
 
 function useElapsedTime(isRecording: boolean) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  useHarmonicIntervalFn(() => {
+  useInterval(() => {
     if (isRecording) {
       setElapsedSeconds(elapsedSeconds + 1);
     }
@@ -28,27 +31,52 @@ function useElapsedTime(isRecording: boolean) {
   return `${minutesStr}:${secondsStr}`;
 }
 
-const PureRecorderPopover = ({ className, handlerRef, onStop, onClose, isRecording }: RecorderPopoverProps) => {
+const PureRecorderPopover = ({
+  className,
+  handlerRef,
+  onStop,
+  onClose,
+  isRecording,
+  previewStream,
+  cornered = false,
+}: RecorderPopoverProps) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>();
-  const { styles, attributes } = usePopper(handlerRef, popperElement, { placement: "top" });
+  const { styles, attributes } = usePopper(handlerRef, popperElement, {
+    placement: "top",
+  });
+
+  const popperStyles: CSSProperties = cornered ? { position: "fixed", left: "40px", bottom: "30px" } : styles.popper;
 
   const elapsedTime = useElapsedTime(isRecording);
 
   return (
-    <div className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-      <UIElapsedTime>{elapsedTime}</UIElapsedTime>
-      <UIStopButton onClick={() => onStop()}>
-        <StopCircle />
-      </UIStopButton>
-      <UIVerticalSeparator />
-      <UICloseButton onClick={() => onClose()}>
-        <CloseOutline />
-      </UICloseButton>
+    <div className={className} ref={setPopperElement} style={popperStyles} {...attributes.popper}>
+      <VideoPreview stream={previewStream} flip />
+      <UIControls>
+        <UIElapsedTime>{elapsedTime}</UIElapsedTime>
+        <UIStopButton onClick={() => onStop()}>
+          <StopCircle />
+        </UIStopButton>
+        <UIVerticalSeparator />
+        <UICloseButton onClick={() => onClose()}>
+          <CloseOutline />
+        </UICloseButton>
+      </UIControls>
     </div>
   );
 };
 
 export const RecorderPopover = styled(PureRecorderPopover)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  ${VideoPreview} {
+    margin-bottom: 1rem;
+  }
+`;
+
+const UIControls = styled.div`
   display: flex;
   align-items: center;
   background-color: white;
