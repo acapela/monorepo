@@ -4,7 +4,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { MicOutline } from "~ui/icons";
 import { MediaDebugger } from "./MediaDebugger";
 import { RecordButton } from "./RecordButton";
-import { RecorderPopover } from "./RecorderPopover";
+import { RecorderControls } from "./RecorderControls";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 
 interface AudioRecorderProps {
@@ -13,7 +13,7 @@ interface AudioRecorderProps {
 }
 
 const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
-  const [isPopoverVisible, { set: showPopover, unset: hidePopover }] = useBoolean(false);
+  const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const { status, error, startRecording, stopRecording, getMediaStream, mediaBlobUrl } = useReactMediaRecorder({
@@ -23,34 +23,34 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
   });
   const [handlerRef, setHandlerRef] = useState<HTMLElement | null>(null);
 
-  const onPopoverClose = () => {
+  const onCancel = () => {
     setIsDismissed(true);
-    hidePopover();
+    hideControls();
   };
 
   const onStopRecording = () => {
     setIsDismissed(false);
-    hidePopover();
+    hideControls();
   };
 
   const onRecordButtonClick = () => {
-    if (isPopoverVisible) {
-      onPopoverClose();
+    if (areControlsVisible) {
+      onCancel();
     } else {
       getMediaStream().then(() => {
-        showPopover();
+        showControls();
       });
     }
   };
 
   useEffect(() => {
-    if (isPopoverVisible) {
+    if (areControlsVisible) {
       setBlob(null);
       startRecording();
     } else {
       stopRecording();
     }
-  }, [isPopoverVisible]);
+  }, [areControlsVisible]);
 
   useEffect(() => {
     if (!isDismissed && blob) {
@@ -64,12 +64,12 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
         <MicOutline />
       </RecordButton>
       <MediaDebugger status={status} error={error} mediaBlobUrl={mediaBlobUrl} />
-      {isPopoverVisible && (
-        <RecorderPopover
+      {areControlsVisible && (
+        <RecorderControls
           isRecording={status === "recording"}
           handlerRef={handlerRef}
           onStop={onStopRecording}
-          onClose={onPopoverClose}
+          onCancel={onCancel}
         />
       )}
     </div>
