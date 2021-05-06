@@ -45,6 +45,14 @@ const PureRecorderControls = ({
   const [popperElement, setPopperElement] = useState<HTMLElement | null>();
   const { styles, attributes } = usePopper(handlerRef, popperElement, {
     placement: "top",
+    modifiers: [
+      {
+        name: "offset",
+        options: {
+          offset: [0, 5],
+        },
+      },
+    ],
   });
 
   const popperStyles: CSSProperties = cornered ? { position: "fixed", left: "40px", bottom: "30px" } : styles.popper;
@@ -72,6 +80,7 @@ export const RecorderControls = styled(PureRecorderControls)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 1;
 
   ${VideoPreview} {
     margin-bottom: 1rem;
