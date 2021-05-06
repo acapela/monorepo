@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { getUserFromAppContext } from "~frontend/authentication/appContext";
+import { getUserFromRequest } from "~frontend/authentication/request";
 import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
 import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
 import { Logo } from "~frontend/design/Logo";
@@ -27,7 +27,7 @@ export default function LandingPage(): JSX.Element {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = getUserFromAppContext(context.req);
+  const session = getUserFromRequest(context.req);
 
   if (session) {
     return {

@@ -7,7 +7,7 @@ import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { Provider as ApolloProvider } from "~frontend/apollo";
-import { getUserFromAppContext } from "~frontend/authentication/appContext";
+import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 
@@ -59,7 +59,7 @@ const CommonMetadata = () => {
  * session provider value will update.
  */
 App.getInitialProps = (context: AppContext) => {
-  const session = getUserFromAppContext(context);
+  const session = getUserFromRequest(context.ctx.req);
 
   return {
     session,
