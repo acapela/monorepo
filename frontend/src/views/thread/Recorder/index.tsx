@@ -13,7 +13,7 @@ const PureRecorder = ({ className }: RecorderProps) => {
 
   return (
     <div className={className}>
-      <VideoRecorder />
+      <VideoRecorder onRecorded={onRecorded} />
       &nbsp;
       <AudioRecorder onRecorded={onRecorded} />
     </div>
