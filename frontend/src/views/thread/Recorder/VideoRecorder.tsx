@@ -4,7 +4,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { VideoOutline } from "~ui/icons";
 import { MediaDebugger } from "./MediaDebugger";
 import { RecordButton } from "./RecordButton";
-import { RecorderPopover } from "./RecorderPopover";
+import { RecorderControls } from "./RecorderControls";
 import { FullScreenCountdown } from "./useCountdown";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { VideoSource, VideoSourcePicker } from "./VideoSourcePicker";
@@ -15,7 +15,7 @@ interface VideoRecorderProps {
 }
 
 const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
-  const [isPopoverVisible, { set: showPopover, unset: hidePopover }] = useBoolean(false);
+  const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [videoSource, setVideoSource] = useState<VideoSource | null>(null);
@@ -41,7 +41,7 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   const doStartRecording = () => {
     setIsCountdownActive(false);
     setBlob(null);
-    showPopover();
+    showControls();
     startRecording();
   };
 
@@ -66,19 +66,19 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
     });
   }, [videoSource]);
 
-  const onPopoverClose = () => {
+  const onCancel = () => {
     setIsCountdownActive(false);
     setIsDismissed(true);
     setVideoSource(null);
     stopRecording();
-    hidePopover();
+    hideControls();
   };
 
   const onStopRecording = () => {
     setIsDismissed(false);
     setVideoSource(null);
     stopRecording();
-    hidePopover();
+    hideControls();
   };
 
   useEffect(() => {
@@ -94,15 +94,13 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
       </RecordButton>
       <MediaDebugger status={status} error={error} mediaBlobUrl={mediaBlobUrl} />
       {isSourcePickerVisible && <VideoSourcePicker handlerRef={handlerRef} onStartRecording={onStartRecording} />}
-      {isCountdownActive && (
-        <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={onPopoverClose} />
-      )}
-      {isPopoverVisible && (
-        <RecorderPopover
+      {isCountdownActive && <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={onCancel} />}
+      {areControlsVisible && (
+        <RecorderControls
           isRecording={status === "recording"}
           handlerRef={handlerRef}
           onStop={onStopRecording}
-          onClose={onPopoverClose}
+          onCancel={onCancel}
           previewStream={previewStream}
           cornered
         />
