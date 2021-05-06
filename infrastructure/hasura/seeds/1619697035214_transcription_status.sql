@@ -4,4 +4,5 @@ VALUES
     ('transcribing'),
     ('completed'),
     ('blocked'),
-    ('failed');
+    ('failed')
+ON CONFLICT DO NOTHING;
