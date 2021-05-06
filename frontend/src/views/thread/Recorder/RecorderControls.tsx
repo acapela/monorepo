@@ -13,6 +13,7 @@ interface RecorderControlsProps {
   previewStream?: MediaStream | null;
   className?: string;
   cornered?: boolean;
+  flipVideoPreview?: boolean;
 }
 
 function useElapsedTime(isRecording: boolean) {
@@ -39,6 +40,7 @@ const PureRecorderControls = ({
   isRecording,
   previewStream,
   cornered = false,
+  flipVideoPreview = false,
 }: RecorderControlsProps) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>();
   const { styles, attributes } = usePopper(handlerRef, popperElement, {
@@ -51,7 +53,7 @@ const PureRecorderControls = ({
 
   return (
     <div className={className} ref={setPopperElement} style={popperStyles} {...attributes.popper}>
-      <VideoPreview stream={previewStream} flip />
+      <VideoPreview stream={previewStream} flip={flipVideoPreview} />
       <UIControls>
         <UIElapsedTime>{elapsedTime}</UIElapsedTime>
         <UIStopButton onClick={() => onStop()}>
