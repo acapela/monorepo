@@ -64,8 +64,12 @@
         check:
           thread:
             room:
-              finished_at:
-                _is_null: true
+              _and:
+                - finished_at:
+                    _is_null: true
+                - participants:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         set:
           user_id: x-hasura-User-Id
         columns:
@@ -86,7 +90,12 @@
           - thread_id
           - type
           - user_id
-        filter: {}
+        filter:
+          thread:
+            room:
+              participants:
+                user_id:
+                  _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -131,7 +140,10 @@
   insert_permissions:
     - role: user
       permission:
-        check: {}
+        check:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
         columns:
           - message_id
           - attachment_id
@@ -142,19 +154,28 @@
         columns:
           - attachment_id
           - message_id
-        filter: {}
+        filter:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
         columns:
           - attachment_id
           - message_id
-        filter: {}
+        filter:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
         check: null
   delete_permissions:
     - role: user
       permission:
-        filter: {}
+        filter:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: message_type
@@ -217,7 +238,10 @@
           - id
           - name
           - summary
-        filter: {}
+        filter:
+          participants:
+            user_id:
+              _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
@@ -311,7 +335,11 @@
         columns:
           - room_id
           - user_id
-        filter: {}
+        filter:
+          room:
+            participants:
+              user_id:
+                _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: thread
@@ -351,7 +379,11 @@
           - index
           - name
           - room_id
-        filter: {}
+        filter:
+          room:
+            participants:
+              user_id:
+                _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
