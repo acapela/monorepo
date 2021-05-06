@@ -1,19 +1,13 @@
-import { signOut } from "next-auth/client";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import styled from "styled-components";
+import { getUserFromAppContext } from "~frontend/authentication/appContext";
 import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
 import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Logo } from "~frontend/design/Logo";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
 
-const AppLinkWrapper = styled.div``;
-
 export default function LandingPage(): JSX.Element {
-  const { user } = useCurrentUser();
-
   return (
     <div>
       <Head>
@@ -24,23 +18,27 @@ export default function LandingPage(): JSX.Element {
         <UILogoWrapper>
           <Logo />
         </UILogoWrapper>
-        {user ? (
-          <>
-            <AppLinkWrapper>
-              <Link href="/home">Return to the app</Link>
-            </AppLinkWrapper>
-            <a href="" onClick={() => signOut()}>
-              Logout
-            </a>
-          </>
-        ) : (
-          <>
-            <GoogleLoginButton />
-            &nbsp;
-            <EmailLoginButton />
-          </>
-        )}
+        <GoogleLoginButton />
+        &nbsp;
+        <EmailLoginButton />
       </UIContentWrapper>
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = getUserFromAppContext(context.req);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/home",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
