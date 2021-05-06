@@ -5,7 +5,7 @@ import { VideoOutline } from "~ui/icons";
 import { MediaDebugger } from "./MediaDebugger";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
-import { FullScreenCountdown } from "./useCountdown";
+import { FullScreenCountdown } from "./FullScreenCountdown";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { VideoSource, VideoSourcePicker } from "./VideoSourcePicker";
 
@@ -102,6 +102,7 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
           onStop={onStopRecording}
           onCancel={onCancel}
           previewStream={previewStream}
+          flipVideoPreview={videoSource === VideoSource.CAMERA}
           cornered
         />
       )}
