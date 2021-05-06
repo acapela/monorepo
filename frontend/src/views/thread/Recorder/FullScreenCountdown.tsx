@@ -21,7 +21,9 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
   });
 
   useInterval(() => {
-    if (seconds === 0) {
+    const newSeconds = seconds - 1;
+
+    if (newSeconds === 0) {
       onFinished();
     } else {
       setSeconds((seconds) => seconds - 1);
