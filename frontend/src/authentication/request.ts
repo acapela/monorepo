@@ -5,7 +5,7 @@ import { IncomingMessage } from "http";
 
 type Empty = Record<string, never>;
 
-export function getUserFromAppContext<SessionData = Empty>(reqInput?: IncomingMessage) {
+export function getUserFromRequest<SessionData = Empty>(reqInput?: IncomingMessage) {
   if (!reqInput) return null;
 
   // Raw node request is enchaned in next.js with things like parsed cookies etc.
