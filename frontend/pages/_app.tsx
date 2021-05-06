@@ -1,20 +1,18 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "@reach/dialog/styles.css";
 import "focus-visible";
-import { NextApiRequest } from "next";
 import { Session } from "next-auth";
 import { Provider as SessionProvider } from "next-auth/client";
-import { WithAdditionalParams } from "next-auth/_utils";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { Provider as ApolloProvider } from "~frontend/apollo";
-import { parseJWTWithoutValidation } from "~frontend/authentication/jwt";
+import { getUserFromAppContext } from "~frontend/authentication/appContext";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 
 interface AddedProps {
-  session: unknown;
+  session: Session;
 }
 
 const BuiltInStyles = createGlobalStyle`
@@ -26,7 +24,7 @@ export default function App({ Component, pageProps, session }: AppProps & AddedP
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <SessionProvider session={session as WithAdditionalParams<Session> | null}>
+      <SessionProvider session={session}>
         <ApolloProvider>{renderWithPageLayout(Component, pageProps)}</ApolloProvider>
       </SessionProvider>
     </>
@@ -60,19 +58,10 @@ const CommonMetadata = () => {
  * will make actual call to api to get 'fresh version' of current user and in case it changed,
  * session provider value will update.
  */
-App.getInitialProps = ({ ctx }: AppContext) => {
-  const req = ctx.req as NextApiRequest;
-  const sessionToken = (req?.cookies?.["next-auth.session-token"] as string) ?? null;
-
-  if (!sessionToken) {
-    return {
-      session: null,
-    };
-  }
-
-  const userTokenContent = parseJWTWithoutValidation(sessionToken);
+App.getInitialProps = (context: AppContext) => {
+  const session = getUserFromAppContext(context);
 
   return {
-    session: userTokenContent,
+    session,
   };
 };
