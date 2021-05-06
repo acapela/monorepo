@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { VideoOutline } from "~ui/icons";
-import { MediaDebugger } from "./MediaDebugger";
+import { FullScreenCountdown } from "./FullScreenCountdown";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
-import { FullScreenCountdown } from "./FullScreenCountdown";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { VideoSource, VideoSourcePicker } from "./VideoSourcePicker";
 
@@ -19,15 +18,7 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   const [isDismissed, setIsDismissed] = useState(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [videoSource, setVideoSource] = useState<VideoSource | null>(null);
-  const {
-    status,
-    error,
-    startRecording,
-    stopRecording,
-    previewStream,
-    mediaBlobUrl,
-    getMediaStream,
-  } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
     video: videoSource === VideoSource.CAMERA,
     screen: videoSource === VideoSource.SCREEN,
     audio: !!videoSource,
@@ -92,7 +83,6 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
       <RecordButton onClick={toggleSourcePicker} ref={setHandlerRef}>
         <VideoOutline />
       </RecordButton>
-      <MediaDebugger status={status} error={error} mediaBlobUrl={mediaBlobUrl} />
       {isSourcePickerVisible && <VideoSourcePicker handlerRef={handlerRef} onStartRecording={onStartRecording} />}
       {isCountdownActive && <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={onCancel} />}
       {areControlsVisible && (

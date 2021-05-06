@@ -3,10 +3,13 @@ import { useList } from "react-use";
 import styled from "styled-components";
 import { Message_Type_Enum } from "~frontend/gql";
 import { useCreateMessageMutation } from "~frontend/gql/threads";
+import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
-import { uploadFile } from "./uploadFile";
 import { Recorder } from "./Recorder";
+import { AudioRecorder } from "./Recorder/AudioRecorder";
+import { VideoRecorder } from "./Recorder/VideoRecorder";
+import { uploadFile } from "./uploadFile";
 
 interface ComposerAttachment {
   uuid: string;
@@ -17,10 +20,10 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
   const [createMessage] = useCreateMessageMutation();
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
-  const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
+  // const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
   const [value, setValue] = useState<EditorContent>([]);
 
-  async function handleNewFiles(files: File[]) {
+  async function uploadFiles(files: File[]): Promise<ComposerAttachment[]> {
     const uploadedAttachments = await Promise.all(
       files.map(
         async (file): Promise<ComposerAttachment> => {
@@ -34,31 +37,53 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
       )
     );
 
+    return uploadedAttachments;
+  }
+
+  async function handleNewFiles(files: File[]) {
+    const uploadedAttachments = await uploadFiles(files);
+
     attachmentsList.push(...uploadedAttachments);
   }
 
   return (
     <>
-      <RichEditor
-        value={value}
-        onChange={setValue}
-        onFilesSelected={handleNewFiles}
-        onSubmit={async () => {
-          await createMessage({
-            threadId: threadId,
-            type: Message_Type_Enum.Text,
-            content: value,
-            attachments: attachments.map((attachment) => ({
-              attachment_id: attachment.uuid,
-            })),
-          });
+      <UIEditorContainer>
+        <Recorder
+          onRecordingReady={async (recording: File) => {
+            const uploadedAttachments = await uploadFiles([recording]);
 
-          attachmentsList.clear();
-          setValue([]);
-        }}
-      />
+            const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-      <Recorder />
+            await createMessage({
+              threadId: threadId,
+              type: messageType,
+              content: "",
+              attachments: uploadedAttachments.map((attachment) => ({
+                attachment_id: attachment.uuid,
+              })),
+            });
+          }}
+        />
+        <RichEditor
+          value={value}
+          onChange={setValue}
+          onFilesSelected={handleNewFiles}
+          onSubmit={async () => {
+            await createMessage({
+              threadId: threadId,
+              type: Message_Type_Enum.Text,
+              content: value,
+              attachments: attachments.map((attachment) => ({
+                attachment_id: attachment.uuid,
+              })),
+            });
+
+            attachmentsList.clear();
+            setValue([]);
+          }}
+        />
+      </UIEditorContainer>
 
       {attachments.length > 0 && (
         <UIAttachmentsPreviews>
@@ -81,7 +106,8 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           }}
         /> */}
 
-      <div>
+      {/* TODO: Integrate with rich editor */}
+      {/* <div>
         <label>
           Is recording?
           <input
@@ -90,9 +116,23 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
             onChange={(event) => setShouldTranscribe(event.target.checked)}
           />
         </label>
-      </div>
+      </div> */}
     </>
   );
 };
+
+const UIEditorContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  ${AudioRecorder}, ${VideoRecorder} {
+    margin-right: 1rem;
+  }
+
+  div:nth-child(2) {
+    flex-grow: 1;
+  }
+`;
 
 const UIAttachmentsPreviews = styled.div``;
