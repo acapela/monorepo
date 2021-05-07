@@ -49,6 +49,7 @@
     "@next/bundle-analyzer": "^10.0.9",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
+    "@types/dom-mediacapture-record": "^1.0.7",
     "@types/js-cookie": "^2.2.6",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/next-auth": "^3.7.2",

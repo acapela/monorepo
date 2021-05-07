@@ -10,12 +10,11 @@ interface CountdownParams {
 }
 
 export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
-  // TODO: types?
-  const intervalRef = useRef<any>(null);
+  const intervalRef = useRef<number | null>(null);
   const [seconds, setSeconds] = useState(startFrom);
 
   useKey("Escape", () => {
-    clearInterval(intervalRef.current);
+    clearInterval(intervalRef.current as number);
     intervalRef.current = null;
     onCancelled();
   });
