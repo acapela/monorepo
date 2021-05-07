@@ -55,7 +55,6 @@ export enum RecorderErrors {
   NO_RECORDER = "recorder_error",
 }
 
-// TODO: types
 /**
  * Fork of the react-media-recorder library
  * Allows requesting media permissions on demand
@@ -86,6 +85,8 @@ export function useReactMediaRecorder({
     };
     try {
       if (screen) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const stream = (await window.navigator.mediaDevices.getDisplayMedia({
           video: video || true,
         })) as MediaStream;
@@ -115,6 +116,8 @@ export function useReactMediaRecorder({
     }
 
     if (screen) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (!window.navigator.mediaDevices.getDisplayMedia) {
         throw new Error("This browser doesn't support screen capturing");
       }
@@ -123,7 +126,7 @@ export function useReactMediaRecorder({
     const checkConstraints = (mediaType: MediaTrackConstraints) => {
       const supportedMediaConstraints = navigator.mediaDevices.getSupportedConstraints();
       const unSupportedConstraints = Object.keys(mediaType).filter(
-        (constraint) => !(supportedMediaConstraints as { [key: string]: any })[constraint]
+        (constraint) => !(supportedMediaConstraints as { [key: string]: MediaTrackSupportedConstraints })[constraint]
       );
 
       if (unSupportedConstraints.length > 0) {
