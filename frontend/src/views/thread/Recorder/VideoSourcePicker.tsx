@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { usePopper } from "react-popper";
 import styled, { css } from "styled-components";
-import { useBoolean } from "~frontend/hooks/useBoolean";
 import { MonitorOutline, PersonOutline } from "~ui/icons";
 
 export enum VideoSource {
@@ -12,12 +11,18 @@ export enum VideoSource {
 interface VideoSourcePickerParams {
   handlerRef: HTMLElement | null;
   onStartRecording: (source: VideoSource) => void;
+  activeSource?: VideoSource;
   className?: string;
 }
 
-const PureVideoSourcePicker = ({ className, handlerRef, onStartRecording }: VideoSourcePickerParams) => {
+const PureVideoSourcePicker = ({
+  className,
+  handlerRef,
+  onStartRecording,
+  activeSource = VideoSource.SCREEN,
+}: VideoSourcePickerParams) => {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>();
-  const [isCameraSelected, { set: selectCamera, unset: selectScreen }] = useBoolean(false);
+  const [source, setSource] = useState<VideoSource>(activeSource);
   const { styles, attributes } = usePopper(handlerRef, popperElement, {
     placement: "top",
     modifiers: [
@@ -33,18 +38,16 @@ const PureVideoSourcePicker = ({ className, handlerRef, onStartRecording }: Vide
   return (
     <div className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
       <UISourcesWrapper>
-        <UISourceButton selected={!isCameraSelected} onClick={() => selectScreen()}>
+        <UISourceButton selected={source === VideoSource.SCREEN} onClick={() => setSource(VideoSource.SCREEN)}>
           <MonitorOutline />
           <UISourceLabel>Screen</UISourceLabel>
         </UISourceButton>
-        <UISourceButton selected={isCameraSelected} onClick={() => selectCamera()}>
+        <UISourceButton selected={source === VideoSource.CAMERA} onClick={() => setSource(VideoSource.CAMERA)}>
           <PersonOutline />
           <UISourceLabel>Camera</UISourceLabel>
         </UISourceButton>
       </UISourcesWrapper>
-      <UIConfirmButton onClick={() => onStartRecording(isCameraSelected ? VideoSource.CAMERA : VideoSource.SCREEN)}>
-        Start recording
-      </UIConfirmButton>
+      <UIConfirmButton onClick={() => onStartRecording(source)}>Start recording</UIConfirmButton>
     </div>
   );
 };
