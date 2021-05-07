@@ -1,8 +1,12 @@
 import React from "react";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
+import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import styled from "styled-components";
-import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { useGetDownloadUrlQuery } from "~frontend/gql/threads";
+import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/threads";
+import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { BodyPortal } from "~ui/BodyPortal";
+import { zIndex } from "~ui/zIndex";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { AnimateSharedLayout } from "framer-motion";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -12,66 +16,62 @@ interface AttachmentProps {
 const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
   const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
   const url = downloadUrlData?.get_download_url?.downloadUrl;
-  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+  const { data: attachmentData } = useGetAttachmentQuery({ id: attachment.id });
+  const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
   if (!url) {
     return <div className={className}>Fetching</div>;
   }
 
-  if (messageType === Message_Type_Enum.Video) {
+  if (!attachmentData?.attachment) return null;
+
+  const renderAttachment = (isPlaceholder = false) => {
     return (
-      <PlayableMediaWrapper>
-        <video className={className} src={url} controls>
-          Sorry, your browser doesn't support embedded videos.
-        </video>
-      </PlayableMediaWrapper>
+      <MessageAttachmentDisplayer
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        attachment={attachmentData.attachment!}
+        attachmentUrl={url}
+        onClick={toggleIsFullscreenOpened}
+        layoutId={isPlaceholder ? null : `attachment-${attachment.id}`}
+      />
     );
-  }
+  };
 
-  if (messageType === Message_Type_Enum.Audio) {
-    return (
-      <PlayableMediaWrapper>
-        <audio className={className} src={url} controls>
-          Sorry, your browser doesn't support embedded audios.
-        </audio>
-      </PlayableMediaWrapper>
-    );
-  }
-
-  if (messageType === Message_Type_Enum.Text) {
-    const type = attachment.mimeType.split("/")[0];
-
-    if (type === "image") {
-      return (
-        <ImageWrapper href={url} target="_blank">
-          <img className={className} src={url} alt={attachment.originalName || ""} />
-        </ImageWrapper>
-      );
-    }
-
-    return (
-      <a href={url} target="_blank">
-        <span>{attachment.originalName}</span>
-      </a>
-    );
-  }
-
-  return null;
+  return (
+    <AnimateSharedLayout>
+      <UIInlineAttachmentHolder>
+        {!isFullscreenOpened && renderAttachment()}
+        {isFullscreenOpened && <UIAttachmentPlaceholder>{renderAttachment(true)}</UIAttachmentPlaceholder>}
+      </UIInlineAttachmentHolder>
+      <BodyPortal>
+        {isFullscreenOpened && (
+          <UIFullscreenHolder onClick={toggleIsFullscreenOpened}>{renderAttachment()}</UIFullscreenHolder>
+        )}
+      </BodyPortal>
+    </AnimateSharedLayout>
+  );
 };
 
-const ImageWrapper = styled.a`
-  display: inline-block;
-  max-height: 100px;
-  max-width: 100px;
+const UIFullscreenHolder = styled.div`
+  position: fixed;
+  z-index: ${zIndex.FullScreenPreview};
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #0004;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const PlayableMediaWrapper = styled.div`
-  max-width: 100%;
+const UIAttachmentPlaceholder = styled.div`
+  visibility: hidden;
+  opacity: 0;
+`;
 
-  audio,
-  video {
-    max-width: 100%;
-  }
+const UIInlineAttachmentHolder = styled.div`
+  max-width: 200px;
 `;
 
 export const MessageAttachment = styled(PureMessageAttachment)``;
