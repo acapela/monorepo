@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useInterval, useKey } from "react-use";
 import styled from "styled-components";
 import { ClientOnlyPortal } from "./ClientOnlyPortal";
@@ -10,12 +10,9 @@ interface CountdownParams {
 }
 
 export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
-  const intervalRef = useRef<number | null>(null);
   const [seconds, setSeconds] = useState(startFrom);
 
   useKey("Escape", () => {
-    clearInterval(intervalRef.current as number);
-    intervalRef.current = null;
     onCancelled();
   });
 
