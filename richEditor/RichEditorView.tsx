@@ -1,12 +1,27 @@
-import { DeltaOperation } from "quill";
+import { DeltaOperation, KeyboardStatic } from "quill";
 import Delta from "quill-delta";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import ReactQuill from "react-quill";
 import { useIsomorphicLayoutEffect, useUpdate } from "react-use";
 import { QuillTheme } from "./Theme";
 import { Toolbar } from "./Toolbar";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
+import { removeElementFromArray } from "~shared/array";
+
+interface KeyboardBinding {
+  key: number;
+  metaKey?: boolean | null;
+  handler?: () => void;
+}
+
+declare module "quill" {
+  // Quill type definition for keyboard does not include raw access to bindings priorities
+  interface KeyboardStatic {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bindings: Record<string | number, KeyboardBinding[]>;
+  }
+}
 
 export interface RichEditorProps {
   value: DeltaOperation[];
@@ -14,6 +29,8 @@ export interface RichEditorProps {
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
 }
+
+const ENTER_KEYCODE = 13;
 
 export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichEditorProps) => {
   const ref = useRef<ReactQuill>(null);
@@ -46,6 +63,22 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
     onFilesSelected?.(files);
   });
 
+  useEffect(() => {
+    const editor = ref.current?.editor;
+
+    if (!editor) return;
+
+    const cmdEnterSubmit: KeyboardBinding = {
+      key: ENTER_KEYCODE,
+      metaKey: true,
+      handler: () => {
+        onSubmit?.();
+      },
+    };
+
+    return addQuillBindingWithPriority(editor.keyboard, ENTER_KEYCODE, cmdEnterSubmit);
+  }, [toolbarRef.current, onSubmit]);
+
   return (
     <>
       <QuillTheme />
@@ -59,13 +92,6 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
             onChange={handleChange}
             modules={{
               toolbar: toolbarRef.current,
-              // toolbar: [
-              //   ["bold", "italic", "strike"], // toggled buttons
-              //   ["code-block", "link"],
-
-              //   [{ list: "ordered" }, { list: "bullet" }],
-              //   ["blockquote"],
-              // ],
             }}
           />
         )}
@@ -74,3 +100,24 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
     </>
   );
 };
+
+/**
+ * This is alternative to .addBinding method on Quill keyboard module.
+ *
+ * It works almost the same with the difference binding will be added at the beginning of handlers
+ * instead of the end allowing it to be called even if other bindings call .stopPropagation etc.
+ */
+function addQuillBindingWithPriority(keyboard: KeyboardStatic, keyCode: number, binding: KeyboardBinding) {
+  let bindingsList = keyboard.bindings[keyCode];
+
+  if (!bindingsList) {
+    bindingsList = [];
+    keyboard.bindings[keyCode] = bindingsList;
+  }
+
+  bindingsList.unshift(binding);
+
+  return () => {
+    removeElementFromArray(bindingsList, binding);
+  };
+}
