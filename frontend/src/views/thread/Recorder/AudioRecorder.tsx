@@ -13,7 +13,7 @@ interface AudioRecorderProps {
 
 const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
   const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+  const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const { status, startRecording, stopRecording, getMediaStream } = useReactMediaRecorder({
     audio: true,
@@ -23,12 +23,12 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
   const [handlerRef, setHandlerRef] = useState<HTMLElement | null>(null);
 
   const onCancel = () => {
-    setIsDismissed(true);
+    dismissRecording();
     hideControls();
   };
 
   const onStopRecording = () => {
-    setIsDismissed(false);
+    clearDismissedStatus();
     hideControls();
   };
 

@@ -15,7 +15,7 @@ interface VideoRecorderProps {
 
 const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+  const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [videoSource, setVideoSource] = useState<VideoSource | null>(null);
   const { status, startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
@@ -27,10 +27,10 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   });
   const [handlerRef, setHandlerRef] = useState<HTMLElement | null>(null);
   const [isSourcePickerVisible, { toggle: toggleSourcePicker }] = useBoolean(false);
-  const [isCountdownActive, setIsCountdownActive] = useState(false);
+  const [isCountdownActive, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
 
   const doStartRecording = () => {
-    setIsCountdownActive(false);
+    dismissCountdown();
     setBlob(null);
     showControls();
     startRecording();
@@ -48,25 +48,25 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
 
     getMediaStream().then(() => {
       if (videoSource === VideoSource.CAMERA) {
-        setIsCountdownActive(true);
+        startCountdown();
       }
 
       if (videoSource === VideoSource.SCREEN) {
-        setIsCountdownActive(true);
+        startCountdown();
       }
     });
   }, [videoSource]);
 
   const onCancel = () => {
-    setIsCountdownActive(false);
-    setIsDismissed(true);
+    dismissCountdown();
+    dismissRecording();
     setVideoSource(null);
     stopRecording();
     hideControls();
   };
 
   const onStopRecording = () => {
-    setIsDismissed(false);
+    clearDismissedStatus();
     setVideoSource(null);
     stopRecording();
     hideControls();
