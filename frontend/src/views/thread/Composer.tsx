@@ -72,7 +72,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           onSubmit={async () => {
             await createMessage({
               threadId: threadId,
-              type: Message_Type_Enum.Text,
+              type: Message_Type_Enum.Audio,
               content: value,
               attachments: attachments.map((attachment) => ({
                 attachment_id: attachment.uuid,
