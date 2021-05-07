@@ -34,6 +34,7 @@
     "docker:down": "docker-compose down -v",
     "frontend": "yarn workspace ~frontend",
     "backend": "yarn workspace ~backend",
+    "richEditor": "yarn workspace ~richEditor",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
     "shared": "yarn workspace ~shared",
