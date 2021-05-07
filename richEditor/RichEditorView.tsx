@@ -19,7 +19,7 @@ declare module "quill" {
   // Quill type definition for keyboard does not include raw access to bindings priorities
   interface KeyboardStatic {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    bindings: Record<string | number, KeyboardBinding[]>;
+    bindings: Record<number, KeyboardBinding[]>;
   }
 }
 
