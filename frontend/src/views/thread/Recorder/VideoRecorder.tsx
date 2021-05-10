@@ -46,6 +46,8 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
       return;
     }
 
+    clearDismissedStatus();
+
     getMediaStream().then(() => {
       if (videoSource === VideoSource.CAMERA) {
         startCountdown();
@@ -66,7 +68,6 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   };
 
   const onStopRecording = () => {
-    clearDismissedStatus();
     setVideoSource(null);
     stopRecording();
     hideControls();
@@ -75,6 +76,10 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   useEffect(() => {
     if (!isDismissed && blob) {
       onRecorded(blob);
+
+      // In case recording is forcefully stopped
+      setVideoSource(null);
+      hideControls();
     }
   }, [isDismissed, blob]);
 

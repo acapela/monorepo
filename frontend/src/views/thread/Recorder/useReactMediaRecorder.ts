@@ -168,6 +168,8 @@ export function useReactMediaRecorder({
       if (isStreamEnded) {
         await getMediaStream();
       }
+      // User can stop the stream using browser's own built-in 'Stop sharing' button.
+      mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
       mediaRecorder.current = new MediaRecorder(mediaStream.current);
       mediaRecorder.current.ondataavailable = onRecordingActive;
       mediaRecorder.current.onstop = onRecordingStop;
