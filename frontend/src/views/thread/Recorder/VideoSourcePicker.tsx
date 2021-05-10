@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { usePopper } from "react-popper";
 import styled, { css } from "styled-components";
 import { MonitorOutline, PersonOutline } from "~ui/icons";
+import { Popover } from "~ui/Popover";
 
 export enum VideoSource {
   SCREEN = "screen",
@@ -15,28 +15,15 @@ interface VideoSourcePickerParams {
   className?: string;
 }
 
-const PureVideoSourcePicker = ({
-  className,
+export const VideoSourcePicker = ({
   handlerRef,
   onStartRecording,
   activeSource = VideoSource.SCREEN,
 }: VideoSourcePickerParams) => {
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>();
   const [source, setSource] = useState<VideoSource>(activeSource);
-  const { styles, attributes } = usePopper(handlerRef, popperElement, {
-    placement: "top",
-    modifiers: [
-      {
-        name: "offset",
-        options: {
-          offset: [0, 5],
-        },
-      },
-    ],
-  });
 
   return (
-    <div className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+    <Popover handlerRef={handlerRef}>
       <UISourcesWrapper>
         <UISourceButton selected={source === VideoSource.SCREEN} onClick={() => setSource(VideoSource.SCREEN)}>
           <MonitorOutline />
@@ -48,20 +35,12 @@ const PureVideoSourcePicker = ({
         </UISourceButton>
       </UISourcesWrapper>
       <UIConfirmButton onClick={() => onStartRecording(source)}>Start recording</UIConfirmButton>
-    </div>
+    </Popover>
   );
 };
 
-export const VideoSourcePicker = styled(PureVideoSourcePicker)`
-  min-width: 175px;
-  background-color: white;
-  padding: 1rem;
-  border-radius: 0.625rem;
-  user-select: none;
-  box-shadow: 0px 0.5rem 1rem rgb(0 0 0 / 8%);
-`;
-
 const UISourcesWrapper = styled.div`
+  width: 100%;
   display: flex;
   flex-display: row;
   justify-content: space-between;
@@ -72,7 +51,7 @@ const UISourceButton = styled.button<{ selected: boolean }>`
   flex-direction: column;
   align-items: center;
   border: 1px solid transparent;
-  height: 50px;
+  height: 3.1rem;
   padding: 0.5rem;
   background-color: #f8f8f8;
   border-radius: 0.75rem;
@@ -84,8 +63,8 @@ const UISourceButton = styled.button<{ selected: boolean }>`
     `}
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 `;
 

@@ -27,7 +27,7 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
   }, 1000);
 
   return (
-    <ClientOnlyPortal selector="#__next > div">
+    <ClientOnlyPortal selector="body">
       <UIBackDrop />
       <UIModal>
         <UICounter>{seconds}</UICounter>
@@ -48,6 +48,8 @@ const UIBackDrop = styled.div`
 
 const UIModal = styled.div`
   position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;

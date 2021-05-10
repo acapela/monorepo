@@ -50,7 +50,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
     <>
       <UIEditorContainer>
         <Recorder
-          onRecordingReady={async (recording: File) => {
+          onRecordingReady={async (recording) => {
             const uploadedAttachments = await uploadFiles([recording]);
 
             const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
