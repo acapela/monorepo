@@ -3,7 +3,7 @@ import { ClientOnlyPortal } from "./ClientOnlyPortal";
 
 export const TranscodingIndicator = () => {
   return (
-    <ClientOnlyPortal selector="#__next > div">
+    <ClientOnlyPortal selector="body">
       <UIBackDrop />
       <UIModal>
         <UIMessage>
@@ -28,6 +28,8 @@ const UIBackDrop = styled.div`
 
 const UIModal = styled.div`
   position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
