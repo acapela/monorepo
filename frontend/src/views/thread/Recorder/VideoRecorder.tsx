@@ -49,13 +49,7 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
     clearDismissedStatus();
 
     getMediaStream().then(() => {
-      if (videoSource === VideoSource.CAMERA) {
-        startCountdown();
-      }
-
-      if (videoSource === VideoSource.SCREEN) {
-        startCountdown();
-      }
+      startCountdown();
     });
   }, [videoSource]);
 

@@ -1,8 +1,8 @@
-import React, { CSSProperties, useState } from "react";
-import { usePopper } from "react-popper";
+import React, { useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
 import { CloseOutline, StopCircle } from "~ui/icons";
+import { Popover } from "~ui/Popover";
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
@@ -42,37 +42,24 @@ const PureRecorderControls = ({
   cornered = false,
   flipVideoPreview = false,
 }: RecorderControlsProps) => {
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>();
-  const { styles, attributes } = usePopper(handlerRef, popperElement, {
-    placement: "top",
-    modifiers: [
-      {
-        name: "offset",
-        options: {
-          offset: [0, 5],
-        },
-      },
-    ],
-  });
-
-  const popperStyles: CSSProperties = cornered ? { position: "fixed", left: "40px", bottom: "30px" } : styles.popper;
-
   const elapsedTime = useElapsedTime(isRecording);
 
   return (
-    <div className={className} ref={setPopperElement} style={popperStyles} {...attributes.popper}>
-      <VideoPreview stream={previewStream} flip={flipVideoPreview} />
-      <UIControls>
-        <UIElapsedTime>{elapsedTime}</UIElapsedTime>
-        <UIStopButton onClick={() => onStop()}>
-          <StopCircle />
-        </UIStopButton>
-        <UIVerticalSeparator />
-        <UICloseButton onClick={() => onCancel()}>
-          <CloseOutline />
-        </UICloseButton>
-      </UIControls>
-    </div>
+    <Popover className={className} handlerRef={handlerRef} cornered={cornered}>
+      <div className={className}>
+        <VideoPreview stream={previewStream} flip={flipVideoPreview} />
+        <UIControls>
+          <UIElapsedTime>{elapsedTime}</UIElapsedTime>
+          <UIStopButton onClick={() => onStop()}>
+            <StopCircle />
+          </UIStopButton>
+          <UIVerticalSeparator />
+          <UICloseButton onClick={() => onCancel()}>
+            <CloseOutline />
+          </UICloseButton>
+        </UIControls>
+      </div>
+    </Popover>
   );
 };
 
@@ -80,7 +67,6 @@ export const RecorderControls = styled(PureRecorderControls)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1;
 
   ${VideoPreview} {
     margin-bottom: 1rem;
@@ -94,7 +80,7 @@ const UIControls = styled.div`
   padding: 0.5rem;
   border-radius: 0.625rem;
   user-select: none;
-  box-shadow: 0px 0.5rem 1rem rgb(0 0 0 / 8%);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 8%);
 
   button {
     display: inline-block;

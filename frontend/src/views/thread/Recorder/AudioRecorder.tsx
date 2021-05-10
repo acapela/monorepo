@@ -24,32 +24,32 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
 
   const onCancel = () => {
     dismissRecording();
-    hideControls();
+    stopRecording();
   };
 
   const onStopRecording = () => {
     clearDismissedStatus();
-    hideControls();
+    stopRecording();
   };
 
-  const onRecordButtonClick = () => {
+  const onRecordButtonClick = async () => {
     if (areControlsVisible) {
       onCancel();
     } else {
-      getMediaStream().then(() => {
-        showControls();
-      });
+      setBlob(null);
+      await getMediaStream();
+      startRecording();
     }
   };
 
   useEffect(() => {
-    if (areControlsVisible) {
+    if (status === "recording") {
       setBlob(null);
-      startRecording();
+      showControls();
     } else {
-      stopRecording();
+      hideControls();
     }
-  }, [areControlsVisible]);
+  }, [status]);
 
   useEffect(() => {
     if (!isDismissed && blob) {
