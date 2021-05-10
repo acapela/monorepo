@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.13",
+    "@ffmpeg/ffmpeg": "^0.9.8",
     "@popperjs/core": "^2.9.2",
     "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
