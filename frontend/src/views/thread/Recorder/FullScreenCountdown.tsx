@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useInterval, useKey } from "react-use";
 import styled from "styled-components";
-import { ClientOnlyPortal } from "./ClientOnlyPortal";
+import { BodyPortal } from "~ui/BodyPortal";
 
 interface CountdownParams {
   seconds: number;
@@ -27,12 +27,12 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
   }, 1000);
 
   return (
-    <ClientOnlyPortal selector="body">
+    <BodyPortal>
       <UIBackDrop />
       <UIModal>
         <UICounter>{seconds}</UICounter>
       </UIModal>
-    </ClientOnlyPortal>
+    </BodyPortal>
   );
 };
 
