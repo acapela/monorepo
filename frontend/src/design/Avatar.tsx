@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { getInitials } from "~frontend/utils";
 
 export interface AvatarProps {
-  name: string;
-  url?: string;
+  name?: string;
+  url?: string | null;
   className?: string;
 }
 
@@ -31,7 +31,7 @@ export const Avatar = styled(PureAvatar)`
 
   font-weight: 600;
 
-  background-color: rgba(96, 165, 250, 1);
+  background-color: #ffaa70;
 
   border-radius: 50%;
 

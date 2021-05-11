@@ -11,6 +11,8 @@ export const global = css`
     -moz-font-smoothing: antialiased;
     -webkit-font-smoothing: antialiased;
 
-    font-family: "Kumbh Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
+    font-family: "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
+    font-weight: 400;
+    color: #232b35;
   }
 `;
