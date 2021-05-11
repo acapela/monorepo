@@ -17,17 +17,12 @@ interface Transcript {
 
 interface MessageTranscriptionProps {
   transcription: Pick<Transcription, "status" | "transcript">;
-  onWordClicked: (time: number) => void;
+  onSeek: (time: number) => void;
   actualMediaTime: number;
   className?: string;
 }
 
-const PureMessageTranscription = ({
-  transcription,
-  actualMediaTime,
-  onWordClicked,
-  className,
-}: MessageTranscriptionProps) => {
+const PureMessageTranscription = ({ transcription, actualMediaTime, onSeek, className }: MessageTranscriptionProps) => {
   if (transcription.status === Transcription_Status_Enum.Completed) {
     return (
       <div className={className}>
@@ -36,8 +31,8 @@ const PureMessageTranscription = ({
           t.words.map((word) => (
             <UIWord
               key={word.start_time}
-              onClick={() => onWordClicked(word.start_time)}
-              active={word.start_time <= actualMediaTime && actualMediaTime < word.end_time}
+              onClick={() => onSeek(word.start_time)}
+              isActive={word.start_time <= actualMediaTime && actualMediaTime < word.end_time}
             >
               {word.text.trim()}
             </UIWord>
@@ -54,7 +49,7 @@ export const MessageTranscription = styled(PureMessageTranscription)`
   margin-top: 1rem;
 `;
 
-const UIWord = styled.span<{ active: boolean }>`
+const UIWord = styled.span<{ isActive: boolean }>`
   display: inline-block;
   cursor: default;
   padding: 0.1rem 0.3rem;
@@ -66,8 +61,8 @@ const UIWord = styled.span<{ active: boolean }>`
     background-color: #fff;
   }
 
-  ${({ active }) =>
-    active &&
+  ${({ isActive }) =>
+    isActive &&
     css`
       border-color: #f27121;
       background-color: #fff;

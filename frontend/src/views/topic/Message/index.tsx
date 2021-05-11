@@ -87,7 +87,7 @@ export const Message = ({ message }: Props) => {
           <MessageTranscription
             transcription={message.transcription}
             actualMediaTime={actualMediaTime}
-            onWordClicked={setSelectedMediaTime}
+            onSeek={setSelectedMediaTime}
           />
         )}
       </UIMessageBody>
