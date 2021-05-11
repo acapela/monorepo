@@ -1,6 +1,7 @@
 import React, { CSSProperties, ReactNode, useState } from "react";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
+import { zIndex } from "~ui/zIndex";
 
 interface PopoverProps {
   handlerRef: HTMLElement | null;
@@ -36,5 +37,5 @@ export const Popover = styled(PurePopover)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1;
+  z-index: ${zIndex.Popover};
 `;
