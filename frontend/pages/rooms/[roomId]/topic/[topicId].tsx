@@ -1,7 +1,8 @@
 import React from "react";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { RoomLayout } from "~frontend/rooms/RoomLayout";
+import { AppLayout } from "~frontend/layouts/AppLayout";
 import { usePathParameter } from "~frontend/utils";
+import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { TopicView } from "~frontend/views/topic/TopicView";
 import { assert } from "~shared/assert";
 
@@ -10,13 +11,11 @@ const Page = () => {
 
   assert(topicId, "Topic ID Required");
 
-  return (
-    <RoomLayout>
-      <TopicView id={topicId} />
-    </RoomLayout>
-  );
+  return <TopicView id={topicId} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();
+
+assignPageLayout(Page, AppLayout);
 
 export default Page;

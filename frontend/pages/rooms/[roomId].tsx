@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
-import { RoomLayout } from "~frontend/rooms/RoomLayout";
+import { AppLayout } from "~frontend/layouts/AppLayout";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
@@ -49,6 +49,6 @@ const Page = () => {
 
 export const getServerSideProps = withServerSideAuthRedirect();
 
-assignPageLayout(Page, RoomLayout);
+assignPageLayout(Page, AppLayout);
 
 export default Page;
