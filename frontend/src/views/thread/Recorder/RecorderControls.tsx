@@ -7,7 +7,6 @@ import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
   handlerRef: HTMLElement | null;
-  isRecording: boolean;
   onStop: () => void;
   onCancel: () => void;
   previewStream?: MediaStream | null;
@@ -16,12 +15,10 @@ interface RecorderControlsProps {
   flipVideoPreview?: boolean;
 }
 
-function useElapsedTime(isRecording: boolean) {
+function useElapsedTime() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   useInterval(() => {
-    if (isRecording) {
-      setElapsedSeconds(elapsedSeconds + 1);
-    }
+    setElapsedSeconds(elapsedSeconds + 1);
   }, 1000);
 
   const minutes = Math.floor(elapsedSeconds / 60);
@@ -37,12 +34,11 @@ const PureRecorderControls = ({
   handlerRef,
   onStop,
   onCancel,
-  isRecording,
   previewStream,
   cornered = false,
   flipVideoPreview = false,
 }: RecorderControlsProps) => {
-  const elapsedTime = useElapsedTime(isRecording);
+  const elapsedTime = useElapsedTime();
 
   return (
     <Popover className={className} handlerRef={handlerRef} cornered={cornered}>

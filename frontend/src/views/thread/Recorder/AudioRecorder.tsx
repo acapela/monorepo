@@ -12,7 +12,6 @@ interface AudioRecorderProps {
 }
 
 const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
-  const [areControlsVisible, { set: showControls, unset: hideControls }] = useBoolean(false);
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const { status, startRecording, stopRecording, getMediaStream } = useReactMediaRecorder({
@@ -20,6 +19,7 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
     acquireMediaOnDemand: true,
     onStop: (_url: string, blob: Blob) => setBlob(blob),
   });
+  const isRecording = status === "recording";
   const [handlerRef, setHandlerRef] = useState<HTMLElement | null>(null);
 
   const onCancel = () => {
@@ -33,7 +33,7 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
   };
 
   const onRecordButtonClick = async () => {
-    if (areControlsVisible) {
+    if (isRecording) {
       onCancel();
     } else {
       setBlob(null);
@@ -41,15 +41,6 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
       startRecording();
     }
   };
-
-  useEffect(() => {
-    if (status === "recording") {
-      setBlob(null);
-      showControls();
-    } else {
-      hideControls();
-    }
-  }, [status]);
 
   useEffect(() => {
     if (!isDismissed && blob) {
@@ -62,14 +53,7 @@ const PureAudioRecorder = ({ className, onRecorded }: AudioRecorderProps) => {
       <RecordButton onClick={onRecordButtonClick} ref={setHandlerRef}>
         <MicOutline />
       </RecordButton>
-      {areControlsVisible && (
-        <RecorderControls
-          isRecording={status === "recording"}
-          handlerRef={handlerRef}
-          onStop={onStopRecording}
-          onCancel={onCancel}
-        />
-      )}
+      {isRecording && <RecorderControls handlerRef={handlerRef} onStop={onStopRecording} onCancel={onCancel} />}
     </div>
   );
 };
