@@ -39,7 +39,7 @@ const RoomDetailedInfoFragment = gql`
       }
     }
 
-    threads {
+    topics {
       id
       name
       index

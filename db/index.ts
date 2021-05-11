@@ -8,7 +8,7 @@ export type {
   room as Room,
   room_invites as RoomInvites,
   room_participants as RoomParticipants,
-  thread as Thread,
+  topic as Topic,
   user as User,
   verification_requests as VerificationRequest,
   attachment as Attachment,

@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import {
   CreateMessageMutation,
   CreateMessageMutationVariables,
-  CreateThreadMutation,
-  CreateThreadMutationVariables,
+  CreateTopicMutation,
+  CreateTopicMutationVariables,
   DeleteTextMessageMutation,
   DeleteTextMessageMutationVariables,
   GetAttachmentQuery,
@@ -12,25 +12,25 @@ import {
   GetDownloadUrlQueryVariables,
   GetUploadUrlQuery,
   GetUploadUrlQueryVariables,
-  RoomThreadsSubscription,
-  RoomThreadsSubscriptionVariables,
-  ThreadMessagesSubscription,
-  ThreadMessagesSubscriptionVariables,
+  RoomTopicsSubscription,
+  RoomTopicsSubscriptionVariables,
+  TopicMessagesSubscription,
+  TopicMessagesSubscriptionVariables,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
 } from "./generated";
 import { createMutation, createSubscription, createQuery } from "./utils";
 
-const ThreadDetailedInfoFragment = gql`
-  fragment ThreadDetailedInfo on thread {
+const TopicDetailedInfoFragment = gql`
+  fragment TopicDetailedInfo on topic {
     id
     name
     index
   }
 `;
 
-const ThreadMessageBasicInfoFragment = gql`
-  fragment ThreadMessageBasicInfo on message {
+const TopicMessageBasicInfoFragment = gql`
+  fragment TopicMessageBasicInfo on message {
     id
     createdAt: created_at
     content
@@ -50,10 +50,10 @@ const AttachmentDetailedInfoFragment = gql`
   }
 `;
 
-const ThreadMessageDetailedInfoFragment = gql`
+const TopicMessageDetailedInfoFragment = gql`
   ${AttachmentDetailedInfoFragment}
 
-  fragment ThreadMessageDetailedInfo on message {
+  fragment TopicMessageDetailedInfo on message {
     id
     content
     createdAt: created_at
@@ -76,39 +76,39 @@ const ThreadMessageDetailedInfoFragment = gql`
   }
 `;
 
-export const [useCreateThreadMutation] = createMutation<CreateThreadMutation, CreateThreadMutationVariables>(gql`
-  mutation CreateThread($name: String!, $roomId: uuid!, $index: String!) {
-    thread: insert_thread_one(object: { name: $name, room_id: $roomId, index: $index }) {
+export const [useCreateTopicMutation] = createMutation<CreateTopicMutation, CreateTopicMutationVariables>(gql`
+  mutation CreateTopic($name: String!, $roomId: uuid!, $index: String!) {
+    topic: insert_topic_one(object: { name: $name, room_id: $roomId, index: $index }) {
       id
     }
   }
 `);
 
-export const [useRoomThreadsSubscription] = createSubscription<
-  RoomThreadsSubscription,
-  RoomThreadsSubscriptionVariables
+export const [useRoomTopicsSubscription] = createSubscription<
+  RoomTopicsSubscription,
+  RoomTopicsSubscriptionVariables
 >(gql`
-  ${ThreadDetailedInfoFragment}
+  ${TopicDetailedInfoFragment}
 
-  subscription RoomThreads($roomId: uuid!) {
-    threads: thread(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
-      ...ThreadDetailedInfo
+  subscription RoomTopics($roomId: uuid!) {
+    topics: topic(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
+      ...TopicDetailedInfo
     }
   }
 `);
 
-export const [useThreadMessagesSubscription, threadMessagesSubscriptionManager] = createSubscription<
-  ThreadMessagesSubscription,
-  ThreadMessagesSubscriptionVariables
+export const [useTopicMessagesSubscription, topicMessagesSubscriptionManager] = createSubscription<
+  TopicMessagesSubscription,
+  TopicMessagesSubscriptionVariables
 >(gql`
-  ${ThreadMessageDetailedInfoFragment}
+  ${TopicMessageDetailedInfoFragment}
 
-  subscription ThreadMessages($threadId: uuid!) {
+  subscription TopicMessages($topicId: uuid!) {
     messages: message(
-      where: { thread_id: { _eq: $threadId }, is_draft: { _eq: false } }
+      where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false } }
       order_by: [{ created_at: asc }]
     ) {
-      ...ThreadMessageDetailedInfo
+      ...TopicMessageDetailedInfo
     }
   }
 `);
@@ -116,29 +116,29 @@ export const [useThreadMessagesSubscription, threadMessagesSubscriptionManager] 
 export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, CreateMessageMutationVariables>(
   gql`
   mutation CreateMessage(
-    $threadId: uuid!
+    $topicId: uuid!
     $content: jsonb!
     $type: message_type_enum!
     $attachments: [message_attachments_insert_input!]!
   ) {
-    ${ThreadMessageDetailedInfoFragment}
+    ${TopicMessageDetailedInfoFragment}
 
     message: insert_message_one(
       object: {
         content: $content
-        thread_id: $threadId
+        topic_id: $topicId
         type: $type
         message_attachments: { data: $attachments }
         is_draft: false
       }
     ) {
-      ...ThreadMessageDetailedInfo
+      ...TopicMessageDetailedInfo
     }
   }
 `,
   {
     onSuccess: (data, variables) => {
-      threadMessagesSubscriptionManager.update({ threadId: variables.threadId }, (current) => {
+      topicMessagesSubscriptionManager.update({ topicId: variables.topicId }, (current) => {
         if (!data.message) {
           return;
         }
@@ -152,12 +152,12 @@ export const [useUpdateTextMessageMutation] = createMutation<
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables
 >(gql`
-  ${ThreadMessageBasicInfoFragment}
+  ${TopicMessageBasicInfoFragment}
 
   mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean) {
     update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
       message: returning {
-        ...ThreadMessageBasicInfo
+        ...TopicMessageBasicInfo
       }
     }
   }

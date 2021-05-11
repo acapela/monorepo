@@ -5,10 +5,10 @@ import { AvatarProps } from "~frontend/design/Avatar";
 import { AvatarList } from "~frontend/design/AvatarList";
 import { SidebarLayout } from "~frontend/design/Layout";
 import { NavLink } from "~frontend/design/NavLink";
-import { ParticipantBasicInfoFragment, ThreadDetailedInfoFragment } from "~frontend/gql";
+import { ParticipantBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
 import { useGetSingleRoomQuery, useRoomParticipantsSubscription } from "~frontend/gql/rooms";
-import { useRoomThreadsSubscription } from "~frontend/gql/threads";
-import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
+import { useRoomTopicsSubscription } from "~frontend/gql/topics";
+import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assert } from "~shared/assert";
 import { Button } from "~ui/button";
@@ -22,19 +22,18 @@ const UIStyledInviteButton = styled(InviteButton)`
   margin-top: 0.5rem;
 `;
 
-const UIThreadsWrapper = styled.div`
+const UITopicsWrapper = styled.div`
   margin-top: 1rem;
 
-  /* ThreadCreationButton */
   ${Button} {
     margin-top: 0.5rem;
   } ;
 `;
 
-const useThreads = (roomId: string): { loading: boolean; threads: ThreadDetailedInfoFragment[] } => {
-  const { data, loading } = useRoomThreadsSubscription({ roomId });
+const useTopics = (roomId: string): { loading: boolean; topics: TopicDetailedInfoFragment[] } => {
+  const { data, loading } = useRoomTopicsSubscription({ roomId });
 
-  return { loading, threads: data?.threads ?? [] };
+  return { loading, topics: data?.topics ?? [] };
 };
 
 const useParticipants = (roomId: string): { loading: boolean; participants: ParticipantBasicInfoFragment[] } => {
@@ -48,7 +47,7 @@ export const RoomLayout: React.FC<Props> = ({ children }) => {
 
   assert(roomId, "Room ID Required");
 
-  const { threads } = useThreads(roomId);
+  const { topics } = useTopics(roomId);
 
   const { participants } = useParticipants(roomId);
 
@@ -70,14 +69,14 @@ export const RoomLayout: React.FC<Props> = ({ children }) => {
                 .map(({ user }) => ({ name: user.name, url: user.avatarUrl } as AvatarProps))}
             />
             <UIStyledInviteButton roomId={roomId} />
-            <UIThreadsWrapper>
-              {threads.map(({ id, name }, index) => (
-                <NavLink key={id} to={`/rooms/${roomId}/threads/${id}`}>
+            <UITopicsWrapper>
+              {topics.map(({ id, name }, index) => (
+                <NavLink key={id} to={`/rooms/${roomId}/topic/${id}`}>
                   {index + 1} {name}
                 </NavLink>
               ))}
-              <ThreadCreationButton roomId={roomId} lastThreadIndex={threads[threads.length - 1]?.index ?? 0} />
-            </UIThreadsWrapper>
+              <TopicCreationButton roomId={roomId} lastTopicIndex={topics[topics.length - 1]?.index ?? 0} />
+            </UITopicsWrapper>
           </>
         }
       >

@@ -2,17 +2,17 @@ import React from "react";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { RoomLayout } from "~frontend/rooms/RoomLayout";
 import { usePathParameter } from "~frontend/utils";
-import { ThreadView } from "~frontend/views/thread/ThreadView";
+import { TopicView } from "~frontend/views/topic/TopicView";
 import { assert } from "~shared/assert";
 
 const Page = () => {
-  const threadId = usePathParameter("threadId");
+  const topicId = usePathParameter("topicId");
 
-  assert(threadId, "Room ID Required");
+  assert(topicId, "Topic ID Required");
 
   return (
     <RoomLayout>
-      <ThreadView id={threadId} />
+      <TopicView id={topicId} />
     </RoomLayout>
   );
 };

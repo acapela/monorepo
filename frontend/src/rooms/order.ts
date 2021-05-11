@@ -1,13 +1,13 @@
 const CHARACTER_MIN_BOUND = 32;
 const CHARACTER_UPPER_BOUND = 126;
 
-export function createNextIndex(lastThreadIndex?: string): string {
+export function createNextIndex(lastTopicIndex?: string): string {
   // TODO: write full algorithm for this
-  if (!lastThreadIndex) {
+  if (!lastTopicIndex) {
     return String.fromCharCode(CHARACTER_MIN_BOUND);
   }
-  if (lastThreadIndex[0].charCodeAt(0) >= CHARACTER_UPPER_BOUND) {
+  if (lastTopicIndex[0].charCodeAt(0) >= CHARACTER_UPPER_BOUND) {
     throw new Error("Algorithm not implemented for higher indexes");
   }
-  return String.fromCharCode(lastThreadIndex[0].charCodeAt(0) + 1);
+  return String.fromCharCode(lastTopicIndex[0].charCodeAt(0) + 1);
 }

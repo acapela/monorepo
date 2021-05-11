@@ -40,9 +40,9 @@
     - name: message_type
       using:
         foreign_key_constraint_on: type
-    - name: thread
+    - name: topic
       using:
-        foreign_key_constraint_on: thread_id
+        foreign_key_constraint_on: topic_id
     - name: transcription
       using:
         foreign_key_constraint_on: transcription_id
@@ -62,21 +62,17 @@
     - role: user
       permission:
         check:
-          thread:
+          topic:
             room:
-              _and:
-                - finished_at:
-                    _is_null: true
-                - participants:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+              finished_at:
+                _is_null: true
         set:
           user_id: x-hasura-User-Id
         columns:
           - is_draft
           - content
           - is_draft
-          - thread_id
+          - topic_id
           - type
         backend_only: false
   select_permissions:
@@ -87,15 +83,10 @@
           - created_at
           - id
           - is_draft
-          - thread_id
+          - topic_id
           - type
           - user_id
-        filter:
-          thread:
-            room:
-              participants:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        filter: {}
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -140,10 +131,7 @@
   insert_permissions:
     - role: user
       permission:
-        check:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
+        check: {}
         columns:
           - message_id
           - attachment_id
@@ -154,28 +142,19 @@
         columns:
           - attachment_id
           - message_id
-        filter:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
+        filter: {}
   update_permissions:
     - role: user
       permission:
         columns:
           - attachment_id
           - message_id
-        filter:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
+        filter: {}
         check: null
   delete_permissions:
     - role: user
       permission:
-        filter:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
+        filter: {}
 - table:
     schema: public
     name: message_type
@@ -209,13 +188,13 @@
           table:
             schema: public
             name: room_invites
-    - name: threads
+    - name: topics
       using:
         foreign_key_constraint_on:
           column: room_id
           table:
             schema: public
-            name: thread
+            name: topic
   insert_permissions:
     - role: user
       permission:
@@ -238,10 +217,7 @@
           - id
           - name
           - summary
-        filter:
-          participants:
-            user_id:
-              _eq: X-Hasura-User-Id
+        filter: {}
   update_permissions:
     - role: user
       permission:
@@ -335,14 +311,10 @@
         columns:
           - room_id
           - user_id
-        filter:
-          room:
-            participants:
-              user_id:
-                _eq: X-Hasura-User-Id
+        filter: {}
 - table:
     schema: public
-    name: thread
+    name: topic
   object_relationships:
     - name: room
       using:
@@ -355,7 +327,7 @@
             schema: public
             name: message
           column_mapping:
-            id: thread_id
+            id: topic_id
   insert_permissions:
     - role: user
       permission:
@@ -379,11 +351,7 @@
           - index
           - name
           - room_id
-        filter:
-          room:
-            participants:
-              user_id:
-                _eq: X-Hasura-User-Id
+        filter: {}
         allow_aggregations: true
   update_permissions:
     - role: user

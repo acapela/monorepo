@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 import { Message_Type_Enum } from "~frontend/gql";
-import { useCreateMessageMutation } from "~frontend/gql/threads";
+import { useCreateMessageMutation } from "~frontend/gql/topics";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
@@ -16,7 +16,7 @@ interface ComposerAttachment {
   mimeType: string;
 }
 
-export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) => {
+export const MessageComposer: React.FC<{ topicId: string }> = ({ topicId }) => {
   const [createMessage] = useCreateMessageMutation();
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
@@ -56,7 +56,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
             const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
             await createMessage({
-              threadId: threadId,
+              topicId: topicId,
               type: messageType,
               content: "",
               attachments: uploadedAttachments.map((attachment) => ({
@@ -71,7 +71,7 @@ export const MessageComposer: React.FC<{ threadId: string }> = ({ threadId }) =>
           onFilesSelected={handleNewFiles}
           onSubmit={async () => {
             await createMessage({
-              threadId: threadId,
+              topicId: topicId,
               type: Message_Type_Enum.Audio,
               content: value,
               attachments: attachments.map((attachment) => ({
