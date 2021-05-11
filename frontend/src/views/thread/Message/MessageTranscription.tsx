@@ -1,22 +1,47 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Transcription, Transcription_Status_Enum } from "~frontend/gql";
+
+export interface Word {
+  text: string;
+  start_time: number;
+  end_time: number;
+}
+
+interface Transcript {
+  words: Word[];
+  speaker?: string;
+  start_time: number;
+  end_time: number;
+}
 
 interface MessageTranscriptionProps {
   transcription: Pick<Transcription, "status" | "transcript">;
+  onWordClicked: (time: number) => void;
+  actualMediaTime: number;
   className?: string;
 }
 
-const PureMessageTranscription = ({ transcription, className }: MessageTranscriptionProps) => {
+const PureMessageTranscription = ({
+  transcription,
+  actualMediaTime,
+  onWordClicked,
+  className,
+}: MessageTranscriptionProps) => {
   if (transcription.status === Transcription_Status_Enum.Completed) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (
       <div className={className}>
         {!transcription.transcript.length && <span>We couldn't transcribe this message, retry?</span>}
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-        {transcription.transcript.map((t: any) =>
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          t.words.map((word: any) => <span key={word.start_time}>{word.text}</span>)
+        {transcription.transcript.map((t: Transcript) =>
+          t.words.map((word) => (
+            <UIWord
+              key={word.start_time}
+              onClick={() => onWordClicked(word.start_time)}
+              active={word.start_time <= actualMediaTime && actualMediaTime < word.end_time}
+            >
+              {word.text.trim()}
+            </UIWord>
+          ))
         )}
       </div>
     );
@@ -25,4 +50,26 @@ const PureMessageTranscription = ({ transcription, className }: MessageTranscrip
   return <div className={className}>{`Transcription ${transcription.status}`}</div>;
 };
 
-export const MessageTranscription = styled(PureMessageTranscription)``;
+export const MessageTranscription = styled(PureMessageTranscription)`
+  margin-top: 1rem;
+`;
+
+const UIWord = styled.span<{ active: boolean }>`
+  display: inline-block;
+  cursor: default;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+
+  &:hover {
+    border-color: #e94057;
+    background-color: #fff;
+  }
+
+  ${({ active }) =>
+    active &&
+    css`
+      border-color: #f27121;
+      background-color: #fff;
+    `}
+`;

@@ -1,18 +1,34 @@
-import React from "react";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
+import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
 import { useGetDownloadUrlQuery } from "~frontend/gql/threads";
+import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
+  selectedMediaTime?: number;
+  onMediaTimeUpdate: (time: number) => void;
   className?: string;
 }
 
-const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
+const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
+  const mediaRef = useRef<HTMLVideoElement>(null);
   const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
   const url = downloadUrlData?.get_download_url?.downloadUrl;
   const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+
+  const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);
+
+  useEffect(() => {
+    if (typeof selectedMediaTime === "number" && mediaRef.current) {
+      mediaRef.current.currentTime = selectedMediaTime;
+    }
+  }, [selectedMediaTime]);
+
+  useEffect(() => {
+    mediaRef.current?.addEventListener("timeupdate", onTimeUpdate);
+    return () => mediaRef.current?.removeEventListener("timeupdate", onTimeUpdate);
+  }, [mediaRef.current]);
 
   if (!url) {
     return <div className={className}>Fetching</div>;
@@ -21,7 +37,7 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
   if (messageType === Message_Type_Enum.Video) {
     return (
       <PlayableMediaWrapper>
-        <video className={className} src={url} controls>
+        <video ref={mediaRef} className={className} src={url} controls>
           Sorry, your browser doesn't support embedded videos.
         </video>
       </PlayableMediaWrapper>
@@ -31,7 +47,7 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
   if (messageType === Message_Type_Enum.Audio) {
     return (
       <PlayableMediaWrapper>
-        <audio className={className} src={url} controls>
+        <audio ref={mediaRef} className={className} src={url} controls>
           Sorry, your browser doesn't support embedded audios.
         </audio>
       </PlayableMediaWrapper>
