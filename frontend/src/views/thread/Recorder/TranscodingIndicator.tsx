@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { ClientOnlyPortal } from "./ClientOnlyPortal";
+import { BodyPortal } from "~ui/BodyPortal";
 
 export const TranscodingIndicator = () => {
   return (
-    <ClientOnlyPortal selector="#__next > div">
+    <BodyPortal>
       <UIBackDrop />
       <UIModal>
         <UIMessage>
@@ -12,7 +12,7 @@ export const TranscodingIndicator = () => {
           Do not close this tab
         </UIMessage>
       </UIModal>
-    </ClientOnlyPortal>
+    </BodyPortal>
   );
 };
 

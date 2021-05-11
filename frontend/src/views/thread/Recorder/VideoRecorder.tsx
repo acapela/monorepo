@@ -18,7 +18,7 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [videoSource, setVideoSource] = useState<VideoSource | null>(null);
-  const { status, startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
+  const { startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
     video: videoSource === VideoSource.CAMERA,
     screen: videoSource === VideoSource.SCREEN,
     audio: !!videoSource,
@@ -86,7 +86,6 @@ const PureVideoRecorder = ({ className, onRecorded }: VideoRecorderProps) => {
       {isCountdownActive && <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={onCancel} />}
       {areControlsVisible && (
         <RecorderControls
-          isRecording={status === "recording"}
           handlerRef={handlerRef}
           onStop={onStopRecording}
           onCancel={onCancel}
