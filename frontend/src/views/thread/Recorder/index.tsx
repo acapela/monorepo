@@ -7,14 +7,10 @@ interface RecorderProps {
   onRecordingReady: (files: File) => void;
 }
 
-function capitalize(str: string): string {
-  return str[0].toUpperCase() + str.slice(1);
-}
-
 function recordingBlobToFile(blob: Blob): File {
   const [type, extension] = blob.type.split("/");
   const timestamp = new Date().getTime();
-  const name = `${capitalize(type)}Recording-${timestamp}.${extension}`;
+  const name = `${type.toLowerCase()}-recording-${timestamp}.${extension}`;
   const file = new File([blob], name, { lastModified: timestamp, type: blob.type });
 
   return file;
