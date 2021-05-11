@@ -6,7 +6,7 @@ import { withServerSideAuthRedirect } from "~frontend/authentication/withServerS
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
 import { RoomLayout } from "~frontend/rooms/RoomLayout";
-import { ThreadCreationButton } from "~frontend/rooms/ThreadCreationButton";
+import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 
@@ -23,9 +23,9 @@ const Page = () => {
   const room = data?.room;
 
   useEffect(() => {
-    if (room?.threads?.length) {
+    if (room?.topics?.length) {
       setRedirecting(true);
-      replace(`/rooms/${room.id}/threads/${room.threads[0].id}`).then(() => setRedirecting(false));
+      replace(`/rooms/${room.id}/topic/${room.topics[0].id}`).then(() => setRedirecting(false));
     }
   }, [room]);
 
@@ -41,7 +41,7 @@ const Page = () => {
       </Head>
       <UIContentWrapper>
         <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>
-        <ThreadCreationButton roomId={room.id} />
+        <TopicCreationButton roomId={room.id} />
       </UIContentWrapper>
     </>
   );

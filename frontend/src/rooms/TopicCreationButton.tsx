@@ -2,15 +2,15 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Dialog } from "~frontend/design/Dialog";
-import { useCreateThreadMutation } from "~frontend/gql/threads";
+import { useCreateTopicMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { createNextIndex } from "~frontend/rooms/order";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
 
-export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: string }> = ({
+export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: string }> = ({
   roomId,
-  lastThreadIndex,
+  lastTopicIndex,
 }) => {
   const [isDialogOpened, { set: openDialog, unset: closeDialog }] = useBoolean(false);
 
@@ -20,33 +20,33 @@ export const ThreadCreationButton: React.FC<{ roomId: string; lastThreadIndex?: 
         title={"Add agenda point"}
         isOpened={isDialogOpened}
         onClose={closeDialog}
-        aria-labelledby="thread-creation-button"
+        aria-labelledby="topic-creation-button"
       >
-        <ThreadCreationForm roomId={roomId} lastThreadIndex={lastThreadIndex} onCreated={closeDialog} />
+        <TopicCreationForm roomId={roomId} lastTopicIndex={lastTopicIndex} onCreated={closeDialog} />
       </Dialog>
-      <Button wide onClick={openDialog} id="thread-creation-button">
+      <Button wide onClick={openDialog} id="topic-creation-button">
         Add agenda point
       </Button>
     </>
   );
 };
 
-const UIThreadNameFieldWrapper = styled.div`
+const UITopicNameFieldWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
 interface Props {
   roomId: string;
-  onCreated?: (threadId: string) => unknown;
-  lastThreadIndex?: string;
+  onCreated?: (topicId: string) => unknown;
+  lastTopicIndex?: string;
 }
 
 interface FormData {
   name: string;
 }
 
-const ThreadCreationForm: React.FC<Props> = ({ onCreated, roomId, lastThreadIndex }) => {
-  const [createThread, { loading }] = useCreateThreadMutation();
+const TopicCreationForm: React.FC<Props> = ({ onCreated, roomId, lastTopicIndex }) => {
+  const [createTopic, { loading }] = useCreateTopicMutation();
 
   const {
     register,
@@ -55,26 +55,26 @@ const ThreadCreationForm: React.FC<Props> = ({ onCreated, roomId, lastThreadInde
   } = useForm<FormData>({ defaultValues: { name: "" } });
 
   const onSubmit = handleSubmit(async (formData) => {
-    const index = createNextIndex(lastThreadIndex);
-    const { data } = await createThread({
+    const index = createNextIndex(lastTopicIndex);
+    const { data } = await createTopic({
       name: formData.name,
       index,
       roomId,
     });
 
-    if (!data?.thread) return;
+    if (!data?.topic) return;
 
-    onCreated?.(data.thread.id);
+    onCreated?.(data.topic.id);
   });
 
   // TODO: Show errors in UI (aca-258-handle-errors-on-the-fe)
 
   return (
     <form onSubmit={onSubmit}>
-      <UIThreadNameFieldWrapper>
-        <label htmlFor="thread-name">Name</label>
+      <UITopicNameFieldWrapper>
+        <label htmlFor="topic-name">Name</label>
         <Field type="text" {...register("name")} placeholder="How do we get to mars?" />
-      </UIThreadNameFieldWrapper>
+      </UITopicNameFieldWrapper>
       <Button type="submit" disabled={loading || isSubmitting} wide>
         Create
       </Button>

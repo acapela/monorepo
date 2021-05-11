@@ -3,7 +3,7 @@ import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
 const bucketName = process.env.GOOGLE_STORAGE_BUCKET;
 const directory = "attachments";
 
-/* We can have thread subdirectories if needed */
+/* We can have topic subdirectories if needed */
 function getFilePath(fileId: string) {
   return `${directory}/${fileId}`;
 }

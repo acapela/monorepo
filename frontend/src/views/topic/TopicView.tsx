@@ -3,21 +3,21 @@ import React from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
-import { ThreadMessageDetailedInfoFragment } from "~frontend/gql";
-import { useThreadMessagesSubscription } from "~frontend/gql/threads";
+import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
+import { useTopicMessagesSubscription } from "~frontend/gql/topics";
 import { MessageComposer } from "./Composer";
 import { Message, MessageWithUserInfo } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { DropFileContext } from "~richEditor/DropFileContext";
 
-const useThreadMessages = (threadId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
+const useTopicMessages = (topicId: string): { isLoading: boolean; messages: MessageWithUserInfo[] } => {
   const { loading: isLoadingUser, user } = useCurrentUser();
-  const { data, loading: isLoadingMessages } = useThreadMessagesSubscription({
-    threadId,
+  const { data, loading: isLoadingMessages } = useTopicMessagesSubscription({
+    topicId,
   });
 
   const isLoading = isLoadingUser || isLoadingMessages || !data;
-  const messagesList: ThreadMessageDetailedInfoFragment[] = data?.messages ?? [];
+  const messagesList: TopicMessageDetailedInfoFragment[] = data?.messages ?? [];
 
   return {
     isLoading,
@@ -30,7 +30,7 @@ const useThreadMessages = (threadId: string): { isLoading: boolean; messages: Me
   };
 };
 
-const ThreadRoot = styled(DropFileContext)`
+const TopicRoot = styled(DropFileContext)`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -54,8 +54,8 @@ const UIAnimatedMessagesWrapper = styled(motion.div)`
   flex-direction: column;
 `;
 
-export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
-  const { isLoading, messages } = useThreadMessages(id);
+export const TopicView: React.FC<{ id: string }> = ({ id }) => {
+  const { isLoading, messages } = useTopicMessages(id);
 
   if (isLoading) {
     // TODO: Add proper loading UI
@@ -63,7 +63,7 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
   }
 
   return (
-    <ThreadRoot>
+    <TopicRoot>
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           <AnimateSharedLayout>
@@ -77,8 +77,8 @@ export const ThreadView: React.FC<{ id: string }> = ({ id }) => {
         </UIAnimatedMessagesWrapper>
       </ScrollableMessages>
       <UIMessageComposer>
-        <MessageComposer threadId={id} />
+        <MessageComposer topicId={id} />
       </UIMessageComposer>
-    </ThreadRoot>
+    </TopicRoot>
   );
 };

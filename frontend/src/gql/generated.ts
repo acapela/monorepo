@@ -559,8 +559,8 @@ export type Message = {
   /** An object relationship */
   message_type: Message_Type;
   /** An object relationship */
-  thread: Thread;
-  thread_id: Scalars['uuid'];
+  topic: Topic;
+  topic_id: Scalars['uuid'];
   /** An object relationship */
   transcription?: Maybe<Transcription>;
   transcription_id?: Maybe<Scalars['uuid']>;
@@ -802,8 +802,8 @@ export type Message_Bool_Exp = {
   is_draft?: Maybe<Boolean_Comparison_Exp>;
   message_attachments?: Maybe<Message_Attachments_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
-  thread?: Maybe<Thread_Bool_Exp>;
-  thread_id?: Maybe<Uuid_Comparison_Exp>;
+  topic?: Maybe<Topic_Bool_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
   transcription?: Maybe<Transcription_Bool_Exp>;
   transcription_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
@@ -842,8 +842,8 @@ export type Message_Insert_Input = {
   is_draft?: Maybe<Scalars['Boolean']>;
   message_attachments?: Maybe<Message_Attachments_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
-  thread?: Maybe<Thread_Obj_Rel_Insert_Input>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
+  topic_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Transcription_Obj_Rel_Insert_Input>;
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
@@ -856,7 +856,7 @@ export type Message_Max_Fields = {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 };
@@ -865,7 +865,7 @@ export type Message_Max_Fields = {
 export type Message_Max_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  thread_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 };
@@ -875,7 +875,7 @@ export type Message_Min_Fields = {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 };
@@ -884,7 +884,7 @@ export type Message_Min_Fields = {
 export type Message_Min_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  thread_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 };
@@ -919,8 +919,8 @@ export type Message_Order_By = {
   is_draft?: Maybe<Order_By>;
   message_attachments_aggregate?: Maybe<Message_Attachments_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
-  thread?: Maybe<Thread_Order_By>;
-  thread_id?: Maybe<Order_By>;
+  topic?: Maybe<Topic_Order_By>;
+  topic_id?: Maybe<Order_By>;
   transcription?: Maybe<Transcription_Order_By>;
   transcription_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
@@ -949,7 +949,7 @@ export enum Message_Select_Column {
   /** column name */
   IsDraft = 'is_draft',
   /** column name */
-  ThreadId = 'thread_id',
+  TopicId = 'topic_id',
   /** column name */
   TranscriptionId = 'transcription_id',
   /** column name */
@@ -964,7 +964,7 @@ export type Message_Set_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
-  thread_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -1133,7 +1133,7 @@ export enum Message_Update_Column {
   /** column name */
   IsDraft = 'is_draft',
   /** column name */
-  ThreadId = 'thread_id',
+  TopicId = 'topic_id',
   /** column name */
   TranscriptionId = 'transcription_id',
   /** column name */
@@ -1179,10 +1179,10 @@ export type Mutation_Root = {
   delete_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** delete single row from the table: "room_participants" */
   delete_room_participants_by_pk?: Maybe<Room_Participants>;
-  /** delete data from the table: "thread" */
-  delete_thread?: Maybe<Thread_Mutation_Response>;
-  /** delete single row from the table: "thread" */
-  delete_thread_by_pk?: Maybe<Thread>;
+  /** delete data from the table: "topic" */
+  delete_topic?: Maybe<Topic_Mutation_Response>;
+  /** delete single row from the table: "topic" */
+  delete_topic_by_pk?: Maybe<Topic>;
   /** delete data from the table: "transcription" */
   delete_transcription?: Maybe<Transcription_Mutation_Response>;
   /** delete single row from the table: "transcription" */
@@ -1227,10 +1227,10 @@ export type Mutation_Root = {
   insert_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** insert a single row into the table: "room_participants" */
   insert_room_participants_one?: Maybe<Room_Participants>;
-  /** insert data into the table: "thread" */
-  insert_thread?: Maybe<Thread_Mutation_Response>;
-  /** insert a single row into the table: "thread" */
-  insert_thread_one?: Maybe<Thread>;
+  /** insert data into the table: "topic" */
+  insert_topic?: Maybe<Topic_Mutation_Response>;
+  /** insert a single row into the table: "topic" */
+  insert_topic_one?: Maybe<Topic>;
   /** insert data into the table: "transcription" */
   insert_transcription?: Maybe<Transcription_Mutation_Response>;
   /** insert a single row into the table: "transcription" */
@@ -1275,10 +1275,10 @@ export type Mutation_Root = {
   update_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** update single row of the table: "room_participants" */
   update_room_participants_by_pk?: Maybe<Room_Participants>;
-  /** update data of the table: "thread" */
-  update_thread?: Maybe<Thread_Mutation_Response>;
-  /** update single row of the table: "thread" */
-  update_thread_by_pk?: Maybe<Thread>;
+  /** update data of the table: "topic" */
+  update_topic?: Maybe<Topic_Mutation_Response>;
+  /** update single row of the table: "topic" */
+  update_topic_by_pk?: Maybe<Topic>;
   /** update data of the table: "transcription" */
   update_transcription?: Maybe<Transcription_Mutation_Response>;
   /** update single row of the table: "transcription" */
@@ -1401,13 +1401,13 @@ export type Mutation_RootDelete_Room_Participants_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootDelete_ThreadArgs = {
-  where: Thread_Bool_Exp;
+export type Mutation_RootDelete_TopicArgs = {
+  where: Topic_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootDelete_Thread_By_PkArgs = {
+export type Mutation_RootDelete_Topic_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
@@ -1561,16 +1561,16 @@ export type Mutation_RootInsert_Room_Participants_OneArgs = {
 
 
 /** mutation root */
-export type Mutation_RootInsert_ThreadArgs = {
-  objects: Array<Thread_Insert_Input>;
-  on_conflict?: Maybe<Thread_On_Conflict>;
+export type Mutation_RootInsert_TopicArgs = {
+  objects: Array<Topic_Insert_Input>;
+  on_conflict?: Maybe<Topic_On_Conflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsert_Thread_OneArgs = {
-  object: Thread_Insert_Input;
-  on_conflict?: Maybe<Thread_On_Conflict>;
+export type Mutation_RootInsert_Topic_OneArgs = {
+  object: Topic_Insert_Input;
+  on_conflict?: Maybe<Topic_On_Conflict>;
 };
 
 
@@ -1739,16 +1739,16 @@ export type Mutation_RootUpdate_Room_Participants_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdate_ThreadArgs = {
-  _set?: Maybe<Thread_Set_Input>;
-  where: Thread_Bool_Exp;
+export type Mutation_RootUpdate_TopicArgs = {
+  _set?: Maybe<Topic_Set_Input>;
+  where: Topic_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Thread_By_PkArgs = {
-  _set?: Maybe<Thread_Set_Input>;
-  pk_columns: Thread_Pk_Columns_Input;
+export type Mutation_RootUpdate_Topic_By_PkArgs = {
+  _set?: Maybe<Topic_Set_Input>;
+  pk_columns: Topic_Pk_Columns_Input;
 };
 
 
@@ -1874,12 +1874,12 @@ export type Query_Root = {
   room_participants_aggregate: Room_Participants_Aggregate;
   /** fetch data from the table: "room_participants" using primary key columns */
   room_participants_by_pk?: Maybe<Room_Participants>;
-  /** fetch data from the table: "thread" */
-  thread: Array<Thread>;
-  /** fetch aggregated fields from the table: "thread" */
-  thread_aggregate: Thread_Aggregate;
-  /** fetch data from the table: "thread" using primary key columns */
-  thread_by_pk?: Maybe<Thread>;
+  /** fetch data from the table: "topic" */
+  topic: Array<Topic>;
+  /** fetch aggregated fields from the table: "topic" */
+  topic_aggregate: Topic_Aggregate;
+  /** fetch data from the table: "topic" using primary key columns */
+  topic_by_pk?: Maybe<Topic>;
   /** fetch data from the table: "transcription" */
   transcription: Array<Transcription>;
   /** fetch aggregated fields from the table: "transcription" */
@@ -2125,27 +2125,27 @@ export type Query_RootRoom_Participants_By_PkArgs = {
 
 
 /** query root */
-export type Query_RootThreadArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type Query_RootTopicArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootThread_AggregateArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type Query_RootTopic_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootThread_By_PkArgs = {
+export type Query_RootTopic_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
@@ -2249,9 +2249,9 @@ export type Room = {
   room_invites_aggregate: Room_Invites_Aggregate;
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
-  threads: Array<Thread>;
+  topics: Array<Topic>;
   /** An aggregated array relationship */
-  threads_aggregate: Thread_Aggregate;
+  topics_aggregate: Topic_Aggregate;
 };
 
 
@@ -2296,22 +2296,22 @@ export type RoomRoom_Invites_AggregateArgs = {
 
 
 /** columns and relationships of "room" */
-export type RoomThreadsArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type RoomTopicsArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 
 /** columns and relationships of "room" */
-export type RoomThreads_AggregateArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type RoomTopics_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 /** aggregated selection of "room" */
@@ -2365,7 +2365,7 @@ export type Room_Bool_Exp = {
   participants?: Maybe<Room_Participants_Bool_Exp>;
   room_invites?: Maybe<Room_Invites_Bool_Exp>;
   summary?: Maybe<String_Comparison_Exp>;
-  threads?: Maybe<Thread_Bool_Exp>;
+  topics?: Maybe<Topic_Bool_Exp>;
 };
 
 /** unique or primary key constraints on table "room" */
@@ -2387,7 +2387,7 @@ export type Room_Insert_Input = {
   participants?: Maybe<Room_Participants_Arr_Rel_Insert_Input>;
   room_invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   summary?: Maybe<Scalars['String']>;
-  threads?: Maybe<Thread_Arr_Rel_Insert_Input>;
+  topics?: Maybe<Topic_Arr_Rel_Insert_Input>;
 };
 
 /** columns and relationships of "room_invites" */
@@ -2698,7 +2698,7 @@ export type Room_Order_By = {
   participants_aggregate?: Maybe<Room_Participants_Aggregate_Order_By>;
   room_invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   summary?: Maybe<Order_By>;
-  threads_aggregate?: Maybe<Thread_Aggregate_Order_By>;
+  topics_aggregate?: Maybe<Topic_Aggregate_Order_By>;
 };
 
 /** columns and relationships of "room_participants" */
@@ -2970,12 +2970,12 @@ export type Subscription_Root = {
   room_participants_aggregate: Room_Participants_Aggregate;
   /** fetch data from the table: "room_participants" using primary key columns */
   room_participants_by_pk?: Maybe<Room_Participants>;
-  /** fetch data from the table: "thread" */
-  thread: Array<Thread>;
-  /** fetch aggregated fields from the table: "thread" */
-  thread_aggregate: Thread_Aggregate;
-  /** fetch data from the table: "thread" using primary key columns */
-  thread_by_pk?: Maybe<Thread>;
+  /** fetch data from the table: "topic" */
+  topic: Array<Topic>;
+  /** fetch aggregated fields from the table: "topic" */
+  topic_aggregate: Topic_Aggregate;
+  /** fetch data from the table: "topic" using primary key columns */
+  topic_by_pk?: Maybe<Topic>;
   /** fetch data from the table: "transcription" */
   transcription: Array<Transcription>;
   /** fetch aggregated fields from the table: "transcription" */
@@ -3221,27 +3221,27 @@ export type Subscription_RootRoom_Participants_By_PkArgs = {
 
 
 /** subscription root */
-export type Subscription_RootThreadArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type Subscription_RootTopicArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootThread_AggregateArgs = {
-  distinct_on?: Maybe<Array<Thread_Select_Column>>;
+export type Subscription_RootTopic_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Thread_Order_By>>;
-  where?: Maybe<Thread_Bool_Exp>;
+  order_by?: Maybe<Array<Topic_Order_By>>;
+  where?: Maybe<Topic_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootThread_By_PkArgs = {
+export type Subscription_RootTopic_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
@@ -3323,208 +3323,6 @@ export type Subscription_RootUser_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
-/** columns and relationships of "thread" */
-export type Thread = {
-  __typename?: 'thread';
-  id: Scalars['uuid'];
-  index: Scalars['String'];
-  /** An array relationship */
-  messages: Array<Message>;
-  /** An aggregated array relationship */
-  messages_aggregate: Message_Aggregate;
-  name?: Maybe<Scalars['String']>;
-  /** An object relationship */
-  room: Room;
-  room_id: Scalars['uuid'];
-};
-
-
-/** columns and relationships of "thread" */
-export type ThreadMessagesArgs = {
-  distinct_on?: Maybe<Array<Message_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Order_By>>;
-  where?: Maybe<Message_Bool_Exp>;
-};
-
-
-/** columns and relationships of "thread" */
-export type ThreadMessages_AggregateArgs = {
-  distinct_on?: Maybe<Array<Message_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Order_By>>;
-  where?: Maybe<Message_Bool_Exp>;
-};
-
-/** aggregated selection of "thread" */
-export type Thread_Aggregate = {
-  __typename?: 'thread_aggregate';
-  aggregate?: Maybe<Thread_Aggregate_Fields>;
-  nodes: Array<Thread>;
-};
-
-/** aggregate fields of "thread" */
-export type Thread_Aggregate_Fields = {
-  __typename?: 'thread_aggregate_fields';
-  count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Thread_Max_Fields>;
-  min?: Maybe<Thread_Min_Fields>;
-};
-
-
-/** aggregate fields of "thread" */
-export type Thread_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Thread_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
-};
-
-/** order by aggregate values of table "thread" */
-export type Thread_Aggregate_Order_By = {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Thread_Max_Order_By>;
-  min?: Maybe<Thread_Min_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "thread" */
-export type Thread_Arr_Rel_Insert_Input = {
-  data: Array<Thread_Insert_Input>;
-  on_conflict?: Maybe<Thread_On_Conflict>;
-};
-
-/** Boolean expression to filter rows from the table "thread". All fields are combined with a logical 'AND'. */
-export type Thread_Bool_Exp = {
-  _and?: Maybe<Array<Maybe<Thread_Bool_Exp>>>;
-  _not?: Maybe<Thread_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Thread_Bool_Exp>>>;
-  id?: Maybe<Uuid_Comparison_Exp>;
-  index?: Maybe<String_Comparison_Exp>;
-  messages?: Maybe<Message_Bool_Exp>;
-  name?: Maybe<String_Comparison_Exp>;
-  room?: Maybe<Room_Bool_Exp>;
-  room_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "thread" */
-export enum Thread_Constraint {
-  /** unique or primary key constraint */
-  ThreadPkey = 'thread_pkey'
-}
-
-/** input type for inserting data into table "thread" */
-export type Thread_Insert_Input = {
-  id?: Maybe<Scalars['uuid']>;
-  index?: Maybe<Scalars['String']>;
-  messages?: Maybe<Message_Arr_Rel_Insert_Input>;
-  name?: Maybe<Scalars['String']>;
-  room?: Maybe<Room_Obj_Rel_Insert_Input>;
-  room_id?: Maybe<Scalars['uuid']>;
-};
-
-/** aggregate max on columns */
-export type Thread_Max_Fields = {
-  __typename?: 'thread_max_fields';
-  id?: Maybe<Scalars['uuid']>;
-  index?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  room_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by max() on columns of table "thread" */
-export type Thread_Max_Order_By = {
-  id?: Maybe<Order_By>;
-  index?: Maybe<Order_By>;
-  name?: Maybe<Order_By>;
-  room_id?: Maybe<Order_By>;
-};
-
-/** aggregate min on columns */
-export type Thread_Min_Fields = {
-  __typename?: 'thread_min_fields';
-  id?: Maybe<Scalars['uuid']>;
-  index?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  room_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "thread" */
-export type Thread_Min_Order_By = {
-  id?: Maybe<Order_By>;
-  index?: Maybe<Order_By>;
-  name?: Maybe<Order_By>;
-  room_id?: Maybe<Order_By>;
-};
-
-/** response of any mutation on the table "thread" */
-export type Thread_Mutation_Response = {
-  __typename?: 'thread_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Thread>;
-};
-
-/** input type for inserting object relation for remote table "thread" */
-export type Thread_Obj_Rel_Insert_Input = {
-  data: Thread_Insert_Input;
-  on_conflict?: Maybe<Thread_On_Conflict>;
-};
-
-/** on conflict condition type for table "thread" */
-export type Thread_On_Conflict = {
-  constraint: Thread_Constraint;
-  update_columns: Array<Thread_Update_Column>;
-  where?: Maybe<Thread_Bool_Exp>;
-};
-
-/** ordering options when selecting data from "thread" */
-export type Thread_Order_By = {
-  id?: Maybe<Order_By>;
-  index?: Maybe<Order_By>;
-  messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
-  name?: Maybe<Order_By>;
-  room?: Maybe<Room_Order_By>;
-  room_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "thread" */
-export type Thread_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "thread" */
-export enum Thread_Select_Column {
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Index = 'index',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RoomId = 'room_id'
-}
-
-/** input type for updating data in table "thread" */
-export type Thread_Set_Input = {
-  id?: Maybe<Scalars['uuid']>;
-  index?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  room_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "thread" */
-export enum Thread_Update_Column {
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Index = 'index',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RoomId = 'room_id'
-}
-
 
 /** expression to compare columns of type timestamptz. All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {
@@ -3538,6 +3336,208 @@ export type Timestamptz_Comparison_Exp = {
   _neq?: Maybe<Scalars['timestamptz']>;
   _nin?: Maybe<Array<Scalars['timestamptz']>>;
 };
+
+/** columns and relationships of "topic" */
+export type Topic = {
+  __typename?: 'topic';
+  id: Scalars['uuid'];
+  index: Scalars['String'];
+  /** An array relationship */
+  messages: Array<Message>;
+  /** An aggregated array relationship */
+  messages_aggregate: Message_Aggregate;
+  name?: Maybe<Scalars['String']>;
+  /** An object relationship */
+  room: Room;
+  room_id: Scalars['uuid'];
+};
+
+
+/** columns and relationships of "topic" */
+export type TopicMessagesArgs = {
+  distinct_on?: Maybe<Array<Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Order_By>>;
+  where?: Maybe<Message_Bool_Exp>;
+};
+
+
+/** columns and relationships of "topic" */
+export type TopicMessages_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Order_By>>;
+  where?: Maybe<Message_Bool_Exp>;
+};
+
+/** aggregated selection of "topic" */
+export type Topic_Aggregate = {
+  __typename?: 'topic_aggregate';
+  aggregate?: Maybe<Topic_Aggregate_Fields>;
+  nodes: Array<Topic>;
+};
+
+/** aggregate fields of "topic" */
+export type Topic_Aggregate_Fields = {
+  __typename?: 'topic_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Topic_Max_Fields>;
+  min?: Maybe<Topic_Min_Fields>;
+};
+
+
+/** aggregate fields of "topic" */
+export type Topic_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Topic_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "topic" */
+export type Topic_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Topic_Max_Order_By>;
+  min?: Maybe<Topic_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "topic" */
+export type Topic_Arr_Rel_Insert_Input = {
+  data: Array<Topic_Insert_Input>;
+  on_conflict?: Maybe<Topic_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "topic". All fields are combined with a logical 'AND'. */
+export type Topic_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
+  _not?: Maybe<Topic_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  index?: Maybe<String_Comparison_Exp>;
+  messages?: Maybe<Message_Bool_Exp>;
+  name?: Maybe<String_Comparison_Exp>;
+  room?: Maybe<Room_Bool_Exp>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "topic" */
+export enum Topic_Constraint {
+  /** unique or primary key constraint */
+  ThreadPkey = 'thread_pkey'
+}
+
+/** input type for inserting data into table "topic" */
+export type Topic_Insert_Input = {
+  id?: Maybe<Scalars['uuid']>;
+  index?: Maybe<Scalars['String']>;
+  messages?: Maybe<Message_Arr_Rel_Insert_Input>;
+  name?: Maybe<Scalars['String']>;
+  room?: Maybe<Room_Obj_Rel_Insert_Input>;
+  room_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Topic_Max_Fields = {
+  __typename?: 'topic_max_fields';
+  id?: Maybe<Scalars['uuid']>;
+  index?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "topic" */
+export type Topic_Max_Order_By = {
+  id?: Maybe<Order_By>;
+  index?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Topic_Min_Fields = {
+  __typename?: 'topic_min_fields';
+  id?: Maybe<Scalars['uuid']>;
+  index?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "topic" */
+export type Topic_Min_Order_By = {
+  id?: Maybe<Order_By>;
+  index?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "topic" */
+export type Topic_Mutation_Response = {
+  __typename?: 'topic_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Topic>;
+};
+
+/** input type for inserting object relation for remote table "topic" */
+export type Topic_Obj_Rel_Insert_Input = {
+  data: Topic_Insert_Input;
+  on_conflict?: Maybe<Topic_On_Conflict>;
+};
+
+/** on conflict condition type for table "topic" */
+export type Topic_On_Conflict = {
+  constraint: Topic_Constraint;
+  update_columns: Array<Topic_Update_Column>;
+  where?: Maybe<Topic_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "topic" */
+export type Topic_Order_By = {
+  id?: Maybe<Order_By>;
+  index?: Maybe<Order_By>;
+  messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
+  name?: Maybe<Order_By>;
+  room?: Maybe<Room_Order_By>;
+  room_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "topic" */
+export type Topic_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** select columns of table "topic" */
+export enum Topic_Select_Column {
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Index = 'index',
+  /** column name */
+  Name = 'name',
+  /** column name */
+  RoomId = 'room_id'
+}
+
+/** input type for updating data in table "topic" */
+export type Topic_Set_Input = {
+  id?: Maybe<Scalars['uuid']>;
+  index?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "topic" */
+export enum Topic_Update_Column {
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Index = 'index',
+  /** column name */
+  Name = 'name',
+  /** column name */
+  RoomId = 'room_id'
+}
 
 /** columns and relationships of "transcription" */
 export type Transcription = {
@@ -4304,9 +4304,9 @@ export type RoomDetailedInfoFragment = (
       & Pick<User, 'id' | 'name'>
       & { avatarUrl: User['avatar_url'] }
     ) }
-  )>, threads: Array<(
-    { __typename?: 'thread' }
-    & Pick<Thread, 'id' | 'name' | 'index'>
+  )>, topics: Array<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name' | 'index'>
   )> }
 );
 
@@ -4369,12 +4369,12 @@ export type RoomParticipantsSubscription = (
   )> }
 );
 
-export type ThreadDetailedInfoFragment = (
-  { __typename?: 'thread' }
-  & Pick<Thread, 'id' | 'name' | 'index'>
+export type TopicDetailedInfoFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'name' | 'index'>
 );
 
-export type ThreadMessageBasicInfoFragment = (
+export type TopicMessageBasicInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content'>
   & { createdAt: Message['created_at'] }
@@ -4391,7 +4391,7 @@ export type AttachmentDetailedInfoFragment = (
   & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
 );
 
-export type ThreadMessageDetailedInfoFragment = (
+export type TopicMessageDetailedInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
@@ -4411,49 +4411,49 @@ export type ThreadMessageDetailedInfoFragment = (
   )> }
 );
 
-export type CreateThreadMutationVariables = Exact<{
+export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
   index: Scalars['String'];
 }>;
 
 
-export type CreateThreadMutation = (
+export type CreateTopicMutation = (
   { __typename?: 'mutation_root' }
-  & { thread?: Maybe<(
-    { __typename?: 'thread' }
-    & Pick<Thread, 'id'>
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id'>
   )> }
 );
 
-export type RoomThreadsSubscriptionVariables = Exact<{
+export type RoomTopicsSubscriptionVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type RoomThreadsSubscription = (
+export type RoomTopicsSubscription = (
   { __typename?: 'subscription_root' }
-  & { threads: Array<(
-    { __typename?: 'thread' }
-    & ThreadDetailedInfoFragment
+  & { topics: Array<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
   )> }
 );
 
-export type ThreadMessagesSubscriptionVariables = Exact<{
-  threadId: Scalars['uuid'];
+export type TopicMessagesSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
 }>;
 
 
-export type ThreadMessagesSubscription = (
+export type TopicMessagesSubscription = (
   { __typename?: 'subscription_root' }
   & { messages: Array<(
     { __typename?: 'message' }
-    & ThreadMessageDetailedInfoFragment
+    & TopicMessageDetailedInfoFragment
   )> }
 );
 
 export type CreateMessageMutationVariables = Exact<{
-  threadId: Scalars['uuid'];
+  topicId: Scalars['uuid'];
   content: Scalars['jsonb'];
   type: Message_Type_Enum;
   attachments: Array<Message_Attachments_Insert_Input> | Message_Attachments_Insert_Input;
@@ -4464,7 +4464,7 @@ export type CreateMessageMutation = (
   { __typename?: 'mutation_root' }
   & { message?: Maybe<(
     { __typename?: 'message' }
-    & ThreadMessageDetailedInfoFragment
+    & TopicMessageDetailedInfoFragment
   )> }
 );
 
@@ -4481,7 +4481,7 @@ export type UpdateTextMessageMutation = (
     { __typename?: 'message_mutation_response' }
     & { message: Array<(
       { __typename?: 'message' }
-      & ThreadMessageBasicInfoFragment
+      & TopicMessageBasicInfoFragment
     )> }
   )> }
 );
@@ -4656,7 +4656,7 @@ export type attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'thread' | 'thread_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4665,8 +4665,8 @@ export type messageFieldPolicy = {
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4717,19 +4717,19 @@ export type message_attachments_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'topic_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'thread_id' | 'transcription_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'topic_id' | 'transcription_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -4766,7 +4766,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_thread' | 'delete_thread_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_thread' | 'insert_thread_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_thread' | 'update_thread_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_topic' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4785,8 +4785,8 @@ export type mutation_rootFieldPolicy = {
 	delete_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4809,8 +4809,8 @@ export type mutation_rootFieldPolicy = {
 	insert_room_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_thread_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_topic_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4833,8 +4833,8 @@ export type mutation_rootFieldPolicy = {
 	update_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4843,7 +4843,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4871,9 +4871,9 @@ export type query_rootFieldPolicy = {
 	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4884,7 +4884,7 @@ export type query_rootFieldPolicy = {
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'participants' | 'participants_aggregate' | 'room_invites' | 'room_invites_aggregate' | 'summary' | 'threads' | 'threads_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'participants' | 'participants_aggregate' | 'room_invites' | 'room_invites_aggregate' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4899,8 +4899,8 @@ export type roomFieldPolicy = {
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>,
-	threads?: FieldPolicy<any> | FieldReadFunction<any>,
-	threads_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	topics?: FieldPolicy<any> | FieldReadFunction<any>,
+	topics_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_aggregateKeySpecifier)[];
 export type room_aggregateFieldPolicy = {
@@ -5021,7 +5021,7 @@ export type room_participants_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'thread' | 'thread_aggregate' | 'thread_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -5049,9 +5049,9 @@ export type subscription_rootFieldPolicy = {
 	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	thread_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -5062,8 +5062,8 @@ export type subscription_rootFieldPolicy = {
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type threadKeySpecifier = ('id' | 'index' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | threadKeySpecifier)[];
-export type threadFieldPolicy = {
+export type topicKeySpecifier = ('id' | 'index' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | topicKeySpecifier)[];
+export type topicFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -5072,33 +5072,33 @@ export type threadFieldPolicy = {
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type thread_aggregateKeySpecifier = ('aggregate' | 'nodes' | thread_aggregateKeySpecifier)[];
-export type thread_aggregateFieldPolicy = {
+export type topic_aggregateKeySpecifier = ('aggregate' | 'nodes' | topic_aggregateKeySpecifier)[];
+export type topic_aggregateFieldPolicy = {
 	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	nodes?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type thread_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | thread_aggregate_fieldsKeySpecifier)[];
-export type thread_aggregate_fieldsFieldPolicy = {
+export type topic_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | topic_aggregate_fieldsKeySpecifier)[];
+export type topic_aggregate_fieldsFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type thread_max_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | thread_max_fieldsKeySpecifier)[];
-export type thread_max_fieldsFieldPolicy = {
+export type topic_max_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type thread_min_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | thread_min_fieldsKeySpecifier)[];
-export type thread_min_fieldsFieldPolicy = {
+export type topic_min_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | topic_min_fieldsKeySpecifier)[];
+export type topic_min_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type thread_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | thread_mutation_responseKeySpecifier)[];
-export type thread_mutation_responseFieldPolicy = {
+export type topic_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | topic_mutation_responseKeySpecifier)[];
+export type topic_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -5441,29 +5441,29 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | subscription_rootKeySpecifier | (() => undefined | subscription_rootKeySpecifier),
 		fields?: subscription_rootFieldPolicy,
 	},
-	thread?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | threadKeySpecifier | (() => undefined | threadKeySpecifier),
-		fields?: threadFieldPolicy,
+	topic?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topicKeySpecifier | (() => undefined | topicKeySpecifier),
+		fields?: topicFieldPolicy,
 	},
-	thread_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | thread_aggregateKeySpecifier | (() => undefined | thread_aggregateKeySpecifier),
-		fields?: thread_aggregateFieldPolicy,
+	topic_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_aggregateKeySpecifier | (() => undefined | topic_aggregateKeySpecifier),
+		fields?: topic_aggregateFieldPolicy,
 	},
-	thread_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | thread_aggregate_fieldsKeySpecifier | (() => undefined | thread_aggregate_fieldsKeySpecifier),
-		fields?: thread_aggregate_fieldsFieldPolicy,
+	topic_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_aggregate_fieldsKeySpecifier | (() => undefined | topic_aggregate_fieldsKeySpecifier),
+		fields?: topic_aggregate_fieldsFieldPolicy,
 	},
-	thread_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | thread_max_fieldsKeySpecifier | (() => undefined | thread_max_fieldsKeySpecifier),
-		fields?: thread_max_fieldsFieldPolicy,
+	topic_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_max_fieldsKeySpecifier | (() => undefined | topic_max_fieldsKeySpecifier),
+		fields?: topic_max_fieldsFieldPolicy,
 	},
-	thread_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | thread_min_fieldsKeySpecifier | (() => undefined | thread_min_fieldsKeySpecifier),
-		fields?: thread_min_fieldsFieldPolicy,
+	topic_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_min_fieldsKeySpecifier | (() => undefined | topic_min_fieldsKeySpecifier),
+		fields?: topic_min_fieldsFieldPolicy,
 	},
-	thread_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | thread_mutation_responseKeySpecifier | (() => undefined | thread_mutation_responseKeySpecifier),
-		fields?: thread_mutation_responseFieldPolicy,
+	topic_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_mutation_responseKeySpecifier | (() => undefined | topic_mutation_responseKeySpecifier),
+		fields?: topic_mutation_responseFieldPolicy,
 	},
 	transcription?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcriptionKeySpecifier | (() => undefined | transcriptionKeySpecifier),

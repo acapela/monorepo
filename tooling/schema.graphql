@@ -668,8 +668,8 @@ type message {
   message_type: message_type!
 
   """An object relationship"""
-  thread: thread!
-  thread_id: uuid!
+  topic: topic!
+  topic_id: uuid!
 
   """An object relationship"""
   transcription: transcription
@@ -915,8 +915,8 @@ input message_bool_exp {
   is_draft: Boolean_comparison_exp
   message_attachments: message_attachments_bool_exp
   message_type: message_type_bool_exp
-  thread: thread_bool_exp
-  thread_id: uuid_comparison_exp
+  topic: topic_bool_exp
+  topic_id: uuid_comparison_exp
   transcription: transcription_bool_exp
   transcription_id: uuid_comparison_exp
   type: message_type_enum_comparison_exp
@@ -966,8 +966,8 @@ input message_insert_input {
   is_draft: Boolean
   message_attachments: message_attachments_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
-  thread: thread_obj_rel_insert_input
-  thread_id: uuid
+  topic: topic_obj_rel_insert_input
+  topic_id: uuid
   transcription: transcription_obj_rel_insert_input
   transcription_id: uuid
   type: message_type_enum
@@ -979,7 +979,7 @@ input message_insert_input {
 type message_max_fields {
   created_at: timestamptz
   id: uuid
-  thread_id: uuid
+  topic_id: uuid
   transcription_id: uuid
   user_id: uuid
 }
@@ -990,7 +990,7 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
-  thread_id: order_by
+  topic_id: order_by
   transcription_id: order_by
   user_id: order_by
 }
@@ -999,7 +999,7 @@ input message_max_order_by {
 type message_min_fields {
   created_at: timestamptz
   id: uuid
-  thread_id: uuid
+  topic_id: uuid
   transcription_id: uuid
   user_id: uuid
 }
@@ -1010,7 +1010,7 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
-  thread_id: order_by
+  topic_id: order_by
   transcription_id: order_by
   user_id: order_by
 }
@@ -1053,8 +1053,8 @@ input message_order_by {
   is_draft: order_by
   message_attachments_aggregate: message_attachments_aggregate_order_by
   message_type: message_type_order_by
-  thread: thread_order_by
-  thread_id: order_by
+  topic: topic_order_by
+  topic_id: order_by
   transcription: transcription_order_by
   transcription_id: order_by
   type: order_by
@@ -1091,7 +1091,7 @@ enum message_select_column {
   is_draft
 
   """column name"""
-  thread_id
+  topic_id
 
   """column name"""
   transcription_id
@@ -1111,7 +1111,7 @@ input message_set_input {
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
-  thread_id: uuid
+  topic_id: uuid
   transcription_id: uuid
   type: message_type_enum
   user_id: uuid
@@ -1311,7 +1311,7 @@ enum message_update_column {
   is_draft
 
   """column name"""
-  thread_id
+  topic_id
 
   """column name"""
   transcription_id
@@ -1435,17 +1435,17 @@ type mutation_root {
   delete_room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
 
   """
-  delete data from the table: "thread"
+  delete data from the table: "topic"
   """
-  delete_thread(
+  delete_topic(
     """filter the rows which have to be deleted"""
-    where: thread_bool_exp!
-  ): thread_mutation_response
+    where: topic_bool_exp!
+  ): topic_mutation_response
 
   """
-  delete single row from the table: "thread"
+  delete single row from the table: "topic"
   """
-  delete_thread_by_pk(id: uuid!): thread
+  delete_topic_by_pk(id: uuid!): topic
 
   """
   delete data from the table: "transcription"
@@ -1663,26 +1663,26 @@ type mutation_root {
   ): room_participants
 
   """
-  insert data into the table: "thread"
+  insert data into the table: "topic"
   """
-  insert_thread(
+  insert_topic(
     """the rows to be inserted"""
-    objects: [thread_insert_input!]!
+    objects: [topic_insert_input!]!
 
     """on conflict condition"""
-    on_conflict: thread_on_conflict
-  ): thread_mutation_response
+    on_conflict: topic_on_conflict
+  ): topic_mutation_response
 
   """
-  insert a single row into the table: "thread"
+  insert a single row into the table: "topic"
   """
-  insert_thread_one(
+  insert_topic_one(
     """the row to be inserted"""
-    object: thread_insert_input!
+    object: topic_insert_input!
 
     """on conflict condition"""
-    on_conflict: thread_on_conflict
-  ): thread
+    on_conflict: topic_on_conflict
+  ): topic
 
   """
   insert data into the table: "transcription"
@@ -1953,24 +1953,24 @@ type mutation_root {
   ): room_participants
 
   """
-  update data of the table: "thread"
+  update data of the table: "topic"
   """
-  update_thread(
+  update_topic(
     """sets the columns of the filtered rows to the given values"""
-    _set: thread_set_input
+    _set: topic_set_input
 
     """filter the rows which have to be updated"""
-    where: thread_bool_exp!
-  ): thread_mutation_response
+    where: topic_bool_exp!
+  ): topic_mutation_response
 
   """
-  update single row of the table: "thread"
+  update single row of the table: "topic"
   """
-  update_thread_by_pk(
+  update_topic_by_pk(
     """sets the columns of the filtered rows to the given values"""
-    _set: thread_set_input
-    pk_columns: thread_pk_columns_input!
-  ): thread
+    _set: topic_set_input
+    pk_columns: topic_pk_columns_input!
+  ): topic
 
   """
   update data of the table: "transcription"
@@ -2462,11 +2462,11 @@ type query_root {
   room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
 
   """
-  fetch data from the table: "thread"
+  fetch data from the table: "topic"
   """
-  thread(
+  topic(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -2475,18 +2475,18 @@ type query_root {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): [thread!]!
+    where: topic_bool_exp
+  ): [topic!]!
 
   """
-  fetch aggregated fields from the table: "thread"
+  fetch aggregated fields from the table: "topic"
   """
-  thread_aggregate(
+  topic_aggregate(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -2495,14 +2495,14 @@ type query_root {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): thread_aggregate!
+    where: topic_bool_exp
+  ): topic_aggregate!
 
-  """fetch data from the table: "thread" using primary key columns"""
-  thread_by_pk(id: uuid!): thread
+  """fetch data from the table: "topic" using primary key columns"""
+  topic_by_pk(id: uuid!): topic
 
   """
   fetch data from the table: "transcription"
@@ -2725,9 +2725,9 @@ type room {
   summary: String
 
   """An array relationship"""
-  threads(
+  topics(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -2736,16 +2736,16 @@ type room {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): [thread!]!
+    where: topic_bool_exp
+  ): [topic!]!
 
   """An aggregated array relationship"""
-  threads_aggregate(
+  topics_aggregate(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -2754,11 +2754,11 @@ type room {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): thread_aggregate!
+    where: topic_bool_exp
+  ): topic_aggregate!
 }
 
 """
@@ -2813,7 +2813,7 @@ input room_bool_exp {
   participants: room_participants_bool_exp
   room_invites: room_invites_bool_exp
   summary: String_comparison_exp
-  threads: thread_bool_exp
+  topics: topic_bool_exp
 }
 
 """
@@ -2839,7 +2839,7 @@ input room_insert_input {
   participants: room_participants_arr_rel_insert_input
   room_invites: room_invites_arr_rel_insert_input
   summary: String
-  threads: thread_arr_rel_insert_input
+  topics: topic_arr_rel_insert_input
 }
 
 """
@@ -3200,7 +3200,7 @@ input room_order_by {
   participants_aggregate: room_participants_aggregate_order_by
   room_invites_aggregate: room_invites_aggregate_order_by
   summary: order_by
-  threads_aggregate: thread_aggregate_order_by
+  topics_aggregate: topic_aggregate_order_by
 }
 
 """
@@ -3828,11 +3828,11 @@ type subscription_root {
   room_participants_by_pk(room_id: uuid!, user_id: uuid!): room_participants
 
   """
-  fetch data from the table: "thread"
+  fetch data from the table: "topic"
   """
-  thread(
+  topic(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -3841,18 +3841,18 @@ type subscription_root {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): [thread!]!
+    where: topic_bool_exp
+  ): [topic!]!
 
   """
-  fetch aggregated fields from the table: "thread"
+  fetch aggregated fields from the table: "topic"
   """
-  thread_aggregate(
+  topic_aggregate(
     """distinct select on columns"""
-    distinct_on: [thread_select_column!]
+    distinct_on: [topic_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -3861,14 +3861,14 @@ type subscription_root {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [thread_order_by!]
+    order_by: [topic_order_by!]
 
     """filter the rows returned"""
-    where: thread_bool_exp
-  ): thread_aggregate!
+    where: topic_bool_exp
+  ): topic_aggregate!
 
-  """fetch data from the table: "thread" using primary key columns"""
-  thread_by_pk(id: uuid!): thread
+  """fetch data from the table: "topic" using primary key columns"""
+  topic_by_pk(id: uuid!): topic
 
   """
   fetch data from the table: "transcription"
@@ -4002,10 +4002,27 @@ type subscription_root {
   user_by_pk(id: uuid!): user
 }
 
+scalar timestamptz
+
 """
-columns and relationships of "thread"
+expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
 """
-type thread {
+input timestamptz_comparison_exp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _is_null: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "topic"
+"""
+type topic {
   id: uuid!
   index: String!
 
@@ -4052,46 +4069,46 @@ type thread {
 }
 
 """
-aggregated selection of "thread"
+aggregated selection of "topic"
 """
-type thread_aggregate {
-  aggregate: thread_aggregate_fields
-  nodes: [thread!]!
+type topic_aggregate {
+  aggregate: topic_aggregate_fields
+  nodes: [topic!]!
 }
 
 """
-aggregate fields of "thread"
+aggregate fields of "topic"
 """
-type thread_aggregate_fields {
-  count(columns: [thread_select_column!], distinct: Boolean): Int
-  max: thread_max_fields
-  min: thread_min_fields
+type topic_aggregate_fields {
+  count(columns: [topic_select_column!], distinct: Boolean): Int
+  max: topic_max_fields
+  min: topic_min_fields
 }
 
 """
-order by aggregate values of table "thread"
+order by aggregate values of table "topic"
 """
-input thread_aggregate_order_by {
+input topic_aggregate_order_by {
   count: order_by
-  max: thread_max_order_by
-  min: thread_min_order_by
+  max: topic_max_order_by
+  min: topic_min_order_by
 }
 
 """
-input type for inserting array relation for remote table "thread"
+input type for inserting array relation for remote table "topic"
 """
-input thread_arr_rel_insert_input {
-  data: [thread_insert_input!]!
-  on_conflict: thread_on_conflict
+input topic_arr_rel_insert_input {
+  data: [topic_insert_input!]!
+  on_conflict: topic_on_conflict
 }
 
 """
-Boolean expression to filter rows from the table "thread". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "topic". All fields are combined with a logical 'AND'.
 """
-input thread_bool_exp {
-  _and: [thread_bool_exp]
-  _not: thread_bool_exp
-  _or: [thread_bool_exp]
+input topic_bool_exp {
+  _and: [topic_bool_exp]
+  _not: topic_bool_exp
+  _or: [topic_bool_exp]
   id: uuid_comparison_exp
   index: String_comparison_exp
   messages: message_bool_exp
@@ -4101,17 +4118,17 @@ input thread_bool_exp {
 }
 
 """
-unique or primary key constraints on table "thread"
+unique or primary key constraints on table "topic"
 """
-enum thread_constraint {
+enum topic_constraint {
   """unique or primary key constraint"""
   thread_pkey
 }
 
 """
-input type for inserting data into table "thread"
+input type for inserting data into table "topic"
 """
-input thread_insert_input {
+input topic_insert_input {
   id: uuid
   index: String
   messages: message_arr_rel_insert_input
@@ -4121,7 +4138,7 @@ input thread_insert_input {
 }
 
 """aggregate max on columns"""
-type thread_max_fields {
+type topic_max_fields {
   id: uuid
   index: String
   name: String
@@ -4129,9 +4146,9 @@ type thread_max_fields {
 }
 
 """
-order by max() on columns of table "thread"
+order by max() on columns of table "topic"
 """
-input thread_max_order_by {
+input topic_max_order_by {
   id: order_by
   index: order_by
   name: order_by
@@ -4139,7 +4156,7 @@ input thread_max_order_by {
 }
 
 """aggregate min on columns"""
-type thread_min_fields {
+type topic_min_fields {
   id: uuid
   index: String
   name: String
@@ -4147,9 +4164,9 @@ type thread_min_fields {
 }
 
 """
-order by min() on columns of table "thread"
+order by min() on columns of table "topic"
 """
-input thread_min_order_by {
+input topic_min_order_by {
   id: order_by
   index: order_by
   name: order_by
@@ -4157,37 +4174,37 @@ input thread_min_order_by {
 }
 
 """
-response of any mutation on the table "thread"
+response of any mutation on the table "topic"
 """
-type thread_mutation_response {
+type topic_mutation_response {
   """number of affected rows by the mutation"""
   affected_rows: Int!
 
   """data of the affected rows by the mutation"""
-  returning: [thread!]!
+  returning: [topic!]!
 }
 
 """
-input type for inserting object relation for remote table "thread"
+input type for inserting object relation for remote table "topic"
 """
-input thread_obj_rel_insert_input {
-  data: thread_insert_input!
-  on_conflict: thread_on_conflict
+input topic_obj_rel_insert_input {
+  data: topic_insert_input!
+  on_conflict: topic_on_conflict
 }
 
 """
-on conflict condition type for table "thread"
+on conflict condition type for table "topic"
 """
-input thread_on_conflict {
-  constraint: thread_constraint!
-  update_columns: [thread_update_column!]!
-  where: thread_bool_exp
+input topic_on_conflict {
+  constraint: topic_constraint!
+  update_columns: [topic_update_column!]!
+  where: topic_bool_exp
 }
 
 """
-ordering options when selecting data from "thread"
+ordering options when selecting data from "topic"
 """
-input thread_order_by {
+input topic_order_by {
   id: order_by
   index: order_by
   messages_aggregate: message_aggregate_order_by
@@ -4197,16 +4214,16 @@ input thread_order_by {
 }
 
 """
-primary key columns input for table: "thread"
+primary key columns input for table: "topic"
 """
-input thread_pk_columns_input {
+input topic_pk_columns_input {
   id: uuid!
 }
 
 """
-select columns of table "thread"
+select columns of table "topic"
 """
-enum thread_select_column {
+enum topic_select_column {
   """column name"""
   id
 
@@ -4221,9 +4238,9 @@ enum thread_select_column {
 }
 
 """
-input type for updating data in table "thread"
+input type for updating data in table "topic"
 """
-input thread_set_input {
+input topic_set_input {
   id: uuid
   index: String
   name: String
@@ -4231,9 +4248,9 @@ input thread_set_input {
 }
 
 """
-update columns of table "thread"
+update columns of table "topic"
 """
-enum thread_update_column {
+enum topic_update_column {
   """column name"""
   id
 
@@ -4245,23 +4262,6 @@ enum thread_update_column {
 
   """column name"""
   room_id
-}
-
-scalar timestamptz
-
-"""
-expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
-"""
-input timestamptz_comparison_exp {
-  _eq: timestamptz
-  _gt: timestamptz
-  _gte: timestamptz
-  _in: [timestamptz!]
-  _is_null: Boolean
-  _lt: timestamptz
-  _lte: timestamptz
-  _neq: timestamptz
-  _nin: [timestamptz!]
 }
 
 """

@@ -1,7 +1,7 @@
 import React from "react";
 import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import styled from "styled-components";
-import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/threads";
+import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";

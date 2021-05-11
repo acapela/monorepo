@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { ThreadMessageBasicInfoFragment, ThreadMessageDetailedInfoFragment } from "~frontend/gql";
+import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { RichEditor, EditorContent } from "~richEditor/RichEditor";
 
 interface Props {
-  message: ThreadMessageDetailedInfoFragment;
+  message: TopicMessageDetailedInfoFragment;
   isInEditMode: boolean;
   onEditRequest(newContent: EditorContent): void;
 }
 
-function renderMessageContent(message: ThreadMessageBasicInfoFragment) {
+function renderMessageContent(message: TopicMessageBasicInfoFragment) {
   try {
     const converter = new QuillDeltaToHtmlConverter(message.content, {});
 

@@ -5,7 +5,7 @@ import { sendForTranscription } from "../transcriptions/transcriptionService";
 interface HasuraMessage {
   id: string;
   type: Message_Type_Enum;
-  thread_id: string;
+  topic_id: string;
   text: string;
   is_draft: boolean;
   created_at: string;

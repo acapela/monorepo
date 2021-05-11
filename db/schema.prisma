@@ -30,7 +30,7 @@ model attachment {
 }
 
 model message {
-  thread_id           String                @db.Uuid
+  topic_id            String                @db.Uuid
   user_id             String                @db.Uuid
   created_at          DateTime              @default(now()) @db.Timestamptz(6)
   type                String
@@ -38,7 +38,7 @@ model message {
   is_draft            Boolean               @default(false)
   content             Json                  @default(dbgenerated("jsonb_build_array()"))
   transcription_id    String?               @db.Uuid
-  thread              thread                @relation(fields: [thread_id], references: [id])
+  topic               topic                 @relation(fields: [topic_id], references: [id])
   transcription       transcription?        @relation(fields: [transcription_id], references: [id])
   message_type        message_type          @relation(fields: [type], references: [value])
   user                user                  @relation(fields: [user_id], references: [id])
@@ -71,7 +71,7 @@ model room {
   user                user                @relation(fields: [creator_id], references: [id])
   room_invites        room_invites[]
   room_participants   room_participants[]
-  thread              thread[]
+  topic               topic[]
 }
 
 model room_invites {
@@ -96,15 +96,6 @@ model room_participants {
 
   @@id([room_id, user_id])
   @@unique([room_id, user_id], name: "room_participants_room_id_user_id_key")
-}
-
-model thread {
-  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id String    @db.Uuid
-  name    String?
-  index   String
-  room    room      @relation(fields: [room_id], references: [id])
-  message message[]
 }
 
 model transcription {
@@ -144,4 +135,13 @@ model verification_requests {
   identifier String
   token      String
   expires    DateTime @db.Timestamptz(6)
+}
+
+model topic {
+  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id String    @db.Uuid
+  name    String?
+  index   String
+  room    room      @relation(fields: [room_id], references: [id])
+  message message[]
 }

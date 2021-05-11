@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getUploadUrlQueryManager } from "~frontend/gql/threads";
+import { getUploadUrlQueryManager } from "~frontend/gql/topics";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;

@@ -4,16 +4,16 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { Avatar } from "~frontend/design/Avatar";
-import { ThreadMessageDetailedInfoFragment } from "~frontend/gql";
-import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/threads";
+import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
+import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { EditorContent } from "~richEditor/RichEditor";
-import { MessageText } from "~frontend/views/thread/Message/MessageText";
-import { MessageActions } from "~frontend/views/thread/Message/MessageActions";
-import { MessageAttachment } from "~frontend/views/thread/Message/MessageAttachment";
-import { MessageTranscription } from "~frontend/views/thread/Message/MessageTranscription";
+import { MessageText } from "~frontend/views/topic/Message/MessageText";
+import { MessageActions } from "~frontend/views/topic/Message/MessageActions";
+import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachment";
+import { MessageTranscription } from "~frontend/views/topic/Message/MessageTranscription";
 
-export interface MessageWithUserInfo extends ThreadMessageDetailedInfoFragment {
+export interface MessageWithUserInfo extends TopicMessageDetailedInfoFragment {
   isOwnMessage: boolean;
 }
 
