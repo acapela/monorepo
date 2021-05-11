@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Ref } from "react";
 import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~frontend/gql";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { motion } from "framer-motion";
 
 interface AttachmentProps {
+  mediaRef: Ref<HTMLVideoElement>;
   attachment: AttachmentDetailedInfoFragment;
   attachmentUrl: string;
   className?: string;
@@ -13,6 +14,7 @@ interface AttachmentProps {
 }
 
 export const MessageAttachmentDisplayer = ({
+  mediaRef,
   attachment,
   className,
   attachmentUrl,
@@ -25,7 +27,7 @@ export const MessageAttachmentDisplayer = ({
     if (messageType === Message_Type_Enum.Video) {
       return (
         <PlayableMediaWrapper>
-          <video className={className} src={attachmentUrl} controls>
+          <video ref={mediaRef} className={className} src={attachmentUrl} controls>
             Sorry, your browser doesn't support embedded videos.
           </video>
         </PlayableMediaWrapper>
@@ -35,7 +37,7 @@ export const MessageAttachmentDisplayer = ({
     if (messageType === Message_Type_Enum.Audio) {
       return (
         <PlayableMediaWrapper>
-          <audio className={className} src={attachmentUrl} controls>
+          <audio ref={mediaRef} className={className} src={attachmentUrl} controls>
             Sorry, your browser doesn't support embedded audios.
           </audio>
         </PlayableMediaWrapper>

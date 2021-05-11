@@ -7,11 +7,11 @@ import { Avatar } from "~frontend/design/Avatar";
 import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
-import { EditorContent } from "~richEditor/RichEditor";
-import { MessageText } from "~frontend/views/topic/Message/MessageText";
 import { MessageActions } from "~frontend/views/topic/Message/MessageActions";
 import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachment";
+import { MessageText } from "~frontend/views/topic/Message/MessageText";
 import { MessageTranscription } from "~frontend/views/topic/Message/MessageTranscription";
+import { EditorContent } from "~richEditor/RichEditor";
 
 export interface MessageWithUserInfo extends TopicMessageDetailedInfoFragment {
   isOwnMessage: boolean;
@@ -32,6 +32,8 @@ export const Message = ({ message }: Props) => {
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
   const [isActive, setIsActive] = useState(false);
   const holderRef = useRef<HTMLDivElement>(null);
+  const [selectedMediaTime, setSelectedMediaTime] = useState<number | null>(null);
+  const [actualMediaTime, setActualMediaTime] = useState(0);
 
   useClickAway(holderRef, () => {
     setIsActive(false);
@@ -71,9 +73,23 @@ export const Message = ({ message }: Props) => {
         </UIMessageHead>
         <MessageText message={message} isInEditMode={isInEditMode} onEditRequest={handleEditContentRequest} />
         {message.message_attachments?.map(({ attachment }) => (
-          <MessageAttachment key={attachment.id} attachment={attachment} />
+          <MessageAttachment
+            key={attachment.id}
+            attachment={attachment}
+            selectedMediaTime={selectedMediaTime}
+            onMediaTimeUpdate={(time) => {
+              setSelectedMediaTime(null);
+              setActualMediaTime(time);
+            }}
+          />
         ))}
-        {message.transcription && <MessageTranscription transcription={message.transcription} />}
+        {message.transcription && (
+          <MessageTranscription
+            transcription={message.transcription}
+            actualMediaTime={actualMediaTime}
+            onWordClicked={setSelectedMediaTime}
+          />
+        )}
       </UIMessageBody>
       <AnimatePresence>
         {/* TODO: For consistent layout, needs to be always present and hidden with `visibility` */}
