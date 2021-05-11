@@ -1,23 +1,39 @@
-import React from "react";
-import { AttachmentDetailedInfoFragment } from "~frontend/gql";
+import { AnimateSharedLayout } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
-import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { useBoolean } from "~frontend/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
-import { useBoolean } from "~frontend/hooks/useBoolean";
-import { AnimateSharedLayout } from "framer-motion";
+import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
+  selectedMediaTime: number | null;
+  onMediaTimeUpdate: (time: number) => void;
   className?: string;
 }
 
-const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
+const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
+  const mediaRef = useRef<HTMLVideoElement>(null);
   const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
   const url = downloadUrlData?.get_download_url?.downloadUrl;
   const { data: attachmentData } = useGetAttachmentQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
+
+  const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);
+
+  useEffect(() => {
+    if (typeof selectedMediaTime === "number" && mediaRef.current) {
+      mediaRef.current.currentTime = selectedMediaTime;
+    }
+  }, [selectedMediaTime]);
+
+  useEffect(() => {
+    mediaRef.current?.addEventListener("timeupdate", onTimeUpdate);
+    return () => mediaRef.current?.removeEventListener("timeupdate", onTimeUpdate);
+  }, [mediaRef.current]);
 
   if (!url) {
     return <div className={className}>Fetching</div>;
@@ -28,6 +44,7 @@ const PureMessageAttachment = ({ attachment, className }: AttachmentProps) => {
   const renderAttachment = (isPlaceholder = false) => {
     return (
       <MessageAttachmentDisplayer
+        mediaRef={mediaRef}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         attachment={attachmentData.attachment!}
         attachmentUrl={url}
