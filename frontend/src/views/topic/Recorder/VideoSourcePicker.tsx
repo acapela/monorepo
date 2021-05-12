@@ -15,29 +15,40 @@ interface VideoSourcePickerParams {
   className?: string;
 }
 
-export const VideoSourcePicker = ({
+const PureVideoSourcePicker = ({
   handlerRef,
   onStartRecording,
   activeSource = VideoSource.SCREEN,
+  className,
 }: VideoSourcePickerParams) => {
   const [source, setSource] = useState<VideoSource>(activeSource);
 
   return (
     <Popover handlerRef={handlerRef}>
-      <UISourcesWrapper>
-        <UISourceButton selected={source === VideoSource.SCREEN} onClick={() => setSource(VideoSource.SCREEN)}>
-          <MonitorOutline />
-          <UISourceLabel>Screen</UISourceLabel>
-        </UISourceButton>
-        <UISourceButton selected={source === VideoSource.CAMERA} onClick={() => setSource(VideoSource.CAMERA)}>
-          <PersonOutline />
-          <UISourceLabel>Camera</UISourceLabel>
-        </UISourceButton>
-      </UISourcesWrapper>
-      <UIConfirmButton onClick={() => onStartRecording(source)}>Start recording</UIConfirmButton>
+      <div className={className}>
+        <UISourcesWrapper>
+          <UISourceButton selected={source === VideoSource.SCREEN} onClick={() => setSource(VideoSource.SCREEN)}>
+            <MonitorOutline />
+            <UISourceLabel>Screen</UISourceLabel>
+          </UISourceButton>
+          <UISourceButton selected={source === VideoSource.CAMERA} onClick={() => setSource(VideoSource.CAMERA)}>
+            <PersonOutline />
+            <UISourceLabel>Camera</UISourceLabel>
+          </UISourceButton>
+        </UISourcesWrapper>
+        <UIConfirmButton onClick={() => onStartRecording(source)}>Start recording</UIConfirmButton>
+      </div>
     </Popover>
   );
 };
+
+export const VideoSourcePicker = styled(PureVideoSourcePicker)`
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 0.625rem;
+  user-select: none;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 8%);
+`;
 
 const UISourcesWrapper = styled.div`
   width: 100%;

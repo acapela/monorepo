@@ -27,6 +27,8 @@ const UIBackDrop = styled.div`
 `;
 
 const UIModal = styled.div`
+  top: 0;
+  left: 0;
   position: absolute;
   display: flex;
   align-items: center;
