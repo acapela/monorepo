@@ -21,10 +21,16 @@ const PurePopover = ({ className, handlerRef, children, cornered = false }: Popo
           offset: [0, 5],
         },
       },
+      {
+        name: "preventOverflow",
+        options: {
+          padding: 8,
+        },
+      },
     ],
   });
 
-  const popperStyles: CSSProperties = cornered ? { position: "fixed", left: "3rem", bottom: "2rem" } : styles.popper;
+  const popperStyles: CSSProperties = cornered ? { position: "fixed", left: "2rem", bottom: "9rem" } : styles.popper;
 
   return (
     <div className={className} ref={setPopperElement} style={popperStyles} {...attributes.popper}>
