@@ -48,7 +48,7 @@ const UITopBar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
+  padding: 0.75rem 1.5rem;
 
   background: #ffffff;
   box-shadow: 0px 1px 0px #ededed;

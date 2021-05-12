@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/design/Avatar";
 
 export function UserMenu() {
-  const { user } = useCurrentUser();
+  const user = useAssertCurrentUser();
+
   return (
     <UIHolder>
-      <Avatar url={user?.picture} />
+      <Avatar url={user.picture} name={user.name ?? undefined} />
     </UIHolder>
   );
 }
