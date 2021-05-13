@@ -7,8 +7,6 @@ import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
 import { Recorder } from "./Recorder";
-import { AudioRecorder } from "./Recorder/AudioRecorder";
-import { VideoRecorder } from "./Recorder/VideoRecorder";
 import { uploadFile } from "./uploadFile";
 
 interface ComposerAttachment {
@@ -125,10 +123,6 @@ const UIEditorContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-
-  ${AudioRecorder}, ${VideoRecorder} {
-    margin-right: 1rem;
-  }
 
   div:nth-child(2) {
     flex-grow: 1;

@@ -2,36 +2,32 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 import { MonitorOutline, PersonOutline } from "~ui/icons";
 import { Popover } from "~ui/Popover";
-
-export enum VideoSource {
-  SCREEN = "screen",
-  CAMERA = "camera",
-}
+import { MediaSource } from "./MediaSource";
 
 interface VideoSourcePickerParams {
   handlerRef: HTMLElement | null;
-  onStartRecording: (source: VideoSource) => void;
-  activeSource?: VideoSource;
+  onStartRecording: (source: MediaSource) => void;
+  activeSource?: MediaSource;
   className?: string;
 }
 
 const PureVideoSourcePicker = ({
   handlerRef,
   onStartRecording,
-  activeSource = VideoSource.SCREEN,
+  activeSource = MediaSource.SCREEN,
   className,
 }: VideoSourcePickerParams) => {
-  const [source, setSource] = useState<VideoSource>(activeSource);
+  const [source, setSource] = useState<MediaSource>(activeSource);
 
   return (
     <Popover handlerRef={handlerRef}>
       <div className={className}>
         <UISourcesWrapper>
-          <UISourceButton selected={source === VideoSource.SCREEN} onClick={() => setSource(VideoSource.SCREEN)}>
+          <UISourceButton selected={source === MediaSource.SCREEN} onClick={() => setSource(MediaSource.SCREEN)}>
             <MonitorOutline />
             <UISourceLabel>Screen</UISourceLabel>
           </UISourceButton>
-          <UISourceButton selected={source === VideoSource.CAMERA} onClick={() => setSource(VideoSource.CAMERA)}>
+          <UISourceButton selected={source === MediaSource.CAMERA} onClick={() => setSource(MediaSource.CAMERA)}>
             <PersonOutline />
             <UISourceLabel>Camera</UISourceLabel>
           </UISourceButton>

@@ -43,7 +43,7 @@ const PureRecorderControls = ({
   return (
     <Popover className={className} handlerRef={handlerRef} cornered={cornered}>
       <div className={className}>
-        <VideoPreview stream={previewStream} flip={flipVideoPreview} />
+        {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
         <UIControls>
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
           <UIStopButton onClick={() => onStop()}>
