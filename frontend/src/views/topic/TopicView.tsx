@@ -1,28 +1,46 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useTopicMessages } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
-import { useTopicMessages as useTopicMessagesRaw } from "~frontend/gql/topics";
-import { MessageComposer } from "./Composer";
-import { Message, MessageWithUserInfo } from "./Message";
-import { ScrollableMessages } from "./ScrollableMessages";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { MessageComposer } from "./Composer";
+import { Message } from "./Message";
+import { ScrollableMessages } from "./ScrollableMessages";
 
-const useTopicMessages = (topicId: string): MessageWithUserInfo[] => {
-  const user = useCurrentUser();
-  const { data } = useTopicMessagesRaw({
-    topicId,
+interface Props {
+  id: string;
+}
+
+export const TopicView = ({ id }: Props) => {
+  const { data } = useTopicMessages.subscription({
+    topicId: id,
   });
 
-  const messagesList: TopicMessageDetailedInfoFragment[] = data?.messages ?? [];
+  const messages = data?.messages ?? [];
 
-  return messagesList.map((message) => ({
-    ...message,
-    isOwnMessage: message.user.id === user?.id,
-  }));
+  return (
+    <TopicRoot>
+      <ScrollableMessages>
+        <UIAnimatedMessagesWrapper>
+          <AnimateSharedLayout>
+            {messages.map((message) => (
+              <Message key={message.id} message={message} />
+            ))}
+          </AnimateSharedLayout>
+          {!messages.length && (
+            <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+          )}
+        </UIAnimatedMessagesWrapper>
+      </ScrollableMessages>
+      <ClientSideOnly>
+        <UIMessageComposer>
+          <MessageComposer topicId={id} />
+        </UIMessageComposer>
+      </ClientSideOnly>
+    </TopicRoot>
+  );
 };
 
 const TopicRoot = styled(DropFileContext)`
@@ -48,29 +66,3 @@ const UIAnimatedMessagesWrapper = styled(motion.div)`
   display: flex;
   flex-direction: column;
 `;
-
-export const TopicView: React.FC<{ id: string }> = ({ id }) => {
-  const messages = useTopicMessages(id);
-
-  return (
-    <TopicRoot>
-      <ScrollableMessages>
-        <UIAnimatedMessagesWrapper>
-          <AnimateSharedLayout>
-            {messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))}
-          </AnimateSharedLayout>
-        </UIAnimatedMessagesWrapper>
-        {!messages.length && (
-          <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
-        )}
-      </ScrollableMessages>
-      <UIMessageComposer>
-        <ClientSideOnly>
-          <MessageComposer topicId={id} />
-        </ClientSideOnly>
-      </UIMessageComposer>
-    </TopicRoot>
-  );
-};

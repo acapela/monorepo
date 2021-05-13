@@ -1,4 +1,4 @@
-import { DocumentNode } from "@apollo/client";
+import { ApolloClient, DocumentNode } from "@apollo/client";
 import memoize from "lodash/memoize";
 
 interface QueryUseageData {
@@ -37,6 +37,8 @@ export function reportQueryUseage(queryInfo: QueryUseageData) {
 const APOLLO_INITIAL_STATE_JSON_ID = "apollo-initial-state";
 
 export function ApolloInitialState({ state }: { state: unknown }) {
+  if (!state) return null;
+
   return (
     <script
       id={APOLLO_INITIAL_STATE_JSON_ID}
@@ -55,3 +57,22 @@ export const getApolloInitialState = memoize(() => {
 
   return JSON.parse(queriesDataElement.innerHTML);
 });
+
+export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {
+  // For each used query - fetch it using the client
+
+  await Promise.all(
+    recordings.map(async (query) => {
+      try {
+        const { data } = await client.query({
+          query: query.query,
+          variables: query.variables,
+        });
+
+        client.writeQuery({ data, query: query.query, variables: query.variables });
+      } catch (error) {
+        //
+      }
+    })
+  );
+}
