@@ -1,9 +1,10 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { Logo } from "~frontend/ui/Logo";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
+import { Logo } from "~frontend/design/Logo";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
+import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
 import { useAcceptInviteMutation } from "~frontend/gql/invitations";
 import { usePathParameter } from "~frontend/utils";
 import { assert } from "~shared/assert";
@@ -15,6 +16,10 @@ export default function InvitePage() {
 
   return (
     <div>
+      <Head>
+        <title>Acapela</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <UIContentWrapper marginTop>
         <UILogoWrapper>
           <Logo />
@@ -44,7 +49,7 @@ const InviteAcceptor = ({ code }: { code: string }): JSX.Element | null => {
         return await replace(`/rooms/${roomId}`);
       }
 
-      return await replace("/");
+      return await replace("/home");
     }
 
     acceptInviteAndRedirect();

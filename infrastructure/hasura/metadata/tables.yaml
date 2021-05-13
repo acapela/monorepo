@@ -197,13 +197,6 @@
           table:
             schema: public
             name: room_invites
-    - name: space
-      using:
-        foreign_key_constraint_on:
-          column: room_id
-          table:
-            schema: public
-            name: space_rooms
     - name: topics
       using:
         foreign_key_constraint_on:

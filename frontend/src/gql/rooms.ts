@@ -6,13 +6,13 @@ import {
   GetRoomsQueryVariables,
   GetSingleRoomQuery,
   GetSingleRoomQueryVariables,
-  RoomParticipantsQuery,
-  RoomParticipantsQueryVariables,
+  RoomParticipantsSubscription,
+  RoomParticipantsSubscriptionVariables,
 } from "./generated";
 
-import { createMutation, createQuery } from "./utils";
+import { createMutation, createQuery, createSubscription } from "./utils";
 
-export const RoomBasicInfoFragment = gql`
+const RoomBasicInfoFragment = gql`
   fragment RoomBasicInfo on room {
     id
     name
@@ -86,10 +86,13 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
   }
 `);
 
-export const [useRoomParticipants] = createQuery<RoomParticipantsQuery, RoomParticipantsQueryVariables>(gql`
+export const [useRoomParticipantsSubscription] = createSubscription<
+  RoomParticipantsSubscription,
+  RoomParticipantsSubscriptionVariables
+>(gql`
   ${RoomParticipantBasicInfoFragment}
 
-  query RoomParticipants($roomId: uuid!) {
+  subscription RoomParticipants($roomId: uuid!) {
     participants: room_participants(where: { room_id: { _eq: $roomId } }) {
       ...RoomParticipantBasicInfo
     }

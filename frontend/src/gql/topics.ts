@@ -12,14 +12,14 @@ import {
   GetDownloadUrlQueryVariables,
   GetUploadUrlQuery,
   GetUploadUrlQueryVariables,
-  RoomTopicsQuery,
-  RoomTopicsQueryVariables,
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables,
+  RoomTopicsSubscription,
+  RoomTopicsSubscriptionVariables,
+  TopicMessagesSubscription,
+  TopicMessagesSubscriptionVariables,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
 } from "./generated";
-import { createMutation, createQuery } from "./utils";
+import { createMutation, createSubscription, createQuery } from "./utils";
 
 const TopicDetailedInfoFragment = gql`
   fragment TopicDetailedInfo on topic {
@@ -84,23 +84,26 @@ export const [useCreateTopicMutation] = createMutation<CreateTopicMutation, Crea
   }
 `);
 
-export const [useRoomTopicsSubscription] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(gql`
+export const [useRoomTopicsSubscription] = createSubscription<
+  RoomTopicsSubscription,
+  RoomTopicsSubscriptionVariables
+>(gql`
   ${TopicDetailedInfoFragment}
 
-  query RoomTopics($roomId: uuid!) {
+  subscription RoomTopics($roomId: uuid!) {
     topics: topic(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
       ...TopicDetailedInfo
     }
   }
 `);
 
-export const [useTopicMessages, topicMessagesSubscriptionManager] = createQuery<
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables
+export const [useTopicMessagesSubscription, topicMessagesSubscriptionManager] = createSubscription<
+  TopicMessagesSubscription,
+  TopicMessagesSubscriptionVariables
 >(gql`
   ${TopicMessageDetailedInfoFragment}
 
-  query TopicMessages($topicId: uuid!) {
+  subscription TopicMessages($topicId: uuid!) {
     messages: message(
       where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false } }
       order_by: [{ created_at: asc }]

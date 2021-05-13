@@ -3,13 +3,12 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { PageMeta } from "~frontend/utils/PageMeta";
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;
@@ -37,7 +36,9 @@ const Page = () => {
 
   return (
     <>
-      <PageMeta title={room.name} />
+      <Head>
+        <title>{room.name} | Acapela</title>
+      </Head>
       <UIContentWrapper>
         <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>
         <TopicCreationButton roomId={room.id} />

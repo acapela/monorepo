@@ -1,13 +1,8 @@
 import { useRouter } from "next/router";
 
-export function usePathParameter(name: string): string | null {
-  const router = useRouter();
-
-  if (!router) return null;
-
-  const { query } = router;
-  const parameter = query[name] ?? null;
-
+export function usePathParameter(name: string): string | undefined {
+  const { query } = useRouter();
+  const parameter = query[name];
   return Array.isArray(parameter) ? parameter[0] : parameter;
 }
 
