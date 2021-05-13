@@ -2,8 +2,12 @@ import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, spli
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import Cookie from "js-cookie";
+import { memoize } from "lodash";
+import { NextApiRequest } from "next";
+import { IncomingMessage } from "node:http";
 import React from "react";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
+import { getApolloInitialState } from "./gql/hydration";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -11,21 +15,29 @@ function readCurrentToken(): string | null {
   return Cookie.get(TOKEN_COOKIE_NAME) ?? null;
 }
 
-const authorizationHeaderLink = new ApolloLink((operation, forward) => {
-  const authToken = readCurrentToken();
+export function readTokenFromRequest(req?: IncomingMessage): string | null {
+  if (!req) return null;
 
-  if (!authToken) {
+  const nextRequest = req as NextApiRequest;
+  return nextRequest.cookies?.[TOKEN_COOKIE_NAME] ?? null;
+}
+
+const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
+  new ApolloLink((operation, forward) => {
+    const authToken = forcedAuthToken ?? readCurrentToken();
+
+    if (!authToken) {
+      return forward(operation);
+    }
+
+    operation.setContext({
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
     return forward(operation);
-  }
-
-  operation.setContext({
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
   });
-
-  return forward(operation);
-});
 
 function createSocketLink() {
   return new WebSocketLink({
@@ -50,31 +62,67 @@ function createSocketLink() {
   });
 }
 
-const httpLink = new HttpLink({ uri: "/graphql" });
+function getGraphqlUrl() {
+  const rootUrl = process.env.FRONTEND_URL ?? "";
 
-const createApolloClient = (): ApolloClient<unknown> => {
-  const ssrMode = typeof window === "undefined";
+  return `${rootUrl}/graphql`;
+}
 
-  const link = ssrMode
-    ? authorizationHeaderLink.concat(httpLink)
-    : splitLinks(
+const httpLink = new HttpLink({ uri: getGraphqlUrl() });
+
+export const getApolloClient = memoize(
+  (forcedAuthToken?: string): ApolloClient<unknown> => {
+    const ssrMode = typeof window === "undefined";
+
+    if (!ssrMode) {
+      // Client side - never use forced token and allways read one dynamically
+      forcedAuthToken = undefined;
+    }
+
+    const authTokenLink = createAuthorizationHeaderLink(forcedAuthToken);
+
+    function getLink() {
+      if (ssrMode) {
+        return authTokenLink.concat(httpLink);
+      }
+
+      return splitLinks(
         ({ query }) => {
           const definition = getMainDefinition(query);
           return definition.kind === "OperationDefinition" && definition.operation === "subscription";
         },
         createSocketLink(),
-        authorizationHeaderLink.concat(httpLink)
+        authTokenLink.concat(httpLink)
       );
+    }
 
-  return new ApolloClient({
-    ssrMode,
-    link,
-    cache: new InMemoryCache(),
-  });
-};
+    const link = getLink();
 
-export const apolloClient = createApolloClient();
+    // Create cache and try to populate it if there is pre-fetched data
+    const cache = new InMemoryCache();
+    const initialCacheState = getApolloInitialState();
 
-export const Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
+    if (initialCacheState) {
+      cache.restore(initialCacheState);
+    }
+
+    return new ApolloClient({
+      ssrMode,
+      link,
+      cache,
+    });
+  }
+);
+
+interface ApolloClientProviderProps {
+  children: React.ReactNode;
+  // On server side, queries are pre-populated ysing authorized client. This props allows using the same client instance,
+  // resulting in initial render having all data in place and avoiding loading state.
+  ssrAuthToken?: string | null;
+}
+
+export const ApolloClientProvider = ({ children, ssrAuthToken }: ApolloClientProviderProps) => {
+  const client = getApolloClient(ssrAuthToken ?? undefined);
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

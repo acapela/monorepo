@@ -4,7 +4,7 @@ import { graphql, rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "next-auth/client";
 import { PropsWithChildren } from "react";
-import { Provider as ApolloProvider } from "./apollo";
+import { ApolloClientProvider as ApolloProvider } from "./apollo";
 import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
 import { useCurrentUser } from "./authentication/useCurrentUser";
 import { useGetRoomsQuery } from "./gql/rooms";
@@ -42,7 +42,7 @@ describe("Apollo setup", () => {
   // receives an empty room list from the useGetRoomsQuery() function
   it.skip("sets up graphql link correctly when you are authenticated", async () => {
     render(
-      <Provider session={null}>
+      <Provider session={undefined}>
         <ApolloProvider>
           <TestComponent />
           <GoogleLoginButton />
@@ -66,7 +66,7 @@ gql`
 `;
 
 function TestComponent() {
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   if (user) {
     return <TestQueryComponent />;
   }

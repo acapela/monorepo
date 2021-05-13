@@ -14,19 +14,40 @@ import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { useRef } from "react";
 import { assert } from "~shared/assert";
-import { apolloClient } from "~frontend/apollo";
+import { getApolloClient } from "~frontend/apollo";
+import { reportQueryUseage } from "./hydration";
 
 type EmptyObject = Record<string, never>;
-
 type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
 
 export function createQuery<Data, Variables>(query: DocumentNode) {
+  const subscriptionQuery = getSubscribtionNodeFromQueryNode(query);
   function useQuery(variables: VoidableIfEmpty<Variables>, options?: QueryHookOptions<Data, Variables>) {
+    reportQueryUseage({ query, variables: variables });
+
     return useRawQuery(query, { ...options, variables: variables as Variables });
   }
 
+  function useAsSubscribtion(
+    variables: VoidableIfEmpty<Variables>,
+    options?: SubscriptionHookOptions<Data, Variables>
+  ) {
+    const queryResult = useQuery(variables);
+    const subscriptionResult = useRawSubscription(subscriptionQuery, { ...options, variables: variables as Variables });
+
+    const data = useLatest(subscriptionResult.data, queryResult.data);
+
+    return {
+      ...subscriptionResult,
+      data,
+    };
+  }
+
+  useQuery.subscription = useAsSubscribtion;
+
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
-    const currentData = apolloClient.readQuery<Data, Variables>({ query, variables });
+    const client = getApolloClient();
+    const currentData = client.readQuery<Data, Variables>({ query, variables });
 
     if (currentData === null) {
       return;
@@ -38,19 +59,19 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
       return draft;
     });
 
-    apolloClient.writeQuery({ query, variables, data: newData });
+    client.writeQuery({ query, variables, data: newData });
   }
 
   function write(variables: Variables, data: Data) {
-    apolloClient.writeQuery<Data, Variables>({ query, variables, data });
+    getApolloClient().writeQuery<Data, Variables>({ query, variables, data });
   }
 
   function read(variables: Variables) {
-    return apolloClient.readQuery<Data, Variables>({ query, variables });
+    return getApolloClient().readQuery<Data, Variables>({ query, variables });
   }
 
   async function fetch(variables: Variables) {
-    const response = await apolloClient.query<Data, Variables>({ query, variables });
+    const response = await i().query<Data, Variables>({ query, variables });
 
     if (response.error) {
       throw response.error;
@@ -69,8 +90,8 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
   return [useQuery, manager] as const;
 }
 
-function getQueryNodeFromSubscriptionNode(subscriptionNode: DocumentNode): DocumentNode {
-  const subscriptionSource = print(subscriptionNode);
+function getSubscribtionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
+  const subscriptionSource = print(queryNode);
 
   assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
   assert(
@@ -78,53 +99,13 @@ function getQueryNodeFromSubscriptionNode(subscriptionNode: DocumentNode): Docum
     "Incorrect query string cannot be converted to subscription (provided graphql definition is not a query)"
   );
 
-  const queryString = subscriptionSource.replace("subscription", "query");
+  const subscriptionString = subscriptionSource.replace("query", "subscription");
 
-  const queryNode = gql`
-    ${queryString}
+  const subscriptionNode = gql`
+    ${subscriptionString}
   `;
 
-  return queryNode;
-}
-
-export function createSubscription<Data, Variables>(subscription: DocumentNode) {
-  /**
-   * Due to apollo-cache limitations (https://github.com/apollographql/apollo-client/issues/5267)
-   * it is not possible to update cache of subscribtion to create optimistic updates.
-   *
-   * To mitigate it, we'll use both query and subscribtion at the same time. It is possible because in hasura
-   * every subscribtion can be converted to query without modifications.
-   *
-   * What we do is in `useSubscribtion` hook we'll use query and subscribtion at once and return 'latest' result out
-   * of the two.
-   *
-   * This way we can update query cache and it'll be 'official' until next subscribtion native update.
-   */
-
-  // Let's create corresponding query node
-  const queryNode = getQueryNodeFromSubscriptionNode(subscription);
-
-  // Create query with manager that will be used to update query if needed
-  const [useQuery, queryManager] = createQuery<Data, Variables>(queryNode);
-
-  function useSubscription(variables: VoidableIfEmpty<Variables>, options?: SubscriptionHookOptions<Data, Variables>) {
-    const queryResult = useQuery(variables);
-    const subscriptionResult = useRawSubscription(subscription, { ...options, variables: variables as Variables });
-
-    const data = useLatest(queryResult.data, subscriptionResult.data);
-
-    return {
-      ...subscriptionResult,
-      data,
-    };
-  }
-
-  const manager = {
-    update: queryManager.update,
-    write: queryManager.write,
-  };
-
-  return [useSubscription, manager] as const;
+  return subscriptionNode;
 }
 
 interface MutationDefinitionOptions<Data, Variables> {
@@ -152,7 +133,7 @@ export function createMutation<Data, Variables>(
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    const rawResult = await apolloClient.mutate<Data, Variables>({ ...options, mutation, variables });
+    const rawResult = await getApolloClient().mutate<Data, Variables>({ ...options, mutation, variables });
 
     if (rawResult.data) {
       mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
@@ -179,6 +160,8 @@ export function useLatest<T>(...items: T[]) {
 
   // Let's try to find first value that we don't know meaning it is new
   for (const item of items) {
+    if (item === undefined) continue;
+
     const isNew = !itemsAddSet.current.has(item);
 
     // Add value to known values

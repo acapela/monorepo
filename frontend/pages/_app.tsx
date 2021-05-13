@@ -6,26 +6,27 @@ import { Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
-import { Provider as ApolloProvider } from "~frontend/apollo";
+import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 
 interface AddedProps {
   session: Session;
+  authToken: string | null;
 }
 
 const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
 
-export default function App({ Component, pageProps, session }: AppProps & AddedProps): JSX.Element {
+export default function App({ Component, pageProps, session, authToken }: AppProps & AddedProps): JSX.Element {
   return (
     <>
       <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session}>
-        <ApolloProvider>{renderWithPageLayout(Component, pageProps)}</ApolloProvider>
+        <ApolloProvider ssrAuthToken={authToken}>{renderWithPageLayout(Component, pageProps)}</ApolloProvider>
       </SessionProvider>
     </>
   );
@@ -55,8 +56,12 @@ const CommonMetadata = () => {
  */
 App.getInitialProps = (context: AppContext) => {
   const session = getUserFromRequest(context.ctx.req);
+  // We're pre-fetching all the queries on server side before actual rendering happens.
+  // During server-side rendering, we will use apollo client with fixed token value
+  const authToken = readTokenFromRequest(context.ctx.req);
 
   return {
     session,
+    authToken,
   };
 };
