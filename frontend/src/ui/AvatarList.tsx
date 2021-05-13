@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Avatar, AvatarProps } from "~frontend/design/Avatar";
+import { Avatar, AvatarProps } from "~frontend/ui/Avatar";
 
 interface AvatarListProps {
   avatars: AvatarProps[];
