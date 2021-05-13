@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { Avatar } from "~frontend/ui/Avatar";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
@@ -13,19 +14,16 @@ import { MessageText } from "~frontend/views/topic/Message/MessageText";
 import { MessageTranscription } from "~frontend/views/topic/Message/MessageTranscription";
 import { EditorContent } from "~richEditor/RichEditor";
 
-export interface MessageWithUserInfo extends TopicMessageDetailedInfoFragment {
-  isOwnMessage: boolean;
-}
-
 interface Props extends MotionProps {
-  message: MessageWithUserInfo;
+  message: TopicMessageDetailedInfoFragment;
 }
 
-function getUserOrGuestName(message: MessageWithUserInfo): string {
+function getUserOrGuestName(message: TopicMessageDetailedInfoFragment): string {
   return message.user.name || "Guest";
 }
 
 export const Message = ({ message }: Props) => {
+  const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [updateMessage] = useUpdateTextMessageMutation();
   const [isInEditMode, setIsInEditMode] = useState(false);
@@ -34,6 +32,8 @@ export const Message = ({ message }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
   const [selectedMediaTime, setSelectedMediaTime] = useState<number | null>(null);
   const [actualMediaTime, setActualMediaTime] = useState(0);
+
+  const isOwnMessage = user?.id === message.user.id;
 
   useClickAway(holderRef, () => {
     setIsActive(false);
@@ -49,7 +49,7 @@ export const Message = ({ message }: Props) => {
   }
 
   function getShouldShowTools() {
-    if (!message.isOwnMessage) return false;
+    if (!isOwnMessage) return false;
     if (isInEditMode) return false;
 
     return isHovered || isActive;
@@ -59,16 +59,15 @@ export const Message = ({ message }: Props) => {
 
   return (
     <UIAnimatedMessageWrapper
-      layoutId={`message-${message.id}`}
       ref={holderRef}
-      message={message}
+      isOwnMessage={isOwnMessage}
       onMouseEnter={setHovered}
       onMouseLeave={unsetHovered}
     >
       <UIMessageAvatar url={message.user.avatarUrl ?? ""} name={getUserOrGuestName(message)} />
       <UIMessageBody>
         <UIMessageHead>
-          <UIUserName>{message.isOwnMessage ? "You" : getUserOrGuestName(message)}</UIUserName>
+          <UIUserName>{isOwnMessage ? "You" : getUserOrGuestName(message)}</UIUserName>
           <UITimestamp>{format(new Date(message.createdAt), "p")}</UITimestamp>
         </UIMessageHead>
         <MessageText message={message} isInEditMode={isInEditMode} onEditRequest={handleEditContentRequest} />
@@ -120,21 +119,21 @@ const UIMessageAvatar = styled(Avatar)`
   flex-shrink: 0;
 `;
 
-const UIAnimatedMessageWrapper = styled.div<Props>`
+const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   width: auto;
   display: inline-flex;
   align-items: flex-start;
-  align-self: ${({ message }) => (message.isOwnMessage ? "flex-end" : "flex-start")};
-  flex-direction: ${({ message }) => (message.isOwnMessage ? "row-reverse" : "row")};
+  align-self: ${({ isOwnMessage }) => (isOwnMessage ? "flex-end" : "flex-start")};
+  flex-direction: ${({ isOwnMessage }) => (isOwnMessage ? "row-reverse" : "row")};
 
   margin-top: 0.5rem;
-  margin-right: ${({ message }) => (message.isOwnMessage ? "0" : "0.5")}rem;
-  margin-left: ${({ message }) => (message.isOwnMessage ? "0.5" : "0")}rem;
+  margin-right: ${({ isOwnMessage }) => (isOwnMessage ? "0" : "0.5")}rem;
+  margin-left: ${({ isOwnMessage }) => (isOwnMessage ? "0.5" : "0")}rem;
 
   border-radius: 0.5rem;
 
   & > *:not(:last-child) {
-    ${({ message }) => (message.isOwnMessage ? "margin-left: 1rem;" : "margin-right: 1rem;")}
+    ${({ isOwnMessage }) => (isOwnMessage ? "margin-left: 1rem;" : "margin-right: 1rem;")}
   }
 
   ${UIMessageAvatar} {
