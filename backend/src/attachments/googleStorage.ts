@@ -1,4 +1,5 @@
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
+import { ATTACHMENT_LINK_EXPIRATION_TIME } from "~config/attachments";
 
 const bucketName = process.env.GOOGLE_STORAGE_BUCKET;
 const directory = "attachments";
@@ -8,14 +9,15 @@ function getFilePath(fileId: string) {
   return `${directory}/${fileId}`;
 }
 
+const UPLOAD_TIMEOUT_TIME = 30 * 1000; // 30s
+
 export async function getSignedUploadUrl(uuid: string, mimeType: string): Promise<string> {
   const filePath = getFilePath(uuid);
-  const expiresInMinutes = 0.5; // 30 seconds should be enough
 
   const options: GetSignedUrlConfig = {
     version: "v4",
     action: "write",
-    expires: Date.now() + 60 * 1000 * expiresInMinutes,
+    expires: Date.now() + UPLOAD_TIMEOUT_TIME,
     contentType: mimeType,
     virtualHostedStyle: true,
   };
@@ -28,12 +30,11 @@ export async function getSignedUploadUrl(uuid: string, mimeType: string): Promis
 
 export async function getSignedDownloadUrl(uuid: string): Promise<string> {
   const filePath = getFilePath(uuid);
-  const expiresInMinutes = 60;
 
   const options: GetSignedUrlConfig = {
     version: "v4",
     action: "read",
-    expires: Date.now() + 60 * 1000 * expiresInMinutes,
+    expires: Date.now() + ATTACHMENT_LINK_EXPIRATION_TIME,
     virtualHostedStyle: true,
   };
 
