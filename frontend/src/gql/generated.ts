@@ -1179,6 +1179,18 @@ export type Mutation_Root = {
   delete_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** delete single row from the table: "room_participants" */
   delete_room_participants_by_pk?: Maybe<Room_Participants>;
+  /** delete data from the table: "space" */
+  delete_space?: Maybe<Space_Mutation_Response>;
+  /** delete single row from the table: "space" */
+  delete_space_by_pk?: Maybe<Space>;
+  /** delete data from the table: "space_participants" */
+  delete_space_participants?: Maybe<Space_Participants_Mutation_Response>;
+  /** delete single row from the table: "space_participants" */
+  delete_space_participants_by_pk?: Maybe<Space_Participants>;
+  /** delete data from the table: "space_rooms" */
+  delete_space_rooms?: Maybe<Space_Rooms_Mutation_Response>;
+  /** delete single row from the table: "space_rooms" */
+  delete_space_rooms_by_pk?: Maybe<Space_Rooms>;
   /** delete data from the table: "topic" */
   delete_topic?: Maybe<Topic_Mutation_Response>;
   /** delete single row from the table: "topic" */
@@ -1227,6 +1239,18 @@ export type Mutation_Root = {
   insert_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** insert a single row into the table: "room_participants" */
   insert_room_participants_one?: Maybe<Room_Participants>;
+  /** insert data into the table: "space" */
+  insert_space?: Maybe<Space_Mutation_Response>;
+  /** insert a single row into the table: "space" */
+  insert_space_one?: Maybe<Space>;
+  /** insert data into the table: "space_participants" */
+  insert_space_participants?: Maybe<Space_Participants_Mutation_Response>;
+  /** insert a single row into the table: "space_participants" */
+  insert_space_participants_one?: Maybe<Space_Participants>;
+  /** insert data into the table: "space_rooms" */
+  insert_space_rooms?: Maybe<Space_Rooms_Mutation_Response>;
+  /** insert a single row into the table: "space_rooms" */
+  insert_space_rooms_one?: Maybe<Space_Rooms>;
   /** insert data into the table: "topic" */
   insert_topic?: Maybe<Topic_Mutation_Response>;
   /** insert a single row into the table: "topic" */
@@ -1275,6 +1299,18 @@ export type Mutation_Root = {
   update_room_participants?: Maybe<Room_Participants_Mutation_Response>;
   /** update single row of the table: "room_participants" */
   update_room_participants_by_pk?: Maybe<Room_Participants>;
+  /** update data of the table: "space" */
+  update_space?: Maybe<Space_Mutation_Response>;
+  /** update single row of the table: "space" */
+  update_space_by_pk?: Maybe<Space>;
+  /** update data of the table: "space_participants" */
+  update_space_participants?: Maybe<Space_Participants_Mutation_Response>;
+  /** update single row of the table: "space_participants" */
+  update_space_participants_by_pk?: Maybe<Space_Participants>;
+  /** update data of the table: "space_rooms" */
+  update_space_rooms?: Maybe<Space_Rooms_Mutation_Response>;
+  /** update single row of the table: "space_rooms" */
+  update_space_rooms_by_pk?: Maybe<Space_Rooms>;
   /** update data of the table: "topic" */
   update_topic?: Maybe<Topic_Mutation_Response>;
   /** update single row of the table: "topic" */
@@ -1397,6 +1433,44 @@ export type Mutation_RootDelete_Room_ParticipantsArgs = {
 export type Mutation_RootDelete_Room_Participants_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_SpaceArgs = {
+  where: Space_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Space_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Space_ParticipantsArgs = {
+  where: Space_Participants_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Space_Participants_By_PkArgs = {
+  space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Space_RoomsArgs = {
+  where: Space_Rooms_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Space_Rooms_By_PkArgs = {
+  room_id: Scalars['uuid'];
+  space_id: Scalars['uuid'];
 };
 
 
@@ -1557,6 +1631,48 @@ export type Mutation_RootInsert_Room_ParticipantsArgs = {
 export type Mutation_RootInsert_Room_Participants_OneArgs = {
   object: Room_Participants_Insert_Input;
   on_conflict?: Maybe<Room_Participants_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_SpaceArgs = {
+  objects: Array<Space_Insert_Input>;
+  on_conflict?: Maybe<Space_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_OneArgs = {
+  object: Space_Insert_Input;
+  on_conflict?: Maybe<Space_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_ParticipantsArgs = {
+  objects: Array<Space_Participants_Insert_Input>;
+  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_Participants_OneArgs = {
+  object: Space_Participants_Insert_Input;
+  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_RoomsArgs = {
+  objects: Array<Space_Rooms_Insert_Input>;
+  on_conflict?: Maybe<Space_Rooms_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_Rooms_OneArgs = {
+  object: Space_Rooms_Insert_Input;
+  on_conflict?: Maybe<Space_Rooms_On_Conflict>;
 };
 
 
@@ -1739,6 +1855,48 @@ export type Mutation_RootUpdate_Room_Participants_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_SpaceArgs = {
+  _set?: Maybe<Space_Set_Input>;
+  where: Space_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Space_By_PkArgs = {
+  _set?: Maybe<Space_Set_Input>;
+  pk_columns: Space_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Space_ParticipantsArgs = {
+  _set?: Maybe<Space_Participants_Set_Input>;
+  where: Space_Participants_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Space_Participants_By_PkArgs = {
+  _set?: Maybe<Space_Participants_Set_Input>;
+  pk_columns: Space_Participants_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Space_RoomsArgs = {
+  _set?: Maybe<Space_Rooms_Set_Input>;
+  where: Space_Rooms_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Space_Rooms_By_PkArgs = {
+  _set?: Maybe<Space_Rooms_Set_Input>;
+  pk_columns: Space_Rooms_Pk_Columns_Input;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_TopicArgs = {
   _set?: Maybe<Topic_Set_Input>;
   where: Topic_Bool_Exp;
@@ -1874,6 +2032,24 @@ export type Query_Root = {
   room_participants_aggregate: Room_Participants_Aggregate;
   /** fetch data from the table: "room_participants" using primary key columns */
   room_participants_by_pk?: Maybe<Room_Participants>;
+  /** fetch data from the table: "space" */
+  space: Array<Space>;
+  /** fetch aggregated fields from the table: "space" */
+  space_aggregate: Space_Aggregate;
+  /** fetch data from the table: "space" using primary key columns */
+  space_by_pk?: Maybe<Space>;
+  /** fetch data from the table: "space_participants" */
+  space_participants: Array<Space_Participants>;
+  /** fetch aggregated fields from the table: "space_participants" */
+  space_participants_aggregate: Space_Participants_Aggregate;
+  /** fetch data from the table: "space_participants" using primary key columns */
+  space_participants_by_pk?: Maybe<Space_Participants>;
+  /** fetch data from the table: "space_rooms" */
+  space_rooms: Array<Space_Rooms>;
+  /** fetch aggregated fields from the table: "space_rooms" */
+  space_rooms_aggregate: Space_Rooms_Aggregate;
+  /** fetch data from the table: "space_rooms" using primary key columns */
+  space_rooms_by_pk?: Maybe<Space_Rooms>;
   /** fetch data from the table: "topic" */
   topic: Array<Topic>;
   /** fetch aggregated fields from the table: "topic" */
@@ -2125,6 +2301,86 @@ export type Query_RootRoom_Participants_By_PkArgs = {
 
 
 /** query root */
+export type Query_RootSpaceArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootSpace_ParticipantsArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_Participants_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_Participants_By_PkArgs = {
+  space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootSpace_RoomsArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_Rooms_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSpace_Rooms_By_PkArgs = {
+  room_id: Scalars['uuid'];
+  space_id: Scalars['uuid'];
+};
+
+
+/** query root */
 export type Query_RootTopicArgs = {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -2247,6 +2503,10 @@ export type Room = {
   room_invites: Array<Room_Invites>;
   /** An aggregated array relationship */
   room_invites_aggregate: Room_Invites_Aggregate;
+  /** An array relationship */
+  space: Array<Space_Rooms>;
+  /** An aggregated array relationship */
+  space_aggregate: Space_Rooms_Aggregate;
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
   topics: Array<Topic>;
@@ -2292,6 +2552,26 @@ export type RoomRoom_Invites_AggregateArgs = {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
+};
+
+
+/** columns and relationships of "room" */
+export type RoomSpaceArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** columns and relationships of "room" */
+export type RoomSpace_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
 };
 
 
@@ -2364,6 +2644,7 @@ export type Room_Bool_Exp = {
   notification_job_id?: Maybe<String_Comparison_Exp>;
   participants?: Maybe<Room_Participants_Bool_Exp>;
   room_invites?: Maybe<Room_Invites_Bool_Exp>;
+  space?: Maybe<Space_Rooms_Bool_Exp>;
   summary?: Maybe<String_Comparison_Exp>;
   topics?: Maybe<Topic_Bool_Exp>;
 };
@@ -2386,6 +2667,7 @@ export type Room_Insert_Input = {
   notification_job_id?: Maybe<Scalars['String']>;
   participants?: Maybe<Room_Participants_Arr_Rel_Insert_Input>;
   room_invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
+  space?: Maybe<Space_Rooms_Arr_Rel_Insert_Input>;
   summary?: Maybe<Scalars['String']>;
   topics?: Maybe<Topic_Arr_Rel_Insert_Input>;
 };
@@ -2697,6 +2979,7 @@ export type Room_Order_By = {
   notification_job_id?: Maybe<Order_By>;
   participants_aggregate?: Maybe<Room_Participants_Aggregate_Order_By>;
   room_invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
+  space_aggregate?: Maybe<Space_Rooms_Aggregate_Order_By>;
   summary?: Maybe<Order_By>;
   topics_aggregate?: Maybe<Topic_Aggregate_Order_By>;
 };
@@ -2915,6 +3198,532 @@ export enum Room_Update_Column {
   Summary = 'summary'
 }
 
+/** columns and relationships of "space" */
+export type Space = {
+  __typename?: 'space';
+  /** An object relationship */
+  creator?: Maybe<User>;
+  creator_id: Scalars['uuid'];
+  id: Scalars['uuid'];
+  name: Scalars['String'];
+  /** An array relationship */
+  participants: Array<Space_Participants>;
+  /** An aggregated array relationship */
+  participants_aggregate: Space_Participants_Aggregate;
+  /** An array relationship */
+  rooms: Array<Space_Rooms>;
+  /** An aggregated array relationship */
+  rooms_aggregate: Space_Rooms_Aggregate;
+};
+
+
+/** columns and relationships of "space" */
+export type SpaceParticipantsArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** columns and relationships of "space" */
+export type SpaceParticipants_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** columns and relationships of "space" */
+export type SpaceRoomsArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** columns and relationships of "space" */
+export type SpaceRooms_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+/** aggregated selection of "space" */
+export type Space_Aggregate = {
+  __typename?: 'space_aggregate';
+  aggregate?: Maybe<Space_Aggregate_Fields>;
+  nodes: Array<Space>;
+};
+
+/** aggregate fields of "space" */
+export type Space_Aggregate_Fields = {
+  __typename?: 'space_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Space_Max_Fields>;
+  min?: Maybe<Space_Min_Fields>;
+};
+
+
+/** aggregate fields of "space" */
+export type Space_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Space_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "space" */
+export type Space_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Space_Max_Order_By>;
+  min?: Maybe<Space_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "space" */
+export type Space_Arr_Rel_Insert_Input = {
+  data: Array<Space_Insert_Input>;
+  on_conflict?: Maybe<Space_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "space". All fields are combined with a logical 'AND'. */
+export type Space_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Space_Bool_Exp>>>;
+  _not?: Maybe<Space_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Space_Bool_Exp>>>;
+  creator?: Maybe<User_Bool_Exp>;
+  creator_id?: Maybe<Uuid_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  name?: Maybe<String_Comparison_Exp>;
+  participants?: Maybe<Space_Participants_Bool_Exp>;
+  rooms?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+/** unique or primary key constraints on table "space" */
+export enum Space_Constraint {
+  /** unique or primary key constraint */
+  SpacePkey = 'space_pkey'
+}
+
+/** input type for inserting data into table "space" */
+export type Space_Insert_Input = {
+  creator?: Maybe<User_Obj_Rel_Insert_Input>;
+  creator_id?: Maybe<Scalars['uuid']>;
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+  participants?: Maybe<Space_Participants_Arr_Rel_Insert_Input>;
+  rooms?: Maybe<Space_Rooms_Arr_Rel_Insert_Input>;
+};
+
+/** aggregate max on columns */
+export type Space_Max_Fields = {
+  __typename?: 'space_max_fields';
+  creator_id?: Maybe<Scalars['uuid']>;
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+/** order by max() on columns of table "space" */
+export type Space_Max_Order_By = {
+  creator_id?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Space_Min_Fields = {
+  __typename?: 'space_min_fields';
+  creator_id?: Maybe<Scalars['uuid']>;
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+/** order by min() on columns of table "space" */
+export type Space_Min_Order_By = {
+  creator_id?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "space" */
+export type Space_Mutation_Response = {
+  __typename?: 'space_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Space>;
+};
+
+/** input type for inserting object relation for remote table "space" */
+export type Space_Obj_Rel_Insert_Input = {
+  data: Space_Insert_Input;
+  on_conflict?: Maybe<Space_On_Conflict>;
+};
+
+/** on conflict condition type for table "space" */
+export type Space_On_Conflict = {
+  constraint: Space_Constraint;
+  update_columns: Array<Space_Update_Column>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "space" */
+export type Space_Order_By = {
+  creator?: Maybe<User_Order_By>;
+  creator_id?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+  participants_aggregate?: Maybe<Space_Participants_Aggregate_Order_By>;
+  rooms_aggregate?: Maybe<Space_Rooms_Aggregate_Order_By>;
+};
+
+/** columns and relationships of "space_participants" */
+export type Space_Participants = {
+  __typename?: 'space_participants';
+  /** An object relationship */
+  space: Space;
+  space_id: Scalars['uuid'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "space_participants" */
+export type Space_Participants_Aggregate = {
+  __typename?: 'space_participants_aggregate';
+  aggregate?: Maybe<Space_Participants_Aggregate_Fields>;
+  nodes: Array<Space_Participants>;
+};
+
+/** aggregate fields of "space_participants" */
+export type Space_Participants_Aggregate_Fields = {
+  __typename?: 'space_participants_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Space_Participants_Max_Fields>;
+  min?: Maybe<Space_Participants_Min_Fields>;
+};
+
+
+/** aggregate fields of "space_participants" */
+export type Space_Participants_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Space_Participants_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "space_participants" */
+export type Space_Participants_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Space_Participants_Max_Order_By>;
+  min?: Maybe<Space_Participants_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "space_participants" */
+export type Space_Participants_Arr_Rel_Insert_Input = {
+  data: Array<Space_Participants_Insert_Input>;
+  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "space_participants". All fields are combined with a logical 'AND'. */
+export type Space_Participants_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Space_Participants_Bool_Exp>>>;
+  _not?: Maybe<Space_Participants_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Space_Participants_Bool_Exp>>>;
+  space?: Maybe<Space_Bool_Exp>;
+  space_id?: Maybe<Uuid_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "space_participants" */
+export enum Space_Participants_Constraint {
+  /** unique or primary key constraint */
+  SpaceParticipantsPkey = 'space_participants_pkey'
+}
+
+/** input type for inserting data into table "space_participants" */
+export type Space_Participants_Insert_Input = {
+  space?: Maybe<Space_Obj_Rel_Insert_Input>;
+  space_id?: Maybe<Scalars['uuid']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Space_Participants_Max_Fields = {
+  __typename?: 'space_participants_max_fields';
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "space_participants" */
+export type Space_Participants_Max_Order_By = {
+  space_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Space_Participants_Min_Fields = {
+  __typename?: 'space_participants_min_fields';
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "space_participants" */
+export type Space_Participants_Min_Order_By = {
+  space_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "space_participants" */
+export type Space_Participants_Mutation_Response = {
+  __typename?: 'space_participants_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Space_Participants>;
+};
+
+/** input type for inserting object relation for remote table "space_participants" */
+export type Space_Participants_Obj_Rel_Insert_Input = {
+  data: Space_Participants_Insert_Input;
+  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+};
+
+/** on conflict condition type for table "space_participants" */
+export type Space_Participants_On_Conflict = {
+  constraint: Space_Participants_Constraint;
+  update_columns: Array<Space_Participants_Update_Column>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "space_participants" */
+export type Space_Participants_Order_By = {
+  space?: Maybe<Space_Order_By>;
+  space_id?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "space_participants" */
+export type Space_Participants_Pk_Columns_Input = {
+  space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "space_participants" */
+export enum Space_Participants_Select_Column {
+  /** column name */
+  SpaceId = 'space_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "space_participants" */
+export type Space_Participants_Set_Input = {
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "space_participants" */
+export enum Space_Participants_Update_Column {
+  /** column name */
+  SpaceId = 'space_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** primary key columns input for table: "space" */
+export type Space_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** columns and relationships of "space_rooms" */
+export type Space_Rooms = {
+  __typename?: 'space_rooms';
+  /** An object relationship */
+  room: Room;
+  room_id: Scalars['uuid'];
+  /** An object relationship */
+  space: Space;
+  space_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "space_rooms" */
+export type Space_Rooms_Aggregate = {
+  __typename?: 'space_rooms_aggregate';
+  aggregate?: Maybe<Space_Rooms_Aggregate_Fields>;
+  nodes: Array<Space_Rooms>;
+};
+
+/** aggregate fields of "space_rooms" */
+export type Space_Rooms_Aggregate_Fields = {
+  __typename?: 'space_rooms_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Space_Rooms_Max_Fields>;
+  min?: Maybe<Space_Rooms_Min_Fields>;
+};
+
+
+/** aggregate fields of "space_rooms" */
+export type Space_Rooms_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Space_Rooms_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "space_rooms" */
+export type Space_Rooms_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Space_Rooms_Max_Order_By>;
+  min?: Maybe<Space_Rooms_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "space_rooms" */
+export type Space_Rooms_Arr_Rel_Insert_Input = {
+  data: Array<Space_Rooms_Insert_Input>;
+  on_conflict?: Maybe<Space_Rooms_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "space_rooms". All fields are combined with a logical 'AND'. */
+export type Space_Rooms_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Space_Rooms_Bool_Exp>>>;
+  _not?: Maybe<Space_Rooms_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Space_Rooms_Bool_Exp>>>;
+  room?: Maybe<Room_Bool_Exp>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+  space?: Maybe<Space_Bool_Exp>;
+  space_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "space_rooms" */
+export enum Space_Rooms_Constraint {
+  /** unique or primary key constraint */
+  SpaceRoomsPkey = 'space_rooms_pkey'
+}
+
+/** input type for inserting data into table "space_rooms" */
+export type Space_Rooms_Insert_Input = {
+  room?: Maybe<Room_Obj_Rel_Insert_Input>;
+  room_id?: Maybe<Scalars['uuid']>;
+  space?: Maybe<Space_Obj_Rel_Insert_Input>;
+  space_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Space_Rooms_Max_Fields = {
+  __typename?: 'space_rooms_max_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  space_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "space_rooms" */
+export type Space_Rooms_Max_Order_By = {
+  room_id?: Maybe<Order_By>;
+  space_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Space_Rooms_Min_Fields = {
+  __typename?: 'space_rooms_min_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  space_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "space_rooms" */
+export type Space_Rooms_Min_Order_By = {
+  room_id?: Maybe<Order_By>;
+  space_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "space_rooms" */
+export type Space_Rooms_Mutation_Response = {
+  __typename?: 'space_rooms_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Space_Rooms>;
+};
+
+/** input type for inserting object relation for remote table "space_rooms" */
+export type Space_Rooms_Obj_Rel_Insert_Input = {
+  data: Space_Rooms_Insert_Input;
+  on_conflict?: Maybe<Space_Rooms_On_Conflict>;
+};
+
+/** on conflict condition type for table "space_rooms" */
+export type Space_Rooms_On_Conflict = {
+  constraint: Space_Rooms_Constraint;
+  update_columns: Array<Space_Rooms_Update_Column>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "space_rooms" */
+export type Space_Rooms_Order_By = {
+  room?: Maybe<Room_Order_By>;
+  room_id?: Maybe<Order_By>;
+  space?: Maybe<Space_Order_By>;
+  space_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "space_rooms" */
+export type Space_Rooms_Pk_Columns_Input = {
+  room_id: Scalars['uuid'];
+  space_id: Scalars['uuid'];
+};
+
+/** select columns of table "space_rooms" */
+export enum Space_Rooms_Select_Column {
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  SpaceId = 'space_id'
+}
+
+/** input type for updating data in table "space_rooms" */
+export type Space_Rooms_Set_Input = {
+  room_id?: Maybe<Scalars['uuid']>;
+  space_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "space_rooms" */
+export enum Space_Rooms_Update_Column {
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  SpaceId = 'space_id'
+}
+
+/** select columns of table "space" */
+export enum Space_Select_Column {
+  /** column name */
+  CreatorId = 'creator_id',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Name = 'name'
+}
+
+/** input type for updating data in table "space" */
+export type Space_Set_Input = {
+  creator_id?: Maybe<Scalars['uuid']>;
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+/** update columns of table "space" */
+export enum Space_Update_Column {
+  /** column name */
+  CreatorId = 'creator_id',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Name = 'name'
+}
+
 /** subscription root */
 export type Subscription_Root = {
   __typename?: 'subscription_root';
@@ -2970,6 +3779,24 @@ export type Subscription_Root = {
   room_participants_aggregate: Room_Participants_Aggregate;
   /** fetch data from the table: "room_participants" using primary key columns */
   room_participants_by_pk?: Maybe<Room_Participants>;
+  /** fetch data from the table: "space" */
+  space: Array<Space>;
+  /** fetch aggregated fields from the table: "space" */
+  space_aggregate: Space_Aggregate;
+  /** fetch data from the table: "space" using primary key columns */
+  space_by_pk?: Maybe<Space>;
+  /** fetch data from the table: "space_participants" */
+  space_participants: Array<Space_Participants>;
+  /** fetch aggregated fields from the table: "space_participants" */
+  space_participants_aggregate: Space_Participants_Aggregate;
+  /** fetch data from the table: "space_participants" using primary key columns */
+  space_participants_by_pk?: Maybe<Space_Participants>;
+  /** fetch data from the table: "space_rooms" */
+  space_rooms: Array<Space_Rooms>;
+  /** fetch aggregated fields from the table: "space_rooms" */
+  space_rooms_aggregate: Space_Rooms_Aggregate;
+  /** fetch data from the table: "space_rooms" using primary key columns */
+  space_rooms_by_pk?: Maybe<Space_Rooms>;
   /** fetch data from the table: "topic" */
   topic: Array<Topic>;
   /** fetch aggregated fields from the table: "topic" */
@@ -3217,6 +4044,86 @@ export type Subscription_RootRoom_Participants_AggregateArgs = {
 export type Subscription_RootRoom_Participants_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootSpaceArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_ParticipantsArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_Participants_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Participants_Order_By>>;
+  where?: Maybe<Space_Participants_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_Participants_By_PkArgs = {
+  space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_RoomsArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_Rooms_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Rooms_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Rooms_Order_By>>;
+  where?: Maybe<Space_Rooms_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSpace_Rooms_By_PkArgs = {
+  room_id: Scalars['uuid'];
+  space_id: Scalars['uuid'];
 };
 
 
@@ -4356,16 +5263,71 @@ export type CreateRoomMutation = (
   )> }
 );
 
-export type RoomParticipantsSubscriptionVariables = Exact<{
+export type RoomParticipantsQueryVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type RoomParticipantsSubscription = (
-  { __typename?: 'subscription_root' }
+export type RoomParticipantsQuery = (
+  { __typename?: 'query_root' }
   & { participants: Array<(
     { __typename?: 'room_participants' }
     & RoomParticipantBasicInfoFragment
+  )> }
+);
+
+export type SpaceBasicInfoFragment = (
+  { __typename?: 'space' }
+  & Pick<Space, 'id' | 'name'>
+  & { participants: Array<(
+    { __typename?: 'space_participants' }
+    & { user: (
+      { __typename?: 'user' }
+      & UserBasicInfoFragment
+    ) }
+  )>, rooms: Array<(
+    { __typename?: 'space_rooms' }
+    & { room: (
+      { __typename?: 'room' }
+      & Pick<Room, 'id' | 'name'>
+    ) }
+  )> }
+);
+
+export type GetSpacesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSpacesQuery = (
+  { __typename?: 'query_root' }
+  & { space: Array<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
+  )> }
+);
+
+export type GetSingleSpaceQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type GetSingleSpaceQuery = (
+  { __typename?: 'query_root' }
+  & { space?: Maybe<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
+  )> }
+);
+
+export type CreateSpaceMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type CreateSpaceMutation = (
+  { __typename?: 'mutation_root' }
+  & { space?: Maybe<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
   )> }
 );
 
@@ -4426,26 +5388,26 @@ export type CreateTopicMutation = (
   )> }
 );
 
-export type RoomTopicsSubscriptionVariables = Exact<{
+export type RoomTopicsQueryVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type RoomTopicsSubscription = (
-  { __typename?: 'subscription_root' }
+export type RoomTopicsQuery = (
+  { __typename?: 'query_root' }
   & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }
 );
 
-export type TopicMessagesSubscriptionVariables = Exact<{
+export type TopicMessagesQueryVariables = Exact<{
   topicId: Scalars['uuid'];
 }>;
 
 
-export type TopicMessagesSubscription = (
-  { __typename?: 'subscription_root' }
+export type TopicMessagesQuery = (
+  { __typename?: 'query_root' }
   & { messages: Array<(
     { __typename?: 'message' }
     & TopicMessageDetailedInfoFragment
@@ -4540,6 +5502,11 @@ export type GetAttachmentQuery = (
     { __typename?: 'attachment' }
     & AttachmentDetailedInfoFragment
   )> }
+);
+
+export type UserBasicInfoFragment = (
+  { __typename?: 'user' }
+  & Pick<User, 'id' | 'name' | 'avatar_url'>
 );
 
 export type GetDownloadUrlResponseKeySpecifier = ('downloadUrl' | GetDownloadUrlResponseKeySpecifier)[];
@@ -4766,7 +5733,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_topic' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_participants' | 'delete_space_participants_by_pk' | 'delete_space_rooms' | 'delete_space_rooms_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_space' | 'insert_space_one' | 'insert_space_participants' | 'insert_space_participants_one' | 'insert_space_rooms' | 'insert_space_rooms_one' | 'insert_topic' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_participants' | 'update_space_participants_by_pk' | 'update_space_rooms' | 'update_space_rooms_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4785,6 +5752,12 @@ export type mutation_rootFieldPolicy = {
 	delete_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_rooms_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4809,6 +5782,12 @@ export type mutation_rootFieldPolicy = {
 	insert_room_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_rooms_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_topic_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4833,6 +5812,12 @@ export type mutation_rootFieldPolicy = {
 	update_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_rooms_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4843,7 +5828,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_participants' | 'space_participants_aggregate' | 'space_participants_by_pk' | 'space_rooms' | 'space_rooms_aggregate' | 'space_rooms_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4871,6 +5856,15 @@ export type query_rootFieldPolicy = {
 	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4884,7 +5878,7 @@ export type query_rootFieldPolicy = {
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'participants' | 'participants_aggregate' | 'room_invites' | 'room_invites_aggregate' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'participants' | 'participants_aggregate' | 'room_invites' | 'room_invites_aggregate' | 'space' | 'space_aggregate' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -4898,6 +5892,8 @@ export type roomFieldPolicy = {
 	participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	topics?: FieldPolicy<any> | FieldReadFunction<any>,
 	topics_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
@@ -5021,7 +6017,112 @@ export type room_participants_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'name' | 'participants' | 'participants_aggregate' | 'rooms' | 'rooms_aggregate' | spaceKeySpecifier)[];
+export type spaceFieldPolicy = {
+	creator?: FieldPolicy<any> | FieldReadFunction<any>,
+	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_aggregateKeySpecifier)[];
+export type space_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | space_aggregate_fieldsKeySpecifier)[];
+export type space_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_max_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | space_max_fieldsKeySpecifier)[];
+export type space_max_fieldsFieldPolicy = {
+	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_min_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | space_min_fieldsKeySpecifier)[];
+export type space_min_fieldsFieldPolicy = {
+	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_mutation_responseKeySpecifier)[];
+export type space_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participantsKeySpecifier = ('space' | 'space_id' | 'user' | 'user_id' | space_participantsKeySpecifier)[];
+export type space_participantsFieldPolicy = {
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participants_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_participants_aggregateKeySpecifier)[];
+export type space_participants_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participants_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | space_participants_aggregate_fieldsKeySpecifier)[];
+export type space_participants_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participants_max_fieldsKeySpecifier = ('space_id' | 'user_id' | space_participants_max_fieldsKeySpecifier)[];
+export type space_participants_max_fieldsFieldPolicy = {
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participants_min_fieldsKeySpecifier = ('space_id' | 'user_id' | space_participants_min_fieldsKeySpecifier)[];
+export type space_participants_min_fieldsFieldPolicy = {
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_participants_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_participants_mutation_responseKeySpecifier)[];
+export type space_participants_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_roomsKeySpecifier = ('room' | 'room_id' | 'space' | 'space_id' | space_roomsKeySpecifier)[];
+export type space_roomsFieldPolicy = {
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_rooms_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_rooms_aggregateKeySpecifier)[];
+export type space_rooms_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_rooms_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | space_rooms_aggregate_fieldsKeySpecifier)[];
+export type space_rooms_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_rooms_max_fieldsKeySpecifier = ('room_id' | 'space_id' | space_rooms_max_fieldsKeySpecifier)[];
+export type space_rooms_max_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_rooms_min_fieldsKeySpecifier = ('room_id' | 'space_id' | space_rooms_min_fieldsKeySpecifier)[];
+export type space_rooms_min_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_rooms_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_rooms_mutation_responseKeySpecifier)[];
+export type space_rooms_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_participants' | 'space_participants_aggregate' | 'space_participants_by_pk' | 'space_rooms' | 'space_rooms_aggregate' | 'space_rooms_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -5049,6 +6150,15 @@ export type subscription_rootFieldPolicy = {
 	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_rooms_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -5436,6 +6546,78 @@ export type TypedTypePolicies = TypePolicies & {
 	room_participants_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_participants_mutation_responseKeySpecifier | (() => undefined | room_participants_mutation_responseKeySpecifier),
 		fields?: room_participants_mutation_responseFieldPolicy,
+	},
+	space?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | spaceKeySpecifier | (() => undefined | spaceKeySpecifier),
+		fields?: spaceFieldPolicy,
+	},
+	space_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_aggregateKeySpecifier | (() => undefined | space_aggregateKeySpecifier),
+		fields?: space_aggregateFieldPolicy,
+	},
+	space_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_aggregate_fieldsKeySpecifier | (() => undefined | space_aggregate_fieldsKeySpecifier),
+		fields?: space_aggregate_fieldsFieldPolicy,
+	},
+	space_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_max_fieldsKeySpecifier | (() => undefined | space_max_fieldsKeySpecifier),
+		fields?: space_max_fieldsFieldPolicy,
+	},
+	space_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_min_fieldsKeySpecifier | (() => undefined | space_min_fieldsKeySpecifier),
+		fields?: space_min_fieldsFieldPolicy,
+	},
+	space_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_mutation_responseKeySpecifier | (() => undefined | space_mutation_responseKeySpecifier),
+		fields?: space_mutation_responseFieldPolicy,
+	},
+	space_participants?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participantsKeySpecifier | (() => undefined | space_participantsKeySpecifier),
+		fields?: space_participantsFieldPolicy,
+	},
+	space_participants_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participants_aggregateKeySpecifier | (() => undefined | space_participants_aggregateKeySpecifier),
+		fields?: space_participants_aggregateFieldPolicy,
+	},
+	space_participants_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participants_aggregate_fieldsKeySpecifier | (() => undefined | space_participants_aggregate_fieldsKeySpecifier),
+		fields?: space_participants_aggregate_fieldsFieldPolicy,
+	},
+	space_participants_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participants_max_fieldsKeySpecifier | (() => undefined | space_participants_max_fieldsKeySpecifier),
+		fields?: space_participants_max_fieldsFieldPolicy,
+	},
+	space_participants_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participants_min_fieldsKeySpecifier | (() => undefined | space_participants_min_fieldsKeySpecifier),
+		fields?: space_participants_min_fieldsFieldPolicy,
+	},
+	space_participants_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_participants_mutation_responseKeySpecifier | (() => undefined | space_participants_mutation_responseKeySpecifier),
+		fields?: space_participants_mutation_responseFieldPolicy,
+	},
+	space_rooms?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_roomsKeySpecifier | (() => undefined | space_roomsKeySpecifier),
+		fields?: space_roomsFieldPolicy,
+	},
+	space_rooms_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_rooms_aggregateKeySpecifier | (() => undefined | space_rooms_aggregateKeySpecifier),
+		fields?: space_rooms_aggregateFieldPolicy,
+	},
+	space_rooms_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_rooms_aggregate_fieldsKeySpecifier | (() => undefined | space_rooms_aggregate_fieldsKeySpecifier),
+		fields?: space_rooms_aggregate_fieldsFieldPolicy,
+	},
+	space_rooms_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_rooms_max_fieldsKeySpecifier | (() => undefined | space_rooms_max_fieldsKeySpecifier),
+		fields?: space_rooms_max_fieldsFieldPolicy,
+	},
+	space_rooms_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_rooms_min_fieldsKeySpecifier | (() => undefined | space_rooms_min_fieldsKeySpecifier),
+		fields?: space_rooms_min_fieldsFieldPolicy,
+	},
+	space_rooms_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_rooms_mutation_responseKeySpecifier | (() => undefined | space_rooms_mutation_responseKeySpecifier),
+		fields?: space_rooms_mutation_responseFieldPolicy,
 	},
 	subscription_root?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | subscription_rootKeySpecifier | (() => undefined | subscription_rootKeySpecifier),

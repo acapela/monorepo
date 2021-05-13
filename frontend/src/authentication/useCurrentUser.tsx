@@ -4,7 +4,7 @@ import { assert } from "~shared/assert";
 /**
  * We are passing custom data to session JWT token, so we have more data than default next-auth Session type.
  */
-interface SessionData {
+interface UserAuthData {
   email: string;
   iat: number;
   name: string;
@@ -18,18 +18,14 @@ interface SessionData {
  * simple data mapping.
  */
 function useAdjustedSession() {
-  const [session, isLoading] = useSession();
+  const [session] = useSession();
 
-  function getSessionData(): SessionData | null {
-    if (!session) return null;
+  if (!session) return null;
 
-    const id = get<string | null>(session, "sub", null);
-    const picture = get<string | null>(session, "picture", null);
+  const id = get<string | null>(session, "sub", null);
+  const picture = get<string | null>(session, "picture", null);
 
-    return ({ ...session, id, picture } as unknown) as SessionData;
-  }
-
-  return [getSessionData(), isLoading] as const;
+  return ({ ...session, id, picture } as unknown) as UserAuthData;
 }
 
 function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T) {
@@ -41,9 +37,9 @@ function get<T>(target: Record<string, unknown> | null | void, key: string, defa
 }
 
 export function useCurrentUser() {
-  const [user, isLoading] = useAdjustedSession();
+  const user = useAdjustedSession();
 
-  return { loading: isLoading, user };
+  return user;
 }
 
 /**
@@ -52,7 +48,7 @@ export function useCurrentUser() {
  * Therefore in components that renders only on logged in use-cases, we can assert current user
  */
 export function useAssertCurrentUser() {
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
 
   assert(user, `Using useAssertCurrentUser with null user`);
 

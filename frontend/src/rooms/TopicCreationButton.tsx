@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import { Dialog } from "~frontend/design/Dialog";
+import { Dialog } from "~frontend/ui/Dialog";
 import { useCreateTopicMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { createNextIndex } from "~frontend/rooms/order";

@@ -6,19 +6,15 @@ import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
 import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { DEFAULT_REDIRECT_URL } from "~frontend/config";
-import { Logo } from "~frontend/design/Logo";
-import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
-import { UILogoWrapper } from "~frontend/design/UILogoWrapper";
+import { Logo } from "~frontend/ui/Logo";
+import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
 
 export default function LoginPage(): JSX.Element {
   const { loading, isAuthenticated } = useRedirectWhenAuthenticated();
 
   return (
     <div>
-      <Head>
-        <title>Acapela</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <UIContentWrapper marginTop>
         <UILogoWrapper>
           <Logo />
@@ -38,10 +34,10 @@ export default function LoginPage(): JSX.Element {
 
 function useRedirectWhenAuthenticated() {
   const { query, replace } = useRouter();
-  const { loading, user } = useCurrentUser();
+  const user = useCurrentUser();
   const redirectUrl = readRedirectUrl(query);
   const [redirecting, setRedirecting] = useState(false);
-  const isAuthenticated = !loading && user;
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -50,7 +46,7 @@ function useRedirectWhenAuthenticated() {
     }
   }, [redirectUrl, isAuthenticated]);
 
-  return { loading: loading || redirecting, isAuthenticated };
+  return { loading: redirecting, isAuthenticated };
 }
 
 function readRedirectUrl(query: ParsedUrlQuery): string {
