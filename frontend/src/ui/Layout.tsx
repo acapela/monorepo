@@ -37,7 +37,7 @@ export const SidebarLayout: FC<Props> = ({ children, sidebarContent, sidebarActi
   return (
     <UIHolder>
       <UISidebar>
-        <Link href="/home" passHref>
+        <Link href="/" passHref>
           <UISidebarLogoWrapper>
             <Logo />
           </UISidebarLogoWrapper>

@@ -197,6 +197,13 @@
           table:
             schema: public
             name: room_invites
+    - name: space
+      using:
+        foreign_key_constraint_on:
+          column: room_id
+          table:
+            schema: public
+            name: space_rooms
     - name: topics
       using:
         foreign_key_constraint_on:
@@ -333,6 +340,174 @@
           - user_id
         filter:
           room:
+            participants:
+              user_id:
+                _eq: X-Hasura-User-Id
+- table:
+    schema: public
+    name: space
+  object_relationships:
+    - name: creator
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: user
+          column_mapping:
+            creator_id: id
+  array_relationships:
+    - name: participants
+      using:
+        foreign_key_constraint_on:
+          column: space_id
+          table:
+            schema: public
+            name: space_participants
+    - name: rooms
+      using:
+        foreign_key_constraint_on:
+          column: space_id
+          table:
+            schema: public
+            name: space_rooms
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          creator_id:
+            _eq: X-Hasura-User-Id
+        columns: []
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - creator_id
+          - id
+          - name
+        filter:
+          _or:
+            - creator_id:
+                _eq: X-Hasura-User-Id
+            - participants:
+                user_id:
+                  _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns: []
+        filter:
+          _or:
+            - creator_id:
+                _eq: X-Hasura-User-Id
+            - participants:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          _or:
+            - creator_id:
+                _eq: X-Hasura-User-Id
+            - participants:
+                user_id:
+                  _eq: X-Hasura-User-Id
+- table:
+    schema: public
+    name: space_participants
+  object_relationships:
+    - name: space
+      using:
+        foreign_key_constraint_on: space_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          space:
+            _or:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        columns: []
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns: []
+        filter:
+          space:
+            _or:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns: []
+        filter:
+          space:
+            _or:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          space:
+            _or:
+              - creator_id:
+                  _eq: X-Hasura-User-Id
+              - participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+- table:
+    schema: public
+    name: space_rooms
+  object_relationships:
+    - name: room
+      using:
+        foreign_key_constraint_on: room_id
+    - name: space
+      using:
+        foreign_key_constraint_on: space_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _and:
+            - room:
+                participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+            - space:
+                participants:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        columns:
+          - room_id
+          - space_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - room_id
+          - space_id
+        filter:
+          space:
             participants:
               user_id:
                 _eq: X-Hasura-User-Id

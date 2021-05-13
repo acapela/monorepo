@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useCreateInviteMutation, useGetRoomInvitesQuery } from "~frontend/gql/invitations";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
-import { Dialog } from "../design/Dialog";
+import { Dialog } from "../ui/Dialog";
 
 export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
