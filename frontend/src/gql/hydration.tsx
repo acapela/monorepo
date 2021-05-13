@@ -3,6 +3,7 @@ import memoize from "lodash/memoize";
 
 interface QueryUseageData {
   query: DocumentNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variables?: Record<string, any> | void;
 }
 
