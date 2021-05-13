@@ -75,7 +75,7 @@ export const getApolloClient = memoize(
     const ssrMode = typeof window === "undefined";
 
     if (!ssrMode) {
-      // Client side - never use forced token and allways read one dynamically
+      // Client side - never use forced token and always read one dynamically
       forcedAuthToken = undefined;
     }
 
@@ -116,7 +116,7 @@ export const getApolloClient = memoize(
 
 interface ApolloClientProviderProps {
   children: React.ReactNode;
-  // On server side, queries are pre-populated ysing authorized client. This props allows using the same client instance,
+  // On server side, queries are pre-populated using authorized client. This props allows using the same client instance,
   // resulting in initial render having all data in place and avoiding loading state.
   ssrAuthToken?: string | null;
 }

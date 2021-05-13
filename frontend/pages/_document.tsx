@@ -36,25 +36,25 @@ export default class AppDocument extends Document<Props> {
      */
 
     // Hook new used queries recorder
-    const [stopRecording, recordedQuries] = startRecordingUsedQueries();
+    const [stopRecording, recordedQueries] = startRecordingUsedQueries();
 
     // Try to get graphql auth token and create authorized client
     const graphqlAuthToken = readTokenFromRequest(ctx.req);
     const apolloClient = getApolloClient(graphqlAuthToken ?? undefined);
 
-    // Prefetch queries only if user is authorized
+    // Pre-fetch queries only if user is authorized
     if (graphqlAuthToken) {
       // ! We are 'wasting' one render of entire page here.
-      // It is very likely it'll resutl in render that includes 'loading' states, but it allows us to capture all
+      // It is very likely it'll result in render that includes 'loading' states, but it allows us to capture all
       // graphql queries used in initial render.
       await ctx.renderPage();
 
       // We can now stop recording as we have all queries captured
       stopRecording();
 
-      // now, prefetch all recorded queries and populate the cache into apollo client.
+      // now, pre-fetch all recorded queries and populate the cache into apollo client.
       // This client will be used for actual render and will allow us to 'skip' loading states in server output render.
-      await prefetchRecordedQueries(apolloClient, recordedQuries);
+      await prefetchRecordedQueries(apolloClient, recordedQueries);
     }
 
     // Now back to default next.js flow
@@ -92,78 +92,3 @@ export default class AppDocument extends Document<Props> {
     );
   }
 }
-
-// /**
-//  * This AppDocument modification allows server-side capturing of styled-components so initial render has proper css
-//  * already injected into page.
-//  */
-// static async getInitialProps(ctx: DocumentContext): Promise<Props> {
-//   const sheet = new ServerStyleSheet();
-//   const originalRenderPage = ctx.renderPage;
-//   const request = ctx.req as NextApiRequest;
-
-//   // we will record all graphql queries used during render and pre-populate apollo cache on server-side
-//   const [stopRecordingQueriesUseage, queriesUsedDuringRender] = startRecordingUsedQueries();
-
-//   let resultProps: Props;
-
-//   try {
-//     ctx.renderPage = () => {
-//       const renderResult = originalRenderPage({
-//         enhanceApp: (App) => (props) => {
-//           const renderResult = sheet.collectStyles(<App {...props} />);
-
-//           return renderResult;
-//         },
-//       });
-
-//       return renderResult;
-//     };
-
-//     const initialProps = await Document.getInitialProps(ctx);
-
-//     resultProps = {
-//       ...initialProps,
-
-//       styles: (
-//         <>
-//           {initialProps.styles}
-//           {sheet.getStyleElement()}
-//         </>
-//       ),
-//     };
-//   } finally {
-//     stopRecordingQueriesUseage();
-//     sheet.seal();
-//   }
-
-//   // Now, having queries recorded - let's try to pre-fetch them and populate the cache
-//   try {
-//     const graphqlAuthToken = readTokenFromRequest(request);
-
-//     // Do so only if user is authorized
-//     if (graphqlAuthToken) {
-//       // Get user-authorized client
-//       const client = getApolloClient(graphqlAuthToken);
-
-//       // For each used query - fetch it using the client
-//       await Promise.all(
-//         queriesUsedDuringRender.map(async (query) => {
-//           const { data } = await client.query({
-//             query: query.query,
-//             variables: query.variables,
-//           });
-
-//           client.writeQuery({ data, query: query.query, variables: query.variables });
-//         })
-//       );
-
-//       // finally - pass apollo cache state from the client so it can be used in Document.render
-//       resultProps.apolloInitialState = client.extract();
-//     }
-//   } catch (error) {
-//     //
-//   }
-
-//   return resultProps;
-// }
