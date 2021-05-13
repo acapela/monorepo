@@ -45,6 +45,11 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
+  const [isVideoSourcePickerVisible, { unset: hideVideoSourcePicker, toggle: toggleVideoSourcePicker }] = useBoolean(
+    false
+  );
+  const [isCountdownActive, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
+  const [popoverHandlerRef, setPopoverHandlerRef] = useState<HTMLElement | null>(null);
   const { status, startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
     video: mediaSource === MediaSource.CAMERA,
     screen: mediaSource === MediaSource.SCREEN,
@@ -53,9 +58,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     onStop: (_url: string, blob: Blob) => setBlob(blob),
   });
   const isRecording = !!mediaSource && status === "recording";
-  const [popoverHandlerRef, setPopoverHandlerRef] = useState<HTMLElement | null>(null);
-  const [isVideoSourcePickerVisible, { toggle: toggleVideoSourcePicker }] = useBoolean(false);
-  const [isCountdownActive, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
 
   const doStartRecording = () => {
     dismissCountdown();
@@ -78,6 +80,37 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     setMediaSource(source);
   };
 
+  const onVideoButtonClick = (button: HTMLElement) => {
+    if (isRecording) {
+      doCancelRecording();
+    }
+
+    setPopoverHandlerRef(button);
+    toggleVideoSourcePicker();
+  };
+
+  const onAudioButtonClick = (button: HTMLElement) => {
+    hideVideoSourcePicker();
+
+    if (mediaSource === MediaSource.MICROPHONE && isRecording) {
+      return doCancelRecording();
+    }
+
+    doCancelRecording();
+    setPopoverHandlerRef(button);
+    setMediaSource(MediaSource.MICROPHONE);
+  };
+
+  const onRecorded = async (blob: Blob) => {
+    let file = recordingBlobToFile(blob);
+
+    showTranscodingIndicator();
+    file = await transcode(file);
+    hideTranscodingIndicator();
+
+    onRecordingReady(file);
+  };
+
   useEffect(() => {
     if (!mediaSource) {
       return stopRecording();
@@ -95,20 +128,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     });
   }, [mediaSource]);
 
-  const onVideoButtonClick = (button: HTMLElement) => {
-    setPopoverHandlerRef(button);
-    toggleVideoSourcePicker();
-  };
-
-  const onAudioButtonClick = (button: HTMLElement) => {
-    if (isRecording) {
-      doCancelRecording();
-    } else {
-      setPopoverHandlerRef(button);
-      setMediaSource(MediaSource.MICROPHONE);
-    }
-  };
-
   useEffect(() => {
     if (!isDismissed && blob) {
       onRecorded(blob);
@@ -117,16 +136,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       setMediaSource(null);
     }
   }, [isDismissed, blob]);
-
-  const onRecorded = async (blob: Blob) => {
-    let file = recordingBlobToFile(blob);
-
-    showTranscodingIndicator();
-    file = await transcode(file);
-    hideTranscodingIndicator();
-
-    onRecordingReady(file);
-  };
 
   return (
     <div className={className}>
