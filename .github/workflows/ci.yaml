@@ -97,14 +97,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
+        if: github.ref == 'refs/heads/master'
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
+        if: github.ref == 'refs/heads/master'
       - run: yarn install
+        if: github.ref == 'refs/heads/master'
       - run: docker build -t test .
+        if: github.ref == 'refs/heads/master'
 
   release:
     name: Release
