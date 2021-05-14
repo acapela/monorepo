@@ -2,7 +2,7 @@ import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { CalendarOutline, HomeOutline, KeypadOutline } from "~ui/icons";
-import { Logo } from "~frontend/ui/Logo";
+import { Logo } from "~frontend/design/Logo";
 import { NavItem } from "./NavItem";
 import { AppLayoutStyles } from "./styles";
 import { UserMenu } from "./UserMenu";
@@ -17,13 +17,13 @@ export const AppLayout = ({ children }: Props) => {
       <AppLayoutStyles />
       <UIHolder>
         <UITopBar>
-          <Link href="/" passHref>
+          <Link href="/home" passHref>
             <UILogo>
               <Logo />
             </UILogo>
           </Link>
           <UINav>
-            <NavItem icon={<HomeOutline />} label="Home" href="/" />
+            <NavItem icon={<HomeOutline />} label="Home" href="/home" />
             <NavItem icon={<KeypadOutline />} label="Spaces" href="/spaces" />
             <NavItem icon={<CalendarOutline />} label="Calendar" href="/calendar" />
           </UINav>

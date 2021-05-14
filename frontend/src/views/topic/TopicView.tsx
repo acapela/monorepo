@@ -2,7 +2,7 @@ import { AnimateSharedLayout, motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 import { useTopicMessages } from "~frontend/gql/topics";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { UIContentWrapper } from "~frontend/design/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
