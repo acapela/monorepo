@@ -3,6 +3,7 @@ import { AnimatePresence, motion, MotionProps } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/design/Avatar";
 import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
