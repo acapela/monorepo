@@ -2,13 +2,14 @@ import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
-import { MicOutline, VideoOutline } from "~ui/icons";
+import { MicOffOutline, MicOutline, VideoOutline } from "~ui/icons";
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { TranscodingIndicator } from "./TranscodingIndicator";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
+import { useRecorderErrors } from "./useRecorderErrors";
 import { VideoSourcePicker } from "./VideoSourcePicker";
 
 interface RecorderProps {
@@ -48,9 +49,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isVideoSourcePickerVisible, { unset: hideVideoSourcePicker, toggle: toggleVideoSourcePicker }] = useBoolean(
     false
   );
-  const [isCountdownActive, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
+  const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const [popoverHandlerRef, setPopoverHandlerRef] = useState<HTMLElement | null>(null);
-  const { status, startRecording, stopRecording, previewStream, getMediaStream } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({
     video: mediaSource === MediaSource.CAMERA,
     screen: mediaSource === MediaSource.SCREEN,
     audio: !!mediaSource,
@@ -58,6 +59,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     onStop: (_url: string, blob: Blob) => setBlob(blob),
   });
   const isRecording = !!mediaSource && status === "recording";
+  const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
+  const isUnsupportedBrowser = error === "unsupported_browser";
 
   const doStartRecording = () => {
     dismissCountdown();
@@ -119,7 +122,16 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     clearDismissedStatus();
     setBlob(null);
 
-    getMediaStream().then(() => {
+    getMediaStream().then((success) => {
+      if (!success) {
+        /* This state is recoverable, possible to retry */
+        if (mediaSource === MediaSource.SCREEN) {
+          setMediaSource(null);
+        }
+
+        return;
+      }
+
       if (mediaSource === MediaSource.MICROPHONE) {
         doStartRecording();
       } else {
@@ -137,18 +149,51 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     }
   }, [isDismissed, blob]);
 
+  useEffect(() => {
+    if (mediaSource && error) {
+      /* This state is recoverable, no need to block the UI */
+      if (mediaSource === MediaSource.SCREEN && error === "permission_denied") {
+        return;
+      }
+
+      setRecorderError(mediaSource, error);
+    }
+  }, [mediaSource, error]);
+
+  if (isUnsupportedBrowser) {
+    return (
+      <div className={className}>
+        <RecordButton disabled title="Media recording is not supported by your browser">
+          <MicOffOutline />
+        </RecordButton>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
-      <RecordButton onClick={(event) => onVideoButtonClick(event.currentTarget)}>
+      <RecordButton
+        onClick={(event) => onVideoButtonClick(event.currentTarget)}
+        disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
+      >
         <VideoOutline />
       </RecordButton>
-      <RecordButton onClick={(event) => onAudioButtonClick(event.currentTarget)}>
+      <RecordButton
+        onClick={(event) => onAudioButtonClick(event.currentTarget)}
+        disabled={!!getRecorderError(MediaSource.MICROPHONE)}
+        title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
+      >
         <MicOutline />
       </RecordButton>
       {isVideoSourcePickerVisible && (
-        <VideoSourcePicker handlerRef={popoverHandlerRef} onStartRecording={startVideoRecording} />
+        <VideoSourcePicker
+          handlerRef={popoverHandlerRef}
+          onStartRecording={startVideoRecording}
+          screenCaptureError={getRecorderError(MediaSource.SCREEN) ?? ""}
+          cameraCaptureError={getRecorderError(MediaSource.CAMERA) ?? ""}
+        />
       )}
-      {isCountdownActive && (
+      {isCountdownStarted && (
         <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
       )}
       {isRecording && (

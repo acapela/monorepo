@@ -4356,13 +4356,13 @@ export type CreateRoomMutation = (
   )> }
 );
 
-export type RoomParticipantsSubscriptionVariables = Exact<{
+export type RoomParticipantsQueryVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type RoomParticipantsSubscription = (
-  { __typename?: 'subscription_root' }
+export type RoomParticipantsQuery = (
+  { __typename?: 'query_root' }
   & { participants: Array<(
     { __typename?: 'room_participants' }
     & RoomParticipantBasicInfoFragment
@@ -4426,26 +4426,26 @@ export type CreateTopicMutation = (
   )> }
 );
 
-export type RoomTopicsSubscriptionVariables = Exact<{
+export type RoomTopicsQueryVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type RoomTopicsSubscription = (
-  { __typename?: 'subscription_root' }
+export type RoomTopicsQuery = (
+  { __typename?: 'query_root' }
   & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }
 );
 
-export type TopicMessagesSubscriptionVariables = Exact<{
+export type TopicMessagesQueryVariables = Exact<{
   topicId: Scalars['uuid'];
 }>;
 
 
-export type TopicMessagesSubscription = (
-  { __typename?: 'subscription_root' }
+export type TopicMessagesQuery = (
+  { __typename?: 'query_root' }
   & { messages: Array<(
     { __typename?: 'message' }
     & TopicMessageDetailedInfoFragment

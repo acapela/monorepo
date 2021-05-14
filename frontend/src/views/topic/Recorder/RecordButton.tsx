@@ -11,4 +11,12 @@ export const RecordButton = styled.button`
   border-radius: 50%;
   padding: 0;
   cursor: pointer;
+
+  :disabled {
+    cursor: default;
+
+    svg {
+      fill: #a7a3a3;
+    }
+  }
 `;
