@@ -43,7 +43,7 @@ const UIRoomName = styled.h3`
 
 const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
   return (
-    <Link href={`/rooms/${room.id}`} passHref>
+    <Link href={`/space/${room.space_id}/${room.id}`} passHref>
       <UIRoomLink>
         <UIRoomName>{room.name || "New room"}</UIRoomName>
         <AvatarList

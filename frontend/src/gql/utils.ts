@@ -15,25 +15,28 @@ import produce, { Draft } from "immer";
 import { useRef } from "react";
 import { assert } from "~shared/assert";
 import { getApolloClient } from "~frontend/apollo";
-import { reportQueryUseage } from "./hydration";
+import { reportQueryUsage } from "./hydration";
+import { memoize } from "lodash";
 
 type EmptyObject = Record<string, never>;
 type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
 
-export function createQuery<Data, Variables>(query: DocumentNode) {
-  const subscriptionQuery = getSubscribtionNodeFromQueryNode(query);
-  function useQuery(variables: VoidableIfEmpty<Variables>, options?: QueryHookOptions<Data, Variables>) {
-    reportQueryUseage({ query, variables: variables });
+export function createQuery<Data, Variables>(query: () => DocumentNode) {
+  const getQuery = memoize(query);
+  type VoidableVariables = VoidableIfEmpty<Variables>;
+  const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
+  function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
+    reportQueryUsage({ query: getQuery(), variables: variables });
 
-    return useRawQuery(query, { ...options, variables: variables as Variables });
+    return useRawQuery(getQuery(), { ...options, variables: variables as Variables });
   }
 
-  function useAsSubscribtion(
-    variables: VoidableIfEmpty<Variables>,
-    options?: SubscriptionHookOptions<Data, Variables>
-  ) {
+  function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
     const queryResult = useQuery(variables);
-    const subscriptionResult = useRawSubscription(subscriptionQuery, { ...options, variables: variables as Variables });
+    const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
+      ...options,
+      variables: variables as Variables,
+    });
 
     const data = useLatest(subscriptionResult.data, queryResult.data);
 
@@ -43,11 +46,11 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
     };
   }
 
-  useQuery.subscription = useAsSubscribtion;
+  useQuery.subscription = useAsSubscription;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
     const client = getApolloClient();
-    const currentData = client.readQuery<Data, Variables>({ query, variables });
+    const currentData = client.readQuery<Data, Variables>({ query: getQuery(), variables });
 
     if (currentData === null) {
       return;
@@ -59,19 +62,19 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
       return draft;
     });
 
-    client.writeQuery({ query, variables, data: newData });
+    client.writeQuery({ query: getQuery(), variables, data: newData });
   }
 
   function write(variables: Variables, data: Data) {
-    getApolloClient().writeQuery<Data, Variables>({ query, variables, data });
+    getApolloClient().writeQuery<Data, Variables>({ query: getQuery(), variables, data });
   }
 
   function read(variables: Variables) {
-    return getApolloClient().readQuery<Data, Variables>({ query, variables });
+    return getApolloClient().readQuery<Data, Variables>({ query: getQuery(), variables });
   }
 
   async function fetch(variables: Variables) {
-    const response = await i().query<Data, Variables>({ query, variables });
+    const response = await getApolloClient().query<Data, Variables>({ query: getQuery(), variables });
 
     if (response.error) {
       throw response.error;
@@ -90,7 +93,7 @@ export function createQuery<Data, Variables>(query: DocumentNode) {
   return [useQuery, manager] as const;
 }
 
-function getSubscribtionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
+function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
   const subscriptionSource = print(queryNode);
 
   assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
@@ -113,11 +116,12 @@ interface MutationDefinitionOptions<Data, Variables> {
 }
 
 export function createMutation<Data, Variables>(
-  mutation: DocumentNode,
+  mutation: () => DocumentNode,
   mutationDefinitionOptions?: MutationDefinitionOptions<Data, Variables>
 ) {
+  const getMutation = memoize(mutation);
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
-    const [runMutationRaw, result] = useRawMutation<Data, Variables>(mutation, options);
+    const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
       const rawResult = await runMutationRaw({ ...options, variables });
@@ -133,7 +137,11 @@ export function createMutation<Data, Variables>(
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    const rawResult = await getApolloClient().mutate<Data, Variables>({ ...options, mutation, variables });
+    const rawResult = await getApolloClient().mutate<Data, Variables>({
+      ...options,
+      mutation: getMutation(),
+      variables,
+    });
 
     if (rawResult.data) {
       mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);

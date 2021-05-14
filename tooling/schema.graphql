@@ -1461,19 +1461,6 @@ type mutation_root {
   delete_space_participants_by_pk(space_id: uuid!, user_id: uuid!): space_participants
 
   """
-  delete data from the table: "space_rooms"
-  """
-  delete_space_rooms(
-    """filter the rows which have to be deleted"""
-    where: space_rooms_bool_exp!
-  ): space_rooms_mutation_response
-
-  """
-  delete single row from the table: "space_rooms"
-  """
-  delete_space_rooms_by_pk(room_id: uuid!, space_id: uuid!): space_rooms
-
-  """
   delete data from the table: "topic"
   """
   delete_topic(
@@ -1744,28 +1731,6 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: space_participants_on_conflict
   ): space_participants
-
-  """
-  insert data into the table: "space_rooms"
-  """
-  insert_space_rooms(
-    """the rows to be inserted"""
-    objects: [space_rooms_insert_input!]!
-
-    """on conflict condition"""
-    on_conflict: space_rooms_on_conflict
-  ): space_rooms_mutation_response
-
-  """
-  insert a single row into the table: "space_rooms"
-  """
-  insert_space_rooms_one(
-    """the row to be inserted"""
-    object: space_rooms_insert_input!
-
-    """on conflict condition"""
-    on_conflict: space_rooms_on_conflict
-  ): space_rooms
 
   """
   insert data into the table: "topic"
@@ -2096,26 +2061,6 @@ type mutation_root {
     _set: space_participants_set_input
     pk_columns: space_participants_pk_columns_input!
   ): space_participants
-
-  """
-  update data of the table: "space_rooms"
-  """
-  update_space_rooms(
-    """sets the columns of the filtered rows to the given values"""
-    _set: space_rooms_set_input
-
-    """filter the rows which have to be updated"""
-    where: space_rooms_bool_exp!
-  ): space_rooms_mutation_response
-
-  """
-  update single row of the table: "space_rooms"
-  """
-  update_space_rooms_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: space_rooms_set_input
-    pk_columns: space_rooms_pk_columns_input!
-  ): space_rooms
 
   """
   update data of the table: "topic"
@@ -2715,49 +2660,6 @@ type query_root {
   space_participants_by_pk(space_id: uuid!, user_id: uuid!): space_participants
 
   """
-  fetch data from the table: "space_rooms"
-  """
-  space_rooms(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): [space_rooms!]!
-
-  """
-  fetch aggregated fields from the table: "space_rooms"
-  """
-  space_rooms_aggregate(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): space_rooms_aggregate!
-
-  """fetch data from the table: "space_rooms" using primary key columns"""
-  space_rooms_by_pk(room_id: uuid!, space_id: uuid!): space_rooms
-
-  """
   fetch data from the table: "topic"
   """
   topic(
@@ -3019,41 +2921,9 @@ type room {
     where: room_invites_bool_exp
   ): room_invites_aggregate!
 
-  """An array relationship"""
-  space(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): [space_rooms!]!
-
-  """An aggregated array relationship"""
-  space_aggregate(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): space_rooms_aggregate!
+  """An object relationship"""
+  space: space
+  space_id: uuid
   summary: String
 
   """An array relationship"""
@@ -3144,7 +3014,8 @@ input room_bool_exp {
   notification_job_id: String_comparison_exp
   participants: room_participants_bool_exp
   room_invites: room_invites_bool_exp
-  space: space_rooms_bool_exp
+  space: space_bool_exp
+  space_id: uuid_comparison_exp
   summary: String_comparison_exp
   topics: topic_bool_exp
 }
@@ -3171,7 +3042,8 @@ input room_insert_input {
   notification_job_id: String
   participants: room_participants_arr_rel_insert_input
   room_invites: room_invites_arr_rel_insert_input
-  space: space_rooms_arr_rel_insert_input
+  space: space_obj_rel_insert_input
+  space_id: uuid
   summary: String
   topics: topic_arr_rel_insert_input
 }
@@ -3448,6 +3320,7 @@ type room_max_fields {
   id: uuid
   name: String
   notification_job_id: String
+  space_id: uuid
   summary: String
 }
 
@@ -3462,6 +3335,7 @@ input room_max_order_by {
   id: order_by
   name: order_by
   notification_job_id: order_by
+  space_id: order_by
   summary: order_by
 }
 
@@ -3474,6 +3348,7 @@ type room_min_fields {
   id: uuid
   name: String
   notification_job_id: String
+  space_id: uuid
   summary: String
 }
 
@@ -3488,6 +3363,7 @@ input room_min_order_by {
   id: order_by
   name: order_by
   notification_job_id: order_by
+  space_id: order_by
   summary: order_by
 }
 
@@ -3533,7 +3409,8 @@ input room_order_by {
   notification_job_id: order_by
   participants_aggregate: room_participants_aggregate_order_by
   room_invites_aggregate: room_invites_aggregate_order_by
-  space_aggregate: space_rooms_aggregate_order_by
+  space: space_order_by
+  space_id: order_by
   summary: order_by
   topics_aggregate: topic_aggregate_order_by
 }
@@ -3756,6 +3633,9 @@ enum room_select_column {
   notification_job_id
 
   """column name"""
+  space_id
+
+  """column name"""
   summary
 }
 
@@ -3770,6 +3650,7 @@ input room_set_input {
   id: uuid
   name: String
   notification_job_id: String
+  space_id: uuid
   summary: String
 }
 
@@ -3797,6 +3678,9 @@ enum room_update_column {
 
   """column name"""
   notification_job_id
+
+  """column name"""
+  space_id
 
   """column name"""
   summary
@@ -3851,7 +3735,7 @@ type space {
   """An array relationship"""
   rooms(
     """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
+    distinct_on: [room_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -3860,16 +3744,16 @@ type space {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
+    order_by: [room_order_by!]
 
     """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): [space_rooms!]!
+    where: room_bool_exp
+  ): [room!]!
 
   """An aggregated array relationship"""
   rooms_aggregate(
     """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
+    distinct_on: [room_select_column!]
 
     """limit the number of rows returned"""
     limit: Int
@@ -3878,11 +3762,11 @@ type space {
     offset: Int
 
     """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
+    order_by: [room_order_by!]
 
     """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): space_rooms_aggregate!
+    where: room_bool_exp
+  ): room_aggregate!
 }
 
 """
@@ -3931,7 +3815,7 @@ input space_bool_exp {
   id: uuid_comparison_exp
   name: String_comparison_exp
   participants: space_participants_bool_exp
-  rooms: space_rooms_bool_exp
+  rooms: room_bool_exp
 }
 
 """
@@ -3951,7 +3835,7 @@ input space_insert_input {
   id: uuid
   name: String
   participants: space_participants_arr_rel_insert_input
-  rooms: space_rooms_arr_rel_insert_input
+  rooms: room_arr_rel_insert_input
 }
 
 """aggregate max on columns"""
@@ -4023,7 +3907,7 @@ input space_order_by {
   id: order_by
   name: order_by
   participants_aggregate: space_participants_aggregate_order_by
-  rooms_aggregate: space_rooms_aggregate_order_by
+  rooms_aggregate: room_aggregate_order_by
 }
 
 """
@@ -4213,188 +4097,6 @@ primary key columns input for table: "space"
 """
 input space_pk_columns_input {
   id: uuid!
-}
-
-"""
-columns and relationships of "space_rooms"
-"""
-type space_rooms {
-  """An object relationship"""
-  room: room!
-  room_id: uuid!
-
-  """An object relationship"""
-  space: space!
-  space_id: uuid!
-}
-
-"""
-aggregated selection of "space_rooms"
-"""
-type space_rooms_aggregate {
-  aggregate: space_rooms_aggregate_fields
-  nodes: [space_rooms!]!
-}
-
-"""
-aggregate fields of "space_rooms"
-"""
-type space_rooms_aggregate_fields {
-  count(columns: [space_rooms_select_column!], distinct: Boolean): Int
-  max: space_rooms_max_fields
-  min: space_rooms_min_fields
-}
-
-"""
-order by aggregate values of table "space_rooms"
-"""
-input space_rooms_aggregate_order_by {
-  count: order_by
-  max: space_rooms_max_order_by
-  min: space_rooms_min_order_by
-}
-
-"""
-input type for inserting array relation for remote table "space_rooms"
-"""
-input space_rooms_arr_rel_insert_input {
-  data: [space_rooms_insert_input!]!
-  on_conflict: space_rooms_on_conflict
-}
-
-"""
-Boolean expression to filter rows from the table "space_rooms". All fields are combined with a logical 'AND'.
-"""
-input space_rooms_bool_exp {
-  _and: [space_rooms_bool_exp]
-  _not: space_rooms_bool_exp
-  _or: [space_rooms_bool_exp]
-  room: room_bool_exp
-  room_id: uuid_comparison_exp
-  space: space_bool_exp
-  space_id: uuid_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "space_rooms"
-"""
-enum space_rooms_constraint {
-  """unique or primary key constraint"""
-  space_rooms_pkey
-}
-
-"""
-input type for inserting data into table "space_rooms"
-"""
-input space_rooms_insert_input {
-  room: room_obj_rel_insert_input
-  room_id: uuid
-  space: space_obj_rel_insert_input
-  space_id: uuid
-}
-
-"""aggregate max on columns"""
-type space_rooms_max_fields {
-  room_id: uuid
-  space_id: uuid
-}
-
-"""
-order by max() on columns of table "space_rooms"
-"""
-input space_rooms_max_order_by {
-  room_id: order_by
-  space_id: order_by
-}
-
-"""aggregate min on columns"""
-type space_rooms_min_fields {
-  room_id: uuid
-  space_id: uuid
-}
-
-"""
-order by min() on columns of table "space_rooms"
-"""
-input space_rooms_min_order_by {
-  room_id: order_by
-  space_id: order_by
-}
-
-"""
-response of any mutation on the table "space_rooms"
-"""
-type space_rooms_mutation_response {
-  """number of affected rows by the mutation"""
-  affected_rows: Int!
-
-  """data of the affected rows by the mutation"""
-  returning: [space_rooms!]!
-}
-
-"""
-input type for inserting object relation for remote table "space_rooms"
-"""
-input space_rooms_obj_rel_insert_input {
-  data: space_rooms_insert_input!
-  on_conflict: space_rooms_on_conflict
-}
-
-"""
-on conflict condition type for table "space_rooms"
-"""
-input space_rooms_on_conflict {
-  constraint: space_rooms_constraint!
-  update_columns: [space_rooms_update_column!]!
-  where: space_rooms_bool_exp
-}
-
-"""
-ordering options when selecting data from "space_rooms"
-"""
-input space_rooms_order_by {
-  room: room_order_by
-  room_id: order_by
-  space: space_order_by
-  space_id: order_by
-}
-
-"""
-primary key columns input for table: "space_rooms"
-"""
-input space_rooms_pk_columns_input {
-  room_id: uuid!
-  space_id: uuid!
-}
-
-"""
-select columns of table "space_rooms"
-"""
-enum space_rooms_select_column {
-  """column name"""
-  room_id
-
-  """column name"""
-  space_id
-}
-
-"""
-input type for updating data in table "space_rooms"
-"""
-input space_rooms_set_input {
-  room_id: uuid
-  space_id: uuid
-}
-
-"""
-update columns of table "space_rooms"
-"""
-enum space_rooms_update_column {
-  """column name"""
-  room_id
-
-  """column name"""
-  space_id
 }
 
 """
@@ -4881,49 +4583,6 @@ type subscription_root {
   fetch data from the table: "space_participants" using primary key columns
   """
   space_participants_by_pk(space_id: uuid!, user_id: uuid!): space_participants
-
-  """
-  fetch data from the table: "space_rooms"
-  """
-  space_rooms(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): [space_rooms!]!
-
-  """
-  fetch aggregated fields from the table: "space_rooms"
-  """
-  space_rooms_aggregate(
-    """distinct select on columns"""
-    distinct_on: [space_rooms_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [space_rooms_order_by!]
-
-    """filter the rows returned"""
-    where: space_rooms_bool_exp
-  ): space_rooms_aggregate!
-
-  """fetch data from the table: "space_rooms" using primary key columns"""
-  space_rooms_by_pk(room_id: uuid!, space_id: uuid!): space_rooms
 
   """
   fetch data from the table: "topic"

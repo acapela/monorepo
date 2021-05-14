@@ -29,7 +29,7 @@ export function startRecordingUsedQueries() {
   return [finishRecording, recordedQueries] as const;
 }
 
-export function reportQueryUseage(queryInfo: QueryUseageData) {
+export function reportQueryUsage(queryInfo: QueryUseageData) {
   queryUseageRecorders.forEach((recorder) => {
     recorder(queryInfo);
   });
@@ -49,7 +49,7 @@ export function ApolloInitialState({ state }: { state: unknown }) {
   );
 }
 
-export const getApolloInitialState = memoize(() => {
+export const getApolloInitialState = () => {
   if (typeof document === "undefined") return null;
 
   const queriesDataElement = document.getElementById(APOLLO_INITIAL_STATE_JSON_ID) as HTMLScriptElement | null;
@@ -57,7 +57,7 @@ export const getApolloInitialState = memoize(() => {
   if (!queriesDataElement) return null;
 
   return JSON.parse(queriesDataElement.innerHTML);
-});
+};
 
 export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {
   // For each used query - fetch it using the client

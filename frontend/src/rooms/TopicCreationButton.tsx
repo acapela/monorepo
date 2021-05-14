@@ -25,7 +25,7 @@ export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: st
         <TopicCreationForm roomId={roomId} lastTopicIndex={lastTopicIndex} onCreated={closeDialog} />
       </Dialog>
       <Button wide onClick={openDialog} id="topic-creation-button">
-        Add agenda point
+        Add topic
       </Button>
     </>
   );
