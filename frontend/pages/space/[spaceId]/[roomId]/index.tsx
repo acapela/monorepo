@@ -10,37 +10,39 @@ import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { usePathParameter } from "~frontend/utils";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
+import { routes } from "~frontend/routes";
+import { ItemTitle } from "~ui/typo";
+
+const UITopic = styled.div`
+  margin-bottom: 2rem;
+`;
 
 const UINoAgendaMessage = styled.div`
   margin-bottom: 1rem;
 `;
 
 const Page = () => {
-  const { replace } = useRouter();
-  const roomId = usePathParameter("roomId");
-  const { loading, data } = useGetSingleRoomQuery({ id: roomId });
-  const [redirecting, setRedirecting] = useState(false);
+  const { roomId, spaceId } = routes.spaceRoom.useParams();
+  const { loading, data } = useGetSingleRoomQuery.subscription({ id: roomId });
 
   const room = data?.room;
 
-  useEffect(() => {
-    if (room?.topics?.length) {
-      setRedirecting(true);
-      replace(`/rooms/${room.id}/topic/${room.topics[0].id}`).then(() => setRedirecting(false));
-    }
-  }, [room]);
-
-  // TODO: use a proper loader here
-  if (loading || redirecting || !room) {
-    return <span>Loading...</span>;
-  }
+  const topics = room?.topics ?? [];
 
   return (
     <>
-      <PageMeta title={room.name} />
+      <PageMeta title={room?.name} />
       <UIContentWrapper>
-        <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>
-        <TopicCreationButton roomId={room.id} />
+        {topics.length === 0 && <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>}
+
+        {topics.map((topic) => {
+          return (
+            <UITopic key={topic.id} onClick={() => routes.spaceRoomTopic.push({ spaceId, roomId, topicId: topic.id })}>
+              <ItemTitle>Topic: {topic.name}</ItemTitle>
+            </UITopic>
+          );
+        })}
+        <TopicCreationButton roomId={room?.id} />
       </UIContentWrapper>
     </>
   );
