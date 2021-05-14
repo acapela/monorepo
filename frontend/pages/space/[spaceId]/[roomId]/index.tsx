@@ -1,16 +1,13 @@
-import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
-import { usePathParameter } from "~frontend/utils";
+import { routes } from "~frontend/routes";
+import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { routes } from "~frontend/routes";
 import { ItemTitle } from "~ui/typo";
 
 const UITopic = styled.div`
@@ -23,7 +20,7 @@ const UINoAgendaMessage = styled.div`
 
 const Page = () => {
   const { roomId, spaceId } = routes.spaceRoom.useParams();
-  const { loading, data } = useGetSingleRoomQuery.subscription({ id: roomId });
+  const { data } = useGetSingleRoomQuery.subscription({ id: roomId });
 
   const room = data?.room;
 

@@ -83,7 +83,7 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
     }
   `,
   {
-    onSuccess(data, variables) {
+    onSuccess(data) {
       getSpacesQueryManager.update({}, (draft) => {
         if (!data.space) return;
 

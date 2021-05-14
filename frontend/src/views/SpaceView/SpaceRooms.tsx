@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { RoomCard } from "~frontend/ui/rooms/RoomCard";
 

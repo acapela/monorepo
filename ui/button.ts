@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { borderRadius, fontSize } from "./baseStyles";
+import { fontSize } from "./baseStyles";
 
 interface Props {
   isLoading?: boolean;
