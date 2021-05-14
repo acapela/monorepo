@@ -1,5 +1,5 @@
 import { Button } from "~ui/button";
-import { useGetSpacesQuery, useCreateSpaceMutation } from "~frontend/gql/spaces";
+import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { ToolsBar } from "~frontend/ui/ToolsBar";
 import styled from "styled-components";
 import { SpacesList } from "./SpacesList";

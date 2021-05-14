@@ -2,7 +2,6 @@ import { routes } from "~frontend/../routes";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { SpacesView } from "~frontend/views/SpacesView";
 import { SpaceView } from "~frontend/views/SpaceView";
 
 export default function SpacesPage(): JSX.Element {

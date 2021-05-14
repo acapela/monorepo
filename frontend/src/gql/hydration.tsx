@@ -1,5 +1,4 @@
 import { ApolloClient, DocumentNode } from "@apollo/client";
-import memoize from "lodash/memoize";
 
 interface QueryUseageData {
   query: DocumentNode;

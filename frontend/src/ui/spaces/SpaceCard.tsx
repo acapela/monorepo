@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 interface Props {
   space: SpaceBasicInfoFragment;

@@ -6,8 +6,6 @@ import { SpaceRooms } from "./SpaceRooms";
 import { Button } from "~ui/button";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 
-import { routes } from "~frontend/routes";
-
 interface Props {
   spaceId: string;
 }
