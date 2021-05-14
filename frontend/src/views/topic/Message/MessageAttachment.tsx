@@ -7,8 +7,6 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
-import { ATTACHMENT_LINK_EXPIRATION_TIME } from "~config/attachments";
-import { useInterval } from "react-use";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -17,19 +15,10 @@ interface AttachmentProps {
   className?: string;
 }
 
-function useAttachmentDownloadUrl(attachmentId: string) {
-  const { refetch, data } = useGetDownloadUrlQuery({ id: attachmentId }, { fetchPolicy: "network-only" });
-
-  useInterval(() => {
-    refetch();
-  }, ATTACHMENT_LINK_EXPIRATION_TIME);
-
-  return data?.get_download_url?.downloadUrl ?? null;
-}
-
 const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
   const mediaRef = useRef<HTMLVideoElement>(null);
-  const url = useAttachmentDownloadUrl(attachment.id);
+  const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
+  const url = downloadUrlData?.get_download_url?.downloadUrl;
   const { data: attachmentData } = useGetAttachmentQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
