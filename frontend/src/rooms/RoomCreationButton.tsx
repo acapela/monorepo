@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
-import { Dialog } from "~frontend/ui/Dialog";
+import { Dialog } from "~frontend/design/Dialog";
 import { RoomBasicInfoFragment } from "~frontend/gql";
 
 const UIRoomTitleFieldWrapper = styled.div`
