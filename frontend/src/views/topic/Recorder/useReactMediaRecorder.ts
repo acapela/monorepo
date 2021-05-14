@@ -13,7 +13,7 @@ export type ReactMediaRecorderRenderProps = {
   isAudioMuted: boolean;
   previewStream: MediaStream | null;
   clearBlobUrl: () => void;
-  getMediaStream: () => Promise<void>;
+  getMediaStream: () => Promise<boolean>;
 };
 
 export type ReactMediaRecorderHookProps = {
@@ -53,6 +53,8 @@ export enum RecorderErrors {
   TypeError = "no_constraints",
   NONE = "",
   NO_RECORDER = "recorder_error",
+  SCREEN_CAPTURE_UNSUPPORTED = "screen_capture_unsupported",
+  UNSUPPORTED_BROWSER = "unsupported_browser",
 }
 
 /**
@@ -77,7 +79,7 @@ export function useReactMediaRecorder({
   const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
   const [error, setError] = useState<keyof typeof RecorderErrors>("NONE");
 
-  const getMediaStream = useCallback(async () => {
+  const getMediaStream = useCallback(async (): Promise<boolean> => {
     setStatus("acquiring_media");
     const requiredMedia: MediaStreamConstraints = {
       audio: typeof audio === "boolean" ? !!audio : audio,
@@ -85,6 +87,13 @@ export function useReactMediaRecorder({
     };
     try {
       if (screen) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (!window.navigator.mediaDevices.getDisplayMedia) {
+          setError("SCREEN_CAPTURE_UNSUPPORTED");
+
+          return false;
+        }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const stream = (await window.navigator.mediaDevices.getDisplayMedia({
@@ -102,9 +111,11 @@ export function useReactMediaRecorder({
         const stream = await window.navigator.mediaDevices.getUserMedia(requiredMedia);
         mediaStream.current = stream;
       }
-      // setError("NONE");
+
+      return true;
     } catch (error) {
       setError(error.name);
+      return false;
     } finally {
       setStatus("idle");
     }
@@ -112,17 +123,7 @@ export function useReactMediaRecorder({
 
   useEffect(() => {
     if (!window.MediaRecorder) {
-      // TODO: handle gracefully, set an error?
-      return alert("Unsupported Browser");
-    }
-
-    if (screen) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      if (!window.navigator.mediaDevices.getDisplayMedia) {
-        // TODO: handle gracefully, set an error?
-        return alert("This browser doesn't support screen capturing");
-      }
+      return setError("UNSUPPORTED_BROWSER");
     }
 
     const checkConstraints = (mediaType: MediaTrackConstraints) => {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
 import { MonitorOutline, PersonOutline } from "~ui/icons";
 import { Popover } from "~ui/Popover";
@@ -7,32 +8,50 @@ import { MediaSource } from "./MediaSource";
 interface VideoSourcePickerParams {
   handlerRef: HTMLElement | null;
   onStartRecording: (source: MediaSource) => void;
-  activeSource?: MediaSource;
+  screenCaptureError: string;
+  cameraCaptureError: string;
   className?: string;
 }
 
 const PureVideoSourcePicker = ({
   handlerRef,
   onStartRecording,
-  activeSource = MediaSource.SCREEN,
+  screenCaptureError,
+  cameraCaptureError,
   className,
 }: VideoSourcePickerParams) => {
-  const [source, setSource] = useState<MediaSource>(activeSource);
+  const [source, setSource] = useState<MediaSource | null>();
+
+  useIsomorphicLayoutEffect(() => {
+    setSource((!screenCaptureError && MediaSource.SCREEN) || (!cameraCaptureError && MediaSource.CAMERA) || null);
+  }, []);
 
   return (
     <Popover handlerRef={handlerRef}>
       <div className={className}>
         <UISourcesWrapper>
-          <UISourceButton selected={source === MediaSource.SCREEN} onClick={() => setSource(MediaSource.SCREEN)}>
+          <UISourceButton
+            selected={source === MediaSource.SCREEN && !screenCaptureError}
+            onClick={() => setSource(MediaSource.SCREEN)}
+            disabled={!!screenCaptureError}
+            title={screenCaptureError}
+          >
             <MonitorOutline />
             <UISourceLabel>Screen</UISourceLabel>
           </UISourceButton>
-          <UISourceButton selected={source === MediaSource.CAMERA} onClick={() => setSource(MediaSource.CAMERA)}>
+          <UISourceButton
+            selected={source === MediaSource.CAMERA && !cameraCaptureError}
+            onClick={() => setSource(MediaSource.CAMERA)}
+            disabled={!!cameraCaptureError}
+            title={cameraCaptureError}
+          >
             <PersonOutline />
             <UISourceLabel>Camera</UISourceLabel>
           </UISourceButton>
         </UISourcesWrapper>
-        <UIConfirmButton onClick={() => onStartRecording(source)}>Start recording</UIConfirmButton>
+        <UIConfirmButton onClick={() => source && onStartRecording(source)} disabled={!source}>
+          Start recording
+        </UIConfirmButton>
       </div>
     </Popover>
   );
@@ -73,6 +92,13 @@ const UISourceButton = styled.button<{ selected: boolean }>`
     width: 1.2rem;
     height: 1.2rem;
   }
+
+  :disabled {
+    cursor: default;
+    svg {
+      fill: #a7a3a3;
+    }
+  }
 `;
 
 const UISourceLabel = styled.span`
@@ -87,4 +113,8 @@ const UIConfirmButton = styled.button`
   color: #fff;
   font-weight: 400;
   border-radius: 0.75rem;
+
+  :disabled {
+    background-color: #a5a5a5;
+  }
 `;
