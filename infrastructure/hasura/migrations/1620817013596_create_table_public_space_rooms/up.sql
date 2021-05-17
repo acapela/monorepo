@@ -1,1 +1,0 @@
-CREATE TABLE "public"."space_rooms"("space_id" uuid NOT NULL, "room_id" uuid NOT NULL, PRIMARY KEY ("space_id","room_id") , FOREIGN KEY ("space_id") REFERENCES "public"."space"("id") ON UPDATE restrict ON DELETE restrict, FOREIGN KEY ("room_id") REFERENCES "public"."room"("id") ON UPDATE restrict ON DELETE restrict, UNIQUE ("space_id", "room_id"));

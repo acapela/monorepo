@@ -10,15 +10,7 @@ import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { ItemTitle } from "~ui/typo";
 
-const UITopic = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const UINoAgendaMessage = styled.div`
-  margin-bottom: 1rem;
-`;
-
-const Page = () => {
+const SpaceRoomPage = () => {
   const { roomId, spaceId } = routes.spaceRoom.useParams();
   const { data } = useGetSingleRoomQuery.subscription({ id: roomId });
 
@@ -47,6 +39,14 @@ const Page = () => {
 
 export const getServerSideProps = withServerSideAuthRedirect();
 
-assignPageLayout(Page, AppLayout);
+assignPageLayout(SpaceRoomPage, AppLayout);
 
-export default Page;
+export default SpaceRoomPage;
+
+const UITopic = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const UINoAgendaMessage = styled.div`
+  margin-bottom: 1rem;
+`;
