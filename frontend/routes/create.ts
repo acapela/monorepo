@@ -37,8 +37,6 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
       }
     });
 
-    console.log({ router });
-
     return query as Params;
   }
 

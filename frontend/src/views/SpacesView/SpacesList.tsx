@@ -5,13 +5,11 @@ import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 
 export function SpacesList() {
-  const { data, loading } = useGetSpacesQuery();
+  const { data, loading } = useGetSpacesQuery.subscription();
 
   const spacesList = data?.space ?? [];
 
   const hasNoSpaces = !loading && spacesList.length === 0;
-
-  console.log(spacesList);
 
   return (
     <UIHolder>

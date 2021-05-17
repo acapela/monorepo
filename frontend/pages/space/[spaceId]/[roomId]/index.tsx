@@ -30,7 +30,7 @@ const Page = () => {
     <>
       <PageMeta title={room?.name} />
       <UIContentWrapper>
-        {topics.length === 0 && <UINoAgendaMessage>This room has no agenda points yet.</UINoAgendaMessage>}
+        {topics.length === 0 && <UINoAgendaMessage>This room has topics yet.</UINoAgendaMessage>}
 
         {topics.map((topic) => {
           return (
