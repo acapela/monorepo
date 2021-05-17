@@ -10,7 +10,6 @@ export function SpaceRooms({ rooms }: Props) {
   return (
     <UIHolder>
       {rooms.map((room) => {
-        console.log("ebe");
         return <RoomCard key={room.id} room={room} />;
       })}
     </UIHolder>

@@ -6,15 +6,12 @@ import { pluralize } from "~shared/numbers";
 
 interface Props {
   room: RoomDetailedInfoFragment;
-  css?: FlattenSimpleInterpolation;
 }
 
-export function RoomCard({ room, css }: Props) {
+export function RoomCard({ room }: Props) {
   const topicsCount = room.topics.length;
-  console.log({ css });
   return (
     <UIHolder
-      css={css}
       onClick={() => {
         routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
       }}
@@ -25,16 +22,11 @@ export function RoomCard({ room, css }: Props) {
   );
 }
 
-const UIHolder = styled.div<{ css?: FlattenSimpleInterpolation }>`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 21px 14px;
-
-  ${(props) => {
-    console.log(props.css);
-    return props.css;
-  }}
 
   /* Base/White */
 

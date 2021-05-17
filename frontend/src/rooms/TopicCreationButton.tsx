@@ -17,7 +17,7 @@ export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: st
   return (
     <>
       <Dialog
-        title={"Add agenda point"}
+        title={"Add new topic"}
         isOpened={isDialogOpened}
         onClose={closeDialog}
         aria-labelledby="topic-creation-button"
@@ -25,7 +25,7 @@ export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: st
         <TopicCreationForm roomId={roomId} lastTopicIndex={lastTopicIndex} onCreated={closeDialog} />
       </Dialog>
       <Button wide onClick={openDialog} id="topic-creation-button">
-        Add topic
+        Add new topic
       </Button>
     </>
   );

@@ -8,6 +8,5 @@ module.exports = {
         displayName: true,
       },
     ],
-    "graphql-tag",
   ],
 };
