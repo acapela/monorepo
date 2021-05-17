@@ -209,12 +209,11 @@ export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDown
 
 export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(
   () => gql`
-  query GetAttachment($id: uuid!) {
-    ${AttachmentDetailedInfoFragment}
-
-    attachment: attachment_by_pk(id: $id) {
-      ...AttachmentDetailedInfo
+    ${AttachmentDetailedInfoFragment()}
+    query GetAttachment($id: uuid!) {
+      attachment: attachment_by_pk(id: $id) {
+        ...AttachmentDetailedInfo
+      }
     }
-  }
-`
+  `
 );
