@@ -1,6 +1,6 @@
 import { Button } from "~ui/button";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
-import { ToolsBar } from "~frontend/ui/ToolsBar";
+import { Toolbar } from "~frontend/ui/Toolbar";
 import styled from "styled-components";
 import { SpacesList } from "./SpacesList";
 
@@ -19,9 +19,9 @@ export function SpacesView() {
 
   return (
     <>
-      <ToolsBar>
+      <Toolbar>
         <Button onClick={handleCreate}>Create new space</Button>
-      </ToolsBar>
+      </Toolbar>
       <UISpaces>
         <SpacesList />
       </UISpaces>

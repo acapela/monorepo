@@ -10,7 +10,7 @@ import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
 
 export default function LoginPage(): JSX.Element {
-  const { loading, isAuthenticated } = useRedirectWhenAuthenticated();
+  const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
 
   return (
     <div>
@@ -25,7 +25,7 @@ export default function LoginPage(): JSX.Element {
             <EmailLoginButton />
           </>
         )}
-        {loading && <div>Loading...</div>}
+        {isRedirecting && <div>Redirecting...</div>}
       </UIContentWrapper>
     </div>
   );
@@ -35,17 +35,17 @@ function useRedirectWhenAuthenticated() {
   const { query, replace } = useRouter();
   const user = useCurrentUser();
   const redirectUrl = readRedirectUrl(query);
-  const [redirecting, setRedirecting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const isAuthenticated = !!user;
 
   useEffect(() => {
     if (isAuthenticated) {
-      setRedirecting(true);
-      replace(redirectUrl).then(() => setRedirecting(false));
+      setIsRedirecting(true);
+      replace(redirectUrl).then(() => setIsRedirecting(false));
     }
   }, [redirectUrl, isAuthenticated]);
 
-  return { loading: redirecting, isAuthenticated };
+  return { isRedirecting, isAuthenticated };
 }
 
 function readRedirectUrl(query: ParsedUrlQuery): string {

@@ -6,12 +6,12 @@ import { LoginView } from "~frontend/views/LoginView";
 
 export default function LandingPage(): JSX.Element {
   const user = useCurrentUser();
-  return (
-    <div>
-      {!user && <LoginView />}
-      {!!user && <RoomList />}
-    </div>
-  );
+
+  if (!user) {
+    return <LoginView />;
+  }
+
+  return <RoomList />;
 }
 
 assignPageLayout(LandingPage, AppLayout);

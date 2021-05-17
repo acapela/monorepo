@@ -1,4 +1,4 @@
-import styled, { FlattenSimpleInterpolation } from "styled-components";
+import styled from "styled-components";
 import { ItemTitle, SecondaryText } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { routes } from "~frontend/routes";

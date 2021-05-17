@@ -3,7 +3,6 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/ui/Avatar";
 
 export function UserMenu() {
-  return null;
   const user = useAssertCurrentUser();
 
   return (
