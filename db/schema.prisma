@@ -36,8 +36,8 @@ model message {
   type                String
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   is_draft            Boolean               @default(false)
-  content             Json                  @default(dbgenerated("jsonb_build_array()"))
   transcription_id    String?               @db.Uuid
+  content             Json                  @default(dbgenerated("jsonb_build_array()"))
   topic               topic                 @relation(fields: [topic_id], references: [id])
   transcription       transcription?        @relation(fields: [transcription_id], references: [id])
   message_type        message_type          @relation(fields: [type], references: [value])
@@ -68,7 +68,9 @@ model room {
   notification_job_id String?
   summary             String?
   finished_at         DateTime?           @db.Timestamptz(6)
+  space_id            String?             @db.Uuid
   user                user                @relation(fields: [creator_id], references: [id])
+  space               space?              @relation(fields: [space_id], references: [id])
   room_invites        room_invites[]
   room_participants   room_participants[]
   topic               topic[]
@@ -115,17 +117,18 @@ model transcription_status {
 }
 
 model user {
-  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email             String?             @unique
-  name              String?
-  avatar_url        String?
-  created_at        DateTime            @default(now()) @db.Timestamptz(6)
-  email_verified    DateTime?           @db.Timestamptz(6)
-  account           account[]
-  message           message[]
-  room              room[]
-  room_invites      room_invites[]
-  room_participants room_participants[]
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email              String?              @unique
+  name               String?
+  avatar_url         String?
+  created_at         DateTime             @default(now()) @db.Timestamptz(6)
+  email_verified     DateTime?            @db.Timestamptz(6)
+  account            account[]
+  message            message[]
+  room               room[]
+  room_invites       room_invites[]
+  room_participants  room_participants[]
+  space_participants space_participants[]
 }
 
 model verification_requests {
@@ -144,4 +147,30 @@ model topic {
   index   String
   room    room      @relation(fields: [room_id], references: [id])
   message message[]
+}
+
+model last_seen_message {
+  user_id    String   @db.Uuid
+  topic_id   String   @db.Uuid
+  seen_at    DateTime @default(now()) @db.Timestamptz(6)
+  message_id String   @db.Uuid
+
+  @@id([user_id, topic_id])
+}
+
+model space {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  creator_id         String               @db.Uuid
+  room               room[]
+  space_participants space_participants[]
+}
+
+model space_participants {
+  space_id String @db.Uuid
+  user_id  String @db.Uuid
+  space    space  @relation(fields: [space_id], references: [id])
+  user     user   @relation(fields: [user_id], references: [id])
+
+  @@id([space_id, user_id])
 }
