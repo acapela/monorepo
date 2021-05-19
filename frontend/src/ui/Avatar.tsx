@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
 export interface AvatarProps {
-  name?: string;
+  name?: Maybe<string>;
   url?: string | null;
   className?: string;
 }
@@ -17,7 +18,7 @@ const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
 
   return (
     <div className={className}>
-      <img src={url} alt={`${name}'s avatar`} title={name} onError={() => setFailedToLoad(true)} />
+      <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
     </div>
   );
 };

@@ -1,11 +1,53 @@
 import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
-import { AvatarList } from "~frontend/ui/AvatarList";
 import { RoomBasicInfoFragment } from "~frontend/gql";
+import { useUnreadMessages } from "~frontend/gql/topics";
 import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
+import { AvatarList } from "~frontend/ui/AvatarList";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { useGetSpaceRoomsQuery } from "~frontend/gql/rooms";
+import { UnreadTopicIndicator } from "../ui/UnreadTopicsIndicator";
+
+const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
+  const [unreadMessagesData] = useUnreadMessages.subscription({ roomId: room.id });
+  const unreadMessages = unreadMessagesData?.messages.reduce((acc, cur) => acc + cur.unreadMessages, 0) ?? 0;
+
+  return (
+    <Link href={`/space/${room.space_id}/${room.id}`} passHref>
+      <UIRoomLink>
+        <UnreadTopicIndicator unreadMessages={unreadMessages} />
+        <UIRoomName>{room.name || "New room"}</UIRoomName>
+        <AvatarList users={room.members.map((member) => member.user)} />
+      </UIRoomLink>
+    </Link>
+  );
+};
+
+export const RoomList = ({ spaceId }: { spaceId: string }) => {
+  const [data] = useGetSpaceRoomsQuery({ spaceId });
+
+  if (!data?.room.length) {
+    return (
+      <>
+        <span>Start by creating new Acapela</span>
+        <UIContentWrapper marginTop>
+          <RoomCreationButton spaceId={spaceId} />
+        </UIContentWrapper>
+      </>
+    );
+  }
+
+  return (
+    <UIRoomsGrid>
+      {data.room.map((room) => (
+        <li key={room.id}>
+          <RoomLink room={room} />
+        </li>
+      ))}
+    </UIRoomsGrid>
+  );
+};
 
 const UIRoomsGrid = styled.ul`
   display: grid;
@@ -14,6 +56,7 @@ const UIRoomsGrid = styled.ul`
 `;
 
 const UIRoomLink = styled.a`
+  position: relative;
   display: block;
   width: 100%;
   padding: 1rem;
@@ -40,44 +83,3 @@ const UIRoomName = styled.h3`
   line-height: 1.75rem;
   margin-bottom: 1rem;
 `;
-
-const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
-  return (
-    <Link href={`/space/${room.space_id}/${room.id}`} passHref>
-      <UIRoomLink>
-        <UIRoomName>{room.name || "New room"}</UIRoomName>
-        <AvatarList
-          avatars={(room.members || []).map(({ user: { name, avatarUrl } }) => ({
-            url: avatarUrl,
-            name,
-          }))}
-        />
-      </UIRoomLink>
-    </Link>
-  );
-};
-
-export const RoomList = ({ spaceId }: { spaceId: string }) => {
-  const { data } = useGetSpaceRoomsQuery({ spaceId });
-
-  if (!data?.room.length) {
-    return (
-      <>
-        <span>Start by creating new Acapela</span>
-        <UIContentWrapper marginTop>
-          <RoomCreationButton spaceId={spaceId} />
-        </UIContentWrapper>
-      </>
-    );
-  }
-
-  return (
-    <UIRoomsGrid>
-      {data.room.map((room) => (
-        <li key={room.id}>
-          <RoomLink room={room} />
-        </li>
-      ))}
-    </UIRoomsGrid>
-  );
-};

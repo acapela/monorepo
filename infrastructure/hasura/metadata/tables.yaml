@@ -39,6 +39,43 @@
   is_enum: true
 - table:
     schema: public
+    name: last_seen_message
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          user_id:
+            _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-User-Id
+        columns:
+          - message_id
+          - topic_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - message_id
+          - seen_at
+          - topic_id
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - message_id
+          - topic_id
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+        check: null
+        set:
+          user_id: x-hasura-User-Id
+- table:
+    schema: public
     name: message
   object_relationships:
     - name: message_type
@@ -954,6 +991,19 @@
     schema: public
     name: transcription_status
   is_enum: true
+- table:
+    schema: public
+    name: unread_messages
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - room_id
+          - topic_id
+          - unread_messages
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: user

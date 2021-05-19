@@ -10,6 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  bigint: any;
   date: any;
   json: any;
   jsonb: any;
@@ -509,6 +510,20 @@ export enum Attachment_Update_Column {
 }
 
 
+/** expression to compare columns of type bigint. All fields are combined with logical 'AND'. */
+export type Bigint_Comparison_Exp = {
+  _eq?: Maybe<Scalars['bigint']>;
+  _gt?: Maybe<Scalars['bigint']>;
+  _gte?: Maybe<Scalars['bigint']>;
+  _in?: Maybe<Array<Scalars['bigint']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['bigint']>;
+  _lte?: Maybe<Scalars['bigint']>;
+  _neq?: Maybe<Scalars['bigint']>;
+  _nin?: Maybe<Array<Scalars['bigint']>>;
+};
+
+
 /** expression to compare columns of type date. All fields are combined with logical 'AND'. */
 export type Date_Comparison_Exp = {
   _eq?: Maybe<Scalars['date']>;
@@ -559,6 +574,177 @@ export type Jsonb_Comparison_Exp = {
   _neq?: Maybe<Scalars['jsonb']>;
   _nin?: Maybe<Array<Scalars['jsonb']>>;
 };
+
+/** columns and relationships of "last_seen_message" */
+export type Last_Seen_Message = {
+  __typename?: 'last_seen_message';
+  message_id: Scalars['uuid'];
+  seen_at: Scalars['timestamptz'];
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "last_seen_message" */
+export type Last_Seen_Message_Aggregate = {
+  __typename?: 'last_seen_message_aggregate';
+  aggregate?: Maybe<Last_Seen_Message_Aggregate_Fields>;
+  nodes: Array<Last_Seen_Message>;
+};
+
+/** aggregate fields of "last_seen_message" */
+export type Last_Seen_Message_Aggregate_Fields = {
+  __typename?: 'last_seen_message_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Last_Seen_Message_Max_Fields>;
+  min?: Maybe<Last_Seen_Message_Min_Fields>;
+};
+
+
+/** aggregate fields of "last_seen_message" */
+export type Last_Seen_Message_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Last_Seen_Message_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "last_seen_message" */
+export type Last_Seen_Message_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Last_Seen_Message_Max_Order_By>;
+  min?: Maybe<Last_Seen_Message_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "last_seen_message" */
+export type Last_Seen_Message_Arr_Rel_Insert_Input = {
+  data: Array<Last_Seen_Message_Insert_Input>;
+  on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "last_seen_message". All fields are combined with a logical 'AND'. */
+export type Last_Seen_Message_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Last_Seen_Message_Bool_Exp>>>;
+  _not?: Maybe<Last_Seen_Message_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Last_Seen_Message_Bool_Exp>>>;
+  message_id?: Maybe<Uuid_Comparison_Exp>;
+  seen_at?: Maybe<Timestamptz_Comparison_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "last_seen_message" */
+export enum Last_Seen_Message_Constraint {
+  /** unique or primary key constraint */
+  LastSeenMessagePkey = 'last_seen_message_pkey'
+}
+
+/** input type for inserting data into table "last_seen_message" */
+export type Last_Seen_Message_Insert_Input = {
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Last_Seen_Message_Max_Fields = {
+  __typename?: 'last_seen_message_max_fields';
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "last_seen_message" */
+export type Last_Seen_Message_Max_Order_By = {
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Last_Seen_Message_Min_Fields = {
+  __typename?: 'last_seen_message_min_fields';
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "last_seen_message" */
+export type Last_Seen_Message_Min_Order_By = {
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "last_seen_message" */
+export type Last_Seen_Message_Mutation_Response = {
+  __typename?: 'last_seen_message_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Last_Seen_Message>;
+};
+
+/** input type for inserting object relation for remote table "last_seen_message" */
+export type Last_Seen_Message_Obj_Rel_Insert_Input = {
+  data: Last_Seen_Message_Insert_Input;
+  on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
+};
+
+/** on conflict condition type for table "last_seen_message" */
+export type Last_Seen_Message_On_Conflict = {
+  constraint: Last_Seen_Message_Constraint;
+  update_columns: Array<Last_Seen_Message_Update_Column>;
+  where?: Maybe<Last_Seen_Message_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "last_seen_message" */
+export type Last_Seen_Message_Order_By = {
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "last_seen_message" */
+export type Last_Seen_Message_Pk_Columns_Input = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "last_seen_message" */
+export enum Last_Seen_Message_Select_Column {
+  /** column name */
+  MessageId = 'message_id',
+  /** column name */
+  SeenAt = 'seen_at',
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "last_seen_message" */
+export type Last_Seen_Message_Set_Input = {
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "last_seen_message" */
+export enum Last_Seen_Message_Update_Column {
+  /** column name */
+  MessageId = 'message_id',
+  /** column name */
+  SeenAt = 'seen_at',
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  UserId = 'user_id'
+}
 
 /** columns and relationships of "membership_status" */
 export type Membership_Status = {
@@ -1301,6 +1487,10 @@ export type Mutation_Root = {
   delete_attachment?: Maybe<Attachment_Mutation_Response>;
   /** delete single row from the table: "attachment" */
   delete_attachment_by_pk?: Maybe<Attachment>;
+  /** delete data from the table: "last_seen_message" */
+  delete_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
+  /** delete single row from the table: "last_seen_message" */
+  delete_last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
   /** delete data from the table: "membership_status" */
   delete_membership_status?: Maybe<Membership_Status_Mutation_Response>;
   /** delete single row from the table: "membership_status" */
@@ -1377,6 +1567,10 @@ export type Mutation_Root = {
   insert_attachment?: Maybe<Attachment_Mutation_Response>;
   /** insert a single row into the table: "attachment" */
   insert_attachment_one?: Maybe<Attachment>;
+  /** insert data into the table: "last_seen_message" */
+  insert_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
+  /** insert a single row into the table: "last_seen_message" */
+  insert_last_seen_message_one?: Maybe<Last_Seen_Message>;
   /** insert data into the table: "membership_status" */
   insert_membership_status?: Maybe<Membership_Status_Mutation_Response>;
   /** insert a single row into the table: "membership_status" */
@@ -1453,6 +1647,10 @@ export type Mutation_Root = {
   update_attachment?: Maybe<Attachment_Mutation_Response>;
   /** update single row of the table: "attachment" */
   update_attachment_by_pk?: Maybe<Attachment>;
+  /** update data of the table: "last_seen_message" */
+  update_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
+  /** update single row of the table: "last_seen_message" */
+  update_last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
   /** update data of the table: "membership_status" */
   update_membership_status?: Maybe<Membership_Status_Mutation_Response>;
   /** update single row of the table: "membership_status" */
@@ -1553,6 +1751,19 @@ export type Mutation_RootDelete_AttachmentArgs = {
 /** mutation root */
 export type Mutation_RootDelete_Attachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Last_Seen_MessageArgs = {
+  where: Last_Seen_Message_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Last_Seen_Message_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -1790,6 +2001,20 @@ export type Mutation_RootInsert_AttachmentArgs = {
 export type Mutation_RootInsert_Attachment_OneArgs = {
   object: Attachment_Insert_Input;
   on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Last_Seen_MessageArgs = {
+  objects: Array<Last_Seen_Message_Insert_Input>;
+  on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Last_Seen_Message_OneArgs = {
+  object: Last_Seen_Message_Insert_Input;
+  on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
 };
 
 
@@ -2056,6 +2281,20 @@ export type Mutation_RootUpdate_AttachmentArgs = {
 export type Mutation_RootUpdate_Attachment_By_PkArgs = {
   _set?: Maybe<Attachment_Set_Input>;
   pk_columns: Attachment_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Last_Seen_MessageArgs = {
+  _set?: Maybe<Last_Seen_Message_Set_Input>;
+  where: Last_Seen_Message_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Last_Seen_Message_By_PkArgs = {
+  _set?: Maybe<Last_Seen_Message_Set_Input>;
+  pk_columns: Last_Seen_Message_Pk_Columns_Input;
 };
 
 
@@ -2351,6 +2590,12 @@ export type Query_Root = {
   get_download_url?: Maybe<GetDownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
   get_upload_url?: Maybe<GetUploadUrlResponse>;
+  /** fetch data from the table: "last_seen_message" */
+  last_seen_message: Array<Last_Seen_Message>;
+  /** fetch aggregated fields from the table: "last_seen_message" */
+  last_seen_message_aggregate: Last_Seen_Message_Aggregate;
+  /** fetch data from the table: "last_seen_message" using primary key columns */
+  last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
   /** fetch data from the table: "membership_status" */
   membership_status: Array<Membership_Status>;
   /** fetch aggregated fields from the table: "membership_status" */
@@ -2447,6 +2692,10 @@ export type Query_Root = {
   transcription_status_aggregate: Transcription_Status_Aggregate;
   /** fetch data from the table: "transcription_status" using primary key columns */
   transcription_status_by_pk?: Maybe<Transcription_Status>;
+  /** fetch data from the table: "unread_messages" */
+  unread_messages: Array<Unread_Messages>;
+  /** fetch aggregated fields from the table: "unread_messages" */
+  unread_messages_aggregate: Unread_Messages_Aggregate;
   /** fetch data from the table: "user" */
   user: Array<User>;
   /** fetch aggregated fields from the table: "user" */
@@ -2518,6 +2767,33 @@ export type Query_RootGet_Download_UrlArgs = {
 export type Query_RootGet_Upload_UrlArgs = {
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
+};
+
+
+/** query root */
+export type Query_RootLast_Seen_MessageArgs = {
+  distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
+  where?: Maybe<Last_Seen_Message_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootLast_Seen_Message_AggregateArgs = {
+  distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
+  where?: Maybe<Last_Seen_Message_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootLast_Seen_Message_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -2939,6 +3215,26 @@ export type Query_RootTranscription_Status_AggregateArgs = {
 /** query root */
 export type Query_RootTranscription_Status_By_PkArgs = {
   value: Scalars['String'];
+};
+
+
+/** query root */
+export type Query_RootUnread_MessagesArgs = {
+  distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Unread_Messages_Order_By>>;
+  where?: Maybe<Unread_Messages_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootUnread_Messages_AggregateArgs = {
+  distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Unread_Messages_Order_By>>;
+  where?: Maybe<Unread_Messages_Bool_Exp>;
 };
 
 
@@ -4111,6 +4407,12 @@ export type Subscription_Root = {
   get_download_url?: Maybe<GetDownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
   get_upload_url?: Maybe<GetUploadUrlResponse>;
+  /** fetch data from the table: "last_seen_message" */
+  last_seen_message: Array<Last_Seen_Message>;
+  /** fetch aggregated fields from the table: "last_seen_message" */
+  last_seen_message_aggregate: Last_Seen_Message_Aggregate;
+  /** fetch data from the table: "last_seen_message" using primary key columns */
+  last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
   /** fetch data from the table: "membership_status" */
   membership_status: Array<Membership_Status>;
   /** fetch aggregated fields from the table: "membership_status" */
@@ -4207,6 +4509,10 @@ export type Subscription_Root = {
   transcription_status_aggregate: Transcription_Status_Aggregate;
   /** fetch data from the table: "transcription_status" using primary key columns */
   transcription_status_by_pk?: Maybe<Transcription_Status>;
+  /** fetch data from the table: "unread_messages" */
+  unread_messages: Array<Unread_Messages>;
+  /** fetch aggregated fields from the table: "unread_messages" */
+  unread_messages_aggregate: Unread_Messages_Aggregate;
   /** fetch data from the table: "user" */
   user: Array<User>;
   /** fetch aggregated fields from the table: "user" */
@@ -4278,6 +4584,33 @@ export type Subscription_RootGet_Download_UrlArgs = {
 export type Subscription_RootGet_Upload_UrlArgs = {
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
+};
+
+
+/** subscription root */
+export type Subscription_RootLast_Seen_MessageArgs = {
+  distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
+  where?: Maybe<Last_Seen_Message_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootLast_Seen_Message_AggregateArgs = {
+  distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
+  where?: Maybe<Last_Seen_Message_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootLast_Seen_Message_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -4699,6 +5032,26 @@ export type Subscription_RootTranscription_Status_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootTranscription_Status_By_PkArgs = {
   value: Scalars['String'];
+};
+
+
+/** subscription root */
+export type Subscription_RootUnread_MessagesArgs = {
+  distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Unread_Messages_Order_By>>;
+  where?: Maybe<Unread_Messages_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootUnread_Messages_AggregateArgs = {
+  distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Unread_Messages_Order_By>>;
+  where?: Maybe<Unread_Messages_Bool_Exp>;
 };
 
 
@@ -6145,6 +6498,213 @@ export enum Transcription_Update_Column {
   UpdatedAt = 'updated_at'
 }
 
+/** columns and relationships of "unread_messages" */
+export type Unread_Messages = {
+  __typename?: 'unread_messages';
+  room_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  unread_messages?: Maybe<Scalars['bigint']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregated selection of "unread_messages" */
+export type Unread_Messages_Aggregate = {
+  __typename?: 'unread_messages_aggregate';
+  aggregate?: Maybe<Unread_Messages_Aggregate_Fields>;
+  nodes: Array<Unread_Messages>;
+};
+
+/** aggregate fields of "unread_messages" */
+export type Unread_Messages_Aggregate_Fields = {
+  __typename?: 'unread_messages_aggregate_fields';
+  avg?: Maybe<Unread_Messages_Avg_Fields>;
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Unread_Messages_Max_Fields>;
+  min?: Maybe<Unread_Messages_Min_Fields>;
+  stddev?: Maybe<Unread_Messages_Stddev_Fields>;
+  stddev_pop?: Maybe<Unread_Messages_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Unread_Messages_Stddev_Samp_Fields>;
+  sum?: Maybe<Unread_Messages_Sum_Fields>;
+  var_pop?: Maybe<Unread_Messages_Var_Pop_Fields>;
+  var_samp?: Maybe<Unread_Messages_Var_Samp_Fields>;
+  variance?: Maybe<Unread_Messages_Variance_Fields>;
+};
+
+
+/** aggregate fields of "unread_messages" */
+export type Unread_Messages_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Unread_Messages_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "unread_messages" */
+export type Unread_Messages_Aggregate_Order_By = {
+  avg?: Maybe<Unread_Messages_Avg_Order_By>;
+  count?: Maybe<Order_By>;
+  max?: Maybe<Unread_Messages_Max_Order_By>;
+  min?: Maybe<Unread_Messages_Min_Order_By>;
+  stddev?: Maybe<Unread_Messages_Stddev_Order_By>;
+  stddev_pop?: Maybe<Unread_Messages_Stddev_Pop_Order_By>;
+  stddev_samp?: Maybe<Unread_Messages_Stddev_Samp_Order_By>;
+  sum?: Maybe<Unread_Messages_Sum_Order_By>;
+  var_pop?: Maybe<Unread_Messages_Var_Pop_Order_By>;
+  var_samp?: Maybe<Unread_Messages_Var_Samp_Order_By>;
+  variance?: Maybe<Unread_Messages_Variance_Order_By>;
+};
+
+/** aggregate avg on columns */
+export type Unread_Messages_Avg_Fields = {
+  __typename?: 'unread_messages_avg_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by avg() on columns of table "unread_messages" */
+export type Unread_Messages_Avg_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "unread_messages". All fields are combined with a logical 'AND'. */
+export type Unread_Messages_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Unread_Messages_Bool_Exp>>>;
+  _not?: Maybe<Unread_Messages_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Unread_Messages_Bool_Exp>>>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
+  unread_messages?: Maybe<Bigint_Comparison_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Unread_Messages_Max_Fields = {
+  __typename?: 'unread_messages_max_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  unread_messages?: Maybe<Scalars['bigint']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "unread_messages" */
+export type Unread_Messages_Max_Order_By = {
+  room_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  unread_messages?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Unread_Messages_Min_Fields = {
+  __typename?: 'unread_messages_min_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  unread_messages?: Maybe<Scalars['bigint']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "unread_messages" */
+export type Unread_Messages_Min_Order_By = {
+  room_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  unread_messages?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** ordering options when selecting data from "unread_messages" */
+export type Unread_Messages_Order_By = {
+  room_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  unread_messages?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** select columns of table "unread_messages" */
+export enum Unread_Messages_Select_Column {
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  UnreadMessages = 'unread_messages',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** aggregate stddev on columns */
+export type Unread_Messages_Stddev_Fields = {
+  __typename?: 'unread_messages_stddev_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev() on columns of table "unread_messages" */
+export type Unread_Messages_Stddev_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Unread_Messages_Stddev_Pop_Fields = {
+  __typename?: 'unread_messages_stddev_pop_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev_pop() on columns of table "unread_messages" */
+export type Unread_Messages_Stddev_Pop_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Unread_Messages_Stddev_Samp_Fields = {
+  __typename?: 'unread_messages_stddev_samp_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev_samp() on columns of table "unread_messages" */
+export type Unread_Messages_Stddev_Samp_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate sum on columns */
+export type Unread_Messages_Sum_Fields = {
+  __typename?: 'unread_messages_sum_fields';
+  unread_messages?: Maybe<Scalars['bigint']>;
+};
+
+/** order by sum() on columns of table "unread_messages" */
+export type Unread_Messages_Sum_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate var_pop on columns */
+export type Unread_Messages_Var_Pop_Fields = {
+  __typename?: 'unread_messages_var_pop_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by var_pop() on columns of table "unread_messages" */
+export type Unread_Messages_Var_Pop_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Unread_Messages_Var_Samp_Fields = {
+  __typename?: 'unread_messages_var_samp_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by var_samp() on columns of table "unread_messages" */
+export type Unread_Messages_Var_Samp_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Unread_Messages_Variance_Fields = {
+  __typename?: 'unread_messages_variance_fields';
+  unread_messages?: Maybe<Scalars['Float']>;
+};
+
+/** order by variance() on columns of table "unread_messages" */
+export type Unread_Messages_Variance_Order_By = {
+  unread_messages?: Maybe<Order_By>;
+};
+
 /** columns and relationships of "user" */
 export type User = {
   __typename?: 'user';
@@ -7020,6 +7580,11 @@ export type TopicMessageDetailedInfoFragment = (
   )> }
 );
 
+export type UnreadMessageFragmentFragment = (
+  { __typename?: 'unread_messages' }
+  & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
+);
+
 export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -7180,6 +7745,33 @@ export type RemoveTopicMemberMutation = (
   )> }
 );
 
+export type GetUnreadMessagesQueryVariables = Exact<{
+  roomId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type GetUnreadMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'unread_messages' }
+    & UnreadMessageFragmentFragment
+  )> }
+);
+
+export type UpdateLastSeenMessageMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  messageId: Scalars['uuid'];
+}>;
+
+
+export type UpdateLastSeenMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_last_seen_message_one?: Maybe<(
+    { __typename?: 'last_seen_message' }
+    & Pick<Last_Seen_Message, 'message_id'>
+  )> }
+);
+
 export type UserBasicInfoFragment = (
   { __typename?: 'user' }
   & Pick<User, 'id' | 'name' | 'avatar_url'>
@@ -7310,6 +7902,43 @@ export type attachment_min_fieldsFieldPolicy = {
 };
 export type attachment_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | attachment_mutation_responseKeySpecifier)[];
 export type attachment_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_messageKeySpecifier = ('message_id' | 'seen_at' | 'topic_id' | 'user_id' | last_seen_messageKeySpecifier)[];
+export type last_seen_messageFieldPolicy = {
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_message_aggregateKeySpecifier = ('aggregate' | 'nodes' | last_seen_message_aggregateKeySpecifier)[];
+export type last_seen_message_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_message_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | last_seen_message_aggregate_fieldsKeySpecifier)[];
+export type last_seen_message_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_message_max_fieldsKeySpecifier = ('message_id' | 'seen_at' | 'topic_id' | 'user_id' | last_seen_message_max_fieldsKeySpecifier)[];
+export type last_seen_message_max_fieldsFieldPolicy = {
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_message_min_fieldsKeySpecifier = ('message_id' | 'seen_at' | 'topic_id' | 'user_id' | last_seen_message_min_fieldsKeySpecifier)[];
+export type last_seen_message_min_fieldsFieldPolicy = {
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type last_seen_message_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | last_seen_message_mutation_responseKeySpecifier)[];
+export type last_seen_message_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -7451,13 +8080,15 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7496,6 +8127,8 @@ export type mutation_rootFieldPolicy = {
 	insert_account_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_attachment_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_last_seen_message_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_membership_status_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7534,6 +8167,8 @@ export type mutation_rootFieldPolicy = {
 	update_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7570,7 +8205,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7580,6 +8215,9 @@ export type query_rootFieldPolicy = {
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7628,6 +8266,8 @@ export type query_rootFieldPolicy = {
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
@@ -7855,7 +8495,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7865,6 +8505,9 @@ export type subscription_rootFieldPolicy = {
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -7913,6 +8556,8 @@ export type subscription_rootFieldPolicy = {
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
@@ -8187,6 +8832,78 @@ export type transcription_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type unread_messagesKeySpecifier = ('room_id' | 'topic_id' | 'unread_messages' | 'user_id' | unread_messagesKeySpecifier)[];
+export type unread_messagesFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_aggregateKeySpecifier = ('aggregate' | 'nodes' | unread_messages_aggregateKeySpecifier)[];
+export type unread_messages_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_aggregate_fieldsKeySpecifier = ('avg' | 'count' | 'max' | 'min' | 'stddev' | 'stddev_pop' | 'stddev_samp' | 'sum' | 'var_pop' | 'var_samp' | 'variance' | unread_messages_aggregate_fieldsKeySpecifier)[];
+export type unread_messages_aggregate_fieldsFieldPolicy = {
+	avg?: FieldPolicy<any> | FieldReadFunction<any>,
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev_pop?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev_samp?: FieldPolicy<any> | FieldReadFunction<any>,
+	sum?: FieldPolicy<any> | FieldReadFunction<any>,
+	var_pop?: FieldPolicy<any> | FieldReadFunction<any>,
+	var_samp?: FieldPolicy<any> | FieldReadFunction<any>,
+	variance?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_avg_fieldsKeySpecifier = ('unread_messages' | unread_messages_avg_fieldsKeySpecifier)[];
+export type unread_messages_avg_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_max_fieldsKeySpecifier = ('room_id' | 'topic_id' | 'unread_messages' | 'user_id' | unread_messages_max_fieldsKeySpecifier)[];
+export type unread_messages_max_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_min_fieldsKeySpecifier = ('room_id' | 'topic_id' | 'unread_messages' | 'user_id' | unread_messages_min_fieldsKeySpecifier)[];
+export type unread_messages_min_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_stddev_fieldsKeySpecifier = ('unread_messages' | unread_messages_stddev_fieldsKeySpecifier)[];
+export type unread_messages_stddev_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_stddev_pop_fieldsKeySpecifier = ('unread_messages' | unread_messages_stddev_pop_fieldsKeySpecifier)[];
+export type unread_messages_stddev_pop_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_stddev_samp_fieldsKeySpecifier = ('unread_messages' | unread_messages_stddev_samp_fieldsKeySpecifier)[];
+export type unread_messages_stddev_samp_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_sum_fieldsKeySpecifier = ('unread_messages' | unread_messages_sum_fieldsKeySpecifier)[];
+export type unread_messages_sum_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_var_pop_fieldsKeySpecifier = ('unread_messages' | unread_messages_var_pop_fieldsKeySpecifier)[];
+export type unread_messages_var_pop_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_var_samp_fieldsKeySpecifier = ('unread_messages' | unread_messages_var_samp_fieldsKeySpecifier)[];
+export type unread_messages_var_samp_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type unread_messages_variance_fieldsKeySpecifier = ('unread_messages' | unread_messages_variance_fieldsKeySpecifier)[];
+export type unread_messages_variance_fieldsFieldPolicy = {
+	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8316,6 +9033,30 @@ export type TypedTypePolicies = TypePolicies & {
 	attachment_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | attachment_mutation_responseKeySpecifier | (() => undefined | attachment_mutation_responseKeySpecifier),
 		fields?: attachment_mutation_responseFieldPolicy,
+	},
+	last_seen_message?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_messageKeySpecifier | (() => undefined | last_seen_messageKeySpecifier),
+		fields?: last_seen_messageFieldPolicy,
+	},
+	last_seen_message_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_message_aggregateKeySpecifier | (() => undefined | last_seen_message_aggregateKeySpecifier),
+		fields?: last_seen_message_aggregateFieldPolicy,
+	},
+	last_seen_message_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_message_aggregate_fieldsKeySpecifier | (() => undefined | last_seen_message_aggregate_fieldsKeySpecifier),
+		fields?: last_seen_message_aggregate_fieldsFieldPolicy,
+	},
+	last_seen_message_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_message_max_fieldsKeySpecifier | (() => undefined | last_seen_message_max_fieldsKeySpecifier),
+		fields?: last_seen_message_max_fieldsFieldPolicy,
+	},
+	last_seen_message_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_message_min_fieldsKeySpecifier | (() => undefined | last_seen_message_min_fieldsKeySpecifier),
+		fields?: last_seen_message_min_fieldsFieldPolicy,
+	},
+	last_seen_message_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | last_seen_message_mutation_responseKeySpecifier | (() => undefined | last_seen_message_mutation_responseKeySpecifier),
+		fields?: last_seen_message_mutation_responseFieldPolicy,
 	},
 	membership_status?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | membership_statusKeySpecifier | (() => undefined | membership_statusKeySpecifier),
@@ -8712,6 +9453,58 @@ export type TypedTypePolicies = TypePolicies & {
 	transcription_status_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcription_status_mutation_responseKeySpecifier | (() => undefined | transcription_status_mutation_responseKeySpecifier),
 		fields?: transcription_status_mutation_responseFieldPolicy,
+	},
+	unread_messages?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messagesKeySpecifier | (() => undefined | unread_messagesKeySpecifier),
+		fields?: unread_messagesFieldPolicy,
+	},
+	unread_messages_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_aggregateKeySpecifier | (() => undefined | unread_messages_aggregateKeySpecifier),
+		fields?: unread_messages_aggregateFieldPolicy,
+	},
+	unread_messages_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_aggregate_fieldsKeySpecifier | (() => undefined | unread_messages_aggregate_fieldsKeySpecifier),
+		fields?: unread_messages_aggregate_fieldsFieldPolicy,
+	},
+	unread_messages_avg_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_avg_fieldsKeySpecifier | (() => undefined | unread_messages_avg_fieldsKeySpecifier),
+		fields?: unread_messages_avg_fieldsFieldPolicy,
+	},
+	unread_messages_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_max_fieldsKeySpecifier | (() => undefined | unread_messages_max_fieldsKeySpecifier),
+		fields?: unread_messages_max_fieldsFieldPolicy,
+	},
+	unread_messages_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_min_fieldsKeySpecifier | (() => undefined | unread_messages_min_fieldsKeySpecifier),
+		fields?: unread_messages_min_fieldsFieldPolicy,
+	},
+	unread_messages_stddev_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_stddev_fieldsKeySpecifier | (() => undefined | unread_messages_stddev_fieldsKeySpecifier),
+		fields?: unread_messages_stddev_fieldsFieldPolicy,
+	},
+	unread_messages_stddev_pop_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_stddev_pop_fieldsKeySpecifier | (() => undefined | unread_messages_stddev_pop_fieldsKeySpecifier),
+		fields?: unread_messages_stddev_pop_fieldsFieldPolicy,
+	},
+	unread_messages_stddev_samp_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_stddev_samp_fieldsKeySpecifier | (() => undefined | unread_messages_stddev_samp_fieldsKeySpecifier),
+		fields?: unread_messages_stddev_samp_fieldsFieldPolicy,
+	},
+	unread_messages_sum_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_sum_fieldsKeySpecifier | (() => undefined | unread_messages_sum_fieldsKeySpecifier),
+		fields?: unread_messages_sum_fieldsFieldPolicy,
+	},
+	unread_messages_var_pop_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_var_pop_fieldsKeySpecifier | (() => undefined | unread_messages_var_pop_fieldsKeySpecifier),
+		fields?: unread_messages_var_pop_fieldsFieldPolicy,
+	},
+	unread_messages_var_samp_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_var_samp_fieldsKeySpecifier | (() => undefined | unread_messages_var_samp_fieldsKeySpecifier),
+		fields?: unread_messages_var_samp_fieldsFieldPolicy,
+	},
+	unread_messages_variance_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | unread_messages_variance_fieldsKeySpecifier | (() => undefined | unread_messages_variance_fieldsKeySpecifier),
+		fields?: unread_messages_variance_fieldsFieldPolicy,
 	},
 	user?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | userKeySpecifier | (() => undefined | userKeySpecifier),

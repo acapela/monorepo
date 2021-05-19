@@ -29,6 +29,19 @@ model attachment {
   message_attachment message_attachment[]
 }
 
+model last_seen_message {
+  user_id    String   @db.Uuid
+  topic_id   String   @db.Uuid
+  message_id String   @db.Uuid
+  seen_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([user_id, topic_id])
+}
+
+model membership_status {
+  value String @id
+}
+
 model message {
   topic_id           String               @db.Uuid
   user_id            String               @db.Uuid
@@ -43,6 +56,15 @@ model message {
   message_type       message_type         @relation(fields: [type], references: [value])
   user               user                 @relation(fields: [user_id], references: [id])
   message_attachment message_attachment[]
+}
+
+model message_attachment {
+  message_id    String     @db.Uuid
+  attachment_id String     @db.Uuid
+  attachment    attachment @relation(fields: [attachment_id], references: [id])
+  message       message    @relation(fields: [message_id], references: [id])
+
+  @@id([message_id, attachment_id])
 }
 
 model message_type {
@@ -84,78 +106,6 @@ model room_invites {
   @@unique([room_id, email], name: "room_invites_room_id_email_key")
 }
 
-model transcription {
-  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at           DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime             @default(now()) @db.Timestamptz(6)
-  sonix_media_id       String               @unique
-  transcript           Json?
-  status               String
-  transcription_status transcription_status @relation(fields: [status], references: [value])
-  message              message[]
-}
-
-model transcription_status {
-  value         String          @id
-  transcription transcription[]
-}
-
-model user {
-  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email                           String?           @unique
-  name                            String?
-  avatar_url                      String?
-  created_at                      DateTime          @default(now()) @db.Timestamptz(6)
-  email_verified                  DateTime?         @db.Timestamptz(6)
-  current_team_id                 String?           @db.Uuid
-  team_teamTouser_current_team_id team?             @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
-  account                         account[]
-  message                         message[]
-  room                            room[]
-  room_invites                    room_invites[]
-  room_member                     room_member[]
-  space_member                    space_member[]
-  team                            team[]
-  team_invitation                 team_invitation[]
-  team_member                     team_member[]
-  topic_member                    topic_member[]
-}
-
-model verification_requests {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
-  identifier String
-  token      String
-  expires    DateTime @db.Timestamptz(6)
-}
-
-model topic {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id      String         @db.Uuid
-  name         String?
-  index        String
-  slug         String
-  room         room           @relation(fields: [room_id], references: [id])
-  message      message[]
-  topic_member topic_member[]
-
-  @@unique([slug, room_id], name: "topic_slug_room_id_key")
-}
-
-model membership_status {
-  value String @id
-}
-
-model message_attachment {
-  message_id    String     @db.Uuid
-  attachment_id String     @db.Uuid
-  attachment    attachment @relation(fields: [attachment_id], references: [id])
-  message       message    @relation(fields: [message_id], references: [id])
-
-  @@id([message_id, attachment_id])
-}
-
 model room_member {
   room_id String @db.Uuid
   user_id String @db.Uuid
@@ -189,17 +139,15 @@ model space_member {
 }
 
 model team {
-  id                              String            @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug                            String            @unique
   name                            String
   owner_id                        String            @db.Uuid
-  user                            user              @relation(fields: [owner_id], references: [id])
+  user_team_owner_idTouser        user              @relation("team_owner_idTouser", fields: [owner_id], references: [id])
   space                           space[]
   team_invitation                 team_invitation[]
   team_member                     team_member[]
   user_teamTouser_current_team_id user[]            @relation("teamTouser_current_team_id")
-
-  @@id([id, slug])
 }
 
 model team_invitation {
@@ -223,6 +171,19 @@ model team_member {
   @@id([team_id, user_id])
 }
 
+model topic {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id      String         @db.Uuid
+  name         String?
+  index        String
+  slug         String
+  room         room           @relation(fields: [room_id], references: [id])
+  message      message[]
+  topic_member topic_member[]
+
+  @@unique([slug, room_id], name: "topic_slug_room_id_key")
+}
+
 model topic_member {
   topic_id String @db.Uuid
   user_id  String @db.Uuid
@@ -230,4 +191,50 @@ model topic_member {
   user     user   @relation(fields: [user_id], references: [id])
 
   @@id([topic_id, user_id])
+}
+
+model transcription {
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at           DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime             @default(now()) @db.Timestamptz(6)
+  sonix_media_id       String               @unique
+  transcript           Json?
+  status               String
+  transcription_status transcription_status @relation(fields: [status], references: [value])
+  message              message[]
+}
+
+model transcription_status {
+  value         String          @id
+  transcription transcription[]
+}
+
+model user {
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                           String?           @unique
+  name                            String?
+  avatar_url                      String?
+  created_at                      DateTime          @default(now()) @db.Timestamptz(6)
+  email_verified                  DateTime?         @db.Timestamptz(6)
+  current_team_id                 String?           @db.Uuid
+  team_teamTouser_current_team_id team?             @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
+  account                         account[]
+  message                         message[]
+  room                            room[]
+  room_invites                    room_invites[]
+  room_member                     room_member[]
+  space_member                    space_member[]
+  team_team_owner_idTouser        team[]            @relation("team_owner_idTouser")
+  team_invitation                 team_invitation[]
+  team_member                     team_member[]
+  topic_member                    topic_member[]
+}
+
+model verification_requests {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  identifier String
+  token      String
+  expires    DateTime @db.Timestamptz(6)
 }

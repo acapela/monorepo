@@ -10,12 +10,15 @@ import {
   GetAttachmentQueryVariables,
   GetDownloadUrlQuery,
   GetDownloadUrlQueryVariables,
+  GetUnreadMessagesQuery,
+  GetUnreadMessagesQueryVariables,
   GetUploadUrlQuery,
   GetUploadUrlQueryVariables,
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
   TopicMessagesQuery,
   TopicMessagesQueryVariables,
+  UpdateLastSeenMessageMutationVariables,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
   AddTopicMemberMutation,
@@ -89,6 +92,14 @@ const TopicMessageDetailedInfoFragment = () => gql`
         ...AttachmentDetailedInfo
       }
     }
+  }
+`;
+
+const UnreadMessageFragment = () => gql`
+  fragment UnreadMessageFragment on unread_messages {
+    roomId: room_id
+    topicId: topic_id
+    unreadMessages: unread_messages
   }
 `;
 
@@ -250,6 +261,33 @@ export const [useRemoveTopicMember] = createMutation<RemoveTopicMemberMutation, 
     mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
       delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {
         affected_rows
+      }
+    }
+  `
+);
+
+export const [useUnreadMessages] = createQuery<GetUnreadMessagesQuery, GetUnreadMessagesQueryVariables>(
+  () => gql`
+    ${UnreadMessageFragment()}
+    query GetUnreadMessages($roomId: uuid) {
+      messages: unread_messages(where: { room_id: { _eq: $roomId } }) {
+        ...UnreadMessageFragment
+      }
+    }
+  `
+);
+
+export const [useLastSeenMessageMutation] = createMutation<
+  UpdateLastSeenMessageMutationVariables,
+  UpdateLastSeenMessageMutationVariables
+>(
+  () => gql`
+    mutation UpdateLastSeenMessage($topicId: uuid!, $messageId: uuid!) {
+      insert_last_seen_message_one(
+        object: { topic_id: $topicId, message_id: $messageId }
+        on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
+      ) {
+        message_id
       }
     }
   `

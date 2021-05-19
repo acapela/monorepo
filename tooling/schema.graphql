@@ -568,6 +568,23 @@ enum attachment_update_column {
   original_name
 }
 
+scalar bigint
+
+"""
+expression to compare columns of type bigint. All fields are combined with logical 'AND'.
+"""
+input bigint_comparison_exp {
+  _eq: bigint
+  _gt: bigint
+  _gte: bigint
+  _in: [bigint!]
+  _is_null: Boolean
+  _lt: bigint
+  _lte: bigint
+  _neq: bigint
+  _nin: [bigint!]
+}
+
 scalar date
 
 """
@@ -631,6 +648,207 @@ input jsonb_comparison_exp {
   _lte: jsonb
   _neq: jsonb
   _nin: [jsonb!]
+}
+
+"""
+columns and relationships of "last_seen_message"
+"""
+type last_seen_message {
+  message_id: uuid!
+  seen_at: timestamptz!
+  topic_id: uuid!
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "last_seen_message"
+"""
+type last_seen_message_aggregate {
+  aggregate: last_seen_message_aggregate_fields
+  nodes: [last_seen_message!]!
+}
+
+"""
+aggregate fields of "last_seen_message"
+"""
+type last_seen_message_aggregate_fields {
+  count(columns: [last_seen_message_select_column!], distinct: Boolean): Int
+  max: last_seen_message_max_fields
+  min: last_seen_message_min_fields
+}
+
+"""
+order by aggregate values of table "last_seen_message"
+"""
+input last_seen_message_aggregate_order_by {
+  count: order_by
+  max: last_seen_message_max_order_by
+  min: last_seen_message_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "last_seen_message"
+"""
+input last_seen_message_arr_rel_insert_input {
+  data: [last_seen_message_insert_input!]!
+  on_conflict: last_seen_message_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "last_seen_message". All fields are combined with a logical 'AND'.
+"""
+input last_seen_message_bool_exp {
+  _and: [last_seen_message_bool_exp]
+  _not: last_seen_message_bool_exp
+  _or: [last_seen_message_bool_exp]
+  message_id: uuid_comparison_exp
+  seen_at: timestamptz_comparison_exp
+  topic_id: uuid_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "last_seen_message"
+"""
+enum last_seen_message_constraint {
+  """unique or primary key constraint"""
+  last_seen_message_pkey
+}
+
+"""
+input type for inserting data into table "last_seen_message"
+"""
+input last_seen_message_insert_input {
+  message_id: uuid
+  seen_at: timestamptz
+  topic_id: uuid
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type last_seen_message_max_fields {
+  message_id: uuid
+  seen_at: timestamptz
+  topic_id: uuid
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "last_seen_message"
+"""
+input last_seen_message_max_order_by {
+  message_id: order_by
+  seen_at: order_by
+  topic_id: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type last_seen_message_min_fields {
+  message_id: uuid
+  seen_at: timestamptz
+  topic_id: uuid
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "last_seen_message"
+"""
+input last_seen_message_min_order_by {
+  message_id: order_by
+  seen_at: order_by
+  topic_id: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "last_seen_message"
+"""
+type last_seen_message_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [last_seen_message!]!
+}
+
+"""
+input type for inserting object relation for remote table "last_seen_message"
+"""
+input last_seen_message_obj_rel_insert_input {
+  data: last_seen_message_insert_input!
+  on_conflict: last_seen_message_on_conflict
+}
+
+"""
+on conflict condition type for table "last_seen_message"
+"""
+input last_seen_message_on_conflict {
+  constraint: last_seen_message_constraint!
+  update_columns: [last_seen_message_update_column!]!
+  where: last_seen_message_bool_exp
+}
+
+"""
+ordering options when selecting data from "last_seen_message"
+"""
+input last_seen_message_order_by {
+  message_id: order_by
+  seen_at: order_by
+  topic_id: order_by
+  user_id: order_by
+}
+
+"""
+primary key columns input for table: "last_seen_message"
+"""
+input last_seen_message_pk_columns_input {
+  topic_id: uuid!
+  user_id: uuid!
+}
+
+"""
+select columns of table "last_seen_message"
+"""
+enum last_seen_message_select_column {
+  """column name"""
+  message_id
+
+  """column name"""
+  seen_at
+
+  """column name"""
+  topic_id
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "last_seen_message"
+"""
+input last_seen_message_set_input {
+  message_id: uuid
+  seen_at: timestamptz
+  topic_id: uuid
+  user_id: uuid
+}
+
+"""
+update columns of table "last_seen_message"
+"""
+enum last_seen_message_update_column {
+  """column name"""
+  message_id
+
+  """column name"""
+  seen_at
+
+  """column name"""
+  topic_id
+
+  """column name"""
+  user_id
 }
 
 """
@@ -1529,6 +1747,19 @@ type mutation_root {
   delete_attachment_by_pk(id: uuid!): attachment
 
   """
+  delete data from the table: "last_seen_message"
+  """
+  delete_last_seen_message(
+    """filter the rows which have to be deleted"""
+    where: last_seen_message_bool_exp!
+  ): last_seen_message_mutation_response
+
+  """
+  delete single row from the table: "last_seen_message"
+  """
+  delete_last_seen_message_by_pk(topic_id: uuid!, user_id: uuid!): last_seen_message
+
+  """
   delete data from the table: "membership_status"
   """
   delete_membership_status(
@@ -1792,6 +2023,28 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: attachment_on_conflict
   ): attachment
+
+  """
+  insert data into the table: "last_seen_message"
+  """
+  insert_last_seen_message(
+    """the rows to be inserted"""
+    objects: [last_seen_message_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: last_seen_message_on_conflict
+  ): last_seen_message_mutation_response
+
+  """
+  insert a single row into the table: "last_seen_message"
+  """
+  insert_last_seen_message_one(
+    """the row to be inserted"""
+    object: last_seen_message_insert_input!
+
+    """on conflict condition"""
+    on_conflict: last_seen_message_on_conflict
+  ): last_seen_message
 
   """
   insert data into the table: "membership_status"
@@ -2206,6 +2459,26 @@ type mutation_root {
     _set: attachment_set_input
     pk_columns: attachment_pk_columns_input!
   ): attachment
+
+  """
+  update data of the table: "last_seen_message"
+  """
+  update_last_seen_message(
+    """sets the columns of the filtered rows to the given values"""
+    _set: last_seen_message_set_input
+
+    """filter the rows which have to be updated"""
+    where: last_seen_message_bool_exp!
+  ): last_seen_message_mutation_response
+
+  """
+  update single row of the table: "last_seen_message"
+  """
+  update_last_seen_message_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: last_seen_message_set_input
+    pk_columns: last_seen_message_pk_columns_input!
+  ): last_seen_message
 
   """
   update data of the table: "membership_status"
@@ -2755,6 +3028,51 @@ type query_root {
   perform the action: "get_upload_url"
   """
   get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
+
+  """
+  fetch data from the table: "last_seen_message"
+  """
+  last_seen_message(
+    """distinct select on columns"""
+    distinct_on: [last_seen_message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [last_seen_message_order_by!]
+
+    """filter the rows returned"""
+    where: last_seen_message_bool_exp
+  ): [last_seen_message!]!
+
+  """
+  fetch aggregated fields from the table: "last_seen_message"
+  """
+  last_seen_message_aggregate(
+    """distinct select on columns"""
+    distinct_on: [last_seen_message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [last_seen_message_order_by!]
+
+    """filter the rows returned"""
+    where: last_seen_message_bool_exp
+  ): last_seen_message_aggregate!
+
+  """
+  fetch data from the table: "last_seen_message" using primary key columns
+  """
+  last_seen_message_by_pk(topic_id: uuid!, user_id: uuid!): last_seen_message
 
   """
   fetch data from the table: "membership_status"
@@ -3449,6 +3767,46 @@ type query_root {
   fetch data from the table: "transcription_status" using primary key columns
   """
   transcription_status_by_pk(value: String!): transcription_status
+
+  """
+  fetch data from the table: "unread_messages"
+  """
+  unread_messages(
+    """distinct select on columns"""
+    distinct_on: [unread_messages_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [unread_messages_order_by!]
+
+    """filter the rows returned"""
+    where: unread_messages_bool_exp
+  ): [unread_messages!]!
+
+  """
+  fetch aggregated fields from the table: "unread_messages"
+  """
+  unread_messages_aggregate(
+    """distinct select on columns"""
+    distinct_on: [unread_messages_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [unread_messages_order_by!]
+
+    """filter the rows returned"""
+    where: unread_messages_bool_exp
+  ): unread_messages_aggregate!
 
   """
   fetch data from the table: "user"
@@ -4952,6 +5310,51 @@ type subscription_root {
   get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
 
   """
+  fetch data from the table: "last_seen_message"
+  """
+  last_seen_message(
+    """distinct select on columns"""
+    distinct_on: [last_seen_message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [last_seen_message_order_by!]
+
+    """filter the rows returned"""
+    where: last_seen_message_bool_exp
+  ): [last_seen_message!]!
+
+  """
+  fetch aggregated fields from the table: "last_seen_message"
+  """
+  last_seen_message_aggregate(
+    """distinct select on columns"""
+    distinct_on: [last_seen_message_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [last_seen_message_order_by!]
+
+    """filter the rows returned"""
+    where: last_seen_message_bool_exp
+  ): last_seen_message_aggregate!
+
+  """
+  fetch data from the table: "last_seen_message" using primary key columns
+  """
+  last_seen_message_by_pk(topic_id: uuid!, user_id: uuid!): last_seen_message
+
+  """
   fetch data from the table: "membership_status"
   """
   membership_status(
@@ -5644,6 +6047,46 @@ type subscription_root {
   fetch data from the table: "transcription_status" using primary key columns
   """
   transcription_status_by_pk(value: String!): transcription_status
+
+  """
+  fetch data from the table: "unread_messages"
+  """
+  unread_messages(
+    """distinct select on columns"""
+    distinct_on: [unread_messages_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [unread_messages_order_by!]
+
+    """filter the rows returned"""
+    where: unread_messages_bool_exp
+  ): [unread_messages!]!
+
+  """
+  fetch aggregated fields from the table: "unread_messages"
+  """
+  unread_messages_aggregate(
+    """distinct select on columns"""
+    distinct_on: [unread_messages_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [unread_messages_order_by!]
+
+    """filter the rows returned"""
+    where: unread_messages_bool_exp
+  ): unread_messages_aggregate!
 
   """
   fetch data from the table: "user"
@@ -7392,6 +7835,230 @@ enum transcription_update_column {
 
   """column name"""
   updated_at
+}
+
+"""
+columns and relationships of "unread_messages"
+"""
+type unread_messages {
+  room_id: uuid
+  topic_id: uuid
+  unread_messages: bigint
+  user_id: uuid
+}
+
+"""
+aggregated selection of "unread_messages"
+"""
+type unread_messages_aggregate {
+  aggregate: unread_messages_aggregate_fields
+  nodes: [unread_messages!]!
+}
+
+"""
+aggregate fields of "unread_messages"
+"""
+type unread_messages_aggregate_fields {
+  avg: unread_messages_avg_fields
+  count(columns: [unread_messages_select_column!], distinct: Boolean): Int
+  max: unread_messages_max_fields
+  min: unread_messages_min_fields
+  stddev: unread_messages_stddev_fields
+  stddev_pop: unread_messages_stddev_pop_fields
+  stddev_samp: unread_messages_stddev_samp_fields
+  sum: unread_messages_sum_fields
+  var_pop: unread_messages_var_pop_fields
+  var_samp: unread_messages_var_samp_fields
+  variance: unread_messages_variance_fields
+}
+
+"""
+order by aggregate values of table "unread_messages"
+"""
+input unread_messages_aggregate_order_by {
+  avg: unread_messages_avg_order_by
+  count: order_by
+  max: unread_messages_max_order_by
+  min: unread_messages_min_order_by
+  stddev: unread_messages_stddev_order_by
+  stddev_pop: unread_messages_stddev_pop_order_by
+  stddev_samp: unread_messages_stddev_samp_order_by
+  sum: unread_messages_sum_order_by
+  var_pop: unread_messages_var_pop_order_by
+  var_samp: unread_messages_var_samp_order_by
+  variance: unread_messages_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type unread_messages_avg_fields {
+  unread_messages: Float
+}
+
+"""
+order by avg() on columns of table "unread_messages"
+"""
+input unread_messages_avg_order_by {
+  unread_messages: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "unread_messages". All fields are combined with a logical 'AND'.
+"""
+input unread_messages_bool_exp {
+  _and: [unread_messages_bool_exp]
+  _not: unread_messages_bool_exp
+  _or: [unread_messages_bool_exp]
+  room_id: uuid_comparison_exp
+  topic_id: uuid_comparison_exp
+  unread_messages: bigint_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""aggregate max on columns"""
+type unread_messages_max_fields {
+  room_id: uuid
+  topic_id: uuid
+  unread_messages: bigint
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "unread_messages"
+"""
+input unread_messages_max_order_by {
+  room_id: order_by
+  topic_id: order_by
+  unread_messages: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type unread_messages_min_fields {
+  room_id: uuid
+  topic_id: uuid
+  unread_messages: bigint
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "unread_messages"
+"""
+input unread_messages_min_order_by {
+  room_id: order_by
+  topic_id: order_by
+  unread_messages: order_by
+  user_id: order_by
+}
+
+"""
+ordering options when selecting data from "unread_messages"
+"""
+input unread_messages_order_by {
+  room_id: order_by
+  topic_id: order_by
+  unread_messages: order_by
+  user_id: order_by
+}
+
+"""
+select columns of table "unread_messages"
+"""
+enum unread_messages_select_column {
+  """column name"""
+  room_id
+
+  """column name"""
+  topic_id
+
+  """column name"""
+  unread_messages
+
+  """column name"""
+  user_id
+}
+
+"""aggregate stddev on columns"""
+type unread_messages_stddev_fields {
+  unread_messages: Float
+}
+
+"""
+order by stddev() on columns of table "unread_messages"
+"""
+input unread_messages_stddev_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type unread_messages_stddev_pop_fields {
+  unread_messages: Float
+}
+
+"""
+order by stddev_pop() on columns of table "unread_messages"
+"""
+input unread_messages_stddev_pop_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type unread_messages_stddev_samp_fields {
+  unread_messages: Float
+}
+
+"""
+order by stddev_samp() on columns of table "unread_messages"
+"""
+input unread_messages_stddev_samp_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate sum on columns"""
+type unread_messages_sum_fields {
+  unread_messages: bigint
+}
+
+"""
+order by sum() on columns of table "unread_messages"
+"""
+input unread_messages_sum_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate var_pop on columns"""
+type unread_messages_var_pop_fields {
+  unread_messages: Float
+}
+
+"""
+order by var_pop() on columns of table "unread_messages"
+"""
+input unread_messages_var_pop_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate var_samp on columns"""
+type unread_messages_var_samp_fields {
+  unread_messages: Float
+}
+
+"""
+order by var_samp() on columns of table "unread_messages"
+"""
+input unread_messages_var_samp_order_by {
+  unread_messages: order_by
+}
+
+"""aggregate variance on columns"""
+type unread_messages_variance_fields {
+  unread_messages: Float
+}
+
+"""
+order by variance() on columns of table "unread_messages"
+"""
+input unread_messages_variance_order_by {
+  unread_messages: order_by
 }
 
 """
