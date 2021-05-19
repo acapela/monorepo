@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import { Button } from "~ui/button";
 import { ItemTitle } from "~ui/typo";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import { useCreateTeamInvitation, useCurrentTeamDetails, useTeamDetails } from "~frontend/gql/teams";
+import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import isEmail from "validator/lib/isEmail";
 
 export function HomeView() {

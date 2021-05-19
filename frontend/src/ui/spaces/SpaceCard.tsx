@@ -3,7 +3,7 @@ import { ItemTitle } from "~ui/typo";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useRouter } from "next/router";
 import { AvatarList } from "../AvatarList";
-import { useAssertCurrentUser, useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useAddSpaceMember, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { Button } from "~ui/button";
 

@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import styled from "styled-components";
 import { routes } from "~frontend/../routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -53,12 +52,6 @@ export function TopicCard({ topic }: Props) {
 
 const UIHolder = styled.div``;
 
-const UIImage = styled.div`
-  padding-bottom: 58%;
-  background-color: #fccedd;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-`;
 const UIInfo = styled.div`
   text-align: center;
 `;

@@ -7,7 +7,6 @@ import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo";
-import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 

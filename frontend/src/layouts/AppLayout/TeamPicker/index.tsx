@@ -1,13 +1,12 @@
+import slugify from "slugify";
 import styled from "styled-components";
-import { Button } from "~ui/button";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeam, useTeams } from "~frontend/gql/teams";
 import { useChangeCurrentTeamId } from "~frontend/gql/user";
-import { useAssertCurrentUser, useCurrentUser } from "~frontend/authentication/useCurrentUser";
-
-import slugify from "slugify";
+import { Button } from "~ui/button";
 
 export function TeamPickerView() {
-  const { data } = useTeams.subscription();
+  const [data] = useTeams.subscription();
   const user = useAssertCurrentUser();
 
   const [createTeam] = useCreateTeam();
@@ -23,7 +22,7 @@ export function TeamPickerView() {
 
     const slug = slugify(name);
 
-    const newTeam = await createTeam({ name, slug });
+    await createTeam({ name, slug });
   }
 
   async function handleChangeTeam(teamId: string) {

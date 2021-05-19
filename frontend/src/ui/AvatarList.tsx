@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
-import { Avatar, AvatarProps } from "~frontend/ui/Avatar";
+import { Avatar } from "~frontend/ui/Avatar";
 
 interface AvatarListProps {
   users: UserBasicInfoFragment[];

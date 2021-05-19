@@ -1,8 +1,6 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useEffect, useState } from "react";
-import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
-import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { DEFAULT_REDIRECT_URL } from "~frontend/config";
 import { Logo } from "~frontend/ui/Logo";
