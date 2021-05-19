@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const TopicView = ({ id }: Props) => {
-  const { data } = useTopicMessages.subscription({
+  const [data] = useTopicMessages.subscription({
     topicId: id,
   });
 

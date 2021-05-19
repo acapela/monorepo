@@ -7,6 +7,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { createNextIndex } from "~frontend/rooms/order";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
+import slugify from "slugify";
 
 export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: string }> = ({
   roomId,
@@ -56,8 +57,10 @@ const TopicCreationForm: React.FC<Props> = ({ onCreated, roomId, lastTopicIndex 
 
   const onSubmit = handleSubmit(async (formData) => {
     const index = createNextIndex(lastTopicIndex);
+    const slug = slugify(formData.name);
     const { data } = await createTopic({
       name: formData.name,
+      slug,
       index,
       roomId,
     });

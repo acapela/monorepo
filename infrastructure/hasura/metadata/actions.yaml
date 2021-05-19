@@ -44,18 +44,18 @@ custom_types:
       relationships:
         - remote_table:
             schema: public
-            name: room
-          name: room
-          type: object
-          field_mapping:
-            room_id: id
-        - remote_table:
-            schema: public
             name: room_invites
           name: invite
           type: object
           field_mapping:
             invite_id: id
+        - remote_table:
+            schema: public
+            name: team
+          name: team
+          type: object
+          field_mapping:
+            team_id: id
     - name: UpgradeUserResponse
       relationships:
         - remote_table:

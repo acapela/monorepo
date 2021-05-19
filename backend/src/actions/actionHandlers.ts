@@ -1,4 +1,4 @@
-import { acceptInvite } from "../invites/acceptInvite";
+import { acceptInvite } from "../teamInvitation/acceptInvite";
 import { getUploadUrl, getDownloadUrl } from "../attachments/attachments";
 
 export interface ActionHandler<DataT, ResponseT> {

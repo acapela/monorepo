@@ -7,7 +7,7 @@ import { PropsWithChildren } from "react";
 import { ApolloClientProvider as ApolloProvider } from "./apollo";
 import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
 import { useCurrentUser } from "./authentication/useCurrentUser";
-import { useGetRoomsQuery } from "./gql/rooms";
+import { useGetSpaceRoomsQuery } from "./gql/rooms";
 
 jest.mock(
   "next-auth/client",
@@ -74,7 +74,7 @@ function TestComponent() {
 }
 
 function TestQueryComponent() {
-  const { data } = useGetRoomsQuery();
+  const { data } = useGetSpaceRoomsQuery();
   return <>Rooms: {data ? data.room.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
 }
 

@@ -7,26 +7,16 @@ import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
 import { useAcceptInviteMutation } from "~frontend/gql/invitations";
 import { usePathParameter } from "~frontend/utils";
 import { assert } from "~shared/assert";
+import { routes } from "~frontend/../routes";
+import { TeamInvitationView } from "~frontend/views/TeamInvitationView";
 
 export default function InvitePage() {
-  const inviteCode = usePathParameter("inviteCode");
+  const { inviteCode } = routes.invitePage.useParams();
 
   assert(inviteCode, "Invite code required");
 
-  return (
-    <div>
-      <UIContentWrapper marginTop>
-        <UILogoWrapper>
-          <Logo />
-          <InviteAcceptor code={inviteCode} />
-          <span>Loading...</span>
-        </UILogoWrapper>
-      </UIContentWrapper>
-    </div>
-  );
+  return <TeamInvitationView code={inviteCode} />;
 }
-
-export const getServerSideProps = withServerSideAuthRedirect();
 
 // We only create an apollo context once the user is authenticated.
 // This means we cannot useMutation until this context is established.
@@ -59,10 +49,10 @@ const useInviteAcceptance = () => {
   return {
     loading,
     error,
-    async acceptInvite(code: string): Promise<string | null> {
-      const result = await acceptInvite({ code });
+    async acceptInvite(token: string): Promise<string | null> {
+      const result = await acceptInvite({ token });
 
-      return result?.data?.invite?.roomId ?? null;
+      return result?.data?.invite?.team?.id ?? null;
     },
   };
 };

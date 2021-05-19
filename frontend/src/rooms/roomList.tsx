@@ -5,7 +5,7 @@ import { AvatarList } from "~frontend/ui/AvatarList";
 import { RoomBasicInfoFragment } from "~frontend/gql";
 import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { useGetRoomsQuery } from "~frontend/gql/rooms";
+import { useGetSpaceRoomsQuery } from "~frontend/gql/rooms";
 
 const UIRoomsGrid = styled.ul`
   display: grid;
@@ -47,7 +47,7 @@ const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
       <UIRoomLink>
         <UIRoomName>{room.name || "New room"}</UIRoomName>
         <AvatarList
-          avatars={(room.participants || []).map(({ user: { name, avatarUrl } }) => ({
+          avatars={(room.members || []).map(({ user: { name, avatarUrl } }) => ({
             url: avatarUrl,
             name,
           }))}
@@ -57,15 +57,15 @@ const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
   );
 };
 
-export const RoomList: React.FC<unknown> = () => {
-  const { data } = useGetRoomsQuery();
+export const RoomList = ({ spaceId }: { spaceId: string }) => {
+  const { data } = useGetSpaceRoomsQuery({ spaceId });
 
   if (!data?.room.length) {
     return (
       <>
         <span>Start by creating new Acapela</span>
         <UIContentWrapper marginTop>
-          <RoomCreationButton />
+          <RoomCreationButton spaceId={spaceId} />
         </UIContentWrapper>
       </>
     );

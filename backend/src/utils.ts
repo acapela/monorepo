@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { extractToken } from "./authentication";
+import { extractAndAssertBearerToken } from "./authentication";
 import { AuthenticationError } from "./errors";
 
 export function middlewareRequireBearerToken(secretValue: string, errorMessage: string) {
   return function (req: Request, _: Response, next: () => unknown): void {
-    const token = extractToken(req.get("Authorization") || "");
+    const token = extractAndAssertBearerToken(req.get("Authorization") || "");
 
     if (!token) {
       throw new AuthenticationError(errorMessage);

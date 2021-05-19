@@ -3,6 +3,7 @@ import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
 import { Logo } from "~frontend/ui/Logo";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
+import { LoginOptionsView } from "../LoginOptionsView";
 
 export function LoginView(): JSX.Element {
   return (
@@ -11,9 +12,7 @@ export function LoginView(): JSX.Element {
         <UILogoWrapper>
           <Logo />
         </UILogoWrapper>
-        <GoogleLoginButton />
-        &nbsp;
-        <EmailLoginButton />
+        <LoginOptionsView />
       </UIContentWrapper>
     </div>
   );

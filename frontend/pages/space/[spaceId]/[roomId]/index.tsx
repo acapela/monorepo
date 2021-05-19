@@ -5,6 +5,7 @@ import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { routes } from "~frontend/routes";
+import { TopicCard } from "~frontend/ui/topics/TopicCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { PageMeta } from "~frontend/utils/PageMeta";
@@ -12,7 +13,7 @@ import { ItemTitle } from "~ui/typo";
 
 const SpaceRoomPage = () => {
   const { roomId, spaceId } = routes.spaceRoom.useParams();
-  const { data } = useGetSingleRoomQuery.subscription({ id: roomId });
+  const [data] = useGetSingleRoomQuery.subscription({ id: roomId });
 
   const room = data?.room;
 
@@ -26,8 +27,8 @@ const SpaceRoomPage = () => {
 
         {topics.map((topic) => {
           return (
-            <UITopic key={topic.id} onClick={() => routes.spaceRoomTopic.push({ spaceId, roomId, topicId: topic.id })}>
-              <ItemTitle>Topic: {topic.name}</ItemTitle>
+            <UITopic key={topic.id}>
+              <TopicCard topic={topic} />
             </UITopic>
           );
         })}

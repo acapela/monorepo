@@ -2,7 +2,7 @@
 import "@reach/dialog/styles.css";
 import "focus-visible";
 import { Session } from "next-auth";
-import { Provider as SessionProvider } from "next-auth/client";
+import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
@@ -54,8 +54,10 @@ const CommonMetadata = () => {
  * will make actual call to api to get 'fresh version' of current user and in case it changed,
  * session provider value will update.
  */
-App.getInitialProps = (context: AppContext) => {
-  const session = getUserFromRequest(context.ctx.req);
+App.getInitialProps = async (context: AppContext) => {
+  const session = await getSession({ req: context.ctx.req });
+
+  // const session = getUserFromRequest(context.ctx.req);
   // We're pre-fetching all the queries on server side before actual rendering happens.
   // During server-side rendering, we will use apollo client with fixed token value
   const authToken = readTokenFromRequest(context.ctx.req);

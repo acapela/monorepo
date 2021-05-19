@@ -1,5 +1,5 @@
 type Mutation {
-  accept_invite(code: String!): InviteAcceptResponse
+  accept_invite(token: String!): InviteAcceptResponse
 }
 
 type Query {
@@ -19,7 +19,7 @@ input InviteAcceptCommand {
 }
 
 type InviteAcceptResponse {
-  room_id: ID!
+  team_id: ID!
   invite_id: ID!
 }
 

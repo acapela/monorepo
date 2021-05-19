@@ -18,9 +18,10 @@ interface FormData {
 
 interface Props {
   onCreated?: (room: RoomBasicInfoFragment) => void;
+  spaceId: string;
 }
 
-const RoomCreationForm: React.FC<Props> = ({ onCreated }) => {
+const RoomCreationForm = ({ onCreated, spaceId }: Props) => {
   const {
     register,
     handleSubmit,
@@ -29,7 +30,7 @@ const RoomCreationForm: React.FC<Props> = ({ onCreated }) => {
   } = useForm<FormData>({ defaultValues: { name: "" } });
 
   const onSubmit = handleSubmit(async (formData) => {
-    const { data } = await createRoom({ name: formData.name });
+    const { data } = await createRoom({ name: formData.name, spaceId });
 
     if (!data?.room) {
       return;
@@ -53,7 +54,7 @@ const RoomCreationForm: React.FC<Props> = ({ onCreated }) => {
   );
 };
 
-export const RoomCreationButton: React.FC = () => {
+export const RoomCreationButton = ({ spaceId }: { spaceId: string }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { push } = useRouter();
 
@@ -72,7 +73,7 @@ export const RoomCreationButton: React.FC = () => {
         onClose={close}
         aria-labelledby="acapela-creation-button"
       >
-        <RoomCreationForm onCreated={handleRoomCreation} />
+        <RoomCreationForm onCreated={handleRoomCreation} spaceId={spaceId} />
       </Dialog>
       <Button wide onClick={open} id="acapela-creation-button">
         Create New Acapela

@@ -36,7 +36,7 @@ interface Profile {
   image: string;
 }
 
-// We dont support sessions as we use JWT
+// We don't support sessions as we use JWT
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Session {}
 
@@ -197,17 +197,17 @@ async function getAuthInitOptions() {
       encryption: false,
       // By default the JSON Web Token is signed with SHA256 and encrypted with AES.
       // We use HS256 token signature in order to make it compatible with hasura JWT
-      encode: async ({ secret, token }) => {
-        if (!token) {
+      encode: async (tokenData) => {
+        if (!tokenData?.token) {
           throw new Error("JWT Token not found");
         }
-        return jwt.sign(token, secret, { algorithm: "HS256" });
+        return jwt.sign(tokenData.token, tokenData.secret, { algorithm: "HS256" });
       },
-      decode: async ({ secret, token }) => {
-        if (!token) {
+      decode: async (tokenData) => {
+        if (!tokenData?.token) {
           throw new Error("JWT Token not found");
         }
-        const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
+        const decodedToken = jwt.verify(tokenData.token, tokenData.secret, { algorithms: ["HS256"] });
 
         return decodedToken as Record<string, unknown>;
       },
@@ -231,6 +231,7 @@ async function getAuthInitOptions() {
           // Add some useful informations we might use in the frontend.
           picture: user.avatar_url,
           name: profile.name,
+          currentTeamId: user.current_team_id ?? null,
           // Make JWT token compatible with hasura
           "https://hasura.io/jwt/claims": {
             "x-hasura-allowed-roles": ["user"],
@@ -244,6 +245,26 @@ async function getAuthInitOptions() {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       session: async (session, tokenData) => {
+        const userId = Reflect.get(tokenData, "sub") as string;
+        if (!userId) return null;
+
+        const user = await db.user.findFirst({ where: { id: userId } });
+
+        if (!user) return null;
+
+        Reflect.set(tokenData, "currentTeamId", user.current_team_id);
+
+        if (process.env.NODE_ENV === "development") {
+          if (user.current_team_id) {
+            const team = await db.team.findFirst({ where: { id: user.current_team_id } });
+
+            if (!team) {
+              Reflect.set(tokenData, "currentTeamId", null);
+              await db.user.update({ where: { id: user.id }, data: { current_team_id: null } });
+            }
+          }
+        }
+
         return tokenData;
       },
     },

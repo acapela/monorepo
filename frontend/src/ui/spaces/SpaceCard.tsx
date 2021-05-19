@@ -2,22 +2,51 @@ import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useRouter } from "next/router";
+import { AvatarList } from "../AvatarList";
+import { useAssertCurrentUser, useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAddSpaceMember, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { Button } from "~ui/button";
 
 interface Props {
   space: SpaceBasicInfoFragment;
 }
 
 export function SpaceCard({ space }: Props) {
+  const spaceId = space.id;
+  const user = useAssertCurrentUser();
   const router = useRouter();
+
+  const [addSpaceMember] = useAddSpaceMember();
+  const [removeSpaceMember] = useRemoveSpaceMember();
+
+  async function handleJoin() {
+    await addSpaceMember({ userId: user.id, spaceId });
+  }
+
+  async function handleLeave() {
+    await removeSpaceMember({ userId: user.id, spaceId });
+  }
+
+  function getIsMember() {
+    return space.members.some((member) => member.user.id === user?.id);
+  }
+
+  const isMember = getIsMember();
+
+  function handleOpen() {
+    router.push(`space/${space.id}`);
+  }
+
   return (
-    <UIHolder
-      onClick={() => {
-        router.push(`space/${space.id}`);
-      }}
-    >
-      <UIImage></UIImage>
+    <UIHolder>
+      <UIImage onClick={handleOpen}></UIImage>
       <UIInfo>
-        <ItemTitle>{space.name}</ItemTitle>
+        <ItemTitle onClick={handleOpen}>{space.name}</ItemTitle>
+        <UIMembers>
+          <AvatarList users={space.members.map((m) => m.user)} />
+        </UIMembers>
+        {!isMember && <Button onClick={handleJoin}>Join</Button>}
+        {isMember && <Button onClick={handleLeave}>Leave</Button>}
       </UIInfo>
     </UIHolder>
   );
@@ -34,3 +63,5 @@ const UIImage = styled.div`
 const UIInfo = styled.div`
   text-align: center;
 `;
+
+const UIMembers = styled.div``;

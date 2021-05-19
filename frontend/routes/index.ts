@@ -10,4 +10,5 @@ export const routes = {
     roomId: "string",
     topicId: "string",
   }),
+  invitePage: createRoute("/invite/[inviteCode]", { inviteCode: "string" }),
 };

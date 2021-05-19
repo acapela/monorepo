@@ -36,9 +36,11 @@ export const [useGetRoomInvitesQuery] = createQuery<GetRoomInvitesQuery, GetRoom
 
 export const [useAcceptInviteMutation] = createMutation<AcceptInviteMutation, AcceptInviteMutationVariables>(
   () => gql`
-    mutation AcceptInvite($code: String!) {
-      invite: accept_invite(code: $code) {
-        roomId: room_id
+    mutation AcceptInvite($token: String!) {
+      invite: accept_invite(token: $token) {
+        team {
+          id
+        }
       }
     }
   `

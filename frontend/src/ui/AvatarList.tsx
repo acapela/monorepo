@@ -1,16 +1,17 @@
 import React from "react";
 import styled from "styled-components";
+import { UserBasicInfoFragment } from "~frontend/gql";
 import { Avatar, AvatarProps } from "~frontend/ui/Avatar";
 
 interface AvatarListProps {
-  avatars: AvatarProps[];
+  users: UserBasicInfoFragment[];
   className?: string;
 }
 
-const PureAvatarList: React.FC<AvatarListProps> = ({ avatars, className }) => (
+const PureAvatarList: React.FC<AvatarListProps> = ({ users, className }) => (
   <div className={className}>
-    {avatars.map((avatar, index) => (
-      <Avatar key={index} {...avatar} />
+    {users.map((users, index) => (
+      <Avatar key={index} url={users.avatar_url} name={users.name ?? ""} />
     ))}
   </div>
 );

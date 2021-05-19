@@ -18,14 +18,30 @@ import {
   TopicMessagesQueryVariables,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
+  AddTopicMemberMutation,
+  AddTopicMemberMutationVariables,
+  RemoveTopicMemberMutation,
+  RemoveTopicMemberMutationVariables,
 } from "./generated";
+import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery } from "./utils";
 
-const TopicDetailedInfoFragment = () => gql`
+export const TopicDetailedInfoFragment = () => gql`
+  ${UserBasicInfoFragment()}
   fragment TopicDetailedInfo on topic {
     id
     name
     index
+    slug
+    room {
+      id
+      space_id
+    }
+    members {
+      user {
+        ...UserBasicInfo
+      }
+    }
   }
 `;
 
@@ -78,8 +94,8 @@ const TopicMessageDetailedInfoFragment = () => gql`
 
 export const [useCreateTopicMutation] = createMutation<CreateTopicMutation, CreateTopicMutationVariables>(
   () => gql`
-    mutation CreateTopic($name: String!, $roomId: uuid!, $index: String!) {
-      topic: insert_topic_one(object: { name: $name, room_id: $roomId, index: $index }) {
+    mutation CreateTopic($name: String!, $roomId: uuid!, $index: String!, $slug: String!) {
+      topic: insert_topic_one(object: { name: $name, room_id: $roomId, index: $index, slug: $slug }) {
         id
       }
     }
@@ -124,7 +140,7 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
       $topicId: uuid!
       $content: jsonb!
       $type: message_type_enum!
-      $attachments: [message_attachments_insert_input!]!
+      $attachments: [message_attachment_insert_input!]!
     ) {
       message: insert_message_one(
         object: {
@@ -213,6 +229,27 @@ export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttach
     query GetAttachment($id: uuid!) {
       attachment: attachment_by_pk(id: $id) {
         ...AttachmentDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useAddTopicMember] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
+  () => gql`
+    mutation AddTopicMember($topicId: uuid!, $userId: uuid!) {
+      insert_topic_member_one(object: { topic_id: $topicId, user_id: $userId }) {
+        topic_id
+        user_id
+      }
+    }
+  `
+);
+
+export const [useRemoveTopicMember] = createMutation<RemoveTopicMemberMutation, RemoveTopicMemberMutationVariables>(
+  () => gql`
+    mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
+      delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {
+        affected_rows
       }
     }
   `

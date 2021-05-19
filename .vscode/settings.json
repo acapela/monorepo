@@ -26,5 +26,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "spellright.language": ["en"],
-  "spellright.documentTypes": ["markdown", "plaintext", "typescript"]
+  "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
+  "cSpell.words": ["Hasura", "Unprocessable", "immer"]
 }
