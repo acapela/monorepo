@@ -1,6 +1,6 @@
 import request from "supertest";
 import { v4 as uuid } from "uuid";
-import { BaseHasuraEvent, HasuraEventOperation } from "./events";
+import { BaseHasuraEvent } from "../hasura/events";
 
 export function sendEvent(
   app: Express.Application,
@@ -10,11 +10,11 @@ export function sendEvent(
   return request(app)
     .post("/api/v1/events")
     .set("Authorization", "Bearer dev-event-secret")
-    .send(hasuraEvent(triggerName, params));
+    .send(createTestHasuraEvent(triggerName, params));
 }
 
 export interface HasuraEventParameters {
-  op?: HasuraEventOperation;
+  op?: string;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   oldData?: any;
   newData?: any;
@@ -22,10 +22,10 @@ export interface HasuraEventParameters {
   userId?: string | null;
 }
 
-export function hasuraEvent(
+export function createTestHasuraEvent(
   triggerName: string,
-  { op = HasuraEventOperation.INSERT, oldData = null, newData = null, userId = uuid() }: HasuraEventParameters = {}
-): BaseHasuraEvent<typeof op, unknown, unknown> {
+  { op = "INSERT", oldData = null, newData = null, userId = uuid() }: HasuraEventParameters = {}
+): BaseHasuraEvent<any, unknown, unknown> {
   return {
     id: uuid(),
     created_at: new Date().toString(),

@@ -4,7 +4,7 @@ import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { getSonixClient, MediaResponse } from "./sonixClient";
 
 export async function sendForTranscription(messageId: string) {
-  const messageAttachment = await db.message_attachments.findFirst({
+  const messageAttachment = await db.message_attachment.findFirst({
     where: { message_id: messageId },
     include: { attachment: true },
   });

@@ -30,6 +30,7 @@ export async function acceptTeamInvitation(invite: TeamInvitation, userId: strin
     },
   });
 
+  // If user is accepting team invite - set it as current team for this user
   await db.user.update({ where: { id: userId }, data: { current_team_id: team.id } });
 
   return team;

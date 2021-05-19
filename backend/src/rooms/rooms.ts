@@ -12,6 +12,7 @@ export async function createRoom({ creatorId, name }: { creatorId: string; name:
     data: {
       creator_id: creatorId,
       name,
+      slug: name,
     },
   });
 }
