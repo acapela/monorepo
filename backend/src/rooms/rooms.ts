@@ -5,6 +5,7 @@ export async function findRoomById(roomId: string): Promise<Room | null> {
     where: { id: roomId },
     select: {
       id: true,
+      space_id: true,
       creator_id: true,
       name: true,
       created_at: true,
