@@ -7,8 +7,9 @@ import { NavItem } from "./NavItem";
 import { AppLayoutStyles } from "./styles";
 import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { LoginView } from "~frontend/views/LoginView";
 import { TeamPickerView } from "./TeamPicker";
+import { WindowView } from "~frontend/views/WindowView";
+import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 
 interface Props {
   children?: ReactNode;
@@ -18,11 +19,19 @@ export const AppLayout = ({ children }: Props) => {
   const user = useCurrentUser();
 
   if (!user) {
-    return <LoginView />;
+    return (
+      <WindowView>
+        <LoginOptionsView />
+      </WindowView>
+    );
   }
 
   if (!user.currentTeamId) {
-    return <TeamPickerView />;
+    return (
+      <WindowView>
+        <TeamPickerView />
+      </WindowView>
+    );
   }
 
   return (

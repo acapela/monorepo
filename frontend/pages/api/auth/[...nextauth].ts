@@ -309,6 +309,10 @@ async function getAuthInitOptions() {
       Providers.Google({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        // Added `prompt=select_account` to default url to always ask which gmail user do you want to authorize.
+        // It is useful if you'd like to login with multiple google accounts on the same machine. Without this param,
+        // it would automatically pick previous user each time.
+        authorizationUrl: `https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=select_account`,
         // Beside default scope, we need calendar access.
         scope:
           "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
