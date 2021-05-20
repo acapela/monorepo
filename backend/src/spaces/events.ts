@@ -1,4 +1,4 @@
-import { Space, Team } from "~db";
+import { Space } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors";
 import { addSpaceMember, getSpaceHasMember } from "./helpers";
