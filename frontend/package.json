@@ -37,7 +37,6 @@
     "next-auth": "^3.13.3",
     "react-hook-form": "^7.0.6",
     "react-popper": "^2.2.5",
-    "slugify": "^1.5.3",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
     "subscriptions-transport-ws": "^0.9.18",

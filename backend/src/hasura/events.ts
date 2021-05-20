@@ -24,8 +24,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     return operationTypeHandlers;
   }
 
-  2;
-
   function addHandler<TN extends TriggerName>(
     triggerName: TN,
     operationType: OperationType | OperationType[],
@@ -55,6 +53,8 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
   async function requestHandler(req: Request, res: Response) {
     const hasuraEvent = req.body as HasuraEvent<unknown>;
     const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
+
+    console.log({ userId });
     if (!userId) {
       throw new AuthenticationError("No user id provided with a hasura event");
     }
@@ -64,8 +64,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
       triggerName: hasuraEvent.trigger.name,
       userId,
     });
-
-    console.log("okidoki");
 
     await handleHasuraEvent(hasuraEvent, userId);
 
@@ -87,9 +85,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     requestHandler,
   };
 }
-
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// export const handlers: EventHandler<any>[] = [handleRoomCreated, handleInviteCreated, handleMessageCreated];
 
 export type HasuraEvent<DataT> = InsertEvent<DataT> | UpdateEvent<DataT> | DeleteEvent<DataT> | ManualEvent<DataT>;
 

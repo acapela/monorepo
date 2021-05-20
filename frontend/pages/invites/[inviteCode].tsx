@@ -1,5 +1,5 @@
 import React from "react";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { TeamInvitationView } from "~frontend/views/TeamInvitationView";
 import { assert } from "~shared/assert";
 

@@ -5,7 +5,7 @@ import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { SpaceRooms } from "./SpaceRooms";
 import { Button } from "~ui/button";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
-import slugify from "slugify";
+import { slugify } from "~shared/slugify";
 
 interface Props {
   spaceId: string;

@@ -25,7 +25,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "spellright.language": ["en"],
   "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
   "cSpell.words": ["Hasura", "Unprocessable", "immer"]
 }

@@ -7,7 +7,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { createNextIndex } from "~frontend/rooms/order";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
-import slugify from "slugify";
+import { slugify } from "~shared/slugify";
 
 export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: string }> = ({
   roomId,

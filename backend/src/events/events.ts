@@ -6,6 +6,7 @@ import { handleRoomUpdates } from "../rooms/events";
 import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
 import { handleMessageCreated } from "../messages/events";
+import { handleSpaceUpdates } from "../spaces/events";
 
 export const router = Router();
 
@@ -13,6 +14,7 @@ hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates)
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
+hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   console.log("elosza events");

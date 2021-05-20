@@ -4,7 +4,6 @@ import { UnprocessableEntityError } from "../errors";
 import { addTeamMember, getTeamHasMember } from "./helpers";
 
 export async function handleTeamUpdates(team: Team, userId: string) {
-  console.log("team updated", { team, userId });
   const { owner_id: ownerId, id: teamId } = team;
   if (userId !== ownerId) {
     logger.error("User id of action caller does not match room creator", {

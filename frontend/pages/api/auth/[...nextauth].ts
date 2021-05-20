@@ -254,6 +254,7 @@ async function getAuthInitOptions() {
 
         Reflect.set(tokenData, "currentTeamId", user.current_team_id);
 
+        // In dev mode, we often wipe out the db so we cannot fully trust JWT. Let's double check it
         if (process.env.NODE_ENV === "development") {
           if (user.current_team_id) {
             const team = await db.team.findFirst({ where: { id: user.current_team_id } });

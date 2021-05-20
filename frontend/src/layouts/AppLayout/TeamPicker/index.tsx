@@ -1,4 +1,4 @@
-import slugify from "slugify";
+import { slugify } from "~shared/slugify";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeam, useTeams } from "~frontend/gql/teams";
@@ -51,7 +51,7 @@ export function TeamPickerView() {
 }
 
 const UIHolder = styled.div`
-  padding: 20px;
+  padding: 2rem;
 `;
 
 const UITeams = styled.div`

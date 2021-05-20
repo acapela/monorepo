@@ -7,6 +7,7 @@ import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo";
+import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 
@@ -54,15 +55,22 @@ const CommonMetadata = () => {
  * session provider value will update.
  */
 App.getInitialProps = async (context: AppContext) => {
-  const session = await getSession({ req: context.ctx.req });
+  async function getSessionForEnv() {
+    // In development, we might wipe out db so we cant trust 'jwt'
+    if (process.env.NODE_ENV === "development") {
+      return await getSession({ req: context.ctx.req });
+    }
 
-  // const session = getUserFromRequest(context.ctx.req);
+    // In production, simply parse the token if it's still valid
+    return getUserFromRequest(context.ctx.req);
+  }
+
   // We're pre-fetching all the queries on server side before actual rendering happens.
   // During server-side rendering, we will use apollo client with fixed token value
   const authToken = readTokenFromRequest(context.ctx.req);
 
   return {
-    session,
+    session: await getSessionForEnv(),
     authToken,
   };
 };
