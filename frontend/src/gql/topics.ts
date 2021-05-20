@@ -185,7 +185,7 @@ export const [useUpdateTextMessageMutation] = createMutation<
   () => gql`
     ${TopicMessageBasicInfoFragment()}
 
-    mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean) {
+    mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean!) {
       update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
         message: returning {
           ...TopicMessageBasicInfo

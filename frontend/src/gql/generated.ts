@@ -8331,7 +8331,7 @@ export type CreateMessageMutation = (
 export type UpdateTextMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
   content: Scalars['jsonb'];
-  isDraft?: Maybe<Scalars['Boolean']>;
+  isDraft: Scalars['Boolean'];
 }>;
 
 
