@@ -17,7 +17,6 @@ hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
-  console.log("elosza events");
   await hasuraEvents.requestHandler(req, res);
 });
 

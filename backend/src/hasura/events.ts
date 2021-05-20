@@ -43,7 +43,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const operationType = event.event.op;
 
     const operationTypeHandlers = getTriggerOperationTypeHandlers(triggerName, operationType);
-    console.log({ triggerName, operationType, operationTypeHandlers });
 
     for (const handler of operationTypeHandlers) {
       await handler(event.event.data.new, userId);
@@ -54,7 +53,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const hasuraEvent = req.body as HasuraEvent<unknown>;
     const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
 
-    console.log({ userId });
     if (!userId) {
       throw new AuthenticationError("No user id provided with a hasura event");
     }
