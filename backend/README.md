@@ -44,3 +44,15 @@ To make changes to the hasura schema, follow these steps:
 7. When your PR is merged, the hasura migrations are automatically applied to production using github actions.
 
 If hasura is not updating metadata automatically through this workflow, try wiping your local hasura setup, by running `rm -rf ~/.hasura`.
+
+### Resources on Hasura
+
+[Hasura](https://hasura.io/) is an opensource product that connects to your databases & services and gives you a realtime GraphQL API, instantly.
+
+References:
+
+- [Documentation](https://hasura.io/docs/1.0/graphql/core/index.html)
+
+Tutorials:
+
+- [Hasura Tutorial](https://hasura.io/learn/)
