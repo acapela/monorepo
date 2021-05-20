@@ -14,12 +14,15 @@ import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { useRef } from "react";
 import { assert } from "~shared/assert";
+import { createChannel } from "~shared/channel";
 import { getApolloClient } from "~frontend/apollo";
 import { reportQueryUsage } from "./hydration";
 import { memoize } from "lodash";
 
 type EmptyObject = Record<string, never>;
 type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
+
+const anyUpdateChannel = createChannel<void>();
 
 export function createQuery<Data, Variables>(query: () => DocumentNode) {
   const getQuery = memoize(query);
@@ -29,6 +32,10 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     reportQueryUsage({ query: getQuery(), variables: variables });
 
     const { data, ...rest } = useRawQuery(getQuery(), { ...options, variables: variables as Variables });
+
+    anyUpdateChannel.useSubscribe(() => {
+      rest.refetch();
+    });
 
     return [data, rest] as const;
   }
@@ -129,6 +136,8 @@ export function createMutation<Data, Variables>(
         mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
       }
 
+      anyUpdateChannel.publish();
+
       return rawResult;
     }
 
@@ -145,6 +154,8 @@ export function createMutation<Data, Variables>(
     if (rawResult.data) {
       mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
     }
+
+    anyUpdateChannel.publish();
 
     return rawResult;
   }
