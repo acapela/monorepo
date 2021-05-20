@@ -11,6 +11,7 @@ type OperationType = "INSERT" | "UPDATE" | "DELETE" | "MANUAL";
 
 type OperationTypeHandler<T> = (item: T, userId: string) => void;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SingleTriggerHandlers = Map<OperationType, OperationTypeHandler<any>[]>;
 
 export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {

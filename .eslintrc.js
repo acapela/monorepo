@@ -18,6 +18,5 @@ module.exports = {
   ],
   rules: {
     "@typescript-eslint/explicit-module-boundary-types": 0,
-    "@typescript-eslint/no-explicit-any": 0,
   },
 };

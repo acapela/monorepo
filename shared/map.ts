@@ -1,9 +1,9 @@
-type AnyMap = Map<any, any>;
+type AnyMap = Map<unknown, unknown>;
 
-type MapKey<M extends AnyMap> = M extends Map<infer K, any> ? K : never;
-type MapValue<M extends AnyMap> = M extends Map<any, infer V> ? V : never;
+type MapKey<M extends AnyMap> = M extends Map<infer K, unknown> ? K : never;
+type MapValue<M extends AnyMap> = M extends Map<unknown, infer V> ? V : never;
 
-export function mapGetOrCreate<M extends Map<any, any>>(
+export function mapGetOrCreate<M extends Map<unknown, unknown>>(
   map: M,
   key: MapKey<M>,
   getter: () => MapValue<M>
@@ -11,7 +11,7 @@ export function mapGetOrCreate<M extends Map<any, any>>(
   const existingValue = map.get(key);
 
   if (existingValue !== undefined) {
-    return existingValue;
+    return existingValue as MapValue<M>;
   }
 
   const newValue = getter();
