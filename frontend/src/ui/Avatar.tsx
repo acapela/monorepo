@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
-export interface AvatarProps {
+export interface Props {
   name?: Maybe<string>;
   url?: string | null;
   className?: string;
 }
 
-const PureAvatar: React.FC<AvatarProps> = ({ url, name, className }) => {
+const PureAvatar = ({ url, name, className }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {

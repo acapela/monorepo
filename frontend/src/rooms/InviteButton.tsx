@@ -6,7 +6,12 @@ import { Button } from "~ui/button";
 import { Field } from "~ui/field";
 import { Dialog } from "../ui/Dialog";
 
-export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({ roomId, className }) => {
+interface InviteButtonProps {
+  roomId: string;
+  className?: string;
+}
+
+export const InviteButton = ({ roomId, className }: InviteButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const open = () => setDialogOpen(true);
   const close = () => setDialogOpen(false);
@@ -29,8 +34,12 @@ export const InviteButton: React.FC<{ roomId: string; className?: string }> = ({
   );
 };
 
-const InviteTable = ({ roomId }: { roomId: string }): JSX.Element => {
-  const { loading, data } = useGetRoomInvitesQuery({ roomId });
+interface InviteTableProps {
+  roomId: string;
+}
+
+const InviteTable = ({ roomId }: InviteTableProps) => {
+  const [data, { loading }] = useGetRoomInvitesQuery({ roomId });
   if (loading) {
     return <>Loading...</>; // TODO: use loader
   }

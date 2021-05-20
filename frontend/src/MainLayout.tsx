@@ -1,8 +1,9 @@
+import { PropsWithChildren } from "react";
 import styled from "styled-components";
 import { SidebarLayout } from "./ui/Layout";
 import { NavLink } from "./ui/NavLink";
 
-export const MainLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const MainLayout = ({ children }: PropsWithChildren<unknown>) => {
   return (
     <SidebarLayout
       sidebarContent={

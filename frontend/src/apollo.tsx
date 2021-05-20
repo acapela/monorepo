@@ -5,7 +5,7 @@ import Cookie from "js-cookie";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import { IncomingMessage } from "node:http";
-import React from "react";
+import React, { ReactNode } from "react";
 import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 import { getApolloInitialState } from "./gql/hydration";
 
@@ -115,7 +115,7 @@ export const getApolloClient = memoize(
 );
 
 interface ApolloClientProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   // On server side, queries are pre-populated using authorized client. This props allows using the same client instance,
   // resulting in initial render having all data in place and avoiding loading state.
   ssrAuthToken?: string | null;

@@ -14,7 +14,11 @@ interface ComposerAttachment {
   mimeType: string;
 }
 
-export const MessageComposer: React.FC<{ topicId: string }> = ({ topicId }) => {
+interface Props {
+  topicId: string;
+}
+
+export const MessageComposer = ({ topicId }: Props) => {
   const [createMessage] = useCreateMessageMutation();
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);

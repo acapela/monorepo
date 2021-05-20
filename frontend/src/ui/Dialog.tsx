@@ -1,6 +1,6 @@
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 const MotionDialogOverlay = motion(DialogOverlay);
@@ -25,7 +25,7 @@ export const Dialog = ({
   title: string;
   isOpened?: boolean;
   onClose?: () => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) => {
   return (
     <AnimatePresence>

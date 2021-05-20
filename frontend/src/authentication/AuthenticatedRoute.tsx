@@ -1,10 +1,8 @@
 import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { ComponentType, PropsWithChildren, useEffect } from "react";
 
-export const AuthenticatedRoute: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const AuthenticatedRoute = ({ children }: PropsWithChildren<unknown>) => {
   const [session, isLoading] = useSession();
   const router = useRouter();
 
@@ -22,7 +20,7 @@ export const AuthenticatedRoute: React.FC<{
   return <>{children}</>;
 };
 
-export function withAuthenticatedRoute<T>(Component: React.ComponentType<T>): React.ComponentType<T> {
+export function withAuthenticatedRoute<T>(Component: ComponentType<T>): ComponentType<T> {
   const AuthenticatedComponent = (props: T) => {
     return (
       <AuthenticatedRoute>
