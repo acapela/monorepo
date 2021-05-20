@@ -1,0 +1,43 @@
+CREATE OR REPLACE FUNCTION refresh_full_text_search()
+    RETURNS TRIGGER LANGUAGE plpgsql
+AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW full_text_search;
+RETURN NULL;
+END $$;
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON message FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON transcription FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON room_participants FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON room FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON topic FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON message_attachments FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();
+
+CREATE TRIGGER refresh_search
+    AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
+    ON attachment FOR EACH STATEMENT
+EXECUTE PROCEDURE refresh_full_text_search();

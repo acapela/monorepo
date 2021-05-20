@@ -39,6 +39,29 @@
   is_enum: true
 - table:
     schema: public
+    name: full_text_search
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - room_id
+          - room_name
+          - user_id
+          - topic_id
+          - topic_name
+          - message_created_at
+          - message_type
+          - message_id
+          - message_content
+          - transcription_id
+          - attachment_id
+          - attachment_name
+          - transcript
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+- table:
+    schema: public
     name: last_seen_message
   insert_permissions:
     - role: user
@@ -218,6 +241,9 @@
     - role: user
       permission:
         filter: {}
+- table:
+    schema: public
+    name: message_full_text
 - table:
     schema: public
     name: message_type
@@ -987,6 +1013,9 @@
           - transcript
           - updated_at
         filter: {}
+- table:
+    schema: public
+    name: transcription_full_text
 - table:
     schema: public
     name: transcription_status
