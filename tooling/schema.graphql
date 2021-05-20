@@ -602,6 +602,271 @@ input date_comparison_exp {
   _nin: [date!]
 }
 
+"""
+columns and relationships of "full_text_search"
+"""
+type full_text_search {
+  attachment_id: uuid
+  attachment_name: String
+  message_content: String
+  message_created_at: timestamptz
+  message_id: uuid
+  message_type: String
+  room_id: uuid
+  room_name: String
+  topic_id: uuid
+  topic_name: String
+  transcript: String
+  transcription_id: uuid
+  user_id: uuid
+}
+
+"""
+aggregated selection of "full_text_search"
+"""
+type full_text_search_aggregate {
+  aggregate: full_text_search_aggregate_fields
+  nodes: [full_text_search!]!
+}
+
+"""
+aggregate fields of "full_text_search"
+"""
+type full_text_search_aggregate_fields {
+  count(columns: [full_text_search_select_column!], distinct: Boolean): Int
+  max: full_text_search_max_fields
+  min: full_text_search_min_fields
+}
+
+"""
+order by aggregate values of table "full_text_search"
+"""
+input full_text_search_aggregate_order_by {
+  count: order_by
+  max: full_text_search_max_order_by
+  min: full_text_search_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "full_text_search"
+"""
+input full_text_search_arr_rel_insert_input {
+  data: [full_text_search_insert_input!]!
+}
+
+"""
+Boolean expression to filter rows from the table "full_text_search". All fields are combined with a logical 'AND'.
+"""
+input full_text_search_bool_exp {
+  _and: [full_text_search_bool_exp]
+  _not: full_text_search_bool_exp
+  _or: [full_text_search_bool_exp]
+  attachment_id: uuid_comparison_exp
+  attachment_name: String_comparison_exp
+  message_content: String_comparison_exp
+  message_created_at: timestamptz_comparison_exp
+  message_id: uuid_comparison_exp
+  message_type: String_comparison_exp
+  room_id: uuid_comparison_exp
+  room_name: String_comparison_exp
+  topic_id: uuid_comparison_exp
+  topic_name: String_comparison_exp
+  transcript: String_comparison_exp
+  transcription_id: uuid_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+input type for inserting data into table "full_text_search"
+"""
+input full_text_search_insert_input {
+  attachment_id: uuid
+  attachment_name: String
+  message_content: String
+  message_created_at: timestamptz
+  message_id: uuid
+  message_type: String
+  room_id: uuid
+  room_name: String
+  topic_id: uuid
+  topic_name: String
+  transcript: String
+  transcription_id: uuid
+  user_id: uuid
+}
+
+"""aggregate max on columns"""
+type full_text_search_max_fields {
+  attachment_id: uuid
+  attachment_name: String
+  message_content: String
+  message_created_at: timestamptz
+  message_id: uuid
+  message_type: String
+  room_id: uuid
+  room_name: String
+  topic_id: uuid
+  topic_name: String
+  transcript: String
+  transcription_id: uuid
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "full_text_search"
+"""
+input full_text_search_max_order_by {
+  attachment_id: order_by
+  attachment_name: order_by
+  message_content: order_by
+  message_created_at: order_by
+  message_id: order_by
+  message_type: order_by
+  room_id: order_by
+  room_name: order_by
+  topic_id: order_by
+  topic_name: order_by
+  transcript: order_by
+  transcription_id: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type full_text_search_min_fields {
+  attachment_id: uuid
+  attachment_name: String
+  message_content: String
+  message_created_at: timestamptz
+  message_id: uuid
+  message_type: String
+  room_id: uuid
+  room_name: String
+  topic_id: uuid
+  topic_name: String
+  transcript: String
+  transcription_id: uuid
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "full_text_search"
+"""
+input full_text_search_min_order_by {
+  attachment_id: order_by
+  attachment_name: order_by
+  message_content: order_by
+  message_created_at: order_by
+  message_id: order_by
+  message_type: order_by
+  room_id: order_by
+  room_name: order_by
+  topic_id: order_by
+  topic_name: order_by
+  transcript: order_by
+  transcription_id: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "full_text_search"
+"""
+type full_text_search_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [full_text_search!]!
+}
+
+"""
+input type for inserting object relation for remote table "full_text_search"
+"""
+input full_text_search_obj_rel_insert_input {
+  data: full_text_search_insert_input!
+}
+
+"""
+ordering options when selecting data from "full_text_search"
+"""
+input full_text_search_order_by {
+  attachment_id: order_by
+  attachment_name: order_by
+  message_content: order_by
+  message_created_at: order_by
+  message_id: order_by
+  message_type: order_by
+  room_id: order_by
+  room_name: order_by
+  topic_id: order_by
+  topic_name: order_by
+  transcript: order_by
+  transcription_id: order_by
+  user_id: order_by
+}
+
+"""
+select columns of table "full_text_search"
+"""
+enum full_text_search_select_column {
+  """column name"""
+  attachment_id
+
+  """column name"""
+  attachment_name
+
+  """column name"""
+  message_content
+
+  """column name"""
+  message_created_at
+
+  """column name"""
+  message_id
+
+  """column name"""
+  message_type
+
+  """column name"""
+  room_id
+
+  """column name"""
+  room_name
+
+  """column name"""
+  topic_id
+
+  """column name"""
+  topic_name
+
+  """column name"""
+  transcript
+
+  """column name"""
+  transcription_id
+
+  """column name"""
+  user_id
+}
+
+"""
+input type for updating data in table "full_text_search"
+"""
+input full_text_search_set_input {
+  attachment_id: uuid
+  attachment_name: String
+  message_content: String
+  message_created_at: timestamptz
+  message_id: uuid
+  message_type: String
+  room_id: uuid
+  room_name: String
+  topic_id: uuid
+  topic_name: String
+  transcript: String
+  transcription_id: uuid
+  user_id: uuid
+}
+
 scalar json
 
 """
@@ -1347,6 +1612,148 @@ input message_delete_key_input {
 }
 
 """
+columns and relationships of "message_full_text"
+"""
+type message_full_text {
+  content_txt: String
+  created_at: timestamptz
+  id: uuid
+  topic_id: uuid
+  transcription_id: uuid
+  type: String
+  user_id: uuid
+}
+
+"""
+aggregated selection of "message_full_text"
+"""
+type message_full_text_aggregate {
+  aggregate: message_full_text_aggregate_fields
+  nodes: [message_full_text!]!
+}
+
+"""
+aggregate fields of "message_full_text"
+"""
+type message_full_text_aggregate_fields {
+  count(columns: [message_full_text_select_column!], distinct: Boolean): Int
+  max: message_full_text_max_fields
+  min: message_full_text_min_fields
+}
+
+"""
+order by aggregate values of table "message_full_text"
+"""
+input message_full_text_aggregate_order_by {
+  count: order_by
+  max: message_full_text_max_order_by
+  min: message_full_text_min_order_by
+}
+
+"""
+Boolean expression to filter rows from the table "message_full_text". All fields are combined with a logical 'AND'.
+"""
+input message_full_text_bool_exp {
+  _and: [message_full_text_bool_exp]
+  _not: message_full_text_bool_exp
+  _or: [message_full_text_bool_exp]
+  content_txt: String_comparison_exp
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  topic_id: uuid_comparison_exp
+  transcription_id: uuid_comparison_exp
+  type: String_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+"""aggregate max on columns"""
+type message_full_text_max_fields {
+  content_txt: String
+  created_at: timestamptz
+  id: uuid
+  topic_id: uuid
+  transcription_id: uuid
+  type: String
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "message_full_text"
+"""
+input message_full_text_max_order_by {
+  content_txt: order_by
+  created_at: order_by
+  id: order_by
+  topic_id: order_by
+  transcription_id: order_by
+  type: order_by
+  user_id: order_by
+}
+
+"""aggregate min on columns"""
+type message_full_text_min_fields {
+  content_txt: String
+  created_at: timestamptz
+  id: uuid
+  topic_id: uuid
+  transcription_id: uuid
+  type: String
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "message_full_text"
+"""
+input message_full_text_min_order_by {
+  content_txt: order_by
+  created_at: order_by
+  id: order_by
+  topic_id: order_by
+  transcription_id: order_by
+  type: order_by
+  user_id: order_by
+}
+
+"""
+ordering options when selecting data from "message_full_text"
+"""
+input message_full_text_order_by {
+  content_txt: order_by
+  created_at: order_by
+  id: order_by
+  topic_id: order_by
+  transcription_id: order_by
+  type: order_by
+  user_id: order_by
+}
+
+"""
+select columns of table "message_full_text"
+"""
+enum message_full_text_select_column {
+  """column name"""
+  content_txt
+
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  topic_id
+
+  """column name"""
+  transcription_id
+
+  """column name"""
+  type
+
+  """column name"""
+  user_id
+}
+
+"""
 input type for inserting data into table "message"
 """
 input message_insert_input {
@@ -1747,6 +2154,14 @@ type mutation_root {
   delete_attachment_by_pk(id: uuid!): attachment
 
   """
+  delete data from the table: "full_text_search"
+  """
+  delete_full_text_search(
+    """filter the rows which have to be deleted"""
+    where: full_text_search_bool_exp!
+  ): full_text_search_mutation_response
+
+  """
   delete data from the table: "last_seen_message"
   """
   delete_last_seen_message(
@@ -2023,6 +2438,22 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: attachment_on_conflict
   ): attachment
+
+  """
+  insert data into the table: "full_text_search"
+  """
+  insert_full_text_search(
+    """the rows to be inserted"""
+    objects: [full_text_search_insert_input!]!
+  ): full_text_search_mutation_response
+
+  """
+  insert a single row into the table: "full_text_search"
+  """
+  insert_full_text_search_one(
+    """the row to be inserted"""
+    object: full_text_search_insert_input!
+  ): full_text_search
 
   """
   insert data into the table: "last_seen_message"
@@ -2459,6 +2890,17 @@ type mutation_root {
     _set: attachment_set_input
     pk_columns: attachment_pk_columns_input!
   ): attachment
+
+  """
+  update data of the table: "full_text_search"
+  """
+  update_full_text_search(
+    """sets the columns of the filtered rows to the given values"""
+    _set: full_text_search_set_input
+
+    """filter the rows which have to be updated"""
+    where: full_text_search_bool_exp!
+  ): full_text_search_mutation_response
 
   """
   update data of the table: "last_seen_message"
@@ -3020,6 +3462,46 @@ type query_root {
   attachment_by_pk(id: uuid!): attachment
 
   """
+  fetch data from the table: "full_text_search"
+  """
+  full_text_search(
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  fetch aggregated fields from the table: "full_text_search"
+  """
+  full_text_search_aggregate(
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
+
+  """
   perform the action: "get_download_url"
   """
   get_download_url(uuid: uuid!): GetDownloadUrlResponse
@@ -3208,6 +3690,46 @@ type query_root {
   message_by_pk(id: uuid!): message
 
   """
+  fetch data from the table: "message_full_text"
+  """
+  message_full_text(
+    """distinct select on columns"""
+    distinct_on: [message_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: message_full_text_bool_exp
+  ): [message_full_text!]!
+
+  """
+  fetch aggregated fields from the table: "message_full_text"
+  """
+  message_full_text_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: message_full_text_bool_exp
+  ): message_full_text_aggregate!
+
+  """
   fetch data from the table: "message_type"
   """
   message_type(
@@ -3378,6 +3900,56 @@ type query_root {
 
   """fetch data from the table: "room_member" using primary key columns"""
   room_member_by_pk(room_id: uuid!, user_id: uuid!): room_member
+
+  """
+  execute function "search_full_text" which returns "full_text_search"
+  """
+  search_full_text(
+    """
+    input parameters for function "search_full_text"
+    """
+    args: search_full_text_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  execute function "search_full_text" and query aggregates on result of table type "full_text_search"
+  """
+  search_full_text_aggregate(
+    """
+    input parameters for function "search_full_text"
+    """
+    args: search_full_text_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
 
   """
   fetch data from the table: "space"
@@ -3722,6 +4294,46 @@ type query_root {
 
   """fetch data from the table: "transcription" using primary key columns"""
   transcription_by_pk(id: uuid!): transcription
+
+  """
+  fetch data from the table: "transcription_full_text"
+  """
+  transcription_full_text(
+    """distinct select on columns"""
+    distinct_on: [transcription_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_full_text_bool_exp
+  ): [transcription_full_text!]!
+
+  """
+  fetch aggregated fields from the table: "transcription_full_text"
+  """
+  transcription_full_text_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_full_text_bool_exp
+  ): transcription_full_text_aggregate!
 
   """
   fetch data from the table: "transcription_status"
@@ -4722,6 +5334,10 @@ enum room_update_column {
   summary
 }
 
+input search_full_text_args {
+  search: String
+}
+
 """
 columns and relationships of "space"
 """
@@ -5300,6 +5916,46 @@ type subscription_root {
   attachment_by_pk(id: uuid!): attachment
 
   """
+  fetch data from the table: "full_text_search"
+  """
+  full_text_search(
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  fetch aggregated fields from the table: "full_text_search"
+  """
+  full_text_search_aggregate(
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
+
+  """
   perform the action: "get_download_url"
   """
   get_download_url(uuid: uuid!): GetDownloadUrlResponse
@@ -5488,6 +6144,46 @@ type subscription_root {
   message_by_pk(id: uuid!): message
 
   """
+  fetch data from the table: "message_full_text"
+  """
+  message_full_text(
+    """distinct select on columns"""
+    distinct_on: [message_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: message_full_text_bool_exp
+  ): [message_full_text!]!
+
+  """
+  fetch aggregated fields from the table: "message_full_text"
+  """
+  message_full_text_aggregate(
+    """distinct select on columns"""
+    distinct_on: [message_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [message_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: message_full_text_bool_exp
+  ): message_full_text_aggregate!
+
+  """
   fetch data from the table: "message_type"
   """
   message_type(
@@ -5658,6 +6354,56 @@ type subscription_root {
 
   """fetch data from the table: "room_member" using primary key columns"""
   room_member_by_pk(room_id: uuid!, user_id: uuid!): room_member
+
+  """
+  execute function "search_full_text" which returns "full_text_search"
+  """
+  search_full_text(
+    """
+    input parameters for function "search_full_text"
+    """
+    args: search_full_text_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  execute function "search_full_text" and query aggregates on result of table type "full_text_search"
+  """
+  search_full_text_aggregate(
+    """
+    input parameters for function "search_full_text"
+    """
+    args: search_full_text_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
 
   """
   fetch data from the table: "space"
@@ -6002,6 +6748,46 @@ type subscription_root {
 
   """fetch data from the table: "transcription" using primary key columns"""
   transcription_by_pk(id: uuid!): transcription
+
+  """
+  fetch data from the table: "transcription_full_text"
+  """
+  transcription_full_text(
+    """distinct select on columns"""
+    distinct_on: [transcription_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_full_text_bool_exp
+  ): [transcription_full_text!]!
+
+  """
+  fetch aggregated fields from the table: "transcription_full_text"
+  """
+  transcription_full_text_aggregate(
+    """distinct select on columns"""
+    distinct_on: [transcription_full_text_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [transcription_full_text_order_by!]
+
+    """filter the rows returned"""
+    where: transcription_full_text_bool_exp
+  ): transcription_full_text_aggregate!
 
   """
   fetch data from the table: "transcription_status"
@@ -7503,6 +8289,98 @@ delete key/value pair or string element. key/value pairs are matched based on th
 """
 input transcription_delete_key_input {
   transcript: String
+}
+
+"""
+columns and relationships of "transcription_full_text"
+"""
+type transcription_full_text {
+  transcript: String
+  transcription_id: uuid
+}
+
+"""
+aggregated selection of "transcription_full_text"
+"""
+type transcription_full_text_aggregate {
+  aggregate: transcription_full_text_aggregate_fields
+  nodes: [transcription_full_text!]!
+}
+
+"""
+aggregate fields of "transcription_full_text"
+"""
+type transcription_full_text_aggregate_fields {
+  count(columns: [transcription_full_text_select_column!], distinct: Boolean): Int
+  max: transcription_full_text_max_fields
+  min: transcription_full_text_min_fields
+}
+
+"""
+order by aggregate values of table "transcription_full_text"
+"""
+input transcription_full_text_aggregate_order_by {
+  count: order_by
+  max: transcription_full_text_max_order_by
+  min: transcription_full_text_min_order_by
+}
+
+"""
+Boolean expression to filter rows from the table "transcription_full_text". All fields are combined with a logical 'AND'.
+"""
+input transcription_full_text_bool_exp {
+  _and: [transcription_full_text_bool_exp]
+  _not: transcription_full_text_bool_exp
+  _or: [transcription_full_text_bool_exp]
+  transcript: String_comparison_exp
+  transcription_id: uuid_comparison_exp
+}
+
+"""aggregate max on columns"""
+type transcription_full_text_max_fields {
+  transcript: String
+  transcription_id: uuid
+}
+
+"""
+order by max() on columns of table "transcription_full_text"
+"""
+input transcription_full_text_max_order_by {
+  transcript: order_by
+  transcription_id: order_by
+}
+
+"""aggregate min on columns"""
+type transcription_full_text_min_fields {
+  transcript: String
+  transcription_id: uuid
+}
+
+"""
+order by min() on columns of table "transcription_full_text"
+"""
+input transcription_full_text_min_order_by {
+  transcript: order_by
+  transcription_id: order_by
+}
+
+"""
+ordering options when selecting data from "transcription_full_text"
+"""
+input transcription_full_text_order_by {
+  transcript: order_by
+  transcription_id: order_by
+}
+
+"""
+select columns of table "transcription_full_text"
+"""
+enum transcription_full_text_select_column {
+  """column name"""
+  transcript
+
+  """column name"""
+  transcription_id
 }
 
 """

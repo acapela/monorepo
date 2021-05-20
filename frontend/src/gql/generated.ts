@@ -537,6 +537,243 @@ export type Date_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['date']>>;
 };
 
+/** columns and relationships of "full_text_search" */
+export type Full_Text_Search = {
+  __typename?: 'full_text_search';
+  attachment_id?: Maybe<Scalars['uuid']>;
+  attachment_name?: Maybe<Scalars['String']>;
+  message_content?: Maybe<Scalars['String']>;
+  message_created_at?: Maybe<Scalars['timestamptz']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  message_type?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+  room_name?: Maybe<Scalars['String']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  topic_name?: Maybe<Scalars['String']>;
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregated selection of "full_text_search" */
+export type Full_Text_Search_Aggregate = {
+  __typename?: 'full_text_search_aggregate';
+  aggregate?: Maybe<Full_Text_Search_Aggregate_Fields>;
+  nodes: Array<Full_Text_Search>;
+};
+
+/** aggregate fields of "full_text_search" */
+export type Full_Text_Search_Aggregate_Fields = {
+  __typename?: 'full_text_search_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Full_Text_Search_Max_Fields>;
+  min?: Maybe<Full_Text_Search_Min_Fields>;
+};
+
+
+/** aggregate fields of "full_text_search" */
+export type Full_Text_Search_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "full_text_search" */
+export type Full_Text_Search_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Full_Text_Search_Max_Order_By>;
+  min?: Maybe<Full_Text_Search_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "full_text_search" */
+export type Full_Text_Search_Arr_Rel_Insert_Input = {
+  data: Array<Full_Text_Search_Insert_Input>;
+};
+
+/** Boolean expression to filter rows from the table "full_text_search". All fields are combined with a logical 'AND'. */
+export type Full_Text_Search_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Full_Text_Search_Bool_Exp>>>;
+  _not?: Maybe<Full_Text_Search_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Full_Text_Search_Bool_Exp>>>;
+  attachment_id?: Maybe<Uuid_Comparison_Exp>;
+  attachment_name?: Maybe<String_Comparison_Exp>;
+  message_content?: Maybe<String_Comparison_Exp>;
+  message_created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  message_id?: Maybe<Uuid_Comparison_Exp>;
+  message_type?: Maybe<String_Comparison_Exp>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+  room_name?: Maybe<String_Comparison_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
+  topic_name?: Maybe<String_Comparison_Exp>;
+  transcript?: Maybe<String_Comparison_Exp>;
+  transcription_id?: Maybe<Uuid_Comparison_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** input type for inserting data into table "full_text_search" */
+export type Full_Text_Search_Insert_Input = {
+  attachment_id?: Maybe<Scalars['uuid']>;
+  attachment_name?: Maybe<Scalars['String']>;
+  message_content?: Maybe<Scalars['String']>;
+  message_created_at?: Maybe<Scalars['timestamptz']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  message_type?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+  room_name?: Maybe<Scalars['String']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  topic_name?: Maybe<Scalars['String']>;
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Full_Text_Search_Max_Fields = {
+  __typename?: 'full_text_search_max_fields';
+  attachment_id?: Maybe<Scalars['uuid']>;
+  attachment_name?: Maybe<Scalars['String']>;
+  message_content?: Maybe<Scalars['String']>;
+  message_created_at?: Maybe<Scalars['timestamptz']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  message_type?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+  room_name?: Maybe<Scalars['String']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  topic_name?: Maybe<Scalars['String']>;
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "full_text_search" */
+export type Full_Text_Search_Max_Order_By = {
+  attachment_id?: Maybe<Order_By>;
+  attachment_name?: Maybe<Order_By>;
+  message_content?: Maybe<Order_By>;
+  message_created_at?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  message_type?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+  room_name?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  topic_name?: Maybe<Order_By>;
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Full_Text_Search_Min_Fields = {
+  __typename?: 'full_text_search_min_fields';
+  attachment_id?: Maybe<Scalars['uuid']>;
+  attachment_name?: Maybe<Scalars['String']>;
+  message_content?: Maybe<Scalars['String']>;
+  message_created_at?: Maybe<Scalars['timestamptz']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  message_type?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+  room_name?: Maybe<Scalars['String']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  topic_name?: Maybe<Scalars['String']>;
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "full_text_search" */
+export type Full_Text_Search_Min_Order_By = {
+  attachment_id?: Maybe<Order_By>;
+  attachment_name?: Maybe<Order_By>;
+  message_content?: Maybe<Order_By>;
+  message_created_at?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  message_type?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+  room_name?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  topic_name?: Maybe<Order_By>;
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "full_text_search" */
+export type Full_Text_Search_Mutation_Response = {
+  __typename?: 'full_text_search_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Full_Text_Search>;
+};
+
+/** input type for inserting object relation for remote table "full_text_search" */
+export type Full_Text_Search_Obj_Rel_Insert_Input = {
+  data: Full_Text_Search_Insert_Input;
+};
+
+/** ordering options when selecting data from "full_text_search" */
+export type Full_Text_Search_Order_By = {
+  attachment_id?: Maybe<Order_By>;
+  attachment_name?: Maybe<Order_By>;
+  message_content?: Maybe<Order_By>;
+  message_created_at?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  message_type?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+  room_name?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  topic_name?: Maybe<Order_By>;
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** select columns of table "full_text_search" */
+export enum Full_Text_Search_Select_Column {
+  /** column name */
+  AttachmentId = 'attachment_id',
+  /** column name */
+  AttachmentName = 'attachment_name',
+  /** column name */
+  MessageContent = 'message_content',
+  /** column name */
+  MessageCreatedAt = 'message_created_at',
+  /** column name */
+  MessageId = 'message_id',
+  /** column name */
+  MessageType = 'message_type',
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  RoomName = 'room_name',
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  TopicName = 'topic_name',
+  /** column name */
+  Transcript = 'transcript',
+  /** column name */
+  TranscriptionId = 'transcription_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "full_text_search" */
+export type Full_Text_Search_Set_Input = {
+  attachment_id?: Maybe<Scalars['uuid']>;
+  attachment_name?: Maybe<Scalars['String']>;
+  message_content?: Maybe<Scalars['String']>;
+  message_created_at?: Maybe<Scalars['timestamptz']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  message_type?: Maybe<Scalars['String']>;
+  room_id?: Maybe<Scalars['uuid']>;
+  room_name?: Maybe<Scalars['String']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  topic_name?: Maybe<Scalars['String']>;
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
 
 /** expression to compare columns of type json. All fields are combined with logical 'AND'. */
 export type Json_Comparison_Exp = {
@@ -1166,6 +1403,136 @@ export type Message_Delete_Key_Input = {
   content?: Maybe<Scalars['String']>;
 };
 
+/** columns and relationships of "message_full_text" */
+export type Message_Full_Text = {
+  __typename?: 'message_full_text';
+  content_txt?: Maybe<Scalars['String']>;
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  type?: Maybe<Scalars['String']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregated selection of "message_full_text" */
+export type Message_Full_Text_Aggregate = {
+  __typename?: 'message_full_text_aggregate';
+  aggregate?: Maybe<Message_Full_Text_Aggregate_Fields>;
+  nodes: Array<Message_Full_Text>;
+};
+
+/** aggregate fields of "message_full_text" */
+export type Message_Full_Text_Aggregate_Fields = {
+  __typename?: 'message_full_text_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Message_Full_Text_Max_Fields>;
+  min?: Maybe<Message_Full_Text_Min_Fields>;
+};
+
+
+/** aggregate fields of "message_full_text" */
+export type Message_Full_Text_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Message_Full_Text_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "message_full_text" */
+export type Message_Full_Text_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Message_Full_Text_Max_Order_By>;
+  min?: Maybe<Message_Full_Text_Min_Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "message_full_text". All fields are combined with a logical 'AND'. */
+export type Message_Full_Text_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Message_Full_Text_Bool_Exp>>>;
+  _not?: Maybe<Message_Full_Text_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Message_Full_Text_Bool_Exp>>>;
+  content_txt?: Maybe<String_Comparison_Exp>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
+  transcription_id?: Maybe<Uuid_Comparison_Exp>;
+  type?: Maybe<String_Comparison_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Message_Full_Text_Max_Fields = {
+  __typename?: 'message_full_text_max_fields';
+  content_txt?: Maybe<Scalars['String']>;
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  type?: Maybe<Scalars['String']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "message_full_text" */
+export type Message_Full_Text_Max_Order_By = {
+  content_txt?: Maybe<Order_By>;
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  type?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Message_Full_Text_Min_Fields = {
+  __typename?: 'message_full_text_min_fields';
+  content_txt?: Maybe<Scalars['String']>;
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+  type?: Maybe<Scalars['String']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "message_full_text" */
+export type Message_Full_Text_Min_Order_By = {
+  content_txt?: Maybe<Order_By>;
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  type?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** ordering options when selecting data from "message_full_text" */
+export type Message_Full_Text_Order_By = {
+  content_txt?: Maybe<Order_By>;
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  type?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** select columns of table "message_full_text" */
+export enum Message_Full_Text_Select_Column {
+  /** column name */
+  ContentTxt = 'content_txt',
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  TranscriptionId = 'transcription_id',
+  /** column name */
+  Type = 'type',
+  /** column name */
+  UserId = 'user_id'
+}
+
 /** input type for inserting data into table "message" */
 export type Message_Insert_Input = {
   content?: Maybe<Scalars['jsonb']>;
@@ -1487,6 +1854,8 @@ export type Mutation_Root = {
   delete_attachment?: Maybe<Attachment_Mutation_Response>;
   /** delete single row from the table: "attachment" */
   delete_attachment_by_pk?: Maybe<Attachment>;
+  /** delete data from the table: "full_text_search" */
+  delete_full_text_search?: Maybe<Full_Text_Search_Mutation_Response>;
   /** delete data from the table: "last_seen_message" */
   delete_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** delete single row from the table: "last_seen_message" */
@@ -1567,6 +1936,10 @@ export type Mutation_Root = {
   insert_attachment?: Maybe<Attachment_Mutation_Response>;
   /** insert a single row into the table: "attachment" */
   insert_attachment_one?: Maybe<Attachment>;
+  /** insert data into the table: "full_text_search" */
+  insert_full_text_search?: Maybe<Full_Text_Search_Mutation_Response>;
+  /** insert a single row into the table: "full_text_search" */
+  insert_full_text_search_one?: Maybe<Full_Text_Search>;
   /** insert data into the table: "last_seen_message" */
   insert_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** insert a single row into the table: "last_seen_message" */
@@ -1647,6 +2020,8 @@ export type Mutation_Root = {
   update_attachment?: Maybe<Attachment_Mutation_Response>;
   /** update single row of the table: "attachment" */
   update_attachment_by_pk?: Maybe<Attachment>;
+  /** update data of the table: "full_text_search" */
+  update_full_text_search?: Maybe<Full_Text_Search_Mutation_Response>;
   /** update data of the table: "last_seen_message" */
   update_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** update single row of the table: "last_seen_message" */
@@ -1751,6 +2126,12 @@ export type Mutation_RootDelete_AttachmentArgs = {
 /** mutation root */
 export type Mutation_RootDelete_Attachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Full_Text_SearchArgs = {
+  where: Full_Text_Search_Bool_Exp;
 };
 
 
@@ -2001,6 +2382,18 @@ export type Mutation_RootInsert_AttachmentArgs = {
 export type Mutation_RootInsert_Attachment_OneArgs = {
   object: Attachment_Insert_Input;
   on_conflict?: Maybe<Attachment_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Full_Text_SearchArgs = {
+  objects: Array<Full_Text_Search_Insert_Input>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Full_Text_Search_OneArgs = {
+  object: Full_Text_Search_Insert_Input;
 };
 
 
@@ -2281,6 +2674,13 @@ export type Mutation_RootUpdate_AttachmentArgs = {
 export type Mutation_RootUpdate_Attachment_By_PkArgs = {
   _set?: Maybe<Attachment_Set_Input>;
   pk_columns: Attachment_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Full_Text_SearchArgs = {
+  _set?: Maybe<Full_Text_Search_Set_Input>;
+  where: Full_Text_Search_Bool_Exp;
 };
 
 
@@ -2586,6 +2986,10 @@ export type Query_Root = {
   attachment_aggregate: Attachment_Aggregate;
   /** fetch data from the table: "attachment" using primary key columns */
   attachment_by_pk?: Maybe<Attachment>;
+  /** fetch data from the table: "full_text_search" */
+  full_text_search: Array<Full_Text_Search>;
+  /** fetch aggregated fields from the table: "full_text_search" */
+  full_text_search_aggregate: Full_Text_Search_Aggregate;
   /** perform the action: "get_download_url" */
   get_download_url?: Maybe<GetDownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
@@ -2614,6 +3018,10 @@ export type Query_Root = {
   message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
+  /** fetch data from the table: "message_full_text" */
+  message_full_text: Array<Message_Full_Text>;
+  /** fetch aggregated fields from the table: "message_full_text" */
+  message_full_text_aggregate: Message_Full_Text_Aggregate;
   /** fetch data from the table: "message_type" */
   message_type: Array<Message_Type>;
   /** fetch aggregated fields from the table: "message_type" */
@@ -2638,6 +3046,10 @@ export type Query_Root = {
   room_member_aggregate: Room_Member_Aggregate;
   /** fetch data from the table: "room_member" using primary key columns */
   room_member_by_pk?: Maybe<Room_Member>;
+  /** execute function "search_full_text" which returns "full_text_search" */
+  search_full_text: Array<Full_Text_Search>;
+  /** execute function "search_full_text" and query aggregates on result of table type "full_text_search" */
+  search_full_text_aggregate: Full_Text_Search_Aggregate;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
@@ -2686,6 +3098,10 @@ export type Query_Root = {
   transcription_aggregate: Transcription_Aggregate;
   /** fetch data from the table: "transcription" using primary key columns */
   transcription_by_pk?: Maybe<Transcription>;
+  /** fetch data from the table: "transcription_full_text" */
+  transcription_full_text: Array<Transcription_Full_Text>;
+  /** fetch aggregated fields from the table: "transcription_full_text" */
+  transcription_full_text_aggregate: Transcription_Full_Text_Aggregate;
   /** fetch data from the table: "transcription_status" */
   transcription_status: Array<Transcription_Status>;
   /** fetch aggregated fields from the table: "transcription_status" */
@@ -2754,6 +3170,26 @@ export type Query_RootAttachment_AggregateArgs = {
 /** query root */
 export type Query_RootAttachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootFull_Text_SearchArgs = {
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootFull_Text_Search_AggregateArgs = {
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
 };
 
 
@@ -2877,6 +3313,26 @@ export type Query_RootMessage_By_PkArgs = {
 
 
 /** query root */
+export type Query_RootMessage_Full_TextArgs = {
+  distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
+  where?: Maybe<Message_Full_Text_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMessage_Full_Text_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
+  where?: Maybe<Message_Full_Text_Bool_Exp>;
+};
+
+
+/** query root */
 export type Query_RootMessage_TypeArgs = {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -2978,6 +3434,28 @@ export type Query_RootRoom_Member_AggregateArgs = {
 export type Query_RootRoom_Member_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootSearch_Full_TextArgs = {
+  args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSearch_Full_Text_AggregateArgs = {
+  args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
 };
 
 
@@ -3189,6 +3667,26 @@ export type Query_RootTranscription_AggregateArgs = {
 /** query root */
 export type Query_RootTranscription_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTranscription_Full_TextArgs = {
+  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
+  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTranscription_Full_Text_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
+  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
 };
 
 
@@ -3984,6 +4482,10 @@ export enum Room_Update_Column {
   Summary = 'summary'
 }
 
+export type Search_Full_Text_Args = {
+  search?: Maybe<Scalars['String']>;
+};
+
 /** columns and relationships of "space" */
 export type Space = {
   __typename?: 'space';
@@ -4403,6 +4905,10 @@ export type Subscription_Root = {
   attachment_aggregate: Attachment_Aggregate;
   /** fetch data from the table: "attachment" using primary key columns */
   attachment_by_pk?: Maybe<Attachment>;
+  /** fetch data from the table: "full_text_search" */
+  full_text_search: Array<Full_Text_Search>;
+  /** fetch aggregated fields from the table: "full_text_search" */
+  full_text_search_aggregate: Full_Text_Search_Aggregate;
   /** perform the action: "get_download_url" */
   get_download_url?: Maybe<GetDownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
@@ -4431,6 +4937,10 @@ export type Subscription_Root = {
   message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
+  /** fetch data from the table: "message_full_text" */
+  message_full_text: Array<Message_Full_Text>;
+  /** fetch aggregated fields from the table: "message_full_text" */
+  message_full_text_aggregate: Message_Full_Text_Aggregate;
   /** fetch data from the table: "message_type" */
   message_type: Array<Message_Type>;
   /** fetch aggregated fields from the table: "message_type" */
@@ -4455,6 +4965,10 @@ export type Subscription_Root = {
   room_member_aggregate: Room_Member_Aggregate;
   /** fetch data from the table: "room_member" using primary key columns */
   room_member_by_pk?: Maybe<Room_Member>;
+  /** execute function "search_full_text" which returns "full_text_search" */
+  search_full_text: Array<Full_Text_Search>;
+  /** execute function "search_full_text" and query aggregates on result of table type "full_text_search" */
+  search_full_text_aggregate: Full_Text_Search_Aggregate;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
@@ -4503,6 +5017,10 @@ export type Subscription_Root = {
   transcription_aggregate: Transcription_Aggregate;
   /** fetch data from the table: "transcription" using primary key columns */
   transcription_by_pk?: Maybe<Transcription>;
+  /** fetch data from the table: "transcription_full_text" */
+  transcription_full_text: Array<Transcription_Full_Text>;
+  /** fetch aggregated fields from the table: "transcription_full_text" */
+  transcription_full_text_aggregate: Transcription_Full_Text_Aggregate;
   /** fetch data from the table: "transcription_status" */
   transcription_status: Array<Transcription_Status>;
   /** fetch aggregated fields from the table: "transcription_status" */
@@ -4571,6 +5089,26 @@ export type Subscription_RootAttachment_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootAttachment_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootFull_Text_SearchArgs = {
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootFull_Text_Search_AggregateArgs = {
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
 };
 
 
@@ -4694,6 +5232,26 @@ export type Subscription_RootMessage_By_PkArgs = {
 
 
 /** subscription root */
+export type Subscription_RootMessage_Full_TextArgs = {
+  distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
+  where?: Maybe<Message_Full_Text_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMessage_Full_Text_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
+  where?: Maybe<Message_Full_Text_Bool_Exp>;
+};
+
+
+/** subscription root */
 export type Subscription_RootMessage_TypeArgs = {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -4795,6 +5353,28 @@ export type Subscription_RootRoom_Member_AggregateArgs = {
 export type Subscription_RootRoom_Member_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootSearch_Full_TextArgs = {
+  args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSearch_Full_Text_AggregateArgs = {
+  args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
 };
 
 
@@ -5006,6 +5586,26 @@ export type Subscription_RootTranscription_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootTranscription_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_Full_TextArgs = {
+  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
+  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTranscription_Full_Text_AggregateArgs = {
+  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
+  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
 };
 
 
@@ -6221,6 +6821,91 @@ export type Transcription_Delete_Elem_Input = {
 export type Transcription_Delete_Key_Input = {
   transcript?: Maybe<Scalars['String']>;
 };
+
+/** columns and relationships of "transcription_full_text" */
+export type Transcription_Full_Text = {
+  __typename?: 'transcription_full_text';
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregated selection of "transcription_full_text" */
+export type Transcription_Full_Text_Aggregate = {
+  __typename?: 'transcription_full_text_aggregate';
+  aggregate?: Maybe<Transcription_Full_Text_Aggregate_Fields>;
+  nodes: Array<Transcription_Full_Text>;
+};
+
+/** aggregate fields of "transcription_full_text" */
+export type Transcription_Full_Text_Aggregate_Fields = {
+  __typename?: 'transcription_full_text_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Transcription_Full_Text_Max_Fields>;
+  min?: Maybe<Transcription_Full_Text_Min_Fields>;
+};
+
+
+/** aggregate fields of "transcription_full_text" */
+export type Transcription_Full_Text_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "transcription_full_text" */
+export type Transcription_Full_Text_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Transcription_Full_Text_Max_Order_By>;
+  min?: Maybe<Transcription_Full_Text_Min_Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "transcription_full_text". All fields are combined with a logical 'AND'. */
+export type Transcription_Full_Text_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
+  _not?: Maybe<Transcription_Full_Text_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
+  transcript?: Maybe<String_Comparison_Exp>;
+  transcription_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Transcription_Full_Text_Max_Fields = {
+  __typename?: 'transcription_full_text_max_fields';
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "transcription_full_text" */
+export type Transcription_Full_Text_Max_Order_By = {
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Transcription_Full_Text_Min_Fields = {
+  __typename?: 'transcription_full_text_min_fields';
+  transcript?: Maybe<Scalars['String']>;
+  transcription_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "transcription_full_text" */
+export type Transcription_Full_Text_Min_Order_By = {
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+};
+
+/** ordering options when selecting data from "transcription_full_text" */
+export type Transcription_Full_Text_Order_By = {
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+};
+
+/** select columns of table "transcription_full_text" */
+export enum Transcription_Full_Text_Select_Column {
+  /** column name */
+  Transcript = 'transcript',
+  /** column name */
+  TranscriptionId = 'transcription_id'
+}
 
 /** input type for inserting data into table "transcription" */
 export type Transcription_Insert_Input = {
@@ -7905,6 +8590,70 @@ export type attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type full_text_searchKeySpecifier = ('attachment_id' | 'attachment_name' | 'message_content' | 'message_created_at' | 'message_id' | 'message_type' | 'room_id' | 'room_name' | 'topic_id' | 'topic_name' | 'transcript' | 'transcription_id' | 'user_id' | full_text_searchKeySpecifier)[];
+export type full_text_searchFieldPolicy = {
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_content?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type full_text_search_aggregateKeySpecifier = ('aggregate' | 'nodes' | full_text_search_aggregateKeySpecifier)[];
+export type full_text_search_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type full_text_search_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | full_text_search_aggregate_fieldsKeySpecifier)[];
+export type full_text_search_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type full_text_search_max_fieldsKeySpecifier = ('attachment_id' | 'attachment_name' | 'message_content' | 'message_created_at' | 'message_id' | 'message_type' | 'room_id' | 'room_name' | 'topic_id' | 'topic_name' | 'transcript' | 'transcription_id' | 'user_id' | full_text_search_max_fieldsKeySpecifier)[];
+export type full_text_search_max_fieldsFieldPolicy = {
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_content?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type full_text_search_min_fieldsKeySpecifier = ('attachment_id' | 'attachment_name' | 'message_content' | 'message_created_at' | 'message_id' | 'message_type' | 'room_id' | 'room_name' | 'topic_id' | 'topic_name' | 'transcript' | 'transcription_id' | 'user_id' | full_text_search_min_fieldsKeySpecifier)[];
+export type full_text_search_min_fieldsFieldPolicy = {
+	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	attachment_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_content?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type full_text_search_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | full_text_search_mutation_responseKeySpecifier)[];
+export type full_text_search_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type last_seen_messageKeySpecifier = ('message_id' | 'seen_at' | 'topic_id' | 'user_id' | last_seen_messageKeySpecifier)[];
 export type last_seen_messageFieldPolicy = {
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8031,6 +8780,47 @@ export type message_attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type message_full_textKeySpecifier = ('content_txt' | 'created_at' | 'id' | 'topic_id' | 'transcription_id' | 'type' | 'user_id' | message_full_textKeySpecifier)[];
+export type message_full_textFieldPolicy = {
+	content_txt?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_full_text_aggregateKeySpecifier = ('aggregate' | 'nodes' | message_full_text_aggregateKeySpecifier)[];
+export type message_full_text_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_full_text_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | message_full_text_aggregate_fieldsKeySpecifier)[];
+export type message_full_text_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_full_text_max_fieldsKeySpecifier = ('content_txt' | 'created_at' | 'id' | 'topic_id' | 'transcription_id' | 'type' | 'user_id' | message_full_text_max_fieldsKeySpecifier)[];
+export type message_full_text_max_fieldsFieldPolicy = {
+	content_txt?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type message_full_text_min_fieldsKeySpecifier = ('content_txt' | 'created_at' | 'id' | 'topic_id' | 'transcription_id' | 'type' | 'user_id' | message_full_text_min_fieldsKeySpecifier)[];
+export type message_full_text_min_fieldsFieldPolicy = {
+	content_txt?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'topic_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8080,13 +8870,14 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_full_text_search?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8127,6 +8918,8 @@ export type mutation_rootFieldPolicy = {
 	insert_account_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_attachment_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_full_text_search?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_full_text_search_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_last_seen_message_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8167,6 +8960,7 @@ export type mutation_rootFieldPolicy = {
 	update_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_full_text_search?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8205,7 +8999,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8213,6 +9007,8 @@ export type query_rootFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	full_text_search?: FieldPolicy<any> | FieldReadFunction<any>,
+	full_text_search_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8227,6 +9023,8 @@ export type query_rootFieldPolicy = {
 	message_attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8239,6 +9037,8 @@ export type query_rootFieldPolicy = {
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8263,6 +9063,8 @@ export type query_rootFieldPolicy = {
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8495,7 +9297,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8503,6 +9305,8 @@ export type subscription_rootFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	full_text_search?: FieldPolicy<any> | FieldReadFunction<any>,
+	full_text_search_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_download_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	get_upload_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8517,6 +9321,8 @@ export type subscription_rootFieldPolicy = {
 	message_attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8529,6 +9335,8 @@ export type subscription_rootFieldPolicy = {
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8553,6 +9361,8 @@ export type subscription_rootFieldPolicy = {
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8784,6 +9594,32 @@ export type transcription_aggregate_fieldsFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_full_textKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_textKeySpecifier)[];
+export type transcription_full_textFieldPolicy = {
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_full_text_aggregateKeySpecifier = ('aggregate' | 'nodes' | transcription_full_text_aggregateKeySpecifier)[];
+export type transcription_full_text_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_full_text_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | transcription_full_text_aggregate_fieldsKeySpecifier)[];
+export type transcription_full_text_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_full_text_max_fieldsKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_text_max_fieldsKeySpecifier)[];
+export type transcription_full_text_max_fieldsFieldPolicy = {
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type transcription_full_text_min_fieldsKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_text_min_fieldsKeySpecifier)[];
+export type transcription_full_text_min_fieldsFieldPolicy = {
+	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
+	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type transcription_max_fieldsKeySpecifier = ('created_at' | 'id' | 'sonix_media_id' | 'updated_at' | transcription_max_fieldsKeySpecifier)[];
 export type transcription_max_fieldsFieldPolicy = {
@@ -9034,6 +9870,30 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | attachment_mutation_responseKeySpecifier | (() => undefined | attachment_mutation_responseKeySpecifier),
 		fields?: attachment_mutation_responseFieldPolicy,
 	},
+	full_text_search?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_searchKeySpecifier | (() => undefined | full_text_searchKeySpecifier),
+		fields?: full_text_searchFieldPolicy,
+	},
+	full_text_search_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_search_aggregateKeySpecifier | (() => undefined | full_text_search_aggregateKeySpecifier),
+		fields?: full_text_search_aggregateFieldPolicy,
+	},
+	full_text_search_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_search_aggregate_fieldsKeySpecifier | (() => undefined | full_text_search_aggregate_fieldsKeySpecifier),
+		fields?: full_text_search_aggregate_fieldsFieldPolicy,
+	},
+	full_text_search_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_search_max_fieldsKeySpecifier | (() => undefined | full_text_search_max_fieldsKeySpecifier),
+		fields?: full_text_search_max_fieldsFieldPolicy,
+	},
+	full_text_search_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_search_min_fieldsKeySpecifier | (() => undefined | full_text_search_min_fieldsKeySpecifier),
+		fields?: full_text_search_min_fieldsFieldPolicy,
+	},
+	full_text_search_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | full_text_search_mutation_responseKeySpecifier | (() => undefined | full_text_search_mutation_responseKeySpecifier),
+		fields?: full_text_search_mutation_responseFieldPolicy,
+	},
 	last_seen_message?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | last_seen_messageKeySpecifier | (() => undefined | last_seen_messageKeySpecifier),
 		fields?: last_seen_messageFieldPolicy,
@@ -9117,6 +9977,26 @@ export type TypedTypePolicies = TypePolicies & {
 	message_attachment_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | message_attachment_mutation_responseKeySpecifier | (() => undefined | message_attachment_mutation_responseKeySpecifier),
 		fields?: message_attachment_mutation_responseFieldPolicy,
+	},
+	message_full_text?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_full_textKeySpecifier | (() => undefined | message_full_textKeySpecifier),
+		fields?: message_full_textFieldPolicy,
+	},
+	message_full_text_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_full_text_aggregateKeySpecifier | (() => undefined | message_full_text_aggregateKeySpecifier),
+		fields?: message_full_text_aggregateFieldPolicy,
+	},
+	message_full_text_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_full_text_aggregate_fieldsKeySpecifier | (() => undefined | message_full_text_aggregate_fieldsKeySpecifier),
+		fields?: message_full_text_aggregate_fieldsFieldPolicy,
+	},
+	message_full_text_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_full_text_max_fieldsKeySpecifier | (() => undefined | message_full_text_max_fieldsKeySpecifier),
+		fields?: message_full_text_max_fieldsFieldPolicy,
+	},
+	message_full_text_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_full_text_min_fieldsKeySpecifier | (() => undefined | message_full_text_min_fieldsKeySpecifier),
+		fields?: message_full_text_min_fieldsFieldPolicy,
 	},
 	message_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | message_max_fieldsKeySpecifier | (() => undefined | message_max_fieldsKeySpecifier),
@@ -9417,6 +10297,26 @@ export type TypedTypePolicies = TypePolicies & {
 	transcription_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcription_aggregate_fieldsKeySpecifier | (() => undefined | transcription_aggregate_fieldsKeySpecifier),
 		fields?: transcription_aggregate_fieldsFieldPolicy,
+	},
+	transcription_full_text?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_full_textKeySpecifier | (() => undefined | transcription_full_textKeySpecifier),
+		fields?: transcription_full_textFieldPolicy,
+	},
+	transcription_full_text_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_full_text_aggregateKeySpecifier | (() => undefined | transcription_full_text_aggregateKeySpecifier),
+		fields?: transcription_full_text_aggregateFieldPolicy,
+	},
+	transcription_full_text_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_full_text_aggregate_fieldsKeySpecifier | (() => undefined | transcription_full_text_aggregate_fieldsKeySpecifier),
+		fields?: transcription_full_text_aggregate_fieldsFieldPolicy,
+	},
+	transcription_full_text_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_full_text_max_fieldsKeySpecifier | (() => undefined | transcription_full_text_max_fieldsKeySpecifier),
+		fields?: transcription_full_text_max_fieldsFieldPolicy,
+	},
+	transcription_full_text_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | transcription_full_text_min_fieldsKeySpecifier | (() => undefined | transcription_full_text_min_fieldsKeySpecifier),
+		fields?: transcription_full_text_min_fieldsFieldPolicy,
 	},
 	transcription_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcription_max_fieldsKeySpecifier | (() => undefined | transcription_max_fieldsKeySpecifier),
