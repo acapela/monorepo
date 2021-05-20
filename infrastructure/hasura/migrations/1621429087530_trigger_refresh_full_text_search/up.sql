@@ -18,7 +18,7 @@ EXECUTE PROCEDURE refresh_full_text_search();
 
 CREATE TRIGGER refresh_search
     AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
-    ON room_participants FOR EACH STATEMENT
+    ON room_member FOR EACH STATEMENT
 EXECUTE PROCEDURE refresh_full_text_search();
 
 CREATE TRIGGER refresh_search
@@ -34,7 +34,7 @@ EXECUTE PROCEDURE refresh_full_text_search();
 
 CREATE TRIGGER refresh_search
     AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE
-    ON message_attachments FOR EACH STATEMENT
+    ON message_attachment FOR EACH STATEMENT
 EXECUTE PROCEDURE refresh_full_text_search();
 
 CREATE TRIGGER refresh_search
