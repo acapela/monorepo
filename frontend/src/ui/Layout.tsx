@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { FC, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { Logo } from "./Logo";
 
@@ -33,7 +33,7 @@ interface Props {
   sidebarAction?: ReactNode;
 }
 
-export const SidebarLayout: FC<Props> = ({ children, sidebarContent, sidebarAction }) => {
+export const SidebarLayout = ({ children, sidebarContent, sidebarAction }: Props) => {
   return (
     <UIHolder>
       <UISidebar>

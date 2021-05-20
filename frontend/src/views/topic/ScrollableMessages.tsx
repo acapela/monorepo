@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 import { useScrollToBottom } from "~frontend/hooks/useScrollToBottom";
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 

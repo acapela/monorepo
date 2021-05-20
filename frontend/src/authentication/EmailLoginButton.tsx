@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/client";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "~ui/button";
 
 export const EmailLoginButton = ({
@@ -7,7 +7,7 @@ export const EmailLoginButton = ({
   children,
 }: {
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }): JSX.Element => {
   function handleLogin() {
     const email = window.prompt("Email...");

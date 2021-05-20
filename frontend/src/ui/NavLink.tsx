@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { CalendarOutline } from "~ui/icons";
 
-export const NavLink: React.FC<{
+interface Props {
   to: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
-}> = ({ to, children, className }) => {
+}
+
+export const NavLink = ({ to, children, className }: Props) => {
   const router = useRouter();
   const isActive = router.asPath === to;
 

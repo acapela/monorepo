@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { Avatar } from "~frontend/ui/Avatar";
 
-interface AvatarListProps {
+interface Props {
   users: UserBasicInfoFragment[];
   className?: string;
 }
 
-const PureAvatarList: React.FC<AvatarListProps> = ({ users, className }) => (
+const PureAvatarList = ({ users, className }: Props) => (
   <div className={className}>
     {users.map((users, index) => (
       <Avatar key={index} url={users.avatar_url} name={users.name ?? ""} />

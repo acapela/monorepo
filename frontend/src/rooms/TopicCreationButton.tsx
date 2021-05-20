@@ -9,10 +9,12 @@ import { Button } from "~ui/button";
 import { Field } from "~ui/field";
 import { slugify } from "~shared/slugify";
 
-export const TopicCreationButton: React.FC<{ roomId: string; lastTopicIndex?: string }> = ({
-  roomId,
-  lastTopicIndex,
-}) => {
+interface TopicCreationButtonProps {
+  roomId: string;
+  lastTopicIndex?: string;
+}
+
+export const TopicCreationButton = ({ roomId, lastTopicIndex }: TopicCreationButtonProps) => {
   const [isDialogOpened, { set: openDialog, unset: closeDialog }] = useBoolean(false);
 
   return (
@@ -36,7 +38,7 @@ const UITopicNameFieldWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
-interface Props {
+interface TopicCreationFormProps {
   roomId: string;
   onCreated?: (topicId: string) => unknown;
   lastTopicIndex?: string;
@@ -46,7 +48,7 @@ interface FormData {
   name: string;
 }
 
-const TopicCreationForm: React.FC<Props> = ({ onCreated, roomId, lastTopicIndex }) => {
+const TopicCreationForm = ({ onCreated, roomId, lastTopicIndex }: TopicCreationFormProps) => {
   const [createTopic, { loading }] = useCreateTopicMutation();
 
   const {
