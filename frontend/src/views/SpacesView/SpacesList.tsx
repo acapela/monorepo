@@ -5,7 +5,7 @@ import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 
 export function SpacesList() {
-  const { data, loading } = useGetSpacesQuery.subscription();
+  const [data, { loading }] = useGetSpacesQuery.subscription();
 
   const spacesList = data?.space ?? [];
 

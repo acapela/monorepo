@@ -3,7 +3,7 @@ import { AuthenticationError } from "./errors";
 
 export const router = Router();
 
-export function extractToken(header: string): string {
+export function extractAndAssertBearerToken(header: string): string {
   if (!header) {
     throw new AuthenticationError("No authorization header present");
   }

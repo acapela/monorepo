@@ -22,30 +22,43 @@ model account {
 }
 
 model attachment {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  original_name       String
-  mime_type           String
-  message_attachments message_attachments[]
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at         DateTime             @default(now()) @db.Timestamptz(6)
+  original_name      String
+  mime_type          String
+  message_attachment message_attachment[]
+}
+
+model last_seen_message {
+  user_id    String   @db.Uuid
+  topic_id   String   @db.Uuid
+  message_id String   @db.Uuid
+  seen_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([user_id, topic_id])
+}
+
+model membership_status {
+  value String @id
 }
 
 model message {
-  topic_id            String                @db.Uuid
-  user_id             String                @db.Uuid
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  type                String
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  is_draft            Boolean               @default(false)
-  transcription_id    String?               @db.Uuid
-  content             Json                  @default(dbgenerated("jsonb_build_array()"))
-  topic               topic                 @relation(fields: [topic_id], references: [id])
-  transcription       transcription?        @relation(fields: [transcription_id], references: [id])
-  message_type        message_type          @relation(fields: [type], references: [value])
-  user                user                  @relation(fields: [user_id], references: [id])
-  message_attachments message_attachments[]
+  topic_id           String               @db.Uuid
+  user_id            String               @db.Uuid
+  created_at         DateTime             @default(now()) @db.Timestamptz(6)
+  type               String
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  is_draft           Boolean              @default(false)
+  content            Json                 @default(dbgenerated("jsonb_build_array()"))
+  transcription_id   String?              @db.Uuid
+  topic              topic                @relation(fields: [topic_id], references: [id])
+  transcription      transcription?       @relation(fields: [transcription_id], references: [id])
+  message_type       message_type         @relation(fields: [type], references: [value])
+  user               user                 @relation(fields: [user_id], references: [id])
+  message_attachment message_attachment[]
 }
 
-model message_attachments {
+model message_attachment {
   message_id    String     @db.Uuid
   attachment_id String     @db.Uuid
   attachment    attachment @relation(fields: [attachment_id], references: [id])
@@ -60,20 +73,23 @@ model message_type {
 }
 
 model room {
-  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  creator_id          String              @db.Uuid
+  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  creator_id          String         @db.Uuid
   name                String?
-  created_at          DateTime            @default(now()) @db.Timestamptz(6)
-  deadline            DateTime            @default(now()) @db.Timestamptz(6)
+  created_at          DateTime       @default(now()) @db.Timestamptz(6)
+  deadline            DateTime       @default(now()) @db.Timestamptz(6)
   notification_job_id String?
   summary             String?
-  finished_at         DateTime?           @db.Timestamptz(6)
-  space_id            String?             @db.Uuid
-  user                user                @relation(fields: [creator_id], references: [id])
-  space               space?              @relation(fields: [space_id], references: [id])
+  finished_at         DateTime?      @db.Timestamptz(6)
+  space_id            String?        @db.Uuid
+  slug                String
+  user                user           @relation(fields: [creator_id], references: [id])
+  space               space?         @relation(fields: [space_id], references: [id])
   room_invites        room_invites[]
-  room_participants   room_participants[]
+  room_member         room_member[]
   topic               topic[]
+
+  @@unique([slug, space_id], name: "room_slug_space_id_key")
 }
 
 model room_invites {
@@ -90,7 +106,7 @@ model room_invites {
   @@unique([room_id, email], name: "room_invites_room_id_email_key")
 }
 
-model room_participants {
+model room_member {
   room_id String @db.Uuid
   user_id String @db.Uuid
   room    room   @relation(fields: [room_id], references: [id])
@@ -98,6 +114,83 @@ model room_participants {
 
   @@id([room_id, user_id])
   @@unique([room_id, user_id], name: "room_participants_room_id_user_id_key")
+}
+
+model space {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  creator_id   String         @db.Uuid
+  team_id      String         @db.Uuid
+  slug         String
+  team         team           @relation(fields: [team_id], references: [id])
+  room         room[]
+  space_member space_member[]
+
+  @@unique([team_id, slug], name: "space_team_id_slug_key")
+}
+
+model space_member {
+  space_id String @db.Uuid
+  user_id  String @db.Uuid
+  space    space  @relation(fields: [space_id], references: [id])
+  user     user   @relation(fields: [user_id], references: [id])
+
+  @@id([space_id, user_id])
+}
+
+model team {
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                            String            @unique
+  name                            String
+  owner_id                        String            @db.Uuid
+  user_team_owner_idTouser        user              @relation("team_owner_idTouser", fields: [owner_id], references: [id])
+  space                           space[]
+  team_invitation                 team_invitation[]
+  team_member                     team_member[]
+  user_teamTouser_current_team_id user[]            @relation("teamTouser_current_team_id")
+}
+
+model team_invitation {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String
+  used_at          DateTime? @db.Date
+  token            String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  inviting_user_id String    @db.Uuid
+  team_id          String    @db.Uuid
+  user             user      @relation(fields: [inviting_user_id], references: [id])
+  team             team      @relation(fields: [team_id], references: [id])
+}
+
+model team_member {
+  team_id String @db.Uuid
+  user_id String @db.Uuid
+  team    team   @relation(fields: [team_id], references: [id])
+  user    user   @relation(fields: [user_id], references: [id])
+
+  @@id([team_id, user_id])
+}
+
+model topic {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id      String         @db.Uuid
+  name         String?
+  index        String
+  slug         String
+  room         room           @relation(fields: [room_id], references: [id])
+  message      message[]
+  topic_member topic_member[]
+
+  @@unique([slug, room_id], name: "topic_slug_room_id_key")
+}
+
+model topic_member {
+  topic_id String @db.Uuid
+  user_id  String @db.Uuid
+  topic    topic  @relation(fields: [topic_id], references: [id])
+  user     user   @relation(fields: [user_id], references: [id])
+
+  @@id([topic_id, user_id])
 }
 
 model transcription {
@@ -117,18 +210,24 @@ model transcription_status {
 }
 
 model user {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email              String?              @unique
-  name               String?
-  avatar_url         String?
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  email_verified     DateTime?            @db.Timestamptz(6)
-  account            account[]
-  message            message[]
-  room               room[]
-  room_invites       room_invites[]
-  room_participants  room_participants[]
-  space_participants space_participants[]
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                           String?           @unique
+  name                            String?
+  avatar_url                      String?
+  created_at                      DateTime          @default(now()) @db.Timestamptz(6)
+  email_verified                  DateTime?         @db.Timestamptz(6)
+  current_team_id                 String?           @db.Uuid
+  team_teamTouser_current_team_id team?             @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
+  account                         account[]
+  message                         message[]
+  room                            room[]
+  room_invites                    room_invites[]
+  room_member                     room_member[]
+  space_member                    space_member[]
+  team_team_owner_idTouser        team[]            @relation("team_owner_idTouser")
+  team_invitation                 team_invitation[]
+  team_member                     team_member[]
+  topic_member                    topic_member[]
 }
 
 model verification_requests {
@@ -138,39 +237,4 @@ model verification_requests {
   identifier String
   token      String
   expires    DateTime @db.Timestamptz(6)
-}
-
-model topic {
-  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id String    @db.Uuid
-  name    String?
-  index   String
-  room    room      @relation(fields: [room_id], references: [id])
-  message message[]
-}
-
-model last_seen_message {
-  user_id    String   @db.Uuid
-  topic_id   String   @db.Uuid
-  seen_at    DateTime @default(now()) @db.Timestamptz(6)
-  message_id String   @db.Uuid
-
-  @@id([user_id, topic_id])
-}
-
-model space {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name               String
-  creator_id         String               @db.Uuid
-  room               room[]
-  space_participants space_participants[]
-}
-
-model space_participants {
-  space_id String @db.Uuid
-  user_id  String @db.Uuid
-  space    space  @relation(fields: [space_id], references: [id])
-  user     user   @relation(fields: [user_id], references: [id])
-
-  @@id([space_id, user_id])
 }

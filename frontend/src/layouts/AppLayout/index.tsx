@@ -6,12 +6,25 @@ import { Logo } from "~frontend/ui/Logo";
 import { NavItem } from "./NavItem";
 import { AppLayoutStyles } from "./styles";
 import { UserMenu } from "./UserMenu";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { LoginView } from "~frontend/views/LoginView";
+import { TeamPickerView } from "./TeamPicker";
 
 interface Props {
   children?: ReactNode;
 }
 
 export const AppLayout = ({ children }: Props) => {
+  const user = useCurrentUser();
+
+  if (!user) {
+    return <LoginView />;
+  }
+
+  if (!user.currentTeamId) {
+    return <TeamPickerView />;
+  }
+
   return (
     <>
       <AppLayoutStyles />

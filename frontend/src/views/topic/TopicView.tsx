@@ -30,7 +30,7 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ id }: Props) => {
-  const { data } = useTopicMessages.subscription({
+  const [data] = useTopicMessages.subscription({
     topicId: id,
   });
 

@@ -11,6 +11,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   bigint: any;
+  date: any;
   json: any;
   jsonb: any;
   timestamptz: any;
@@ -49,8 +50,8 @@ export type InviteAcceptResponse = {
   __typename?: 'InviteAcceptResponse';
   invite?: Maybe<Room_Invites>;
   invite_id: Scalars['ID'];
-  room?: Maybe<Room>;
-  room_id: Scalars['ID'];
+  team?: Maybe<Team>;
+  team_id: Scalars['ID'];
 };
 
 /** expression to compare columns of type String. All fields are combined with logical 'AND'. */
@@ -523,6 +524,20 @@ export type Bigint_Comparison_Exp = {
 };
 
 
+/** expression to compare columns of type date. All fields are combined with logical 'AND'. */
+export type Date_Comparison_Exp = {
+  _eq?: Maybe<Scalars['date']>;
+  _gt?: Maybe<Scalars['date']>;
+  _gte?: Maybe<Scalars['date']>;
+  _in?: Maybe<Array<Scalars['date']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['date']>;
+  _lte?: Maybe<Scalars['date']>;
+  _neq?: Maybe<Scalars['date']>;
+  _nin?: Maybe<Array<Scalars['date']>>;
+};
+
+
 /** expression to compare columns of type json. All fields are combined with logical 'AND'. */
 export type Json_Comparison_Exp = {
   _eq?: Maybe<Scalars['json']>;
@@ -731,6 +746,137 @@ export enum Last_Seen_Message_Update_Column {
   UserId = 'user_id'
 }
 
+/** columns and relationships of "membership_status" */
+export type Membership_Status = {
+  __typename?: 'membership_status';
+  value: Scalars['String'];
+};
+
+/** aggregated selection of "membership_status" */
+export type Membership_Status_Aggregate = {
+  __typename?: 'membership_status_aggregate';
+  aggregate?: Maybe<Membership_Status_Aggregate_Fields>;
+  nodes: Array<Membership_Status>;
+};
+
+/** aggregate fields of "membership_status" */
+export type Membership_Status_Aggregate_Fields = {
+  __typename?: 'membership_status_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Membership_Status_Max_Fields>;
+  min?: Maybe<Membership_Status_Min_Fields>;
+};
+
+
+/** aggregate fields of "membership_status" */
+export type Membership_Status_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Membership_Status_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "membership_status" */
+export type Membership_Status_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Membership_Status_Max_Order_By>;
+  min?: Maybe<Membership_Status_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "membership_status" */
+export type Membership_Status_Arr_Rel_Insert_Input = {
+  data: Array<Membership_Status_Insert_Input>;
+  on_conflict?: Maybe<Membership_Status_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "membership_status". All fields are combined with a logical 'AND'. */
+export type Membership_Status_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Membership_Status_Bool_Exp>>>;
+  _not?: Maybe<Membership_Status_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Membership_Status_Bool_Exp>>>;
+  value?: Maybe<String_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "membership_status" */
+export enum Membership_Status_Constraint {
+  /** unique or primary key constraint */
+  TeamMembershipStatusPkey = 'team_membership_status_pkey'
+}
+
+/** input type for inserting data into table "membership_status" */
+export type Membership_Status_Insert_Input = {
+  value?: Maybe<Scalars['String']>;
+};
+
+/** aggregate max on columns */
+export type Membership_Status_Max_Fields = {
+  __typename?: 'membership_status_max_fields';
+  value?: Maybe<Scalars['String']>;
+};
+
+/** order by max() on columns of table "membership_status" */
+export type Membership_Status_Max_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Membership_Status_Min_Fields = {
+  __typename?: 'membership_status_min_fields';
+  value?: Maybe<Scalars['String']>;
+};
+
+/** order by min() on columns of table "membership_status" */
+export type Membership_Status_Min_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "membership_status" */
+export type Membership_Status_Mutation_Response = {
+  __typename?: 'membership_status_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Membership_Status>;
+};
+
+/** input type for inserting object relation for remote table "membership_status" */
+export type Membership_Status_Obj_Rel_Insert_Input = {
+  data: Membership_Status_Insert_Input;
+  on_conflict?: Maybe<Membership_Status_On_Conflict>;
+};
+
+/** on conflict condition type for table "membership_status" */
+export type Membership_Status_On_Conflict = {
+  constraint: Membership_Status_Constraint;
+  update_columns: Array<Membership_Status_Update_Column>;
+  where?: Maybe<Membership_Status_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "membership_status" */
+export type Membership_Status_Order_By = {
+  value?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "membership_status" */
+export type Membership_Status_Pk_Columns_Input = {
+  value: Scalars['String'];
+};
+
+/** select columns of table "membership_status" */
+export enum Membership_Status_Select_Column {
+  /** column name */
+  Value = 'value'
+}
+
+/** input type for updating data in table "membership_status" */
+export type Membership_Status_Set_Input = {
+  value?: Maybe<Scalars['String']>;
+};
+
+/** update columns of table "membership_status" */
+export enum Membership_Status_Update_Column {
+  /** column name */
+  Value = 'value'
+}
+
 /** columns and relationships of "message" */
 export type Message = {
   __typename?: 'message';
@@ -739,9 +885,9 @@ export type Message = {
   id: Scalars['uuid'];
   is_draft: Scalars['Boolean'];
   /** An array relationship */
-  message_attachments: Array<Message_Attachments>;
+  message_attachments: Array<Message_Attachment>;
   /** An aggregated array relationship */
-  message_attachments_aggregate: Message_Attachments_Aggregate;
+  message_attachments_aggregate: Message_Attachment_Aggregate;
   /** An object relationship */
   message_type: Message_Type;
   /** An object relationship */
@@ -765,21 +911,21 @@ export type MessageContentArgs = {
 
 /** columns and relationships of "message" */
 export type MessageMessage_AttachmentsArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 
 /** columns and relationships of "message" */
 export type MessageMessage_Attachments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 /** aggregated selection of "message" */
@@ -822,9 +968,9 @@ export type Message_Arr_Rel_Insert_Input = {
   on_conflict?: Maybe<Message_On_Conflict>;
 };
 
-/** columns and relationships of "message_attachments" */
-export type Message_Attachments = {
-  __typename?: 'message_attachments';
+/** columns and relationships of "message_attachment" */
+export type Message_Attachment = {
+  __typename?: 'message_attachment';
   /** An object relationship */
   attachment: Attachment;
   attachment_id: Scalars['uuid'];
@@ -833,60 +979,60 @@ export type Message_Attachments = {
   message_id: Scalars['uuid'];
 };
 
-/** aggregated selection of "message_attachments" */
-export type Message_Attachments_Aggregate = {
-  __typename?: 'message_attachments_aggregate';
-  aggregate?: Maybe<Message_Attachments_Aggregate_Fields>;
-  nodes: Array<Message_Attachments>;
+/** aggregated selection of "message_attachment" */
+export type Message_Attachment_Aggregate = {
+  __typename?: 'message_attachment_aggregate';
+  aggregate?: Maybe<Message_Attachment_Aggregate_Fields>;
+  nodes: Array<Message_Attachment>;
 };
 
-/** aggregate fields of "message_attachments" */
-export type Message_Attachments_Aggregate_Fields = {
-  __typename?: 'message_attachments_aggregate_fields';
+/** aggregate fields of "message_attachment" */
+export type Message_Attachment_Aggregate_Fields = {
+  __typename?: 'message_attachment_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Message_Attachments_Max_Fields>;
-  min?: Maybe<Message_Attachments_Min_Fields>;
+  max?: Maybe<Message_Attachment_Max_Fields>;
+  min?: Maybe<Message_Attachment_Min_Fields>;
 };
 
 
-/** aggregate fields of "message_attachments" */
-export type Message_Attachments_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Message_Attachments_Select_Column>>;
+/** aggregate fields of "message_attachment" */
+export type Message_Attachment_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Message_Attachment_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
 };
 
-/** order by aggregate values of table "message_attachments" */
-export type Message_Attachments_Aggregate_Order_By = {
+/** order by aggregate values of table "message_attachment" */
+export type Message_Attachment_Aggregate_Order_By = {
   count?: Maybe<Order_By>;
-  max?: Maybe<Message_Attachments_Max_Order_By>;
-  min?: Maybe<Message_Attachments_Min_Order_By>;
+  max?: Maybe<Message_Attachment_Max_Order_By>;
+  min?: Maybe<Message_Attachment_Min_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "message_attachments" */
-export type Message_Attachments_Arr_Rel_Insert_Input = {
-  data: Array<Message_Attachments_Insert_Input>;
-  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+/** input type for inserting array relation for remote table "message_attachment" */
+export type Message_Attachment_Arr_Rel_Insert_Input = {
+  data: Array<Message_Attachment_Insert_Input>;
+  on_conflict?: Maybe<Message_Attachment_On_Conflict>;
 };
 
-/** Boolean expression to filter rows from the table "message_attachments". All fields are combined with a logical 'AND'. */
-export type Message_Attachments_Bool_Exp = {
-  _and?: Maybe<Array<Maybe<Message_Attachments_Bool_Exp>>>;
-  _not?: Maybe<Message_Attachments_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Message_Attachments_Bool_Exp>>>;
+/** Boolean expression to filter rows from the table "message_attachment". All fields are combined with a logical 'AND'. */
+export type Message_Attachment_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Message_Attachment_Bool_Exp>>>;
+  _not?: Maybe<Message_Attachment_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Message_Attachment_Bool_Exp>>>;
   attachment?: Maybe<Attachment_Bool_Exp>;
   attachment_id?: Maybe<Uuid_Comparison_Exp>;
   message?: Maybe<Message_Bool_Exp>;
   message_id?: Maybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "message_attachments" */
-export enum Message_Attachments_Constraint {
+/** unique or primary key constraints on table "message_attachment" */
+export enum Message_Attachment_Constraint {
   /** unique or primary key constraint */
   MessageAttachmentsPkey = 'message_attachments_pkey'
 }
 
-/** input type for inserting data into table "message_attachments" */
-export type Message_Attachments_Insert_Input = {
+/** input type for inserting data into table "message_attachment" */
+export type Message_Attachment_Insert_Input = {
   attachment?: Maybe<Attachment_Obj_Rel_Insert_Input>;
   attachment_id?: Maybe<Scalars['uuid']>;
   message?: Maybe<Message_Obj_Rel_Insert_Input>;
@@ -894,83 +1040,83 @@ export type Message_Attachments_Insert_Input = {
 };
 
 /** aggregate max on columns */
-export type Message_Attachments_Max_Fields = {
-  __typename?: 'message_attachments_max_fields';
+export type Message_Attachment_Max_Fields = {
+  __typename?: 'message_attachment_max_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
 };
 
-/** order by max() on columns of table "message_attachments" */
-export type Message_Attachments_Max_Order_By = {
+/** order by max() on columns of table "message_attachment" */
+export type Message_Attachment_Max_Order_By = {
   attachment_id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
 };
 
 /** aggregate min on columns */
-export type Message_Attachments_Min_Fields = {
-  __typename?: 'message_attachments_min_fields';
+export type Message_Attachment_Min_Fields = {
+  __typename?: 'message_attachment_min_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
 };
 
-/** order by min() on columns of table "message_attachments" */
-export type Message_Attachments_Min_Order_By = {
+/** order by min() on columns of table "message_attachment" */
+export type Message_Attachment_Min_Order_By = {
   attachment_id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
 };
 
-/** response of any mutation on the table "message_attachments" */
-export type Message_Attachments_Mutation_Response = {
-  __typename?: 'message_attachments_mutation_response';
+/** response of any mutation on the table "message_attachment" */
+export type Message_Attachment_Mutation_Response = {
+  __typename?: 'message_attachment_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
-  returning: Array<Message_Attachments>;
+  returning: Array<Message_Attachment>;
 };
 
-/** input type for inserting object relation for remote table "message_attachments" */
-export type Message_Attachments_Obj_Rel_Insert_Input = {
-  data: Message_Attachments_Insert_Input;
-  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+/** input type for inserting object relation for remote table "message_attachment" */
+export type Message_Attachment_Obj_Rel_Insert_Input = {
+  data: Message_Attachment_Insert_Input;
+  on_conflict?: Maybe<Message_Attachment_On_Conflict>;
 };
 
-/** on conflict condition type for table "message_attachments" */
-export type Message_Attachments_On_Conflict = {
-  constraint: Message_Attachments_Constraint;
-  update_columns: Array<Message_Attachments_Update_Column>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+/** on conflict condition type for table "message_attachment" */
+export type Message_Attachment_On_Conflict = {
+  constraint: Message_Attachment_Constraint;
+  update_columns: Array<Message_Attachment_Update_Column>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
-/** ordering options when selecting data from "message_attachments" */
-export type Message_Attachments_Order_By = {
+/** ordering options when selecting data from "message_attachment" */
+export type Message_Attachment_Order_By = {
   attachment?: Maybe<Attachment_Order_By>;
   attachment_id?: Maybe<Order_By>;
   message?: Maybe<Message_Order_By>;
   message_id?: Maybe<Order_By>;
 };
 
-/** primary key columns input for table: "message_attachments" */
-export type Message_Attachments_Pk_Columns_Input = {
+/** primary key columns input for table: "message_attachment" */
+export type Message_Attachment_Pk_Columns_Input = {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
 };
 
-/** select columns of table "message_attachments" */
-export enum Message_Attachments_Select_Column {
+/** select columns of table "message_attachment" */
+export enum Message_Attachment_Select_Column {
   /** column name */
   AttachmentId = 'attachment_id',
   /** column name */
   MessageId = 'message_id'
 }
 
-/** input type for updating data in table "message_attachments" */
-export type Message_Attachments_Set_Input = {
+/** input type for updating data in table "message_attachment" */
+export type Message_Attachment_Set_Input = {
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
 };
 
-/** update columns of table "message_attachments" */
-export enum Message_Attachments_Update_Column {
+/** update columns of table "message_attachment" */
+export enum Message_Attachment_Update_Column {
   /** column name */
   AttachmentId = 'attachment_id',
   /** column name */
@@ -986,7 +1132,7 @@ export type Message_Bool_Exp = {
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   is_draft?: Maybe<Boolean_Comparison_Exp>;
-  message_attachments?: Maybe<Message_Attachments_Bool_Exp>;
+  message_attachments?: Maybe<Message_Attachment_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
@@ -1026,7 +1172,7 @@ export type Message_Insert_Input = {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
-  message_attachments?: Maybe<Message_Attachments_Arr_Rel_Insert_Input>;
+  message_attachments?: Maybe<Message_Attachment_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
@@ -1103,7 +1249,7 @@ export type Message_Order_By = {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   is_draft?: Maybe<Order_By>;
-  message_attachments_aggregate?: Maybe<Message_Attachments_Aggregate_Order_By>;
+  message_attachments_aggregate?: Maybe<Message_Attachment_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
@@ -1345,12 +1491,16 @@ export type Mutation_Root = {
   delete_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** delete single row from the table: "last_seen_message" */
   delete_last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
+  /** delete data from the table: "membership_status" */
+  delete_membership_status?: Maybe<Membership_Status_Mutation_Response>;
+  /** delete single row from the table: "membership_status" */
+  delete_membership_status_by_pk?: Maybe<Membership_Status>;
   /** delete data from the table: "message" */
   delete_message?: Maybe<Message_Mutation_Response>;
-  /** delete data from the table: "message_attachments" */
-  delete_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
-  /** delete single row from the table: "message_attachments" */
-  delete_message_attachments_by_pk?: Maybe<Message_Attachments>;
+  /** delete data from the table: "message_attachment" */
+  delete_message_attachment?: Maybe<Message_Attachment_Mutation_Response>;
+  /** delete single row from the table: "message_attachment" */
+  delete_message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** delete single row from the table: "message" */
   delete_message_by_pk?: Maybe<Message>;
   /** delete data from the table: "message_type" */
@@ -1365,22 +1515,38 @@ export type Mutation_Root = {
   delete_room_invites?: Maybe<Room_Invites_Mutation_Response>;
   /** delete single row from the table: "room_invites" */
   delete_room_invites_by_pk?: Maybe<Room_Invites>;
-  /** delete data from the table: "room_participants" */
-  delete_room_participants?: Maybe<Room_Participants_Mutation_Response>;
-  /** delete single row from the table: "room_participants" */
-  delete_room_participants_by_pk?: Maybe<Room_Participants>;
+  /** delete data from the table: "room_member" */
+  delete_room_member?: Maybe<Room_Member_Mutation_Response>;
+  /** delete single row from the table: "room_member" */
+  delete_room_member_by_pk?: Maybe<Room_Member>;
   /** delete data from the table: "space" */
   delete_space?: Maybe<Space_Mutation_Response>;
   /** delete single row from the table: "space" */
   delete_space_by_pk?: Maybe<Space>;
-  /** delete data from the table: "space_participants" */
-  delete_space_participants?: Maybe<Space_Participants_Mutation_Response>;
-  /** delete single row from the table: "space_participants" */
-  delete_space_participants_by_pk?: Maybe<Space_Participants>;
+  /** delete data from the table: "space_member" */
+  delete_space_member?: Maybe<Space_Member_Mutation_Response>;
+  /** delete single row from the table: "space_member" */
+  delete_space_member_by_pk?: Maybe<Space_Member>;
+  /** delete data from the table: "team" */
+  delete_team?: Maybe<Team_Mutation_Response>;
+  /** delete single row from the table: "team" */
+  delete_team_by_pk?: Maybe<Team>;
+  /** delete data from the table: "team_invitation" */
+  delete_team_invitation?: Maybe<Team_Invitation_Mutation_Response>;
+  /** delete single row from the table: "team_invitation" */
+  delete_team_invitation_by_pk?: Maybe<Team_Invitation>;
+  /** delete data from the table: "team_member" */
+  delete_team_member?: Maybe<Team_Member_Mutation_Response>;
+  /** delete single row from the table: "team_member" */
+  delete_team_member_by_pk?: Maybe<Team_Member>;
   /** delete data from the table: "topic" */
   delete_topic?: Maybe<Topic_Mutation_Response>;
   /** delete single row from the table: "topic" */
   delete_topic_by_pk?: Maybe<Topic>;
+  /** delete data from the table: "topic_member" */
+  delete_topic_member?: Maybe<Topic_Member_Mutation_Response>;
+  /** delete single row from the table: "topic_member" */
+  delete_topic_member_by_pk?: Maybe<Topic_Member>;
   /** delete data from the table: "transcription" */
   delete_transcription?: Maybe<Transcription_Mutation_Response>;
   /** delete single row from the table: "transcription" */
@@ -1405,12 +1571,16 @@ export type Mutation_Root = {
   insert_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** insert a single row into the table: "last_seen_message" */
   insert_last_seen_message_one?: Maybe<Last_Seen_Message>;
+  /** insert data into the table: "membership_status" */
+  insert_membership_status?: Maybe<Membership_Status_Mutation_Response>;
+  /** insert a single row into the table: "membership_status" */
+  insert_membership_status_one?: Maybe<Membership_Status>;
   /** insert data into the table: "message" */
   insert_message?: Maybe<Message_Mutation_Response>;
-  /** insert data into the table: "message_attachments" */
-  insert_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
-  /** insert a single row into the table: "message_attachments" */
-  insert_message_attachments_one?: Maybe<Message_Attachments>;
+  /** insert data into the table: "message_attachment" */
+  insert_message_attachment?: Maybe<Message_Attachment_Mutation_Response>;
+  /** insert a single row into the table: "message_attachment" */
+  insert_message_attachment_one?: Maybe<Message_Attachment>;
   /** insert a single row into the table: "message" */
   insert_message_one?: Maybe<Message>;
   /** insert data into the table: "message_type" */
@@ -1423,22 +1593,38 @@ export type Mutation_Root = {
   insert_room_invites?: Maybe<Room_Invites_Mutation_Response>;
   /** insert a single row into the table: "room_invites" */
   insert_room_invites_one?: Maybe<Room_Invites>;
+  /** insert data into the table: "room_member" */
+  insert_room_member?: Maybe<Room_Member_Mutation_Response>;
+  /** insert a single row into the table: "room_member" */
+  insert_room_member_one?: Maybe<Room_Member>;
   /** insert a single row into the table: "room" */
   insert_room_one?: Maybe<Room>;
-  /** insert data into the table: "room_participants" */
-  insert_room_participants?: Maybe<Room_Participants_Mutation_Response>;
-  /** insert a single row into the table: "room_participants" */
-  insert_room_participants_one?: Maybe<Room_Participants>;
   /** insert data into the table: "space" */
   insert_space?: Maybe<Space_Mutation_Response>;
+  /** insert data into the table: "space_member" */
+  insert_space_member?: Maybe<Space_Member_Mutation_Response>;
+  /** insert a single row into the table: "space_member" */
+  insert_space_member_one?: Maybe<Space_Member>;
   /** insert a single row into the table: "space" */
   insert_space_one?: Maybe<Space>;
-  /** insert data into the table: "space_participants" */
-  insert_space_participants?: Maybe<Space_Participants_Mutation_Response>;
-  /** insert a single row into the table: "space_participants" */
-  insert_space_participants_one?: Maybe<Space_Participants>;
+  /** insert data into the table: "team" */
+  insert_team?: Maybe<Team_Mutation_Response>;
+  /** insert data into the table: "team_invitation" */
+  insert_team_invitation?: Maybe<Team_Invitation_Mutation_Response>;
+  /** insert a single row into the table: "team_invitation" */
+  insert_team_invitation_one?: Maybe<Team_Invitation>;
+  /** insert data into the table: "team_member" */
+  insert_team_member?: Maybe<Team_Member_Mutation_Response>;
+  /** insert a single row into the table: "team_member" */
+  insert_team_member_one?: Maybe<Team_Member>;
+  /** insert a single row into the table: "team" */
+  insert_team_one?: Maybe<Team>;
   /** insert data into the table: "topic" */
   insert_topic?: Maybe<Topic_Mutation_Response>;
+  /** insert data into the table: "topic_member" */
+  insert_topic_member?: Maybe<Topic_Member_Mutation_Response>;
+  /** insert a single row into the table: "topic_member" */
+  insert_topic_member_one?: Maybe<Topic_Member>;
   /** insert a single row into the table: "topic" */
   insert_topic_one?: Maybe<Topic>;
   /** insert data into the table: "transcription" */
@@ -1465,12 +1651,16 @@ export type Mutation_Root = {
   update_last_seen_message?: Maybe<Last_Seen_Message_Mutation_Response>;
   /** update single row of the table: "last_seen_message" */
   update_last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
+  /** update data of the table: "membership_status" */
+  update_membership_status?: Maybe<Membership_Status_Mutation_Response>;
+  /** update single row of the table: "membership_status" */
+  update_membership_status_by_pk?: Maybe<Membership_Status>;
   /** update data of the table: "message" */
   update_message?: Maybe<Message_Mutation_Response>;
-  /** update data of the table: "message_attachments" */
-  update_message_attachments?: Maybe<Message_Attachments_Mutation_Response>;
-  /** update single row of the table: "message_attachments" */
-  update_message_attachments_by_pk?: Maybe<Message_Attachments>;
+  /** update data of the table: "message_attachment" */
+  update_message_attachment?: Maybe<Message_Attachment_Mutation_Response>;
+  /** update single row of the table: "message_attachment" */
+  update_message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** update single row of the table: "message" */
   update_message_by_pk?: Maybe<Message>;
   /** update data of the table: "message_type" */
@@ -1485,22 +1675,38 @@ export type Mutation_Root = {
   update_room_invites?: Maybe<Room_Invites_Mutation_Response>;
   /** update single row of the table: "room_invites" */
   update_room_invites_by_pk?: Maybe<Room_Invites>;
-  /** update data of the table: "room_participants" */
-  update_room_participants?: Maybe<Room_Participants_Mutation_Response>;
-  /** update single row of the table: "room_participants" */
-  update_room_participants_by_pk?: Maybe<Room_Participants>;
+  /** update data of the table: "room_member" */
+  update_room_member?: Maybe<Room_Member_Mutation_Response>;
+  /** update single row of the table: "room_member" */
+  update_room_member_by_pk?: Maybe<Room_Member>;
   /** update data of the table: "space" */
   update_space?: Maybe<Space_Mutation_Response>;
   /** update single row of the table: "space" */
   update_space_by_pk?: Maybe<Space>;
-  /** update data of the table: "space_participants" */
-  update_space_participants?: Maybe<Space_Participants_Mutation_Response>;
-  /** update single row of the table: "space_participants" */
-  update_space_participants_by_pk?: Maybe<Space_Participants>;
+  /** update data of the table: "space_member" */
+  update_space_member?: Maybe<Space_Member_Mutation_Response>;
+  /** update single row of the table: "space_member" */
+  update_space_member_by_pk?: Maybe<Space_Member>;
+  /** update data of the table: "team" */
+  update_team?: Maybe<Team_Mutation_Response>;
+  /** update single row of the table: "team" */
+  update_team_by_pk?: Maybe<Team>;
+  /** update data of the table: "team_invitation" */
+  update_team_invitation?: Maybe<Team_Invitation_Mutation_Response>;
+  /** update single row of the table: "team_invitation" */
+  update_team_invitation_by_pk?: Maybe<Team_Invitation>;
+  /** update data of the table: "team_member" */
+  update_team_member?: Maybe<Team_Member_Mutation_Response>;
+  /** update single row of the table: "team_member" */
+  update_team_member_by_pk?: Maybe<Team_Member>;
   /** update data of the table: "topic" */
   update_topic?: Maybe<Topic_Mutation_Response>;
   /** update single row of the table: "topic" */
   update_topic_by_pk?: Maybe<Topic>;
+  /** update data of the table: "topic_member" */
+  update_topic_member?: Maybe<Topic_Member_Mutation_Response>;
+  /** update single row of the table: "topic_member" */
+  update_topic_member_by_pk?: Maybe<Topic_Member>;
   /** update data of the table: "transcription" */
   update_transcription?: Maybe<Transcription_Mutation_Response>;
   /** update single row of the table: "transcription" */
@@ -1520,7 +1726,7 @@ export type Mutation_Root = {
 
 /** mutation root */
 export type Mutation_RootAccept_InviteArgs = {
-  code: Scalars['String'];
+  token: Scalars['String'];
 };
 
 
@@ -1562,19 +1768,31 @@ export type Mutation_RootDelete_Last_Seen_Message_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDelete_Membership_StatusArgs = {
+  where: Membership_Status_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Membership_Status_By_PkArgs = {
+  value: Scalars['String'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDelete_MessageArgs = {
   where: Message_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_AttachmentsArgs = {
-  where: Message_Attachments_Bool_Exp;
+export type Mutation_RootDelete_Message_AttachmentArgs = {
+  where: Message_Attachment_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_Attachments_By_PkArgs = {
+export type Mutation_RootDelete_Message_Attachment_By_PkArgs = {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
 };
@@ -1623,13 +1841,13 @@ export type Mutation_RootDelete_Room_Invites_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_ParticipantsArgs = {
-  where: Room_Participants_Bool_Exp;
+export type Mutation_RootDelete_Room_MemberArgs = {
+  where: Room_Member_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_Participants_By_PkArgs = {
+export type Mutation_RootDelete_Room_Member_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
@@ -1648,14 +1866,51 @@ export type Mutation_RootDelete_Space_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootDelete_Space_ParticipantsArgs = {
-  where: Space_Participants_Bool_Exp;
+export type Mutation_RootDelete_Space_MemberArgs = {
+  where: Space_Member_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootDelete_Space_Participants_By_PkArgs = {
+export type Mutation_RootDelete_Space_Member_By_PkArgs = {
   space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_TeamArgs = {
+  where: Team_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Team_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Team_InvitationArgs = {
+  where: Team_Invitation_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Team_Invitation_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Team_MemberArgs = {
+  where: Team_Member_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Team_Member_By_PkArgs = {
+  team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
 
@@ -1669,6 +1924,19 @@ export type Mutation_RootDelete_TopicArgs = {
 /** mutation root */
 export type Mutation_RootDelete_Topic_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Topic_MemberArgs = {
+  where: Topic_Member_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Topic_Member_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -1751,6 +2019,20 @@ export type Mutation_RootInsert_Last_Seen_Message_OneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsert_Membership_StatusArgs = {
+  objects: Array<Membership_Status_Insert_Input>;
+  on_conflict?: Maybe<Membership_Status_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Membership_Status_OneArgs = {
+  object: Membership_Status_Insert_Input;
+  on_conflict?: Maybe<Membership_Status_On_Conflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_MessageArgs = {
   objects: Array<Message_Insert_Input>;
   on_conflict?: Maybe<Message_On_Conflict>;
@@ -1758,16 +2040,16 @@ export type Mutation_RootInsert_MessageArgs = {
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_AttachmentsArgs = {
-  objects: Array<Message_Attachments_Insert_Input>;
-  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+export type Mutation_RootInsert_Message_AttachmentArgs = {
+  objects: Array<Message_Attachment_Insert_Input>;
+  on_conflict?: Maybe<Message_Attachment_On_Conflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_Attachments_OneArgs = {
-  object: Message_Attachments_Insert_Input;
-  on_conflict?: Maybe<Message_Attachments_On_Conflict>;
+export type Mutation_RootInsert_Message_Attachment_OneArgs = {
+  object: Message_Attachment_Insert_Input;
+  on_conflict?: Maybe<Message_Attachment_On_Conflict>;
 };
 
 
@@ -1814,23 +2096,23 @@ export type Mutation_RootInsert_Room_Invites_OneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsert_Room_MemberArgs = {
+  objects: Array<Room_Member_Insert_Input>;
+  on_conflict?: Maybe<Room_Member_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Room_Member_OneArgs = {
+  object: Room_Member_Insert_Input;
+  on_conflict?: Maybe<Room_Member_On_Conflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_Room_OneArgs = {
   object: Room_Insert_Input;
   on_conflict?: Maybe<Room_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Room_ParticipantsArgs = {
-  objects: Array<Room_Participants_Insert_Input>;
-  on_conflict?: Maybe<Room_Participants_On_Conflict>;
-};
-
-
-/** mutation root */
-export type Mutation_RootInsert_Room_Participants_OneArgs = {
-  object: Room_Participants_Insert_Input;
-  on_conflict?: Maybe<Room_Participants_On_Conflict>;
 };
 
 
@@ -1842,6 +2124,20 @@ export type Mutation_RootInsert_SpaceArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsert_Space_MemberArgs = {
+  objects: Array<Space_Member_Insert_Input>;
+  on_conflict?: Maybe<Space_Member_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Space_Member_OneArgs = {
+  object: Space_Member_Insert_Input;
+  on_conflict?: Maybe<Space_Member_On_Conflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsert_Space_OneArgs = {
   object: Space_Insert_Input;
   on_conflict?: Maybe<Space_On_Conflict>;
@@ -1849,16 +2145,44 @@ export type Mutation_RootInsert_Space_OneArgs = {
 
 
 /** mutation root */
-export type Mutation_RootInsert_Space_ParticipantsArgs = {
-  objects: Array<Space_Participants_Insert_Input>;
-  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+export type Mutation_RootInsert_TeamArgs = {
+  objects: Array<Team_Insert_Input>;
+  on_conflict?: Maybe<Team_On_Conflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsert_Space_Participants_OneArgs = {
-  object: Space_Participants_Insert_Input;
-  on_conflict?: Maybe<Space_Participants_On_Conflict>;
+export type Mutation_RootInsert_Team_InvitationArgs = {
+  objects: Array<Team_Invitation_Insert_Input>;
+  on_conflict?: Maybe<Team_Invitation_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Team_Invitation_OneArgs = {
+  object: Team_Invitation_Insert_Input;
+  on_conflict?: Maybe<Team_Invitation_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Team_MemberArgs = {
+  objects: Array<Team_Member_Insert_Input>;
+  on_conflict?: Maybe<Team_Member_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Team_Member_OneArgs = {
+  object: Team_Member_Insert_Input;
+  on_conflict?: Maybe<Team_Member_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Team_OneArgs = {
+  object: Team_Insert_Input;
+  on_conflict?: Maybe<Team_On_Conflict>;
 };
 
 
@@ -1866,6 +2190,20 @@ export type Mutation_RootInsert_Space_Participants_OneArgs = {
 export type Mutation_RootInsert_TopicArgs = {
   objects: Array<Topic_Insert_Input>;
   on_conflict?: Maybe<Topic_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Topic_MemberArgs = {
+  objects: Array<Topic_Member_Insert_Input>;
+  on_conflict?: Maybe<Topic_Member_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Topic_Member_OneArgs = {
+  object: Topic_Member_Insert_Input;
+  on_conflict?: Maybe<Topic_Member_On_Conflict>;
 };
 
 
@@ -1961,6 +2299,20 @@ export type Mutation_RootUpdate_Last_Seen_Message_By_PkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdate_Membership_StatusArgs = {
+  _set?: Maybe<Membership_Status_Set_Input>;
+  where: Membership_Status_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Membership_Status_By_PkArgs = {
+  _set?: Maybe<Membership_Status_Set_Input>;
+  pk_columns: Membership_Status_Pk_Columns_Input;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdate_MessageArgs = {
   _append?: Maybe<Message_Append_Input>;
   _delete_at_path?: Maybe<Message_Delete_At_Path_Input>;
@@ -1973,16 +2325,16 @@ export type Mutation_RootUpdate_MessageArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_AttachmentsArgs = {
-  _set?: Maybe<Message_Attachments_Set_Input>;
-  where: Message_Attachments_Bool_Exp;
+export type Mutation_RootUpdate_Message_AttachmentArgs = {
+  _set?: Maybe<Message_Attachment_Set_Input>;
+  where: Message_Attachment_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_Attachments_By_PkArgs = {
-  _set?: Maybe<Message_Attachments_Set_Input>;
-  pk_columns: Message_Attachments_Pk_Columns_Input;
+export type Mutation_RootUpdate_Message_Attachment_By_PkArgs = {
+  _set?: Maybe<Message_Attachment_Set_Input>;
+  pk_columns: Message_Attachment_Pk_Columns_Input;
 };
 
 
@@ -2041,16 +2393,16 @@ export type Mutation_RootUpdate_Room_Invites_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_ParticipantsArgs = {
-  _set?: Maybe<Room_Participants_Set_Input>;
-  where: Room_Participants_Bool_Exp;
+export type Mutation_RootUpdate_Room_MemberArgs = {
+  _set?: Maybe<Room_Member_Set_Input>;
+  where: Room_Member_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_Participants_By_PkArgs = {
-  _set?: Maybe<Room_Participants_Set_Input>;
-  pk_columns: Room_Participants_Pk_Columns_Input;
+export type Mutation_RootUpdate_Room_Member_By_PkArgs = {
+  _set?: Maybe<Room_Member_Set_Input>;
+  pk_columns: Room_Member_Pk_Columns_Input;
 };
 
 
@@ -2069,16 +2421,58 @@ export type Mutation_RootUpdate_Space_By_PkArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Space_ParticipantsArgs = {
-  _set?: Maybe<Space_Participants_Set_Input>;
-  where: Space_Participants_Bool_Exp;
+export type Mutation_RootUpdate_Space_MemberArgs = {
+  _set?: Maybe<Space_Member_Set_Input>;
+  where: Space_Member_Bool_Exp;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Space_Participants_By_PkArgs = {
-  _set?: Maybe<Space_Participants_Set_Input>;
-  pk_columns: Space_Participants_Pk_Columns_Input;
+export type Mutation_RootUpdate_Space_Member_By_PkArgs = {
+  _set?: Maybe<Space_Member_Set_Input>;
+  pk_columns: Space_Member_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_TeamArgs = {
+  _set?: Maybe<Team_Set_Input>;
+  where: Team_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Team_By_PkArgs = {
+  _set?: Maybe<Team_Set_Input>;
+  pk_columns: Team_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Team_InvitationArgs = {
+  _set?: Maybe<Team_Invitation_Set_Input>;
+  where: Team_Invitation_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Team_Invitation_By_PkArgs = {
+  _set?: Maybe<Team_Invitation_Set_Input>;
+  pk_columns: Team_Invitation_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Team_MemberArgs = {
+  _set?: Maybe<Team_Member_Set_Input>;
+  where: Team_Member_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Team_Member_By_PkArgs = {
+  _set?: Maybe<Team_Member_Set_Input>;
+  pk_columns: Team_Member_Pk_Columns_Input;
 };
 
 
@@ -2093,6 +2487,20 @@ export type Mutation_RootUpdate_TopicArgs = {
 export type Mutation_RootUpdate_Topic_By_PkArgs = {
   _set?: Maybe<Topic_Set_Input>;
   pk_columns: Topic_Pk_Columns_Input;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Topic_MemberArgs = {
+  _set?: Maybe<Topic_Member_Set_Input>;
+  where: Topic_Member_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Topic_Member_By_PkArgs = {
+  _set?: Maybe<Topic_Member_Set_Input>;
+  pk_columns: Topic_Member_Pk_Columns_Input;
 };
 
 
@@ -2188,16 +2596,22 @@ export type Query_Root = {
   last_seen_message_aggregate: Last_Seen_Message_Aggregate;
   /** fetch data from the table: "last_seen_message" using primary key columns */
   last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
+  /** fetch data from the table: "membership_status" */
+  membership_status: Array<Membership_Status>;
+  /** fetch aggregated fields from the table: "membership_status" */
+  membership_status_aggregate: Membership_Status_Aggregate;
+  /** fetch data from the table: "membership_status" using primary key columns */
+  membership_status_by_pk?: Maybe<Membership_Status>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
-  /** fetch data from the table: "message_attachments" */
-  message_attachments: Array<Message_Attachments>;
-  /** fetch aggregated fields from the table: "message_attachments" */
-  message_attachments_aggregate: Message_Attachments_Aggregate;
-  /** fetch data from the table: "message_attachments" using primary key columns */
-  message_attachments_by_pk?: Maybe<Message_Attachments>;
+  /** fetch data from the table: "message_attachment" */
+  message_attachment: Array<Message_Attachment>;
+  /** fetch aggregated fields from the table: "message_attachment" */
+  message_attachment_aggregate: Message_Attachment_Aggregate;
+  /** fetch data from the table: "message_attachment" using primary key columns */
+  message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
   /** fetch data from the table: "message_type" */
@@ -2218,30 +2632,54 @@ export type Query_Root = {
   room_invites_aggregate: Room_Invites_Aggregate;
   /** fetch data from the table: "room_invites" using primary key columns */
   room_invites_by_pk?: Maybe<Room_Invites>;
-  /** fetch data from the table: "room_participants" */
-  room_participants: Array<Room_Participants>;
-  /** fetch aggregated fields from the table: "room_participants" */
-  room_participants_aggregate: Room_Participants_Aggregate;
-  /** fetch data from the table: "room_participants" using primary key columns */
-  room_participants_by_pk?: Maybe<Room_Participants>;
+  /** fetch data from the table: "room_member" */
+  room_member: Array<Room_Member>;
+  /** fetch aggregated fields from the table: "room_member" */
+  room_member_aggregate: Room_Member_Aggregate;
+  /** fetch data from the table: "room_member" using primary key columns */
+  room_member_by_pk?: Maybe<Room_Member>;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
   space_aggregate: Space_Aggregate;
   /** fetch data from the table: "space" using primary key columns */
   space_by_pk?: Maybe<Space>;
-  /** fetch data from the table: "space_participants" */
-  space_participants: Array<Space_Participants>;
-  /** fetch aggregated fields from the table: "space_participants" */
-  space_participants_aggregate: Space_Participants_Aggregate;
-  /** fetch data from the table: "space_participants" using primary key columns */
-  space_participants_by_pk?: Maybe<Space_Participants>;
+  /** fetch data from the table: "space_member" */
+  space_member: Array<Space_Member>;
+  /** fetch aggregated fields from the table: "space_member" */
+  space_member_aggregate: Space_Member_Aggregate;
+  /** fetch data from the table: "space_member" using primary key columns */
+  space_member_by_pk?: Maybe<Space_Member>;
+  /** fetch data from the table: "team" */
+  team: Array<Team>;
+  /** fetch aggregated fields from the table: "team" */
+  team_aggregate: Team_Aggregate;
+  /** fetch data from the table: "team" using primary key columns */
+  team_by_pk?: Maybe<Team>;
+  /** fetch data from the table: "team_invitation" */
+  team_invitation: Array<Team_Invitation>;
+  /** fetch aggregated fields from the table: "team_invitation" */
+  team_invitation_aggregate: Team_Invitation_Aggregate;
+  /** fetch data from the table: "team_invitation" using primary key columns */
+  team_invitation_by_pk?: Maybe<Team_Invitation>;
+  /** fetch data from the table: "team_member" */
+  team_member: Array<Team_Member>;
+  /** fetch aggregated fields from the table: "team_member" */
+  team_member_aggregate: Team_Member_Aggregate;
+  /** fetch data from the table: "team_member" using primary key columns */
+  team_member_by_pk?: Maybe<Team_Member>;
   /** fetch data from the table: "topic" */
   topic: Array<Topic>;
   /** fetch aggregated fields from the table: "topic" */
   topic_aggregate: Topic_Aggregate;
   /** fetch data from the table: "topic" using primary key columns */
   topic_by_pk?: Maybe<Topic>;
+  /** fetch data from the table: "topic_member" */
+  topic_member: Array<Topic_Member>;
+  /** fetch aggregated fields from the table: "topic_member" */
+  topic_member_aggregate: Topic_Member_Aggregate;
+  /** fetch data from the table: "topic_member" using primary key columns */
+  topic_member_by_pk?: Maybe<Topic_Member>;
   /** fetch data from the table: "transcription" */
   transcription: Array<Transcription>;
   /** fetch aggregated fields from the table: "transcription" */
@@ -2360,6 +2798,32 @@ export type Query_RootLast_Seen_Message_By_PkArgs = {
 
 
 /** query root */
+export type Query_RootMembership_StatusArgs = {
+  distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Membership_Status_Order_By>>;
+  where?: Maybe<Membership_Status_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMembership_Status_AggregateArgs = {
+  distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Membership_Status_Order_By>>;
+  where?: Maybe<Membership_Status_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootMembership_Status_By_PkArgs = {
+  value: Scalars['String'];
+};
+
+
+/** query root */
 export type Query_RootMessageArgs = {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -2380,27 +2844,27 @@ export type Query_RootMessage_AggregateArgs = {
 
 
 /** query root */
-export type Query_RootMessage_AttachmentsArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+export type Query_RootMessage_AttachmentArgs = {
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootMessage_Attachments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+export type Query_RootMessage_Attachment_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootMessage_Attachments_By_PkArgs = {
+export type Query_RootMessage_Attachment_By_PkArgs = {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
 };
@@ -2491,27 +2955,27 @@ export type Query_RootRoom_Invites_By_PkArgs = {
 
 
 /** query root */
-export type Query_RootRoom_ParticipantsArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type Query_RootRoom_MemberArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootRoom_Participants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type Query_RootRoom_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootRoom_Participants_By_PkArgs = {
+export type Query_RootRoom_Member_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
@@ -2544,28 +3008,107 @@ export type Query_RootSpace_By_PkArgs = {
 
 
 /** query root */
-export type Query_RootSpace_ParticipantsArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type Query_RootSpace_MemberArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootSpace_Participants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type Query_RootSpace_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
 /** query root */
-export type Query_RootSpace_Participants_By_PkArgs = {
+export type Query_RootSpace_Member_By_PkArgs = {
   space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTeamArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTeam_InvitationArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_Invitation_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_Invitation_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTeam_MemberArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTeam_Member_By_PkArgs = {
+  team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
 
@@ -2593,6 +3136,33 @@ export type Query_RootTopic_AggregateArgs = {
 /** query root */
 export type Query_RootTopic_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootTopic_MemberArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTopic_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootTopic_Member_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -2703,16 +3273,17 @@ export type Room = {
   deadline: Scalars['timestamptz'];
   finished_at?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
+  /** An array relationship */
+  members: Array<Room_Member>;
+  /** An aggregated array relationship */
+  members_aggregate: Room_Member_Aggregate;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
-  /** An array relationship */
-  participants: Array<Room_Participants>;
-  /** An aggregated array relationship */
-  participants_aggregate: Room_Participants_Aggregate;
   /** An array relationship */
   room_invites: Array<Room_Invites>;
   /** An aggregated array relationship */
   room_invites_aggregate: Room_Invites_Aggregate;
+  slug: Scalars['String'];
   /** An object relationship */
   space?: Maybe<Space>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -2725,22 +3296,22 @@ export type Room = {
 
 
 /** columns and relationships of "room" */
-export type RoomParticipantsArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type RoomMembersArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** columns and relationships of "room" */
-export type RoomParticipants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type RoomMembers_AggregateArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
@@ -2829,10 +3400,11 @@ export type Room_Bool_Exp = {
   deadline?: Maybe<Timestamptz_Comparison_Exp>;
   finished_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   notification_job_id?: Maybe<String_Comparison_Exp>;
-  participants?: Maybe<Room_Participants_Bool_Exp>;
   room_invites?: Maybe<Room_Invites_Bool_Exp>;
+  slug?: Maybe<String_Comparison_Exp>;
   space?: Maybe<Space_Bool_Exp>;
   space_id?: Maybe<Uuid_Comparison_Exp>;
   summary?: Maybe<String_Comparison_Exp>;
@@ -2842,7 +3414,9 @@ export type Room_Bool_Exp = {
 /** unique or primary key constraints on table "room" */
 export enum Room_Constraint {
   /** unique or primary key constraint */
-  RoomPkey = 'room_pkey'
+  RoomPkey = 'room_pkey',
+  /** unique or primary key constraint */
+  RoomSlugSpaceIdKey = 'room_slug_space_id_key'
 }
 
 /** input type for inserting data into table "room" */
@@ -2853,10 +3427,11 @@ export type Room_Insert_Input = {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  members?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
-  participants?: Maybe<Room_Participants_Arr_Rel_Insert_Input>;
   room_invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
+  slug?: Maybe<Scalars['String']>;
   space?: Maybe<Space_Obj_Rel_Insert_Input>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
@@ -3096,6 +3671,7 @@ export type Room_Max_Fields = {
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
 };
@@ -3109,9 +3685,167 @@ export type Room_Max_Order_By = {
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
 };
+
+/** columns and relationships of "room_member" */
+export type Room_Member = {
+  __typename?: 'room_member';
+  /** An object relationship */
+  room: Room;
+  room_id: Scalars['uuid'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "room_member" */
+export type Room_Member_Aggregate = {
+  __typename?: 'room_member_aggregate';
+  aggregate?: Maybe<Room_Member_Aggregate_Fields>;
+  nodes: Array<Room_Member>;
+};
+
+/** aggregate fields of "room_member" */
+export type Room_Member_Aggregate_Fields = {
+  __typename?: 'room_member_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Room_Member_Max_Fields>;
+  min?: Maybe<Room_Member_Min_Fields>;
+};
+
+
+/** aggregate fields of "room_member" */
+export type Room_Member_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Room_Member_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "room_member" */
+export type Room_Member_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Room_Member_Max_Order_By>;
+  min?: Maybe<Room_Member_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "room_member" */
+export type Room_Member_Arr_Rel_Insert_Input = {
+  data: Array<Room_Member_Insert_Input>;
+  on_conflict?: Maybe<Room_Member_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "room_member". All fields are combined with a logical 'AND'. */
+export type Room_Member_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Room_Member_Bool_Exp>>>;
+  _not?: Maybe<Room_Member_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Room_Member_Bool_Exp>>>;
+  room?: Maybe<Room_Bool_Exp>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "room_member" */
+export enum Room_Member_Constraint {
+  /** unique or primary key constraint */
+  RoomParticipantsPkey = 'room_participants_pkey',
+  /** unique or primary key constraint */
+  RoomParticipantsRoomIdUserIdKey = 'room_participants_room_id_user_id_key'
+}
+
+/** input type for inserting data into table "room_member" */
+export type Room_Member_Insert_Input = {
+  room?: Maybe<Room_Obj_Rel_Insert_Input>;
+  room_id?: Maybe<Scalars['uuid']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Room_Member_Max_Fields = {
+  __typename?: 'room_member_max_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "room_member" */
+export type Room_Member_Max_Order_By = {
+  room_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Room_Member_Min_Fields = {
+  __typename?: 'room_member_min_fields';
+  room_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "room_member" */
+export type Room_Member_Min_Order_By = {
+  room_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "room_member" */
+export type Room_Member_Mutation_Response = {
+  __typename?: 'room_member_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Room_Member>;
+};
+
+/** input type for inserting object relation for remote table "room_member" */
+export type Room_Member_Obj_Rel_Insert_Input = {
+  data: Room_Member_Insert_Input;
+  on_conflict?: Maybe<Room_Member_On_Conflict>;
+};
+
+/** on conflict condition type for table "room_member" */
+export type Room_Member_On_Conflict = {
+  constraint: Room_Member_Constraint;
+  update_columns: Array<Room_Member_Update_Column>;
+  where?: Maybe<Room_Member_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "room_member" */
+export type Room_Member_Order_By = {
+  room?: Maybe<Room_Order_By>;
+  room_id?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "room_member" */
+export type Room_Member_Pk_Columns_Input = {
+  room_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "room_member" */
+export enum Room_Member_Select_Column {
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "room_member" */
+export type Room_Member_Set_Input = {
+  room_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "room_member" */
+export enum Room_Member_Update_Column {
+  /** column name */
+  RoomId = 'room_id',
+  /** column name */
+  UserId = 'user_id'
+}
 
 /** aggregate min on columns */
 export type Room_Min_Fields = {
@@ -3123,6 +3857,7 @@ export type Room_Min_Fields = {
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
 };
@@ -3136,6 +3871,7 @@ export type Room_Min_Order_By = {
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
 };
@@ -3170,172 +3906,16 @@ export type Room_Order_By = {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
-  participants_aggregate?: Maybe<Room_Participants_Aggregate_Order_By>;
   room_invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
+  slug?: Maybe<Order_By>;
   space?: Maybe<Space_Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
   topics_aggregate?: Maybe<Topic_Aggregate_Order_By>;
 };
-
-/** columns and relationships of "room_participants" */
-export type Room_Participants = {
-  __typename?: 'room_participants';
-  /** An object relationship */
-  room: Room;
-  room_id: Scalars['uuid'];
-  /** An object relationship */
-  user: User;
-  user_id: Scalars['uuid'];
-};
-
-/** aggregated selection of "room_participants" */
-export type Room_Participants_Aggregate = {
-  __typename?: 'room_participants_aggregate';
-  aggregate?: Maybe<Room_Participants_Aggregate_Fields>;
-  nodes: Array<Room_Participants>;
-};
-
-/** aggregate fields of "room_participants" */
-export type Room_Participants_Aggregate_Fields = {
-  __typename?: 'room_participants_aggregate_fields';
-  count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Room_Participants_Max_Fields>;
-  min?: Maybe<Room_Participants_Min_Fields>;
-};
-
-
-/** aggregate fields of "room_participants" */
-export type Room_Participants_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Room_Participants_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
-};
-
-/** order by aggregate values of table "room_participants" */
-export type Room_Participants_Aggregate_Order_By = {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Room_Participants_Max_Order_By>;
-  min?: Maybe<Room_Participants_Min_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "room_participants" */
-export type Room_Participants_Arr_Rel_Insert_Input = {
-  data: Array<Room_Participants_Insert_Input>;
-  on_conflict?: Maybe<Room_Participants_On_Conflict>;
-};
-
-/** Boolean expression to filter rows from the table "room_participants". All fields are combined with a logical 'AND'. */
-export type Room_Participants_Bool_Exp = {
-  _and?: Maybe<Array<Maybe<Room_Participants_Bool_Exp>>>;
-  _not?: Maybe<Room_Participants_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Room_Participants_Bool_Exp>>>;
-  room?: Maybe<Room_Bool_Exp>;
-  room_id?: Maybe<Uuid_Comparison_Exp>;
-  user?: Maybe<User_Bool_Exp>;
-  user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "room_participants" */
-export enum Room_Participants_Constraint {
-  /** unique or primary key constraint */
-  RoomParticipantsPkey = 'room_participants_pkey',
-  /** unique or primary key constraint */
-  RoomParticipantsRoomIdUserIdKey = 'room_participants_room_id_user_id_key'
-}
-
-/** input type for inserting data into table "room_participants" */
-export type Room_Participants_Insert_Input = {
-  room?: Maybe<Room_Obj_Rel_Insert_Input>;
-  room_id?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** aggregate max on columns */
-export type Room_Participants_Max_Fields = {
-  __typename?: 'room_participants_max_fields';
-  room_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by max() on columns of table "room_participants" */
-export type Room_Participants_Max_Order_By = {
-  room_id?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** aggregate min on columns */
-export type Room_Participants_Min_Fields = {
-  __typename?: 'room_participants_min_fields';
-  room_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "room_participants" */
-export type Room_Participants_Min_Order_By = {
-  room_id?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** response of any mutation on the table "room_participants" */
-export type Room_Participants_Mutation_Response = {
-  __typename?: 'room_participants_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Room_Participants>;
-};
-
-/** input type for inserting object relation for remote table "room_participants" */
-export type Room_Participants_Obj_Rel_Insert_Input = {
-  data: Room_Participants_Insert_Input;
-  on_conflict?: Maybe<Room_Participants_On_Conflict>;
-};
-
-/** on conflict condition type for table "room_participants" */
-export type Room_Participants_On_Conflict = {
-  constraint: Room_Participants_Constraint;
-  update_columns: Array<Room_Participants_Update_Column>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
-};
-
-/** ordering options when selecting data from "room_participants" */
-export type Room_Participants_Order_By = {
-  room?: Maybe<Room_Order_By>;
-  room_id?: Maybe<Order_By>;
-  user?: Maybe<User_Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "room_participants" */
-export type Room_Participants_Pk_Columns_Input = {
-  room_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
-};
-
-/** select columns of table "room_participants" */
-export enum Room_Participants_Select_Column {
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  UserId = 'user_id'
-}
-
-/** input type for updating data in table "room_participants" */
-export type Room_Participants_Set_Input = {
-  room_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "room_participants" */
-export enum Room_Participants_Update_Column {
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  UserId = 'user_id'
-}
 
 /** primary key columns input for table: "room" */
 export type Room_Pk_Columns_Input = {
@@ -3359,6 +3939,8 @@ export enum Room_Select_Column {
   /** column name */
   NotificationJobId = 'notification_job_id',
   /** column name */
+  Slug = 'slug',
+  /** column name */
   SpaceId = 'space_id',
   /** column name */
   Summary = 'summary'
@@ -3373,6 +3955,7 @@ export type Room_Set_Input = {
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
 };
@@ -3394,6 +3977,8 @@ export enum Room_Update_Column {
   /** column name */
   NotificationJobId = 'notification_job_id',
   /** column name */
+  Slug = 'slug',
+  /** column name */
   SpaceId = 'space_id',
   /** column name */
   Summary = 'summary'
@@ -3406,35 +3991,39 @@ export type Space = {
   creator?: Maybe<User>;
   creator_id: Scalars['uuid'];
   id: Scalars['uuid'];
-  name: Scalars['String'];
   /** An array relationship */
-  participants: Array<Space_Participants>;
+  members: Array<Space_Member>;
   /** An aggregated array relationship */
-  participants_aggregate: Space_Participants_Aggregate;
+  members_aggregate: Space_Member_Aggregate;
+  name: Scalars['String'];
   /** An array relationship */
   rooms: Array<Room>;
   /** An aggregated array relationship */
   rooms_aggregate: Room_Aggregate;
+  slug: Scalars['String'];
+  /** An object relationship */
+  team: Team;
+  team_id: Scalars['uuid'];
 };
 
 
 /** columns and relationships of "space" */
-export type SpaceParticipantsArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type SpaceMembersArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
 /** columns and relationships of "space" */
-export type SpaceParticipants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type SpaceMembers_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
@@ -3500,15 +4089,20 @@ export type Space_Bool_Exp = {
   creator?: Maybe<User_Bool_Exp>;
   creator_id?: Maybe<Uuid_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  members?: Maybe<Space_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
-  participants?: Maybe<Space_Participants_Bool_Exp>;
   rooms?: Maybe<Room_Bool_Exp>;
+  slug?: Maybe<String_Comparison_Exp>;
+  team?: Maybe<Team_Bool_Exp>;
+  team_id?: Maybe<Uuid_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "space" */
 export enum Space_Constraint {
   /** unique or primary key constraint */
-  SpacePkey = 'space_pkey'
+  SpacePkey = 'space_pkey',
+  /** unique or primary key constraint */
+  SpaceTeamIdSlugKey = 'space_team_id_slug_key'
 }
 
 /** input type for inserting data into table "space" */
@@ -3516,9 +4110,12 @@ export type Space_Insert_Input = {
   creator?: Maybe<User_Obj_Rel_Insert_Input>;
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
+  members?: Maybe<Space_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
-  participants?: Maybe<Space_Participants_Arr_Rel_Insert_Input>;
   rooms?: Maybe<Room_Arr_Rel_Insert_Input>;
+  slug?: Maybe<Scalars['String']>;
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
+  team_id?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -3527,6 +4124,8 @@ export type Space_Max_Fields = {
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  team_id?: Maybe<Scalars['uuid']>;
 };
 
 /** order by max() on columns of table "space" */
@@ -3534,7 +4133,164 @@ export type Space_Max_Order_By = {
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
 };
+
+/** columns and relationships of "space_member" */
+export type Space_Member = {
+  __typename?: 'space_member';
+  /** An object relationship */
+  space: Space;
+  space_id: Scalars['uuid'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "space_member" */
+export type Space_Member_Aggregate = {
+  __typename?: 'space_member_aggregate';
+  aggregate?: Maybe<Space_Member_Aggregate_Fields>;
+  nodes: Array<Space_Member>;
+};
+
+/** aggregate fields of "space_member" */
+export type Space_Member_Aggregate_Fields = {
+  __typename?: 'space_member_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Space_Member_Max_Fields>;
+  min?: Maybe<Space_Member_Min_Fields>;
+};
+
+
+/** aggregate fields of "space_member" */
+export type Space_Member_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Space_Member_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "space_member" */
+export type Space_Member_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Space_Member_Max_Order_By>;
+  min?: Maybe<Space_Member_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "space_member" */
+export type Space_Member_Arr_Rel_Insert_Input = {
+  data: Array<Space_Member_Insert_Input>;
+  on_conflict?: Maybe<Space_Member_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "space_member". All fields are combined with a logical 'AND'. */
+export type Space_Member_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Space_Member_Bool_Exp>>>;
+  _not?: Maybe<Space_Member_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Space_Member_Bool_Exp>>>;
+  space?: Maybe<Space_Bool_Exp>;
+  space_id?: Maybe<Uuid_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "space_member" */
+export enum Space_Member_Constraint {
+  /** unique or primary key constraint */
+  SpaceParticipantsPkey = 'space_participants_pkey'
+}
+
+/** input type for inserting data into table "space_member" */
+export type Space_Member_Insert_Input = {
+  space?: Maybe<Space_Obj_Rel_Insert_Input>;
+  space_id?: Maybe<Scalars['uuid']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Space_Member_Max_Fields = {
+  __typename?: 'space_member_max_fields';
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "space_member" */
+export type Space_Member_Max_Order_By = {
+  space_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Space_Member_Min_Fields = {
+  __typename?: 'space_member_min_fields';
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "space_member" */
+export type Space_Member_Min_Order_By = {
+  space_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "space_member" */
+export type Space_Member_Mutation_Response = {
+  __typename?: 'space_member_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Space_Member>;
+};
+
+/** input type for inserting object relation for remote table "space_member" */
+export type Space_Member_Obj_Rel_Insert_Input = {
+  data: Space_Member_Insert_Input;
+  on_conflict?: Maybe<Space_Member_On_Conflict>;
+};
+
+/** on conflict condition type for table "space_member" */
+export type Space_Member_On_Conflict = {
+  constraint: Space_Member_Constraint;
+  update_columns: Array<Space_Member_Update_Column>;
+  where?: Maybe<Space_Member_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "space_member" */
+export type Space_Member_Order_By = {
+  space?: Maybe<Space_Order_By>;
+  space_id?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "space_member" */
+export type Space_Member_Pk_Columns_Input = {
+  space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "space_member" */
+export enum Space_Member_Select_Column {
+  /** column name */
+  SpaceId = 'space_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "space_member" */
+export type Space_Member_Set_Input = {
+  space_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "space_member" */
+export enum Space_Member_Update_Column {
+  /** column name */
+  SpaceId = 'space_id',
+  /** column name */
+  UserId = 'user_id'
+}
 
 /** aggregate min on columns */
 export type Space_Min_Fields = {
@@ -3542,6 +4298,8 @@ export type Space_Min_Fields = {
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  team_id?: Maybe<Scalars['uuid']>;
 };
 
 /** order by min() on columns of table "space" */
@@ -3549,6 +4307,8 @@ export type Space_Min_Order_By = {
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
 };
 
 /** response of any mutation on the table "space" */
@@ -3578,165 +4338,13 @@ export type Space_Order_By = {
   creator?: Maybe<User_Order_By>;
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  members_aggregate?: Maybe<Space_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
-  participants_aggregate?: Maybe<Space_Participants_Aggregate_Order_By>;
   rooms_aggregate?: Maybe<Room_Aggregate_Order_By>;
+  slug?: Maybe<Order_By>;
+  team?: Maybe<Team_Order_By>;
+  team_id?: Maybe<Order_By>;
 };
-
-/** columns and relationships of "space_participants" */
-export type Space_Participants = {
-  __typename?: 'space_participants';
-  /** An object relationship */
-  space: Space;
-  space_id: Scalars['uuid'];
-  /** An object relationship */
-  user: User;
-  user_id: Scalars['uuid'];
-};
-
-/** aggregated selection of "space_participants" */
-export type Space_Participants_Aggregate = {
-  __typename?: 'space_participants_aggregate';
-  aggregate?: Maybe<Space_Participants_Aggregate_Fields>;
-  nodes: Array<Space_Participants>;
-};
-
-/** aggregate fields of "space_participants" */
-export type Space_Participants_Aggregate_Fields = {
-  __typename?: 'space_participants_aggregate_fields';
-  count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Space_Participants_Max_Fields>;
-  min?: Maybe<Space_Participants_Min_Fields>;
-};
-
-
-/** aggregate fields of "space_participants" */
-export type Space_Participants_Aggregate_FieldsCountArgs = {
-  columns?: Maybe<Array<Space_Participants_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
-};
-
-/** order by aggregate values of table "space_participants" */
-export type Space_Participants_Aggregate_Order_By = {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Space_Participants_Max_Order_By>;
-  min?: Maybe<Space_Participants_Min_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "space_participants" */
-export type Space_Participants_Arr_Rel_Insert_Input = {
-  data: Array<Space_Participants_Insert_Input>;
-  on_conflict?: Maybe<Space_Participants_On_Conflict>;
-};
-
-/** Boolean expression to filter rows from the table "space_participants". All fields are combined with a logical 'AND'. */
-export type Space_Participants_Bool_Exp = {
-  _and?: Maybe<Array<Maybe<Space_Participants_Bool_Exp>>>;
-  _not?: Maybe<Space_Participants_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Space_Participants_Bool_Exp>>>;
-  space?: Maybe<Space_Bool_Exp>;
-  space_id?: Maybe<Uuid_Comparison_Exp>;
-  user?: Maybe<User_Bool_Exp>;
-  user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "space_participants" */
-export enum Space_Participants_Constraint {
-  /** unique or primary key constraint */
-  SpaceParticipantsPkey = 'space_participants_pkey'
-}
-
-/** input type for inserting data into table "space_participants" */
-export type Space_Participants_Insert_Input = {
-  space?: Maybe<Space_Obj_Rel_Insert_Input>;
-  space_id?: Maybe<Scalars['uuid']>;
-  user?: Maybe<User_Obj_Rel_Insert_Input>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** aggregate max on columns */
-export type Space_Participants_Max_Fields = {
-  __typename?: 'space_participants_max_fields';
-  space_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by max() on columns of table "space_participants" */
-export type Space_Participants_Max_Order_By = {
-  space_id?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** aggregate min on columns */
-export type Space_Participants_Min_Fields = {
-  __typename?: 'space_participants_min_fields';
-  space_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "space_participants" */
-export type Space_Participants_Min_Order_By = {
-  space_id?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** response of any mutation on the table "space_participants" */
-export type Space_Participants_Mutation_Response = {
-  __typename?: 'space_participants_mutation_response';
-  /** number of affected rows by the mutation */
-  affected_rows: Scalars['Int'];
-  /** data of the affected rows by the mutation */
-  returning: Array<Space_Participants>;
-};
-
-/** input type for inserting object relation for remote table "space_participants" */
-export type Space_Participants_Obj_Rel_Insert_Input = {
-  data: Space_Participants_Insert_Input;
-  on_conflict?: Maybe<Space_Participants_On_Conflict>;
-};
-
-/** on conflict condition type for table "space_participants" */
-export type Space_Participants_On_Conflict = {
-  constraint: Space_Participants_Constraint;
-  update_columns: Array<Space_Participants_Update_Column>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
-};
-
-/** ordering options when selecting data from "space_participants" */
-export type Space_Participants_Order_By = {
-  space?: Maybe<Space_Order_By>;
-  space_id?: Maybe<Order_By>;
-  user?: Maybe<User_Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "space_participants" */
-export type Space_Participants_Pk_Columns_Input = {
-  space_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
-};
-
-/** select columns of table "space_participants" */
-export enum Space_Participants_Select_Column {
-  /** column name */
-  SpaceId = 'space_id',
-  /** column name */
-  UserId = 'user_id'
-}
-
-/** input type for updating data in table "space_participants" */
-export type Space_Participants_Set_Input = {
-  space_id?: Maybe<Scalars['uuid']>;
-  user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "space_participants" */
-export enum Space_Participants_Update_Column {
-  /** column name */
-  SpaceId = 'space_id',
-  /** column name */
-  UserId = 'user_id'
-}
 
 /** primary key columns input for table: "space" */
 export type Space_Pk_Columns_Input = {
@@ -3750,7 +4358,11 @@ export enum Space_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  Name = 'name'
+  Name = 'name',
+  /** column name */
+  Slug = 'slug',
+  /** column name */
+  TeamId = 'team_id'
 }
 
 /** input type for updating data in table "space" */
@@ -3758,6 +4370,8 @@ export type Space_Set_Input = {
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  team_id?: Maybe<Scalars['uuid']>;
 };
 
 /** update columns of table "space" */
@@ -3767,7 +4381,11 @@ export enum Space_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
-  Name = 'name'
+  Name = 'name',
+  /** column name */
+  Slug = 'slug',
+  /** column name */
+  TeamId = 'team_id'
 }
 
 /** subscription root */
@@ -3795,16 +4413,22 @@ export type Subscription_Root = {
   last_seen_message_aggregate: Last_Seen_Message_Aggregate;
   /** fetch data from the table: "last_seen_message" using primary key columns */
   last_seen_message_by_pk?: Maybe<Last_Seen_Message>;
+  /** fetch data from the table: "membership_status" */
+  membership_status: Array<Membership_Status>;
+  /** fetch aggregated fields from the table: "membership_status" */
+  membership_status_aggregate: Membership_Status_Aggregate;
+  /** fetch data from the table: "membership_status" using primary key columns */
+  membership_status_by_pk?: Maybe<Membership_Status>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
-  /** fetch data from the table: "message_attachments" */
-  message_attachments: Array<Message_Attachments>;
-  /** fetch aggregated fields from the table: "message_attachments" */
-  message_attachments_aggregate: Message_Attachments_Aggregate;
-  /** fetch data from the table: "message_attachments" using primary key columns */
-  message_attachments_by_pk?: Maybe<Message_Attachments>;
+  /** fetch data from the table: "message_attachment" */
+  message_attachment: Array<Message_Attachment>;
+  /** fetch aggregated fields from the table: "message_attachment" */
+  message_attachment_aggregate: Message_Attachment_Aggregate;
+  /** fetch data from the table: "message_attachment" using primary key columns */
+  message_attachment_by_pk?: Maybe<Message_Attachment>;
   /** fetch data from the table: "message" using primary key columns */
   message_by_pk?: Maybe<Message>;
   /** fetch data from the table: "message_type" */
@@ -3825,30 +4449,54 @@ export type Subscription_Root = {
   room_invites_aggregate: Room_Invites_Aggregate;
   /** fetch data from the table: "room_invites" using primary key columns */
   room_invites_by_pk?: Maybe<Room_Invites>;
-  /** fetch data from the table: "room_participants" */
-  room_participants: Array<Room_Participants>;
-  /** fetch aggregated fields from the table: "room_participants" */
-  room_participants_aggregate: Room_Participants_Aggregate;
-  /** fetch data from the table: "room_participants" using primary key columns */
-  room_participants_by_pk?: Maybe<Room_Participants>;
+  /** fetch data from the table: "room_member" */
+  room_member: Array<Room_Member>;
+  /** fetch aggregated fields from the table: "room_member" */
+  room_member_aggregate: Room_Member_Aggregate;
+  /** fetch data from the table: "room_member" using primary key columns */
+  room_member_by_pk?: Maybe<Room_Member>;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
   space_aggregate: Space_Aggregate;
   /** fetch data from the table: "space" using primary key columns */
   space_by_pk?: Maybe<Space>;
-  /** fetch data from the table: "space_participants" */
-  space_participants: Array<Space_Participants>;
-  /** fetch aggregated fields from the table: "space_participants" */
-  space_participants_aggregate: Space_Participants_Aggregate;
-  /** fetch data from the table: "space_participants" using primary key columns */
-  space_participants_by_pk?: Maybe<Space_Participants>;
+  /** fetch data from the table: "space_member" */
+  space_member: Array<Space_Member>;
+  /** fetch aggregated fields from the table: "space_member" */
+  space_member_aggregate: Space_Member_Aggregate;
+  /** fetch data from the table: "space_member" using primary key columns */
+  space_member_by_pk?: Maybe<Space_Member>;
+  /** fetch data from the table: "team" */
+  team: Array<Team>;
+  /** fetch aggregated fields from the table: "team" */
+  team_aggregate: Team_Aggregate;
+  /** fetch data from the table: "team" using primary key columns */
+  team_by_pk?: Maybe<Team>;
+  /** fetch data from the table: "team_invitation" */
+  team_invitation: Array<Team_Invitation>;
+  /** fetch aggregated fields from the table: "team_invitation" */
+  team_invitation_aggregate: Team_Invitation_Aggregate;
+  /** fetch data from the table: "team_invitation" using primary key columns */
+  team_invitation_by_pk?: Maybe<Team_Invitation>;
+  /** fetch data from the table: "team_member" */
+  team_member: Array<Team_Member>;
+  /** fetch aggregated fields from the table: "team_member" */
+  team_member_aggregate: Team_Member_Aggregate;
+  /** fetch data from the table: "team_member" using primary key columns */
+  team_member_by_pk?: Maybe<Team_Member>;
   /** fetch data from the table: "topic" */
   topic: Array<Topic>;
   /** fetch aggregated fields from the table: "topic" */
   topic_aggregate: Topic_Aggregate;
   /** fetch data from the table: "topic" using primary key columns */
   topic_by_pk?: Maybe<Topic>;
+  /** fetch data from the table: "topic_member" */
+  topic_member: Array<Topic_Member>;
+  /** fetch aggregated fields from the table: "topic_member" */
+  topic_member_aggregate: Topic_Member_Aggregate;
+  /** fetch data from the table: "topic_member" using primary key columns */
+  topic_member_by_pk?: Maybe<Topic_Member>;
   /** fetch data from the table: "transcription" */
   transcription: Array<Transcription>;
   /** fetch aggregated fields from the table: "transcription" */
@@ -3967,6 +4615,32 @@ export type Subscription_RootLast_Seen_Message_By_PkArgs = {
 
 
 /** subscription root */
+export type Subscription_RootMembership_StatusArgs = {
+  distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Membership_Status_Order_By>>;
+  where?: Maybe<Membership_Status_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMembership_Status_AggregateArgs = {
+  distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Membership_Status_Order_By>>;
+  where?: Maybe<Membership_Status_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootMembership_Status_By_PkArgs = {
+  value: Scalars['String'];
+};
+
+
+/** subscription root */
 export type Subscription_RootMessageArgs = {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -3987,27 +4661,27 @@ export type Subscription_RootMessage_AggregateArgs = {
 
 
 /** subscription root */
-export type Subscription_RootMessage_AttachmentsArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+export type Subscription_RootMessage_AttachmentArgs = {
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootMessage_Attachments_AggregateArgs = {
-  distinct_on?: Maybe<Array<Message_Attachments_Select_Column>>;
+export type Subscription_RootMessage_Attachment_AggregateArgs = {
+  distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Message_Attachments_Order_By>>;
-  where?: Maybe<Message_Attachments_Bool_Exp>;
+  order_by?: Maybe<Array<Message_Attachment_Order_By>>;
+  where?: Maybe<Message_Attachment_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootMessage_Attachments_By_PkArgs = {
+export type Subscription_RootMessage_Attachment_By_PkArgs = {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
 };
@@ -4098,27 +4772,27 @@ export type Subscription_RootRoom_Invites_By_PkArgs = {
 
 
 /** subscription root */
-export type Subscription_RootRoom_ParticipantsArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type Subscription_RootRoom_MemberArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootRoom_Participants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type Subscription_RootRoom_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootRoom_Participants_By_PkArgs = {
+export type Subscription_RootRoom_Member_By_PkArgs = {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
@@ -4151,28 +4825,107 @@ export type Subscription_RootSpace_By_PkArgs = {
 
 
 /** subscription root */
-export type Subscription_RootSpace_ParticipantsArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type Subscription_RootSpace_MemberArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootSpace_Participants_AggregateArgs = {
-  distinct_on?: Maybe<Array<Space_Participants_Select_Column>>;
+export type Subscription_RootSpace_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Space_Participants_Order_By>>;
-  where?: Maybe<Space_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
 };
 
 
 /** subscription root */
-export type Subscription_RootSpace_Participants_By_PkArgs = {
+export type Subscription_RootSpace_Member_By_PkArgs = {
   space_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTeamArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_InvitationArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_Invitation_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_Invitation_By_PkArgs = {
+  id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_MemberArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTeam_Member_By_PkArgs = {
+  team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
 };
 
@@ -4200,6 +4953,33 @@ export type Subscription_RootTopic_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootTopic_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootTopic_MemberArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTopic_Member_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootTopic_Member_By_PkArgs = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
 };
 
 
@@ -4300,6 +5080,642 @@ export type Subscription_RootUser_By_PkArgs = {
   id: Scalars['uuid'];
 };
 
+/** columns and relationships of "team" */
+export type Team = {
+  __typename?: 'team';
+  id: Scalars['uuid'];
+  /** An array relationship */
+  invitations: Array<Team_Invitation>;
+  /** An aggregated array relationship */
+  invitations_aggregate: Team_Invitation_Aggregate;
+  /** An array relationship */
+  memberships: Array<Team_Member>;
+  /** An aggregated array relationship */
+  memberships_aggregate: Team_Member_Aggregate;
+  name: Scalars['String'];
+  /** An object relationship */
+  owner: User;
+  owner_id: Scalars['uuid'];
+  slug: Scalars['String'];
+  /** An array relationship */
+  spaces: Array<Space>;
+  /** An aggregated array relationship */
+  spaces_aggregate: Space_Aggregate;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamInvitationsArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamInvitations_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamMembershipsArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamMemberships_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamSpacesArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+
+/** columns and relationships of "team" */
+export type TeamSpaces_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Order_By>>;
+  where?: Maybe<Space_Bool_Exp>;
+};
+
+/** aggregated selection of "team" */
+export type Team_Aggregate = {
+  __typename?: 'team_aggregate';
+  aggregate?: Maybe<Team_Aggregate_Fields>;
+  nodes: Array<Team>;
+};
+
+/** aggregate fields of "team" */
+export type Team_Aggregate_Fields = {
+  __typename?: 'team_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Team_Max_Fields>;
+  min?: Maybe<Team_Min_Fields>;
+};
+
+
+/** aggregate fields of "team" */
+export type Team_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Team_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "team" */
+export type Team_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Team_Max_Order_By>;
+  min?: Maybe<Team_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "team" */
+export type Team_Arr_Rel_Insert_Input = {
+  data: Array<Team_Insert_Input>;
+  on_conflict?: Maybe<Team_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "team". All fields are combined with a logical 'AND'. */
+export type Team_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Team_Bool_Exp>>>;
+  _not?: Maybe<Team_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Team_Bool_Exp>>>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  invitations?: Maybe<Team_Invitation_Bool_Exp>;
+  memberships?: Maybe<Team_Member_Bool_Exp>;
+  name?: Maybe<String_Comparison_Exp>;
+  owner?: Maybe<User_Bool_Exp>;
+  owner_id?: Maybe<Uuid_Comparison_Exp>;
+  slug?: Maybe<String_Comparison_Exp>;
+  spaces?: Maybe<Space_Bool_Exp>;
+};
+
+/** unique or primary key constraints on table "team" */
+export enum Team_Constraint {
+  /** unique or primary key constraint */
+  TeamIdKey = 'team_id_key',
+  /** unique or primary key constraint */
+  TeamPkey = 'team_pkey',
+  /** unique or primary key constraint */
+  TeamSlugKey = 'team_slug_key'
+}
+
+/** input type for inserting data into table "team" */
+export type Team_Insert_Input = {
+  id?: Maybe<Scalars['uuid']>;
+  invitations?: Maybe<Team_Invitation_Arr_Rel_Insert_Input>;
+  memberships?: Maybe<Team_Member_Arr_Rel_Insert_Input>;
+  name?: Maybe<Scalars['String']>;
+  owner?: Maybe<User_Obj_Rel_Insert_Input>;
+  owner_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
+  spaces?: Maybe<Space_Arr_Rel_Insert_Input>;
+};
+
+/** columns and relationships of "team_invitation" */
+export type Team_Invitation = {
+  __typename?: 'team_invitation';
+  created_at: Scalars['timestamptz'];
+  email: Scalars['String'];
+  id: Scalars['uuid'];
+  /** An object relationship */
+  inviting_user: User;
+  inviting_user_id: Scalars['uuid'];
+  /** An object relationship */
+  team: Team;
+  team_id: Scalars['uuid'];
+  token: Scalars['uuid'];
+  used_at?: Maybe<Scalars['date']>;
+};
+
+/** aggregated selection of "team_invitation" */
+export type Team_Invitation_Aggregate = {
+  __typename?: 'team_invitation_aggregate';
+  aggregate?: Maybe<Team_Invitation_Aggregate_Fields>;
+  nodes: Array<Team_Invitation>;
+};
+
+/** aggregate fields of "team_invitation" */
+export type Team_Invitation_Aggregate_Fields = {
+  __typename?: 'team_invitation_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Team_Invitation_Max_Fields>;
+  min?: Maybe<Team_Invitation_Min_Fields>;
+};
+
+
+/** aggregate fields of "team_invitation" */
+export type Team_Invitation_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Team_Invitation_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "team_invitation" */
+export type Team_Invitation_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Team_Invitation_Max_Order_By>;
+  min?: Maybe<Team_Invitation_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "team_invitation" */
+export type Team_Invitation_Arr_Rel_Insert_Input = {
+  data: Array<Team_Invitation_Insert_Input>;
+  on_conflict?: Maybe<Team_Invitation_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "team_invitation". All fields are combined with a logical 'AND'. */
+export type Team_Invitation_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Team_Invitation_Bool_Exp>>>;
+  _not?: Maybe<Team_Invitation_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Team_Invitation_Bool_Exp>>>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  email?: Maybe<String_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  inviting_user?: Maybe<User_Bool_Exp>;
+  inviting_user_id?: Maybe<Uuid_Comparison_Exp>;
+  team?: Maybe<Team_Bool_Exp>;
+  team_id?: Maybe<Uuid_Comparison_Exp>;
+  token?: Maybe<Uuid_Comparison_Exp>;
+  used_at?: Maybe<Date_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "team_invitation" */
+export enum Team_Invitation_Constraint {
+  /** unique or primary key constraint */
+  TeamInvitationPkey = 'team_invitation_pkey',
+  /** unique or primary key constraint */
+  TeamInvitationTokenKey = 'team_invitation_token_key'
+}
+
+/** input type for inserting data into table "team_invitation" */
+export type Team_Invitation_Insert_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['uuid']>;
+  inviting_user?: Maybe<User_Obj_Rel_Insert_Input>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+};
+
+/** aggregate max on columns */
+export type Team_Invitation_Max_Fields = {
+  __typename?: 'team_invitation_max_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+};
+
+/** order by max() on columns of table "team_invitation" */
+export type Team_Invitation_Max_Order_By = {
+  created_at?: Maybe<Order_By>;
+  email?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
+  used_at?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Team_Invitation_Min_Fields = {
+  __typename?: 'team_invitation_min_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+};
+
+/** order by min() on columns of table "team_invitation" */
+export type Team_Invitation_Min_Order_By = {
+  created_at?: Maybe<Order_By>;
+  email?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
+  used_at?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "team_invitation" */
+export type Team_Invitation_Mutation_Response = {
+  __typename?: 'team_invitation_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Team_Invitation>;
+};
+
+/** input type for inserting object relation for remote table "team_invitation" */
+export type Team_Invitation_Obj_Rel_Insert_Input = {
+  data: Team_Invitation_Insert_Input;
+  on_conflict?: Maybe<Team_Invitation_On_Conflict>;
+};
+
+/** on conflict condition type for table "team_invitation" */
+export type Team_Invitation_On_Conflict = {
+  constraint: Team_Invitation_Constraint;
+  update_columns: Array<Team_Invitation_Update_Column>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "team_invitation" */
+export type Team_Invitation_Order_By = {
+  created_at?: Maybe<Order_By>;
+  email?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  inviting_user?: Maybe<User_Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
+  team?: Maybe<Team_Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
+  used_at?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "team_invitation" */
+export type Team_Invitation_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** select columns of table "team_invitation" */
+export enum Team_Invitation_Select_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Email = 'email',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  InvitingUserId = 'inviting_user_id',
+  /** column name */
+  TeamId = 'team_id',
+  /** column name */
+  Token = 'token',
+  /** column name */
+  UsedAt = 'used_at'
+}
+
+/** input type for updating data in table "team_invitation" */
+export type Team_Invitation_Set_Input = {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+};
+
+/** update columns of table "team_invitation" */
+export enum Team_Invitation_Update_Column {
+  /** column name */
+  CreatedAt = 'created_at',
+  /** column name */
+  Email = 'email',
+  /** column name */
+  Id = 'id',
+  /** column name */
+  InvitingUserId = 'inviting_user_id',
+  /** column name */
+  TeamId = 'team_id',
+  /** column name */
+  Token = 'token',
+  /** column name */
+  UsedAt = 'used_at'
+}
+
+/** aggregate max on columns */
+export type Team_Max_Fields = {
+  __typename?: 'team_max_fields';
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+/** order by max() on columns of table "team" */
+export type Team_Max_Order_By = {
+  id?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+  owner_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
+};
+
+/** columns and relationships of "team_member" */
+export type Team_Member = {
+  __typename?: 'team_member';
+  /** An object relationship */
+  team: Team;
+  team_id: Scalars['uuid'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "team_member" */
+export type Team_Member_Aggregate = {
+  __typename?: 'team_member_aggregate';
+  aggregate?: Maybe<Team_Member_Aggregate_Fields>;
+  nodes: Array<Team_Member>;
+};
+
+/** aggregate fields of "team_member" */
+export type Team_Member_Aggregate_Fields = {
+  __typename?: 'team_member_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Team_Member_Max_Fields>;
+  min?: Maybe<Team_Member_Min_Fields>;
+};
+
+
+/** aggregate fields of "team_member" */
+export type Team_Member_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Team_Member_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "team_member" */
+export type Team_Member_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Team_Member_Max_Order_By>;
+  min?: Maybe<Team_Member_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "team_member" */
+export type Team_Member_Arr_Rel_Insert_Input = {
+  data: Array<Team_Member_Insert_Input>;
+  on_conflict?: Maybe<Team_Member_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "team_member". All fields are combined with a logical 'AND'. */
+export type Team_Member_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Team_Member_Bool_Exp>>>;
+  _not?: Maybe<Team_Member_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Team_Member_Bool_Exp>>>;
+  team?: Maybe<Team_Bool_Exp>;
+  team_id?: Maybe<Uuid_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "team_member" */
+export enum Team_Member_Constraint {
+  /** unique or primary key constraint */
+  TeamMembershipPkey = 'team_membership_pkey'
+}
+
+/** input type for inserting data into table "team_member" */
+export type Team_Member_Insert_Input = {
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
+  team_id?: Maybe<Scalars['uuid']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Team_Member_Max_Fields = {
+  __typename?: 'team_member_max_fields';
+  team_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "team_member" */
+export type Team_Member_Max_Order_By = {
+  team_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Team_Member_Min_Fields = {
+  __typename?: 'team_member_min_fields';
+  team_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "team_member" */
+export type Team_Member_Min_Order_By = {
+  team_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "team_member" */
+export type Team_Member_Mutation_Response = {
+  __typename?: 'team_member_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Team_Member>;
+};
+
+/** input type for inserting object relation for remote table "team_member" */
+export type Team_Member_Obj_Rel_Insert_Input = {
+  data: Team_Member_Insert_Input;
+  on_conflict?: Maybe<Team_Member_On_Conflict>;
+};
+
+/** on conflict condition type for table "team_member" */
+export type Team_Member_On_Conflict = {
+  constraint: Team_Member_Constraint;
+  update_columns: Array<Team_Member_Update_Column>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "team_member" */
+export type Team_Member_Order_By = {
+  team?: Maybe<Team_Order_By>;
+  team_id?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "team_member" */
+export type Team_Member_Pk_Columns_Input = {
+  team_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "team_member" */
+export enum Team_Member_Select_Column {
+  /** column name */
+  TeamId = 'team_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "team_member" */
+export type Team_Member_Set_Input = {
+  team_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "team_member" */
+export enum Team_Member_Update_Column {
+  /** column name */
+  TeamId = 'team_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** aggregate min on columns */
+export type Team_Min_Fields = {
+  __typename?: 'team_min_fields';
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+/** order by min() on columns of table "team" */
+export type Team_Min_Order_By = {
+  id?: Maybe<Order_By>;
+  name?: Maybe<Order_By>;
+  owner_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "team" */
+export type Team_Mutation_Response = {
+  __typename?: 'team_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Team>;
+};
+
+/** input type for inserting object relation for remote table "team" */
+export type Team_Obj_Rel_Insert_Input = {
+  data: Team_Insert_Input;
+  on_conflict?: Maybe<Team_On_Conflict>;
+};
+
+/** on conflict condition type for table "team" */
+export type Team_On_Conflict = {
+  constraint: Team_Constraint;
+  update_columns: Array<Team_Update_Column>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "team" */
+export type Team_Order_By = {
+  id?: Maybe<Order_By>;
+  invitations_aggregate?: Maybe<Team_Invitation_Aggregate_Order_By>;
+  memberships_aggregate?: Maybe<Team_Member_Aggregate_Order_By>;
+  name?: Maybe<Order_By>;
+  owner?: Maybe<User_Order_By>;
+  owner_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
+  spaces_aggregate?: Maybe<Space_Aggregate_Order_By>;
+};
+
+/** primary key columns input for table: "team" */
+export type Team_Pk_Columns_Input = {
+  id: Scalars['uuid'];
+};
+
+/** select columns of table "team" */
+export enum Team_Select_Column {
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Name = 'name',
+  /** column name */
+  OwnerId = 'owner_id',
+  /** column name */
+  Slug = 'slug'
+}
+
+/** input type for updating data in table "team" */
+export type Team_Set_Input = {
+  id?: Maybe<Scalars['uuid']>;
+  name?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+/** update columns of table "team" */
+export enum Team_Update_Column {
+  /** column name */
+  Id = 'id',
+  /** column name */
+  Name = 'name',
+  /** column name */
+  OwnerId = 'owner_id',
+  /** column name */
+  Slug = 'slug'
+}
+
 
 /** expression to compare columns of type timestamptz. All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {
@@ -4320,6 +5736,10 @@ export type Topic = {
   id: Scalars['uuid'];
   index: Scalars['String'];
   /** An array relationship */
+  members: Array<Topic_Member>;
+  /** An aggregated array relationship */
+  members_aggregate: Topic_Member_Aggregate;
+  /** An array relationship */
   messages: Array<Message>;
   /** An aggregated array relationship */
   messages_aggregate: Message_Aggregate;
@@ -4327,6 +5747,27 @@ export type Topic = {
   /** An object relationship */
   room: Room;
   room_id: Scalars['uuid'];
+  slug: Scalars['String'];
+};
+
+
+/** columns and relationships of "topic" */
+export type TopicMembersArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "topic" */
+export type TopicMembers_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
 };
 
 
@@ -4391,26 +5832,32 @@ export type Topic_Bool_Exp = {
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   id?: Maybe<Uuid_Comparison_Exp>;
   index?: Maybe<String_Comparison_Exp>;
+  members?: Maybe<Topic_Member_Bool_Exp>;
   messages?: Maybe<Message_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
+  slug?: Maybe<String_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "topic" */
 export enum Topic_Constraint {
   /** unique or primary key constraint */
-  ThreadPkey = 'thread_pkey'
+  ThreadPkey = 'thread_pkey',
+  /** unique or primary key constraint */
+  TopicSlugRoomIdKey = 'topic_slug_room_id_key'
 }
 
 /** input type for inserting data into table "topic" */
 export type Topic_Insert_Input = {
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
+  members?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
   messages?: Maybe<Message_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 /** aggregate max on columns */
@@ -4420,6 +5867,7 @@ export type Topic_Max_Fields = {
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 /** order by max() on columns of table "topic" */
@@ -4428,7 +5876,163 @@ export type Topic_Max_Order_By = {
   index?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
 };
+
+/** columns and relationships of "topic_member" */
+export type Topic_Member = {
+  __typename?: 'topic_member';
+  /** An object relationship */
+  topic: Topic;
+  topic_id: Scalars['uuid'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+};
+
+/** aggregated selection of "topic_member" */
+export type Topic_Member_Aggregate = {
+  __typename?: 'topic_member_aggregate';
+  aggregate?: Maybe<Topic_Member_Aggregate_Fields>;
+  nodes: Array<Topic_Member>;
+};
+
+/** aggregate fields of "topic_member" */
+export type Topic_Member_Aggregate_Fields = {
+  __typename?: 'topic_member_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Topic_Member_Max_Fields>;
+  min?: Maybe<Topic_Member_Min_Fields>;
+};
+
+
+/** aggregate fields of "topic_member" */
+export type Topic_Member_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Topic_Member_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "topic_member" */
+export type Topic_Member_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Topic_Member_Max_Order_By>;
+  min?: Maybe<Topic_Member_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "topic_member" */
+export type Topic_Member_Arr_Rel_Insert_Input = {
+  data: Array<Topic_Member_Insert_Input>;
+  on_conflict?: Maybe<Topic_Member_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "topic_member". All fields are combined with a logical 'AND'. */
+export type Topic_Member_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Topic_Member_Bool_Exp>>>;
+  _not?: Maybe<Topic_Member_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Topic_Member_Bool_Exp>>>;
+  topic?: Maybe<Topic_Bool_Exp>;
+  topic_id?: Maybe<Uuid_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "topic_member" */
+export enum Topic_Member_Constraint {
+  /** unique or primary key constraint */
+  TopicParticipantsPkey = 'topic_participants_pkey'
+}
+
+/** input type for inserting data into table "topic_member" */
+export type Topic_Member_Insert_Input = {
+  topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
+  topic_id?: Maybe<Scalars['uuid']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** aggregate max on columns */
+export type Topic_Member_Max_Fields = {
+  __typename?: 'topic_member_max_fields';
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by max() on columns of table "topic_member" */
+export type Topic_Member_Max_Order_By = {
+  topic_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Topic_Member_Min_Fields = {
+  __typename?: 'topic_member_min_fields';
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** order by min() on columns of table "topic_member" */
+export type Topic_Member_Min_Order_By = {
+  topic_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "topic_member" */
+export type Topic_Member_Mutation_Response = {
+  __typename?: 'topic_member_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Topic_Member>;
+};
+
+/** input type for inserting object relation for remote table "topic_member" */
+export type Topic_Member_Obj_Rel_Insert_Input = {
+  data: Topic_Member_Insert_Input;
+  on_conflict?: Maybe<Topic_Member_On_Conflict>;
+};
+
+/** on conflict condition type for table "topic_member" */
+export type Topic_Member_On_Conflict = {
+  constraint: Topic_Member_Constraint;
+  update_columns: Array<Topic_Member_Update_Column>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "topic_member" */
+export type Topic_Member_Order_By = {
+  topic?: Maybe<Topic_Order_By>;
+  topic_id?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "topic_member" */
+export type Topic_Member_Pk_Columns_Input = {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+};
+
+/** select columns of table "topic_member" */
+export enum Topic_Member_Select_Column {
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  UserId = 'user_id'
+}
+
+/** input type for updating data in table "topic_member" */
+export type Topic_Member_Set_Input = {
+  topic_id?: Maybe<Scalars['uuid']>;
+  user_id?: Maybe<Scalars['uuid']>;
+};
+
+/** update columns of table "topic_member" */
+export enum Topic_Member_Update_Column {
+  /** column name */
+  TopicId = 'topic_id',
+  /** column name */
+  UserId = 'user_id'
+}
 
 /** aggregate min on columns */
 export type Topic_Min_Fields = {
@@ -4437,6 +6041,7 @@ export type Topic_Min_Fields = {
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 /** order by min() on columns of table "topic" */
@@ -4445,6 +6050,7 @@ export type Topic_Min_Order_By = {
   index?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
 };
 
 /** response of any mutation on the table "topic" */
@@ -4473,10 +6079,12 @@ export type Topic_On_Conflict = {
 export type Topic_Order_By = {
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
+  members_aggregate?: Maybe<Topic_Member_Aggregate_Order_By>;
   messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
+  slug?: Maybe<Order_By>;
 };
 
 /** primary key columns input for table: "topic" */
@@ -4493,7 +6101,9 @@ export enum Topic_Select_Column {
   /** column name */
   Name = 'name',
   /** column name */
-  RoomId = 'room_id'
+  RoomId = 'room_id',
+  /** column name */
+  Slug = 'slug'
 }
 
 /** input type for updating data in table "topic" */
@@ -4502,6 +6112,7 @@ export type Topic_Set_Input = {
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 /** update columns of table "topic" */
@@ -4513,7 +6124,9 @@ export enum Topic_Update_Column {
   /** column name */
   Name = 'name',
   /** column name */
-  RoomId = 'room_id'
+  RoomId = 'room_id',
+  /** column name */
+  Slug = 'slug'
 }
 
 /** columns and relationships of "transcription" */
@@ -5101,6 +6714,13 @@ export type User = {
   created_rooms: Array<Room>;
   /** An aggregated array relationship */
   created_rooms_aggregate: Room_Aggregate;
+  /** An array relationship */
+  created_team_invitations: Array<Team_Invitation>;
+  /** An aggregated array relationship */
+  created_team_invitations_aggregate: Team_Invitation_Aggregate;
+  /** An object relationship */
+  current_team?: Maybe<Team>;
+  current_team_id?: Maybe<Scalars['uuid']>;
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
@@ -5114,9 +6734,25 @@ export type User = {
   messages_aggregate: Message_Aggregate;
   name?: Maybe<Scalars['String']>;
   /** An array relationship */
-  rooms: Array<Room_Participants>;
+  owned_teams: Array<Team>;
   /** An aggregated array relationship */
-  rooms_aggregate: Room_Participants_Aggregate;
+  owned_teams_aggregate: Team_Aggregate;
+  /** An array relationship */
+  rooms: Array<Room_Member>;
+  /** An aggregated array relationship */
+  rooms_aggregate: Room_Member_Aggregate;
+  /** An array relationship */
+  space_memberships: Array<Space_Member>;
+  /** An aggregated array relationship */
+  space_memberships_aggregate: Space_Member_Aggregate;
+  /** An array relationship */
+  team_memberships: Array<Team_Member>;
+  /** An aggregated array relationship */
+  team_memberships_aggregate: Team_Member_Aggregate;
+  /** An array relationship */
+  topic_memberships: Array<Topic_Member>;
+  /** An aggregated array relationship */
+  topic_memberships_aggregate: Topic_Member_Aggregate;
 };
 
 
@@ -5137,6 +6773,26 @@ export type UserCreated_Rooms_AggregateArgs = {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserCreated_Team_InvitationsArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserCreated_Team_Invitations_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Invitation_Order_By>>;
+  where?: Maybe<Team_Invitation_Bool_Exp>;
 };
 
 
@@ -5181,22 +6837,102 @@ export type UserMessages_AggregateArgs = {
 
 
 /** columns and relationships of "user" */
-export type UserRoomsArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+export type UserOwned_TeamsArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserOwned_Teams_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Order_By>>;
+  where?: Maybe<Team_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserRoomsArgs = {
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
 };
 
 
 /** columns and relationships of "user" */
 export type UserRooms_AggregateArgs = {
-  distinct_on?: Maybe<Array<Room_Participants_Select_Column>>;
+  distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Participants_Order_By>>;
-  where?: Maybe<Room_Participants_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Member_Order_By>>;
+  where?: Maybe<Room_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserSpace_MembershipsArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserSpace_Memberships_AggregateArgs = {
+  distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Space_Member_Order_By>>;
+  where?: Maybe<Space_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserTeam_MembershipsArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserTeam_Memberships_AggregateArgs = {
+  distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Team_Member_Order_By>>;
+  where?: Maybe<Team_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserTopic_MembershipsArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
+};
+
+
+/** columns and relationships of "user" */
+export type UserTopic_Memberships_AggregateArgs = {
+  distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Topic_Member_Order_By>>;
+  where?: Maybe<Topic_Member_Bool_Exp>;
 };
 
 /** aggregated selection of "user" */
@@ -5242,13 +6978,20 @@ export type User_Bool_Exp = {
   avatar_url?: Maybe<String_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   created_rooms?: Maybe<Room_Bool_Exp>;
+  created_team_invitations?: Maybe<Team_Invitation_Bool_Exp>;
+  current_team?: Maybe<Team_Bool_Exp>;
+  current_team_id?: Maybe<Uuid_Comparison_Exp>;
   email?: Maybe<String_Comparison_Exp>;
   email_verified?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   invites?: Maybe<Room_Invites_Bool_Exp>;
   messages?: Maybe<Message_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
-  rooms?: Maybe<Room_Participants_Bool_Exp>;
+  owned_teams?: Maybe<Team_Bool_Exp>;
+  rooms?: Maybe<Room_Member_Bool_Exp>;
+  space_memberships?: Maybe<Space_Member_Bool_Exp>;
+  team_memberships?: Maybe<Team_Member_Bool_Exp>;
+  topic_memberships?: Maybe<Topic_Member_Bool_Exp>;
 };
 
 /** unique or primary key constraints on table "user" */
@@ -5264,13 +7007,20 @@ export type User_Insert_Input = {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   created_rooms?: Maybe<Room_Arr_Rel_Insert_Input>;
+  created_team_invitations?: Maybe<Team_Invitation_Arr_Rel_Insert_Input>;
+  current_team?: Maybe<Team_Obj_Rel_Insert_Input>;
+  current_team_id?: Maybe<Scalars['uuid']>;
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   messages?: Maybe<Message_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
-  rooms?: Maybe<Room_Participants_Arr_Rel_Insert_Input>;
+  owned_teams?: Maybe<Team_Arr_Rel_Insert_Input>;
+  rooms?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
+  space_memberships?: Maybe<Space_Member_Arr_Rel_Insert_Input>;
+  team_memberships?: Maybe<Team_Member_Arr_Rel_Insert_Input>;
+  topic_memberships?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
 };
 
 /** aggregate max on columns */
@@ -5278,6 +7028,7 @@ export type User_Max_Fields = {
   __typename?: 'user_max_fields';
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  current_team_id?: Maybe<Scalars['uuid']>;
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
@@ -5288,6 +7039,7 @@ export type User_Max_Fields = {
 export type User_Max_Order_By = {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
+  current_team_id?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -5299,6 +7051,7 @@ export type User_Min_Fields = {
   __typename?: 'user_min_fields';
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  current_team_id?: Maybe<Scalars['uuid']>;
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
@@ -5309,6 +7062,7 @@ export type User_Min_Fields = {
 export type User_Min_Order_By = {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
+  current_team_id?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -5342,13 +7096,20 @@ export type User_Order_By = {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   created_rooms_aggregate?: Maybe<Room_Aggregate_Order_By>;
+  created_team_invitations_aggregate?: Maybe<Team_Invitation_Aggregate_Order_By>;
+  current_team?: Maybe<Team_Order_By>;
+  current_team_id?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
-  rooms_aggregate?: Maybe<Room_Participants_Aggregate_Order_By>;
+  owned_teams_aggregate?: Maybe<Team_Aggregate_Order_By>;
+  rooms_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
+  space_memberships_aggregate?: Maybe<Space_Member_Aggregate_Order_By>;
+  team_memberships_aggregate?: Maybe<Team_Member_Aggregate_Order_By>;
+  topic_memberships_aggregate?: Maybe<Topic_Member_Aggregate_Order_By>;
 };
 
 /** primary key columns input for table: "user" */
@@ -5363,6 +7124,8 @@ export enum User_Select_Column {
   /** column name */
   CreatedAt = 'created_at',
   /** column name */
+  CurrentTeamId = 'current_team_id',
+  /** column name */
   Email = 'email',
   /** column name */
   EmailVerified = 'email_verified',
@@ -5376,6 +7139,7 @@ export enum User_Select_Column {
 export type User_Set_Input = {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  current_team_id?: Maybe<Scalars['uuid']>;
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
@@ -5388,6 +7152,8 @@ export enum User_Update_Column {
   AvatarUrl = 'avatar_url',
   /** column name */
   CreatedAt = 'created_at',
+  /** column name */
+  CurrentTeamId = 'current_team_id',
   /** column name */
   Email = 'email',
   /** column name */
@@ -5453,7 +7219,7 @@ export type GetRoomInvitesQuery = (
 );
 
 export type AcceptInviteMutationVariables = Exact<{
-  code: Scalars['String'];
+  token: Scalars['String'];
 }>;
 
 
@@ -5461,15 +7227,18 @@ export type AcceptInviteMutation = (
   { __typename?: 'mutation_root' }
   & { invite?: Maybe<(
     { __typename?: 'InviteAcceptResponse' }
-    & { roomId: InviteAcceptResponse['room_id'] }
+    & { team?: Maybe<(
+      { __typename?: 'team' }
+      & Pick<Team, 'id'>
+    )> }
   )> }
 );
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'space_id'>
-  & { participants: Array<(
-    { __typename?: 'room_participants' }
+  & { members: Array<(
+    { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
       & Pick<User, 'id' | 'name'>
@@ -5481,8 +7250,8 @@ export type RoomBasicInfoFragment = (
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'space_id'>
-  & { participants: Array<(
-    { __typename?: 'room_participants' }
+  & { members: Array<(
+    { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
       & Pick<User, 'id' | 'name'>
@@ -5490,12 +7259,12 @@ export type RoomDetailedInfoFragment = (
     ) }
   )>, topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'name' | 'index'>
+    & TopicDetailedInfoFragment
   )> }
 );
 
 export type RoomParticipantBasicInfoFragment = (
-  { __typename?: 'room_participants' }
+  { __typename?: 'room_member' }
   & { user: (
     { __typename?: 'user' }
     & Pick<User, 'name'>
@@ -5503,7 +7272,9 @@ export type RoomParticipantBasicInfoFragment = (
   ) }
 );
 
-export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetRoomsQueryVariables = Exact<{
+  spaceId: Scalars['uuid'];
+}>;
 
 
 export type GetRoomsQuery = (
@@ -5530,6 +7301,7 @@ export type GetSingleRoomQuery = (
 export type CreateRoomMutationVariables = Exact<{
   name: Scalars['String'];
   spaceId: Scalars['uuid'];
+  slug: Scalars['String'];
 }>;
 
 
@@ -5548,17 +7320,45 @@ export type RoomParticipantsQueryVariables = Exact<{
 
 export type RoomParticipantsQuery = (
   { __typename?: 'query_root' }
-  & { participants: Array<(
-    { __typename?: 'room_participants' }
+  & { members: Array<(
+    { __typename?: 'room_member' }
     & RoomParticipantBasicInfoFragment
+  )> }
+);
+
+export type AddRoomMemberMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type AddRoomMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_room_member_one?: Maybe<(
+    { __typename?: 'room_member' }
+    & Pick<Room_Member, 'room_id' | 'user_id'>
+  )> }
+);
+
+export type RemoveRoomMemberMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveRoomMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_room_member?: Maybe<(
+    { __typename?: 'room_member_mutation_response' }
+    & Pick<Room_Member_Mutation_Response, 'affected_rows'>
   )> }
 );
 
 export type SpaceBasicInfoFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
-  & { participants: Array<(
-    { __typename?: 'space_participants' }
+  & { members: Array<(
+    { __typename?: 'space_member' }
     & { user: (
       { __typename?: 'user' }
       & UserBasicInfoFragment
@@ -5569,8 +7369,8 @@ export type SpaceBasicInfoFragment = (
 export type SpaceDetailedInfoFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
-  & { participants: Array<(
-    { __typename?: 'space_participants' }
+  & { members: Array<(
+    { __typename?: 'space_member' }
     & { user: (
       { __typename?: 'user' }
       & UserBasicInfoFragment
@@ -5607,6 +7407,8 @@ export type GetSingleSpaceQuery = (
 
 export type CreateSpaceMutationVariables = Exact<{
   name: Scalars['String'];
+  teamId: Scalars['uuid'];
+  slug: Scalars['String'];
 }>;
 
 
@@ -5618,9 +7420,127 @@ export type CreateSpaceMutation = (
   )> }
 );
 
+export type AddSpaceMemberMutationVariables = Exact<{
+  spaceId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type AddSpaceMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_space_member_one?: Maybe<(
+    { __typename?: 'space_member' }
+    & Pick<Space_Member, 'space_id' | 'user_id'>
+  )> }
+);
+
+export type RemoveSpaceMemberMutationVariables = Exact<{
+  spaceId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveSpaceMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_space_member?: Maybe<(
+    { __typename?: 'space_member_mutation_response' }
+    & Pick<Space_Member_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
+export type TeamBasicInfoFragment = (
+  { __typename?: 'team' }
+  & Pick<Team, 'id' | 'name' | 'slug'>
+);
+
+export type TeamInvitationBasicInfoFragment = (
+  { __typename?: 'team_invitation' }
+  & Pick<Team_Invitation, 'email' | 'id' | 'used_at'>
+);
+
+export type TeamDetailedInfoFragment = (
+  { __typename?: 'team' }
+  & Pick<Team, 'id' | 'name' | 'slug'>
+  & { spaces: Array<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
+  )>, invitations: Array<(
+    { __typename?: 'team_invitation' }
+    & TeamInvitationBasicInfoFragment
+  )>, memberships: Array<(
+    { __typename?: 'team_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & UserBasicInfoFragment
+    ) }
+  )> }
+);
+
+export type CreateTeamMutationVariables = Exact<{
+  slug: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type CreateTeamMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_team_one?: Maybe<(
+    { __typename?: 'team' }
+    & TeamDetailedInfoFragment
+  )> }
+);
+
+export type TeamsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TeamsQuery = (
+  { __typename?: 'query_root' }
+  & { teams: Array<(
+    { __typename?: 'team' }
+    & TeamBasicInfoFragment
+  )> }
+);
+
+export type TeamDetailsQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type TeamDetailsQuery = (
+  { __typename?: 'query_root' }
+  & { team?: Maybe<(
+    { __typename?: 'team' }
+    & TeamDetailedInfoFragment
+  )> }
+);
+
+export type CreateTeamInvitationMutationVariables = Exact<{
+  teamId: Scalars['uuid'];
+  email: Scalars['String'];
+}>;
+
+
+export type CreateTeamInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_team_invitation_one?: Maybe<(
+    { __typename?: 'team_invitation' }
+    & TeamInvitationBasicInfoFragment
+  )> }
+);
+
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index'>
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug'>
+  & { room: (
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'space_id'>
+  ), members: Array<(
+    { __typename?: 'topic_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & UserBasicInfoFragment
+    ) }
+  )> }
 );
 
 export type TopicMessageBasicInfoFragment = (
@@ -5652,7 +7572,7 @@ export type TopicMessageDetailedInfoFragment = (
     & Pick<User, 'id' | 'name'>
     & { avatarUrl: User['avatar_url'] }
   ), message_attachments: Array<(
-    { __typename?: 'message_attachments' }
+    { __typename?: 'message_attachment' }
     & { attachment: (
       { __typename?: 'attachment' }
       & AttachmentDetailedInfoFragment
@@ -5669,6 +7589,7 @@ export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
   index: Scalars['String'];
+  slug: Scalars['String'];
 }>;
 
 
@@ -5710,7 +7631,7 @@ export type CreateMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
   content: Scalars['jsonb'];
   type: Message_Type_Enum;
-  attachments: Array<Message_Attachments_Insert_Input> | Message_Attachments_Insert_Input;
+  attachments: Array<Message_Attachment_Insert_Input> | Message_Attachment_Insert_Input;
 }>;
 
 
@@ -5796,6 +7717,34 @@ export type GetAttachmentQuery = (
   )> }
 );
 
+export type AddTopicMemberMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type AddTopicMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_topic_member_one?: Maybe<(
+    { __typename?: 'topic_member' }
+    & Pick<Topic_Member, 'topic_id' | 'user_id'>
+  )> }
+);
+
+export type RemoveTopicMemberMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveTopicMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_topic_member?: Maybe<(
+    { __typename?: 'topic_member_mutation_response' }
+    & Pick<Topic_Member_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
 export type GetUnreadMessagesQueryVariables = Exact<{
   roomId?: Maybe<Scalars['uuid']>;
 }>;
@@ -5828,6 +7777,20 @@ export type UserBasicInfoFragment = (
   & Pick<User, 'id' | 'name' | 'avatar_url'>
 );
 
+export type ChangeCurrentTeamIdMutationVariables = Exact<{
+  userId: Scalars['uuid'];
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type ChangeCurrentTeamIdMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_user_by_pk?: Maybe<(
+    { __typename?: 'user' }
+    & Pick<User, 'id'>
+  )> }
+);
+
 export type GetDownloadUrlResponseKeySpecifier = ('downloadUrl' | GetDownloadUrlResponseKeySpecifier)[];
 export type GetDownloadUrlResponseFieldPolicy = {
 	downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>
@@ -5837,12 +7800,12 @@ export type GetUploadUrlResponseFieldPolicy = {
 	uploadUrl?: FieldPolicy<any> | FieldReadFunction<any>,
 	uuid?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type InviteAcceptResponseKeySpecifier = ('invite' | 'invite_id' | 'room' | 'room_id' | InviteAcceptResponseKeySpecifier)[];
+export type InviteAcceptResponseKeySpecifier = ('invite' | 'invite_id' | 'team' | 'team_id' | InviteAcceptResponseKeySpecifier)[];
 export type InviteAcceptResponseFieldPolicy = {
 	invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	invite_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	room?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type UpgradeUserResponseKeySpecifier = ('user' | 'user_id' | UpgradeUserResponseKeySpecifier)[];
 export type UpgradeUserResponseFieldPolicy = {
@@ -5979,6 +7942,34 @@ export type last_seen_message_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type membership_statusKeySpecifier = ('value' | membership_statusKeySpecifier)[];
+export type membership_statusFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type membership_status_aggregateKeySpecifier = ('aggregate' | 'nodes' | membership_status_aggregateKeySpecifier)[];
+export type membership_status_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type membership_status_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | membership_status_aggregate_fieldsKeySpecifier)[];
+export type membership_status_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type membership_status_max_fieldsKeySpecifier = ('value' | membership_status_max_fieldsKeySpecifier)[];
+export type membership_status_max_fieldsFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type membership_status_min_fieldsKeySpecifier = ('value' | membership_status_min_fieldsKeySpecifier)[];
+export type membership_status_min_fieldsFieldPolicy = {
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type membership_status_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | membership_status_mutation_responseKeySpecifier)[];
+export type membership_status_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6007,36 +7998,36 @@ export type message_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachmentsKeySpecifier = ('attachment' | 'attachment_id' | 'message' | 'message_id' | message_attachmentsKeySpecifier)[];
-export type message_attachmentsFieldPolicy = {
+export type message_attachmentKeySpecifier = ('attachment' | 'attachment_id' | 'message' | 'message_id' | message_attachmentKeySpecifier)[];
+export type message_attachmentFieldPolicy = {
 	attachment?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachments_aggregateKeySpecifier = ('aggregate' | 'nodes' | message_attachments_aggregateKeySpecifier)[];
-export type message_attachments_aggregateFieldPolicy = {
+export type message_attachment_aggregateKeySpecifier = ('aggregate' | 'nodes' | message_attachment_aggregateKeySpecifier)[];
+export type message_attachment_aggregateFieldPolicy = {
 	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	nodes?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachments_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | message_attachments_aggregate_fieldsKeySpecifier)[];
-export type message_attachments_aggregate_fieldsFieldPolicy = {
+export type message_attachment_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | message_attachment_aggregate_fieldsKeySpecifier)[];
+export type message_attachment_aggregate_fieldsFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachments_max_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachments_max_fieldsKeySpecifier)[];
-export type message_attachments_max_fieldsFieldPolicy = {
+export type message_attachment_max_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachment_max_fieldsKeySpecifier)[];
+export type message_attachment_max_fieldsFieldPolicy = {
 	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachments_min_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachments_min_fieldsKeySpecifier)[];
-export type message_attachments_min_fieldsFieldPolicy = {
+export type message_attachment_min_fieldsKeySpecifier = ('attachment_id' | 'message_id' | message_attachment_min_fieldsKeySpecifier)[];
+export type message_attachment_min_fieldsFieldPolicy = {
 	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_attachments_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_attachments_mutation_responseKeySpecifier)[];
-export type message_attachments_mutation_responseFieldPolicy = {
+export type message_attachment_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_attachment_mutation_responseKeySpecifier)[];
+export type message_attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -6089,7 +8080,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_message' | 'delete_message_attachments' | 'delete_message_attachments_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_participants' | 'delete_room_participants_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_participants' | 'delete_space_participants_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_message' | 'insert_message_attachments' | 'insert_message_attachments_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_one' | 'insert_room_participants' | 'insert_room_participants_one' | 'insert_space' | 'insert_space_one' | 'insert_space_participants' | 'insert_space_participants_one' | 'insert_topic' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_message' | 'update_message_attachments' | 'update_message_attachments_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_participants' | 'update_room_participants_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_participants' | 'update_space_participants_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6098,9 +8089,11 @@ export type mutation_rootFieldPolicy = {
 	delete_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_message_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6108,14 +8101,22 @@ export type mutation_rootFieldPolicy = {
 	delete_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_team_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_topic_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_topic_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6128,23 +8129,33 @@ export type mutation_rootFieldPolicy = {
 	insert_attachment_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_last_seen_message_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_membership_status_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_message_attachments_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_message_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_message_attachment_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_invites_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_room_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_one?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_room_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_space?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_space_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_space_one?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_space_participants_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team_invitation_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_team_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_topic_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_topic_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_topic_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_transcription_one?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6158,9 +8169,11 @@ export type mutation_rootFieldPolicy = {
 	update_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_message_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6168,14 +8181,22 @@ export type mutation_rootFieldPolicy = {
 	update_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_space?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_team_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_topic_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_topic_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6184,7 +8205,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_participants' | 'space_participants_aggregate' | 'space_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6197,11 +8218,14 @@ export type query_rootFieldPolicy = {
 	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6212,18 +8236,30 @@ export type query_rootFieldPolicy = {
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6236,7 +8272,7 @@ export type query_rootFieldPolicy = {
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'participants' | 'participants_aggregate' | 'room_invites' | 'room_invites_aggregate' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6244,12 +8280,13 @@ export type roomFieldPolicy = {
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	members?: FieldPolicy<any> | FieldReadFunction<any>,
+	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6315,7 +8352,7 @@ export type room_invites_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
+export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'slug' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6324,10 +8361,44 @@ export type room_max_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
+export type room_memberKeySpecifier = ('room' | 'room_id' | 'user' | 'user_id' | room_memberKeySpecifier)[];
+export type room_memberFieldPolicy = {
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_member_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_member_aggregateKeySpecifier)[];
+export type room_member_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_member_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_member_aggregate_fieldsKeySpecifier)[];
+export type room_member_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_member_max_fieldsKeySpecifier = ('room_id' | 'user_id' | room_member_max_fieldsKeySpecifier)[];
+export type room_member_max_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_member_min_fieldsKeySpecifier = ('room_id' | 'user_id' | room_member_min_fieldsKeySpecifier)[];
+export type room_member_min_fieldsFieldPolicy = {
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_member_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | room_member_mutation_responseKeySpecifier)[];
+export type room_member_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'slug' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
 export type room_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6336,6 +8407,7 @@ export type room_min_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -6344,49 +8416,19 @@ export type room_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_participantsKeySpecifier = ('room' | 'room_id' | 'user' | 'user_id' | room_participantsKeySpecifier)[];
-export type room_participantsFieldPolicy = {
-	room?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type room_participants_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_participants_aggregateKeySpecifier)[];
-export type room_participants_aggregateFieldPolicy = {
-	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	nodes?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type room_participants_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_participants_aggregate_fieldsKeySpecifier)[];
-export type room_participants_aggregate_fieldsFieldPolicy = {
-	count?: FieldPolicy<any> | FieldReadFunction<any>,
-	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type room_participants_max_fieldsKeySpecifier = ('room_id' | 'user_id' | room_participants_max_fieldsKeySpecifier)[];
-export type room_participants_max_fieldsFieldPolicy = {
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type room_participants_min_fieldsKeySpecifier = ('room_id' | 'user_id' | room_participants_min_fieldsKeySpecifier)[];
-export type room_participants_min_fieldsFieldPolicy = {
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type room_participants_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | room_participants_mutation_responseKeySpecifier)[];
-export type room_participants_mutation_responseFieldPolicy = {
-	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
-	returning?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'name' | 'participants' | 'participants_aggregate' | 'rooms' | 'rooms_aggregate' | spaceKeySpecifier)[];
+export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'members' | 'members_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | 'slug' | 'team' | 'team_id' | spaceKeySpecifier)[];
 export type spaceFieldPolicy = {
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	members?: FieldPolicy<any> | FieldReadFunction<any>,
+	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
-	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type space_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_aggregateKeySpecifier)[];
 export type space_aggregateFieldPolicy = {
@@ -6399,57 +8441,61 @@ export type space_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type space_max_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | space_max_fieldsKeySpecifier)[];
+export type space_max_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | space_max_fieldsKeySpecifier)[];
 export type space_max_fieldsFieldPolicy = {
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type space_min_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | space_min_fieldsKeySpecifier)[];
+export type space_memberKeySpecifier = ('space' | 'space_id' | 'user' | 'user_id' | space_memberKeySpecifier)[];
+export type space_memberFieldPolicy = {
+	space?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_member_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_member_aggregateKeySpecifier)[];
+export type space_member_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_member_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | space_member_aggregate_fieldsKeySpecifier)[];
+export type space_member_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_member_max_fieldsKeySpecifier = ('space_id' | 'user_id' | space_member_max_fieldsKeySpecifier)[];
+export type space_member_max_fieldsFieldPolicy = {
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_member_min_fieldsKeySpecifier = ('space_id' | 'user_id' | space_member_min_fieldsKeySpecifier)[];
+export type space_member_min_fieldsFieldPolicy = {
+	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_member_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_member_mutation_responseKeySpecifier)[];
+export type space_member_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type space_min_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | space_min_fieldsKeySpecifier)[];
 export type space_min_fieldsFieldPolicy = {
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type space_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_mutation_responseKeySpecifier)[];
 export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type space_participantsKeySpecifier = ('space' | 'space_id' | 'user' | 'user_id' | space_participantsKeySpecifier)[];
-export type space_participantsFieldPolicy = {
-	space?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type space_participants_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_participants_aggregateKeySpecifier)[];
-export type space_participants_aggregateFieldPolicy = {
-	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	nodes?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type space_participants_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | space_participants_aggregate_fieldsKeySpecifier)[];
-export type space_participants_aggregate_fieldsFieldPolicy = {
-	count?: FieldPolicy<any> | FieldReadFunction<any>,
-	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type space_participants_max_fieldsKeySpecifier = ('space_id' | 'user_id' | space_participants_max_fieldsKeySpecifier)[];
-export type space_participants_max_fieldsFieldPolicy = {
-	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type space_participants_min_fieldsKeySpecifier = ('space_id' | 'user_id' | space_participants_min_fieldsKeySpecifier)[];
-export type space_participants_min_fieldsFieldPolicy = {
-	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type space_participants_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_participants_mutation_responseKeySpecifier)[];
-export type space_participants_mutation_responseFieldPolicy = {
-	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
-	returning?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'message' | 'message_aggregate' | 'message_attachments' | 'message_attachments_aggregate' | 'message_attachments_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_participants' | 'room_participants_aggregate' | 'room_participants_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_participants' | 'space_participants_aggregate' | 'space_participants_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6462,11 +8508,14 @@ export type subscription_rootFieldPolicy = {
 	last_seen_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_seen_message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	membership_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	message_attachments_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_attachment_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6477,18 +8526,30 @@ export type subscription_rootFieldPolicy = {
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	space_participants_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6501,15 +8562,143 @@ export type subscription_rootFieldPolicy = {
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topicKeySpecifier = ('id' | 'index' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | topicKeySpecifier)[];
+export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
+export type teamFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
+	invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	memberships?: FieldPolicy<any> | FieldReadFunction<any>,
+	memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	spaces?: FieldPolicy<any> | FieldReadFunction<any>,
+	spaces_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_aggregateKeySpecifier)[];
+export type team_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | team_aggregate_fieldsKeySpecifier)[];
+export type team_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'team' | 'team_id' | 'token' | 'used_at' | team_invitationKeySpecifier)[];
+export type team_invitationFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitation_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_invitation_aggregateKeySpecifier)[];
+export type team_invitation_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitation_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | team_invitation_aggregate_fieldsKeySpecifier)[];
+export type team_invitation_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitation_max_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | team_invitation_max_fieldsKeySpecifier)[];
+export type team_invitation_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitation_min_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | team_invitation_min_fieldsKeySpecifier)[];
+export type team_invitation_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_invitation_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_invitation_mutation_responseKeySpecifier)[];
+export type team_invitation_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_max_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | team_max_fieldsKeySpecifier)[];
+export type team_max_fieldsFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_memberKeySpecifier = ('team' | 'team_id' | 'user' | 'user_id' | team_memberKeySpecifier)[];
+export type team_memberFieldPolicy = {
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_member_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_member_aggregateKeySpecifier)[];
+export type team_member_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_member_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | team_member_aggregate_fieldsKeySpecifier)[];
+export type team_member_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_member_max_fieldsKeySpecifier = ('team_id' | 'user_id' | team_member_max_fieldsKeySpecifier)[];
+export type team_member_max_fieldsFieldPolicy = {
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_member_min_fieldsKeySpecifier = ('team_id' | 'user_id' | team_member_min_fieldsKeySpecifier)[];
+export type team_member_min_fieldsFieldPolicy = {
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_member_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_member_mutation_responseKeySpecifier)[];
+export type team_member_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_min_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | team_min_fieldsKeySpecifier)[];
+export type team_min_fieldsFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type team_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_mutation_responseKeySpecifier)[];
+export type team_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topicKeySpecifier = ('id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
 export type topicFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
+	members?: FieldPolicy<any> | FieldReadFunction<any>,
+	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type topic_aggregateKeySpecifier = ('aggregate' | 'nodes' | topic_aggregateKeySpecifier)[];
 export type topic_aggregateFieldPolicy = {
@@ -6522,19 +8711,54 @@ export type topic_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_max_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
 export type topic_max_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_min_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | topic_min_fieldsKeySpecifier)[];
+export type topic_memberKeySpecifier = ('topic' | 'topic_id' | 'user' | 'user_id' | topic_memberKeySpecifier)[];
+export type topic_memberFieldPolicy = {
+	topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_member_aggregateKeySpecifier = ('aggregate' | 'nodes' | topic_member_aggregateKeySpecifier)[];
+export type topic_member_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_member_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | topic_member_aggregate_fieldsKeySpecifier)[];
+export type topic_member_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_member_max_fieldsKeySpecifier = ('topic_id' | 'user_id' | topic_member_max_fieldsKeySpecifier)[];
+export type topic_member_max_fieldsFieldPolicy = {
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_member_min_fieldsKeySpecifier = ('topic_id' | 'user_id' | topic_member_min_fieldsKeySpecifier)[];
+export type topic_member_min_fieldsFieldPolicy = {
+	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_member_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | topic_member_mutation_responseKeySpecifier)[];
+export type topic_member_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type topic_min_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
 export type topic_min_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	slug?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type topic_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | topic_mutation_responseKeySpecifier)[];
 export type topic_mutation_responseFieldPolicy = {
@@ -6680,12 +8904,16 @@ export type unread_messages_variance_fieldsKeySpecifier = ('unread_messages' | u
 export type unread_messages_variance_fieldsFieldPolicy = {
 	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | userKeySpecifier)[];
+export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_team_invitations?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_team_invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	current_team?: FieldPolicy<any> | FieldReadFunction<any>,
+	current_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6694,8 +8922,16 @@ export type userFieldPolicy = {
 	messages?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	owned_teams?: FieldPolicy<any> | FieldReadFunction<any>,
+	owned_teams_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
-	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_memberships?: FieldPolicy<any> | FieldReadFunction<any>,
+	space_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_memberships?: FieldPolicy<any> | FieldReadFunction<any>,
+	team_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_memberships?: FieldPolicy<any> | FieldReadFunction<any>,
+	topic_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type user_aggregateKeySpecifier = ('aggregate' | 'nodes' | user_aggregateKeySpecifier)[];
 export type user_aggregateFieldPolicy = {
@@ -6708,19 +8944,21 @@ export type user_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'email_verified' | 'id' | 'name' | user_max_fieldsKeySpecifier)[];
+export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | user_max_fieldsKeySpecifier)[];
 export type user_max_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	current_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'email' | 'email_verified' | 'id' | 'name' | user_min_fieldsKeySpecifier)[];
+export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | user_min_fieldsKeySpecifier)[];
 export type user_min_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	current_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -6820,6 +9058,30 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | last_seen_message_mutation_responseKeySpecifier | (() => undefined | last_seen_message_mutation_responseKeySpecifier),
 		fields?: last_seen_message_mutation_responseFieldPolicy,
 	},
+	membership_status?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_statusKeySpecifier | (() => undefined | membership_statusKeySpecifier),
+		fields?: membership_statusFieldPolicy,
+	},
+	membership_status_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_status_aggregateKeySpecifier | (() => undefined | membership_status_aggregateKeySpecifier),
+		fields?: membership_status_aggregateFieldPolicy,
+	},
+	membership_status_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_status_aggregate_fieldsKeySpecifier | (() => undefined | membership_status_aggregate_fieldsKeySpecifier),
+		fields?: membership_status_aggregate_fieldsFieldPolicy,
+	},
+	membership_status_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_status_max_fieldsKeySpecifier | (() => undefined | membership_status_max_fieldsKeySpecifier),
+		fields?: membership_status_max_fieldsFieldPolicy,
+	},
+	membership_status_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_status_min_fieldsKeySpecifier | (() => undefined | membership_status_min_fieldsKeySpecifier),
+		fields?: membership_status_min_fieldsFieldPolicy,
+	},
+	membership_status_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | membership_status_mutation_responseKeySpecifier | (() => undefined | membership_status_mutation_responseKeySpecifier),
+		fields?: membership_status_mutation_responseFieldPolicy,
+	},
 	message?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | messageKeySpecifier | (() => undefined | messageKeySpecifier),
 		fields?: messageFieldPolicy,
@@ -6832,29 +9094,29 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | message_aggregate_fieldsKeySpecifier | (() => undefined | message_aggregate_fieldsKeySpecifier),
 		fields?: message_aggregate_fieldsFieldPolicy,
 	},
-	message_attachments?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachmentsKeySpecifier | (() => undefined | message_attachmentsKeySpecifier),
-		fields?: message_attachmentsFieldPolicy,
+	message_attachment?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachmentKeySpecifier | (() => undefined | message_attachmentKeySpecifier),
+		fields?: message_attachmentFieldPolicy,
 	},
-	message_attachments_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachments_aggregateKeySpecifier | (() => undefined | message_attachments_aggregateKeySpecifier),
-		fields?: message_attachments_aggregateFieldPolicy,
+	message_attachment_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachment_aggregateKeySpecifier | (() => undefined | message_attachment_aggregateKeySpecifier),
+		fields?: message_attachment_aggregateFieldPolicy,
 	},
-	message_attachments_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachments_aggregate_fieldsKeySpecifier | (() => undefined | message_attachments_aggregate_fieldsKeySpecifier),
-		fields?: message_attachments_aggregate_fieldsFieldPolicy,
+	message_attachment_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachment_aggregate_fieldsKeySpecifier | (() => undefined | message_attachment_aggregate_fieldsKeySpecifier),
+		fields?: message_attachment_aggregate_fieldsFieldPolicy,
 	},
-	message_attachments_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachments_max_fieldsKeySpecifier | (() => undefined | message_attachments_max_fieldsKeySpecifier),
-		fields?: message_attachments_max_fieldsFieldPolicy,
+	message_attachment_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachment_max_fieldsKeySpecifier | (() => undefined | message_attachment_max_fieldsKeySpecifier),
+		fields?: message_attachment_max_fieldsFieldPolicy,
 	},
-	message_attachments_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachments_min_fieldsKeySpecifier | (() => undefined | message_attachments_min_fieldsKeySpecifier),
-		fields?: message_attachments_min_fieldsFieldPolicy,
+	message_attachment_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachment_min_fieldsKeySpecifier | (() => undefined | message_attachment_min_fieldsKeySpecifier),
+		fields?: message_attachment_min_fieldsFieldPolicy,
 	},
-	message_attachments_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | message_attachments_mutation_responseKeySpecifier | (() => undefined | message_attachments_mutation_responseKeySpecifier),
-		fields?: message_attachments_mutation_responseFieldPolicy,
+	message_attachment_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | message_attachment_mutation_responseKeySpecifier | (() => undefined | message_attachment_mutation_responseKeySpecifier),
+		fields?: message_attachment_mutation_responseFieldPolicy,
 	},
 	message_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | message_max_fieldsKeySpecifier | (() => undefined | message_max_fieldsKeySpecifier),
@@ -6940,6 +9202,30 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | room_max_fieldsKeySpecifier | (() => undefined | room_max_fieldsKeySpecifier),
 		fields?: room_max_fieldsFieldPolicy,
 	},
+	room_member?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_memberKeySpecifier | (() => undefined | room_memberKeySpecifier),
+		fields?: room_memberFieldPolicy,
+	},
+	room_member_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_member_aggregateKeySpecifier | (() => undefined | room_member_aggregateKeySpecifier),
+		fields?: room_member_aggregateFieldPolicy,
+	},
+	room_member_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_member_aggregate_fieldsKeySpecifier | (() => undefined | room_member_aggregate_fieldsKeySpecifier),
+		fields?: room_member_aggregate_fieldsFieldPolicy,
+	},
+	room_member_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_member_max_fieldsKeySpecifier | (() => undefined | room_member_max_fieldsKeySpecifier),
+		fields?: room_member_max_fieldsFieldPolicy,
+	},
+	room_member_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_member_min_fieldsKeySpecifier | (() => undefined | room_member_min_fieldsKeySpecifier),
+		fields?: room_member_min_fieldsFieldPolicy,
+	},
+	room_member_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_member_mutation_responseKeySpecifier | (() => undefined | room_member_mutation_responseKeySpecifier),
+		fields?: room_member_mutation_responseFieldPolicy,
+	},
 	room_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_min_fieldsKeySpecifier | (() => undefined | room_min_fieldsKeySpecifier),
 		fields?: room_min_fieldsFieldPolicy,
@@ -6947,30 +9233,6 @@ export type TypedTypePolicies = TypePolicies & {
 	room_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_mutation_responseKeySpecifier | (() => undefined | room_mutation_responseKeySpecifier),
 		fields?: room_mutation_responseFieldPolicy,
-	},
-	room_participants?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participantsKeySpecifier | (() => undefined | room_participantsKeySpecifier),
-		fields?: room_participantsFieldPolicy,
-	},
-	room_participants_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participants_aggregateKeySpecifier | (() => undefined | room_participants_aggregateKeySpecifier),
-		fields?: room_participants_aggregateFieldPolicy,
-	},
-	room_participants_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participants_aggregate_fieldsKeySpecifier | (() => undefined | room_participants_aggregate_fieldsKeySpecifier),
-		fields?: room_participants_aggregate_fieldsFieldPolicy,
-	},
-	room_participants_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participants_max_fieldsKeySpecifier | (() => undefined | room_participants_max_fieldsKeySpecifier),
-		fields?: room_participants_max_fieldsFieldPolicy,
-	},
-	room_participants_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participants_min_fieldsKeySpecifier | (() => undefined | room_participants_min_fieldsKeySpecifier),
-		fields?: room_participants_min_fieldsFieldPolicy,
-	},
-	room_participants_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_participants_mutation_responseKeySpecifier | (() => undefined | room_participants_mutation_responseKeySpecifier),
-		fields?: room_participants_mutation_responseFieldPolicy,
 	},
 	space?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | spaceKeySpecifier | (() => undefined | spaceKeySpecifier),
@@ -6988,6 +9250,30 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | space_max_fieldsKeySpecifier | (() => undefined | space_max_fieldsKeySpecifier),
 		fields?: space_max_fieldsFieldPolicy,
 	},
+	space_member?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_memberKeySpecifier | (() => undefined | space_memberKeySpecifier),
+		fields?: space_memberFieldPolicy,
+	},
+	space_member_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_member_aggregateKeySpecifier | (() => undefined | space_member_aggregateKeySpecifier),
+		fields?: space_member_aggregateFieldPolicy,
+	},
+	space_member_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_member_aggregate_fieldsKeySpecifier | (() => undefined | space_member_aggregate_fieldsKeySpecifier),
+		fields?: space_member_aggregate_fieldsFieldPolicy,
+	},
+	space_member_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_member_max_fieldsKeySpecifier | (() => undefined | space_member_max_fieldsKeySpecifier),
+		fields?: space_member_max_fieldsFieldPolicy,
+	},
+	space_member_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_member_min_fieldsKeySpecifier | (() => undefined | space_member_min_fieldsKeySpecifier),
+		fields?: space_member_min_fieldsFieldPolicy,
+	},
+	space_member_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | space_member_mutation_responseKeySpecifier | (() => undefined | space_member_mutation_responseKeySpecifier),
+		fields?: space_member_mutation_responseFieldPolicy,
+	},
 	space_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | space_min_fieldsKeySpecifier | (() => undefined | space_min_fieldsKeySpecifier),
 		fields?: space_min_fieldsFieldPolicy,
@@ -6996,33 +9282,81 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | space_mutation_responseKeySpecifier | (() => undefined | space_mutation_responseKeySpecifier),
 		fields?: space_mutation_responseFieldPolicy,
 	},
-	space_participants?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participantsKeySpecifier | (() => undefined | space_participantsKeySpecifier),
-		fields?: space_participantsFieldPolicy,
-	},
-	space_participants_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participants_aggregateKeySpecifier | (() => undefined | space_participants_aggregateKeySpecifier),
-		fields?: space_participants_aggregateFieldPolicy,
-	},
-	space_participants_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participants_aggregate_fieldsKeySpecifier | (() => undefined | space_participants_aggregate_fieldsKeySpecifier),
-		fields?: space_participants_aggregate_fieldsFieldPolicy,
-	},
-	space_participants_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participants_max_fieldsKeySpecifier | (() => undefined | space_participants_max_fieldsKeySpecifier),
-		fields?: space_participants_max_fieldsFieldPolicy,
-	},
-	space_participants_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participants_min_fieldsKeySpecifier | (() => undefined | space_participants_min_fieldsKeySpecifier),
-		fields?: space_participants_min_fieldsFieldPolicy,
-	},
-	space_participants_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | space_participants_mutation_responseKeySpecifier | (() => undefined | space_participants_mutation_responseKeySpecifier),
-		fields?: space_participants_mutation_responseFieldPolicy,
-	},
 	subscription_root?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | subscription_rootKeySpecifier | (() => undefined | subscription_rootKeySpecifier),
 		fields?: subscription_rootFieldPolicy,
+	},
+	team?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | teamKeySpecifier | (() => undefined | teamKeySpecifier),
+		fields?: teamFieldPolicy,
+	},
+	team_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_aggregateKeySpecifier | (() => undefined | team_aggregateKeySpecifier),
+		fields?: team_aggregateFieldPolicy,
+	},
+	team_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_aggregate_fieldsKeySpecifier | (() => undefined | team_aggregate_fieldsKeySpecifier),
+		fields?: team_aggregate_fieldsFieldPolicy,
+	},
+	team_invitation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitationKeySpecifier | (() => undefined | team_invitationKeySpecifier),
+		fields?: team_invitationFieldPolicy,
+	},
+	team_invitation_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitation_aggregateKeySpecifier | (() => undefined | team_invitation_aggregateKeySpecifier),
+		fields?: team_invitation_aggregateFieldPolicy,
+	},
+	team_invitation_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitation_aggregate_fieldsKeySpecifier | (() => undefined | team_invitation_aggregate_fieldsKeySpecifier),
+		fields?: team_invitation_aggregate_fieldsFieldPolicy,
+	},
+	team_invitation_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitation_max_fieldsKeySpecifier | (() => undefined | team_invitation_max_fieldsKeySpecifier),
+		fields?: team_invitation_max_fieldsFieldPolicy,
+	},
+	team_invitation_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitation_min_fieldsKeySpecifier | (() => undefined | team_invitation_min_fieldsKeySpecifier),
+		fields?: team_invitation_min_fieldsFieldPolicy,
+	},
+	team_invitation_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_invitation_mutation_responseKeySpecifier | (() => undefined | team_invitation_mutation_responseKeySpecifier),
+		fields?: team_invitation_mutation_responseFieldPolicy,
+	},
+	team_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_max_fieldsKeySpecifier | (() => undefined | team_max_fieldsKeySpecifier),
+		fields?: team_max_fieldsFieldPolicy,
+	},
+	team_member?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_memberKeySpecifier | (() => undefined | team_memberKeySpecifier),
+		fields?: team_memberFieldPolicy,
+	},
+	team_member_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_member_aggregateKeySpecifier | (() => undefined | team_member_aggregateKeySpecifier),
+		fields?: team_member_aggregateFieldPolicy,
+	},
+	team_member_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_member_aggregate_fieldsKeySpecifier | (() => undefined | team_member_aggregate_fieldsKeySpecifier),
+		fields?: team_member_aggregate_fieldsFieldPolicy,
+	},
+	team_member_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_member_max_fieldsKeySpecifier | (() => undefined | team_member_max_fieldsKeySpecifier),
+		fields?: team_member_max_fieldsFieldPolicy,
+	},
+	team_member_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_member_min_fieldsKeySpecifier | (() => undefined | team_member_min_fieldsKeySpecifier),
+		fields?: team_member_min_fieldsFieldPolicy,
+	},
+	team_member_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_member_mutation_responseKeySpecifier | (() => undefined | team_member_mutation_responseKeySpecifier),
+		fields?: team_member_mutation_responseFieldPolicy,
+	},
+	team_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_min_fieldsKeySpecifier | (() => undefined | team_min_fieldsKeySpecifier),
+		fields?: team_min_fieldsFieldPolicy,
+	},
+	team_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | team_mutation_responseKeySpecifier | (() => undefined | team_mutation_responseKeySpecifier),
+		fields?: team_mutation_responseFieldPolicy,
 	},
 	topic?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | topicKeySpecifier | (() => undefined | topicKeySpecifier),
@@ -7039,6 +9373,30 @@ export type TypedTypePolicies = TypePolicies & {
 	topic_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | topic_max_fieldsKeySpecifier | (() => undefined | topic_max_fieldsKeySpecifier),
 		fields?: topic_max_fieldsFieldPolicy,
+	},
+	topic_member?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_memberKeySpecifier | (() => undefined | topic_memberKeySpecifier),
+		fields?: topic_memberFieldPolicy,
+	},
+	topic_member_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_member_aggregateKeySpecifier | (() => undefined | topic_member_aggregateKeySpecifier),
+		fields?: topic_member_aggregateFieldPolicy,
+	},
+	topic_member_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_member_aggregate_fieldsKeySpecifier | (() => undefined | topic_member_aggregate_fieldsKeySpecifier),
+		fields?: topic_member_aggregate_fieldsFieldPolicy,
+	},
+	topic_member_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_member_max_fieldsKeySpecifier | (() => undefined | topic_member_max_fieldsKeySpecifier),
+		fields?: topic_member_max_fieldsFieldPolicy,
+	},
+	topic_member_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_member_min_fieldsKeySpecifier | (() => undefined | topic_member_min_fieldsKeySpecifier),
+		fields?: topic_member_min_fieldsFieldPolicy,
+	},
+	topic_member_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | topic_member_mutation_responseKeySpecifier | (() => undefined | topic_member_mutation_responseKeySpecifier),
+		fields?: topic_member_mutation_responseFieldPolicy,
 	},
 	topic_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | topic_min_fieldsKeySpecifier | (() => undefined | topic_min_fieldsKeySpecifier),

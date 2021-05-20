@@ -2,15 +2,15 @@ import Link from "next/link";
 import React from "react";
 import styled from "styled-components";
 import { RoomBasicInfoFragment } from "~frontend/gql";
-import { useGetRoomsQuery } from "~frontend/gql/rooms";
 import { useUnreadMessages } from "~frontend/gql/topics";
 import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
 import { AvatarList } from "~frontend/ui/AvatarList";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { useGetSpaceRoomsQuery } from "~frontend/gql/rooms";
 import { UnreadTopicIndicator } from "../ui/UnreadTopicsIndicator";
 
 const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
-  const { data: unreadMessagesData } = useUnreadMessages.subscription({ roomId: room.id });
+  const [unreadMessagesData] = useUnreadMessages.subscription({ roomId: room.id });
   const unreadMessages = unreadMessagesData?.messages.reduce((acc, cur) => acc + cur.unreadMessages, 0) ?? 0;
 
   return (
@@ -18,26 +18,21 @@ const RoomLink = ({ room }: { room: RoomBasicInfoFragment }) => {
       <UIRoomLink>
         <UnreadTopicIndicator unreadMessages={unreadMessages} />
         <UIRoomName>{room.name || "New room"}</UIRoomName>
-        <AvatarList
-          avatars={(room.participants || []).map(({ user: { name, avatarUrl } }) => ({
-            url: avatarUrl,
-            name,
-          }))}
-        />
+        <AvatarList users={room.members.map((member) => member.user)} />
       </UIRoomLink>
     </Link>
   );
 };
 
-export const RoomList: React.FC<unknown> = () => {
-  const { data } = useGetRoomsQuery();
+export const RoomList = ({ spaceId }: { spaceId: string }) => {
+  const [data] = useGetSpaceRoomsQuery({ spaceId });
 
   if (!data?.room.length) {
     return (
       <>
         <span>Start by creating new Acapela</span>
         <UIContentWrapper marginTop>
-          <RoomCreationButton />
+          <RoomCreationButton spaceId={spaceId} />
         </UIContentWrapper>
       </>
     );

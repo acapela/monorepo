@@ -7,14 +7,21 @@ export type {
   message_type as MessageType,
   room as Room,
   room_invites as RoomInvites,
-  room_participants as RoomParticipants,
+  room_member as RoomParticipants,
   topic as Topic,
   user as User,
   verification_requests as VerificationRequest,
   attachment as Attachment,
-  message_attachments as MessageAttachments,
+  message_attachment as MessageAttachments,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
+  team as Team,
+  space as Space,
+  team_invitation as TeamInvitation,
+  membership_status as MembershipStatus,
+  topic_member as TopicMember,
+  space_member as SpaceMember,
+  team_member as TeamMember,
 } from "@prisma/client";
 
 const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];

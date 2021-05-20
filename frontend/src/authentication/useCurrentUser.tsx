@@ -11,6 +11,7 @@ interface UserAuthData {
   picture: string | null;
   sub: string;
   id: string;
+  currentTeamId: string | null;
 }
 
 /**
@@ -53,4 +54,12 @@ export function useAssertCurrentUser() {
   assert(user, `Using useAssertCurrentUser with null user`);
 
   return user;
+}
+
+export function useAssertCurrentTeamId() {
+  const user = useAssertCurrentUser();
+
+  assert(user.currentTeamId, "No team id");
+
+  return user.currentTeamId;
 }

@@ -8,8 +8,13 @@ import {
   GetSingleRoomQueryVariables,
   RoomParticipantsQuery,
   RoomParticipantsQueryVariables,
+  AddRoomMemberMutation,
+  AddRoomMemberMutationVariables,
+  RemoveRoomMemberMutation,
+  RemoveRoomMemberMutationVariables,
 } from "./generated";
 import { getSingleSpaceManager } from "./spaces";
+import { TopicDetailedInfoFragment } from "./topics";
 
 import { createMutation, createQuery } from "./utils";
 
@@ -18,7 +23,7 @@ export const RoomBasicInfoFragment = () => gql`
     id
     name
     space_id
-    participants {
+    members {
       user {
         id
         name
@@ -29,12 +34,12 @@ export const RoomBasicInfoFragment = () => gql`
 `;
 
 export const RoomDetailedInfoFragment = () => gql`
+  ${TopicDetailedInfoFragment()}
   fragment RoomDetailedInfo on room {
     id
     name
     space_id
-
-    participants {
+    members {
       user {
         id
         name
@@ -43,15 +48,13 @@ export const RoomDetailedInfoFragment = () => gql`
     }
 
     topics {
-      id
-      name
-      index
+      ...TopicDetailedInfo
     }
   }
 `;
 
 const RoomParticipantBasicInfoFragment = () => gql`
-  fragment RoomParticipantBasicInfo on room_participants {
+  fragment RoomParticipantBasicInfo on room_member {
     user {
       name
       avatarUrl: avatar_url
@@ -59,12 +62,12 @@ const RoomParticipantBasicInfoFragment = () => gql`
   }
 `;
 
-export const [useGetRoomsQuery] = createQuery<GetRoomsQuery, GetRoomsQueryVariables>(
+export const [useGetSpaceRoomsQuery] = createQuery<GetRoomsQuery, GetRoomsQueryVariables>(
   () => gql`
     ${RoomBasicInfoFragment()}
 
-    query GetRooms {
-      room {
+    query GetRooms($spaceId: uuid!) {
+      room(where: { space_id: { _eq: $spaceId } }) {
         ...RoomBasicInfo
       }
     }
@@ -90,8 +93,8 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    mutation CreateRoom($name: String!, $spaceId: uuid!) {
-      room: insert_room_one(object: { name: $name, space_id: $spaceId }) {
+    mutation CreateRoom($name: String!, $spaceId: uuid!, $slug: String!) {
+      room: insert_room_one(object: { name: $name, space_id: $spaceId, slug: $slug }) {
         ...RoomDetailedInfo
       }
     }
@@ -111,8 +114,29 @@ export const [useRoomParticipants] = createQuery<RoomParticipantsQuery, RoomPart
     ${RoomParticipantBasicInfoFragment()}
 
     query RoomParticipants($roomId: uuid!) {
-      participants: room_participants(where: { room_id: { _eq: $roomId } }) {
+      members: room_member(where: { room_id: { _eq: $roomId } }) {
         ...RoomParticipantBasicInfo
+      }
+    }
+  `
+);
+
+export const [useAddRoomMember] = createMutation<AddRoomMemberMutation, AddRoomMemberMutationVariables>(
+  () => gql`
+    mutation AddRoomMember($roomId: uuid!, $userId: uuid!) {
+      insert_room_member_one(object: { room_id: $roomId, user_id: $userId }) {
+        room_id
+        user_id
+      }
+    }
+  `
+);
+
+export const [useRemoveRoomMember] = createMutation<RemoveRoomMemberMutation, RemoveRoomMemberMutationVariables>(
+  () => gql`
+    mutation RemoveRoomMember($roomId: uuid!, $userId: uuid!) {
+      delete_room_member(where: { room_id: { _eq: $roomId }, user_id: { _eq: $userId } }) {
+        affected_rows
       }
     }
   `

@@ -28,22 +28,21 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
     reportQueryUsage({ query: getQuery(), variables: variables });
 
-    return useRawQuery(getQuery(), { ...options, variables: variables as Variables });
+    const { data, ...rest } = useRawQuery(getQuery(), { ...options, variables: variables as Variables });
+
+    return [data, rest] as const;
   }
 
   function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
-    const queryResult = useQuery(variables);
+    const [queryData] = useQuery(variables);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...options,
       variables: variables as Variables,
     });
 
-    const data = useLatest(subscriptionResult.data, queryResult.data);
+    const data = useLatest(subscriptionResult.data, queryData);
 
-    return {
-      ...subscriptionResult,
-      data,
-    };
+    return [data, subscriptionResult] as const;
   }
 
   useQuery.subscription = useAsSubscription;

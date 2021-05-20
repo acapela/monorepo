@@ -3,17 +3,6 @@ import { db, Room, RoomInvites, RoomParticipants } from "~db";
 export async function findRoomById(roomId: string): Promise<Room | null> {
   return await db.room.findUnique({
     where: { id: roomId },
-    select: {
-      id: true,
-      space_id: true,
-      creator_id: true,
-      name: true,
-      created_at: true,
-      deadline: true,
-      notification_job_id: true,
-      summary: true,
-      finished_at: true,
-    },
   });
 }
 
@@ -23,12 +12,13 @@ export async function createRoom({ creatorId, name }: { creatorId: string; name:
     data: {
       creator_id: creatorId,
       name,
+      slug: name,
     },
   });
 }
 
 export async function addRoomParticipant(roomId: string, participantId: string): Promise<RoomParticipants> {
-  return await db.room_participants.create({
+  return await db.room_member.create({
     data: {
       room_id: roomId,
       user_id: participantId,
@@ -53,7 +43,7 @@ export async function addRoomParticipantAndInvalidateInvite(invite: RoomInvites,
           },
         },
       },
-      room_participants: {
+      room_member: {
         create: {
           user_id: participantId,
         },
@@ -63,7 +53,7 @@ export async function addRoomParticipantAndInvalidateInvite(invite: RoomInvites,
 }
 
 export async function getIfParticipantExists(roomId: string, participantId: string): Promise<boolean> {
-  const entry = await db.room_participants.count({
+  const entry = await db.room_member.count({
     where: { room_id: roomId, user_id: participantId },
   });
 

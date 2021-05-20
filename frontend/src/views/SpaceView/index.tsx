@@ -5,13 +5,14 @@ import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { SpaceRooms } from "./SpaceRooms";
 import { Button } from "~ui/button";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
+import { slugify } from "~shared/slugify";
 
 interface Props {
   spaceId: string;
 }
 
 export function SpaceView({ spaceId }: Props) {
-  const { data } = useGetSingleSpaceQuery.subscription({ id: spaceId });
+  const [data] = useGetSingleSpaceQuery.subscription({ id: spaceId });
 
   const [createRoom] = useCreateRoomMutation();
 
@@ -24,7 +25,9 @@ export function SpaceView({ spaceId }: Props) {
 
     if (!name?.trim()) return;
 
-    await createRoom({ name, spaceId });
+    const slug = slugify(name);
+
+    await createRoom({ name, spaceId, slug });
   }
 
   return (

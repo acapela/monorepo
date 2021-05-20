@@ -35,6 +35,10 @@
         filter: {}
 - table:
     schema: public
+    name: membership_status
+  is_enum: true
+- table:
+    schema: public
     name: full_text_search
   select_permissions:
     - role: user
@@ -115,7 +119,7 @@
         manual_configuration:
           remote_table:
             schema: public
-            name: message_attachments
+            name: message_attachment
           column_mapping:
             id: message_id
   insert_permissions:
@@ -124,10 +128,9 @@
         check:
           topic:
             room:
-              _and:
-                - finished_at:
-                    _is_null: true
-                - participants:
+              space:
+                team:
+                  memberships:
                     user_id:
                       _eq: X-Hasura-User-Id
         set:
@@ -153,9 +156,11 @@
         filter:
           topic:
             room:
-              participants:
-                user_id:
-                  _eq: X-Hasura-User-Id
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -174,11 +179,23 @@
           user_id:
             _eq: X-Hasura-User-Id
   event_triggers:
-    - name: message_created
+    - name: message_updates
       definition:
         enable_manual: false
         insert:
           columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - is_draft
+            - content
+            - type
+            - created_at
+            - id
+            - topic_id
+            - transcription_id
+            - user_id
       retry_conf:
         num_retries: 5
         interval_sec: 10
@@ -189,7 +206,7 @@
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: message_attachments
+    name: message_attachment
   object_relationships:
     - name: attachment
       using:
@@ -248,12 +265,12 @@
       using:
         foreign_key_constraint_on: space_id
   array_relationships:
-    - name: participants
+    - name: members
       using:
         manual_configuration:
           remote_table:
             schema: public
-            name: room_participants
+            name: room_member
           column_mapping:
             id: room_id
     - name: room_invites
@@ -273,12 +290,18 @@
   insert_permissions:
     - role: user
       permission:
-        check: {}
+        check:
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
         set:
           creator_id: x-hasura-User-Id
         columns:
           - deadline
           - name
+          - slug
           - space_id
           - summary
         backend_only: false
@@ -292,12 +315,15 @@
           - finished_at
           - id
           - name
+          - slug
           - space_id
           - summary
         filter:
-          participants:
-            user_id:
-              _eq: X-Hasura-User-Id
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
@@ -305,9 +331,10 @@
           - deadline
           - finished_at
           - name
+          - slug
           - summary
         filter:
-          participants:
+          members:
             user_id:
               _eq: X-Hasura-User-Id
         check: null
@@ -315,17 +342,33 @@
     - role: user
       permission:
         filter:
-          participants:
-            user_id:
-              _eq: X-Hasura-User-Id
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   event_triggers:
-    - name: room_created
+    - name: room_updates
       definition:
         enable_manual: false
         insert:
           columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - name
+            - notification_job_id
+            - slug
+            - summary
+            - created_at
+            - deadline
+            - finished_at
+            - creator_id
+            - id
+            - space_id
       retry_conf:
-        num_retries: 5
+        num_retries: 0
         interval_sec: 10
         timeout_sec: 60
       webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
@@ -369,23 +412,9 @@
           room:
             creator_id:
               _eq: X-Hasura-User-Id
-  event_triggers:
-    - name: invite_created
-      definition:
-        enable_manual: false
-        insert:
-          columns: "*"
-      retry_conf:
-        num_retries: 5
-        interval_sec: 100
-        timeout_sec: 600
-      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: room_participants
+    name: room_member
   object_relationships:
     - name: room
       using:
@@ -393,6 +422,23 @@
     - name: user
       using:
         foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          room:
+            space:
+              team:
+                memberships:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - user_id:
+                        _ceq: user_id
+        columns:
+          - room_id
+          - user_id
+        backend_only: false
   select_permissions:
     - role: user
       permission:
@@ -401,9 +447,33 @@
           - user_id
         filter:
           room:
-            participants:
-              user_id:
-                _eq: X-Hasura-User-Id
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns: []
+        filter:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: space
@@ -416,14 +486,17 @@
             name: user
           column_mapping:
             creator_id: id
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
   array_relationships:
-    - name: participants
+    - name: members
       using:
         foreign_key_constraint_on:
           column: space_id
           table:
             schema: public
-            name: space_participants
+            name: space_member
     - name: rooms
       using:
         foreign_key_constraint_on:
@@ -434,11 +507,17 @@
   insert_permissions:
     - role: user
       permission:
-        check: {}
+        check:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
         set:
           creator_id: x-hasura-User-Id
         columns:
           - name
+          - slug
+          - team_id
         backend_only: false
   select_permissions:
     - role: user
@@ -447,38 +526,59 @@
           - creator_id
           - id
           - name
+          - slug
+          - team_id
         filter:
-          _or:
-            - creator_id:
+          team:
+            memberships:
+              user_id:
                 _eq: X-Hasura-User-Id
-            - participants:
-                user_id:
-                  _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
-        columns: []
+        columns:
+          - name
+          - slug
         filter:
-          _or:
-            - creator_id:
+          team:
+            memberships:
+              user_id:
                 _eq: X-Hasura-User-Id
-            - participants:
-                user_id:
-                  _eq: X-Hasura-User-Id
         check: null
   delete_permissions:
     - role: user
       permission:
         filter:
-          _or:
-            - creator_id:
+          team:
+            memberships:
+              user_id:
                 _eq: X-Hasura-User-Id
-            - participants:
-                user_id:
-                  _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: space_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - name
+            - slug
+            - creator_id
+            - id
+            - team_id
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: space_participants
+    name: space_member
   object_relationships:
     - name: space
       using:
@@ -491,50 +591,259 @@
       permission:
         check:
           space:
-            _or:
-              - creator_id:
-                  _eq: X-Hasura-User-Id
-              - participants:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-        columns: []
+            team:
+              memberships:
+                _and:
+                  - user_id:
+                      _eq: X-Hasura-User-Id
+                  - user_id:
+                      _ceq: user_id
+        columns:
+          - space_id
+          - user_id
         backend_only: false
   select_permissions:
     - role: user
       permission:
-        columns: []
+        columns:
+          - space_id
+          - user_id
         filter:
           space:
-            _or:
-              - creator_id:
+            team:
+              memberships:
+                user_id:
                   _eq: X-Hasura-User-Id
-              - participants:
-                  user_id:
-                    _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
         columns: []
         filter:
           space:
-            _or:
-              - creator_id:
+            team:
+              memberships:
+                user_id:
                   _eq: X-Hasura-User-Id
-              - participants:
-                  user_id:
-                    _eq: X-Hasura-User-Id
         check: null
   delete_permissions:
     - role: user
       permission:
         filter:
           space:
-            _or:
-              - creator_id:
+            team:
+              memberships:
+                user_id:
                   _eq: X-Hasura-User-Id
-              - participants:
-                  user_id:
+- table:
+    schema: public
+    name: team
+  object_relationships:
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
+  array_relationships:
+    - name: invitations
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            schema: public
+            name: team_invitation
+    - name: memberships
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            schema: public
+            name: team_member
+    - name: spaces
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            schema: public
+            name: space
+  insert_permissions:
+    - role: user
+      permission:
+        check: {}
+        set:
+          owner_id: x-hasura-User-Id
+        columns:
+          - name
+          - slug
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - id
+          - name
+          - owner_id
+          - slug
+        filter:
+          _or:
+            - owner_id:
+                _eq: X-Hasura-User-Id
+            - memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns: []
+        filter:
+          _or:
+            - owner_id:
+                _eq: X-Hasura-User-Id
+            - memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          owner_id:
+            _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: team_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - name
+            - slug
+            - id
+            - owner_id
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: team_invitation
+  object_relationships:
+    - name: inviting_user
+      using:
+        foreign_key_constraint_on: inviting_user_id
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+        set:
+          inviting_user_id: x-hasura-User-Id
+        columns:
+          - email
+          - team_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - email
+          - id
+          - inviting_user_id
+          - team_id
+          - used_at
+        filter:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: team_invitation_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - used_at
+            - email
+            - created_at
+            - id
+            - inviting_user_id
+            - team_id
+            - token
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: team_member
+  object_relationships:
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          team:
+            memberships:
+              _and:
+                - user_id:
                     _eq: X-Hasura-User-Id
+                - user_id:
+                    _ceq: user_id
+        columns:
+          - team_id
+          - user_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - team_id
+          - user_id
+        filter:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: topic
@@ -543,6 +852,13 @@
       using:
         foreign_key_constraint_on: room_id
   array_relationships:
+    - name: members
+      using:
+        foreign_key_constraint_on:
+          column: topic_id
+          table:
+            schema: public
+            name: topic_member
     - name: messages
       using:
         manual_configuration:
@@ -556,16 +872,16 @@
       permission:
         check:
           room:
-            _and:
-              - participants:
+            space:
+              team:
+                memberships:
                   user_id:
                     _eq: X-Hasura-User-Id
-              - finished_at:
-                  _is_null: true
         columns:
           - index
           - name
           - room_id
+          - slug
         backend_only: false
   select_permissions:
     - role: user
@@ -575,11 +891,14 @@
           - index
           - name
           - room_id
+          - slug
         filter:
           room:
-            participants:
-              user_id:
-                _eq: X-Hasura-User-Id
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -589,21 +908,98 @@
           - name
         filter:
           room:
-            _and:
-              - participants:
+            space:
+              team:
+                memberships:
                   user_id:
                     _eq: X-Hasura-User-Id
-              - finished_at:
-                  _is_null: true
         check: null
   delete_permissions:
     - role: user
       permission:
         filter:
           room:
-            participants:
-              user_id:
-                _eq: X-Hasura-User-Id
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: topic_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - index
+            - name
+            - slug
+            - id
+            - room_id
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: topic_member
+  object_relationships:
+    - name: topic
+      using:
+        foreign_key_constraint_on: topic_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    _and:
+                      - user_id:
+                          _eq: X-Hasura-User-Id
+                      - user_id:
+                          _ceq: user_id
+        columns:
+          - topic_id
+          - user_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - topic_id
+          - user_id
+        filter:
+          topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: transcription
@@ -640,6 +1036,10 @@
 - table:
     schema: public
     name: user
+  object_relationships:
+    - name: current_team
+      using:
+        foreign_key_constraint_on: current_team_id
   array_relationships:
     - name: created_rooms
       using:
@@ -648,6 +1048,13 @@
           table:
             schema: public
             name: room
+    - name: created_team_invitations
+      using:
+        foreign_key_constraint_on:
+          column: inviting_user_id
+          table:
+            schema: public
+            name: team_invitation
     - name: invites
       using:
         foreign_key_constraint_on:
@@ -663,14 +1070,42 @@
             name: message
           column_mapping:
             id: user_id
+    - name: owned_teams
+      using:
+        foreign_key_constraint_on:
+          column: owner_id
+          table:
+            schema: public
+            name: team
     - name: rooms
       using:
         manual_configuration:
           remote_table:
             schema: public
-            name: room_participants
+            name: room_member
           column_mapping:
             id: user_id
+    - name: space_memberships
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            schema: public
+            name: space_member
+    - name: team_memberships
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            schema: public
+            name: team_member
+    - name: topic_memberships
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            schema: public
+            name: topic_member
   select_permissions:
     - role: user
       permission:
@@ -680,3 +1115,14 @@
           - name
         filter: {}
         limit: 1
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - avatar_url
+          - current_team_id
+          - name
+        filter:
+          id:
+            _eq: X-Hasura-User-Id
+        check: null

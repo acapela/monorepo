@@ -7,11 +7,15 @@ export interface InviteNotificationParams {
   inviteCode: string;
 }
 
-export class InviteNotification implements Notification {
+function getInvitationUrl(code: string) {
+  return `${process.env.FRONTEND_URL}/invites/${code}`;
+}
+
+export class TeamInvitationNotification implements Notification {
   constructor(private params: InviteNotificationParams) {}
 
   getContent(): string {
-    const link = `${process.env.FRONTEND_URL}/invites/${this.params.inviteCode}`;
+    const link = getInvitationUrl(this.params.inviteCode);
     return `Hey!<br >
 ${this.params.inviterName} has invited you to collaborate on ${this.params.roomName} using acapela, a tool for asynchronous collaboration.
 Follow this link to join the discussion: <a href="${link}">${link}</a>

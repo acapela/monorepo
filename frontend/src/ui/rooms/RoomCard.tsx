@@ -3,21 +3,48 @@ import { ItemTitle, SecondaryText } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { routes } from "~frontend/routes";
 import { pluralize } from "~shared/numbers";
+import { AvatarList } from "../AvatarList";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { Button } from "~ui/button";
+import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
+import { assert } from "~shared/assert";
 
 interface Props {
   room: RoomDetailedInfoFragment;
 }
 
 export function RoomCard({ room }: Props) {
+  const user = useCurrentUser();
+  const [addRoomMember] = useAddRoomMember();
+  const [removeRoomMember] = useRemoveRoomMember();
   const topicsCount = room.topics.length;
+
+  const members = room.members.map((m) => m.user);
+
+  const isMember = members.some((member) => member.id === user?.id);
+
+  async function handleJoin() {
+    assert(user, "user required");
+    await addRoomMember({ userId: user.id, roomId: room.id });
+  }
+
+  async function handleLeave() {
+    assert(user, "user required");
+    await removeRoomMember({ userId: user.id, roomId: room.id });
+  }
+
+  function handleOpen() {
+    routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
+  }
+
   return (
-    <UIHolder
-      onClick={() => {
-        routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
-      }}
-    >
-      <ItemTitle>{room.name}</ItemTitle>
+    <UIHolder>
+      <ItemTitle onClick={handleOpen}>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>
+      <SecondaryText>{pluralize(members.length, "member", "members")}</SecondaryText>
+      <AvatarList users={members} />
+      {isMember && <Button onClick={handleLeave}>Leave</Button>}
+      {!isMember && <Button onClick={handleJoin}>Join</Button>}
     </UIHolder>
   );
 }
