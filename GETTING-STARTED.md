@@ -6,7 +6,7 @@ Let's get it started.
 
 ## Monorepo
 
-This monorepo includes everything needed to run our product on your laptop.
+This monorepo includes everything needed to run our product on your machine.
 
 ## Requirements
 
@@ -120,6 +120,8 @@ This repository uses [`semantic-release`](https://github.com/semantic-release/go
 That means it is necessary to stick to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention to trigger new releases.
 
 ### How to trigger releases?
+
+A new release gets triggered automatically after a push to master. The version numbers get incemented automatically depending on the commit message prefixes in the merged branch.
 
 #### Patch Release
 

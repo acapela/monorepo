@@ -30,3 +30,30 @@ We use:
 - next-auth for authentication
 - apollo for graphql
 - prettier + eslint
+
+## Resources
+
+### React
+
+[React](https://reactjs.org/)
+
+Tutorials:
+
+- [React Tutorial](https://reactjs.org/tutorial/tutorial.html)
+
+Reference:
+
+- [Advanced Guides](https://reactjs.org/docs/accessibility.html)
+- [React Typescript Cheatsheet](https://github.com/typescript-cheatsheets/react/blob/main/README.md)
+
+### Next.js
+
+[Next.js](https://nextjs.org/) gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more.
+
+Tutorials:
+
+- [Quick Start](https://nextjs.org/docs/getting-started)
+
+Reference:
+
+- [Documentation](https://nextjs.org/docs/basic-features/pages)
