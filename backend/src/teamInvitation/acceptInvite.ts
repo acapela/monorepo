@@ -2,7 +2,7 @@ import { validate as validateUuid } from "uuid";
 import { TeamInvitation, db, Team } from "~db";
 import { ActionHandler } from "../actions/actionHandlers";
 import { NotFoundError, UnprocessableEntityError } from "../errors";
-import { getTeamHasMember } from "../teams/helpers";
+import { getHasTeamMember } from "../teams/helpers";
 import { findInviteByCode, invalidateInvite } from "./invites";
 
 // Transactional
@@ -71,7 +71,7 @@ export const acceptInvite: ActionHandler<
       throw new UnprocessableEntityError(`The invite for token ${token} has already been used`);
     }
 
-    if (await getTeamHasMember(invite.team_id, userId)) {
+    if (await getHasTeamMember(invite.team_id, userId)) {
       await invalidateInvite(invite.id);
 
       return {

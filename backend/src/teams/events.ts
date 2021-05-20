@@ -1,7 +1,7 @@
 import { Team } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors";
-import { addTeamMember, getTeamHasMember } from "./helpers";
+import { addTeamMember, getHasTeamMember } from "./helpers";
 
 export async function handleTeamUpdates(team: Team, userId: string) {
   const { owner_id: ownerId, id: teamId } = team;
@@ -13,7 +13,7 @@ export async function handleTeamUpdates(team: Team, userId: string) {
     throw new UnprocessableEntityError(`User id of action caller: ${userId} does not match room creator: ${ownerId}`);
   }
 
-  const creatorIsAlreadyParticipant = await getTeamHasMember(teamId, userId);
+  const creatorIsAlreadyParticipant = await getHasTeamMember(teamId, userId);
   if (creatorIsAlreadyParticipant) {
     logger.info("Skipping adding creator as participant, as they are already there", {
       roomId: team.id,

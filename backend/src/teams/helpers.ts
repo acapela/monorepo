@@ -1,6 +1,6 @@
 import { db, TeamMember } from "~db";
 
-export async function getTeamHasMember(teamId: string, memberId: string): Promise<boolean> {
+export async function getHasTeamMember(teamId: string, memberId: string): Promise<boolean> {
   const entry = await db.team_member.findFirst({
     where: { team_id: teamId, user_id: memberId },
   });
