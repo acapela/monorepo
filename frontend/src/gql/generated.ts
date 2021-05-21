@@ -546,6 +546,8 @@ export type Full_Text_Search = {
   message_created_at?: Maybe<Scalars['timestamptz']>;
   message_id?: Maybe<Scalars['uuid']>;
   message_type?: Maybe<Scalars['String']>;
+  /** An object relationship */
+  room?: Maybe<Room>;
   room_id?: Maybe<Scalars['uuid']>;
   room_name?: Maybe<Scalars['String']>;
   topic_id?: Maybe<Scalars['uuid']>;
@@ -600,6 +602,7 @@ export type Full_Text_Search_Bool_Exp = {
   message_created_at?: Maybe<Timestamptz_Comparison_Exp>;
   message_id?: Maybe<Uuid_Comparison_Exp>;
   message_type?: Maybe<String_Comparison_Exp>;
+  room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
   room_name?: Maybe<String_Comparison_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
@@ -617,6 +620,7 @@ export type Full_Text_Search_Insert_Input = {
   message_created_at?: Maybe<Scalars['timestamptz']>;
   message_id?: Maybe<Scalars['uuid']>;
   message_type?: Maybe<Scalars['String']>;
+  room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
   room_name?: Maybe<Scalars['String']>;
   topic_id?: Maybe<Scalars['uuid']>;
@@ -718,6 +722,7 @@ export type Full_Text_Search_Order_By = {
   message_created_at?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
   message_type?: Maybe<Order_By>;
+  room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
   room_name?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
@@ -8039,6 +8044,33 @@ export type RemoveRoomMemberMutation = (
   )> }
 );
 
+export type SearchResultFragment = (
+  { __typename?: 'full_text_search' }
+  & Pick<Full_Text_Search, 'transcript'>
+  & { topicId: Full_Text_Search['topic_id'], topicName: Full_Text_Search['topic_name'], messageId: Full_Text_Search['message_id'], messageContent: Full_Text_Search['message_content'], attachmentName: Full_Text_Search['attachment_name'] }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'name'>
+    & { space?: Maybe<(
+      { __typename?: 'space' }
+      & Pick<Space, 'id' | 'name'>
+    )> }
+  )> }
+);
+
+export type GetSearchResultsQueryVariables = Exact<{
+  term: Scalars['String'];
+}>;
+
+
+export type GetSearchResultsQuery = (
+  { __typename?: 'query_root' }
+  & { results: Array<(
+    { __typename?: 'full_text_search' }
+    & SearchResultFragment
+  )> }
+);
+
 export type SpaceBasicInfoFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
@@ -8603,7 +8635,7 @@ export type attachment_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type full_text_searchKeySpecifier = ('attachment_id' | 'attachment_name' | 'message_content' | 'message_created_at' | 'message_id' | 'message_type' | 'room_id' | 'room_name' | 'topic_id' | 'topic_name' | 'transcript' | 'transcription_id' | 'user_id' | full_text_searchKeySpecifier)[];
+export type full_text_searchKeySpecifier = ('attachment_id' | 'attachment_name' | 'message_content' | 'message_created_at' | 'message_id' | 'message_type' | 'room' | 'room_id' | 'room_name' | 'topic_id' | 'topic_name' | 'transcript' | 'transcription_id' | 'user_id' | full_text_searchKeySpecifier)[];
 export type full_text_searchFieldPolicy = {
 	attachment_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	attachment_name?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -8611,6 +8643,7 @@ export type full_text_searchFieldPolicy = {
 	message_created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
