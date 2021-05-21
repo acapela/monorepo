@@ -3,9 +3,11 @@ import { PageTitle } from "~ui/typo";
 import { useGetSpacesQuery } from "~frontend/gql/spaces";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
+import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 export function SpacesList() {
-  const [data, { loading }] = useGetSpacesQuery.subscription();
+  const teamId = useAssertCurrentTeamId();
+  const [data, { loading }] = useGetSpacesQuery.subscription({ teamId });
 
   const spacesList = data?.space ?? [];
 
