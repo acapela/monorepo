@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { Avatar } from "~frontend/ui/Avatar";
+import { Avatar } from "~frontend/ui/users/Avatar";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();

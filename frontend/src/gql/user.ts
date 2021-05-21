@@ -1,6 +1,11 @@
 import { gql } from "@apollo/client";
-import { createMutation } from "./utils";
-import { ChangeCurrentTeamIdMutation, ChangeCurrentTeamIdMutationVariables } from "./generated";
+import { createMutation, createQuery } from "./utils";
+import {
+  ChangeCurrentTeamIdMutation,
+  ChangeCurrentTeamIdMutationVariables,
+  TeamMembersQuery,
+  TeamMembersQueryVariables,
+} from "./generated";
 
 export const UserBasicInfoFragment = () => gql`
   fragment UserBasicInfo on user {
@@ -18,6 +23,18 @@ export const [useChangeCurrentTeamId] = createMutation<
     mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid!) {
       update_user_by_pk(pk_columns: { id: $userId }, _set: { current_team_id: $teamId }) {
         id
+      }
+    }
+  `
+);
+
+export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+
+    query TeamMembers($teamId: uuid!) {
+      teamMembers: user(where: { team_memberships: { team_id: { _eq: $teamId } } }) {
+        ...UserBasicInfo
       }
     }
   `

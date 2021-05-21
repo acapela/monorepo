@@ -24,5 +24,5 @@ export const fontSize = {
   copy: "1rem",
   pageTitle: "2rem",
   itemTitle: "1.25rem",
-  label: "0.8rem",
+  label: "0.875rem",
 };

@@ -3,9 +3,8 @@ import { routes } from "~frontend/../routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";
-import { Button } from "~ui/button";
 import { ItemTitle } from "~ui/typo";
-import { AvatarList } from "../AvatarList";
+import { MembersManager } from "../MembersManager";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -26,25 +25,21 @@ export function TopicCard({ topic }: Props) {
     await removeTopicMember({ userId: user.id, topicId });
   }
 
-  function getIsMember() {
-    return topic.members.some((member) => member.user.id === user?.id);
-  }
-
-  const isMember = getIsMember();
-
   function handleOpen() {
     routes.spaceRoomTopic.push({ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id });
   }
 
   return (
-    <UIHolder>
+    <UIHolder onClick={handleOpen}>
       <UIInfo>
-        <ItemTitle onClick={handleOpen}>Topic: {topic.name}</ItemTitle>
+        <ItemTitle>Topic: {topic.name}</ItemTitle>
         <UIMembers>
-          <AvatarList users={topic.members.map((m) => m.user)} />
+          <MembersManager
+            users={topic.members.map((m) => m.user)}
+            onAddMemberRequest={handleJoin}
+            onLeaveRequest={handleLeave}
+          />
         </UIMembers>
-        {!isMember && <Button onClick={handleJoin}>Join</Button>}
-        {isMember && <Button onClick={handleLeave}>Leave</Button>}
       </UIInfo>
     </UIHolder>
   );

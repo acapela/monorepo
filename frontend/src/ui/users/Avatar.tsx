@@ -7,6 +7,7 @@ export interface Props {
   name?: Maybe<string>;
   url?: string | null;
   className?: string;
+  isSmall?: boolean;
 }
 
 const PureAvatar = ({ url, name, className }: Props) => {
@@ -27,8 +28,9 @@ export const Avatar = styled(PureAvatar)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+
+  width: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
+  height: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
 
   font-weight: 600;
 
