@@ -14,19 +14,28 @@ import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 interface AddedProps {
   session: Session;
   authToken: string | null;
+  hasuraWebsocketEndpoint: string | null;
 }
 
 const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
 
-export default function App({ Component, pageProps, session, authToken }: AppProps & AddedProps): JSX.Element {
+export default function App({
+  Component,
+  pageProps,
+  session,
+  authToken,
+  hasuraWebsocketEndpoint,
+}: AppProps & AddedProps): JSX.Element {
   return (
     <>
       <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session}>
-        <ApolloProvider ssrAuthToken={authToken}>{renderWithPageLayout(Component, pageProps)}</ApolloProvider>
+        <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+          {renderWithPageLayout(Component, pageProps)}
+        </ApolloProvider>
       </SessionProvider>
     </>
   );
@@ -72,5 +81,6 @@ App.getInitialProps = async (context: AppContext) => {
   return {
     session: await getSessionForEnv(),
     authToken,
+    hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };
