@@ -40,7 +40,9 @@ export default class AppDocument extends Document<Props> {
 
     // Try to get graphql auth token and create authorized client
     const graphqlAuthToken = readTokenFromRequest(ctx.req);
-    const apolloClient = getApolloClient(graphqlAuthToken ?? undefined);
+    const apolloClient = getApolloClient({
+      forcedAuthToken: graphqlAuthToken ?? undefined,
+    });
 
     // Pre-fetch queries only if user is authorized
     if (graphqlAuthToken) {
