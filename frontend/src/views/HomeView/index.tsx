@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
-import { SearchBar } from "~frontend/ui/search";
+import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Button } from "~ui/button";
 import { ItemTitle } from "~ui/typo";
 

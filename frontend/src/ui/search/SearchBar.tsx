@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
 import { useFullTextSearch } from "~frontend/gql/search";
-import { SearchOutline } from "~ui/icons";
+import { SearchInput } from "~ui/forms/SearchInput";
 import { SearchResults } from "./SearchResults";
 
 interface Props {
@@ -26,14 +26,11 @@ const PureSearchBar = ({ className }: Props) => {
 
   return (
     <div className={className}>
-      <UISearchBarWrapper>
-        <SearchOutline />
-        <SearchInput
-          placeholder="Search for messages, transcriptions, rooms, and topics"
-          value={value}
-          onChange={({ currentTarget }) => setValue(currentTarget.value)}
-        />
-      </UISearchBarWrapper>
+      <SearchInput
+        placeholder="Search for messages, transcriptions, rooms, and topics"
+        value={value}
+        onChange={({ currentTarget }) => setValue(currentTarget.value)}
+      />
       {searchTerm && <SearchResults searchTerm={searchTerm} results={searchResults?.results || []} />}
     </div>
   );
@@ -42,34 +39,14 @@ const PureSearchBar = ({ className }: Props) => {
 export const SearchBar = styled(PureSearchBar)`
   position: relative;
 
+  ${SearchInput} > input {
+    border-radius: 5rem;
+  }
+
   ${SearchResults} {
     position: absolute;
     /* for explicity: 2.5rem is the height of the search bar wrapper */
     top: calc(2.5rem + 0.4rem);
     width: 100%;
   }
-`;
-
-const UISearchBarWrapper = styled.label`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  height: 2.5rem;
-  padding: 0.8rem 1rem;
-  background-color: #fff;
-  border-radius: 5rem;
-
-  svg {
-    fill: #232b35;
-  }
-`;
-
-const SearchInput = styled.input`
-  display: inline-block;
-  width: 100%;
-  outline: none;
-  margin-left: 1rem;
-  padding: 0;
-  color: #232b35;
 `;

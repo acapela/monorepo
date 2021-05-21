@@ -2,16 +2,20 @@ import styled from "styled-components";
 import { Search } from "~ui/icons";
 import { TextInput, TextInputProps } from "./TextInput";
 
-export function SearchInput(props: TextInputProps) {
+interface Props extends TextInputProps {
+  className?: string;
+}
+
+export function PureSearchInput({ className, ...rest }: Props) {
   return (
-    <UIHolder>
+    <div className={className}>
       <UISearchIcon />
-      <Input {...props} />
-    </UIHolder>
+      <Input {...rest} />
+    </div>
   );
 }
 
-const UIHolder = styled.div`
+export const SearchInput = styled(PureSearchInput)`
   position: relative;
 `;
 
