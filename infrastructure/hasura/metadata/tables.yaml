@@ -35,10 +35,6 @@
         filter: {}
 - table:
     schema: public
-    name: membership_status
-  is_enum: true
-- table:
-    schema: public
     name: full_text_search
   select_permissions:
     - role: user
@@ -97,6 +93,10 @@
         check: null
         set:
           user_id: x-hasura-User-Id
+- table:
+    schema: public
+    name: membership_status
+  is_enum: true
 - table:
     schema: public
     name: message
@@ -1113,7 +1113,12 @@
           - avatar_url
           - id
           - name
-        filter: {}
+        filter:
+          team_memberships:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
         limit: 1
   update_permissions:
     - role: user

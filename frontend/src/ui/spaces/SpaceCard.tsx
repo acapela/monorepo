@@ -1,11 +1,10 @@
-import styled from "styled-components";
-import { ItemTitle } from "~ui/typo";
-import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useRouter } from "next/router";
-import { AvatarList } from "../AvatarList";
+import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useRemoveSpaceMember } from "~frontend/gql/spaces";
-import { Button } from "~ui/button";
+import { ItemTitle } from "~ui/typo";
+import { MembersManager } from "../MembersManager";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -19,19 +18,13 @@ export function SpaceCard({ space }: Props) {
   const [addSpaceMember] = useAddSpaceMember();
   const [removeSpaceMember] = useRemoveSpaceMember();
 
-  async function handleJoin() {
-    await addSpaceMember({ userId: user.id, spaceId });
+  async function handleJoin(userId: string) {
+    await addSpaceMember({ userId, spaceId });
   }
 
   async function handleLeave() {
     await removeSpaceMember({ userId: user.id, spaceId });
   }
-
-  function getIsMember() {
-    return space.members.some((member) => member.user.id === user?.id);
-  }
-
-  const isMember = getIsMember();
 
   function handleOpen() {
     router.push(`space/${space.id}`);
@@ -43,10 +36,12 @@ export function SpaceCard({ space }: Props) {
       <UIInfo>
         <ItemTitle onClick={handleOpen}>{space.name}</ItemTitle>
         <UIMembers>
-          <AvatarList users={space.members.map((m) => m.user)} />
+          <MembersManager
+            users={space.members.map((m) => m.user)}
+            onAddMemberRequest={handleJoin}
+            onLeaveRequest={handleLeave}
+          />
         </UIMembers>
-        {!isMember && <Button onClick={handleJoin}>Join</Button>}
-        {isMember && <Button onClick={handleLeave}>Leave</Button>}
       </UIInfo>
     </UIHolder>
   );
@@ -56,7 +51,7 @@ const UIHolder = styled.div``;
 
 const UIImage = styled.div`
   padding-bottom: 58%;
-  background-color: #fccedd;
+  background-image: linear-gradient(to right bottom, rgb(150, 68, 113) 0%, rgb(244, 113, 117) 100%);
   border-radius: 1rem;
   margin-bottom: 1rem;
 `;

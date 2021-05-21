@@ -12,7 +12,11 @@ export const ItemTitle = styled.h3`
   font-weight: 600;
 `;
 
+export const TextTitle = styled.h4`
+  font-weight: 600;
+`;
+
 export const SecondaryText = styled.span`
   font-size: ${fontSize.label};
-  font-weight: 600;
+  font-weight: 400;
 `;

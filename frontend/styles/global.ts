@@ -12,7 +12,12 @@ export const global = css`
     -webkit-font-smoothing: antialiased;
 
     font-family: "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
-    font-weight: 400;
+    font-weight: 500;
     color: #232b35;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 `;

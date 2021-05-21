@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { RoomBasicInfoFragment } from "~frontend/gql";
 import { useUnreadMessages } from "~frontend/gql/topics";
 import { RoomCreationButton } from "~frontend/rooms/RoomCreationButton";
-import { AvatarList } from "~frontend/ui/AvatarList";
+import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { useGetSpaceRoomsQuery } from "~frontend/gql/rooms";
 import { UnreadTopicIndicator } from "../ui/UnreadTopicsIndicator";

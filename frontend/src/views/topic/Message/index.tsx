@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { Avatar } from "~frontend/ui/Avatar";
+import { Avatar } from "~frontend/ui/users/Avatar";
 import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";

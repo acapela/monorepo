@@ -1,13 +1,12 @@
 import styled from "styled-components";
-import { ItemTitle, SecondaryText } from "~ui/typo";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
-import { routes } from "~frontend/routes";
-import { pluralize } from "~shared/numbers";
-import { AvatarList } from "../AvatarList";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { Button } from "~ui/button";
+import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
+import { routes } from "~frontend/routes";
 import { assert } from "~shared/assert";
+import { pluralize } from "~shared/numbers";
+import { ItemTitle, SecondaryText } from "~ui/typo";
+import { MembersManager } from "../MembersManager";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -20,8 +19,6 @@ export function RoomCard({ room }: Props) {
   const topicsCount = room.topics.length;
 
   const members = room.members.map((m) => m.user);
-
-  const isMember = members.some((member) => member.id === user?.id);
 
   async function handleJoin() {
     assert(user, "user required");
@@ -38,13 +35,11 @@ export function RoomCard({ room }: Props) {
   }
 
   return (
-    <UIHolder>
-      <ItemTitle onClick={handleOpen}>{room.name}</ItemTitle>
+    <UIHolder onClick={handleOpen}>
+      <ItemTitle>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>
       <SecondaryText>{pluralize(members.length, "member", "members")}</SecondaryText>
-      <AvatarList users={members} />
-      {isMember && <Button onClick={handleLeave}>Leave</Button>}
-      {!isMember && <Button onClick={handleJoin}>Join</Button>}
+      <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />
     </UIHolder>
   );
 }

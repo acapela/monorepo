@@ -8476,6 +8476,19 @@ export type ChangeCurrentTeamIdMutation = (
   )> }
 );
 
+export type TeamMembersQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type TeamMembersQuery = (
+  { __typename?: 'query_root' }
+  & { teamMembers: Array<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )> }
+);
+
 export type GetDownloadUrlResponseKeySpecifier = ('downloadUrl' | GetDownloadUrlResponseKeySpecifier)[];
 export type GetDownloadUrlResponseFieldPolicy = {
 	downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>
