@@ -76,15 +76,16 @@ interface ApolloClientOptions {
 }
 
 export const getApolloClient = memoize(
-  (options: ApolloClientOptions): ApolloClient<unknown> => {
+  (options?: ApolloClientOptions): ApolloClient<unknown> => {
     const ssrMode = typeof window === "undefined";
+    const opt = options ?? {};
 
     if (!ssrMode) {
       // Client side - never use forced token and always read one dynamically
-      options.forcedAuthToken = undefined;
+      opt.forcedAuthToken = undefined;
     }
 
-    const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
+    const authTokenLink = createAuthorizationHeaderLink(opt.forcedAuthToken);
 
     function getLink() {
       if (ssrMode) {
@@ -96,7 +97,7 @@ export const getApolloClient = memoize(
           const definition = getMainDefinition(query);
           return definition.kind === "OperationDefinition" && definition.operation === "subscription";
         },
-        createSocketLink(options.websocketEndpoint),
+        createSocketLink(opt.websocketEndpoint),
         authTokenLink.concat(httpLink)
       );
     }
