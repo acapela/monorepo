@@ -6,7 +6,6 @@ import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import { IncomingMessage } from "node:http";
 import React, { ReactNode } from "react";
-import { GRAPHQL_SUBSCRIPTION_HOST } from "./config";
 import { getApolloInitialState } from "./gql/hydration";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
@@ -39,9 +38,10 @@ const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
     return forward(operation);
   });
 
-function createSocketLink() {
+function createSocketLink(websocketEndpoint?: string) {
+  const rootUrl = websocketEndpoint ?? "";
   return new WebSocketLink({
-    uri: `${GRAPHQL_SUBSCRIPTION_HOST}/v1/graphql`,
+    uri: `${rootUrl}/v1/graphql`,
     options: {
       reconnect: true,
       lazy: true,
@@ -71,7 +71,7 @@ function getGraphqlUrl() {
 const httpLink = new HttpLink({ uri: getGraphqlUrl() });
 
 export const getApolloClient = memoize(
-  (forcedAuthToken?: string): ApolloClient<unknown> => {
+  (forcedAuthToken?: string, websocketEndpoint?: string): ApolloClient<unknown> => {
     const ssrMode = typeof window === "undefined";
 
     if (!ssrMode) {
@@ -91,7 +91,7 @@ export const getApolloClient = memoize(
           const definition = getMainDefinition(query);
           return definition.kind === "OperationDefinition" && definition.operation === "subscription";
         },
-        createSocketLink(),
+        createSocketLink(websocketEndpoint),
         authTokenLink.concat(httpLink)
       );
     }
@@ -119,10 +119,11 @@ interface ApolloClientProviderProps {
   // On server side, queries are pre-populated using authorized client. This props allows using the same client instance,
   // resulting in initial render having all data in place and avoiding loading state.
   ssrAuthToken?: string | null;
+  websocketEndpoint?: string | null;
 }
 
-export const ApolloClientProvider = ({ children, ssrAuthToken }: ApolloClientProviderProps) => {
-  const client = getApolloClient(ssrAuthToken ?? undefined);
+export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
+  const client = getApolloClient(ssrAuthToken ?? undefined, websocketEndpoint ?? undefined);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

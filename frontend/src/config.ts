@@ -4,7 +4,4 @@ export const GOOGLE_AUTH_SETTINGS = {
   scope: "https://www.googleapis.com/auth/calendar.readonly",
 };
 
-export const GRAPHQL_SUBSCRIPTION_HOST =
-  process.env.HASURA_HOST || (process.env.NODE_ENV === "production" ? "wss://backend.acape.la" : "ws://localhost:8080");
-
 export const DEFAULT_REDIRECT_URL = "/";
