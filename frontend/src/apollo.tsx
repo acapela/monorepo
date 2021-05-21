@@ -70,16 +70,21 @@ function getGraphqlUrl() {
 
 const httpLink = new HttpLink({ uri: getGraphqlUrl() });
 
+interface ApolloClientOptions {
+  forcedAuthToken?: string;
+  websocketEndpoint?: string;
+}
+
 export const getApolloClient = memoize(
-  (forcedAuthToken?: string, websocketEndpoint?: string): ApolloClient<unknown> => {
+  (options: ApolloClientOptions): ApolloClient<unknown> => {
     const ssrMode = typeof window === "undefined";
 
     if (!ssrMode) {
       // Client side - never use forced token and always read one dynamically
-      forcedAuthToken = undefined;
+      options.forcedAuthToken = undefined;
     }
 
-    const authTokenLink = createAuthorizationHeaderLink(forcedAuthToken);
+    const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
 
     function getLink() {
       if (ssrMode) {
@@ -91,7 +96,7 @@ export const getApolloClient = memoize(
           const definition = getMainDefinition(query);
           return definition.kind === "OperationDefinition" && definition.operation === "subscription";
         },
-        createSocketLink(websocketEndpoint),
+        createSocketLink(options.websocketEndpoint),
         authTokenLink.concat(httpLink)
       );
     }
@@ -123,7 +128,10 @@ interface ApolloClientProviderProps {
 }
 
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
-  const client = getApolloClient(ssrAuthToken ?? undefined, websocketEndpoint ?? undefined);
+  const client = getApolloClient({
+    forcedAuthToken: ssrAuthToken ?? undefined,
+    websocketEndpoint: websocketEndpoint ?? undefined,
+  });
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
