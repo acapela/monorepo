@@ -12,7 +12,7 @@ function buildTopicLink({ room, topicId }: SearchResultFragment): string {
   return `/space/${room?.space?.id}/${room?.id}/${topicId}`;
 }
 
-function buildResultMatchString(result: SearchResultFragment, searchTerm: string) {
+function renderResultMatchString(result: SearchResultFragment, searchTerm: string) {
   const searchTermToMatch = searchTerm.toLowerCase();
 
   const matchIndicesMap = new Map([
@@ -23,8 +23,6 @@ function buildResultMatchString(result: SearchResultFragment, searchTerm: string
   ]);
 
   for (const [prop, index] of matchIndicesMap.entries()) {
-    console.log(prop, index);
-
     if (index > -1) {
       return (
         <>
@@ -52,7 +50,7 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
         <UISearchResultRow key={idx}>
           <Link href={buildTopicLink(result)} passHref>
             <UISearchResultLink>
-              <UISearchResultMatch>{buildResultMatchString(result, searchTerm)}</UISearchResultMatch>
+              <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
               <UISearchResultBreadcrumb>{buildResultBreadcrumb(result)}</UISearchResultBreadcrumb>
             </UISearchResultLink>
           </Link>
@@ -63,8 +61,9 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
 };
 
 export const SearchResults = styled(PureSearchResults)`
-  padding: 1rem;
+  padding: 1rem 0.6rem;
   background-color: #fff;
+  border: 1px solid rgba(190, 190, 190, 0.25);
   border-radius: 1rem;
 `;
 
@@ -72,7 +71,7 @@ const UINoResults = styled.span``;
 
 const UISearchResultRow = styled.li`
   & ~ & {
-    margin-top: 0.2rem;
+    margin-top: 0.4rem;
   }
 `;
 
@@ -80,6 +79,7 @@ const UISearchResultLink = styled.a`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  line-height: 1.5;
   padding: 0.4rem 0.8rem;
   border-radius: 0.4rem;
 
