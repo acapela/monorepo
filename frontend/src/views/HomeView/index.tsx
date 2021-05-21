@@ -1,8 +1,9 @@
 import styled from "styled-components";
+import isEmail from "validator/lib/isEmail";
+import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { SearchBar } from "~frontend/ui/search";
 import { Button } from "~ui/button";
 import { ItemTitle } from "~ui/typo";
-import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
-import isEmail from "validator/lib/isEmail";
 
 export function HomeView() {
   const [team] = useCurrentTeamDetails();
@@ -28,6 +29,9 @@ export function HomeView() {
 
   return (
     <UIHolder>
+      <UISearchWrapper>
+        <SearchBar />
+      </UISearchWrapper>
       <ItemTitle>Current team is: {team?.team?.name}</ItemTitle>
       <Button onClick={handleInviteMember}>Invite team member</Button>
       <UIInvitation>
@@ -54,5 +58,11 @@ export function HomeView() {
 }
 
 const UIHolder = styled.div``;
+
+const UISearchWrapper = styled.div`
+  margin: 0 auto;
+  width: 70vw;
+  margin-bottom: 3rem;
+`;
 
 const UIInvitation = styled.div``;

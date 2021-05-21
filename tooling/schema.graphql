@@ -612,6 +612,9 @@ type full_text_search {
   message_created_at: timestamptz
   message_id: uuid
   message_type: String
+
+  """An object relationship"""
+  room: room
   room_id: uuid
   room_name: String
   topic_id: uuid
@@ -667,6 +670,7 @@ input full_text_search_bool_exp {
   message_created_at: timestamptz_comparison_exp
   message_id: uuid_comparison_exp
   message_type: String_comparison_exp
+  room: room_bool_exp
   room_id: uuid_comparison_exp
   room_name: String_comparison_exp
   topic_id: uuid_comparison_exp
@@ -686,6 +690,7 @@ input full_text_search_insert_input {
   message_created_at: timestamptz
   message_id: uuid
   message_type: String
+  room: room_obj_rel_insert_input
   room_id: uuid
   room_name: String
   topic_id: uuid
@@ -795,6 +800,7 @@ input full_text_search_order_by {
   message_created_at: order_by
   message_id: order_by
   message_type: order_by
+  room: room_order_by
   room_id: order_by
   room_name: order_by
   topic_id: order_by
