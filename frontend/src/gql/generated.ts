@@ -8066,7 +8066,9 @@ export type SpaceDetailedInfoFragment = (
   )> }
 );
 
-export type GetSpacesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetSpacesQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
 
 
 export type GetSpacesQuery = (

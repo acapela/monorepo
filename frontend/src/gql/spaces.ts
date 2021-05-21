@@ -53,8 +53,8 @@ export const [useGetSpacesQuery, getSpacesQueryManager] = createQuery<GetSpacesQ
   () => gql`
     ${SpaceBasicInfoFragment()}
 
-    query GetSpaces {
-      space {
+    query GetSpaces($teamId: uuid!) {
+      space(where: { team_id: { _eq: $teamId } }) {
         ...SpaceBasicInfo
       }
     }
@@ -87,8 +87,8 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
     }
   `,
   {
-    onSuccess(data) {
-      getSpacesQueryManager.update({}, (draft) => {
+    onSuccess(data, { teamId }) {
+      getSpacesQueryManager.update({ teamId }, (draft) => {
         if (!data.space) return;
 
         draft.space.push(data.space);
