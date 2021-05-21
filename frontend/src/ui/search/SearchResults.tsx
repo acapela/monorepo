@@ -8,8 +8,15 @@ interface Props {
   results: SearchResultFragment[];
 }
 
-function buildTopicLink({ room, topicId }: SearchResultFragment): string {
+function composeTopicLink({ room, topicId }: SearchResultFragment): string {
   return `/space/${room?.space?.id}/${room?.id}/${topicId}`;
+}
+
+function composeResultBreadcrumb({ room, topicName }: SearchResultFragment): string {
+  const spaceName = room?.space?.name;
+  const roomName = room?.name;
+
+  return `${spaceName}/${roomName}/${topicName}`;
 }
 
 function renderResultMatchString(result: SearchResultFragment, searchTerm: string) {
@@ -35,30 +42,21 @@ function renderResultMatchString(result: SearchResultFragment, searchTerm: strin
   }
 }
 
-function buildResultBreadcrumb({ room, topicName }: SearchResultFragment): string {
-  const spaceName = room?.space?.name;
-  const roomName = room?.name;
-
-  return `${spaceName}/${roomName}/${topicName}`;
-}
-
-const PureSearchResults = ({ className, searchTerm, results }: Props) => {
-  return (
-    <ul className={className}>
-      {!results.length && <UINoResults>No results</UINoResults>}
-      {results.map((result, idx) => (
-        <UISearchResultRow key={idx}>
-          <Link href={buildTopicLink(result)} passHref>
-            <UISearchResultLink>
-              <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
-              <UISearchResultBreadcrumb>{buildResultBreadcrumb(result)}</UISearchResultBreadcrumb>
-            </UISearchResultLink>
-          </Link>
-        </UISearchResultRow>
-      ))}
-    </ul>
-  );
-};
+const PureSearchResults = ({ className, searchTerm, results }: Props) => (
+  <ul className={className}>
+    {!results.length && <UINoResults>No results</UINoResults>}
+    {results.map((result, idx) => (
+      <UISearchResultRow key={idx}>
+        <Link href={composeTopicLink(result)} passHref>
+          <UISearchResultLink>
+            <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
+            <UISearchResultBreadcrumb>{composeResultBreadcrumb(result)}</UISearchResultBreadcrumb>
+          </UISearchResultLink>
+        </Link>
+      </UISearchResultRow>
+    ))}
+  </ul>
+);
 
 export const SearchResults = styled(PureSearchResults)`
   padding: 1rem 0.6rem;
