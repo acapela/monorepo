@@ -14,12 +14,11 @@ interface Props {
 }
 
 export function BreadcrumbsSegments({ segments }: Props) {
-  console.log({ segments });
   return (
     <UIHolder>
       {segments.map((segment) => {
         return (
-          <Fragment>
+          <Fragment key={segment.title}>
             {segment.icon}
             <Link href={segment.href} passHref>
               <UISingleSegmentHolder>{segment.title}</UISingleSegmentHolder>
