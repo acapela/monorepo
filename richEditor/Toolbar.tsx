@@ -40,29 +40,35 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar({ onFi
 });
 
 const UIHolder = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  &.ql-toolbar {
+    color: #788693;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    border-top: none;
 
-  &&&:after {
-    display: none;
-  }
-
-  ${() => UISection} {
-    ${() => UIToolButton} {
-      all: unset;
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: inline-block;
-
-      font-size: 20px;
-      height: 1em;
-      padding: 0.25em;
-      width: 1em;
+    &&&:after {
+      display: none;
     }
 
-    ${() => UICustomButton} {
+    ${() => UISection} {
+      ${() => UIToolButton} {
+        all: unset;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+
+        font-size: 20px;
+        height: 1em;
+        padding: 0.25em;
+        width: 1em;
+      }
+
+      ${() => UICustomButton} {
+      }
     }
   }
 `;
@@ -72,7 +78,19 @@ const UISection = styled.div`
   min-width: 0;
 `;
 
-const UIToolButton = styled.button``;
+const UIToolButton = styled.button`
+  & {
+    svg {
+      .ql-fill {
+        fill: currentColor;
+      }
+
+      .ql-stroke {
+        stroke: currentColor;
+      }
+    }
+  }
+`;
 
 const UICustomButton = styled.div`
   cursor: pointer;

@@ -72,11 +72,10 @@ export const RecorderControls = styled(PureRecorderControls)`
 const UIControls = styled.div`
   display: flex;
   align-items: center;
-  background-color: white;
+  background: #f8f8f8;
   padding: 0.5rem;
   border-radius: 0.625rem;
   user-select: none;
-  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 8%);
 
   button {
     display: inline-block;

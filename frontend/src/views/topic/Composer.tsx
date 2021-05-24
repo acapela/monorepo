@@ -22,7 +22,6 @@ export const MessageComposer = ({ topicId }: Props) => {
   const [createMessage] = useCreateMessageMutation();
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
-  // const [shouldTranscribe, setShouldTranscribe] = useState<boolean>(false);
   const [value, setValue] = useState<EditorContent>([]);
 
   async function uploadFiles(files: File[]): Promise<ComposerAttachment[]> {
@@ -107,18 +106,6 @@ export const MessageComposer = ({ topicId }: Props) => {
             textField.appendAtCursor(emoji);
           }}
         /> */}
-
-      {/* TODO: Integrate with rich editor */}
-      {/* <div>
-        <label>
-          Is recording?
-          <input
-            type="checkbox"
-            defaultChecked={shouldTranscribe}
-            onChange={(event) => setShouldTranscribe(event.target.checked)}
-          />
-        </label>
-      </div> */}
     </>
   );
 };
@@ -127,10 +114,6 @@ const UIEditorContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-
-  div:nth-child(2) {
-    flex-grow: 1;
-  }
 `;
 
 const UIAttachmentsPreviews = styled.div``;
