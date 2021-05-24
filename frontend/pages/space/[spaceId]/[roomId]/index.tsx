@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useUnreadMessages } from "~frontend/gql/topics";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
@@ -14,7 +14,7 @@ import { PageMeta } from "~frontend/utils/PageMeta";
 
 const SpaceRoomPage = () => {
   const { roomId } = routes.spaceRoom.useParams();
-  const [roomData] = useGetSingleRoomQuery.subscription({ id: roomId });
+  const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
   const [unreadMessagesData] = useUnreadMessages.subscription();
 
   const room = roomData?.room;

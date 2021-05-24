@@ -4,8 +4,8 @@ import {
   CreateRoomMutationVariables,
   GetRoomsQuery,
   GetRoomsQueryVariables,
-  GetSingleRoomQuery,
-  GetSingleRoomQueryVariables,
+  SingleRoomQuery,
+  SingleRoomQueryVariables,
   RoomParticipantsQuery,
   RoomParticipantsQueryVariables,
   AddRoomMemberMutation,
@@ -74,14 +74,11 @@ export const [useGetSpaceRoomsQuery] = createQuery<GetRoomsQuery, GetRoomsQueryV
   `
 );
 
-export const [useGetSingleRoomQuery, getSingleRoomManager] = createQuery<
-  GetSingleRoomQuery,
-  GetSingleRoomQueryVariables
->(
+export const [useSingleRoomQuery, getSingleRoomManager] = createQuery<SingleRoomQuery, SingleRoomQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    query GetSingleRoom($id: uuid!) {
+    query SingleRoom($id: uuid!) {
       room: room_by_pk(id: $id) {
         ...RoomDetailedInfo
       }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
-import { CloseOutline, StopCircle } from "~ui/icons";
+import { IconCrossCircle, IconStopCircle } from "~ui/icons";
 import { Popover } from "~ui/Popover";
 import { VideoPreview } from "./VideoPreview";
 
@@ -47,11 +47,11 @@ const PureRecorderControls = ({
         <UIControls>
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
           <UIStopButton onClick={() => onStop()}>
-            <StopCircle />
+            <IconStopCircle />
           </UIStopButton>
           <UIVerticalSeparator />
           <UICloseButton onClick={() => onCancel()}>
-            <CloseOutline />
+            <IconCrossCircle />
           </UICloseButton>
         </UIControls>
       </div>

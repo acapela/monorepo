@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Search } from "~ui/icons";
+import { IconSearch } from "~ui/icons";
 import { TextInput, TextInputProps } from "./TextInput";
 
 interface Props extends TextInputProps {
@@ -23,7 +23,7 @@ const Input = styled(TextInput)`
   padding-left: 2.25rem;
 `;
 
-const UISearchIcon = styled(Search)`
+const UISearchIcon = styled(IconSearch)`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);

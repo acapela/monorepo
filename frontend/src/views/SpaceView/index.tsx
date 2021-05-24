@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { PageTitle } from "~ui/typo";
-import { useGetSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { SpaceRooms } from "./SpaceRooms";
 import { Button } from "~ui/button";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function SpaceView({ spaceId }: Props) {
-  const [data] = useGetSingleSpaceQuery.subscription({ id: spaceId });
+  const [data] = useSingleSpaceQuery.subscription({ id: spaceId });
 
   const [createRoom] = useCreateRoomMutation();
 

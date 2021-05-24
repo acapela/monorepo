@@ -3,7 +3,7 @@ import { useState } from "react";
 import styled, { css } from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { DANGER_COLOR } from "~ui/colors";
-import { MoreVertical } from "~ui/icons";
+import { IconMenu } from "~ui/icons";
 import { SecondaryText } from "~ui/typo";
 
 interface Props {
@@ -72,7 +72,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
 const UIHolder = styled.div`
   position: relative;
 `;
-const MoreIcon = styled(MoreVertical)`
+const MoreIcon = styled(IconMenu)`
   font-size: 24px;
   border-radius: 0.3em;
   padding: 0.1em;

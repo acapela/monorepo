@@ -1,15 +1,14 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { CalendarOutline, HomeOutline, KeypadOutline } from "~ui/icons";
 import { Logo } from "~frontend/ui/Logo";
-import { NavItem } from "./NavItem";
-import { AppLayoutStyles } from "./styles";
 import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamPickerView } from "./TeamPicker";
 import { WindowView } from "~frontend/views/WindowView";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { TopBarMenu } from "./menu/TopbarMenu";
+import { Icon } from "~frontend/ui/Icon";
 
 interface Props {
   children?: ReactNode;
@@ -36,7 +35,6 @@ export const AppLayout = ({ children }: Props) => {
 
   return (
     <>
-      <AppLayoutStyles />
       <UIHolder>
         <UITopBar>
           <Link href="/" passHref>
@@ -44,11 +42,8 @@ export const AppLayout = ({ children }: Props) => {
               <Logo />
             </UILogo>
           </Link>
-          <UINav>
-            <NavItem icon={<HomeOutline />} label="Home" href="/" />
-            <NavItem icon={<KeypadOutline />} label="Spaces" href="/spaces" />
-            <NavItem icon={<CalendarOutline />} label="Calendar" href="/calendar" />
-          </UINav>
+
+          <TopBarMenu />
           <UIUserMenu>
             <UserMenu />
           </UIUserMenu>
@@ -79,6 +74,7 @@ const UITopBar = styled.div`
 const UILogo = styled.a`
   display: block;
   width: 120px;
+  margin-right: 2rem;
 `;
 
 const UIMainContent = styled.div`
@@ -90,10 +86,8 @@ const UIMainContent = styled.div`
 
 const UINav = styled.nav`
   display: flex;
-
-  ${NavItem} {
-    margin: 0 1em;
-  }
 `;
 
-const UIUserMenu = styled.div``;
+const UIUserMenu = styled.div`
+  margin-left: 2rem;
+`;

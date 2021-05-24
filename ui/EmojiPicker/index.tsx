@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { namedLazy } from "~shared/namedLazy";
-import { SmilingFace } from "~ui/icons";
+import { IconEmotionHappy } from "~ui/icons";
 import { EmojiMartStyles } from "./styles";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
@@ -88,7 +88,7 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIOpenIcon = styled(SmilingFace)`
+const UIOpenIcon = styled(IconEmotionHappy)`
   font-size: 2rem;
   cursor: pointer;
   border-radius: 100px;

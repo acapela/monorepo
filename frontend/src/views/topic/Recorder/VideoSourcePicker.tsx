@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
-import { MonitorOutline, PersonOutline } from "~ui/icons";
+import { IconMonitor, IconUser } from "~ui/icons";
 import { Popover } from "~ui/Popover";
 import { MediaSource } from "./MediaSource";
 
@@ -36,7 +36,7 @@ const PureVideoSourcePicker = ({
             disabled={!!screenCaptureError}
             title={screenCaptureError}
           >
-            <MonitorOutline />
+            <IconMonitor />
             <UISourceLabel>Screen</UISourceLabel>
           </UISourceButton>
           <UISourceButton
@@ -45,7 +45,7 @@ const PureVideoSourcePicker = ({
             disabled={!!cameraCaptureError}
             title={cameraCaptureError}
           >
-            <PersonOutline />
+            <IconUser />
             <UISourceLabel>Camera</UISourceLabel>
           </UISourceButton>
         </UISourcesWrapper>
