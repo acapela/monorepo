@@ -21,7 +21,7 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
 
   return (
     <>
-      {topics.length === 0 && <UINoAgendaMessage>This room has topics yet.</UINoAgendaMessage>}
+      {topics.length === 0 && <UINoAgendaMessage>This room has no topics yet.</UINoAgendaMessage>}
 
       {topics.map((topic) => {
         const unreadMessages = unreadMessagesData?.messages.find((m) => m.topicId === topic.id)?.unreadMessages ?? 0;
