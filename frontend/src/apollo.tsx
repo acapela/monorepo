@@ -7,6 +7,7 @@ import { NextApiRequest } from "next";
 import { IncomingMessage } from "node:http";
 import React, { ReactNode } from "react";
 import { getApolloInitialState } from "./gql/hydration";
+import { useConst } from "./hooks/useConst";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -128,10 +129,12 @@ interface ApolloClientProviderProps {
 }
 
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
-  const client = getApolloClient({
-    forcedAuthToken: ssrAuthToken ?? undefined,
-    websocketEndpoint: websocketEndpoint ?? undefined,
-  });
+  const client = useConst(() =>
+    getApolloClient({
+      forcedAuthToken: ssrAuthToken ?? undefined,
+      websocketEndpoint: websocketEndpoint ?? undefined,
+    })
+  );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
