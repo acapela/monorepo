@@ -74,7 +74,7 @@ export const MessageComposer = ({ topicId }: Props) => {
           onSubmit={async () => {
             await createMessage({
               topicId: topicId,
-              type: Message_Type_Enum.Audio,
+              type: Message_Type_Enum.Text,
               content: value,
               attachments: attachments.map((attachment) => ({
                 attachment_id: attachment.uuid,

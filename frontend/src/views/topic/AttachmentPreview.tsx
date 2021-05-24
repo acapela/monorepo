@@ -9,13 +9,13 @@ interface Props {
 }
 
 export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
-  const { data } = useGetAttachmentQuery({ id });
+  const [data] = useGetAttachmentQuery({ id });
 
   if (!data?.attachment) return null;
 
   return (
     <UIHolder onClick={() => onRemoveRequest(id)}>
-      <MessageAttachment attachment={data.attachment} />
+      <MessageAttachment attachment={data.attachment} selectedMediaTime={null} onMediaTimeUpdate={() => null} />
     </UIHolder>
   );
 };
