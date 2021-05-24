@@ -10,14 +10,14 @@ const SearchResult = () => gql`
     messageContent: message_content
     attachmentName: attachment_name
     transcript
-    # room {
-    #   id
-    #   name
-    #   space {
-    #     id
-    #     name
-    #   }
-    # }
+    room {
+      id
+      name
+      space {
+        id
+        name
+      }
+    }
   }
 `;
 
