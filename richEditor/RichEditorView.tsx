@@ -8,6 +8,7 @@ import { Toolbar } from "./Toolbar";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 import { removeElementFromArray } from "~shared/array";
+import styled from "styled-components";
 
 interface KeyboardBinding {
   key: number;
@@ -82,7 +83,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
   return (
     <>
       <QuillTheme />
-      <div>
+      <UIEditorHolder>
         {toolbarRef.current && (
           <ReactQuill
             ref={ref}
@@ -96,7 +97,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
           />
         )}
         <Toolbar ref={toolbarRef} onSubmit={onSubmit} onFilesSelected={onFilesSelected} />
-      </div>
+      </UIEditorHolder>
     </>
   );
 };
@@ -121,3 +122,7 @@ function addQuillBindingWithPriority(keyboard: KeyboardStatic, keyCode: number, 
     removeElementFromArray(bindingsList, binding);
   };
 }
+
+const UIEditorHolder = styled.div`
+  flex-grow: 1;
+`;

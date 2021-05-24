@@ -17,9 +17,9 @@ interface AttachmentProps {
 
 const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
   const mediaRef = useRef<HTMLVideoElement>(null);
-  const { data: downloadUrlData } = useGetDownloadUrlQuery({ id: attachment.id });
+  const [downloadUrlData] = useGetDownloadUrlQuery({ id: attachment.id });
   const url = downloadUrlData?.get_download_url?.downloadUrl;
-  const { data: attachmentData } = useGetAttachmentQuery({ id: attachment.id });
+  const [attachmentData] = useGetAttachmentQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
   const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);

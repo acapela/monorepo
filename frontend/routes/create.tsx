@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import router from "next/router";
+import NextLink from "next/link";
+import { ReactNode } from "react";
 
 type RouteParamValueType = "string" | "number";
 
@@ -50,9 +52,37 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     router.push({ pathname: path, query: params });
   }
 
+  interface LinkProps {
+    params: Params;
+    children: ReactNode;
+  }
+
+  function Link({ params, children }: LinkProps) {
+    const hrefWithParams = fillParamsInUrl(path, params);
+
+    return (
+      <NextLink href={hrefWithParams} passHref>
+        {children}
+      </NextLink>
+    );
+  }
+
   return {
     useParams,
     push,
     useIsActive,
+    Link,
   };
+}
+
+function fillParamsInUrl<Params extends Record<string, unknown>>(href: string, params: Params) {
+  let hrefWithParams = href;
+
+  Object.keys(params).forEach((paramName) => {
+    const paramValue = params[paramName];
+
+    hrefWithParams = hrefWithParams.replace(`[${paramName}]`, paramValue as string);
+  });
+
+  return hrefWithParams;
 }

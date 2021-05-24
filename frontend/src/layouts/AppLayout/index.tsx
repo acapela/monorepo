@@ -82,6 +82,8 @@ const UIMainContent = styled.div`
   min-height: 0;
   overflow-y: auto;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UINav = styled.nav`

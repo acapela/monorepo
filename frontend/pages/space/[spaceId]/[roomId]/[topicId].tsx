@@ -1,17 +1,14 @@
 import React from "react";
+import { routes } from "~frontend/../routes";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { AppLayout } from "~frontend/layouts/AppLayout";
-import { usePathParameter } from "~frontend/utils";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { TopicView } from "~frontend/views/topic/TopicView";
-import { assert } from "~shared/assert";
+import { RoomView } from "~frontend/views/RoomView";
 
 const Page = () => {
-  const topicId = usePathParameter("topicId");
+  const { roomId, topicId } = routes.spaceRoomTopic.useParams();
 
-  assert(topicId, "Topic ID Required");
-
-  return <TopicView id={topicId} />;
+  return <RoomView topicId={topicId} roomId={roomId} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();
