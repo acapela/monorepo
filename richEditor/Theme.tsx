@@ -1097,9 +1097,17 @@ export const QuillTheme = createGlobalStyle`
 }
 
 /* Custom */
-.ql-editor {
-  strong: {
-    font-weight: bold;
+body .quill {
+  .ql-editor {
+    strong: {
+      font-weight: bold;
+    }
+  }
+.ql-container {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-bottom: none;
   }
 }
+
 `;
