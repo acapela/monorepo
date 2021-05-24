@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useUnreadMessages } from "~frontend/gql/topics";
 import { TopicCreationButton } from "~frontend/rooms/TopicCreationButton";
 import { UnreadTopicIndicator } from "~frontend/ui/UnreadTopicsIndicator";
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function TopicsList({ roomId, activeTopicId }: Props) {
-  const [roomData] = useGetSingleRoomQuery.subscription({ id: roomId });
+  const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
   const [unreadMessagesData] = useUnreadMessages.subscription();
 
   const room = roomData?.room;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useGetSingleRoomQuery } from "~frontend/gql/rooms";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function RoomView({ roomId, topicId }: Props) {
-  const [roomData] = useGetSingleRoomQuery.subscription({ id: roomId });
+  const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
 
   function getSelectedTopicId() {
     if (topicId) return topicId;

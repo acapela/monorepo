@@ -1,6 +1,7 @@
 import { createRoute } from "./create";
 
 export const routes = {
+  home: createRoute("/", {}),
   spaces: createRoute("/spaces", {}),
   space: createRoute("/space/[spaceId]", { spaceId: "string" }),
 

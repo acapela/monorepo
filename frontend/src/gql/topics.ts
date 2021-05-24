@@ -25,6 +25,8 @@ import {
   AddTopicMemberMutationVariables,
   RemoveTopicMemberMutation,
   RemoveTopicMemberMutationVariables,
+  SingleTopicQuery,
+  SingleTopicQueryVariables,
 } from "./generated";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery } from "./utils";
@@ -288,6 +290,18 @@ export const [useLastSeenMessageMutation] = createMutation<
         on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
       ) {
         message_id
+      }
+    }
+  `
+);
+
+export const [useSingleTopicQuery, singleTopicQueryManager] = createQuery<SingleTopicQuery, SingleTopicQueryVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    query SingleTopic($id: uuid!) {
+      topic: topic_by_pk(id: $id) {
+        ...TopicDetailedInfo
       }
     }
   `

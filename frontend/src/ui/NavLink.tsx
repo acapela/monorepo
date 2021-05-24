@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { CalendarOutline } from "~ui/icons";
+import { IconCalendar } from "~ui/icons";
 
 interface Props {
   to: string;
@@ -40,7 +40,7 @@ const UILink = styled.a<{ isActive: boolean }>`
     `}
 `;
 
-const UIIcon = styled(CalendarOutline)`
+const UIIcon = styled(IconCalendar)`
   margin-right: 0.5rem;
 `;
 

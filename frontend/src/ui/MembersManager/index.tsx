@@ -5,7 +5,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/button";
-import SvgPlus from "~ui/icons/fill/Plus";
+import { IconPlusSquare } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
 
 interface Props {
@@ -50,7 +50,7 @@ export function MembersManager({ users, onLeaveRequest, onAddMemberRequest }: Pr
             `}
           />
           <Button onClick={handleWithStopPropagation(openUserPicker)}>
-            <SvgPlus />
+            <IconPlusSquare />
           </Button>
         </UIMembers>
 

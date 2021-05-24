@@ -7975,12 +7975,12 @@ export type GetRoomsQuery = (
   )> }
 );
 
-export type GetSingleRoomQueryVariables = Exact<{
+export type SingleRoomQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type GetSingleRoomQuery = (
+export type SingleRoomQuery = (
   { __typename?: 'query_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
@@ -8111,12 +8111,12 @@ export type GetSpacesQuery = (
   )> }
 );
 
-export type GetSingleSpaceQueryVariables = Exact<{
+export type SingleSpaceQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type GetSingleSpaceQuery = (
+export type SingleSpaceQuery = (
   { __typename?: 'query_root' }
   & { space?: Maybe<(
     { __typename?: 'space' }
@@ -8488,6 +8488,19 @@ export type UpdateLastSeenMessageMutation = (
   & { insert_last_seen_message_one?: Maybe<(
     { __typename?: 'last_seen_message' }
     & Pick<Last_Seen_Message, 'message_id'>
+  )> }
+);
+
+export type SingleTopicQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type SingleTopicQuery = (
+  { __typename?: 'query_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
   )> }
 );
 

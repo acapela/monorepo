@@ -4,8 +4,8 @@ import {
   CreateSpaceMutationVariables,
   GetSpacesQuery,
   GetSpacesQueryVariables,
-  GetSingleSpaceQuery,
-  GetSingleSpaceQueryVariables,
+  SingleSpaceQuery,
+  SingleSpaceQueryVariables,
   AddSpaceMemberMutation,
   AddSpaceMemberMutationVariables,
   RemoveSpaceMemberMutation,
@@ -61,14 +61,11 @@ export const [useGetSpacesQuery, getSpacesQueryManager] = createQuery<GetSpacesQ
   `
 );
 
-export const [useGetSingleSpaceQuery, getSingleSpaceManager] = createQuery<
-  GetSingleSpaceQuery,
-  GetSingleSpaceQueryVariables
->(
+export const [useSingleSpaceQuery, getSingleSpaceManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
-    query GetSingleSpace($id: uuid!) {
+    query SingleSpace($id: uuid!) {
       space: space_by_pk(id: $id) {
         ...SpaceDetailedInfo
       }

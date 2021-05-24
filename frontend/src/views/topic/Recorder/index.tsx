@@ -2,7 +2,7 @@ import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
-import { MicOffOutline, MicOutline, VideoOutline } from "~ui/icons";
+import { IconMic, IconMicSlash, IconVideoCamera } from "~ui/icons";
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
@@ -164,7 +164,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     return (
       <div className={className}>
         <RecordButton disabled title="Media recording is not supported by your browser">
-          <MicOffOutline />
+          <IconMicSlash />
         </RecordButton>
       </div>
     );
@@ -176,14 +176,14 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         onClick={(event) => onVideoButtonClick(event.currentTarget)}
         disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
       >
-        <VideoOutline />
+        <IconVideoCamera />
       </RecordButton>
       <RecordButton
         onClick={(event) => onAudioButtonClick(event.currentTarget)}
         disabled={!!getRecorderError(MediaSource.MICROPHONE)}
         title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
       >
-        <MicOutline />
+        <IconMic />
       </RecordButton>
       {isVideoSourcePickerVisible && (
         <VideoSourcePicker

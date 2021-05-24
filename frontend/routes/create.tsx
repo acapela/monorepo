@@ -42,6 +42,12 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     return query as Params;
   }
 
+  function useIsActive() {
+    const router = useRouter();
+
+    return router.route === path;
+  }
+
   function push(params: Params) {
     router.push({ pathname: path, query: params });
   }
@@ -61,10 +67,16 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     );
   }
 
+  function getUrlWithParams(params: Params) {
+    return fillParamsInUrl(path, params);
+  }
+
   return {
     useParams,
     push,
+    useIsActive,
     Link,
+    getUrlWithParams,
   };
 }
 
