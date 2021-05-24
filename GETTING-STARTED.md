@@ -58,14 +58,18 @@ It will show you all other available commands as a console interactive select:
 
 ![YARN START](./docs/yarn-start.gif)
 
-First, we need to seed the database:
-
-- `hasura:migrations`
-- `hasura:meta`
-
-In order to bring the project up, run these commands in different terminals (using `yarn start` and selecting them):
+First, we need to get docker running (using `yarn start` and selecting them)
 
 - `docker:up`
+
+Then we need to seed the database (again with `yarn start` and selecting them):
+
+- `hasura:migrations`
+- `hasura:seeds`
+- `hasura:meta`
+
+In order to bring the project up, run these in different terminals (using `yarn start` and selecting them):
+
 - `frontend:dev`
 - `backend:dev`
 
