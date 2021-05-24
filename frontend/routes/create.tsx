@@ -67,11 +67,16 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     );
   }
 
+  function getUrlWithParams(params: Params) {
+    return fillParamsInUrl(path, params);
+  }
+
   return {
     useParams,
     push,
     useIsActive,
     Link,
+    getUrlWithParams,
   };
 }
 
