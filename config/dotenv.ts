@@ -39,6 +39,7 @@ declare global {
       HASURA_API_ADMIN_ROLE: string;
       HASURA_ACTION_SECRET: string;
       HASURA_NOTIFICATION_SECRET: string;
+      HASURA_WEBSOCKET_ENDPOINT: string;
       LOGGING_LEVEL: string;
       BACKEND_PORT: number;
       BACKEND_ROOT_URL: string;
