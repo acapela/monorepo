@@ -8,7 +8,6 @@ import { TeamPickerView } from "./TeamPicker";
 import { WindowView } from "~frontend/views/WindowView";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { TopBarMenu } from "./menu/TopbarMenu";
-import { Icon } from "~frontend/ui/Icon";
 
 interface Props {
   children?: ReactNode;
@@ -84,10 +83,6 @@ const UIMainContent = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-`;
-
-const UINav = styled.nav`
-  display: flex;
 `;
 
 const UIUserMenu = styled.div`

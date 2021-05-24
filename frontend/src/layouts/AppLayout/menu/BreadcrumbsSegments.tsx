@@ -21,7 +21,6 @@ export function BreadcrumbsSegments({ segments }: Props) {
         return (
           <Fragment>
             {segment.icon}
-            {/* {segment.kind && <UIKindLabel>{segment.kind}</UIKindLabel>} */}
             <Link href={segment.href} passHref>
               <UISingleSegmentHolder>{segment.title}</UISingleSegmentHolder>
             </Link>
@@ -55,8 +54,3 @@ const UIHolder = styled.div`
 `;
 
 const UISingleSegmentHolder = styled.a``;
-
-const UIKindLabel = styled.div`
-  opacity: 0.5;
-  margin-right: 0.5ch;
-`;
