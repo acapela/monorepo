@@ -54,8 +54,17 @@ export const db = new PrismaClient({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function tsTest() {
-  // Just testing if typescript types for client are properly generated
-  db.user.findMany({ where: { account: { some: { id: "foo" } } } });
+declare global {
+  /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
+  /* eslint-disable @typescript-eslint/no-namespace */
+  module globalThis {
+    // eslint-disable-next-line no-var
+    var dbInstance: PrismaClient;
+  }
 }
+
+if (globalThis.dbInstance) {
+  globalThis.dbInstance.$disconnect();
+}
+
+globalThis.dbInstance = db;

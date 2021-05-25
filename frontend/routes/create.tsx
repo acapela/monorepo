@@ -52,6 +52,10 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     router.push({ pathname: path, query: params });
   }
 
+  function replace(params: Params) {
+    router.replace({ pathname: path, query: params });
+  }
+
   interface LinkProps {
     params: Params;
     children: ReactNode;
@@ -74,6 +78,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   return {
     useParams,
     push,
+    replace,
     useIsActive,
     Link,
     getUrlWithParams,

@@ -8,6 +8,8 @@ import { createNextIndex } from "~frontend/rooms/order";
 import { Button } from "~ui/button";
 import { Field } from "~ui/field";
 import { slugify } from "~shared/slugify";
+import { TopicDetailedInfoFragment } from "~frontend/gql/generated";
+import { routes } from "~frontend/../routes";
 
 interface TopicCreationButtonProps {
   roomId: string;
@@ -17,6 +19,11 @@ interface TopicCreationButtonProps {
 export const TopicCreationButton = ({ roomId, lastTopicIndex }: TopicCreationButtonProps) => {
   const [isDialogOpened, { set: openDialog, unset: closeDialog }] = useBoolean(false);
 
+  function handleCreated(topic: TopicDetailedInfoFragment) {
+    closeDialog();
+    routes.spaceRoomTopic.push({ topicId: topic.id, spaceId: topic.room.space_id, roomId: topic.room.id });
+  }
+
   return (
     <>
       <Dialog
@@ -25,7 +32,7 @@ export const TopicCreationButton = ({ roomId, lastTopicIndex }: TopicCreationBut
         onClose={closeDialog}
         aria-labelledby="topic-creation-button"
       >
-        <TopicCreationForm roomId={roomId} lastTopicIndex={lastTopicIndex} onCreated={closeDialog} />
+        <TopicCreationForm roomId={roomId} lastTopicIndex={lastTopicIndex} onCreated={handleCreated} />
       </Dialog>
       <Button wide onClick={openDialog} id="topic-creation-button">
         Add new topic
@@ -40,7 +47,7 @@ const UITopicNameFieldWrapper = styled.div`
 
 interface TopicCreationFormProps {
   roomId: string;
-  onCreated?: (topicId: string) => unknown;
+  onCreated?: (topic: TopicDetailedInfoFragment) => unknown;
   lastTopicIndex?: string;
 }
 
@@ -69,7 +76,7 @@ const TopicCreationForm = ({ onCreated, roomId, lastTopicIndex }: TopicCreationF
 
     if (!data?.topic) return;
 
-    onCreated?.(data.topic.id);
+    onCreated?.(data.topic);
   });
 
   // TODO: Show errors in UI (aca-258-handle-errors-on-the-fe)

@@ -1,4 +1,8 @@
+import { AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import styled from "styled-components";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { routes } from "~frontend/routes";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
@@ -12,13 +16,29 @@ interface Props {
 export function RoomView({ roomId, topicId }: Props) {
   const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
 
+  const firstTopic = roomData?.room?.topics?.[0] ?? null;
+
   function getSelectedTopicId() {
     if (topicId) return topicId;
 
-    return roomData?.room?.topics?.[0].id ?? null;
+    return firstTopic?.id ?? null;
   }
 
   const selectedTopicId = getSelectedTopicId();
+
+  // If this view is opened without topic, but room has some topic - redirect to the first one
+  useEffect(() => {
+    if (topicId) return;
+    if (!firstTopic) return;
+
+    // Note! Use replace instead of push. If we used push it might result in this annoying UX
+    // when you click 'back' in your browser and it goes back for a moment and then returns to previous page.
+    routes.spaceRoomTopic.replace({
+      topicId: firstTopic.id,
+      roomId: firstTopic.room.id,
+      spaceId: firstTopic.room.space_id,
+    });
+  }, [topicId, firstTopic]);
 
   return (
     <>
@@ -27,7 +47,11 @@ export function RoomView({ roomId, topicId }: Props) {
         <UITopicsHolder>
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
         </UITopicsHolder>
-        <UITopicContentHolder>{selectedTopicId && <TopicView id={selectedTopicId} />}</UITopicContentHolder>
+        <AnimatePresence exitBeforeEnter>
+          <UITopicContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
+            {selectedTopicId && <TopicView id={selectedTopicId} />}
+          </UITopicContentHolder>
+        </AnimatePresence>
       </UIHolder>
     </>
   );
@@ -44,7 +68,7 @@ const UIHolder = styled.div`
 
 const UITopicsHolder = styled.div``;
 
-const UITopicContentHolder = styled.div`
+const UITopicContentHolder = styled(PresenceAnimator)`
   flex-grow: 1;
   background: #ffffff;
   border: 1px solid #f8f8f8;

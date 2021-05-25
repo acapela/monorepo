@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
+import { Container } from "~ui/layout/Container";
 import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Button } from "~ui/button";
@@ -28,32 +29,30 @@ export function HomeView() {
   }
 
   return (
-    <UIHolder>
-      <UISearchWrapper>
-        <SearchBar />
-      </UISearchWrapper>
-      <ItemTitle>Current team is: {team?.team?.name}</ItemTitle>
-      <Button onClick={handleInviteMember}>Invite team member</Button>
-      <UIInvitation>
-        {team?.team?.invitations.map((invitation) => {
-          const didJoin = !!invitation.used_at;
-          return (
-            <div key={invitation.id}>
-              Invited: {invitation.email} {didJoin && "(accepted)"}
-            </div>
-          );
-        })}
+    <Container>
+      <UIHolder>
+        <UISearchWrapper>
+          <SearchBar />
+        </UISearchWrapper>
+        <ItemTitle>Current team is: {team?.team?.name}</ItemTitle>
+        <Button onClick={handleInviteMember}>Invite team member</Button>
+        <UIInvitation>
+          {team?.team?.invitations.map((invitation) => {
+            const didJoin = !!invitation.used_at;
+            return (
+              <div key={invitation.id}>
+                Invited: {invitation.email} {didJoin && "(accepted)"}
+              </div>
+            );
+          })}
 
-        {team?.team?.memberships.map((membership) => {
-          const member = membership.user;
-          return (
-            <div key={member.id}>
-              Member: {member.name} ({member.id})
-            </div>
-          );
-        })}
-      </UIInvitation>
-    </UIHolder>
+          {team?.team?.memberships.map((membership) => {
+            const member = membership.user;
+            return <div key={member.id}>Member: {member.name}</div>;
+          })}
+        </UIInvitation>
+      </UIHolder>
+    </Container>
   );
 }
 
@@ -61,7 +60,6 @@ const UIHolder = styled.div``;
 
 const UISearchWrapper = styled.div`
   margin: 0 auto;
-  width: 70vw;
   margin-bottom: 3rem;
 `;
 
