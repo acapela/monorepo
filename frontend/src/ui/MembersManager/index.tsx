@@ -4,8 +4,8 @@ import { UserBasicInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
-import { Button, TransparentButton } from "~ui/button";
-import { IconPlus, IconPlusCircle, IconPlusSquare } from "~ui/icons";
+import { TransparentButton } from "~ui/button";
+import { IconPlusCircle } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
 
 interface Props {

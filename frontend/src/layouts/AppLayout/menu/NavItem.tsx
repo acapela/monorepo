@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { hoverTransition, hoverActionCss } from "~ui/transitions";
+import { hoverActionCss } from "~ui/transitions";
 
 interface Props {
   label: string;

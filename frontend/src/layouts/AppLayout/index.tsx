@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { Logo, SmallLogo } from "~frontend/ui/Logo";
+import { SmallLogo } from "~frontend/ui/Logo";
 import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamPickerView } from "./TeamPicker";
