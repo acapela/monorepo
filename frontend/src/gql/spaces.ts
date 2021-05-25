@@ -10,6 +10,8 @@ import {
   AddSpaceMemberMutationVariables,
   RemoveSpaceMemberMutation,
   RemoveSpaceMemberMutationVariables,
+  EditSpaceMutation,
+  EditSpaceMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -92,6 +94,18 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
       });
     },
   }
+);
+
+export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpaceMutationVariables>(
+  () => gql`
+    ${SpaceBasicInfoFragment()}
+
+    mutation EditSpace($name: String!, $spaceId: uuid!) {
+      space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: { name: $name }) {
+        ...SpaceBasicInfo
+      }
+    }
+  `
 );
 
 export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpaceMemberMutationVariables>(

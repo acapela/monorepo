@@ -8195,6 +8195,20 @@ export type CreateSpaceMutation = (
   )> }
 );
 
+export type EditSpaceMutationVariables = Exact<{
+  name: Scalars['String'];
+  spaceId: Scalars['uuid'];
+}>;
+
+
+export type EditSpaceMutation = (
+  { __typename?: 'mutation_root' }
+  & { space?: Maybe<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
+  )> }
+);
+
 export type AddSpaceMemberMutationVariables = Exact<{
   spaceId: Scalars['uuid'];
   userId: Scalars['uuid'];
