@@ -14,7 +14,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   const { secret } = req.query;
 
   if (secret !== process.env.SONIX_CALLBACK_SECRET) {
-    logger.info("Invalid Sonix callback secret");
+    logger.info("Invalid Sonix callback secret", { secret, env: process.env.SONIX_CALLBACK_SECRET });
 
     return res.status(401).end();
   }
