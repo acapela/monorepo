@@ -45,7 +45,7 @@ export const MessageAttachmentDisplayer = ({
     }
 
     if (messageType === Message_Type_Enum.Text) {
-      const type = attachment.mimeType.split("/")[0];
+      const [type] = attachment.mimeType.split("/");
 
       if (type === "image") {
         return <ImageWrapper className={className} src={attachmentUrl} alt={attachment.originalName || ""} />;
