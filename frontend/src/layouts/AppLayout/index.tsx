@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { Logo } from "~frontend/ui/Logo";
+import { SmallLogo } from "~frontend/ui/Logo";
 import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamPickerView } from "./TeamPicker";
@@ -38,7 +38,7 @@ export const AppLayout = ({ children }: Props) => {
         <UITopBar>
           <Link href="/" passHref>
             <UILogo>
-              <Logo />
+              <SmallLogo />
             </UILogo>
           </Link>
 
@@ -72,7 +72,7 @@ const UITopBar = styled.div`
 
 const UILogo = styled.a`
   display: block;
-  width: 120px;
+  font-size: 1.5rem;
   margin-right: 2rem;
 `;
 

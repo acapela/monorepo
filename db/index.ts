@@ -54,8 +54,29 @@ export const db = new PrismaClient({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function tsTest() {
-  // Just testing if typescript types for client are properly generated
-  db.user.findMany({ where: { account: { some: { id: "foo" } } } });
+declare global {
+  /* eslint-disable @typescript-eslint/prefer-namespace-keyword */
+  /* eslint-disable @typescript-eslint/no-namespace */
+  module globalThis {
+    // eslint-disable-next-line no-var
+    var dbInstance: PrismaClient | null;
+  }
+}
+
+/**
+ * In dev, this file gets hot-reloaded frequently (on each file change that impacts apis). It means we'll constantly
+ * create new instance of db connection.
+ *
+ * To avoid this we need to save old instance somewhere out of module scope (which is re-created on hot-reload).
+ *
+ * Let's do globalThis for this.
+ */
+if (process.env.NODE_ENV === "development") {
+  // If there is old instance, disconnect it.
+  if (globalThis.dbInstance) {
+    globalThis.dbInstance.$disconnect();
+    globalThis.dbInstance = null;
+  }
+
+  globalThis.dbInstance = db;
 }

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { hoverActionCss } from "~ui/transitions";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
@@ -10,9 +11,10 @@ import { MembersManager } from "../MembersManager";
 
 interface Props {
   room: RoomDetailedInfoFragment;
+  className?: string;
 }
 
-export function RoomCard({ room }: Props) {
+export const RoomCard = styled(function RoomCard({ room, className }: Props) {
   const user = useCurrentUser();
   const [addRoomMember] = useAddRoomMember();
   const [removeRoomMember] = useRemoveRoomMember();
@@ -35,29 +37,31 @@ export function RoomCard({ room }: Props) {
   }
 
   return (
-    <UIHolder onClick={handleOpen}>
+    <UIHolder onClick={handleOpen} className={className}>
       <ItemTitle>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>
-      <SecondaryText>{pluralize(members.length, "member", "members")}</SecondaryText>
       <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />
     </UIHolder>
   );
-}
+})``;
 
 const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 21px 14px;
+  width: 100%;
+  cursor: pointer;
 
-  /* Base/White */
+  ${ItemTitle} {
+    margin-bottom: 0.5rem;
+  }
 
-  background: #ffffff;
-  /* Borders/Default */
+  ${MembersManager} {
+    margin-top: 0.5rem;
+  }
 
-  border: 1px solid #ededed;
-  /* Card/Default */
+  padding: 1rem;
+  margin: -1rem;
 
-  box-shadow: 0px 0px 8px 4px rgba(43, 42, 53, 0.03);
-  border-radius: 16px;
+  ${hoverActionCss}
 `;

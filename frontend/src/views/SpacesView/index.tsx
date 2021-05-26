@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { SpacesList } from "./SpacesList";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { slugify } from "~shared/slugify";
+import { Container } from "~ui/layout/Container";
+import { routes } from "~frontend/routes";
 
 export function SpacesView() {
   const [createSpace] = useCreateSpaceMutation();
@@ -19,18 +21,22 @@ export function SpacesView() {
 
     const { data: spaceCreationResult } = await createSpace({ name, teamId, slug });
 
-    spaceCreationResult?.space;
+    const spaceId = spaceCreationResult?.space?.id;
+
+    if (!spaceId) return;
+
+    routes.space.push({ spaceId });
   }
 
   return (
-    <>
+    <Container>
       <Toolbar>
         <Button onClick={handleCreate}>Create new space</Button>
       </Toolbar>
       <UISpaces>
         <SpacesList />
       </UISpaces>
-    </>
+    </Container>
   );
 }
 

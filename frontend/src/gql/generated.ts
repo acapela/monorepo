@@ -8316,7 +8316,7 @@ export type CreateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & TopicDetailedInfoFragment
   )> }
 );
 

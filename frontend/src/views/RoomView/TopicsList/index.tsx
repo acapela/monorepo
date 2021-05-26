@@ -46,7 +46,7 @@ const UITopic = styled.div`
   margin-bottom: 1rem;
 
   ${TopicMenuItem} {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 `;
 

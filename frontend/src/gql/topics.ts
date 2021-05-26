@@ -107,9 +107,10 @@ const UnreadMessageFragment = () => gql`
 
 export const [useCreateTopicMutation] = createMutation<CreateTopicMutation, CreateTopicMutationVariables>(
   () => gql`
+    ${TopicDetailedInfoFragment()}
     mutation CreateTopic($name: String!, $roomId: uuid!, $index: String!, $slug: String!) {
       topic: insert_topic_one(object: { name: $name, room_id: $roomId, index: $index, slug: $slug }) {
-        id
+        ...TopicDetailedInfo
       }
     }
   `
