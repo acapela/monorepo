@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
