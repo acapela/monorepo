@@ -13,7 +13,7 @@ export async function sendForTranscription(messageId: string) {
   assert(attachment, "Message to be transcribed has no attachment");
 
   const sonix = getSonixClient();
-  const attachmentUrl = await getSignedDownloadUrl(attachment.id);
+  const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);
   const language = "en";
 
   const media = await sonix.submitNewMedia({
