@@ -1,15 +1,17 @@
 import React, { RefObject, useEffect, useRef, useState } from "react";
-import { usePopper } from "react-popper";
-import styled from "styled-components";
 import { zIndex } from "~ui/zIndex";
 
+import styled from "styled-components";
+
+import { usePopper } from "react-popper";
 import { Placement } from "@popperjs/core";
 
 interface PopoverMenuProps {
-  //   handlerRef: HTMLElement | null;
   children: React.ReactElement; // Only one child accepted
   options: Options[];
   position: PopoverPosition;
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export interface Options {
@@ -42,7 +44,13 @@ export const PopoverPosition = {
 };
 export type PopoverPosition = typeof PopoverPosition[keyof typeof PopoverPosition];
 
-const PureOptionsMenu = ({ children, options, position = PopoverPosition.AUTO }: PopoverMenuProps) => {
+const PureOptionsMenu = ({
+  children,
+  options,
+  position = PopoverPosition.AUTO,
+  offsetX = 0,
+  offsetY = 0,
+}: PopoverMenuProps) => {
   // "Anchor" element for positioning the popover
   const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null);
 
@@ -51,7 +59,6 @@ const PureOptionsMenu = ({ children, options, position = PopoverPosition.AUTO }:
   const [isOpen, setOpen] = useState<boolean>(false);
 
   const wholeContainerRef = useRef<HTMLDivElement>(null);
-
   useOutsideClickListener(wholeContainerRef, () => setOpen(false));
 
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -60,7 +67,7 @@ const PureOptionsMenu = ({ children, options, position = PopoverPosition.AUTO }:
       {
         name: "offset",
         options: {
-          offset: [0, 15],
+          offset: [offsetX, offsetY],
         },
       },
       {
@@ -99,7 +106,7 @@ const PureOptionsMenu = ({ children, options, position = PopoverPosition.AUTO }:
                   {label}
                 </li>
               ))}
-            </ul>{" "}
+            </ul>
           </UIMenu>
         ) : (
           false
@@ -141,7 +148,7 @@ export const PopoverMenu = styled(PureOptionsMenu)`
 `;
 
 /**
- * Hook that alerts clicks outside of the passed ref
+ * Hook that handles clicks outside of the passed ref
  */
 function useOutsideClickListener(ref: RefObject<HTMLDivElement>, onOutsideClick: () => void) {
   useEffect(() => {
@@ -163,29 +170,29 @@ function useOutsideClickListener(ref: RefObject<HTMLDivElement>, onOutsideClick:
 function positionToPlacement(position: PopoverPosition): Placement {
   switch (position) {
     case Position.TOP_LEFT:
-      return "top-start";
+      return "top-end";
     case Position.TOP:
       return "top";
     case Position.TOP_RIGHT:
-      return "top-end";
+      return "top-start";
     case Position.RIGHT_TOP:
-      return "right-start";
+      return "right-end";
     case Position.RIGHT:
       return "right";
     case Position.RIGHT_BOTTOM:
-      return "right-end";
+      return "right-start";
     case Position.BOTTOM_RIGHT:
-      return "bottom-end";
+      return "bottom-start";
     case Position.BOTTOM:
       return "bottom";
     case Position.BOTTOM_LEFT:
-      return "bottom-start";
+      return "bottom-end";
     case Position.LEFT_BOTTOM:
-      return "left-end";
+      return "left-start";
     case Position.LEFT:
       return "left";
     case Position.LEFT_TOP:
-      return "left-start";
+      return "left-end";
     case "auto":
     case "auto-start":
     case "auto-end":
