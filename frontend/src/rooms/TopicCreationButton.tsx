@@ -47,7 +47,7 @@ const UITopicNameFieldWrapper = styled.div`
 
 interface TopicCreationFormProps {
   roomId: string;
-  onCreated?: (topic: TopicDetailedInfoFragment) => unknown;
+  onCreated?: (topic: TopicDetailedInfoFragment) => void;
   lastTopicIndex?: string;
 }
 

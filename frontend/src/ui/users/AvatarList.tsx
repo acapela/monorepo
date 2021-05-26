@@ -9,18 +9,18 @@ interface Props {
   className?: string;
 }
 
-const PureAvatarList = ({ users, className }: Props) => (
-  <div className={className}>
-    {users.map((users, index) => (
-      <Avatar isSmall key={index} url={users.avatar_url} name={users.name ?? ""} />
-    ))}
-  </div>
-);
+export const AvatarList = styled(function AvatarList({ users, className }: Props) {
+  return (
+    <UIHolder className={className}>
+      {users.map((users, index) => (
+        <Avatar isSmall key={index} url={users.avatar_url} name={users.name ?? ""} />
+      ))}
+    </UIHolder>
+  );
+})``;
 
-export const AvatarList = styled(PureAvatarList)`
+const UIHolder = styled.div`
   display: flex;
-
-  ${allowCssProp};
 
   /* Shifts each child Avatar starting from the second one a bit to the left for them to overlap */
   & > :not([hidden]) ~ :not([hidden]) {

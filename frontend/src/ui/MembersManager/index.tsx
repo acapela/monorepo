@@ -49,14 +49,7 @@ export const MembersManager = styled(function MembersManager({
       )}
       <UIHolder className={className}>
         <UIMembers>
-          {users.length > 0 && (
-            <AvatarList
-              users={users}
-              css={css`
-                margin-right: 0.5rem;
-              `}
-            />
-          )}
+          {users.length > 0 && <AvatarList users={users} />}
           <UIAddIcon onClick={handleWithStopPropagation(openUserPicker)} />
         </UIMembers>
 
@@ -77,6 +70,10 @@ const UIHolder = styled.div`
 
 const UIMembers = styled.div`
   display: flex;
+
+  ${AvatarList} {
+    margin-right: 0.5rem;
+  }
 `;
 
 const UIActions = styled.div`
@@ -86,5 +83,5 @@ const UIActions = styled.div`
 `;
 
 const UIAddIcon = styled(IconPlusCircle)`
-  font-size: 32px;
+  font-size: 2rem;
 `;

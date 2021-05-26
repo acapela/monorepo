@@ -10,3 +10,9 @@ export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
 
   return [input];
 }
+
+export function isLastItem<T>(array: T[], item: T) {
+  const index = array.indexOf(item);
+
+  return index === array.length - 1;
+}

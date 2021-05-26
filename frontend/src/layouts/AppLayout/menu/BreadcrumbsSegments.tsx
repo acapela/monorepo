@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { isLastItem } from "~shared/array";
 
 export interface BreadcrumbsSegment {
   title: string;
@@ -21,6 +22,7 @@ export function BreadcrumbsSegments({ segments }: Props) {
     <UIHolder>
       <AnimatePresence>
         {segments.map((segment, index) => {
+          const isLastSegment = isLastItem(segments, segment);
           return (
             <UISegment key={index} presenceStyles={{ opacity: [0, 1] }}>
               <UISegmentLabel>
@@ -35,7 +37,7 @@ export function BreadcrumbsSegments({ segments }: Props) {
                   </UISingleSegmentHolder>
                 </Link>
               </UISegmentLabel>
-              <UILimiter>/</UILimiter>
+              {!isLastSegment && <UILimiter>/</UILimiter>}
             </UISegment>
           );
         })}
@@ -55,12 +57,6 @@ const UILimiter = styled.div`
 const UISegment = styled(PresenceAnimator)`
   display: flex;
   align-items: center;
-
-  &:last-child {
-    ${UILimiter} {
-      display: none;
-    }
-  }
 `;
 
 const UISegmentLabel = styled.div`
