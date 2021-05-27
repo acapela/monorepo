@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { MoreHorizontal } from "~ui/icons";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
-import { PopoverMenu, Position } from "~ui/PopoverMenu";
+import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
+import { IconMoreHoriz } from "~ui/icons";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -19,7 +19,7 @@ export function SpaceCard({ space }: Props) {
 
   const [addSpaceMember] = useAddSpaceMember();
   const [removeSpaceMember] = useRemoveSpaceMember();
-  const [editSpaceName] = useEditSpaceMutation();
+  const [editSpace] = useEditSpaceMutation();
 
   async function handleJoin(userId: string) {
     await addSpaceMember({ userId, spaceId });
@@ -38,7 +38,7 @@ export function SpaceCard({ space }: Props) {
 
     if (!name?.trim()) return;
 
-    await editSpaceName({ name, spaceId });
+    await editSpace({ name, spaceId });
   }
 
   return (
@@ -47,9 +47,7 @@ export function SpaceCard({ space }: Props) {
         <UIImage onClick={handleOpen}></UIImage>
         <UIMenuIcon>
           <PopoverMenu
-            position={Position.LEFT_BOTTOM}
-            offsetX={8}
-            offsetY={8}
+            position={PopoverPosition.LEFT_BOTTOM}
             options={[
               {
                 label: "Edit name",
@@ -57,7 +55,7 @@ export function SpaceCard({ space }: Props) {
               },
             ]}
           >
-            <MoreHorizontal />
+            <IconMoreHoriz />
           </PopoverMenu>
         </UIMenuIcon>
       </UIBanner>
@@ -89,6 +87,7 @@ const UIImage = styled.div`
   border-radius: 1rem;
   margin-bottom: 1rem;
 `;
+
 const UIInfo = styled.div`
   text-align: center;
 `;
@@ -97,9 +96,7 @@ const UIMenuIcon = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
-  fill: white;
-
-  z-index: 0;
+  color: #fff;
   cursor: pointer;
 `;
 

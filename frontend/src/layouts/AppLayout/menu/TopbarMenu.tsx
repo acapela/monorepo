@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { IconHome, IconSpaces, IconCalendar } from "~ui/icons";
 import { ContentBreadcrumbs } from "./Breadcrumbs";
 import { NavItem } from "./NavItem";
