@@ -23,7 +23,6 @@
   "dependencies": {
     "@apollo/client": "^3.3.13",
     "@popperjs/core": "^2.9.2",
-    "@reach/dialog": "^0.13.2",
     "date-fns": "^2.19.0",
     "escape-html": "^1.0.3",
     "express-http-proxy": "^1.6.2",
@@ -34,7 +33,6 @@
     "jsonwebtoken": "^8.5.1",
     "next": "^10.0.9",
     "next-auth": "^3.13.3",
-    "react-hook-form": "^7.0.6",
     "react-popper": "^2.2.5",
     "styled-normalize": "^8.0.7",
     "styled-reset": "^4.3.4",
