@@ -25,7 +25,7 @@ export const [useFullTextSearch] = createQuery<GetSearchResultsQuery, GetSearchR
   () => gql`
     ${SearchResult()}
     query GetSearchResults($term: String!) {
-      results: search_full_text(args: { search: $term }) {
+      results: search_full_text_topic(args: { search: $term }) {
         ...SearchResult
       }
     }

@@ -3958,6 +3958,56 @@ type query_root {
   ): full_text_search_aggregate!
 
   """
+  execute function "search_full_text_topic" which returns "full_text_search"
+  """
+  search_full_text_topic(
+    """
+    input parameters for function "search_full_text_topic"
+    """
+    args: search_full_text_topic_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  execute function "search_full_text_topic" and query aggregates on result of table type "full_text_search"
+  """
+  search_full_text_topic_aggregate(
+    """
+    input parameters for function "search_full_text_topic"
+    """
+    args: search_full_text_topic_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
+
+  """
   fetch data from the table: "space"
   """
   space(
@@ -5344,6 +5394,10 @@ input search_full_text_args {
   search: String
 }
 
+input search_full_text_topic_args {
+  search: String
+}
+
 """
 columns and relationships of "space"
 """
@@ -6394,6 +6448,56 @@ type subscription_root {
     input parameters for function "search_full_text"
     """
     args: search_full_text_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): full_text_search_aggregate!
+
+  """
+  execute function "search_full_text_topic" which returns "full_text_search"
+  """
+  search_full_text_topic(
+    """
+    input parameters for function "search_full_text_topic"
+    """
+    args: search_full_text_topic_args!
+
+    """distinct select on columns"""
+    distinct_on: [full_text_search_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [full_text_search_order_by!]
+
+    """filter the rows returned"""
+    where: full_text_search_bool_exp
+  ): [full_text_search!]!
+
+  """
+  execute function "search_full_text_topic" and query aggregates on result of table type "full_text_search"
+  """
+  search_full_text_topic_aggregate(
+    """
+    input parameters for function "search_full_text_topic"
+    """
+    args: search_full_text_topic_args!
 
     """distinct select on columns"""
     distinct_on: [full_text_search_select_column!]

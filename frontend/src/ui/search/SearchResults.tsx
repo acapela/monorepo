@@ -33,9 +33,11 @@ function renderResultMatchString(result: SearchResultFragment, searchTerm: strin
     if (index > -1) {
       return (
         <>
-          {prop?.substr(Math.max(0, index - 20), index)}
-          <UISearchResultMatchHighlight>{prop?.substr(index, searchTerm.length)}</UISearchResultMatchHighlight>
-          {prop?.substr(index + searchTerm.length, 10)}
+          {prop?.substring(Math.max(0, index - 20), index)}
+          <UISearchResultMatchHighlight>
+            {prop?.substring(index, index + searchTerm.length)}
+          </UISearchResultMatchHighlight>
+          {prop?.substring(index + searchTerm.length, index + 10)}
         </>
       );
     }
