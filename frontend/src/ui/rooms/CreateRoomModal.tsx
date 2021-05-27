@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useKey } from "react-use";
 import styled from "styled-components";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { slugify } from "~shared/slugify";
@@ -15,6 +16,9 @@ interface Props {
 export const CreateRoomModal = ({ spaceId, onCloseRequest, onCreated }: Props) => {
   const [createRoom] = useCreateRoomMutation();
   const [name, setName] = useState("");
+
+  useKey("Escape", () => onCloseRequest());
+  useKey("Enter", () => onCreate(), {}, [name]);
 
   async function onCreate() {
     if (!name.trim()) {
@@ -46,7 +50,7 @@ export const CreateRoomModal = ({ spaceId, onCloseRequest, onCreated }: Props) =
       onCloseRequest={onCloseRequest}
     >
       <UIContentWrapper>
-        <TextInput placeholder="Enter room name" value={name} onChangeText={(value) => setName(value)} />
+        <TextInput autoFocus placeholder="Enter room name" value={name} onChangeText={(value) => setName(value)} />
         <Button onClick={onCreate}>Create</Button>
       </UIContentWrapper>
     </Modal>

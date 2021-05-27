@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useKey } from "react-use";
 import styled from "styled-components";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useCreateTopicMutation } from "~frontend/gql/topics";
@@ -18,6 +19,9 @@ interface Props {
 export const AddTopicModal = ({ roomId, lastTopicIndex, onCloseRequest, onCreated }: Props) => {
   const [createTopic] = useCreateTopicMutation();
   const [name, setName] = useState("");
+
+  useKey("Escape", () => onCloseRequest());
+  useKey("Enter", () => onCreate(), {}, [name]);
 
   async function onCreate() {
     if (!name.trim()) {
@@ -55,7 +59,7 @@ export const AddTopicModal = ({ roomId, lastTopicIndex, onCloseRequest, onCreate
       onCloseRequest={onCloseRequest}
     >
       <UIContentWrapper>
-        <TextInput placeholder="Enter topic name" value={name} onChangeText={(value) => setName(value)} />
+        <TextInput autoFocus placeholder="Enter topic name" value={name} onChangeText={(value) => setName(value)} />
         <Button onClick={onCreate}>Add</Button>
       </UIContentWrapper>
     </Modal>
