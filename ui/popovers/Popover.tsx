@@ -1,13 +1,13 @@
-import React, { CSSProperties, ReactNode, RefObject, useEffect, useState } from "react";
-import Popper, { usePopper } from "react-popper";
 import { Placement } from "@popperjs/core";
+import { throttle } from "lodash";
+import React, { ReactNode, RefObject, useState } from "react";
+import { usePopper } from "react-popper";
 import styled from "styled-components";
 import { useRefValue } from "~shared/hooks/useRefValue";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
+import { useValueRef } from "~shared/hooks/useValueRef";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
-import { throttle } from "lodash";
-import { useValueRef } from "~shared/hooks/useValueRef";
 
 interface PopoverProps {
   anchorRef: RefObject<HTMLElement>;
