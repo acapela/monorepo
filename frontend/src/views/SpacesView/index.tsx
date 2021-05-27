@@ -18,7 +18,7 @@ export function SpacesView() {
         <ManageSpaceModal
           teamId={teamId}
           onCloseRequest={closeCreateSpaceModal}
-          onCreated={(spaceId: string) => routes.space.push({ spaceId })}
+          onCreated={({ spaceId }) => routes.space.push({ spaceId })}
         />
       )}
       <Container>

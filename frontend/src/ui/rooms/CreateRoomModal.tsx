@@ -1,20 +1,19 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { useCreateSpaceMutation } from "~frontend/gql/spaces";
+import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { slugify } from "~shared/slugify";
 import { Button } from "~ui/button";
 import { TextInput } from "~ui/forms/TextInput";
 import { Modal } from "../Modal";
 
 interface Props {
-  teamId: string;
+  spaceId: string;
   onCloseRequest: () => void;
-  onCreated: ({ spaceId }: { spaceId: string }) => void;
+  onCreated: ({ spaceId, roomId }: { spaceId: string; roomId: string }) => void;
 }
 
-/* ManageSpaceModal since we'll extend this modal with edit space functionality */
-export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) => {
-  const [createSpace] = useCreateSpaceMutation();
+export const CreateRoomModal = ({ spaceId, onCloseRequest, onCreated }: Props) => {
+  const [createRoom] = useCreateRoomMutation();
   const [name, setName] = useState("");
 
   async function onCreate() {
@@ -25,29 +24,29 @@ export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) =
 
     const slug = slugify(name);
 
-    const { data: spaceCreationResult } = await createSpace({ name: name, teamId, slug });
+    const { data: createRoomResult } = await createRoom({ name, spaceId, slug });
 
-    const spaceId = spaceCreationResult?.space?.id;
+    const roomId = createRoomResult?.room?.id;
 
-    if (!spaceId) {
+    if (!roomId) {
       onCloseRequest();
       return;
     }
 
     onCloseRequest();
-    onCreated({ spaceId });
+    onCreated({ spaceId, roomId });
   }
 
   return (
     <Modal
       head={{
-        title: "Create new space",
+        title: "Create new room",
         description: "",
       }}
       onCloseRequest={onCloseRequest}
     >
       <UIContentWrapper>
-        <TextInput placeholder="Enter space name" value={name} onChangeText={(value) => setName(value)} />
+        <TextInput placeholder="Enter room name" value={name} onChangeText={(value) => setName(value)} />
         <Button onClick={onCreate}>Create</Button>
       </UIContentWrapper>
     </Modal>
