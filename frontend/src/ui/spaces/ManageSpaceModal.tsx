@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useKey } from "react-use";
 import styled from "styled-components";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { slugify } from "~shared/slugify";
@@ -16,6 +17,9 @@ interface Props {
 export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) => {
   const [createSpace] = useCreateSpaceMutation();
   const [name, setName] = useState("");
+
+  useKey("Escape", () => onCloseRequest());
+  useKey("Enter", () => onCreate(), {}, [name]);
 
   async function onCreate() {
     if (!name.trim()) {
@@ -47,7 +51,7 @@ export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) =
       onCloseRequest={onCloseRequest}
     >
       <UIContentWrapper>
-        <TextInput placeholder="Enter space name" value={name} onChangeText={(value) => setName(value)} />
+        <TextInput autoFocus placeholder="Enter space name" value={name} onChangeText={(value) => setName(value)} />
         <Button onClick={onCreate}>Create</Button>
       </UIContentWrapper>
     </Modal>
