@@ -1,5 +1,4 @@
 // Polyfill for :focus-visible pseudo-selector.
-import "@reach/dialog/styles.css";
 import "focus-visible";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
