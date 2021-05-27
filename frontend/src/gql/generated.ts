@@ -3055,6 +3055,10 @@ export type Query_Root = {
   search_full_text: Array<Full_Text_Search>;
   /** execute function "search_full_text" and query aggregates on result of table type "full_text_search" */
   search_full_text_aggregate: Full_Text_Search_Aggregate;
+  /** execute function "search_full_text_topic" which returns "full_text_search" */
+  search_full_text_topic: Array<Full_Text_Search>;
+  /** execute function "search_full_text_topic" and query aggregates on result of table type "full_text_search" */
+  search_full_text_topic_aggregate: Full_Text_Search_Aggregate;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
@@ -3456,6 +3460,28 @@ export type Query_RootSearch_Full_TextArgs = {
 /** query root */
 export type Query_RootSearch_Full_Text_AggregateArgs = {
   args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSearch_Full_Text_TopicArgs = {
+  args: Search_Full_Text_Topic_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootSearch_Full_Text_Topic_AggregateArgs = {
+  args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
@@ -4491,6 +4517,10 @@ export type Search_Full_Text_Args = {
   search?: Maybe<Scalars['String']>;
 };
 
+export type Search_Full_Text_Topic_Args = {
+  search?: Maybe<Scalars['String']>;
+};
+
 /** columns and relationships of "space" */
 export type Space = {
   __typename?: 'space';
@@ -4974,6 +5004,10 @@ export type Subscription_Root = {
   search_full_text: Array<Full_Text_Search>;
   /** execute function "search_full_text" and query aggregates on result of table type "full_text_search" */
   search_full_text_aggregate: Full_Text_Search_Aggregate;
+  /** execute function "search_full_text_topic" which returns "full_text_search" */
+  search_full_text_topic: Array<Full_Text_Search>;
+  /** execute function "search_full_text_topic" and query aggregates on result of table type "full_text_search" */
+  search_full_text_topic_aggregate: Full_Text_Search_Aggregate;
   /** fetch data from the table: "space" */
   space: Array<Space>;
   /** fetch aggregated fields from the table: "space" */
@@ -5375,6 +5409,28 @@ export type Subscription_RootSearch_Full_TextArgs = {
 /** subscription root */
 export type Subscription_RootSearch_Full_Text_AggregateArgs = {
   args: Search_Full_Text_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSearch_Full_Text_TopicArgs = {
+  args: Search_Full_Text_Topic_Args;
+  distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
+  where?: Maybe<Full_Text_Search_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootSearch_Full_Text_Topic_AggregateArgs = {
+  args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
@@ -9060,7 +9116,7 @@ export type mutation_rootFieldPolicy = {
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9100,6 +9156,8 @@ export type query_rootFieldPolicy = {
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9358,7 +9416,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9398,6 +9456,8 @@ export type subscription_rootFieldPolicy = {
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	search_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_topic?: FieldPolicy<any> | FieldReadFunction<any>,
+	search_full_text_topic_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
