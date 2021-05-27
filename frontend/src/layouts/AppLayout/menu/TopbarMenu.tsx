@@ -25,6 +25,6 @@ const UINav = styled.nav`
   display: flex;
 
   ${NavItem} {
-    margin: 0 1em;
+    margin: 0 0.2em;
   }
 `;

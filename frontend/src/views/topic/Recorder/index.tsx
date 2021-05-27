@@ -1,5 +1,4 @@
-import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { IconMic, IconMicSlash, IconVideoCamera } from "~ui/icons";
@@ -7,7 +6,6 @@ import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
-import { TranscodingIndicator } from "./TranscodingIndicator";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { useRecorderErrors } from "./useRecorderErrors";
 import { VideoSourcePicker } from "./VideoSourcePicker";
@@ -18,31 +16,17 @@ interface RecorderProps {
 }
 
 function recordingBlobToFile(blob: Blob): File {
-  const [type, extension] = blob.type.split("/");
+  /* e.g.: audio/webm;codecs=opus */
+  const [mimeType] = blob.type.split(";");
+  const [type, extension] = mimeType.split("/");
   const timestamp = new Date().getTime();
   const name = `${type.toLowerCase()}-recording-${timestamp}.${extension}`;
-  const file = new File([blob], name, { lastModified: timestamp, type: blob.type });
+  const file = new File([blob], name, { lastModified: timestamp, type: mimeType });
 
   return file;
 }
 
-async function transcode(file: File): Promise<File> {
-  const [fileType] = file.type.split("/");
-  const targetFormat = fileType === "audio" ? "mp3" : "mp4";
-  const tempFileName = `temp1.${targetFormat}`;
-
-  const ffmpeg = createFFmpeg({ log: false });
-  await ffmpeg.load();
-  ffmpeg.FS("writeFile", file.name, await fetchFile(file));
-  await ffmpeg.run("-i", file.name, tempFileName);
-  const data = ffmpeg.FS("readFile", tempFileName);
-  const transcodedBlob = new Blob([data.buffer], { type: `${fileType}/${targetFormat}` });
-
-  return recordingBlobToFile(transcodedBlob);
-}
-
 const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
-  const [isTranscoding, { set: showTranscodingIndicator, unset: hideTranscodingIndicator }] = useBoolean(false);
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
@@ -103,11 +87,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   };
 
   const onRecorded = async (blob: Blob) => {
-    let file = recordingBlobToFile(blob);
-
-    showTranscodingIndicator();
-    file = await transcode(file);
-    hideTranscodingIndicator();
+    const file = recordingBlobToFile(blob);
 
     onRecordingReady(file);
   };
@@ -142,7 +122,10 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     if (!isDismissed && blob) {
       onRecorded(blob);
 
-      // In case recording is forcefully stopped
+      /* Reset the state for hot reloading in dev mode */
+      setBlob(null);
+
+      /* In case recording is forcefully stopped */
       setMediaSource(null);
     }
   }, [isDismissed, blob]);
@@ -206,7 +189,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           // cornered={mediaSource !== MediaSource.MICROPHONE}
         />
       )}
-      {isTranscoding && <TranscodingIndicator />}
     </div>
   );
 };

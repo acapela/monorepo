@@ -1,11 +1,13 @@
 import styled from "styled-components";
-import { PageTitle } from "~ui/typo";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { routes } from "~frontend/routes";
+import { CreateRoomModal } from "~frontend/ui/rooms/CreateRoomModal";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
-import { SpaceRooms } from "./SpaceRooms";
 import { Button } from "~ui/button";
-import { useCreateRoomMutation } from "~frontend/gql/rooms";
-import { slugify } from "~shared/slugify";
+import { Container } from "~ui/layout/Container";
+import { PageTitle } from "~ui/typo";
+import { SpaceRooms } from "./SpaceRooms";
 
 interface Props {
   spaceId: string;
@@ -13,37 +15,37 @@ interface Props {
 
 export function SpaceView({ spaceId }: Props) {
   const [data] = useSingleSpaceQuery.subscription({ id: spaceId });
-
-  const [createRoom] = useCreateRoomMutation();
+  const [isCreatingRoom, { set: openCreateRoomModal, unset: closeCreateRoomModal }] = useBoolean(false);
 
   const space = data?.space ?? null;
 
   const rooms = space?.rooms ?? [];
 
-  async function handleCreateRoom() {
-    const name = window.prompt("Room name?");
-
-    if (!name?.trim()) return;
-
-    const slug = slugify(name);
-
-    await createRoom({ name, spaceId, slug });
-  }
-
   return (
-    <UIHolder>
-      <UISpace>{space && <SpaceCard space={space} />}</UISpace>
-      <UIContent>
-        <UITitle>
-          <PageTitle>Rooms</PageTitle>
-          <Button onClick={handleCreateRoom}>Create room</Button>
-        </UITitle>
+    <>
+      {isCreatingRoom && (
+        <CreateRoomModal
+          spaceId={spaceId}
+          onCloseRequest={closeCreateRoomModal}
+          onCreated={({ spaceId, roomId }) => routes.spaceRoom.push({ spaceId, roomId })}
+        />
+      )}
+      <Container>
+        <UIHolder>
+          <UISpace>{space && <SpaceCard space={space} />}</UISpace>
+          <UIContent>
+            <UITitle>
+              <PageTitle>Rooms</PageTitle>
+              <Button onClick={openCreateRoomModal}>Create room</Button>
+            </UITitle>
 
-        <UIRoom>
-          <SpaceRooms rooms={rooms} />
-        </UIRoom>
-      </UIContent>
-    </UIHolder>
+            <UIRoom>
+              <SpaceRooms rooms={rooms} />
+            </UIRoom>
+          </UIContent>
+        </UIHolder>
+      </Container>
+    </>
   );
 }
 
@@ -60,6 +62,7 @@ const UIContent = styled.div``;
 const UITitle = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 2rem;
 `;
 
 const UIRoom = styled.div``;

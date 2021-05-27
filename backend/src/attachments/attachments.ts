@@ -51,7 +51,7 @@ export const getDownloadUrl: ActionHandler<GetDownloadUrlParams, GetDownloadUrlR
       throw new Error("Not found");
     }
 
-    const downloadUrl = await getSignedDownloadUrl(uuid);
+    const downloadUrl = await getSignedDownloadUrl(uuid, attachment.mime_type);
 
     return { downloadUrl };
   },

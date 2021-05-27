@@ -4,12 +4,15 @@ const bucketName = process.env.GOOGLE_STORAGE_BUCKET;
 const directory = "attachments";
 
 /* We can have topic subdirectories if needed */
-function getFilePath(fileId: string) {
-  return `${directory}/${fileId}`;
+function getFilePath(fileId: string, mimeType: string) {
+  const [, extension] = mimeType.split("/");
+
+  /* Having extension is critical for Sonix to get the file type right */
+  return `${directory}/${fileId}.${extension}`;
 }
 
 export async function getSignedUploadUrl(uuid: string, mimeType: string): Promise<string> {
-  const filePath = getFilePath(uuid);
+  const filePath = getFilePath(uuid, mimeType);
   const expiresInMinutes = 0.5; // 30 seconds should be enough
 
   const options: GetSignedUrlConfig = {
@@ -26,8 +29,8 @@ export async function getSignedUploadUrl(uuid: string, mimeType: string): Promis
   return uploadUrl;
 }
 
-export async function getSignedDownloadUrl(uuid: string): Promise<string> {
-  const filePath = getFilePath(uuid);
+export async function getSignedDownloadUrl(uuid: string, mimeType: string): Promise<string> {
+  const filePath = getFilePath(uuid, mimeType);
   const expiresInMinutes = 60;
 
   const options: GetSignedUrlConfig = {

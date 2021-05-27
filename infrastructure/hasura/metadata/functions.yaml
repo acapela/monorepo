@@ -1,3 +1,6 @@
 - function:
     schema: public
     name: search_full_text
+- function:
+    schema: public
+    name: search_full_text_topic

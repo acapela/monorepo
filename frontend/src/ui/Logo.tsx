@@ -1,7 +1,8 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
+import styled from "styled-components";
 
-export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 965 268" {...props}>
+export const Logo = (props: HTMLAttributes<SVGSVGElement>) => (
+  <LogoSvg viewBox="0 0 965 268" {...props}>
     <title>Acapela logo</title>
     <defs>
       <linearGradient x1="0%" y1="50%" x2="99.9896276%" y2="50%" id="linearGradient-1">
@@ -18,5 +19,30 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
         fillRule="nonzero"
       ></path>
     </g>
-  </svg>
+  </LogoSvg>
 );
+
+export const SmallLogo = (props: HTMLAttributes<SVGSVGElement>) => (
+  <LogoSvg viewBox="283 60 160 150" {...props}>
+    <title>Acapela logo</title>
+    <defs>
+      <linearGradient x1="0%" y1="50%" x2="99.9896276%" y2="50%" id="linearGradient-1">
+        <stop stopColor="#8A2387" offset="0%"></stop>
+        <stop stopColor="#E94057" offset="50%"></stop>
+        <stop stopColor="#F27121" offset="99.96%"></stop>
+      </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+      <path
+        d="M436,134 L436,191 C436,196.5 431.5,201 426,201 C420.5,201 416,196.5 416,191 L416,134 C416,106.4 391.8,84 362,84 C332.2,84 308,106.4 308,134 C308,161.6 332.2,184 362,184 C369.1,184 375.9,182.7 382.4,180.3 C387.6,178.3 393.3,180.9 395.3,186.1 C397.3,191.3 394.7,197 389.5,199 C380.7,202.3 371.4,204 361.9,204 C321.1,204 287.9,172.6 287.9,134 C287.9,95.4 321.1,64 361.9,64 C402.7,64 436,95.4 436,134 Z"
+        id="Shape"
+        fill="url(#linearGradient-1)"
+        fillRule="nonzero"
+      ></path>
+    </g>
+  </LogoSvg>
+);
+
+const LogoSvg = styled.svg`
+  height: 1em;
+`;

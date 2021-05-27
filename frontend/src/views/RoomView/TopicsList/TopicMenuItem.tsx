@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -22,22 +23,18 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
 
 const UIHolder = styled.a<{ isActive: boolean }>`
   position: relative;
-  padding: 0.5em 0.75em;
+  padding: 0.75em;
   margin-left: -0.75em;
   cursor: pointer;
-  border-radius: 0.2rem;
   display: flex;
+
+  ${hoverActionCss}
 
   ${(props) => {
     if (props.isActive) {
       return css`
-        background: #f8f8f8;
+        background: ${ACTION_ACTIVE_COLOR};
       `;
     }
   }}
-
-  :hover {
-    border-color: #bdbcbc;
-    color: #676767;
-  }
 `;

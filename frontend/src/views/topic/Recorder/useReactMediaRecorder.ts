@@ -66,7 +66,7 @@ export function useReactMediaRecorder({
   audio = true,
   video = false,
   onStop = () => null,
-  blobPropertyBag,
+  blobPropertyBag = {},
   screen = false,
   mediaRecorderOptions = null,
   acquireMediaOnDemand = false,
@@ -169,7 +169,9 @@ export function useReactMediaRecorder({
       }
       // User can stop the stream using browser's own built-in 'Stop sharing' button.
       mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
-      mediaRecorder.current = new MediaRecorder(mediaStream.current);
+      mediaRecorder.current = new MediaRecorder(mediaStream.current, {
+        mimeType: video || screen ? "video/webm;codecs=opus" : "audio/webm;codecs=opus",
+      });
       mediaRecorder.current.ondataavailable = onRecordingActive;
       mediaRecorder.current.onstop = onRecordingStop;
       mediaRecorder.current.onerror = () => {
@@ -187,10 +189,7 @@ export function useReactMediaRecorder({
 
   const onRecordingStop = () => {
     const [chunk] = mediaChunks.current;
-    const blobProperty: BlobPropertyBag = Object.assign(
-      { type: chunk.type },
-      blobPropertyBag || (video ? { type: "video/mp4" } : { type: "audio/wav" })
-    );
+    const blobProperty: BlobPropertyBag = Object.assign({ type: chunk.type }, blobPropertyBag);
     const blob = new Blob(mediaChunks.current, blobProperty);
     const url = URL.createObjectURL(blob);
     setStatus("stopped");

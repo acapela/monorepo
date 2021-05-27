@@ -1,35 +1,34 @@
-import { Button } from "~ui/button";
-import { useCreateSpaceMutation } from "~frontend/gql/spaces";
-import { Toolbar } from "~frontend/ui/Toolbar";
 import styled from "styled-components";
-import { SpacesList } from "./SpacesList";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import { slugify } from "~shared/slugify";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { routes } from "~frontend/routes";
+import { ManageSpaceModal } from "~frontend/ui/spaces/ManageSpaceModal";
+import { Toolbar } from "~frontend/ui/Toolbar";
+import { Button } from "~ui/button";
+import { Container } from "~ui/layout/Container";
+import { SpacesList } from "./SpacesList";
 
 export function SpacesView() {
-  const [createSpace] = useCreateSpaceMutation();
   const teamId = useAssertCurrentTeamId();
-
-  async function handleCreate() {
-    const name = window.prompt("Name of the space?");
-
-    if (!name?.trim()) return;
-
-    const slug = slugify(name);
-
-    const { data: spaceCreationResult } = await createSpace({ name, teamId, slug });
-
-    spaceCreationResult?.space;
-  }
+  const [isCreatingSpace, { set: openCreateSpaceModal, unset: closeCreateSpaceModal }] = useBoolean(false);
 
   return (
     <>
-      <Toolbar>
-        <Button onClick={handleCreate}>Create new space</Button>
-      </Toolbar>
-      <UISpaces>
-        <SpacesList />
-      </UISpaces>
+      {isCreatingSpace && (
+        <ManageSpaceModal
+          teamId={teamId}
+          onCloseRequest={closeCreateSpaceModal}
+          onCreated={({ spaceId }) => routes.space.push({ spaceId })}
+        />
+      )}
+      <Container>
+        <Toolbar>
+          <Button onClick={openCreateSpaceModal}>Create new space</Button>
+        </Toolbar>
+        <UISpaces>
+          <SpacesList />
+        </UISpaces>
+      </Container>
     </>
   );
 }

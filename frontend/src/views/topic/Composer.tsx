@@ -59,7 +59,7 @@ export const MessageComposer = ({ topicId }: Props) => {
             await createMessage({
               topicId: topicId,
               type: messageType,
-              content: "",
+              content: [],
               attachments: uploadedAttachments.map((attachment) => ({
                 attachment_id: attachment.uuid,
               })),

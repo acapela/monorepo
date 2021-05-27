@@ -1,6 +1,7 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "@reach/dialog/styles.css";
 import "focus-visible";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
@@ -10,6 +11,7 @@ import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~f
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 
 interface AddedProps {
   session: Session;
@@ -33,9 +35,15 @@ export default function App({
       <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session}>
-        <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-          {renderWithPageLayout(Component, pageProps)}
-        </ApolloProvider>
+        <MotionConfig transition={{ type: "spring", stiffness: 500, damping: 30 }}>
+          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+            <AnimatePresence>
+              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                {renderWithPageLayout(Component, pageProps)}
+              </PresenceAnimator>
+            </AnimatePresence>
+          </ApolloProvider>
+        </MotionConfig>
       </SessionProvider>
     </>
   );

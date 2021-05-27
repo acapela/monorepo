@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { hoverActionCss } from "~ui/transitions";
 
 interface Props {
   label: string;
@@ -23,6 +24,9 @@ export const NavItem = styled(({ label, icon, href, className }: Props) => {
 const UIHolder = styled.a`
   display: flex;
   align-items: center;
+  padding: 0.5rem 1rem;
+
+  ${hoverActionCss}
 
   svg {
     font-size: 1.5em;
