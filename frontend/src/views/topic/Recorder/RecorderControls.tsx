@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
 import { IconCrossCircle, IconStopCircle } from "~ui/icons";
-import { Popover } from "~ui/Popover";
+import { Popover } from "~ui/popovers/Popover";
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
-  handlerRef: HTMLElement | null;
+  handlerRef: RefObject<HTMLElement>;
   onStop: () => void;
   onCancel: () => void;
   previewStream?: MediaStream | null;
   className?: string;
-  cornered?: boolean;
   flipVideoPreview?: boolean;
 }
 
@@ -29,37 +28,33 @@ function useElapsedTime() {
   return `${minutesStr}:${secondsStr}`;
 }
 
-const PureRecorderControls = ({
-  className,
-  handlerRef,
-  onStop,
-  onCancel,
-  previewStream,
-  cornered = false,
-  flipVideoPreview = false,
-}: RecorderControlsProps) => {
-  const elapsedTime = useElapsedTime();
+export const RecorderControls = styled(
+  ({ className, handlerRef, onStop, onCancel, previewStream, flipVideoPreview = false }: RecorderControlsProps) => {
+    const elapsedTime = useElapsedTime();
 
-  return (
-    <Popover className={className} handlerRef={handlerRef} cornered={cornered}>
-      <div className={className}>
-        {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
-        <UIControls>
-          <UIElapsedTime>{elapsedTime}</UIElapsedTime>
-          <UIStopButton onClick={() => onStop()}>
-            <IconStopCircle />
-          </UIStopButton>
-          <UIVerticalSeparator />
-          <UICloseButton onClick={() => onCancel()}>
-            <IconCrossCircle />
-          </UICloseButton>
-        </UIControls>
-      </div>
-    </Popover>
-  );
-};
+    console.log({ handlerRef });
 
-export const RecorderControls = styled(PureRecorderControls)`
+    return (
+      <Popover className={className} anchorRef={handlerRef} placement="top">
+        <UIHolder className={className}>
+          {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
+          <UIControls>
+            <UIElapsedTime>{elapsedTime}</UIElapsedTime>
+            <UIStopButton onClick={() => onStop()}>
+              <IconStopCircle />
+            </UIStopButton>
+            <UIVerticalSeparator />
+            <UICloseButton onClick={() => onCancel()}>
+              <IconCrossCircle />
+            </UICloseButton>
+          </UIControls>
+        </UIHolder>
+      </Popover>
+    );
+  }
+)``;
+
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

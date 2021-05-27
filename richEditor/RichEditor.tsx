@@ -20,3 +20,5 @@ export const RichEditor = (props: RichEditorProps) => {
  */
 
 const LazyRichEditor = namedLazy(() => import("./RichEditorView"), "RichEditor");
+
+LazyRichEditor.preload();

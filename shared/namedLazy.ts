@@ -1,15 +1,30 @@
-import { ComponentType, lazy } from "react";
+import { memoize } from "lodash";
+import { ComponentType, lazy, LazyExoticComponent } from "react";
 import { PickByValue } from "utility-types";
+import { onDocumentReady } from "~shared/document";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyComponent = ComponentType<any>;
+
+type WithPreload<C extends AnyComponent> = C & { preload(): Promise<void> };
 
 export function namedLazy<T, K extends keyof PickByValue<T, AnyComponent>>(
   moduleFactory: () => Promise<T>,
   exportName: K
 ) {
-  return lazy(async () => {
-    const module = await moduleFactory();
+  const loadOnce = memoize(moduleFactory);
+
+  function preload() {
+    return new Promise<void>((resolve) => {
+      onDocumentReady(async () => {
+        await loadOnce();
+        resolve();
+      });
+    });
+  }
+
+  const LazyComponent = lazy(async () => {
+    const module = await loadOnce();
 
     const namedExport = module[exportName];
 
@@ -18,4 +33,8 @@ export function namedLazy<T, K extends keyof PickByValue<T, AnyComponent>>(
       default: namedExport,
     };
   });
+
+  Reflect.set(LazyComponent, "preload", preload);
+
+  return LazyComponent as WithPreload<LazyExoticComponent<T[K]>>;
 }

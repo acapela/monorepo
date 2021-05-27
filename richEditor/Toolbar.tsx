@@ -1,39 +1,67 @@
-import { forwardRef } from "react";
+import { Children, forwardRef, RefObject } from "react";
+import ReactQuill from "react-quill";
 import styled from "styled-components";
+import {
+  IconAt,
+  IconBrackets,
+  IconLink1,
+  IconListOrdered2,
+  IconListUnordered3,
+  IconPaperclip,
+  IconQuotes,
+  IconSend,
+  IconTextBold,
+  IconTextItalic,
+  IconTextStrikethrough,
+} from "~ui/icons";
+import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
+import { ToggleEditorFormatButton } from "./FormatButton";
+import { ToolbarButton } from "./ToolbarButton";
 
 interface Props {
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
+  quillRef: RefObject<ReactQuill>;
+  onEmojiSelected: (emoji: string) => void;
 }
 
-export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar({ onFilesSelected, onSubmit }, ref) {
+export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
+  { onFilesSelected, onSubmit, onEmojiSelected },
+  ref
+) {
   return (
     <UIHolder ref={ref}>
       <UISection>
-        <UIToolButton className="ql-bold"></UIToolButton>
-        <UIToolButton className="ql-italic"></UIToolButton>
-        <UIToolButton className="ql-strike"></UIToolButton>
+        <ToggleEditorFormatButton tooltipLabel="Bold" formatName="bold" icon={<IconTextBold />} />
+        <ToggleEditorFormatButton tooltipLabel="Italic" formatName="italic" icon={<IconTextItalic />} />
+        <ToggleEditorFormatButton tooltipLabel="Strikethrough" formatName="strike" icon={<IconTextStrikethrough />} />
 
-        <UIToolButton className="ql-code-block"></UIToolButton>
-        <UIToolButton className="ql-link"></UIToolButton>
-
-        <UIToolButton className="ql-list" value="ordered"></UIToolButton>
-        <UIToolButton className="ql-list" value="bullet"></UIToolButton>
-
-        <UIToolButton className="ql-blockquote"></UIToolButton>
+        <ToggleEditorFormatButton tooltipLabel="Code Block" formatName="code-block" icon={<IconBrackets />} />
+        <ToggleEditorFormatButton tooltipLabel="Create link..." formatName="link" icon={<IconLink1 />} />
+        <ToggleEditorFormatButton
+          tooltipLabel="Ordered list"
+          formatName="list"
+          value="ordered"
+          icon={<IconListOrdered2 />}
+        />
+        <ToggleEditorFormatButton
+          tooltipLabel="Bullet list"
+          formatName="list"
+          value="bullet"
+          icon={<IconListUnordered3 />}
+        />
+        <ToggleEditorFormatButton tooltipLabel="Quote" formatName="blockquote" icon={<IconQuotes />} />
       </UISection>
 
       <UISection>
-        <UIItem>
-          <FileInput onFileSelected={(file) => onFilesSelected?.([file])}>
-            <UICustomButton>Upload...</UICustomButton>
-          </FileInput>
-        </UIItem>
+        <ToolbarButton tooltipLabel="Mention..." onClick={onSubmit} icon={<IconAt />} />
+        <EmojiButton onEmojiSelected={onEmojiSelected} />
+        <FileInput onFileSelected={(file) => onFilesSelected?.([file])}>
+          <ToolbarButton tooltipLabel="Add attachment..." icon={<IconPaperclip />} />
+        </FileInput>
 
-        <UIItem>
-          <UICustomButton onClick={onSubmit}>Submit</UICustomButton>
-        </UIItem>
+        <ToolbarButton tooltipLabel="Submit" onClick={onSubmit} icon={<IconSend />} />
       </UISection>
     </UIHolder>
   );
@@ -74,7 +102,9 @@ const UIHolder = styled.div`
 `;
 
 const UISection = styled.div`
-  display: flex;
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: repeat(${(props) => Children.toArray(props.children).length}, 1fr);
   min-width: 0;
 `;
 
@@ -94,12 +124,4 @@ const UIToolButton = styled.button`
 
 const UICustomButton = styled.div`
   cursor: pointer;
-`;
-
-const UIItem = styled.div`
-  margin-right: 1rem;
-
-  &:last-child {
-    margin-right: 0;
-  }
 `;

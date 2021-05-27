@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { RefObject, useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
 import { IconMonitor, IconUser } from "~ui/icons";
-import { Popover } from "~ui/Popover";
+import { Popover } from "~ui/popovers/Popover";
 import { MediaSource } from "./MediaSource";
 
 interface VideoSourcePickerParams {
-  handlerRef: HTMLElement | null;
+  handlerRef: RefObject<HTMLElement>;
   onStartRecording: (source: MediaSource) => void;
   screenCaptureError: string;
   cameraCaptureError: string;
@@ -27,7 +27,7 @@ const PureVideoSourcePicker = ({
   }, []);
 
   return (
-    <Popover handlerRef={handlerRef}>
+    <Popover anchorRef={handlerRef}>
       <div className={className}>
         <UISourcesWrapper>
           <UISourceButton

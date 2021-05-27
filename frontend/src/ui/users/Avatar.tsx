@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { Tooltip } from "~ui/popovers/Tooltip";
 import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
@@ -10,7 +11,8 @@ export interface Props {
   isSmall?: boolean;
 }
 
-const PureAvatar = ({ url, name, className }: Props) => {
+export const Avatar = styled(({ url, name, className, isSmall }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
@@ -18,13 +20,16 @@ const PureAvatar = ({ url, name, className }: Props) => {
   }
 
   return (
-    <div className={className}>
-      <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
-    </div>
+    <>
+      {name && <Tooltip label={name} anchorRef={ref} />}
+      <UIHolder className={className} isSmall={isSmall} ref={ref}>
+        <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
+      </UIHolder>
+    </>
   );
-};
+})``;
 
-export const Avatar = styled(PureAvatar)`
+const UIHolder = styled.div<{ isSmall?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
