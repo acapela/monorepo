@@ -1,2 +1,0 @@
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE TABLE "public"."room_invites"("id" uuid NOT NULL DEFAULT gen_random_uuid(), "room_id" uuid NOT NULL, "inviter_id" uuid NOT NULL, "code" uuid NOT NULL DEFAULT gen_random_uuid(), "email" text NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "accepted_at" timestamptz, PRIMARY KEY ("id") , FOREIGN KEY ("room_id") REFERENCES "public"."room"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("inviter_id") REFERENCES "public"."user"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("code"));
