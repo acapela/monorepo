@@ -1,42 +1,35 @@
-import { Button } from "~ui/button";
-import { useCreateSpaceMutation } from "~frontend/gql/spaces";
-import { Toolbar } from "~frontend/ui/Toolbar";
 import styled from "styled-components";
-import { SpacesList } from "./SpacesList";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import { slugify } from "~shared/slugify";
-import { Container } from "~ui/layout/Container";
+import { useBoolean } from "~frontend/hooks/useBoolean";
 import { routes } from "~frontend/routes";
+import { ManageSpaceModal } from "~frontend/ui/spaces/ManageSpaceModal";
+import { Toolbar } from "~frontend/ui/Toolbar";
+import { Button } from "~ui/button";
+import { Container } from "~ui/layout/Container";
+import { SpacesList } from "./SpacesList";
 
 export function SpacesView() {
-  const [createSpace] = useCreateSpaceMutation();
   const teamId = useAssertCurrentTeamId();
-
-  async function handleCreate() {
-    const name = window.prompt("Name of the space?");
-
-    if (!name?.trim()) return;
-
-    const slug = slugify(name);
-
-    const { data: spaceCreationResult } = await createSpace({ name, teamId, slug });
-
-    const spaceId = spaceCreationResult?.space?.id;
-
-    if (!spaceId) return;
-
-    routes.space.push({ spaceId });
-  }
+  const [isCreatingSpace, { set: openCreateSpaceModal, unset: closeCreateSpaceModal }] = useBoolean(false);
 
   return (
-    <Container>
-      <Toolbar>
-        <Button onClick={handleCreate}>Create new space</Button>
-      </Toolbar>
-      <UISpaces>
-        <SpacesList />
-      </UISpaces>
-    </Container>
+    <>
+      {isCreatingSpace && (
+        <ManageSpaceModal
+          teamId={teamId}
+          onCloseRequest={closeCreateSpaceModal}
+          onCreated={(spaceId: string) => routes.space.push({ spaceId })}
+        />
+      )}
+      <Container>
+        <Toolbar>
+          <Button onClick={openCreateSpaceModal}>Create new space</Button>
+        </Toolbar>
+        <UISpaces>
+          <SpacesList />
+        </UISpaces>
+      </Container>
+    </>
   );
 }
 
