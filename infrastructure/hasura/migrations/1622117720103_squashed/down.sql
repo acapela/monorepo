@@ -25,11 +25,11 @@ DROP TABLE "public"."last_seen_message";
 
 DROP TABLE "public"."team_invitation";
 
-DROP TABLE "public"."topic_participants";
+DROP TABLE "public"."topic_member";
 
-DROP TABLE "public"."team_membership_status";
+DROP TABLE "public"."membership_status";
 
-DROP TABLE "public"."team_membership";
+DROP TABLE "public"."team_member";
 
 DROP TABLE "public"."team";
 
@@ -57,7 +57,7 @@ DROP TABLE "public"."message_type";
 
 DROP TABLE "public"."message";
 
-DROP TABLE "public"."thread";
+DROP TABLE "public"."topic";
 
 DROP TABLE "public"."room";
 
