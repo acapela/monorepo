@@ -76,49 +76,47 @@ interface ApolloClientOptions {
   websocketEndpoint?: string;
 }
 
-export const getApolloClient = memoize(
-  (options: ApolloClientOptions = {}): ApolloClient<unknown> => {
-    const ssrMode = typeof window === "undefined";
+export const getApolloClient = memoize((options: ApolloClientOptions = {}): ApolloClient<unknown> => {
+  const ssrMode = typeof window === "undefined";
 
-    if (!ssrMode) {
-      // Client side - never use forced token and always read one dynamically
-      options.forcedAuthToken = undefined;
-    }
-
-    const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
-
-    function getLink() {
-      if (ssrMode) {
-        return authTokenLink.concat(httpLink);
-      }
-
-      return splitLinks(
-        ({ query }) => {
-          const definition = getMainDefinition(query);
-          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
-        },
-        createSocketLink(options.websocketEndpoint),
-        authTokenLink.concat(httpLink)
-      );
-    }
-
-    const link = getLink();
-
-    // Create cache and try to populate it if there is pre-fetched data
-    const cache = new InMemoryCache();
-    const initialCacheState = getApolloInitialState();
-
-    if (initialCacheState) {
-      cache.restore(initialCacheState);
-    }
-
-    return new ApolloClient({
-      ssrMode,
-      link,
-      cache,
-    });
+  if (!ssrMode) {
+    // Client side - never use forced token and always read one dynamically
+    options.forcedAuthToken = undefined;
   }
-);
+
+  const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
+
+  function getLink() {
+    if (ssrMode) {
+      return authTokenLink.concat(httpLink);
+    }
+
+    return splitLinks(
+      ({ query }) => {
+        const definition = getMainDefinition(query);
+        return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+      },
+      createSocketLink(options.websocketEndpoint),
+      authTokenLink.concat(httpLink)
+    );
+  }
+
+  const link = getLink();
+
+  // Create cache and try to populate it if there is pre-fetched data
+  const cache = new InMemoryCache();
+  const initialCacheState = getApolloInitialState();
+
+  if (initialCacheState) {
+    cache.restore(initialCacheState);
+  }
+
+  return new ApolloClient({
+    ssrMode,
+    link,
+    cache,
+  });
+});
 
 interface ApolloClientProviderProps {
   children: ReactNode;

@@ -26,7 +26,7 @@ function useAdjustedSession() {
   const id = get<string | null>(session, "sub", null);
   const picture = get<string | null>(session, "picture", null);
 
-  return ({ ...session, id, picture } as unknown) as UserAuthData;
+  return { ...session, id, picture } as unknown as UserAuthData;
 }
 
 function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T) {

@@ -17,11 +17,11 @@
     "typescript": "*"
   },
   "dependencies": {
-    "@godaddy/terminus": "^4.7.1",
-    "@google-cloud/secret-manager": "^3.5.0",
-    "@google-cloud/storage": "^5.8.3",
+    "@godaddy/terminus": "^4.8.0",
+    "@google-cloud/secret-manager": "^3.7.1",
+    "@google-cloud/storage": "^5.8.5",
     "express-async-errors": "^3.1.1",
-    "helmet": "^4.4.1",
+    "helmet": "^4.6.0",
     "pg": "^8.5.1",
     "uuid": "^8.3.2",
     "~config": "0.1.0"

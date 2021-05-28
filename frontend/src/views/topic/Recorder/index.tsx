@@ -30,9 +30,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
-  const [isVideoSourcePickerVisible, { unset: hideVideoSourcePicker, toggle: toggleVideoSourcePicker }] = useBoolean(
-    false
-  );
+  const [isVideoSourcePickerVisible, { unset: hideVideoSourcePicker, toggle: toggleVideoSourcePicker }] =
+    useBoolean(false);
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const popoverHandlerRef = useRef<HTMLDivElement>(null);
   const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({

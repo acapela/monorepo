@@ -11,4 +11,5 @@ module.exports = {
     "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
     "~frontend/(.*)": "<rootDir>/src/$1",
   },
+  testEnvironment: "jsdom",
 };
