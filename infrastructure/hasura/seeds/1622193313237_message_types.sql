@@ -1,1 +1,6 @@
-INSERT INTO "public"."message_type" ("value") VALUES ('TEXT'), ('AUDIO'), ('VIDEO'), ('FILE');
+INSERT INTO message_type (value)
+VALUES ('TEXT'),
+       ('AUDIO'),
+       ('VIDEO'),
+       ('FILE')
+ON CONFLICT DO NOTHING;
