@@ -26,3 +26,10 @@ export const fontSize = {
   itemTitle: "1.25rem",
   label: "0.875rem",
 };
+
+export const colors = {
+  tooltip: {
+    background: "#222",
+    color: "#fff",
+  },
+};

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { Tooltip } from "~ui/popovers/Tooltip";
 import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
@@ -7,10 +8,13 @@ export interface Props {
   name?: Maybe<string>;
   url?: string | null;
   className?: string;
-  isSmall?: boolean;
+  size?: Size;
 }
 
-const PureAvatar = ({ url, name, className }: Props) => {
+type Size = "regular" | "small";
+
+export const Avatar = styled(({ url, name, className, size = "regular" }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
@@ -18,19 +22,22 @@ const PureAvatar = ({ url, name, className }: Props) => {
   }
 
   return (
-    <div className={className}>
-      <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
-    </div>
+    <>
+      {name && <Tooltip label={name} anchorRef={ref} />}
+      <UIHolder className={className} size={size} ref={ref}>
+        <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
+      </UIHolder>
+    </>
   );
-};
+})``;
 
-export const Avatar = styled(PureAvatar)`
+const UIHolder = styled.div<{ size: Size }>`
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
-  height: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
+  width: ${(props) => getAvatarRemSize(props.size)}rem;
+  height: ${(props) => getAvatarRemSize(props.size)}rem;
 
   font-weight: 600;
 
@@ -40,3 +47,14 @@ export const Avatar = styled(PureAvatar)`
 
   overflow: hidden;
 `;
+
+function getAvatarRemSize(size: Size) {
+  switch (size) {
+    case "regular":
+      return 2.5;
+    case "small":
+      return 2;
+  }
+
+  throw new Error("Incorrect avatar size");
+}

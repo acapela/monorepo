@@ -1,4 +1,5 @@
 import { HTMLMotionProps, motion, Target as MotionAnimations } from "framer-motion";
+import { forwardRef } from "react";
 import styled from "styled-components";
 import { objectMap } from "~shared/object";
 
@@ -12,12 +13,16 @@ type PresenceStyles = {
   [key in keyof MotionAnimations]: MakePresenceTuple<MotionAnimations[key]>;
 };
 
-export function PresenceAnimator({ presenceStyles, ...motionProps }: Props) {
+export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function PresenceAnimator(
+  { presenceStyles, ...motionProps }: Props,
+  ref
+) {
   const { animate, exit, initial } = parsePresenceStyles(presenceStyles);
-  return <UIHolder initial={initial} animate={animate} exit={exit} {...motionProps}></UIHolder>;
-}
+  return <UIHolder ref={ref} initial={initial} animate={animate} exit={exit} {...motionProps}></UIHolder>;
+});
 
 const UIHolder = styled(motion.div)`
+  position: relative;
   will-change: transform, opacity;
 `;
 

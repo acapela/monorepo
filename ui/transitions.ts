@@ -11,7 +11,11 @@ export function hoverTransition(propName = "all") {
   `;
 }
 
-export const ACTION_ACTIVE_COLOR = "#8881";
+export const ACTION_ACTIVE_COLOR = "rgb(136 136 136 / 10%)";
+
+export const hoverActionActiveCss = css`
+  background-color: ${ACTION_ACTIVE_COLOR};
+`;
 
 export const hoverActionCss = css`
   border-radius: 0.5rem;

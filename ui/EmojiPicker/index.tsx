@@ -8,7 +8,7 @@ import { IconEmotionHappy } from "~ui/icons";
 import { EmojiMartStyles } from "./styles";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
-const LazyPicker = namedLazy(() => import("emoji-mart"), "Picker");
+export const EmojiPickerWindow = namedLazy(() => import("emoji-mart"), "Picker");
 
 interface Props {
   onPicked?: (emoji: string) => void;
@@ -55,7 +55,7 @@ export function EmojiPicker({ onPicked, className }: Props) {
               exit={exitStyle}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
             >
-              <LazyPicker
+              <EmojiPickerWindow
                 native
                 emojiTooltip
                 autoFocus={isOpened}
