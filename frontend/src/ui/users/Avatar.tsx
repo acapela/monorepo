@@ -8,10 +8,12 @@ export interface Props {
   name?: Maybe<string>;
   url?: string | null;
   className?: string;
-  isSmall?: boolean;
+  size?: Size;
 }
 
-export const Avatar = styled(({ url, name, className, isSmall }: Props) => {
+type Size = "regular" | "small";
+
+export const Avatar = styled(({ url, name, className, size = "regular" }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
@@ -22,20 +24,20 @@ export const Avatar = styled(({ url, name, className, isSmall }: Props) => {
   return (
     <>
       {name && <Tooltip label={name} anchorRef={ref} />}
-      <UIHolder className={className} isSmall={isSmall} ref={ref}>
+      <UIHolder className={className} size={size} ref={ref}>
         <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
       </UIHolder>
     </>
   );
 })``;
 
-const UIHolder = styled.div<{ isSmall?: boolean }>`
+const UIHolder = styled.div<{ size: Size }>`
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
-  height: ${(props) => (props.isSmall ? 2 : 2.5)}rem;
+  width: ${(props) => getAvatarRemSize(props.size)}rem;
+  height: ${(props) => getAvatarRemSize(props.size)}rem;
 
   font-weight: 600;
 
@@ -45,3 +47,14 @@ const UIHolder = styled.div<{ isSmall?: boolean }>`
 
   overflow: hidden;
 `;
+
+function getAvatarRemSize(size: Size) {
+  switch (size) {
+    case "regular":
+      return 2.5;
+    case "small":
+      return 2;
+  }
+
+  throw new Error("Incorrect avatar size");
+}

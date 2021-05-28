@@ -3,7 +3,7 @@ import { throttle } from "lodash";
 import React, { ReactNode, useEffect, useState } from "react";
 import { usePopper } from "react-popper";
 import styled, { css } from "styled-components";
-import { createCleanupObject } from "~shared/createCleanupObject";
+import { createCleanupObject } from "~shared/cleanup";
 import { createDocumentEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
@@ -90,13 +90,15 @@ export const SelectionPopover = styled(
 
       let isMouseBasedSelectionChange = false;
 
-      cleanup.down = createDocumentEvent("mousedown", () => (isMouseBasedSelectionChange = true));
-      cleanup.up = createDocumentEvent("mouseup", () => (isMouseBasedSelectionChange = false));
-      cleanup.selection = createDocumentEvent("selectionchange", () => {
-        if (isMouseBasedSelectionChange) return;
+      cleanup.enqueue(createDocumentEvent("mousedown", () => (isMouseBasedSelectionChange = true)));
+      cleanup.enqueue(createDocumentEvent("mouseup", () => (isMouseBasedSelectionChange = false)));
+      cleanup.enqueue(
+        createDocumentEvent("selectionchange", () => {
+          if (isMouseBasedSelectionChange) return;
 
-        updateAndEnableTransitions();
-      });
+          updateAndEnableTransitions();
+        })
+      );
 
       return cleanup.clean;
     }, [ignoreMouseSelectionChange]);

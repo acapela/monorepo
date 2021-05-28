@@ -32,8 +32,6 @@ export const RecorderControls = styled(
   ({ className, handlerRef, onStop, onCancel, previewStream, flipVideoPreview = false }: RecorderControlsProps) => {
     const elapsedTime = useElapsedTime();
 
-    console.log({ handlerRef });
-
     return (
       <Popover className={className} anchorRef={handlerRef} placement="top">
         <UIHolder className={className}>

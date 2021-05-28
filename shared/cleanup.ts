@@ -1,5 +1,4 @@
 type CleanupFunction = () => void;
-type CleanupObject = { clean: CleanupFunction } & { [key: string]: CleanupFunction | null };
 
 /**
  * Useful for cases when we have to clean multiple things in effects.
@@ -8,23 +7,24 @@ type CleanupObject = { clean: CleanupFunction } & { [key: string]: CleanupFuncti
  * useEffect(() => {
  *   const cleanup = createCleanupObject();
  *
- *   cleanup.foo = createTimeout();
- *   cleanup.bar = createEvent();
+ *   cleanup.add(createTimeout());
+ *   cleanup.add(createEvent());
  *
  *   return cleanup.clean;
  * })
  */
 export function createCleanupObject() {
-  const cleanupObject: CleanupObject = {
+  const cleanups = new Set<CleanupFunction>();
+  const cleanupObject = {
     clean() {
-      Object.keys(cleanupObject).forEach((key) => {
-        if (key === "clean") return;
-
-        const cleanupFunction = cleanupObject[key];
-
-        cleanupObject[key] = null;
-
-        cleanupFunction?.();
+      cleanups.forEach((cleanup) => {
+        cleanups.delete(cleanup);
+        cleanup();
+      });
+    },
+    enqueue(...cleanupsToAdd: CleanupFunction[]) {
+      cleanupsToAdd.forEach((cleanupToAdd) => {
+        cleanups.add(cleanupToAdd);
       });
     },
   };

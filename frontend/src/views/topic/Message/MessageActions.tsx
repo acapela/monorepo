@@ -32,7 +32,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
 
   return (
     <>
-      <Tooltip anchorRef={ref} label="Show Options" isDisabled={mode !== "idle"} />
+      <Tooltip anchorRef={ref} label="Show Options" isDisabled={hasPopup} />
       <UIHolder ref={ref}>
         <MoreIcon onClick={onActiveChange.bind(null, true)} />
         <UIPopupFlyer>

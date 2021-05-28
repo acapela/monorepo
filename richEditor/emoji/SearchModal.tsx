@@ -18,6 +18,9 @@ async function findEmoji(keyword: string, limit = 5) {
   return (foundEmoji?.slice(0, limit) ?? []) as BaseEmoji[];
 }
 
+/**
+ * Select box component that will show up when user writes `:emoji-search-keyword` in the rich editor.
+ */
 export function EmojiSearchModal({ keywordChannel, onEmojiSelected }: Props) {
   const searchKeyword = keywordChannel.useLastValue();
   const [foundEmoji, setFoundEmoji] = useState<BaseEmoji[]>([]);

@@ -4,6 +4,7 @@ import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { ToolbarButton } from "./ToolbarButton";
+import type { EmojiData, BaseEmoji } from "emoji-mart";
 
 interface Props {
   onEmojiSelected: (emoji: string) => void;
@@ -21,9 +22,12 @@ export function EmojiButton({ onEmojiSelected }: Props) {
           <EmojiPickerWindow
             onCloseRequest={close}
             onSelect={(emoji) => {
-              const nativeEmoji = Reflect.get(emoji, "native");
+              if (!isBaseEmoji(emoji)) {
+                console.warn("Custom emojis are not supported");
+                return;
+              }
 
-              onEmojiSelected(nativeEmoji);
+              onEmojiSelected(emoji.native);
               close();
             }}
           />
@@ -31,4 +35,9 @@ export function EmojiButton({ onEmojiSelected }: Props) {
       )}
     </>
   );
+}
+
+function isBaseEmoji(emoji: EmojiData): emoji is BaseEmoji {
+  // Let's make sure it is not Custom Emoji (which has imageUrl instead of native emoji)
+  return !!(emoji as BaseEmoji).native;
 }

@@ -15,6 +15,16 @@ type ValueWrapper<T> = { value: T } | null;
 
 type Subscriber<T> = (value: T) => void;
 
+/**
+ * Creates simple channel that allows creating pub-sub connection.
+ *
+ * It might be useful when integrating non-react tools like Quill with react in reactive manner.
+ *
+ * It might also be useful in React contexts where we want allowing sharing and updating some value without being
+ * required to re-render entire context on each change.
+ *
+ * In such case, instead of passing value and setter to the context, we pass channel that can be subscribed to or published to.
+ */
 export function createChannel<T>(): Channel<T> {
   const subscribers = new Set<Subscriber<T>>();
 

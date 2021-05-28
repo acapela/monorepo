@@ -9,7 +9,11 @@ function getDebounceTime<T>(currentValue: T, timeFactory: DebounceTimeFactory<T>
   return timeFactory(currentValue);
 }
 
-export function useDebouncedValue<T>(value: T, time: number | ((value: T) => number)) {
+export function useDebouncedValue<T>(
+  value: T,
+  // Time can be passed as milliseconds or function that returns milliseconds basing on current value
+  time: number | ((value: T) => number)
+) {
   const [resolvedValue, setResolvedValue] = useState(value);
 
   useEffect(() => {

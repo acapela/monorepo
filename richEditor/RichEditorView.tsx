@@ -116,7 +116,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
 
     const selectionIndex = editor.getSelection()?.index;
 
-    if (!selectionIndex) return;
+    if (selectionIndex === undefined) return;
 
     editor.setSelection(selectionIndex + contentToInsert.length, 0);
   }

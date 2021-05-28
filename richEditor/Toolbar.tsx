@@ -16,7 +16,7 @@ import {
 } from "~ui/icons";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
-import { ToggleEditorFormatButton } from "./FormatButton";
+import { ToggleEditorFormatButton } from "./ToggleEditorFormatButton";
 import { ToolbarButton } from "./ToolbarButton";
 
 interface Props {

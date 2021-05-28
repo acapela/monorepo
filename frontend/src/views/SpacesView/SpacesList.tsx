@@ -28,10 +28,14 @@ export function SpacesList() {
   );
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  ${PageTitle} {
+    margin-bottom: 2rem;
+  }
+`;
 
 const UISpaces = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 2rem;
+  grid-gap: 3rem;
 `;
