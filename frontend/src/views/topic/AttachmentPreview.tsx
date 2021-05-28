@@ -20,4 +20,6 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
   );
 };
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  display: flex;
+`;

@@ -1,6 +1,6 @@
 import { DeltaOperation, KeyboardStatic } from "quill";
 import Delta from "quill-delta";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef } from "react";
 import ReactQuill from "react-quill";
 import { useIsomorphicLayoutEffect, useUpdate } from "react-use";
 import { QuillTheme } from "./Theme";
@@ -38,13 +38,22 @@ export interface RichEditorProps {
   onChange: (value: DeltaOperation[]) => void;
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
+  additionalContent?: ReactNode;
+  placeholder?: string;
 }
 
 const ENTER_KEYCODE = 13;
 
 registerEmojiModule();
 
-export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichEditorProps) => {
+export const RichEditor = ({
+  value,
+  onChange,
+  onSubmit,
+  onFilesSelected,
+  additionalContent,
+  placeholder,
+}: RichEditorProps) => {
   const quillRef = useRef<ReactQuill>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const update = useUpdate();
@@ -131,6 +140,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
             <ReactQuill
               ref={quillRef}
               theme="snow"
+              placeholder={placeholder}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               value={valueDelta as any}
               onChange={handleChange}
@@ -140,6 +150,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
               }}
             />
           )}
+          {additionalContent && <UIAdditionalContent>{additionalContent}</UIAdditionalContent>}
           <Toolbar
             ref={toolbarRef}
             quillRef={quillRef}
@@ -180,4 +191,10 @@ const UIEditorHolder = styled.div`
 
 const UIHolder = styled.div`
   width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+`;
+
+const UIAdditionalContent = styled.div`
+  padding: 1rem;
 `;

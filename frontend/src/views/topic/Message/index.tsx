@@ -14,6 +14,7 @@ import { MessageText } from "~frontend/views/topic/Message/MessageText";
 import { MessageTranscription } from "~frontend/views/topic/Message/MessageTranscription";
 import { EditorContent } from "~richEditor/RichEditor";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./MessageAttachmentDisplayer";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
@@ -60,6 +61,8 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
 
   const shouldShowTools = useDebouncedValue(getShouldShowTools(), { onDelay: 0, offDelay: 200 });
 
+  const attachments = message.message_attachments ?? [];
+
   return (
     <UIAnimatedMessageWrapper
       ref={holderRef}
@@ -75,17 +78,22 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
           <UITimestamp>{format(new Date(message.createdAt), "p")}</UITimestamp>
         </UIMessageHead>
         <MessageText message={message} isInEditMode={isInEditMode} onEditRequest={handleEditContentRequest} />
-        {message.message_attachments?.map(({ attachment }) => (
-          <MessageAttachment
-            key={attachment.id}
-            attachment={attachment}
-            selectedMediaTime={selectedMediaTime}
-            onMediaTimeUpdate={(time) => {
-              setSelectedMediaTime(null);
-              setActualMediaTime(time);
-            }}
-          />
-        ))}
+        {attachments.length > 0 && (
+          <UIAttachments>
+            {attachments.map(({ attachment }) => (
+              <MessageAttachment
+                key={attachment.id}
+                attachment={attachment}
+                selectedMediaTime={selectedMediaTime}
+                onMediaTimeUpdate={(time) => {
+                  setSelectedMediaTime(null);
+                  setActualMediaTime(time);
+                }}
+              />
+            ))}
+          </UIAttachments>
+        )}
+
         {message.transcription && (
           <MessageTranscription
             transcription={message.transcription}
@@ -182,4 +190,10 @@ const UITimestamp = styled.span`
 
 const UITools = styled(motion.div)`
   margin-top: 0.25rem;
+`;
+
+const UIAttachments = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
 `;

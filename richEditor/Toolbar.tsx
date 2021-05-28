@@ -73,9 +73,7 @@ const UIHolder = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-    border-top: none;
+    border: none;
 
     &&&:after {
       display: none;
