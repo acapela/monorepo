@@ -1,6 +1,7 @@
 import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
+import { BodyPortal } from "~ui/BodyPortal";
 import { IconCrossCircle, IconStopCircle } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { VideoPreview } from "./VideoPreview";
@@ -12,6 +13,7 @@ interface RecorderControlsProps {
   previewStream?: MediaStream | null;
   className?: string;
   flipVideoPreview?: boolean;
+  showInCorner?: boolean;
 }
 
 function useElapsedTime() {
@@ -29,25 +31,45 @@ function useElapsedTime() {
 }
 
 export const RecorderControls = styled(
-  ({ className, handlerRef, onStop, onCancel, previewStream, flipVideoPreview = false }: RecorderControlsProps) => {
+  ({
+    className,
+    handlerRef,
+    onStop,
+    onCancel,
+    previewStream,
+    flipVideoPreview = false,
+    showInCorner,
+  }: RecorderControlsProps) => {
     const elapsedTime = useElapsedTime();
 
+    const controlsNode = (
+      <UIHolder className={className}>
+        {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
+        <UIControls>
+          <UIElapsedTime>{elapsedTime}</UIElapsedTime>
+          <UIStopButton onClick={() => onStop()}>
+            <IconStopCircle />
+          </UIStopButton>
+          <UIVerticalSeparator />
+          <UICloseButton onClick={() => onCancel()}>
+            <IconCrossCircle />
+          </UICloseButton>
+        </UIControls>
+      </UIHolder>
+    );
+
+    if (!showInCorner) {
+      return (
+        <Popover className={className} anchorRef={handlerRef} placement="top">
+          {controlsNode}
+        </Popover>
+      );
+    }
+
     return (
-      <Popover className={className} anchorRef={handlerRef} placement="top">
-        <UIHolder className={className}>
-          {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
-          <UIControls>
-            <UIElapsedTime>{elapsedTime}</UIElapsedTime>
-            <UIStopButton onClick={() => onStop()}>
-              <IconStopCircle />
-            </UIStopButton>
-            <UIVerticalSeparator />
-            <UICloseButton onClick={() => onCancel()}>
-              <IconCrossCircle />
-            </UICloseButton>
-          </UIControls>
-        </UIHolder>
-      </Popover>
+      <BodyPortal>
+        <UICornerOfScreen>{controlsNode}</UICornerOfScreen>
+      </BodyPortal>
     );
   }
 )``;
@@ -106,4 +128,10 @@ const UICloseButton = styled.button`
   svg {
     fill: #000;
   }
+`;
+
+const UICornerOfScreen = styled.div`
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
 `;

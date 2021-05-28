@@ -27,7 +27,7 @@ const PureVideoSourcePicker = ({
   }, []);
 
   return (
-    <Popover anchorRef={handlerRef}>
+    <Popover anchorRef={handlerRef} placement="top">
       <div className={className}>
         <UISourcesWrapper>
           <UISourceButton

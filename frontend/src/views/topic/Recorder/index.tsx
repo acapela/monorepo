@@ -155,14 +155,14 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     <div className={className} ref={popoverHandlerRef}>
       <RecordButton
         onClick={onVideoButtonClick}
-        tooltipLabel="Record video"
+        tooltipLabel={isRecording || isVideoSourcePickerVisible ? undefined : "Record video"}
         disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
       >
         <IconVideoCamera />
       </RecordButton>
       <RecordButton
         onClick={onAudioButtonClick}
-        tooltipLabel="Record audio"
+        tooltipLabel={isRecording ? undefined : "Record audio"}
         disabled={!!getRecorderError(MediaSource.MICROPHONE)}
         title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
       >
@@ -186,7 +186,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           onCancel={doCancelRecording}
           previewStream={mediaSource === MediaSource.MICROPHONE ? null : previewStream}
           flipVideoPreview={mediaSource === MediaSource.CAMERA}
-          // cornered={mediaSource !== MediaSource.MICROPHONE}
+          showInCorner={mediaSource !== MediaSource.MICROPHONE}
         />
       )}
     </div>
