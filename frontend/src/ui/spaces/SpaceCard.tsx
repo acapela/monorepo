@@ -1,13 +1,15 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { hoverActionCss } from "~ui/transitions";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
-import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { useAddSpaceMember, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { IconMoreHoriz } from "~ui/icons";
+import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
+import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
-import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
-import { IconMoreHoriz } from "~ui/icons";
+import { ManageSpaceModal } from "./ManageSpaceModal";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -18,9 +20,9 @@ export function SpaceCard({ space }: Props) {
   const user = useAssertCurrentUser();
   const router = useRouter();
 
+  const [isEditingSpace, { set: openEditSpaceModal, unset: closeEditSpaceModal }] = useBoolean(false);
   const [addSpaceMember] = useAddSpaceMember();
   const [removeSpaceMember] = useRemoveSpaceMember();
-  const [editSpace] = useEditSpaceMutation();
 
   async function handleJoin(userId: string) {
     await addSpaceMember({ userId, spaceId });
@@ -34,45 +36,40 @@ export function SpaceCard({ space }: Props) {
     router.push(`space/${space.id}`);
   }
 
-  async function handleEdit() {
-    const name = window.prompt("Name of the space?");
-
-    if (!name?.trim()) return;
-
-    await editSpace({ name, spaceId });
-  }
-
   return (
-    <UIHolder>
-      <UIBanner>
-        <UIImage onClick={handleOpen}></UIImage>
-        <UIMenuIcon>
-          <PopoverMenu
-            position={PopoverPosition.LEFT_BOTTOM}
-            options={[
-              {
-                label: "Edit name",
-                onSelect: () => handleEdit(),
-              },
-            ]}
-          >
-            <IconMoreHoriz />
-          </PopoverMenu>
-        </UIMenuIcon>
-      </UIBanner>
+    <>
+      {isEditingSpace && <ManageSpaceModal space={space} onCloseRequest={closeEditSpaceModal} />}
+      <UIHolder>
+        <UIBanner>
+          <UIImage onClick={handleOpen}></UIImage>
+          <UIMenuIcon>
+            <PopoverMenu
+              position={PopoverPosition.LEFT_BOTTOM}
+              options={[
+                {
+                  label: "Edit name",
+                  onSelect: openEditSpaceModal,
+                },
+              ]}
+            >
+              <IconMoreHoriz />
+            </PopoverMenu>
+          </UIMenuIcon>
+        </UIBanner>
 
-      <UIInfo>
-        <ItemTitle onClick={handleOpen}>{space.name}</ItemTitle>
+        <UIInfo>
+          <ItemTitle onClick={handleOpen}>{space.name}</ItemTitle>
 
-        <UIMembers>
-          <MembersManager
-            users={space.members.map((m) => m.user)}
-            onAddMemberRequest={handleJoin}
-            onLeaveRequest={handleLeave}
-          />
-        </UIMembers>
-      </UIInfo>
-    </UIHolder>
+          <UIMembers>
+            <MembersManager
+              users={space.members.map((m) => m.user)}
+              onAddMemberRequest={handleJoin}
+              onLeaveRequest={handleLeave}
+            />
+          </UIMembers>
+        </UIInfo>
+      </UIHolder>
+    </>
   );
 }
 

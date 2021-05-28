@@ -1,37 +1,47 @@
 import { useState } from "react";
 import { useKey } from "react-use";
 import styled from "styled-components";
-import { useCreateSpaceMutation } from "~frontend/gql/spaces";
+import { SpaceBasicInfoFragment } from "~frontend/gql";
+import { useCreateSpaceMutation, useEditSpaceMutation } from "~frontend/gql/spaces";
 import { slugify } from "~shared/slugify";
 import { Button } from "~ui/button";
 import { TextInput } from "~ui/forms/TextInput";
 import { Modal } from "../Modal";
 
 interface Props {
-  teamId: string;
   onCloseRequest: () => void;
-  onCreated: ({ spaceId }: { spaceId: string }) => void;
+  space?: SpaceBasicInfoFragment;
+  teamId?: string;
+  onSuccess?: ({ spaceId }: { spaceId: string }) => void;
 }
 
-/* ManageSpaceModal since we'll extend this modal with edit space functionality */
-export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) => {
+export const ManageSpaceModal = ({ space, teamId, onCloseRequest, onSuccess }: Props) => {
   const [createSpace] = useCreateSpaceMutation();
-  const [name, setName] = useState("");
+  const [editSpace] = useEditSpaceMutation();
+  const [name, setName] = useState(space?.name ?? "");
+  const isEditMode = !!space;
+  const headTitle = isEditMode ? "Rename space" : "Create new space";
+  const confirmButtonLabel = isEditMode ? "Rename" : "Create";
 
   useKey("Escape", () => onCloseRequest());
-  useKey("Enter", () => onCreate(), {}, [name]);
+  useKey("Enter", () => onSave(), {}, [name]);
 
-  async function onCreate() {
+  async function onSave() {
     if (!name.trim()) {
       onCloseRequest();
       return;
     }
 
-    const slug = slugify(name);
+    let operationResult;
 
-    const { data: spaceCreationResult } = await createSpace({ name: name, teamId, slug });
+    if (isEditMode) {
+      operationResult = await editSpace({ spaceId: space?.id, name });
+    } else {
+      operationResult = await createSpace({ name, teamId, slug: slugify(name) });
+    }
 
-    const spaceId = spaceCreationResult?.space?.id;
+    const { data: genericSpaceResult } = operationResult;
+    const spaceId = genericSpaceResult?.space?.id;
 
     if (!spaceId) {
       onCloseRequest();
@@ -39,20 +49,20 @@ export const ManageSpaceModal = ({ teamId, onCloseRequest, onCreated }: Props) =
     }
 
     onCloseRequest();
-    onCreated({ spaceId });
+    onSuccess?.({ spaceId });
   }
 
   return (
     <Modal
       head={{
-        title: "Create new space",
+        title: headTitle,
         description: "",
       }}
       onCloseRequest={onCloseRequest}
     >
       <UIContentWrapper>
         <TextInput autoFocus placeholder="Enter space name" value={name} onChangeText={(value) => setName(value)} />
-        <Button onClick={onCreate}>Create</Button>
+        <Button onClick={onSave}>{confirmButtonLabel}</Button>
       </UIContentWrapper>
     </Modal>
   );
