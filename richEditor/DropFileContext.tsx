@@ -1,6 +1,6 @@
 import { createContext, ReactNode, RefObject, useContext, useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
-import { createCleanupObject } from "~shared/createCleanupObject";
+import { createCleanupObject } from "~shared/cleanup";
 import { createElementEvent, createElementEvents } from "~shared/domEvents";
 
 interface DropFileContextData {
@@ -48,30 +48,36 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void) {
 
     const cleanup = createCleanupObject();
 
-    cleanup.drop = createElementEvent(dropElement, "drop", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+    cleanup.enqueue(
+      createElementEvent(dropElement, "drop", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
 
-      const filesList = event.dataTransfer?.files;
+        const filesList = event.dataTransfer?.files;
 
-      if (!filesList) return;
+        if (!filesList) return;
 
-      const filesArray = Array.from(filesList);
+        const filesArray = Array.from(filesList);
 
-      callback?.(filesArray);
-    });
+        callback?.(filesArray);
+      })
+    );
 
-    cleanup.activeIndicator = createElementEvents(dropElement, ["dragenter", "dragover"], (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      dropElement.classList.add(DROP_INDICATOR_CLASSNAME);
-    });
+    cleanup.enqueue(
+      createElementEvents(dropElement, ["dragenter", "dragover"], (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropElement.classList.add(DROP_INDICATOR_CLASSNAME);
+      })
+    );
 
-    cleanup.activeIndicatorRemove = createElementEvents(dropElement, ["dragleave", "dragend", "drop"], (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      dropElement.classList.remove(DROP_INDICATOR_CLASSNAME);
-    });
+    cleanup.enqueue(
+      createElementEvents(dropElement, ["dragleave", "dragend", "drop"], (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropElement.classList.remove(DROP_INDICATOR_CLASSNAME);
+      })
+    );
 
     return () => cleanup.clean();
   }, [dropFileContext, callback]);

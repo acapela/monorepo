@@ -9,6 +9,15 @@ import { useFileDroppedInContext } from "./DropFileContext";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 import { removeElementFromArray } from "~shared/array";
 import styled from "styled-components";
+import {
+  registerEmojiModule,
+  EMOJI_MODULE_NAME,
+  EmojiModuleOptions,
+  removeEmojiSearchTextUnderCursor,
+} from "./emoji/module";
+import { RichEditorContext } from "./context";
+import { useChannel } from "~shared/channel";
+import { EmojiSearchModal } from "./emoji/SearchModal";
 
 interface KeyboardBinding {
   key: number;
@@ -33,13 +42,17 @@ export interface RichEditorProps {
 
 const ENTER_KEYCODE = 13;
 
+registerEmojiModule();
+
 export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichEditorProps) => {
-  const ref = useRef<ReactQuill>(null);
+  const quillRef = useRef<ReactQuill>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const update = useUpdate();
 
+  const emojiSearchKeywordChannel = useChannel<string | null>();
+
   function handleChange() {
-    const content = ref.current?.editor?.getContents().ops;
+    const content = quillRef.current?.editor?.getContents().ops;
 
     if (!content) {
       return;
@@ -65,7 +78,7 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
   });
 
   useEffect(() => {
-    const editor = ref.current?.editor;
+    const editor = quillRef.current?.editor;
 
     if (!editor) return;
 
@@ -80,25 +93,63 @@ export const RichEditor = ({ value, onChange, onSubmit, onFilesSelected }: RichE
     return addQuillBindingWithPriority(editor.keyboard, ENTER_KEYCODE, cmdEnterSubmit);
   }, [toolbarRef.current, onSubmit]);
 
+  const emojiModuleOptions = useMemo<EmojiModuleOptions>(() => {
+    return {
+      onKeywordChange(keyword) {
+        emojiSearchKeywordChannel.publish(keyword);
+      },
+    };
+  }, [emojiSearchKeywordChannel]);
+
+  function insertEmoji(emoji: string) {
+    const editor = quillRef.current?.editor;
+
+    if (!editor) return;
+
+    const contentToInsert = `${emoji} `;
+
+    const caretPosition = editor.getSelection(true);
+
+    editor.insertText(caretPosition.index, contentToInsert, "user");
+
+    removeEmojiSearchTextUnderCursor(editor);
+
+    const selectionIndex = editor.getSelection()?.index;
+
+    if (selectionIndex === undefined) return;
+
+    editor.setSelection(selectionIndex + contentToInsert.length, 0);
+  }
+
   return (
-    <>
-      <QuillTheme />
-      <UIEditorHolder>
-        {toolbarRef.current && (
-          <ReactQuill
-            ref={ref}
-            theme="snow"
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            value={valueDelta as any}
-            onChange={handleChange}
-            modules={{
-              toolbar: toolbarRef.current,
-            }}
+    <UIHolder>
+      <RichEditorContext value={{ reactQuillRef: quillRef }}>
+        <QuillTheme />
+        <EmojiSearchModal keywordChannel={emojiSearchKeywordChannel} onEmojiSelected={insertEmoji} />
+        <UIEditorHolder>
+          {toolbarRef.current && (
+            <ReactQuill
+              ref={quillRef}
+              theme="snow"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              value={valueDelta as any}
+              onChange={handleChange}
+              modules={{
+                [EMOJI_MODULE_NAME]: emojiModuleOptions,
+                toolbar: toolbarRef.current,
+              }}
+            />
+          )}
+          <Toolbar
+            ref={toolbarRef}
+            quillRef={quillRef}
+            onSubmit={onSubmit}
+            onFilesSelected={onFilesSelected}
+            onEmojiSelected={insertEmoji}
           />
-        )}
-        <Toolbar ref={toolbarRef} onSubmit={onSubmit} onFilesSelected={onFilesSelected} />
-      </UIEditorHolder>
-    </>
+        </UIEditorHolder>
+      </RichEditorContext>
+    </UIHolder>
   );
 };
 
@@ -125,4 +176,8 @@ function addQuillBindingWithPriority(keyboard: KeyboardStatic, keyCode: number, 
 
 const UIEditorHolder = styled.div`
   flex-grow: 1;
+`;
+
+const UIHolder = styled.div`
+  width: 100%;
 `;

@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import { useBoolean } from "~frontend/hooks/useBoolean";
 import { DANGER_COLOR } from "~ui/colors";
 import { IconMenu } from "~ui/icons";
+import { Tooltip } from "~ui/popovers/Tooltip";
 import { SecondaryText } from "~ui/typo";
 
 interface Props {
@@ -14,17 +14,15 @@ interface Props {
 }
 
 export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemoveRequest }: Props) => {
-  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
+  const ref = useRef<HTMLDivElement>(null);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
 
-  type Mode = "idle" | "tooltip" | "menu" | "confirm-remove";
+  type Mode = "idle" | "menu" | "confirm-remove";
 
   function getMode(): Mode {
     if (isConfirmingRemove) return "confirm-remove";
 
     if (isActive) return "menu";
-
-    if (isHovered) return "tooltip";
 
     return "idle";
   }
@@ -33,39 +31,41 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
   const hasPopup = mode !== "idle";
 
   return (
-    <UIHolder onMouseEnter={setHovered} onMouseLeave={unsetHovered}>
-      <MoreIcon onClick={onActiveChange.bind(null, true)} />
-      <UIPopupFlyer>
-        <AnimatePresence>
-          {hasPopup && (
-            <UIPopupBody
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              layout
-            >
-              <UIPopupContent layout="position">
-                {mode === "tooltip" && <UILabel onClick={onActiveChange.bind(null, true)}>Show Options</UILabel>}
-                {mode === "menu" && (
-                  <>
-                    <UILabel onClick={onEditRequest}>Edit message</UILabel>
-                    <UILabel onClick={() => setIsConfirmingRemove(true)}>Remove message</UILabel>
-                  </>
-                )}
-                {mode === "confirm-remove" && (
-                  <>
-                    <UILabel onClick={onRemoveRequest} isDanger>
-                      Confirm remove
-                    </UILabel>
-                  </>
-                )}
-              </UIPopupContent>
-            </UIPopupBody>
-          )}
-        </AnimatePresence>
-      </UIPopupFlyer>
-    </UIHolder>
+    <>
+      <Tooltip anchorRef={ref} label="Show Options" isDisabled={hasPopup} />
+      <UIHolder ref={ref}>
+        <MoreIcon onClick={onActiveChange.bind(null, true)} />
+        <UIPopupFlyer>
+          <AnimatePresence>
+            {hasPopup && (
+              <UIPopupBody
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                layout
+              >
+                <UIPopupContent layout="position">
+                  {mode === "menu" && (
+                    <>
+                      <UILabel onClick={onEditRequest}>Edit message</UILabel>
+                      <UILabel onClick={() => setIsConfirmingRemove(true)}>Remove message</UILabel>
+                    </>
+                  )}
+                  {mode === "confirm-remove" && (
+                    <>
+                      <UILabel onClick={onRemoveRequest} isDanger>
+                        Confirm remove
+                      </UILabel>
+                    </>
+                  )}
+                </UIPopupContent>
+              </UIPopupBody>
+            )}
+          </AnimatePresence>
+        </UIPopupFlyer>
+      </UIHolder>
+    </>
   );
 };
 

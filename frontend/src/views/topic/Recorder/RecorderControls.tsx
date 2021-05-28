@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
+import { BodyPortal } from "~ui/BodyPortal";
 import { IconCrossCircle, IconStopCircle } from "~ui/icons";
-import { Popover } from "~ui/Popover";
+import { Popover } from "~ui/popovers/Popover";
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
-  handlerRef: HTMLElement | null;
+  handlerRef: RefObject<HTMLElement>;
   onStop: () => void;
   onCancel: () => void;
   previewStream?: MediaStream | null;
   className?: string;
-  cornered?: boolean;
   flipVideoPreview?: boolean;
+  showInCorner?: boolean;
 }
 
 function useElapsedTime() {
@@ -29,20 +30,20 @@ function useElapsedTime() {
   return `${minutesStr}:${secondsStr}`;
 }
 
-const PureRecorderControls = ({
-  className,
-  handlerRef,
-  onStop,
-  onCancel,
-  previewStream,
-  cornered = false,
-  flipVideoPreview = false,
-}: RecorderControlsProps) => {
-  const elapsedTime = useElapsedTime();
+export const RecorderControls = styled(
+  ({
+    className,
+    handlerRef,
+    onStop,
+    onCancel,
+    previewStream,
+    flipVideoPreview = false,
+    showInCorner,
+  }: RecorderControlsProps) => {
+    const elapsedTime = useElapsedTime();
 
-  return (
-    <Popover className={className} handlerRef={handlerRef} cornered={cornered}>
-      <div className={className}>
+    const controlsNode = (
+      <UIHolder className={className}>
         {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
         <UIControls>
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
@@ -54,12 +55,26 @@ const PureRecorderControls = ({
             <IconCrossCircle />
           </UICloseButton>
         </UIControls>
-      </div>
-    </Popover>
-  );
-};
+      </UIHolder>
+    );
 
-export const RecorderControls = styled(PureRecorderControls)`
+    if (!showInCorner) {
+      return (
+        <Popover className={className} anchorRef={handlerRef} placement="top">
+          {controlsNode}
+        </Popover>
+      );
+    }
+
+    return (
+      <BodyPortal>
+        <UICornerOfScreen>{controlsNode}</UICornerOfScreen>
+      </BodyPortal>
+    );
+  }
+)``;
+
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -113,4 +128,10 @@ const UICloseButton = styled.button`
   svg {
     fill: #000;
   }
+`;
+
+const UICornerOfScreen = styled.div`
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
 `;

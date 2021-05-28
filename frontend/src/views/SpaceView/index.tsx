@@ -52,7 +52,7 @@ export function SpaceView({ spaceId }: Props) {
 const UIHolder = styled.div`
   display: grid;
   grid-template-columns: 320px 1fr;
-  grid-gap: 2rem;
+  grid-gap: 4rem;
 `;
 
 const UISpace = styled.div``;

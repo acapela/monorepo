@@ -26,8 +26,8 @@ const config = {
 };
 
 async function start() {
-  console.log("Starting server...");
-  console.log(config);
+  console.info("Starting server...");
+  console.info(config);
   const app = express();
 
   app.get("/healthz", (req, res) => res.send({ ok: true }));
@@ -45,7 +45,7 @@ async function start() {
 
   const port = process.env.FRONTEND_PORT || 3000;
   app.listen(port, () => {
-    console.log(`Server started ${port} prod=${production}`);
+    console.info(`Server started ${port} prod=${production}`);
   });
 }
 

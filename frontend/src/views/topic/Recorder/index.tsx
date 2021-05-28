@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { IconMic, IconMicSlash, IconVideoCamera } from "~ui/icons";
@@ -34,7 +34,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     false
   );
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
-  const [popoverHandlerRef, setPopoverHandlerRef] = useState<HTMLElement | null>(null);
+  const popoverHandlerRef = useRef<HTMLDivElement>(null);
   const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({
     video: mediaSource === MediaSource.CAMERA,
     screen: mediaSource === MediaSource.SCREEN,
@@ -67,16 +67,15 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     setMediaSource(source);
   };
 
-  const onVideoButtonClick = (button: HTMLElement) => {
+  const onVideoButtonClick = () => {
     if (isRecording) {
       doCancelRecording();
     }
 
-    setPopoverHandlerRef(button);
     toggleVideoSourcePicker();
   };
 
-  const onAudioButtonClick = (button: HTMLElement) => {
+  const onAudioButtonClick = () => {
     hideVideoSourcePicker();
 
     if (mediaSource === MediaSource.MICROPHONE && isRecording) {
@@ -84,7 +83,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     }
 
     doCancelRecording();
-    setPopoverHandlerRef(button);
     setMediaSource(MediaSource.MICROPHONE);
   };
 
@@ -154,15 +152,17 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   }
 
   return (
-    <div className={className}>
+    <div className={className} ref={popoverHandlerRef}>
       <RecordButton
-        onClick={(event) => onVideoButtonClick(event.currentTarget)}
+        onClick={onVideoButtonClick}
+        tooltipLabel={isRecording || isVideoSourcePickerVisible ? undefined : "Record video"}
         disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
       >
         <IconVideoCamera />
       </RecordButton>
       <RecordButton
-        onClick={(event) => onAudioButtonClick(event.currentTarget)}
+        onClick={onAudioButtonClick}
+        tooltipLabel={isRecording ? undefined : "Record audio"}
         disabled={!!getRecorderError(MediaSource.MICROPHONE)}
         title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
       >
@@ -186,7 +186,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           onCancel={doCancelRecording}
           previewStream={mediaSource === MediaSource.MICROPHONE ? null : previewStream}
           flipVideoPreview={mediaSource === MediaSource.CAMERA}
-          cornered={mediaSource !== MediaSource.MICROPHONE}
+          showInCorner={mediaSource !== MediaSource.MICROPHONE}
         />
       )}
     </div>

@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
+import { hoverActionCss } from "~ui/transitions";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
@@ -75,7 +76,13 @@ export function SpaceCard({ space }: Props) {
   );
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  padding: 1rem;
+  margin: -1rem;
+  cursor: pointer;
+
+  ${hoverActionCss}
+`;
 
 const UIBanner = styled.div`
   position: relative;

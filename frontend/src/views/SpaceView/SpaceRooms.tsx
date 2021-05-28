@@ -19,6 +19,6 @@ export function SpaceRooms({ rooms }: Props) {
 const UIHolder = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 1rem;
-  grid-column-gap: 2rem;
+  grid-row-gap: 3rem;
+  grid-column-gap: 1rem;
 `;
