@@ -36,6 +36,7 @@ export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest
           const isAlreadyPicked = currentUsers.some((currentUser) => currentUser.id === user.id);
           return (
             <UserSelectCard
+              key={user.id}
               user={user}
               actions={<>{isAlreadyPicked && currentUserLabel}</>}
               isDisabled={isAlreadyPicked}

@@ -1,18 +1,21 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { SecondaryText } from "~ui/typo";
 import { BodyPortal } from "~ui/BodyPortal";
+import { Button } from "~ui/button";
+import { IconCross } from "~ui/icons";
+import { SecondaryText } from "~ui/typo";
 
 interface Props {
   head?: {
     title: ReactNode;
     description?: ReactNode;
   };
+  hasCloseButton?: boolean;
   children: ReactNode;
   onCloseRequest: () => void;
 }
 
-export function Modal({ head, children, onCloseRequest }: Props) {
+export function Modal({ head, hasCloseButton = true, children, onCloseRequest }: Props) {
   return (
     <BodyPortal>
       <UIBodyCover
@@ -27,13 +30,22 @@ export function Modal({ head, children, onCloseRequest }: Props) {
             event.stopPropagation();
           }}
         >
-          {head && (
-            <UIHead>
-              <UIHeadTitle>{head.title}</UIHeadTitle>
-              <SecondaryText>{head.description}</SecondaryText>
-            </UIHead>
+          {hasCloseButton && (
+            <UIToolbar>
+              <UICloseButton onClick={() => onCloseRequest()}>
+                <IconCross />
+              </UICloseButton>
+            </UIToolbar>
           )}
-          {children}
+          <UIBody>
+            {head && (
+              <UIHead>
+                <UIHeadTitle>{head.title}</UIHeadTitle>
+                <SecondaryText>{head.description}</SecondaryText>
+              </UIHead>
+            )}
+            {children}
+          </UIBody>
         </UIModal>
       </UIBodyCover>
     </BodyPortal>
@@ -52,8 +64,6 @@ const UIBodyCover = styled.div`
 `;
 
 const UIModal = styled.div`
-  align-items: center;
-  padding: 1.5rem;
   min-width: 368px;
 
   background: #ffffff;
@@ -72,4 +82,25 @@ const UIHead = styled.div`
   margin-bottom: 2rem;
 `;
 
+const UIBody = styled.div`
+  align-items: center;
+  padding: 1.5rem;
+`;
+
 const UIHeadTitle = styled.div``;
+
+const UIToolbar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1rem 0;
+`;
+
+const UICloseButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+`;
