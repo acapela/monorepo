@@ -25,6 +25,7 @@ export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest
   return (
     <Modal
       onCloseRequest={onCloseRequest}
+      hasCloseButton={false}
       head={{
         title: "Invite people to collaborate together",
         description: "Invite existing team members or add new ones",
