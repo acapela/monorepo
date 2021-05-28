@@ -26,16 +26,14 @@ export const MessageComposer = ({ topicId }: Props) => {
 
   async function uploadFiles(files: File[]): Promise<ComposerAttachment[]> {
     const uploadedAttachments = await Promise.all(
-      files.map(
-        async (file): Promise<ComposerAttachment> => {
-          const uuid = await uploadFile(file);
+      files.map(async (file): Promise<ComposerAttachment> => {
+        const uuid = await uploadFile(file);
 
-          return {
-            uuid,
-            mimeType: file.type,
-          };
-        }
-      )
+        return {
+          uuid,
+          mimeType: file.type,
+        };
+      })
     );
 
     return uploadedAttachments;
