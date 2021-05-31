@@ -6394,6 +6394,7 @@ export type Timestamptz_Comparison_Exp = {
 /** columns and relationships of "topic" */
 export type Topic = {
   __typename?: 'topic';
+  closed_at?: Maybe<Scalars['date']>;
   id: Scalars['uuid'];
   index: Scalars['String'];
   /** An array relationship */
@@ -6491,6 +6492,7 @@ export type Topic_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
+  closed_at?: Maybe<Date_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   index?: Maybe<String_Comparison_Exp>;
   members?: Maybe<Topic_Member_Bool_Exp>;
@@ -6511,6 +6513,7 @@ export enum Topic_Constraint {
 
 /** input type for inserting data into table "topic" */
 export type Topic_Insert_Input = {
+  closed_at?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   members?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
@@ -6524,6 +6527,7 @@ export type Topic_Insert_Input = {
 /** aggregate max on columns */
 export type Topic_Max_Fields = {
   __typename?: 'topic_max_fields';
+  closed_at?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -6533,6 +6537,7 @@ export type Topic_Max_Fields = {
 
 /** order by max() on columns of table "topic" */
 export type Topic_Max_Order_By = {
+  closed_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -6698,6 +6703,7 @@ export enum Topic_Member_Update_Column {
 /** aggregate min on columns */
 export type Topic_Min_Fields = {
   __typename?: 'topic_min_fields';
+  closed_at?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -6707,6 +6713,7 @@ export type Topic_Min_Fields = {
 
 /** order by min() on columns of table "topic" */
 export type Topic_Min_Order_By = {
+  closed_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
@@ -6738,6 +6745,7 @@ export type Topic_On_Conflict = {
 
 /** ordering options when selecting data from "topic" */
 export type Topic_Order_By = {
+  closed_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
   members_aggregate?: Maybe<Topic_Member_Aggregate_Order_By>;
@@ -6756,6 +6764,8 @@ export type Topic_Pk_Columns_Input = {
 /** select columns of table "topic" */
 export enum Topic_Select_Column {
   /** column name */
+  ClosedAt = 'closed_at',
+  /** column name */
   Id = 'id',
   /** column name */
   Index = 'index',
@@ -6769,6 +6779,7 @@ export enum Topic_Select_Column {
 
 /** input type for updating data in table "topic" */
 export type Topic_Set_Input = {
+  closed_at?: Maybe<Scalars['date']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -6778,6 +6789,8 @@ export type Topic_Set_Input = {
 
 /** update columns of table "topic" */
 export enum Topic_Update_Column {
+  /** column name */
+  ClosedAt = 'closed_at',
   /** column name */
   Id = 'id',
   /** column name */
@@ -9651,8 +9664,9 @@ export type team_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topicKeySpecifier = ('id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
+export type topicKeySpecifier = ('closed_at' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
 export type topicFieldPolicy = {
+	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	members?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9675,8 +9689,9 @@ export type topic_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_max_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsKeySpecifier = ('closed_at' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
 export type topic_max_fieldsFieldPolicy = {
+	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9716,8 +9731,9 @@ export type topic_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_min_fieldsKeySpecifier = ('id' | 'index' | 'name' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
+export type topic_min_fieldsKeySpecifier = ('closed_at' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
 export type topic_min_fieldsFieldPolicy = {
+	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
