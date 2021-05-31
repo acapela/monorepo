@@ -854,7 +854,7 @@
     schema: public
     name: topic
   object_relationships:
-    - name: closing_member_id
+    - name: closed_by_user
       using:
         manual_configuration:
           remote_table:

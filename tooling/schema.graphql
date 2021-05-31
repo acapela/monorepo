@@ -7821,6 +7821,10 @@ columns and relationships of "topic"
 """
 type topic {
   closed_at: timestamptz
+  closed_by: uuid
+
+  """An object relationship"""
+  closed_by_user: user
   id: uuid!
   index: String!
 
@@ -7945,6 +7949,8 @@ input topic_bool_exp {
   _not: topic_bool_exp
   _or: [topic_bool_exp]
   closed_at: timestamptz_comparison_exp
+  closed_by: uuid_comparison_exp
+  closed_by_user: user_bool_exp
   id: uuid_comparison_exp
   index: String_comparison_exp
   members: topic_member_bool_exp
@@ -7971,6 +7977,8 @@ input type for inserting data into table "topic"
 """
 input topic_insert_input {
   closed_at: timestamptz
+  closed_by: uuid
+  closed_by_user: user_obj_rel_insert_input
   id: uuid
   index: String
   members: topic_member_arr_rel_insert_input
@@ -7984,6 +7992,7 @@ input topic_insert_input {
 """aggregate max on columns"""
 type topic_max_fields {
   closed_at: timestamptz
+  closed_by: uuid
   id: uuid
   index: String
   name: String
@@ -7996,6 +8005,7 @@ order by max() on columns of table "topic"
 """
 input topic_max_order_by {
   closed_at: order_by
+  closed_by: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8188,6 +8198,7 @@ enum topic_member_update_column {
 """aggregate min on columns"""
 type topic_min_fields {
   closed_at: timestamptz
+  closed_by: uuid
   id: uuid
   index: String
   name: String
@@ -8200,6 +8211,7 @@ order by min() on columns of table "topic"
 """
 input topic_min_order_by {
   closed_at: order_by
+  closed_by: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8240,6 +8252,8 @@ ordering options when selecting data from "topic"
 """
 input topic_order_by {
   closed_at: order_by
+  closed_by: order_by
+  closed_by_user: user_order_by
   id: order_by
   index: order_by
   members_aggregate: topic_member_aggregate_order_by
@@ -8265,6 +8279,9 @@ enum topic_select_column {
   closed_at
 
   """column name"""
+  closed_by
+
+  """column name"""
   id
 
   """column name"""
@@ -8285,6 +8302,7 @@ input type for updating data in table "topic"
 """
 input topic_set_input {
   closed_at: timestamptz
+  closed_by: uuid
   id: uuid
   index: String
   name: String
@@ -8298,6 +8316,9 @@ update columns of table "topic"
 enum topic_update_column {
   """column name"""
   closed_at
+
+  """column name"""
+  closed_by
 
   """column name"""
   id
