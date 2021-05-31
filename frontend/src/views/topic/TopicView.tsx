@@ -40,11 +40,10 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
-  console.log({ topicData });
-
   return (
     <TopicRoot>
-      {topicData?.topic && <TopicHeader topic={topicData?.topic} />}
+      {/* We need to render the topic header or else the flex bugs out on page reload */}
+      <TopicHeader topic={topicData?.topic} />
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           <AnimateSharedLayout>
@@ -79,7 +78,7 @@ const TopicRoot = styled(DropFileContext)`
   }
 
   ${TopicHeader} {
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
   }
 `;
 

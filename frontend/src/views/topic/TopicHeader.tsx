@@ -3,19 +3,49 @@ import { TextTitle } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { Button } from "~ui/button";
 
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { CloseTopicPopover } from "./CloseTopicPopover";
+import { useRef } from "react";
+
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  topic?: TopicDetailedInfoFragment | null;
   className?: string;
 }
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
+  const closeTopicRef = useRef<HTMLButtonElement>(null);
+  const [isClosingTopic, { unset: dismissClosingTopicModal, toggle: toggleClosingTopicModal }] = useBoolean(false);
+
+  const isClosed = !!topic?.closed_at;
+
+  if (!topic) {
+    return <UIHolder className={className}></UIHolder>;
+  }
+
   return (
-    <UIHolder className={className}>
-      <UITitle>{topic.name}</UITitle>
-      <UIAction>
-        <Button>Close topic</Button>
-      </UIAction>
-    </UIHolder>
+    <>
+      <UIHolder className={className}>
+        <UITitle>{topic.name}</UITitle>
+
+        <UIAction>
+          {isClosed ? (
+            <Button ref={closeTopicRef} onClick={() => toggleClosingTopicModal()}>
+              Close Topic
+            </Button>
+          ) : (
+            <Button>Reopen Topic</Button>
+          )}
+        </UIAction>
+      </UIHolder>
+      {isClosingTopic && (
+        <CloseTopicPopover
+          anchorRef={closeTopicRef}
+          topicId={topic.id}
+          onDismissRequested={() => dismissClosingTopicModal()}
+          onTopicClosed={() => dismissClosingTopicModal()}
+        />
+      )}
+    </>
   );
 })``;
 
