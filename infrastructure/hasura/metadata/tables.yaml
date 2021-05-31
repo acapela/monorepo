@@ -854,6 +854,14 @@
     schema: public
     name: topic
   object_relationships:
+    - name: closing_member_id
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: user
+          column_mapping:
+            closed_by: id
     - name: room
       using:
         foreign_key_constraint_on: room_id
@@ -894,6 +902,7 @@
       permission:
         columns:
           - closed_at
+          - closed_by
           - id
           - index
           - name
@@ -912,6 +921,7 @@
       permission:
         columns:
           - closed_at
+          - closed_by
           - index
           - name
         filter:
