@@ -8329,7 +8329,7 @@ export type CreateTeamInvitationMutation = (
 
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index' | 'slug'>
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at'>
   & { room: (
     { __typename?: 'room' }
     & RoomBasicInfoFragment
@@ -8601,6 +8601,20 @@ export type RecentTopicsQueryVariables = Exact<{
 export type RecentTopicsQuery = (
   { __typename?: 'query_root' }
   & { recentTopics: Array<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
+export type CloseTopicMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  closedAt: Scalars['timestamptz'];
+}>;
+
+
+export type CloseTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }
