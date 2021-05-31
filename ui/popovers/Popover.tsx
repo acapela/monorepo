@@ -15,51 +15,54 @@ interface PopoverProps {
   isDisabled?: boolean;
   className?: string;
   placement?: Placement;
+  distance?: number;
 }
 
-export const Popover = styled(({ className, anchorRef, children, isDisabled, placement = "auto" }: PopoverProps) => {
-  const anchorElement = useRefValue(anchorRef);
+export const Popover = styled(
+  ({ className, anchorRef, children, isDisabled, distance = 5, placement = "auto" }: PopoverProps) => {
+    const anchorElement = useRefValue(anchorRef);
 
-  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
+    const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
 
-  const { styles, attributes, update } = usePopper(anchorElement, popperElement, {
-    placement,
-    strategy: "fixed",
+    const { styles, attributes, update } = usePopper(anchorElement, popperElement, {
+      placement,
+      strategy: "fixed",
 
-    modifiers: [
-      {
-        name: "offset",
-        options: {
-          offset: [0, 5],
+      modifiers: [
+        {
+          name: "offset",
+          options: {
+            offset: [0, distance],
+          },
         },
-      },
-      {
-        name: "preventOverflow",
-        options: {
-          padding: 8,
+        {
+          name: "preventOverflow",
+          options: {
+            padding: 8,
+          },
         },
-      },
-    ],
-  });
+      ],
+    });
 
-  const throttledUpdate = throttle(update ?? (() => null), 200);
+    const throttledUpdate = throttle(update ?? (() => null), 200);
 
-  const poperRef = useValueRef(popperElement);
+    const poperRef = useValueRef(popperElement);
 
-  useResizeCallback(poperRef, () => {
-    throttledUpdate?.();
-  });
+    useResizeCallback(poperRef, () => {
+      throttledUpdate?.();
+    });
 
-  if (isDisabled) return null;
+    if (isDisabled) return null;
 
-  return (
-    <BodyPortal>
-      <UIHolder className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-        {children}
-      </UIHolder>
-    </BodyPortal>
-  );
-})``;
+    return (
+      <BodyPortal>
+        <UIHolder className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+          {children}
+        </UIHolder>
+      </BodyPortal>
+    );
+  }
+)``;
 
 const UIHolder = styled.div`
   position: fixed;
