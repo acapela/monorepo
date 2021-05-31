@@ -16,7 +16,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
   const closeTopicRef = useRef<HTMLButtonElement>(null);
   const [isClosingTopic, { unset: dismissClosingTopicModal, toggle: toggleClosingTopicModal }] = useBoolean(false);
 
-  const isClosed = !!topic?.closed_at;
+  const isClosed = !topic?.closed_at;
 
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;

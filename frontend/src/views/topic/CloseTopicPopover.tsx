@@ -4,6 +4,7 @@ import { Button, TransparentButton } from "~ui/button";
 import { Popover } from "~ui/popovers/Popover";
 import { TextTitle } from "~ui/typo";
 import { useCloseTopicMutation } from "~frontend/gql/topics";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   topicId: string;
@@ -14,10 +15,12 @@ interface Props {
 
 export const CloseTopicPopover = ({ anchorRef, topicId, onDismissRequested, onTopicClosed }: Props) => {
   const [closeTopicMutation, { loading }] = useCloseTopicMutation();
+  const user = useAssertCurrentUser();
 
   async function handleCloseTopic() {
     await closeTopicMutation({
       topicId,
+      closedBy: user.id,
       closedAt: new Date().toISOString(),
     });
 
