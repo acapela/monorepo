@@ -12,7 +12,7 @@ export const AvatarList = styled(function AvatarList({ users, className }: Props
   return (
     <UIHolder className={className}>
       {users.map((users, index) => (
-        <Avatar isSmall key={index} url={users.avatar_url} name={users.name ?? ""} />
+        <Avatar size="small" key={index} url={users.avatar_url} name={users.name ?? ""} />
       ))}
     </UIHolder>
   );

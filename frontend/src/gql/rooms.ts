@@ -15,19 +15,19 @@ import {
 } from "./generated";
 import { getSingleSpaceManager } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
+import { UserBasicInfoFragment } from "./user";
 
 import { createMutation, createQuery } from "./utils";
 
 export const RoomBasicInfoFragment = () => gql`
+  ${UserBasicInfoFragment()}
   fragment RoomBasicInfo on room {
     id
     name
     space_id
     members {
       user {
-        id
-        name
-        avatarUrl: avatar_url
+        ...UserBasicInfo
       }
     }
   }
@@ -35,15 +35,15 @@ export const RoomBasicInfoFragment = () => gql`
 
 export const RoomDetailedInfoFragment = () => gql`
   ${TopicDetailedInfoFragment()}
+  ${UserBasicInfoFragment()}
+
   fragment RoomDetailedInfo on room {
     id
     name
     space_id
     members {
       user {
-        id
-        name
-        avatarUrl: avatar_url
+        ...UserBasicInfo
       }
     }
 
@@ -54,10 +54,10 @@ export const RoomDetailedInfoFragment = () => gql`
 `;
 
 const RoomParticipantBasicInfoFragment = () => gql`
+  ${UserBasicInfoFragment()}
   fragment RoomParticipantBasicInfo on room_member {
     user {
-      name
-      avatarUrl: avatar_url
+      ...UserBasicInfo
     }
   }
 `;
