@@ -6394,7 +6394,7 @@ export type Timestamptz_Comparison_Exp = {
 /** columns and relationships of "topic" */
 export type Topic = {
   __typename?: 'topic';
-  closed_at?: Maybe<Scalars['date']>;
+  closed_at?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
   index: Scalars['String'];
   /** An array relationship */
@@ -6492,7 +6492,7 @@ export type Topic_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
-  closed_at?: Maybe<Date_Comparison_Exp>;
+  closed_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   index?: Maybe<String_Comparison_Exp>;
   members?: Maybe<Topic_Member_Bool_Exp>;
@@ -6513,7 +6513,7 @@ export enum Topic_Constraint {
 
 /** input type for inserting data into table "topic" */
 export type Topic_Insert_Input = {
-  closed_at?: Maybe<Scalars['date']>;
+  closed_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   members?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
@@ -6527,7 +6527,7 @@ export type Topic_Insert_Input = {
 /** aggregate max on columns */
 export type Topic_Max_Fields = {
   __typename?: 'topic_max_fields';
-  closed_at?: Maybe<Scalars['date']>;
+  closed_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -6703,7 +6703,7 @@ export enum Topic_Member_Update_Column {
 /** aggregate min on columns */
 export type Topic_Min_Fields = {
   __typename?: 'topic_min_fields';
-  closed_at?: Maybe<Scalars['date']>;
+  closed_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -6779,7 +6779,7 @@ export enum Topic_Select_Column {
 
 /** input type for updating data in table "topic" */
 export type Topic_Set_Input = {
-  closed_at?: Maybe<Scalars['date']>;
+  closed_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
