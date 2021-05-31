@@ -3,13 +3,14 @@ import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
-import { useLastSeenMessageMutation, useTopicMessages } from "~frontend/gql/topics";
+import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessages } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
 import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
+import { TopicHeader } from "./TopicHeader";
 
 interface Props {
   id: string;
@@ -30,6 +31,7 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ id }: Props) => {
+  const [topicData] = useSingleTopicQuery({ id });
   const [data] = useTopicMessages.subscription({
     topicId: id,
   });
@@ -38,8 +40,11 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
+  console.log({ topicData });
+
   return (
     <TopicRoot>
+      {topicData?.topic && <TopicHeader topic={topicData?.topic} />}
       <ScrollableMessages>
         <UIAnimatedMessagesWrapper>
           <AnimateSharedLayout>
@@ -71,6 +76,10 @@ const TopicRoot = styled(DropFileContext)`
     flex: 1 1 100%;
     width: 100%;
     overflow: auto;
+  }
+
+  ${TopicHeader} {
+    margin-bottom: 1rem;
   }
 `;
 
