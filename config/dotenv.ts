@@ -79,19 +79,28 @@ function assertRequiredEnvVariablesLoaded() {
   for (const envVarName of requiredEnvVarNames) {
     const envVarValue = process.env[envVarName];
 
-    if (typeof envVarValue === "undefined") {
-      const valueFromOptionalEnvVars = optionalEnvVars[envVarName];
-
-      // If value is not set, but we have default value provided - assign it to env var and continue without
-      // marking it as missing.
-      if (valueFromOptionalEnvVars) {
-        console.warn(`Using default value for env variable ${envVarName}.`);
-        Reflect.set(process.env, envVarName, valueFromOptionalEnvVars);
-        continue;
-      }
-
-      missingEnvVars.push(envVarName);
+    if (typeof envVarValue !== "undefined") {
+      // Variable is set, there is nothing to do about it.
+      continue;
     }
+
+    // We have no value, let's try to load it from defaults.
+    const valueFromOptionalEnvVars = optionalEnvVars[envVarName];
+
+    // We have default value provided - assign it to env var and continue without marking it as missing.
+    if (valueFromOptionalEnvVars) {
+      // Let's warn about it so developers are aware of it even if defaults are saving them from crash.
+      console.warn(`Using default value for env variable ${envVarName}.`);
+      // Assign it to process.env
+      Reflect.set(process.env, envVarName, valueFromOptionalEnvVars);
+      continue;
+    }
+
+    // There is no value and not able to load it from defaults.
+
+    // Add it to list of missing env variables instead of throwing now so we can throw with names of ALL missing variables
+    // at once.
+    missingEnvVars.push(envVarName);
   }
 
   if (missingEnvVars.length > 0) {
