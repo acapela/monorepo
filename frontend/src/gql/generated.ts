@@ -8375,7 +8375,7 @@ export type CreateTeamInvitationMutation = (
 
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at'>
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
   & { closed_by_user?: Maybe<(
     { __typename?: 'user' }
     & UserBasicInfoFragment

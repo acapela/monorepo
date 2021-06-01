@@ -13,6 +13,7 @@ import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner } from "./TopicClosureBanner";
 import { TopicHeader } from "./TopicHeader";
+import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
 
 interface Props {
   id: string;
@@ -57,6 +58,13 @@ export const TopicView = ({ id }: Props) => {
     return topicData.topic.closed_at!;
   }
 
+  function getClosingSummary(): string {
+    assert(!!topicData?.topic?.closing_summary, "Closed by user not provided");
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    console.log(topicData.topic);
+    return topicData.topic.closing_summary!;
+  }
+
   return (
     <>
       {hasTopic && (
@@ -69,6 +77,13 @@ export const TopicView = ({ id }: Props) => {
                 {messages.map((message) => (
                   <Message key={message.id} message={message} />
                 ))}
+                {isTopicClosed && (
+                  <TopicSummaryMessage
+                    summary={getClosingSummary()}
+                    closedAt={getClosedAt()}
+                    closedBy={getClosedByUser()}
+                  />
+                )}
               </AnimateSharedLayout>
               {!messages.length && (
                 <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>

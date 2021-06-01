@@ -45,6 +45,7 @@ export const TopicDetailedInfoFragment = () => gql`
     index
     slug
     closed_at
+    closing_summary
     closed_by_user {
       ...UserBasicInfo
     }
