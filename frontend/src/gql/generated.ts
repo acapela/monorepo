@@ -14,6 +14,7 @@ export type Scalars = {
   date: any;
   json: any;
   jsonb: any;
+  timestamp: any;
   timestamptz: any;
   uuid: any;
 };
@@ -6378,6 +6379,20 @@ export enum Team_Update_Column {
 }
 
 
+/** expression to compare columns of type timestamp. All fields are combined with logical 'AND'. */
+export type Timestamp_Comparison_Exp = {
+  _eq?: Maybe<Scalars['timestamp']>;
+  _gt?: Maybe<Scalars['timestamp']>;
+  _gte?: Maybe<Scalars['timestamp']>;
+  _in?: Maybe<Array<Scalars['timestamp']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['timestamp']>;
+  _lte?: Maybe<Scalars['timestamp']>;
+  _neq?: Maybe<Scalars['timestamp']>;
+  _nin?: Maybe<Array<Scalars['timestamp']>>;
+};
+
+
 /** expression to compare columns of type timestamptz. All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {
   _eq?: Maybe<Scalars['timestamptz']>;
@@ -6394,7 +6409,7 @@ export type Timestamptz_Comparison_Exp = {
 /** columns and relationships of "topic" */
 export type Topic = {
   __typename?: 'topic';
-  closed_at?: Maybe<Scalars['timestamptz']>;
+  closed_at?: Maybe<Scalars['timestamp']>;
   closed_by?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   closed_by_user?: Maybe<User>;
@@ -6495,7 +6510,7 @@ export type Topic_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
-  closed_at?: Maybe<Timestamptz_Comparison_Exp>;
+  closed_at?: Maybe<Timestamp_Comparison_Exp>;
   closed_by?: Maybe<Uuid_Comparison_Exp>;
   closed_by_user?: Maybe<User_Bool_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
@@ -6518,7 +6533,7 @@ export enum Topic_Constraint {
 
 /** input type for inserting data into table "topic" */
 export type Topic_Insert_Input = {
-  closed_at?: Maybe<Scalars['timestamptz']>;
+  closed_at?: Maybe<Scalars['timestamp']>;
   closed_by?: Maybe<Scalars['uuid']>;
   closed_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
   id?: Maybe<Scalars['uuid']>;
@@ -6534,7 +6549,7 @@ export type Topic_Insert_Input = {
 /** aggregate max on columns */
 export type Topic_Max_Fields = {
   __typename?: 'topic_max_fields';
-  closed_at?: Maybe<Scalars['timestamptz']>;
+  closed_at?: Maybe<Scalars['timestamp']>;
   closed_by?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6712,7 +6727,7 @@ export enum Topic_Member_Update_Column {
 /** aggregate min on columns */
 export type Topic_Min_Fields = {
   __typename?: 'topic_min_fields';
-  closed_at?: Maybe<Scalars['timestamptz']>;
+  closed_at?: Maybe<Scalars['timestamp']>;
   closed_by?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6794,7 +6809,7 @@ export enum Topic_Select_Column {
 
 /** input type for updating data in table "topic" */
 export type Topic_Set_Input = {
-  closed_at?: Maybe<Scalars['timestamptz']>;
+  closed_at?: Maybe<Scalars['timestamp']>;
   closed_by?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -8347,8 +8362,11 @@ export type CreateTeamInvitationMutation = (
 
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closed_by'>
-  & { room: (
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at'>
+  & { closed_by_user?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, room: (
     { __typename?: 'room' }
     & RoomBasicInfoFragment
   ), members: Array<(
@@ -8626,7 +8644,7 @@ export type RecentTopicsQuery = (
 
 export type CloseTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  closedAt: Scalars['timestamptz'];
+  closedAt: Scalars['timestamp'];
   closedBy: Scalars['uuid'];
 }>;
 

@@ -45,7 +45,9 @@ export const TopicDetailedInfoFragment = () => gql`
     index
     slug
     closed_at
-    closed_by
+    closed_by_user {
+      ...UserBasicInfo
+    }
     room {
       ...RoomBasicInfo
     }
@@ -341,7 +343,7 @@ export const [useCloseTopicMutation] = createMutation<CloseTopicMutation, CloseT
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    mutation CloseTopic($topicId: uuid!, $closedAt: timestamptz!, $closedBy: uuid!) {
+    mutation CloseTopic($topicId: uuid!, $closedAt: timestamp!, $closedBy: uuid!) {
       topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { closed_at: $closedAt, closed_by: $closedBy }) {
         ...TopicDetailedInfo
       }
