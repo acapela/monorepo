@@ -56,5 +56,3 @@ const UITopics = styled.div`
     }
   }
 `;
-
-const UIActions = styled.div``;

@@ -20,14 +20,18 @@ export function RecentTopics() {
   return (
     <UIHolder>
       {roomGroups.map((roomGroup) => {
-        return <RoomRecentTopics key={roomGroup.groupItem.id} room={roomGroup.groupItem} topics={roomGroup.items} />;
+        return (
+          <UISingleRoomRecentTopics key={roomGroup.groupItem.id}>
+            <RoomRecentTopics room={roomGroup.groupItem} topics={roomGroup.items} />
+          </UISingleRoomRecentTopics>
+        );
       })}
     </UIHolder>
   );
 }
 
-const UIHolder = styled.div`
-  ${() => RoomRecentTopics} {
-    margin-bottom: 1rem;
-  }
+const UIHolder = styled.div``;
+
+const UISingleRoomRecentTopics = styled.div`
+  margin-bottom: 1rem;
 `;
