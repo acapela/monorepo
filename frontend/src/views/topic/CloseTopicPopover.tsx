@@ -1,10 +1,12 @@
-import { RefObject } from "react";
+import { RefObject, useRef } from "react";
 import styled from "styled-components";
 import { Button, TransparentButton } from "~ui/button";
 import { Popover } from "~ui/popovers/Popover";
 import { TextTitle } from "~ui/typo";
 import { useCloseTopicMutation } from "~frontend/gql/topics";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { useClickAway } from "react-use";
 
 interface Props {
   topicId: string;
@@ -14,8 +16,14 @@ interface Props {
 }
 
 export const CloseTopicPopover = ({ anchorRef, topicId, onDismissRequested, onTopicClosed }: Props) => {
+  const holderRef = useRef<HTMLDivElement>(null);
+
   const [closeTopicMutation, { loading }] = useCloseTopicMutation();
   const user = useAssertCurrentUser();
+
+  useClickAway(holderRef, () => {
+    onDismissRequested();
+  });
 
   async function handleCloseTopic() {
     await closeTopicMutation({
@@ -29,7 +37,7 @@ export const CloseTopicPopover = ({ anchorRef, topicId, onDismissRequested, onTo
 
   return (
     <Popover anchorRef={anchorRef} placement={"bottom-end"} distance={8}>
-      <UIPopover>
+      <UIPopover ref={holderRef} presenceStyles={{ opacity: [0, 1], y: [0, 5] }} transition={{ delay: 0.15 }}>
         <UIBody>
           <UITitle>Almost done!</UITitle>
           <UIBodyText>You can reopen this topic if you change your mind.</UIBodyText>
@@ -47,7 +55,7 @@ export const CloseTopicPopover = ({ anchorRef, topicId, onDismissRequested, onTo
   );
 };
 
-const UIPopover = styled.div`
+const UIPopover = styled(PresenceAnimator)`
   width: 300px;
 
   background: hsl(0, 0%, 100%);
