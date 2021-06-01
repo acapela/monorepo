@@ -4,7 +4,11 @@ import { useRecentTopics } from "~frontend/gql/topics";
 import { groupBy } from "./groupBy";
 import { RoomRecentTopics } from "./RoomRecentTopics";
 
-export function RecentTopics() {
+interface Props {
+  className?: string;
+}
+
+export const RecentTopics = styled(function RecentTopics({ className }: Props) {
   const teamId = useAssertCurrentTeamId();
 
   const [data] = useRecentTopics({ teamId, limit: 20 });
@@ -18,7 +22,7 @@ export function RecentTopics() {
   );
 
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       {roomGroups.map((roomGroup) => {
         return (
           <UISingleRoomRecentTopics key={roomGroup.groupItem.id}>
@@ -28,7 +32,7 @@ export function RecentTopics() {
       })}
     </UIHolder>
   );
-}
+})``;
 
 const UIHolder = styled.div``;
 
