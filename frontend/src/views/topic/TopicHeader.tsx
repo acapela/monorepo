@@ -15,7 +15,7 @@ interface Props {
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
   const [isClosingTopic, { toggle: toggleClosingTopicModal }] = useBoolean(false);
 
-  const [{ isOpen, loading, open: openTopic, close: closeTopic }] = useTopic(topic);
+  const { isOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;

@@ -3,7 +3,6 @@ import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
-import { assert } from "~shared/assert";
 import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessages } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
@@ -11,9 +10,10 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
 import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
-import { TopicClosureBanner } from "./TopicClosureBanner";
+import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
+import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
   id: string;
@@ -43,33 +43,13 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
-  const hasTopic = !!topicData?.topic;
-  const isTopicClosed = !!(topicData?.topic?.closed_at && topicData?.topic?.closed_by_user);
-
-  function getClosedByUser() {
-    assert(!!topicData?.topic?.closed_by_user, "Closed by user not provided");
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return topicData.topic.closed_by_user!;
-  }
-
-  function getClosedAt(): string {
-    assert(!!topicData?.topic?.closed_at, "Closed by user not provided");
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return topicData.topic.closed_at!;
-  }
-
-  function getClosingSummary(): string {
-    assert(!!topicData?.topic?.closing_summary, "Closed by user not provided");
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    console.log(topicData.topic);
-    return topicData.topic.closing_summary!;
-  }
+  const { hasTopic, isClosed: isTopicClosed, closedAt, closedByUser, closingSummary } = useTopic(topicData?.topic);
 
   return (
     <>
       {hasTopic && (
         <TopicRoot>
-          {/* We need to render the topic header or else the flex bugs out on page reload */}
+          {/* We need to render the topic header or else flex bugs out on page reload */}
           <TopicHeader topic={topicData?.topic} />
           <ScrollableMessages>
             <UIAnimatedMessagesWrapper>
@@ -78,11 +58,7 @@ export const TopicView = ({ id }: Props) => {
                   <Message key={message.id} message={message} />
                 ))}
                 {isTopicClosed && (
-                  <TopicSummaryMessage
-                    summary={getClosingSummary()}
-                    closedAt={getClosedAt()}
-                    closedBy={getClosedByUser()}
-                  />
+                  <TopicSummaryMessage summary={closingSummary()} closedAt={closedAt()} closedBy={closedByUser()} />
                 )}
               </AnimateSharedLayout>
               {!messages.length && (
@@ -92,7 +68,7 @@ export const TopicView = ({ id }: Props) => {
           </ScrollableMessages>
           <ClientSideOnly>
             {isTopicClosed ? (
-              <TopicClosureBanner closedBy={getClosedByUser()} closedAt={getClosedAt()} />
+              <TopicClosureNote />
             ) : (
               <UIMessageComposer>
                 <MessageComposer topicId={id} />
