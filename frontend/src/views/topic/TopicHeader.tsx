@@ -1,11 +1,10 @@
 import styled from "styled-components";
 import { TextTitle } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
-import { Button } from "~ui/button";
+import { Button, TransparentButton } from "~ui/button";
 
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicModal } from "./CloseTopicModal";
-import { useRef } from "react";
 import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 }
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
-  const closeTopicRef = useRef<HTMLButtonElement>(null);
   const [isClosingTopic, { toggle: toggleClosingTopicModal }] = useBoolean(false);
 
   const [{ isOpen, loading, open: openTopic, close: closeTopic }] = useTopic(topic);
@@ -30,9 +28,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
 
         <UIAction>
           {isOpen ? (
-            <Button ref={closeTopicRef} onClick={() => toggleClosingTopicModal()}>
-              Close Topic
-            </Button>
+            <TransparentButton onClick={() => toggleClosingTopicModal()}>Close Topic</TransparentButton>
           ) : (
             <Button onClick={() => openTopic()} isLoading={loading}>
               Reopen Topic
@@ -42,7 +38,6 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
       </UIHolder>
       {isClosingTopic && (
         <CloseTopicModal
-          anchorRef={closeTopicRef}
           topicId={topic.id}
           loading={loading}
           onDismissRequested={() => toggleClosingTopicModal()}

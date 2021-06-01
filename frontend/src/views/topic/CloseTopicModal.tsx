@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, TransparentButton } from "~ui/button";
 import { TextTitle } from "~ui/typo";
@@ -10,7 +10,6 @@ interface Props {
   loading: boolean;
   onDismissRequested: () => void;
   onTopicClosed: (summary: string) => void;
-  anchorRef: RefObject<HTMLElement>;
 }
 
 export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: Props) => {
