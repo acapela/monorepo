@@ -35,6 +35,7 @@ export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: 
           Your team will appreciate it.
         </UIBodyText>
         <UITextArea
+          autoFocus
           placeholder={"Type here..."}
           value={topicSummary}
           onChangeText={(value) => setTopicSummary(value)}
