@@ -7,10 +7,12 @@ import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
 import { handleMessageCreated } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
+import { handleTopicCreated } from "../topics/events";
 
 export const router = Router();
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
+hasuraEvents.addHandler("topic_updates", ["INSERT"], handleTopicCreated);
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);

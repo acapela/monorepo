@@ -64,7 +64,7 @@ export const Message = ({ message }: Props) => {
       onMouseEnter={setHovered}
       onMouseLeave={unsetHovered}
     >
-      <UIMessageAvatar url={message.user.avatarUrl ?? ""} name={getUserOrGuestName(message)} />
+      <UIMessageAvatar url={message.user.avatar_url ?? ""} name={getUserOrGuestName(message)} />
       <UIMessageBody>
         <UIMessageHead>
           <UIUserName>{isOwnMessage ? "You" : getUserOrGuestName(message)}</UIUserName>

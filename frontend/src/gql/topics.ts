@@ -51,14 +51,13 @@ export const TopicDetailedInfoFragment = () => gql`
 `;
 
 const TopicMessageBasicInfoFragment = () => gql`
+  ${UserBasicInfoFragment()}
   fragment TopicMessageBasicInfo on message {
     id
     createdAt: created_at
     content
     user {
-      id
-      name
-      avatarUrl: avatar_url
+      ...UserBasicInfo
     }
   }
 `;
@@ -73,6 +72,7 @@ const AttachmentDetailedInfoFragment = () => gql`
 
 const TopicMessageDetailedInfoFragment = () => gql`
   ${AttachmentDetailedInfoFragment()}
+  ${UserBasicInfoFragment()}
 
   fragment TopicMessageDetailedInfo on message {
     id
@@ -85,9 +85,7 @@ const TopicMessageDetailedInfoFragment = () => gql`
       transcript
     }
     user {
-      id
-      name
-      avatarUrl: avatar_url
+      ...UserBasicInfo
     }
     message_attachments {
       attachment {

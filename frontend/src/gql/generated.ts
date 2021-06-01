@@ -7987,8 +7987,7 @@ export type RoomBasicInfoFragment = (
     { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
-      & Pick<User, 'id' | 'name'>
-      & { avatarUrl: User['avatar_url'] }
+      & UserBasicInfoFragment
     ) }
   )> }
 );
@@ -8000,8 +7999,7 @@ export type RoomDetailedInfoFragment = (
     { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
-      & Pick<User, 'id' | 'name'>
-      & { avatarUrl: User['avatar_url'] }
+      & UserBasicInfoFragment
     ) }
   )>, topics: Array<(
     { __typename?: 'topic' }
@@ -8013,8 +8011,7 @@ export type RoomParticipantBasicInfoFragment = (
   { __typename?: 'room_member' }
   & { user: (
     { __typename?: 'user' }
-    & Pick<User, 'name'>
-    & { avatarUrl: User['avatar_url'] }
+    & UserBasicInfoFragment
   ) }
 );
 
@@ -8338,8 +8335,7 @@ export type TopicMessageBasicInfoFragment = (
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
-    & Pick<User, 'id' | 'name'>
-    & { avatarUrl: User['avatar_url'] }
+    & UserBasicInfoFragment
   ) }
 );
 
@@ -8358,8 +8354,7 @@ export type TopicMessageDetailedInfoFragment = (
     & Pick<Transcription, 'status' | 'transcript'>
   )>, user: (
     { __typename?: 'user' }
-    & Pick<User, 'id' | 'name'>
-    & { avatarUrl: User['avatar_url'] }
+    & UserBasicInfoFragment
   ), message_attachments: Array<(
     { __typename?: 'message_attachment' }
     & { attachment: (

@@ -18,7 +18,11 @@ export const Avatar = styled(({ url, name, className, size = "regular" }: Props)
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
-    return <div className={className}>{!!name && getInitials(name)}</div>;
+    return (
+      <UIHolder size={size} className={className}>
+        {!!name && getInitials(name)}
+      </UIHolder>
+    );
   }
 
   return (
