@@ -7842,6 +7842,7 @@ type topic {
 
   """An object relationship"""
   closed_by_user: user
+  closing_summary: String
   id: uuid!
   index: String!
 
@@ -7968,6 +7969,7 @@ input topic_bool_exp {
   closed_at: timestamp_comparison_exp
   closed_by: uuid_comparison_exp
   closed_by_user: user_bool_exp
+  closing_summary: String_comparison_exp
   id: uuid_comparison_exp
   index: String_comparison_exp
   members: topic_member_bool_exp
@@ -7996,6 +7998,7 @@ input topic_insert_input {
   closed_at: timestamp
   closed_by: uuid
   closed_by_user: user_obj_rel_insert_input
+  closing_summary: String
   id: uuid
   index: String
   members: topic_member_arr_rel_insert_input
@@ -8010,6 +8013,7 @@ input topic_insert_input {
 type topic_max_fields {
   closed_at: timestamp
   closed_by: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -8023,6 +8027,7 @@ order by max() on columns of table "topic"
 input topic_max_order_by {
   closed_at: order_by
   closed_by: order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8216,6 +8221,7 @@ enum topic_member_update_column {
 type topic_min_fields {
   closed_at: timestamp
   closed_by: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -8229,6 +8235,7 @@ order by min() on columns of table "topic"
 input topic_min_order_by {
   closed_at: order_by
   closed_by: order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8271,6 +8278,7 @@ input topic_order_by {
   closed_at: order_by
   closed_by: order_by
   closed_by_user: user_order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   members_aggregate: topic_member_aggregate_order_by
@@ -8299,6 +8307,9 @@ enum topic_select_column {
   closed_by
 
   """column name"""
+  closing_summary
+
+  """column name"""
   id
 
   """column name"""
@@ -8320,6 +8331,7 @@ input type for updating data in table "topic"
 input topic_set_input {
   closed_at: timestamp
   closed_by: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -8336,6 +8348,9 @@ enum topic_update_column {
 
   """column name"""
   closed_by
+
+  """column name"""
+  closing_summary
 
   """column name"""
   id

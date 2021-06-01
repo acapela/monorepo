@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { RefObject, useState } from "react";
 import styled from "styled-components";
 import { Button, TransparentButton } from "~ui/button";
 import { TextTitle } from "~ui/typo";
@@ -9,13 +9,15 @@ interface Props {
   topicId: string;
   loading: boolean;
   onDismissRequested: () => void;
-  onTopicClosed: () => void;
+  onTopicClosed: (summary: string) => void;
   anchorRef: RefObject<HTMLElement>;
 }
 
 export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: Props) => {
+  const [topicSummary, setTopicSummary] = useState("");
+
   async function handleCloseTopic() {
-    onTopicClosed();
+    onTopicClosed(topicSummary);
     onDismissRequested();
   }
 
@@ -27,7 +29,11 @@ export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: 
           Briefly highlight the outcome of this Topic.
           <br /> Your team will appreciate it.
         </UIBodyText>
-        <UITextArea placeholder={"Type here..."} />
+        <UITextArea
+          placeholder={"Type here..."}
+          value={topicSummary}
+          onChangeText={(value) => setTopicSummary(value)}
+        />
         <UIButtons>
           <TransparentButton isLoading={loading} onClick={onDismissRequested}>
             Skip

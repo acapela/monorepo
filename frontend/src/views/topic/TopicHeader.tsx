@@ -46,7 +46,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
           topicId={topic.id}
           loading={loading}
           onDismissRequested={() => toggleClosingTopicModal()}
-          onTopicClosed={() => closeTopic()}
+          onTopicClosed={(topicSummary) => closeTopic(topicSummary)}
         />
       )}
     </>
