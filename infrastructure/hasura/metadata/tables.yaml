@@ -691,9 +691,12 @@
           - owner_id
           - slug
         filter:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+          _or:
+            - owner_id:
+                _eq: X-Hasura-User-Id
+            - memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
@@ -903,6 +906,7 @@
         columns:
           - closed_at
           - closed_by
+          - closing_summary
           - id
           - index
           - name
@@ -922,6 +926,7 @@
         columns:
           - closed_at
           - closed_by
+          - closing_summary
           - index
           - name
         filter:
