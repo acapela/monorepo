@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { User } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~frontend/gql";
 import { Avatar } from "~frontend/ui/users/Avatar";
 
 interface Props {
-  closedBy: User;
+  closedBy: UserBasicInfoFragment;
   closedAt: string;
 }
 

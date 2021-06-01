@@ -3,6 +3,7 @@ import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
+import { assert } from "~shared/assert";
 import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessages } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
@@ -41,34 +42,51 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
-  const isTopicClosed = !!topicData?.topic?.closed_at;
+  const hasTopic = !!topicData?.topic;
+  const isTopicClosed = !!(topicData?.topic?.closed_at && topicData?.topic?.closed_by_user);
+
+  function getClosedByUser() {
+    assert(!!topicData?.topic?.closed_by_user, "Closed by user not provided");
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return topicData.topic.closed_by_user!;
+  }
+
+  function getClosedAt(): string {
+    assert(!!topicData?.topic?.closed_at, "Closed by user not provided");
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return topicData.topic.closed_at!;
+  }
 
   return (
-    <TopicRoot>
-      {/* We need to render the topic header or else the flex bugs out on page reload */}
-      <TopicHeader topic={topicData?.topic} />
-      <ScrollableMessages>
-        <UIAnimatedMessagesWrapper>
-          <AnimateSharedLayout>
-            {messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))}
-          </AnimateSharedLayout>
-          {!messages.length && (
-            <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
-          )}
-        </UIAnimatedMessagesWrapper>
-      </ScrollableMessages>
-      <ClientSideOnly>
-        {isTopicClosed ? (
-          <TopicClosureBanner closedBy={topicData.topic.closed_by_user!} closedAt={topicData?.topic?.closed_at} />
-        ) : (
-          <UIMessageComposer>
-            <MessageComposer topicId={id} />
-          </UIMessageComposer>
-        )}
-      </ClientSideOnly>
-    </TopicRoot>
+    <>
+      {hasTopic && (
+        <TopicRoot>
+          {/* We need to render the topic header or else the flex bugs out on page reload */}
+          <TopicHeader topic={topicData?.topic} />
+          <ScrollableMessages>
+            <UIAnimatedMessagesWrapper>
+              <AnimateSharedLayout>
+                {messages.map((message) => (
+                  <Message key={message.id} message={message} />
+                ))}
+              </AnimateSharedLayout>
+              {!messages.length && (
+                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+              )}
+            </UIAnimatedMessagesWrapper>
+          </ScrollableMessages>
+          <ClientSideOnly>
+            {isTopicClosed ? (
+              <TopicClosureBanner closedBy={getClosedByUser()} closedAt={getClosedAt()} />
+            ) : (
+              <UIMessageComposer>
+                <MessageComposer topicId={id} />
+              </UIMessageComposer>
+            )}
+          </ClientSideOnly>
+        </TopicRoot>
+      )}
+    </>
   );
 };
 
