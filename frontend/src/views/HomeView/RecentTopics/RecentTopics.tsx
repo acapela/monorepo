@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useRecentTopics } from "~frontend/gql/topics";
 import { groupBy } from "./groupBy";
 import { RoomRecentTopics } from "./RoomRecentTopics";
@@ -10,8 +10,9 @@ interface Props {
 
 export const RecentTopics = styled(function RecentTopics({ className }: Props) {
   const teamId = useAssertCurrentTeamId();
+  const user = useAssertCurrentUser();
 
-  const [data] = useRecentTopics({ teamId, limit: 20 });
+  const [data] = useRecentTopics({ teamId, limit: 20, userId: user.id });
 
   const topics = data?.recentTopics ?? [];
 

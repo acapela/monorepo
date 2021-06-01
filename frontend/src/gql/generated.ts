@@ -8581,6 +8581,7 @@ export type SingleTopicQuery = (
 export type RecentTopicsQueryVariables = Exact<{
   teamId: Scalars['uuid'];
   limit?: Maybe<Scalars['Int']>;
+  userId: Scalars['uuid'];
 }>;
 
 
