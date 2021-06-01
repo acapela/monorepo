@@ -6,7 +6,7 @@ import { findTeamById } from "../teams/helpers";
 import { findUserById } from "../users/users";
 import { TeamInvitationNotification } from "./InviteNotification";
 
-export async function handleTeamInvitationCreated(invite: TeamInvitation, userId: string) {
+export async function handleTeamInvitationCreated(invite: TeamInvitation, userId: string | null) {
   const { team_id: teamId, inviting_user_id: invitingUserId } = invite;
 
   if (userId !== invitingUserId) {

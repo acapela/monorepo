@@ -3,8 +3,11 @@ import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors";
 import { addRoomParticipant, getIfParticipantExists } from "./rooms";
 
-export async function handleRoomUpdates(room: Room, userId: string) {
+export async function handleRoomUpdates(room: Room, userId: string | null) {
   const { creator_id: creatorId, id: roomId } = room;
+
+  if (!userId) return;
+
   checkUserIdMatchesCreatorId(userId, creatorId);
 
   const creatorIsAlreadyParticipant = await getIfParticipantExists(roomId, userId);
