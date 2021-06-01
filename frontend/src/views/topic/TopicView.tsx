@@ -10,6 +10,7 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
 import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
+import { TopicClosureBanner } from "./TopicClosureBanner";
 import { TopicHeader } from "./TopicHeader";
 
 interface Props {
@@ -40,6 +41,8 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
+  const isTopicClosed = !!topicData?.topic?.closed_at;
+
   return (
     <TopicRoot>
       {/* We need to render the topic header or else the flex bugs out on page reload */}
@@ -57,9 +60,13 @@ export const TopicView = ({ id }: Props) => {
         </UIAnimatedMessagesWrapper>
       </ScrollableMessages>
       <ClientSideOnly>
-        <UIMessageComposer>
-          <MessageComposer topicId={id} />
-        </UIMessageComposer>
+        {isTopicClosed ? (
+          <TopicClosureBanner closedBy={topicData.topic.closed_by_user!} closedAt={topicData?.topic?.closed_at} />
+        ) : (
+          <UIMessageComposer>
+            <MessageComposer topicId={id} />
+          </UIMessageComposer>
+        )}
       </ClientSideOnly>
     </TopicRoot>
   );
