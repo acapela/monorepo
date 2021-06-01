@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { TextTitle } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
-import { Button, TransparentButton } from "~ui/button";
+import { Button } from "~ui/button";
 
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicModal } from "./CloseTopicModal";
@@ -28,7 +28,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
 
         <UIAction>
           {isOpen ? (
-            <TransparentButton onClick={() => toggleClosingTopicModal()}>Close Topic</TransparentButton>
+            <Button onClick={() => toggleClosingTopicModal()}>Close Topic</Button>
           ) : (
             <Button onClick={() => openTopic()} isLoading={loading}>
               Reopen Topic
