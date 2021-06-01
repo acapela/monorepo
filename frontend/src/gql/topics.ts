@@ -27,24 +27,34 @@ import {
   RemoveTopicMemberMutationVariables,
   SingleTopicQuery,
   SingleTopicQueryVariables,
+  RecentTopicsQuery,
+  RecentTopicsQueryVariables,
 } from "./generated";
+import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery } from "./utils";
 
 export const TopicDetailedInfoFragment = () => gql`
   ${UserBasicInfoFragment()}
+  ${RoomBasicInfoFragment()}
   fragment TopicDetailedInfo on topic {
     id
     name
     index
     slug
     room {
-      id
-      space_id
+      ...RoomBasicInfo
     }
     members {
       user {
         ...UserBasicInfo
+      }
+    }
+    lastMessage: messages_aggregate {
+      aggregate {
+        max {
+          created_at
+        }
       }
     }
   }
@@ -300,6 +310,23 @@ export const [useSingleTopicQuery, singleTopicQueryManager] = createQuery<Single
 
     query SingleTopic($id: uuid!) {
       topic: topic_by_pk(id: $id) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useRecentTopics] = createQuery<RecentTopicsQuery, RecentTopicsQueryVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    query RecentTopics($teamId: uuid!, $limit: Int = 10) {
+      recentTopics: topic(
+        where: { room: { space: { team_id: { _eq: $teamId } } } }
+        limit: $limit
+        # TODO: I'm not sure about performance of this in large scale. Should be good tho if used with index.
+        order_by: { messages_aggregate: { max: { created_at: desc } } }
+      ) {
         ...TopicDetailedInfo
       }
     }

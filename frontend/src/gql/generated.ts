@@ -8319,14 +8319,23 @@ export type TopicDetailedInfoFragment = (
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug'>
   & { room: (
     { __typename?: 'room' }
-    & Pick<Room, 'id' | 'space_id'>
+    & RoomBasicInfoFragment
   ), members: Array<(
     { __typename?: 'topic_member' }
     & { user: (
       { __typename?: 'user' }
       & UserBasicInfoFragment
     ) }
-  )> }
+  )>, lastMessage: (
+    { __typename?: 'message_aggregate' }
+    & { aggregate?: Maybe<(
+      { __typename?: 'message_aggregate_fields' }
+      & { max?: Maybe<(
+        { __typename?: 'message_max_fields' }
+        & Pick<Message_Max_Fields, 'created_at'>
+      )> }
+    )> }
+  ) }
 );
 
 export type TopicMessageBasicInfoFragment = (
@@ -8564,6 +8573,20 @@ export type SingleTopicQueryVariables = Exact<{
 export type SingleTopicQuery = (
   { __typename?: 'query_root' }
   & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
+export type RecentTopicsQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+  limit?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type RecentTopicsQuery = (
+  { __typename?: 'query_root' }
+  & { recentTopics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }

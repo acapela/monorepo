@@ -17,6 +17,11 @@ export const hoverActionActiveCss = css`
   background-color: ${ACTION_ACTIVE_COLOR};
 `;
 
+export const hoverActionNegativeSpacingCss = css`
+  padding: 0.75rem;
+  margin: -0.75rem;
+`;
+
 export const hoverActionCss = css`
   border-radius: 0.5rem;
 
