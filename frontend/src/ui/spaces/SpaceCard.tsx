@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
-import { useBoolean } from "~frontend/hooks/useBoolean";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconMoreHoriz } from "~ui/icons";
 import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
@@ -39,7 +38,7 @@ export function SpaceCard({ space }: Props) {
   async function handleEditSpace() {
     const newSpaceName = await openUIPrompt({
       title: "Change space name",
-      placeholder: "Design team",
+      placeholder: "e.g. Design team, Marketing department, iOS developers...",
       submitLabel: "Change name",
     });
 
