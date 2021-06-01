@@ -4,7 +4,7 @@ import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { Button } from "~ui/button";
 
 import { useBoolean } from "~frontend/hooks/useBoolean";
-import { CloseTopicPopover } from "./CloseTopicPopover";
+import { CloseTopicModal } from "./CloseTopicModal";
 import { useRef } from "react";
 import { useTopic } from "~frontend/topics/useTopic";
 
@@ -41,7 +41,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
         </UIAction>
       </UIHolder>
       {isClosingTopic && (
-        <CloseTopicPopover
+        <CloseTopicModal
           anchorRef={closeTopicRef}
           topicId={topic.id}
           loading={loading}
