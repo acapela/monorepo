@@ -50,11 +50,4 @@ export function TeamMembersManager() {
   );
 }
 
-const UIHolder = styled.div``;
-
-const UISearchWrapper = styled.div`
-  margin: 0 auto;
-  margin-bottom: 3rem;
-`;
-
 const UIInvitation = styled.div``;
