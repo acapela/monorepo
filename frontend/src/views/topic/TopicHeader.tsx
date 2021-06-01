@@ -6,7 +6,7 @@ import { Button } from "~ui/button";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicPopover } from "./CloseTopicPopover";
 import { useRef } from "react";
-import { useReopenTopicMutation } from "~frontend/gql/topics";
+import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -15,15 +15,9 @@ interface Props {
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
   const closeTopicRef = useRef<HTMLButtonElement>(null);
-  const [isClosingTopic, { unset: dismissClosingTopicModal, toggle: toggleClosingTopicModal }] = useBoolean(false);
+  const [isClosingTopic, { toggle: toggleClosingTopicModal }] = useBoolean(false);
 
-  const [reopenTopic, { loading: isReopeningTopic }] = useReopenTopicMutation();
-
-  function handleReopenTopicClick() {
-    reopenTopic({ topicId: topic?.id });
-  }
-
-  const isClosed = !topic?.closed_at;
+  const [{ isOpen, loading, open: openTopic, close: closeTopic }] = useTopic(topic);
 
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;
@@ -35,12 +29,12 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
         <UITitle>{topic.name}</UITitle>
 
         <UIAction>
-          {isClosed ? (
+          {isOpen ? (
             <Button ref={closeTopicRef} onClick={() => toggleClosingTopicModal()}>
               Close Topic
             </Button>
           ) : (
-            <Button onClick={() => handleReopenTopicClick()} isLoading={isReopeningTopic}>
+            <Button onClick={() => openTopic()} isLoading={loading}>
               Reopen Topic
             </Button>
           )}
@@ -50,8 +44,9 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
         <CloseTopicPopover
           anchorRef={closeTopicRef}
           topicId={topic.id}
-          onDismissRequested={() => dismissClosingTopicModal()}
-          onTopicClosed={() => dismissClosingTopicModal()}
+          loading={loading}
+          onDismissRequested={() => toggleClosingTopicModal()}
+          onTopicClosed={() => closeTopic()}
         />
       )}
     </>

@@ -3,36 +3,27 @@ import styled from "styled-components";
 import { Button, TransparentButton } from "~ui/button";
 import { Popover } from "~ui/popovers/Popover";
 import { TextTitle } from "~ui/typo";
-import { useCloseTopicMutation } from "~frontend/gql/topics";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { useClickAway } from "react-use";
 
 interface Props {
   topicId: string;
+  loading: boolean;
   onDismissRequested: () => void;
   onTopicClosed: () => void;
   anchorRef: RefObject<HTMLElement>;
 }
 
-export const CloseTopicPopover = ({ anchorRef, topicId, onDismissRequested, onTopicClosed }: Props) => {
+export const CloseTopicPopover = ({ anchorRef, onDismissRequested, onTopicClosed, loading }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
-
-  const [closeTopicMutation, { loading }] = useCloseTopicMutation();
-  const user = useAssertCurrentUser();
 
   useClickAway(holderRef, () => {
     onDismissRequested();
   });
 
   async function handleCloseTopic() {
-    await closeTopicMutation({
-      topicId,
-      closedBy: user.id,
-      closedAt: new Date().toISOString(),
-    });
-
     onTopicClosed();
+    onDismissRequested();
   }
 
   return (
