@@ -9,7 +9,7 @@ type EntitiesEventsMapBase = Record<string, unknown>;
 
 type OperationType = "INSERT" | "UPDATE" | "DELETE" | "MANUAL";
 
-type OperationTypeHandler<T> = (item: T, userId: string) => void;
+type OperationTypeHandler<T> = (item: T, userId: string | null) => void;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SingleTriggerHandlers = Map<OperationType, OperationTypeHandler<any>[]>;
@@ -39,7 +39,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     }
   }
 
-  async function handleHasuraEvent(event: HasuraEvent<unknown>, userId: string) {
+  async function handleHasuraEvent(event: HasuraEvent<unknown>, userId: string | null) {
     const triggerName = event.trigger.name;
     const operationType = event.event.op;
 
@@ -52,11 +52,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
 
   async function requestHandler(req: Request, res: Response) {
     const hasuraEvent = req.body as HasuraEvent<unknown>;
-    const userId = hasuraEvent.event.session_variables["x-hasura-user-id"];
-
-    if (!userId) {
-      throw new AuthenticationError("No user id provided with a hasura event");
-    }
+    const userId = hasuraEvent.event.session_variables?.["x-hasura-user-id"] ?? null;
 
     logger.info("Handling event", {
       eventId: hasuraEvent.id,

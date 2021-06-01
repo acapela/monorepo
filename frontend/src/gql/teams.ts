@@ -8,6 +8,8 @@ import {
   TeamDetailsQueryVariables,
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables,
+  TeamInvitationQuery,
+  TeamInvitationQueryVariables,
 } from "./generated";
 import { createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -102,6 +104,19 @@ export const [useCreateTeamInvitation] = createMutation<
     mutation CreateTeamInvitation($teamId: uuid!, $email: String!) {
       insert_team_invitation_one(object: { team_id: $teamId, email: $email }) {
         ...TeamInvitationBasicInfo
+      }
+    }
+  `
+);
+
+export const [useTeamInvitationByToken] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(
+  () => gql`
+    query TeamInvitation($tokenId: uuid!) {
+      team_invitation(where: { token: { _eq: $tokenId } }) {
+        id
+        team_id
+        token
+        used_by
       }
     }
   `

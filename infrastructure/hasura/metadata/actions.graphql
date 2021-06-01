@@ -1,37 +1,51 @@
 type Mutation {
-  accept_invite(token: String!): InviteAcceptResponse
+  accept_invite (
+    token: String!
+  ): InviteAcceptResponse
 }
 
-type Query {
-  get_download_url(uuid: uuid!): GetDownloadUrlResponse
-}
 
 type Query {
-  get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
+  get_download_url (
+    uuid: uuid!
+  ): GetDownloadUrlResponse
 }
+
+
+type Query {
+  get_upload_url (
+    fileName: String!
+    mimeType: String!
+  ): GetUploadUrlResponse
+}
+
 
 type Mutation {
-  upgrade_current_user: UpgradeUserResponse
+  upgrade_current_user : UpgradeUserResponse
 }
 
+
+
+
 input InviteAcceptCommand {
-  code: String!
+  code : String!
 }
 
 type InviteAcceptResponse {
-  team_id: ID!
-  invite_id: ID!
+  team_id : ID!
+  invite_id : ID!
 }
 
 type UpgradeUserResponse {
-  user_id: ID!
+  user_id : ID!
 }
 
 type GetUploadUrlResponse {
-  uploadUrl: String!
-  uuid: ID!
+  uploadUrl : String!
+  uuid : ID!
 }
 
 type GetDownloadUrlResponse {
-  downloadUrl: String!
+  downloadUrl : String!
 }
+
