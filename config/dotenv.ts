@@ -73,6 +73,7 @@ declare global {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertRequiredEnvVariablesLoaded() {
   const missingEnvVars: string[] = [];
 
@@ -122,4 +123,7 @@ function loadRootDotEnv(): void {
 }
 
 loadRootDotEnv();
-assertRequiredEnvVariablesLoaded();
+
+// if (false === true) {
+// assertRequiredEnvVariablesLoaded();
+// }
