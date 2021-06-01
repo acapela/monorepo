@@ -2,16 +2,17 @@ import { Request, Response, Router } from "express";
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError } from "../errors";
 import { handleTeamInvitationCreated } from "../teamInvitation/events";
-import { handleRoomUpdates, handleRoomCreated } from "../rooms/events";
+import { handleRoomUpdates } from "../rooms/events";
 import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
 import { handleMessageCreated } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
+import { handleTopicCreated } from "../topics/events";
 
 export const router = Router();
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
-hasuraEvents.addHandler("room_updates", ["INSERT"], handleRoomCreated);
+hasuraEvents.addHandler("topic_updates", ["INSERT"], handleTopicCreated);
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
