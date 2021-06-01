@@ -15,8 +15,13 @@ interface Props {
 export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: Props) => {
   const [topicSummary, setTopicSummary] = useState("");
 
-  async function handleCloseTopic() {
+  async function closeWithSummary() {
     onTopicClosed(topicSummary);
+    onDismissRequested();
+  }
+
+  async function closeWithoutSummary() {
+    onTopicClosed("");
     onDismissRequested();
   }
 
@@ -26,7 +31,8 @@ export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: 
         <UITitle>Almost there 🎉</UITitle>
         <UIBodyText>
           Briefly highlight the outcome of this Topic.
-          <br /> Your team will appreciate it.
+          <br />
+          Your team will appreciate it.
         </UIBodyText>
         <UITextArea
           placeholder={"Type here..."}
@@ -34,10 +40,10 @@ export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: 
           onChangeText={(value) => setTopicSummary(value)}
         />
         <UIButtons>
-          <TransparentButton isLoading={loading} onClick={onDismissRequested}>
+          <TransparentButton isLoading={loading} onClick={closeWithoutSummary}>
             Skip
           </TransparentButton>
-          <Button isLoading={loading} onClick={handleCloseTopic}>
+          <Button isLoading={loading} onClick={closeWithSummary}>
             Share
           </Button>
         </UIButtons>
