@@ -12,4 +12,9 @@ export const Container = styled.div`
   flex: 1;
   align-self: flex-start;
   width: 100%;
+
+  & & {
+    padding-left: 0;
+    podding-right: 0;
+  }
 `;

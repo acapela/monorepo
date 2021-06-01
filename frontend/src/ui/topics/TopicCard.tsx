@@ -1,16 +1,18 @@
 import styled from "styled-components";
+import { hoverActionCss, hoverActionNegativeSpacingCss } from "~frontend/../../ui/transitions";
 import { routes } from "~frontend/../routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";
-import { ItemTitle } from "~ui/typo";
+import { TextTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
+  className?: string;
 }
 
-export function TopicCard({ topic }: Props) {
+export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
   const user = useAssertCurrentUser();
 
@@ -30,9 +32,9 @@ export function TopicCard({ topic }: Props) {
   }
 
   return (
-    <UIHolder onClick={handleOpen}>
+    <UIHolder onClick={handleOpen} className={className}>
       <UIInfo>
-        <ItemTitle>Topic: {topic.name}</ItemTitle>
+        <TextTitle>Topic: {topic.name}</TextTitle>
         <UIMembers>
           <MembersManager
             users={topic.members.map((m) => m.user)}
@@ -43,12 +45,17 @@ export function TopicCard({ topic }: Props) {
       </UIInfo>
     </UIHolder>
   );
-}
+})``;
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  ${hoverActionNegativeSpacingCss}
+  ${hoverActionCss}
+`;
 
 const UIInfo = styled.div`
-  text-align: center;
+  ${TextTitle} {
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const UIMembers = styled.div``;
