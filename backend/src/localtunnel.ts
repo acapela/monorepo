@@ -13,7 +13,7 @@ export async function getTunnelPublicUrl(): Promise<string> {
   if (!tunnel) {
     tunnel = await localtunnel({
       subdomain: `acapela-dev-${hostname}`,
-      port: process.env.BACKEND_PORT,
+      port: parseInt(process.env.BACKEND_PORT),
       allow_invalid_cert: true,
     });
 
