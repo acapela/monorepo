@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import logger from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
 import { convertMaybeArrayToArray } from "~shared/array";
-import { AuthenticationError } from "../errors";
 import { HasuraSessionVariables } from "./session";
 
 type EntitiesEventsMapBase = Record<string, unknown>;
