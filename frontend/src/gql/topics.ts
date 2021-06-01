@@ -31,6 +31,8 @@ import {
   RecentTopicsQueryVariables,
   CloseTopicMutation,
   CloseTopicMutationVariables,
+  ReopenTopicMutation,
+  ReopenTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -345,6 +347,18 @@ export const [useCloseTopicMutation] = createMutation<CloseTopicMutation, CloseT
 
     mutation CloseTopic($topicId: uuid!, $closedAt: timestamp!, $closedBy: uuid!) {
       topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { closed_at: $closedAt, closed_by: $closedBy }) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useReopenTopicMutation] = createMutation<ReopenTopicMutation, ReopenTopicMutationVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    mutation ReopenTopic($topicId: uuid!) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { closed_at: null, closed_by: null }) {
         ...TopicDetailedInfo
       }
     }

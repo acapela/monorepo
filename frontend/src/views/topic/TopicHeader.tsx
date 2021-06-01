@@ -6,6 +6,7 @@ import { Button } from "~ui/button";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicPopover } from "./CloseTopicPopover";
 import { useRef } from "react";
+import { useReopenTopicMutation } from "~frontend/gql/topics";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -15,6 +16,12 @@ interface Props {
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
   const closeTopicRef = useRef<HTMLButtonElement>(null);
   const [isClosingTopic, { unset: dismissClosingTopicModal, toggle: toggleClosingTopicModal }] = useBoolean(false);
+
+  const [reopenTopic, { loading: isReopeningTopic }] = useReopenTopicMutation();
+
+  function handleReopenTopicClick() {
+    reopenTopic({ topicId: topic?.id });
+  }
 
   const isClosed = !topic?.closed_at;
 
@@ -33,7 +40,9 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
               Close Topic
             </Button>
           ) : (
-            <Button>Reopen Topic</Button>
+            <Button onClick={() => handleReopenTopicClick()} isLoading={isReopeningTopic}>
+              Reopen Topic
+            </Button>
           )}
         </UIAction>
       </UIHolder>

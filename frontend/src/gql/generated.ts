@@ -8657,6 +8657,19 @@ export type CloseTopicMutation = (
   )> }
 );
 
+export type ReopenTopicMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type ReopenTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
 export type UserBasicInfoFragment = (
   { __typename?: 'user' }
   & Pick<User, 'id' | 'name' | 'avatar_url'>
