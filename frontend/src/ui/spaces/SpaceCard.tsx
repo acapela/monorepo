@@ -2,14 +2,14 @@ import { useRouter } from "next/router";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
-import { useAddSpaceMember, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { useBoolean } from "~frontend/hooks/useBoolean";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconMoreHoriz } from "~ui/icons";
 import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
-import { ManageSpaceModal } from "./ManageSpaceModal";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -20,9 +20,9 @@ export function SpaceCard({ space }: Props) {
   const user = useAssertCurrentUser();
   const router = useRouter();
 
-  const [isEditingSpace, { set: openEditSpaceModal, unset: closeEditSpaceModal }] = useBoolean(false);
   const [addSpaceMember] = useAddSpaceMember();
   const [removeSpaceMember] = useRemoveSpaceMember();
+  const [editSpace] = useEditSpaceMutation();
 
   async function handleJoin(userId: string) {
     await addSpaceMember({ userId, spaceId });
@@ -36,9 +36,22 @@ export function SpaceCard({ space }: Props) {
     router.push(`space/${space.id}`);
   }
 
+  async function handleEditSpace() {
+    const newSpaceName = await openUIPrompt({
+      title: "Change space name",
+      placeholder: "Design team",
+      submitLabel: "Change name",
+    });
+
+    if (!newSpaceName?.trim()) return;
+
+    if (newSpaceName === space.name) return;
+
+    await editSpace({ spaceId: space?.id, name: newSpaceName });
+  }
+
   return (
     <>
-      {isEditingSpace && <ManageSpaceModal space={space} onCloseRequest={closeEditSpaceModal} />}
       <UIHolder>
         <UIBanner>
           <UIImage onClick={handleOpen}></UIImage>
@@ -48,7 +61,7 @@ export function SpaceCard({ space }: Props) {
               options={[
                 {
                   label: "Edit name",
-                  onSelect: openEditSpaceModal,
+                  onSelect: handleEditSpace,
                 },
               ]}
             >

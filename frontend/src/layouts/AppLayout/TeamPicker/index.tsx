@@ -4,6 +4,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeam, useTeams } from "~frontend/gql/teams";
 import { useChangeCurrentTeamId } from "~frontend/gql/user";
 import { Button } from "~ui/button";
+import { openUIPrompt } from "~frontend/utils/prompt";
 
 export function TeamPickerView() {
   const [data] = useTeams.subscription();
@@ -15,7 +16,11 @@ export function TeamPickerView() {
   const teams = data?.teams ?? [];
 
   async function handleCreateNewTeam() {
-    const name = prompt("Team name");
+    const name = await openUIPrompt({
+      title: "Team name",
+      placeholder: "Team name...",
+      submitLabel: "Create new team",
+    });
     if (!name?.trim()) {
       return;
     }

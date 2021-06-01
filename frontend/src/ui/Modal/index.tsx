@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
 import { BodyPortal } from "~ui/BodyPortal";
 import { Button } from "~ui/button";
 import { IconCross } from "~ui/icons";
@@ -29,6 +30,8 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest }:
           onClick={(event) => {
             event.stopPropagation();
           }}
+          presenceStyles={{ opacity: [0, 1], scale: [0.95, 1] }}
+          transition={{ type: "spring", bounce: 0, duration: 0.3 }}
         >
           {hasCloseButton && (
             <UIToolbar>
@@ -63,7 +66,7 @@ const UIBodyCover = styled.div`
   justify-content: center;
 `;
 
-const UIModal = styled.div`
+const UIModal = styled(PresenceAnimator)`
   min-width: 368px;
 
   background: #ffffff;
