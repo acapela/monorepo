@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { slugify } from "~frontend/../../shared/slugify";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useUnreadMessages } from "~frontend/gql/topics";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useCreateTopicMutation, useUnreadMessages } from "~frontend/gql/topics";
+import { createNextIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { UnreadTopicIndicator } from "~frontend/ui/UnreadTopicsIndicator";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/button";
-import { AddTopicModal } from "./AddTopicModal";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
@@ -18,24 +18,43 @@ interface Props {
 export function TopicsList({ roomId, activeTopicId }: Props) {
   const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
   const [unreadMessagesData] = useUnreadMessages.subscription();
-  const [isAddingTopic, { set: openAddTopicModal, unset: closeAddTopicModal }] = useBoolean(false);
+  const [createTopic] = useCreateTopicMutation();
 
   const room = roomData?.room;
 
   const topics = room?.topics ?? [];
 
+  async function handleCreateTopic() {
+    const topicName = await openUIPrompt({
+      title: "New topic name",
+      submitLabel: "Create topic",
+      placeholder: "Our brand colors",
+    });
+    if (!topicName?.trim()) {
+      return;
+    }
+
+    const index = createNextIndex();
+    const slug = slugify(topicName);
+
+    const { data: createTopicResult } = await createTopic({
+      name: topicName,
+      slug,
+      index,
+      roomId,
+    });
+
+    const topic = createTopicResult?.topic;
+
+    if (!topic) {
+      return;
+    }
+
+    routes.spaceRoomTopic.push({ topicId: topic.id, spaceId: topic.room.space_id, roomId: topic.room.id });
+  }
+
   return (
     <>
-      {isAddingTopic && (
-        <AddTopicModal
-          roomId={roomId}
-          onCloseRequest={closeAddTopicModal}
-          onCreated={(topic: TopicDetailedInfoFragment) =>
-            routes.spaceRoomTopic.push({ topicId: topic.id, spaceId: topic.room.space_id, roomId: topic.room.id })
-          }
-        />
-      )}
-
       {topics.length === 0 && <UINoAgendaMessage>This room has no topics yet.</UINoAgendaMessage>}
 
       {topics.map((topic) => {
@@ -50,7 +69,7 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           </UITopic>
         );
       })}
-      <Button onClick={openAddTopicModal}>Add topic</Button>
+      <Button onClick={handleCreateTopic}>Add topic</Button>
     </>
   );
 }

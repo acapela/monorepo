@@ -11,6 +11,7 @@ import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { PromiseUIRenderer } from "~ui/createPromiseUI";
 
 interface AddedProps {
   session: Session;
@@ -33,6 +34,7 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
+      <PromiseUIRenderer />
       <SessionProvider session={session}>
         <MotionConfig transition={{ type: "spring", stiffness: 500, damping: 30 }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>

@@ -8,6 +8,7 @@ import { TeamMembersManager } from "./TeamMembersManager";
 
 export function HomeView() {
   const user = useAssertCurrentUser();
+
   return (
     <UIHolder>
       <UISearchWrapper>

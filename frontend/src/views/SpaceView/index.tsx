@@ -1,9 +1,10 @@
 import styled from "styled-components";
+import { slugify } from "~frontend/../../shared/slugify";
+import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
-import { useBoolean } from "~frontend/hooks/useBoolean";
 import { routes } from "~frontend/routes";
-import { CreateRoomModal } from "~frontend/ui/rooms/CreateRoomModal";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/button";
 import { Container } from "~ui/layout/Container";
 import { PageTitle } from "~ui/typo";
@@ -15,28 +16,46 @@ interface Props {
 
 export function SpaceView({ spaceId }: Props) {
   const [data] = useSingleSpaceQuery.subscription({ id: spaceId });
-  const [isCreatingRoom, { set: openCreateRoomModal, unset: closeCreateRoomModal }] = useBoolean(false);
 
   const space = data?.space ?? null;
 
   const rooms = space?.rooms ?? [];
 
+  const [createRoom] = useCreateRoomMutation();
+
+  async function onCreate() {
+    const roomName = await openUIPrompt({
+      title: "Room name",
+      placeholder: "Daily standup...",
+      submitLabel: "Create room",
+    });
+
+    if (!roomName?.trim()) {
+      return;
+    }
+
+    const slug = slugify(roomName);
+
+    const { data: createRoomResult } = await createRoom({ name: roomName, spaceId, slug });
+
+    const roomId = createRoomResult?.room?.id;
+
+    if (!roomId) {
+      return;
+    }
+
+    routes.spaceRoom.push({ spaceId, roomId });
+  }
+
   return (
     <>
-      {isCreatingRoom && (
-        <CreateRoomModal
-          spaceId={spaceId}
-          onCloseRequest={closeCreateRoomModal}
-          onCreated={({ spaceId, roomId }) => routes.spaceRoom.push({ spaceId, roomId })}
-        />
-      )}
       <Container>
         <UIHolder>
           <UISpace>{space && <SpaceCard space={space} />}</UISpace>
           <UIContent>
             <UITitle>
               <PageTitle>Rooms</PageTitle>
-              <Button onClick={openCreateRoomModal}>Create room</Button>
+              <Button onClick={onCreate}>Create room</Button>
             </UITitle>
 
             <UIRoom>

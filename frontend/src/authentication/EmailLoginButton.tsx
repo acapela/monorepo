@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/button";
 
 export const EmailLoginButton = ({
@@ -9,8 +10,15 @@ export const EmailLoginButton = ({
   className?: string;
   children?: ReactNode;
 }): JSX.Element => {
-  function handleLogin() {
-    const email = window.prompt("Email...");
+  async function handleLogin() {
+    const email = await openUIPrompt({
+      title: "What is your email address",
+      placeholder: "Email...",
+      submitLabel: "Continue...",
+    });
+
+    if (!email?.trim()) return;
+
     signIn("email", { email, callbackUrl: "http://localhost:3000" });
   }
 

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/button";
 import { Container } from "~ui/layout/Container";
 import { ItemTitle } from "~ui/typo";
@@ -11,7 +12,12 @@ export function TeamMembersManager() {
   const [createTeamInvitation] = useCreateTeamInvitation();
 
   async function handleInviteMember() {
-    const email = prompt("User email?");
+    const email = await openUIPrompt({
+      title: "User email",
+      description: "Provide email address of person you want to invite",
+      placeholder: "Email address...",
+      submitLabel: "Send invitation",
+    });
 
     if (!email?.trim()) return;
 
