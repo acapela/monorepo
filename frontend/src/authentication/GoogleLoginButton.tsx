@@ -1,6 +1,6 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 
 export const GoogleLoginButton = ({
   className,

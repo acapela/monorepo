@@ -1,14 +1,15 @@
 import styled from "styled-components";
-import { slugify } from "~frontend/../../shared/slugify";
+import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
 import { PageTitle } from "~ui/typo";
 import { SpaceRooms } from "./SpaceRooms";
+import { useRef } from "react";
 
 interface Props {
   spaceId: string;
@@ -22,12 +23,17 @@ export function SpaceView({ spaceId }: Props) {
   const rooms = space?.rooms ?? [];
 
   const [createRoom] = useCreateRoomMutation();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   async function onCreate() {
     const roomName = await openUIPrompt({
       title: "Room name",
       placeholder: "Daily standup...",
       submitLabel: "Create room",
+      anchor: {
+        ref: buttonRef,
+        placement: "bottom-end",
+      },
     });
 
     if (!roomName?.trim()) {
@@ -55,7 +61,9 @@ export function SpaceView({ spaceId }: Props) {
           <UIContent>
             <UITitle>
               <PageTitle>Rooms</PageTitle>
-              <Button onClick={onCreate}>Create room</Button>
+              <Button ref={buttonRef} onClick={onCreate}>
+                Create room
+              </Button>
             </UITitle>
 
             <UIRoom>

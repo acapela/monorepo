@@ -12,7 +12,7 @@ export const RecentTopics = styled(function RecentTopics({ className }: Props) {
   const teamId = useAssertCurrentTeamId();
   const user = useAssertCurrentUser();
 
-  const [data] = useRecentTopics({ teamId, limit: 20, userId: user.id });
+  const [data] = useRecentTopics.subscription({ teamId, limit: 20, userId: user.id });
 
   const topics = data?.recentTopics ?? [];
 

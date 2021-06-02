@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 import { useAcceptInviteMutation } from "~frontend/gql/invitations";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { LoginOptionsView } from "../LoginOptionsView";

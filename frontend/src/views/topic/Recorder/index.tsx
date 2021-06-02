@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
+import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { useBoolean } from "~frontend/hooks/useBoolean";
-import { IconMic, IconMicSlash, IconVideoCamera } from "~ui/icons";
+import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { useRecorderErrors } from "./useRecorderErrors";
-import { VideoSourcePicker } from "./VideoSourcePicker";
 
 interface RecorderProps {
   className?: string;
@@ -30,8 +30,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
-  const [isVideoSourcePickerVisible, { unset: hideVideoSourcePicker, toggle: toggleVideoSourcePicker }] =
-    useBoolean(false);
+
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const popoverHandlerRef = useRef<HTMLDivElement>(null);
   const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({
@@ -62,7 +61,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   /* Handle Video Source Picker */
   const startVideoRecording = async (source: MediaSource) => {
-    toggleVideoSourcePicker();
     setMediaSource(source);
   };
 
@@ -70,13 +68,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     if (isRecording) {
       doCancelRecording();
     }
-
-    toggleVideoSourcePicker();
   };
 
   const onAudioButtonClick = () => {
-    hideVideoSourcePicker();
-
     if (mediaSource === MediaSource.MICROPHONE && isRecording) {
       return doCancelRecording();
     }
@@ -152,13 +146,28 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   return (
     <div className={className} ref={popoverHandlerRef}>
-      <RecordButton
-        onClick={onVideoButtonClick}
-        tooltipLabel={isRecording || isVideoSourcePickerVisible ? undefined : "Record video"}
-        disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
+      <PopoverMenu
+        tooltip="Record video"
+        options={[
+          {
+            label: "Record screen",
+            icon: <IconMonitor />,
+            onSelect: () => startVideoRecording(MediaSource.SCREEN),
+          },
+          {
+            label: "Record with camera",
+            icon: <IconCamera />,
+            onSelect: () => startVideoRecording(MediaSource.CAMERA),
+          },
+        ]}
       >
-        <IconVideoCamera />
-      </RecordButton>
+        <RecordButton
+          onClick={onVideoButtonClick}
+          disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
+        >
+          <IconVideoCamera />
+        </RecordButton>
+      </PopoverMenu>
       <RecordButton
         onClick={onAudioButtonClick}
         tooltipLabel={isRecording ? undefined : "Record audio"}
@@ -167,14 +176,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       >
         <IconMic />
       </RecordButton>
-      {isVideoSourcePickerVisible && (
-        <VideoSourcePicker
-          handlerRef={popoverHandlerRef}
-          onStartRecording={startVideoRecording}
-          screenCaptureError={getRecorderError(MediaSource.SCREEN) ?? ""}
-          cameraCaptureError={getRecorderError(MediaSource.CAMERA) ?? ""}
-        />
-      )}
+
       {isCountdownStarted && (
         <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
       )}

@@ -1,11 +1,12 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
+import { IconButton } from "~ui/buttons/IconButton";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconMoreHoriz } from "~ui/icons";
-import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
+import { IconEdit, IconMoreHoriz } from "~ui/icons";
+import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
@@ -56,15 +57,15 @@ export function SpaceCard({ space }: Props) {
           <UIImage onClick={handleOpen}></UIImage>
           <UIMenuIcon>
             <PopoverMenu
-              position={PopoverPosition.LEFT_BOTTOM}
               options={[
                 {
                   label: "Edit name",
                   onSelect: handleEditSpace,
+                  icon: <IconEdit />,
                 },
               ]}
             >
-              <IconMoreHoriz />
+              <IconButton tooltip="Show options..." icon={<IconMoreHoriz />} />
             </PopoverMenu>
           </UIMenuIcon>
         </UIBanner>
@@ -114,6 +115,10 @@ const UIMenuIcon = styled.div`
   right: 1rem;
   color: #fff;
   cursor: pointer;
+
+  ${IconButton} {
+    color: #fff;
+  }
 `;
 
 const UIMembers = styled.div``;

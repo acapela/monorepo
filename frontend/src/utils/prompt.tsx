@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useKey } from "react-use";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
-import { Modal } from "~frontend/ui/Modal";
+import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import styled from "styled-components";
 
@@ -12,12 +12,13 @@ interface PromptInput {
   placeholder?: string;
   submitLabel?: string;
   initialValue?: string;
+  anchor?: ModalAnchor;
 }
 
 type PromptResult = string | null;
 
 export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
-  ({ title, initialValue = "", submitLabel = "Submit", placeholder, description }, resolve) => {
+  ({ title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor }, resolve) => {
     const [value, setValue] = useState(initialValue);
 
     useKey("Escape", () => resolve(null));
@@ -25,6 +26,7 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
 
     return (
       <Modal
+        anchor={anchor}
         head={{
           title,
           description,

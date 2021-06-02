@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 
 export const EmailLoginButton = ({
   className,
