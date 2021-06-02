@@ -15,7 +15,7 @@ interface Props {
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
   const [isClosingTopic, { toggle: toggleClosingTopicModal }] = useBoolean(false);
 
-  const { isOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
+  const { isClosed, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;
@@ -27,13 +27,12 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
         <UITitle>{topic.name}</UITitle>
 
         <UIAction>
-          {isOpen ? (
-            <Button onClick={() => toggleClosingTopicModal()}>Close Topic</Button>
-          ) : (
-            <Button onClick={() => openTopic()} isLoading={loading}>
+          {isClosed && (
+            <Button onClick={openTopic} isLoading={loading}>
               Reopen Topic
             </Button>
           )}
+          {!isClosed && <Button onClick={toggleClosingTopicModal}>Close Topic</Button>}
         </UIAction>
       </UIHolder>
       {isClosingTopic && (

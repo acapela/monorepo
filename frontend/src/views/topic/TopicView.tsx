@@ -43,7 +43,7 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
-  const { hasTopic, isClosed: isTopicClosed, closedAt, closedByUser, closingSummary } = useTopic(topicData?.topic);
+  const { hasTopic, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topicData?.topic);
 
   return (
     <>
@@ -57,8 +57,12 @@ export const TopicView = ({ id }: Props) => {
                 {messages.map((message) => (
                   <Message key={message.id} message={message} />
                 ))}
-                {isTopicClosed && (
-                  <TopicSummaryMessage summary={closingSummary()} closedAt={closedAt()} closedBy={closedByUser()} />
+                {topicCloseInfo && (
+                  <TopicSummaryMessage
+                    summary={topicCloseInfo.summary}
+                    closedAt={topicCloseInfo.closedAt}
+                    closedBy={topicCloseInfo.closedByUsedId}
+                  />
                 )}
               </AnimateSharedLayout>
               {!messages.length && (
