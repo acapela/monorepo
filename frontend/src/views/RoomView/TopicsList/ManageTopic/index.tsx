@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { IconVerticalThreeDots } from "~ui/icons";
-import { hoverTransition } from "~ui/transitions";
+import { ACTION_ACTIVE_COLOR, hoverTransition } from "~ui/transitions";
 import { RenameModal } from "./RenameModal";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 
@@ -37,7 +37,7 @@ const Toggle = styled.button`
   --size: 18px;
   width: var(--size);
   height: var(--size);
-  background: var(--white);
+  background: #ffffff;
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -46,7 +46,7 @@ const Toggle = styled.button`
   cursor: pointer;
   @media (hover) {
     :hover {
-      background-color: var(--active);
+      background-color: ${ACTION_ACTIVE_COLOR};
     }
   }
 `;

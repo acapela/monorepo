@@ -14,9 +14,6 @@ export const global = css`
     font-family: "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
     font-weight: 500;
     color: #232b35;
-    --white: #ffffff;
-    --active: rgb(136 136 136 / 10%);
-    --error: #e94057;
   }
 
   body {

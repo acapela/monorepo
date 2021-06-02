@@ -6,6 +6,7 @@ import { VStack } from "~ui/Stack";
 import { Button } from "~ui/button";
 import { useEditTopicMutation } from "~frontend/gql/topics";
 import { SecondaryText } from "~ui/typo";
+import { DANGER_COLOR } from "~ui/colors";
 
 interface Props {
   onClose: () => void;
@@ -57,7 +58,7 @@ export const RenameModal = ({ onClose, topic }: Props) => {
         <VStack style={{ width: "100%" }} alignItems="center" gap={40}>
           <VStack style={{ width: "100%" }} gap={4}>
             <TextInput autoFocus placeholder="Enter topic name" value={name} onChangeText={(value) => setName(value)} />
-            {error && <SecondaryText style={{ paddingLeft: "16px", color: "var(--error)" }}>{error}</SecondaryText>}
+            {error && <SecondaryText style={{ paddingLeft: "16px", color: DANGER_COLOR }}>{error}</SecondaryText>}
           </VStack>
           <Button>Rename</Button>
         </VStack>
