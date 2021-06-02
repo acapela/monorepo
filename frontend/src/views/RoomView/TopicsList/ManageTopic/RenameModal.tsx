@@ -55,8 +55,8 @@ export const RenameModal = ({ onClose, topic }: Props) => {
           handleSubmit();
         }}
       >
-        <VStack style={{ width: "100%" }} alignItems="center" gap={40}>
-          <VStack style={{ width: "100%" }} gap={4}>
+        <VStack fullWidth alignItems="center" gap={40}>
+          <VStack fullWidth gap={4}>
             <TextInput autoFocus placeholder="Enter topic name" value={name} onChangeText={(value) => setName(value)} />
             {error && <SecondaryText style={{ paddingLeft: "16px", color: DANGER_COLOR }}>{error}</SecondaryText>}
           </VStack>

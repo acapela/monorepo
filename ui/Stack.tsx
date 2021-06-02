@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface Props {
   direction: "row" | "column";
@@ -9,6 +9,7 @@ interface Props {
   justifyContent?: "start" | "end" | "center" | "space-between" | "space-around";
   children: React.ReactNode;
   wrap?: "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit";
+  fullWidth?: boolean;
 }
 
 const alignItemsFlexbox = {
@@ -32,6 +33,11 @@ const Stack = styled.div<Props>`
   align-items: ${(p) => alignItemsFlexbox[p.alignItems || "start"]};
   justify-content: ${(p) => justifyContentFlexbox[p.justifyContent || "start"]};
   flex-wrap: ${(p) => p.wrap || "initial"};
+  ${(p) =>
+    p.fullWidth &&
+    css`
+      width: 100%;
+    `}
 `;
 
 export const VStack = (props: Omit<Props, "direction">) => <Stack direction="column" {...props} />;
