@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useKey } from "react-use";
 import styled from "styled-components";
 import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
 import { BodyPortal } from "~ui/BodyPortal";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function Modal({ head, hasCloseButton = true, children, onCloseRequest }: Props) {
+  useKey("Escape", () => onCloseRequest());
   return (
     <BodyPortal>
       <UIBodyCover

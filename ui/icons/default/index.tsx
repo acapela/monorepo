@@ -575,3 +575,4 @@ export { default as IconWrench } from "./Wrench";
 export { default as IconYinYang } from "./YinYang";
 export { default as IconZoomIn } from "./ZoomIn";
 export { default as IconZoomOut } from "./ZoomOut";
+export { default as IconVerticalThreeDots } from "./VerticalThreeDots";

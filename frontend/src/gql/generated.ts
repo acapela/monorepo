@@ -8671,6 +8671,21 @@ export type ToggleCloseTopicMutation = (
   )> }
 );
 
+
+export type EditTopicMutationVariables = Exact<{
+  name: Scalars['String'];
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type EditTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
 export type UserBasicInfoFragment = (
   { __typename?: 'user' }
   & Pick<User, 'id' | 'name' | 'avatar_url'>

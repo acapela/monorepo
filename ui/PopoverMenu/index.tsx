@@ -123,6 +123,7 @@ const UIMenu = styled.ul`
 const UIMenuItem = styled.li`
   padding: 0 0.5rem;
   line-height: 3rem;
+  cursor: pointer;
 
   color: #939eaa;
   border-radius: 0.25rem;

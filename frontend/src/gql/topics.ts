@@ -31,6 +31,8 @@ import {
   RecentTopicsQueryVariables,
   ToggleCloseTopicMutation,
   ToggleCloseTopicMutationVariables,
+  EditTopicMutation,
+  EditTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -352,6 +354,17 @@ export const [useToggleCloseTopicMutation] = createMutation<
         pk_columns: { id: $topicId }
         _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId, closing_summary: $summary }
       ) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopicMutationVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+    mutation EditTopic($name: String!, $topicId: uuid!) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { name: $name }) {
         ...TopicDetailedInfo
       }
     }
