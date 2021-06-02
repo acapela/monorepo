@@ -157,6 +157,9 @@ const UIMessageHead = styled.div`
   display: flex;
   align-items: flex-end;
   margin-bottom: 0.5rem;
+
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const UIUserName = styled.span`

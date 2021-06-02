@@ -65,7 +65,7 @@ export const TopicView = ({ id }: Props) => {
                   />
                 )}
               </AnimateSharedLayout>
-              {!messages.length && (
+              {!messages.length && !topicCloseInfo && (
                 <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
               )}
             </UIAnimatedMessagesWrapper>
