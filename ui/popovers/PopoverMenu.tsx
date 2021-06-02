@@ -15,17 +15,11 @@ type NonEmptyArray<T> = [T, ...T[]];
 
 interface Props {
   className?: string;
-  children: React.ReactElement; // Only one child accepted
+  children: ReactNode;
   options: NonEmptyArray<PopoverMenuOptions>;
-
   position?: PopoverPlacement;
-
-  // https://popper.js.org/docs/v2/modifiers/offset/
-  skidding?: number;
-  distance?: number;
   onOpen?: () => void;
   onClose?: () => void;
-
   tooltip?: string;
 }
 
