@@ -13,6 +13,7 @@ interface Props {
 
 export const ManageTopic = ({ topic }: Props) => {
   const [isModalOpen, { toggle }] = useBoolean(false);
+
   return (
     <>
       {isModalOpen && <RenameModal onClose={toggle} topic={topic} />}
@@ -33,10 +34,11 @@ export const ManageTopic = ({ topic }: Props) => {
   );
 };
 
+const TOGGLE_SIZE_PX = 18;
+
 const Toggle = styled.button`
-  --size: 18px;
-  width: var(--size);
-  height: var(--size);
+  width: ${TOGGLE_SIZE_PX}px;
+  height: ${TOGGLE_SIZE_PX}px;
   background: #ffffff;
   border-radius: 3px;
   display: flex;
