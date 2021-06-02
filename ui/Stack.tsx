@@ -9,7 +9,6 @@ interface Props {
   justifyContent?: "start" | "end" | "center" | "space-between" | "space-around";
   children: React.ReactNode;
   wrap?: "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit";
-  ref?: any;
 }
 
 const alignItemsFlexbox = {
@@ -35,10 +34,6 @@ const Stack = styled.div<Props>`
   flex-wrap: ${(p) => p.wrap || "initial"};
 `;
 
-export const VStack = React.forwardRef((props: Omit<Props, "direction">, ref) => (
-  <Stack ref={ref} direction="column" {...props} />
-));
+export const VStack = (props: Omit<Props, "direction">) => <Stack direction="column" {...props} />;
 
-export const HStack = React.forwardRef((props: Omit<Props, "direction">, ref) => (
-  <Stack ref={ref} direction="row" {...props} />
-));
+export const HStack = (props: Omit<Props, "direction">) => <Stack direction="row" {...props} />;
