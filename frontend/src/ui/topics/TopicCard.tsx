@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { hoverActionCss, hoverActionNegativeSpacingCss } from "~ui/transitions";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";

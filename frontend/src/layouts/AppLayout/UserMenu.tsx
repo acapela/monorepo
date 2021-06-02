@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { IconSignOut, IconUsers } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/ui/users/Avatar";
 
