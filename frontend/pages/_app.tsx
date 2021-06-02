@@ -12,6 +12,7 @@ import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
+import { useEffect } from "react";
 
 interface AddedProps {
   session: Session;
@@ -30,6 +31,18 @@ export default function App({
   authToken,
   hasuraWebsocketEndpoint,
 }: AppProps & AddedProps): JSX.Element {
+  // Load Userback integration after initial app render
+  useEffect(() => {
+    window.Userback = window.Userback || {};
+    window.Userback.access_token = "29970|44040|bV1489q26af7ZoRzAgnJrfPsV";
+    (function (d) {
+      const s = d.createElement("script");
+      s.async = true;
+      s.src = "https://static.userback.io/widget/v1.js";
+      (d.head || d.body).appendChild(s);
+    })(document);
+  }, []);
+
   return (
     <>
       <BuiltInStyles />
