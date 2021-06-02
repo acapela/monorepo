@@ -89,7 +89,6 @@ export default class AppDocument extends Document<Props> {
         <body>
           <Main />
           <NextScript />
-          <script async type="text/javascript" src="/scripts/userback.js"></script>
         </body>
       </Html>
     );
