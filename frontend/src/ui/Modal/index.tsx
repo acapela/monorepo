@@ -19,6 +19,7 @@ interface Props {
 
 export function Modal({ head, hasCloseButton = true, children, onCloseRequest }: Props) {
   useKey("Escape", () => onCloseRequest());
+
   return (
     <BodyPortal>
       <UIBodyCover
