@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { Button } from "./Button";
 import { hoverActionCss } from "../transitions";
 import { ReactNode, useRef } from "react";
 import { Tooltip } from "~ui/popovers/Tooltip";

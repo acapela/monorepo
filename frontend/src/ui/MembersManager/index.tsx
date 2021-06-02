@@ -86,7 +86,3 @@ const UIActions = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-
-const UIAddIcon = styled(IconPlusCircle)`
-  font-size: 2rem;
-`;
