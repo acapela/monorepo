@@ -6410,9 +6410,9 @@ export type Timestamptz_Comparison_Exp = {
 export type Topic = {
   __typename?: 'topic';
   closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   closed_by_user?: Maybe<User>;
+  closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
   id: Scalars['uuid'];
   index: Scalars['String'];
@@ -6512,8 +6512,8 @@ export type Topic_Bool_Exp = {
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   closed_at?: Maybe<Timestamp_Comparison_Exp>;
-  closed_by?: Maybe<Uuid_Comparison_Exp>;
   closed_by_user?: Maybe<User_Bool_Exp>;
+  closed_by_user_id?: Maybe<Uuid_Comparison_Exp>;
   closing_summary?: Maybe<String_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   index?: Maybe<String_Comparison_Exp>;
@@ -6536,8 +6536,8 @@ export enum Topic_Constraint {
 /** input type for inserting data into table "topic" */
 export type Topic_Insert_Input = {
   closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by?: Maybe<Scalars['uuid']>;
   closed_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
+  closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6553,7 +6553,7 @@ export type Topic_Insert_Input = {
 export type Topic_Max_Fields = {
   __typename?: 'topic_max_fields';
   closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by?: Maybe<Scalars['uuid']>;
+  closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6565,7 +6565,7 @@ export type Topic_Max_Fields = {
 /** order by max() on columns of table "topic" */
 export type Topic_Max_Order_By = {
   closed_at?: Maybe<Order_By>;
-  closed_by?: Maybe<Order_By>;
+  closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
@@ -6733,7 +6733,7 @@ export enum Topic_Member_Update_Column {
 export type Topic_Min_Fields = {
   __typename?: 'topic_min_fields';
   closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by?: Maybe<Scalars['uuid']>;
+  closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6745,7 +6745,7 @@ export type Topic_Min_Fields = {
 /** order by min() on columns of table "topic" */
 export type Topic_Min_Order_By = {
   closed_at?: Maybe<Order_By>;
-  closed_by?: Maybe<Order_By>;
+  closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
@@ -6779,8 +6779,8 @@ export type Topic_On_Conflict = {
 /** ordering options when selecting data from "topic" */
 export type Topic_Order_By = {
   closed_at?: Maybe<Order_By>;
-  closed_by?: Maybe<Order_By>;
   closed_by_user?: Maybe<User_Order_By>;
+  closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   index?: Maybe<Order_By>;
@@ -6802,7 +6802,7 @@ export enum Topic_Select_Column {
   /** column name */
   ClosedAt = 'closed_at',
   /** column name */
-  ClosedBy = 'closed_by',
+  ClosedByUserId = 'closed_by_user_id',
   /** column name */
   ClosingSummary = 'closing_summary',
   /** column name */
@@ -6820,7 +6820,7 @@ export enum Topic_Select_Column {
 /** input type for updating data in table "topic" */
 export type Topic_Set_Input = {
   closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by?: Maybe<Scalars['uuid']>;
+  closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
   index?: Maybe<Scalars['String']>;
@@ -6834,7 +6834,7 @@ export enum Topic_Update_Column {
   /** column name */
   ClosedAt = 'closed_at',
   /** column name */
-  ClosedBy = 'closed_by',
+  ClosedByUserId = 'closed_by_user_id',
   /** column name */
   ClosingSummary = 'closing_summary',
   /** column name */
@@ -8658,7 +8658,7 @@ export type RecentTopicsQuery = (
 export type ToggleCloseTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
   closedAt?: Maybe<Scalars['timestamp']>;
-  closedBy?: Maybe<Scalars['uuid']>;
+  closedByUserId?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
 }>;
 
@@ -9729,11 +9729,11 @@ export type team_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topicKeySpecifier = ('closed_at' | 'closed_by' | 'closed_by_user' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
+export type topicKeySpecifier = ('closed_at' | 'closed_by_user' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
 export type topicFieldPolicy = {
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	closed_by?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_by_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	closing_summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9757,10 +9757,10 @@ export type topic_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_max_fieldsKeySpecifier = ('closed_at' | 'closed_by' | 'closing_summary' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsKeySpecifier = ('closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
 export type topic_max_fieldsFieldPolicy = {
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	closed_by?: FieldPolicy<any> | FieldReadFunction<any>,
+	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	closing_summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9801,10 +9801,10 @@ export type topic_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_min_fieldsKeySpecifier = ('closed_at' | 'closed_by' | 'closing_summary' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
+export type topic_min_fieldsKeySpecifier = ('closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
 export type topic_min_fieldsFieldPolicy = {
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	closed_by?: FieldPolicy<any> | FieldReadFunction<any>,
+	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	closing_summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	index?: FieldPolicy<any> | FieldReadFunction<any>,

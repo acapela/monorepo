@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-// import { assert } from "~shared/assert";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql/generated";
 import { useToggleCloseTopicMutation } from "~frontend/gql/topics";
@@ -19,7 +17,7 @@ function getTopicCloseInfo(value?: TopicDetailedInfoFragment | null) {
 }
 
 export function useTopic(value?: TopicDetailedInfoFragment | null) {
-  const { id: closedBy } = useAssertCurrentUser();
+  const { id: closedByUserId } = useAssertCurrentUser();
   const [toggleClosed, { loading }] = useToggleCloseTopicMutation();
 
   const topicId = value?.id;
@@ -31,9 +29,9 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
 
     loading,
 
-    close: (summary: string) => toggleClosed({ topicId, closedAt: now(), closedBy, summary }),
+    close: (summary: string) => toggleClosed({ topicId, closedAt: now(), closedByUserId, summary }),
 
-    open: () => toggleClosed({ topicId, closedAt: null, closedBy: null }),
+    open: () => toggleClosed({ topicId, closedAt: null, closedByUserId: null }),
 
     topicCloseInfo: getTopicCloseInfo(value),
   } as const;

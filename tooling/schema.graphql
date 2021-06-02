@@ -7838,10 +7838,10 @@ columns and relationships of "topic"
 """
 type topic {
   closed_at: timestamp
-  closed_by: uuid
 
   """An object relationship"""
   closed_by_user: user
+  closed_by_user_id: uuid
   closing_summary: String
   id: uuid!
   index: String!
@@ -7967,8 +7967,8 @@ input topic_bool_exp {
   _not: topic_bool_exp
   _or: [topic_bool_exp]
   closed_at: timestamp_comparison_exp
-  closed_by: uuid_comparison_exp
   closed_by_user: user_bool_exp
+  closed_by_user_id: uuid_comparison_exp
   closing_summary: String_comparison_exp
   id: uuid_comparison_exp
   index: String_comparison_exp
@@ -7996,8 +7996,8 @@ input type for inserting data into table "topic"
 """
 input topic_insert_input {
   closed_at: timestamp
-  closed_by: uuid
   closed_by_user: user_obj_rel_insert_input
+  closed_by_user_id: uuid
   closing_summary: String
   id: uuid
   index: String
@@ -8012,7 +8012,7 @@ input topic_insert_input {
 """aggregate max on columns"""
 type topic_max_fields {
   closed_at: timestamp
-  closed_by: uuid
+  closed_by_user_id: uuid
   closing_summary: String
   id: uuid
   index: String
@@ -8026,7 +8026,7 @@ order by max() on columns of table "topic"
 """
 input topic_max_order_by {
   closed_at: order_by
-  closed_by: order_by
+  closed_by_user_id: order_by
   closing_summary: order_by
   id: order_by
   index: order_by
@@ -8220,7 +8220,7 @@ enum topic_member_update_column {
 """aggregate min on columns"""
 type topic_min_fields {
   closed_at: timestamp
-  closed_by: uuid
+  closed_by_user_id: uuid
   closing_summary: String
   id: uuid
   index: String
@@ -8234,7 +8234,7 @@ order by min() on columns of table "topic"
 """
 input topic_min_order_by {
   closed_at: order_by
-  closed_by: order_by
+  closed_by_user_id: order_by
   closing_summary: order_by
   id: order_by
   index: order_by
@@ -8276,8 +8276,8 @@ ordering options when selecting data from "topic"
 """
 input topic_order_by {
   closed_at: order_by
-  closed_by: order_by
   closed_by_user: user_order_by
+  closed_by_user_id: order_by
   closing_summary: order_by
   id: order_by
   index: order_by
@@ -8304,7 +8304,7 @@ enum topic_select_column {
   closed_at
 
   """column name"""
-  closed_by
+  closed_by_user_id
 
   """column name"""
   closing_summary
@@ -8330,7 +8330,7 @@ input type for updating data in table "topic"
 """
 input topic_set_input {
   closed_at: timestamp
-  closed_by: uuid
+  closed_by_user_id: uuid
   closing_summary: String
   id: uuid
   index: String
@@ -8347,7 +8347,7 @@ enum topic_update_column {
   closed_at
 
   """column name"""
-  closed_by
+  closed_by_user_id
 
   """column name"""
   closing_summary

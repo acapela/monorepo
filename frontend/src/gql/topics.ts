@@ -347,10 +347,10 @@ export const [useToggleCloseTopicMutation] = createMutation<
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    mutation ToggleCloseTopic($topicId: uuid!, $closedAt: timestamp, $closedBy: uuid, $summary: String) {
+    mutation ToggleCloseTopic($topicId: uuid!, $closedAt: timestamp, $closedByUserId: uuid, $summary: String) {
       topic: update_topic_by_pk(
         pk_columns: { id: $topicId }
-        _set: { closed_at: $closedAt, closed_by: $closedBy, closing_summary: $summary }
+        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId, closing_summary: $summary }
       ) {
         ...TopicDetailedInfo
       }
