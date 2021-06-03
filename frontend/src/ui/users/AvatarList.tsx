@@ -24,13 +24,13 @@ const UIHolder = styled.div`
   /* Shifts each child Avatar starting from the second one a bit to the left for them to overlap */
 
   ${Avatar} {
-    border: 2px solid #fff;
+    box-sizing: content-box;
     margin-top: -2px;
     margin-bottom: -2px;
-    box-sizing: content-box;
+    border: 2px solid #fff;
 
     &:not(:first-child) {
-      margin-left: -0.75rem;
+      margin-left: -12px;
     }
   }
 `;
