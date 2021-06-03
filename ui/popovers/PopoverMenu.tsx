@@ -107,7 +107,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean }>`
   padding: 4px 8px;
   cursor: pointer;
 
-  font-size: 14px;
+  font-size: 1rem;
   line-height: 2em;
 
   ${hoverActionCss}
