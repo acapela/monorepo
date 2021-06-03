@@ -1,5 +1,5 @@
 import React from "react";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { assignPageLayout } from "~frontend/utils/pageLayout";

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeam, useTeams } from "~frontend/gql/teams";
 import { useChangeCurrentTeamId } from "~frontend/gql/user";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 
 export function TeamPickerView() {

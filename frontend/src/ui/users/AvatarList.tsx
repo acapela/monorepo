@@ -22,7 +22,15 @@ const UIHolder = styled.div`
   display: flex;
 
   /* Shifts each child Avatar starting from the second one a bit to the left for them to overlap */
-  & > :not([hidden]) ~ :not([hidden]) {
-    margin-left: -0.75rem;
+
+  ${Avatar} {
+    box-sizing: content-box;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    border: 2px solid #fff;
+
+    &:not(:first-child) {
+      margin-left: -12px;
+    }
   }
 `;

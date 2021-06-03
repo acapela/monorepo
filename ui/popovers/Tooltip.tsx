@@ -16,13 +16,7 @@ interface Props {
 export const Tooltip = styled(({ anchorRef, label, isDisabled }: Props) => {
   const isHovered = useHoverDirty(anchorRef);
 
-  const shouldShow = useDebouncedValue(isHovered, () => {
-    // Show tooltip with slight delay.
-    if (isHovered) return 150;
-
-    // Hide tooltip instantly.
-    return 0;
-  });
+  const shouldShow = useDebouncedValue(isHovered, { onDelay: 150, offDelay: 0 });
 
   return (
     <AnimatePresence>

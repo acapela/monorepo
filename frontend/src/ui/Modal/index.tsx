@@ -1,12 +1,18 @@
-import { ReactNode } from "react";
+import { ReactNode, RefObject, useRef } from "react";
 import { useKey } from "react-use";
 import styled from "styled-components";
-import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { BodyPortal } from "~ui/BodyPortal";
-import { Button } from "~ui/button";
 import { IconCross } from "~ui/icons";
 import { SecondaryText } from "~ui/typo";
+import { IconButton } from "~ui/buttons/IconButton";
+import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
+import { useClickAway } from "react-use";
 
+export interface ModalAnchor {
+  ref: RefObject<HTMLElement>;
+  placement?: PopoverPlacement;
+}
 interface Props {
   head?: {
     title: ReactNode;
@@ -15,46 +21,62 @@ interface Props {
   hasCloseButton?: boolean;
   children: ReactNode;
   onCloseRequest: () => void;
+  // Modal can be attached to some element instead of center of the screen.
+  anchor?: ModalAnchor;
 }
 
-export function Modal({ head, hasCloseButton = true, children, onCloseRequest }: Props) {
-  useKey("Escape", () => onCloseRequest());
+export function Modal({ head, hasCloseButton = true, children, onCloseRequest, anchor }: Props) {
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <BodyPortal>
-      <UIBodyCover
-        onClick={(event) => {
-          event.stopPropagation();
+  useClickAway(modalRef, onCloseRequest);
+  useKey("Escape", onCloseRequest);
 
-          onCloseRequest();
-        }}
-      >
-        <UIModal
+  const modalBodyNode = (
+    <UIModal
+      ref={modalRef}
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+      presenceStyles={{ opacity: [0, 1], scale: [0.95, 1] }}
+      transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+    >
+      {hasCloseButton && (
+        <UIToolbar>
+          <IconButton icon={<IconCross />} onClick={onCloseRequest} />
+        </UIToolbar>
+      )}
+      <UIBody>
+        {head && (
+          <UIHead>
+            <UIHeadTitle>{head.title}</UIHeadTitle>
+            <SecondaryText>{head.description}</SecondaryText>
+          </UIHead>
+        )}
+        {children}
+      </UIBody>
+    </UIModal>
+  );
+
+  // Modal is attached to some element instead of center of the screen.
+  if (!anchor) {
+    return (
+      <BodyPortal>
+        <UIBodyCover
           onClick={(event) => {
             event.stopPropagation();
+            onCloseRequest();
           }}
-          presenceStyles={{ opacity: [0, 1], scale: [0.95, 1] }}
-          transition={{ type: "spring", bounce: 0, duration: 0.3 }}
         >
-          {hasCloseButton && (
-            <UIToolbar>
-              <UICloseButton onClick={() => onCloseRequest()}>
-                <IconCross />
-              </UICloseButton>
-            </UIToolbar>
-          )}
-          <UIBody>
-            {head && (
-              <UIHead>
-                <UIHeadTitle>{head.title}</UIHeadTitle>
-                <SecondaryText>{head.description}</SecondaryText>
-              </UIHead>
-            )}
-            {children}
-          </UIBody>
-        </UIModal>
-      </UIBodyCover>
-    </BodyPortal>
+          {modalBodyNode}
+        </UIBodyCover>
+      </BodyPortal>
+    );
+  }
+
+  return (
+    <Popover anchorRef={anchor.ref} placement={anchor.placement}>
+      {modalBodyNode}
+    </Popover>
   );
 }
 
@@ -99,14 +121,4 @@ const UIToolbar = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 1rem 1rem 0;
-`;
-
-const UICloseButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
 `;

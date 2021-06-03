@@ -9,12 +9,14 @@ import { useValueRef } from "~shared/hooks/useValueRef";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 
+export type PopoverPlacement = Placement;
+
 interface PopoverProps {
   anchorRef: RefObject<HTMLElement>;
   children: ReactNode;
   isDisabled?: boolean;
   className?: string;
-  placement?: Placement;
+  placement?: PopoverPlacement;
   distance?: number;
 }
 

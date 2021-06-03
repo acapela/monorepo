@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
 import { createTimeout } from "~shared/time";
 
-type DebounceTimeFactory<T> = number | ((value: T) => number);
+interface Options<T> {
+  onDelay?: number;
+  offDelay?: number;
+  timeFactory?: (value: T) => number;
+}
 
-function getDebounceTime<T>(currentValue: T, timeFactory: DebounceTimeFactory<T>) {
-  if (typeof timeFactory === "number") return timeFactory;
-
-  return timeFactory(currentValue);
+function defaultTimeFactory<T>(currentValue: T, onDelay: number, offDelay: number) {
+  if (currentValue) return onDelay;
+  return offDelay;
 }
 
 export function useDebouncedValue<T>(
   value: T,
   // Time can be passed as milliseconds or function that returns milliseconds basing on current value
-  time: number | ((value: T) => number)
+  { onDelay = 0, offDelay = 0, timeFactory }: Options<T>
 ) {
   const [resolvedValue, setResolvedValue] = useState(value);
 
   useEffect(() => {
-    const debounceTime = getDebounceTime(value, time);
+    const debounceTime = timeFactory ? timeFactory(value) : defaultTimeFactory(value, onDelay, offDelay);
     return createTimeout(() => {
       setResolvedValue(value);
     }, debounceTime);
-  }, [value, time]);
+  }, [value, onDelay, offDelay, timeFactory]);
 
   return resolvedValue;
 }

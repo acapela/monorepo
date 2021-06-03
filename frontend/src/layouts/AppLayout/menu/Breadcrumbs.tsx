@@ -5,7 +5,7 @@ import { useSingleTopicQuery } from "~frontend/gql/topics";
 import { usePathParameter } from "~frontend/utils";
 
 import { BreadcrumbsSegments, BreadcrumbsSegment } from "./BreadcrumbsSegments";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 
 export function ContentBreadcrumbs() {
   const spaceId = usePathParameter("spaceId");

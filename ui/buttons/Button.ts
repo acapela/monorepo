@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
-import { fontSize } from "./baseStyles";
-import { hoverActionCss, hoverActionCssWithCustomColor } from "./transitions";
+import { fontSize } from "../baseStyles";
+import { hoverActionCssWithCustomColor } from "../transitions";
 
 interface Props {
   isLoading?: boolean;
@@ -26,11 +26,4 @@ export const Button = styled.button<Props>`
       display: block;
       width: 100%;
     `}
-`;
-
-export const TransparentButton = styled(Button)`
-  ${hoverActionCss}
-
-  background-color: transparent;
-  color: #474f5a;
 `;

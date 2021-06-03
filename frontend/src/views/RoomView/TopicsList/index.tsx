@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
-import { slugify } from "~frontend/../../shared/slugify";
+import { slugify } from "~shared/slugify";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useCreateTopicMutation, useUnreadMessages } from "~frontend/gql/topics";
 import { createNextIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { UnreadTopicIndicator } from "~frontend/ui/UnreadTopicsIndicator";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { Button } from "~ui/button";
+import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export function TopicsList({ roomId, activeTopicId }: Props) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
   const [unreadMessagesData] = useUnreadMessages.subscription();
   const [createTopic] = useCreateTopicMutation();
@@ -29,6 +30,10 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
       title: "New topic name",
       submitLabel: "Create topic",
       placeholder: "Our brand colors",
+      anchor: {
+        ref: buttonRef,
+        placement: "bottom-start",
+      },
     });
     if (!topicName?.trim()) {
       return;
@@ -69,7 +74,9 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           </UITopic>
         );
       })}
-      <Button onClick={handleCreateTopic}>Add topic</Button>
+      <Button ref={buttonRef} onClick={handleCreateTopic}>
+        Add topic
+      </Button>
     </>
   );
 }

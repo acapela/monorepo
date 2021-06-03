@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Button, TransparentButton } from "~ui/button";
 import { TextTitle } from "~ui/typo";
 import { Modal } from "~frontend/ui/Modal";
 import { TextArea } from "~ui/forms/TextArea";
+import { Button } from "~ui/buttons/Button";
+import { TransparentButton } from "~ui/buttons/TransparentButton";
 
 interface Props {
   topicId: string;

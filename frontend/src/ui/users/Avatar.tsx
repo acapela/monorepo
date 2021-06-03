@@ -9,11 +9,12 @@ export interface Props {
   url?: string | null;
   className?: string;
   size?: Size;
+  disableNameTooltip?: boolean;
 }
 
 type Size = "regular" | "small";
 
-export const Avatar = styled(({ url, name, className, size = "regular" }: Props) => {
+export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
@@ -27,7 +28,7 @@ export const Avatar = styled(({ url, name, className, size = "regular" }: Props)
 
   return (
     <>
-      {name && <Tooltip label={name} anchorRef={ref} />}
+      {!disableNameTooltip && name && <Tooltip label={name} anchorRef={ref} />}
       <UIHolder className={className} size={size} ref={ref}>
         <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
       </UIHolder>

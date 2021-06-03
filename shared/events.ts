@@ -3,8 +3,8 @@ interface AnyEvent {
 }
 
 export function handleWithStopPropagation<E extends AnyEvent>(handler: () => void) {
-  return function handle(event: E) {
-    event.stopPropagation();
+  return function handle(event?: E) {
+    event?.stopPropagation?.();
     handler();
   };
 }

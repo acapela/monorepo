@@ -13,6 +13,7 @@ import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachme
 import { MessageText } from "~frontend/views/topic/Message/MessageText";
 import { MessageTranscription } from "~frontend/views/topic/Message/MessageTranscription";
 import { EditorContent } from "~richEditor/RichEditor";
+import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
@@ -57,7 +58,7 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
     return isHovered || isActive;
   }
 
-  const shouldShowTools = getShouldShowTools();
+  const shouldShowTools = useDebouncedValue(getShouldShowTools(), { onDelay: 0, offDelay: 200 });
 
   return (
     <UIAnimatedMessageWrapper

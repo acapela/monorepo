@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { PageTitle } from "~frontend/../../ui/typo";
+import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
 import { RecentTopics } from "./RecentTopics/RecentTopics";
-import { TeamMembersManager } from "./TeamMembersManager";
 
 export function HomeView() {
   const user = useAssertCurrentUser();
@@ -19,7 +18,6 @@ export function HomeView() {
         <div>Here are rooms & topics with recent activity.</div>
       </UIGreeting>
       <RecentTopics />
-      <TeamMembersManager />
     </UIHolder>
   );
 }

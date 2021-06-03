@@ -4,9 +4,10 @@ import { UserBasicInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
-import { TransparentButton } from "~ui/button";
-import { IconPlusCircle } from "~ui/icons";
+import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
+import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -50,7 +51,7 @@ export const MembersManager = styled(function MembersManager({
       <UIHolder className={className}>
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}
-          <UIAddIcon onClick={handleWithStopPropagation(openUserPicker)} />
+          <IconButton tooltip="Add member..." onClick={handleWithStopPropagation(openUserPicker)} icon={<IconPlus />} />
         </UIMembers>
 
         <UIActions>
@@ -74,14 +75,14 @@ const UIMembers = styled.div`
   ${AvatarList} {
     margin-right: 0.5rem;
   }
+
+  ${IconButton} {
+    font-size: 32px;
+  }
 `;
 
 const UIActions = styled.div`
   flex: 1;
   display: flex;
   justify-content: flex-end;
-`;
-
-const UIAddIcon = styled(IconPlusCircle)`
-  font-size: 2rem;
 `;
