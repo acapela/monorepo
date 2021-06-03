@@ -58,13 +58,7 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
     return isHovered || isActive;
   }
 
-  const shouldShowTools = useDebouncedValue(getShouldShowTools(), (willShow) => {
-    // show instantly
-    if (willShow) return 0;
-
-    // hide with delay
-    return 200;
-  });
+  const shouldShowTools = useDebouncedValue(getShouldShowTools(), { onDelay: 0, offDelay: 200 });
 
   return (
     <UIAnimatedMessageWrapper
