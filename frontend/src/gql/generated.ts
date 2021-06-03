@@ -8671,7 +8671,6 @@ export type ToggleCloseTopicMutation = (
   )> }
 );
 
-
 export type EditTopicMutationVariables = Exact<{
   name: Scalars['String'];
   topicId: Scalars['uuid'];
