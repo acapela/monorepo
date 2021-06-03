@@ -93,7 +93,7 @@ function assertRequiredEnvVariablesLoaded() {
 
   const missingEnvVars: string[] = [];
 
-  for (const envVarName of appSpecificEnvVars.concat(requiredEnvVarNames)) {
+  for (const envVarName of [...appSpecificEnvVars, ...requiredEnvVarNames]) {
     const envVarValue = process.env[envVarName];
 
     if (typeof envVarValue !== "undefined") {
