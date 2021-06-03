@@ -5,7 +5,7 @@ import { DependencyList, EffectCallback, useEffect, useRef } from "react";
  *
  * It means it can be used to track changes of dependencies after initial render.
  */
-export function useChangeEffect(callback: EffectCallback, deps: DependencyList) {
+export function useDependencyChangeEffect(callback: EffectCallback, deps: DependencyList) {
   const isFirstEffectRef = useRef(true);
   useEffect(() => {
     if (isFirstEffectRef.current) {

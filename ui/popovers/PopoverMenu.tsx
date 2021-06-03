@@ -8,7 +8,7 @@ import { Popover, PopoverPlacement } from "./Popover";
 import { hoverActionCss } from "~ui/transitions";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { DANGER_COLOR } from "~ui/colors";
-import { useChangeEffect } from "~shared/hooks/useChangeEffect";
+import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { Tooltip } from "./Tooltip";
 
 type NonEmptyArray<T> = [T, ...T[]];
@@ -38,7 +38,7 @@ export const PopoverMenu = styled(
 
     useClickAway(anchorRef, closePopover);
 
-    useChangeEffect(() => {
+    useDependencyChangeEffect(() => {
       if (isOpen) {
         onOpen?.();
         return;
