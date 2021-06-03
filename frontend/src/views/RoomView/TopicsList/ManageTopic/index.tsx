@@ -15,6 +15,7 @@ export const ManageTopic = ({ topic }: Props) => {
   const [editTopic] = useEditTopicMutation();
   const handleRenameSelect = useCallback(async () => {
     const name = await openUIPrompt({
+      initialValue: topic.name || "",
       title: "Rename topic",
       submitLabel: "Rename",
       placeholder: "Enter topic name",
@@ -23,7 +24,7 @@ export const ManageTopic = ({ topic }: Props) => {
       return;
     }
     await editTopic({ topicId: topic.id, name });
-  }, []);
+  }, [topic.name]);
 
   return (
     <>
