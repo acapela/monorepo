@@ -22,6 +22,7 @@ export type {
   topic_member as TopicMember,
   space_member as SpaceMember,
   team_member as TeamMember,
+  whitelist as Whitelist,
 } from "@prisma/client";
 
 const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];

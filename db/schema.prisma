@@ -174,14 +174,17 @@ model team_member {
 }
 
 model topic {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id      String         @db.Uuid
-  name         String?
-  index        String
-  slug         String
-  room         room           @relation(fields: [room_id], references: [id])
-  message      message[]
-  topic_member topic_member[]
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id           String         @db.Uuid
+  name              String?
+  index             String
+  slug              String
+  closed_at         DateTime?      @db.Timestamp(6)
+  closed_by_user_id String?        @db.Uuid
+  closing_summary   String?
+  room              room           @relation(fields: [room_id], references: [id])
+  message           message[]
+  topic_member      topic_member[]
 
   @@unique([slug, room_id], name: "topic_slug_room_id_key")
 }
@@ -240,4 +243,10 @@ model verification_requests {
   identifier String
   token      String
   expires    DateTime @db.Timestamptz(6)
+}
+
+model whitelist {
+  email     String   @id
+  timestamp DateTime @default(now()) @db.Timestamptz(6)
+  approved  Boolean  @default(false)
 }
