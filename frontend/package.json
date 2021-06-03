@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "APP=asd NODE_OPTIONS='--inspect' next dev",
+    "dev": "APP=frontend NODE_OPTIONS='--inspect' next dev",
     "next:build": "APP=frontend next build",
     "next:start": "APP=frontend next start",
     "next:build:analyze": "APP=frontend ANALYZE=true next build",
