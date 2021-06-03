@@ -1,28 +1,38 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
-import { useBoolean } from "~frontend/hooks/useBoolean";
 import { IconMoreVert } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR, hoverTransition } from "~ui/transitions";
-import { RenameModal } from "./RenameModal";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { openUIPrompt } from "~frontend/utils/prompt";
+import { useEditTopicMutation } from "~frontend/gql/topics";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
 }
 
 export const ManageTopic = ({ topic }: Props) => {
-  const [isModalOpen, { toggle }] = useBoolean(false);
+  const [editTopic] = useEditTopicMutation();
+  const handleRenameSelect = useCallback(async () => {
+    const name = await openUIPrompt({
+      title: "Rename topic",
+      submitLabel: "Rename",
+      placeholder: "Enter topic name",
+    });
+    if (!name?.trim()) {
+      return;
+    }
+    await editTopic({ topicId: topic.id, name });
+  }, []);
 
   return (
     <>
-      {isModalOpen && <RenameModal onClose={toggle} topic={topic} />}
       <PopoverMenu
         position={PopoverPosition.RIGHT_BOTTOM}
         options={[
           {
             label: "Rename",
-            onSelect: toggle,
+            onSelect: handleRenameSelect,
           },
         ]}
       >
