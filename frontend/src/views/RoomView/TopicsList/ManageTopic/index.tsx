@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
-import { IconMoreVert } from "~ui/icons";
+import { IconVerticalThreeDots } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR, hoverTransition } from "~ui/transitions";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -37,7 +37,7 @@ export const ManageTopic = ({ topic }: Props) => {
         ]}
       >
         <Toggle>
-          <IconMoreVert />
+          <IconVerticalThreeDots />
         </Toggle>
       </PopoverMenu>
     </>
