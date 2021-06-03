@@ -2,7 +2,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql/generated";
 import { useToggleCloseTopicMutation } from "~frontend/gql/topics";
 
-function now() {
+function nowAsTimestamp(): string {
   return new Date().toISOString();
 }
 
@@ -29,7 +29,7 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
 
     loading,
 
-    close: (summary: string) => toggleClosed({ topicId, closedAt: now(), closedByUserId, summary }),
+    close: (summary: string) => toggleClosed({ topicId, closedAt: nowAsTimestamp(), closedByUserId, summary }),
 
     open: () => toggleClosed({ topicId, closedAt: null, closedByUserId: null }),
 
