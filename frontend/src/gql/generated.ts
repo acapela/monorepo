@@ -8120,8 +8120,8 @@ export type Uuid_Comparison_Exp = {
 /** columns and relationships of "whitelist" */
 export type Whitelist = {
   __typename?: 'whitelist';
-  approved: Scalars['Boolean'];
   email: Scalars['String'];
+  is_approved: Scalars['Boolean'];
   timestamp: Scalars['timestamptz'];
 };
 
@@ -8165,8 +8165,8 @@ export type Whitelist_Bool_Exp = {
   _and?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
   _not?: Maybe<Whitelist_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
-  approved?: Maybe<Boolean_Comparison_Exp>;
   email?: Maybe<String_Comparison_Exp>;
+  is_approved?: Maybe<Boolean_Comparison_Exp>;
   timestamp?: Maybe<Timestamptz_Comparison_Exp>;
 };
 
@@ -8178,8 +8178,8 @@ export enum Whitelist_Constraint {
 
 /** input type for inserting data into table "whitelist" */
 export type Whitelist_Insert_Input = {
-  approved?: Maybe<Scalars['Boolean']>;
   email?: Maybe<Scalars['String']>;
+  is_approved?: Maybe<Scalars['Boolean']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
 };
 
@@ -8233,8 +8233,8 @@ export type Whitelist_On_Conflict = {
 
 /** ordering options when selecting data from "whitelist" */
 export type Whitelist_Order_By = {
-  approved?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
+  is_approved?: Maybe<Order_By>;
   timestamp?: Maybe<Order_By>;
 };
 
@@ -8246,26 +8246,26 @@ export type Whitelist_Pk_Columns_Input = {
 /** select columns of table "whitelist" */
 export enum Whitelist_Select_Column {
   /** column name */
-  Approved = 'approved',
-  /** column name */
   Email = 'email',
+  /** column name */
+  IsApproved = 'is_approved',
   /** column name */
   Timestamp = 'timestamp'
 }
 
 /** input type for updating data in table "whitelist" */
 export type Whitelist_Set_Input = {
-  approved?: Maybe<Scalars['Boolean']>;
   email?: Maybe<Scalars['String']>;
+  is_approved?: Maybe<Scalars['Boolean']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
 };
 
 /** update columns of table "whitelist" */
 export enum Whitelist_Update_Column {
   /** column name */
-  Approved = 'approved',
-  /** column name */
   Email = 'email',
+  /** column name */
+  IsApproved = 'is_approved',
   /** column name */
   Timestamp = 'timestamp'
 }
@@ -10404,10 +10404,10 @@ export type user_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type whitelistKeySpecifier = ('approved' | 'email' | 'timestamp' | whitelistKeySpecifier)[];
+export type whitelistKeySpecifier = ('email' | 'is_approved' | 'timestamp' | whitelistKeySpecifier)[];
 export type whitelistFieldPolicy = {
-	approved?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	is_approved?: FieldPolicy<any> | FieldReadFunction<any>,
 	timestamp?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type whitelist_aggregateKeySpecifier = ('aggregate' | 'nodes' | whitelist_aggregateKeySpecifier)[];
