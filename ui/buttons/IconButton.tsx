@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip }: Props) {
-  const holderRef = useRef<HTMLDivElement>(null);
+  const holderRef = useRef<HTMLButtonElement>(null);
   return (
     <>
       {tooltip && <Tooltip anchorRef={holderRef} label={tooltip} />}
@@ -23,17 +23,20 @@ export const IconButton = styled(function IconButton({ icon, onClick, className,
 })``;
 
 const UIHolder = styled.button`
-  font-size: 24px;
-  width: 1em;
-  height: 1em;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  width: 1em;
+  height: 1em;
+
   border-radius: 0.25em;
   background-color: transparent;
   border: none;
   cursor: pointer;
+
+  font-size: 1.5rem;
 
   ${hoverActionCss};
 
