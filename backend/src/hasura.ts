@@ -20,7 +20,8 @@ export type HasuraHeader = {
 };
 
 export default abstract class Hasura {
-  static apiUrl = process.env.HASURA_API_URL;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  static apiUrl = process.env.HASURA_API_URL!;
   static apiSecret = process.env.HASURA_API_SECRET;
   static apiRole = process.env.HASURA_API_ADMIN_ROLE;
 

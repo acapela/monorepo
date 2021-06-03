@@ -56,7 +56,8 @@ class Sonix {
 
     assert(domain, "Failed to build callback URL");
 
-    return `${domain}${endpoint}?secret=${encodeURIComponent(process.env.SONIX_CALLBACK_SECRET)}`;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return `${domain}${endpoint}?secret=${encodeURIComponent(process.env.SONIX_CALLBACK_SECRET!)}`;
   }
 
   private async doRequest({ method, path, formData }: SonixRequestOptions) {
