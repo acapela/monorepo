@@ -53,6 +53,20 @@ const authAdapterProvider: Adapter = {
 
     return {
       async createUser(profile) {
+        const whiteListEntry = await db.whitelist.findFirst({ where: { email: profile.email.toLocaleLowerCase() } });
+
+        if (!whiteListEntry) {
+          // automatically add a non-whitelisted user to whitelist
+          await db.whitelist.create({
+            data: { email: profile.email.toLocaleLowerCase(), approved: false },
+          });
+          throw new Error("email not whitelisted");
+        }
+
+        if (!whiteListEntry.approved) {
+          throw new Error("email not approved");
+        }
+
         // noinspection UnnecessaryLocalVariableJS
         const user = await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },

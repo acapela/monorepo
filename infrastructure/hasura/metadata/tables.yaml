@@ -1182,3 +1182,6 @@
       headers:
         - name: Authorization
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: whitelist
