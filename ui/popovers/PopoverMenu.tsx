@@ -36,10 +36,9 @@ export interface PopoverMenuOptions {
 export const PopoverMenu = styled(
   ({ children: triggerElement, options, position = "bottom-start", className, onOpen, onClose, tooltip }: Props) => {
     const anchorRef = useRef<HTMLDivElement>(null);
-    const popoverMenuRef = useRef<HTMLDivElement>(null);
-    const [isOpen, { unset: closePopover, set: openPopover }] = useBoolean(false);
+    const [isOpen, { unset: closePopover, toggle: togglePopover }] = useBoolean(false);
 
-    useClickAway(popoverMenuRef, closePopover);
+    useClickAway(anchorRef, closePopover);
 
     useDependencyChangeEffect(() => {
       if (isOpen) {
@@ -56,37 +55,30 @@ export const PopoverMenu = styled(
     return (
       <>
         {tooltip && !isOpen && <Tooltip anchorRef={anchorRef} label={tooltip} />}
-        <UIHolder ref={anchorRef} onClick={openPopover} className={className}>
+        <UIHolder ref={anchorRef} onClick={togglePopover} className={className}>
           {triggerElement}
-          <AnimatePresence>
-            {isOpen && (
-              <Popover anchorRef={anchorRef} placement={position}>
-                <UIMenu
-                  ref={popoverMenuRef}
-                  presenceStyles={POP_PRESENCE_STYLES}
-                  transition={POP_ANIMATION_CONFIG}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                  }}
-                >
-                  {options.map(({ label, onSelect, icon, isDestructive = false }) => (
-                    <UIMenuItem
-                      isDestructive={isDestructive}
-                      key={label}
-                      onClick={() => {
-                        closePopover();
-                        onSelect();
-                      }}
-                    >
-                      {icon && <UIItemIcon>{icon}</UIItemIcon>}
-                      {label}
-                    </UIMenuItem>
-                  ))}
-                </UIMenu>
-              </Popover>
-            )}
-          </AnimatePresence>
         </UIHolder>
+        <AnimatePresence>
+          {isOpen && (
+            <Popover anchorRef={anchorRef} placement={position}>
+              <UIMenu presenceStyles={POP_PRESENCE_STYLES} transition={POP_ANIMATION_CONFIG}>
+                {options.map(({ label, onSelect, icon, isDestructive = false }) => (
+                  <UIMenuItem
+                    isDestructive={isDestructive}
+                    key={label}
+                    onClick={() => {
+                      closePopover();
+                      onSelect();
+                    }}
+                  >
+                    {icon && <UIItemIcon>{icon}</UIItemIcon>}
+                    {label}
+                  </UIMenuItem>
+                ))}
+              </UIMenu>
+            </Popover>
+          )}
+        </AnimatePresence>
       </>
     );
   }
