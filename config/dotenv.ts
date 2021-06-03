@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
+import { assert } from "~shared/assert";
 
 function getDotEnvPath() {
   if (!__dirname) {
@@ -23,33 +24,38 @@ function getDotEnvPath() {
  */
 const requiredEnvVarNames = [
   "STAGE",
-  "GOOGLE_APPLICATION_CREDENTIALS",
-  "GOOGLE_STORAGE_BUCKET",
-  "HASURA_GRAPHQL_URL",
   "DB_HOST",
   "DB_PORT",
   "DB_USER",
-  "DB_PASSWORD",
   "DB_NAME",
-  "FRONTEND_URL",
-  "AUTH_SECRET",
-  "AUTH_JWT_TOKEN_SECRET",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
+  "DB_PASSWORD",
+  "LOGGING_LEVEL",
+  "SENDGRID_API_KEY",
+  "BACKEND_HOST",
+] as const;
+
+const requiredEnvVarNamesBackend = [
+  "HASURA_ENDPOINT",
+  "HASURA_ADMIN_SECRET",
   "HASURA_EVENT_SECRET",
   "HASURA_API_URL",
   "HASURA_API_SECRET",
   "HASURA_API_ADMIN_ROLE",
   "HASURA_ACTION_SECRET",
-  "HASURA_NOTIFICATION_SECRET",
-  "HASURA_WEBSOCKET_ENDPOINT",
-  "LOGGING_LEVEL",
-  "BACKEND_PORT",
-  "BACKEND_ROOT_URL",
-  "BACKEND_AUTH_TOKEN",
-  "SENDGRID_API_KEY",
+  "GOOGLE_STORAGE_BUCKET",
   "SONIX_API_KEY",
   "SONIX_CALLBACK_SECRET",
+  "FRONTEND_URL",
+] as const;
+
+const requiredEnvVarNamesFrontend = [
+  "HASURA_HOST",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "AUTH_SECRET",
+  "AUTH_JWT_TOKEN_SECRET",
+  "NEXTAUTH_URL",
+  "HASURA_WEBSOCKET_ENDPOINT",
 ] as const;
 
 // Out of array of variable names, prepare types for process.env
@@ -59,7 +65,7 @@ type EnvVariablesMap = Record<EnvVarName, string>;
 
 // It is possible to mark some env vars as optional by providing their default value.
 const optionalEnvVars: Partial<NodeJS.ProcessEnv> = {
-  STAGE: "production",
+  STAGE: "development",
 };
 
 declare global {
@@ -75,9 +81,19 @@ declare global {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertRequiredEnvVariablesLoaded() {
+  const app = process.env.APP;
+  let appSpecificEnvVars;
+  if (app === "frontend") {
+    appSpecificEnvVars = requiredEnvVarNamesFrontend;
+  } else if (app === "backend") {
+    appSpecificEnvVars = requiredEnvVarNamesBackend;
+  } else {
+    throw new Error(`invalid value for APP=${app}`);
+  }
+
   const missingEnvVars: string[] = [];
 
-  for (const envVarName of requiredEnvVarNames) {
+  for (const envVarName of appSpecificEnvVars.concat(requiredEnvVarNames)) {
     const envVarValue = process.env[envVarName];
 
     if (typeof envVarValue !== "undefined") {
@@ -122,8 +138,8 @@ function loadRootDotEnv(): void {
   dotenv.config({ path: dotEnvPath });
 }
 
+assert(process.env.APP, "APP environment variable must always be set");
+
 loadRootDotEnv();
 
-// if (false === true) {
-// assertRequiredEnvVariablesLoaded();
-// }
+assertRequiredEnvVariablesLoaded();
