@@ -6,6 +6,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicModal } from "./CloseTopicModal";
 import { useTopic } from "~frontend/topics/useTopic";
 import { AnimatePresence } from "framer-motion";
+import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -13,7 +14,7 @@ interface Props {
 }
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
-  const [isClosingTopic, { set: openClosingModal, unset: closeClosingModal }] = useBoolean(false);
+  const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
 
   const { isClosed, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
@@ -26,14 +27,15 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
       <UIHolder className={className}>
         <UITitle>{topic.name}</UITitle>
 
-        <UIAction>
+        <UIActions>
           {isClosed && (
-            <Button onClick={openTopic} isLoading={loading}>
+            <UIToggleCloseButton onClick={openTopic} isLoading={loading}>
               Reopen Topic
-            </Button>
+            </UIToggleCloseButton>
           )}
-          {!isClosed && <Button onClick={openClosingModal}>Close Topic</Button>}
-        </UIAction>
+          {!isClosed && <UIToggleCloseButton onClick={openClosingTopicModal}>Close Topic</UIToggleCloseButton>}
+          <ManageTopic topic={topic} />
+        </UIActions>
       </UIHolder>
       <AnimatePresence>
         {isClosingTopic && (
@@ -57,4 +59,11 @@ const UIHolder = styled.div`
 
 const UITitle = styled(TextTitle)``;
 
-const UIAction = styled.div``;
+const UIActions = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const UIToggleCloseButton = styled(Button)`
+  margin-right: 16px;
+`;
