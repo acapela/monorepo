@@ -7799,6 +7799,23 @@ enum team_update_column {
   slug
 }
 
+scalar timestamp
+
+"""
+expression to compare columns of type timestamp. All fields are combined with logical 'AND'.
+"""
+input timestamp_comparison_exp {
+  _eq: timestamp
+  _gt: timestamp
+  _gte: timestamp
+  _in: [timestamp!]
+  _is_null: Boolean
+  _lt: timestamp
+  _lte: timestamp
+  _neq: timestamp
+  _nin: [timestamp!]
+}
+
 scalar timestamptz
 
 """
@@ -7820,6 +7837,12 @@ input timestamptz_comparison_exp {
 columns and relationships of "topic"
 """
 type topic {
+  closed_at: timestamp
+
+  """An object relationship"""
+  closed_by_user: user
+  closed_by_user_id: uuid
+  closing_summary: String
   id: uuid!
   index: String!
 
@@ -7943,6 +7966,10 @@ input topic_bool_exp {
   _and: [topic_bool_exp]
   _not: topic_bool_exp
   _or: [topic_bool_exp]
+  closed_at: timestamp_comparison_exp
+  closed_by_user: user_bool_exp
+  closed_by_user_id: uuid_comparison_exp
+  closing_summary: String_comparison_exp
   id: uuid_comparison_exp
   index: String_comparison_exp
   members: topic_member_bool_exp
@@ -7968,6 +7995,10 @@ enum topic_constraint {
 input type for inserting data into table "topic"
 """
 input topic_insert_input {
+  closed_at: timestamp
+  closed_by_user: user_obj_rel_insert_input
+  closed_by_user_id: uuid
+  closing_summary: String
   id: uuid
   index: String
   members: topic_member_arr_rel_insert_input
@@ -7980,6 +8011,9 @@ input topic_insert_input {
 
 """aggregate max on columns"""
 type topic_max_fields {
+  closed_at: timestamp
+  closed_by_user_id: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -7991,6 +8025,9 @@ type topic_max_fields {
 order by max() on columns of table "topic"
 """
 input topic_max_order_by {
+  closed_at: order_by
+  closed_by_user_id: order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8182,6 +8219,9 @@ enum topic_member_update_column {
 
 """aggregate min on columns"""
 type topic_min_fields {
+  closed_at: timestamp
+  closed_by_user_id: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -8193,6 +8233,9 @@ type topic_min_fields {
 order by min() on columns of table "topic"
 """
 input topic_min_order_by {
+  closed_at: order_by
+  closed_by_user_id: order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   name: order_by
@@ -8232,6 +8275,10 @@ input topic_on_conflict {
 ordering options when selecting data from "topic"
 """
 input topic_order_by {
+  closed_at: order_by
+  closed_by_user: user_order_by
+  closed_by_user_id: order_by
+  closing_summary: order_by
   id: order_by
   index: order_by
   members_aggregate: topic_member_aggregate_order_by
@@ -8254,6 +8301,15 @@ select columns of table "topic"
 """
 enum topic_select_column {
   """column name"""
+  closed_at
+
+  """column name"""
+  closed_by_user_id
+
+  """column name"""
+  closing_summary
+
+  """column name"""
   id
 
   """column name"""
@@ -8273,6 +8329,9 @@ enum topic_select_column {
 input type for updating data in table "topic"
 """
 input topic_set_input {
+  closed_at: timestamp
+  closed_by_user_id: uuid
+  closing_summary: String
   id: uuid
   index: String
   name: String
@@ -8284,6 +8343,15 @@ input topic_set_input {
 update columns of table "topic"
 """
 enum topic_update_column {
+  """column name"""
+  closed_at
+
+  """column name"""
+  closed_by_user_id
+
+  """column name"""
+  closing_summary
+
   """column name"""
   id
 

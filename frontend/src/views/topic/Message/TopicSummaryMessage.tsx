@@ -1,0 +1,32 @@
+import React from "react";
+import { Message_Type_Enum, UserBasicInfoFragment } from "~frontend/gql";
+import { Message } from ".";
+
+interface Props {
+  summary: string;
+  closedAt: string;
+  closedBy: UserBasicInfoFragment;
+}
+
+function enrichSummary(summary: string) {
+  if (summary && summary.trim().length > 0) {
+    return [{ insert: "Outcome of the topic: ", attributes: { bold: true } }, { insert: summary }];
+  }
+  return [{ insert: "🎉", attributes: { bold: true } }];
+}
+
+export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => (
+  <Message
+    isTopicSummary={true}
+    key={"closing-topic"}
+    message={{
+      id: "closing-topic",
+      type: Message_Type_Enum.Text,
+      content: enrichSummary(summary),
+      createdAt: closedAt,
+      user: closedBy,
+      transcription: null,
+      message_attachments: [],
+    }}
+  />
+);

@@ -3,13 +3,17 @@ import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
-import { useLastSeenMessageMutation, useTopicMessages } from "~frontend/gql/topics";
+import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessages } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
 import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
+import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
+import { TopicHeader } from "./TopicHeader";
+import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
+import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
   id: string;
@@ -30,6 +34,7 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ id }: Props) => {
+  const [topicData] = useSingleTopicQuery({ id });
   const [data] = useTopicMessages.subscription({
     topicId: id,
   });
@@ -38,26 +43,46 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
+  const { hasTopic, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topicData?.topic);
+
   return (
-    <TopicRoot>
-      <ScrollableMessages>
-        <UIAnimatedMessagesWrapper>
-          <AnimateSharedLayout>
-            {messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))}
-          </AnimateSharedLayout>
-          {!messages.length && (
-            <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+    <>
+      {hasTopic && (
+        <TopicRoot>
+          {/* We need to render the topic header or else flex bugs out on page reload */}
+          <TopicHeader topic={topicData?.topic} />
+          <ScrollableMessages>
+            <UIAnimatedMessagesWrapper>
+              <AnimateSharedLayout>
+                {messages.map((message) => (
+                  <Message key={message.id} message={message} />
+                ))}
+                {topicCloseInfo && (
+                  <TopicSummaryMessage
+                    summary={topicCloseInfo.summary}
+                    closedAt={topicCloseInfo.closedAt}
+                    closedBy={topicCloseInfo.closedByUsedId}
+                  />
+                )}
+              </AnimateSharedLayout>
+              {!messages.length && !topicCloseInfo && (
+                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+              )}
+            </UIAnimatedMessagesWrapper>
+          </ScrollableMessages>
+
+          {isTopicClosed ? (
+            <TopicClosureNote />
+          ) : (
+            <ClientSideOnly>
+              <UIMessageComposer>
+                <MessageComposer topicId={id} />
+              </UIMessageComposer>
+            </ClientSideOnly>
           )}
-        </UIAnimatedMessagesWrapper>
-      </ScrollableMessages>
-      <ClientSideOnly>
-        <UIMessageComposer>
-          <MessageComposer topicId={id} />
-        </UIMessageComposer>
-      </ClientSideOnly>
-    </TopicRoot>
+        </TopicRoot>
+      )}
+    </>
   );
 };
 
@@ -71,6 +96,10 @@ const TopicRoot = styled(DropFileContext)`
     flex: 1 1 100%;
     width: 100%;
     overflow: auto;
+  }
+
+  ${TopicHeader} {
+    margin-bottom: 16px;
   }
 `;
 

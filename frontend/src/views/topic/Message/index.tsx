@@ -16,13 +16,14 @@ import { EditorContent } from "~richEditor/RichEditor";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
+  isTopicSummary?: boolean;
 }
 
 function getUserOrGuestName(message: TopicMessageDetailedInfoFragment): string {
   return message.user.name || "Guest";
 }
 
-export const Message = ({ message }: Props) => {
+export const Message = ({ message, isTopicSummary = false }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [updateMessage] = useUpdateTextMessageMutation();
@@ -51,6 +52,7 @@ export const Message = ({ message }: Props) => {
   function getShouldShowTools() {
     if (!isOwnMessage) return false;
     if (isInEditMode) return false;
+    if (isTopicSummary) return false;
 
     return isHovered || isActive;
   }
@@ -65,9 +67,10 @@ export const Message = ({ message }: Props) => {
       onMouseLeave={unsetHovered}
     >
       <UIMessageAvatar url={message.user.avatar_url ?? ""} name={getUserOrGuestName(message)} />
-      <UIMessageBody>
+      <UIMessageBody isSummary={isTopicSummary}>
         <UIMessageHead>
           <UIUserName>{isOwnMessage ? "You" : getUserOrGuestName(message)}</UIUserName>
+          {isTopicSummary && <UIClosedMessageLabel>Closed this topic</UIClosedMessageLabel>}
           <UITimestamp>{format(new Date(message.createdAt), "p")}</UITimestamp>
         </UIMessageHead>
         <MessageText message={message} isInEditMode={isInEditMode} onEditRequest={handleEditContentRequest} />
@@ -141,23 +144,34 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 `;
 
-const UIMessageBody = styled.div`
-  background-color: #eee;
+const UIMessageBody = styled.div<{ isSummary: boolean }>`
   padding: 1rem;
   border-radius: 1rem;
   min-width: 280px;
   max-width: 80%;
+
+  ${({ isSummary }) => (isSummary ? "background-color: hsla(146, 64%, 96%, 1);" : "background-color: #eee;")}
 `;
 
 const UIMessageHead = styled.div`
   display: flex;
   align-items: flex-end;
   margin-bottom: 0.5rem;
+
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const UIUserName = styled.span`
   font-weight: 700;
-  margin-right: 0.75em;
+  margin-right: 12px;
+`;
+
+const UIClosedMessageLabel = styled.div`
+  margin-right: 12px;
+  color: hsla(149, 99%, 33%, 1);
+  font-weight: 400;
+  opacity: 0.8;
 `;
 
 const UITimestamp = styled.span`

@@ -29,6 +29,8 @@ import {
   SingleTopicQueryVariables,
   RecentTopicsQuery,
   RecentTopicsQueryVariables,
+  ToggleCloseTopicMutation,
+  ToggleCloseTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -42,6 +44,11 @@ export const TopicDetailedInfoFragment = () => gql`
     name
     index
     slug
+    closed_at
+    closing_summary
+    closed_by_user {
+      ...UserBasicInfo
+    }
     room {
       ...RoomBasicInfo
     }
@@ -326,6 +333,24 @@ export const [useRecentTopics] = createQuery<RecentTopicsQuery, RecentTopicsQuer
         limit: $limit
         # TODO: I'm not sure about performance of this in large scale. Should be good tho if used with index.
         order_by: { messages_aggregate: { max: { created_at: desc } } }
+      ) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useToggleCloseTopicMutation] = createMutation<
+  ToggleCloseTopicMutation,
+  ToggleCloseTopicMutationVariables
+>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    mutation ToggleCloseTopic($topicId: uuid!, $closedAt: timestamp, $closedByUserId: uuid, $summary: String) {
+      topic: update_topic_by_pk(
+        pk_columns: { id: $topicId }
+        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId, closing_summary: $summary }
       ) {
         ...TopicDetailedInfo
       }

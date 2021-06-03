@@ -1,5 +1,6 @@
 import { ChangeEvent, forwardRef, InputHTMLAttributes } from "react";
 import styled from "styled-components";
+import { baseInputStyles } from "./utils";
 
 export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
   onChangeText?: (text: string) => void;
@@ -18,14 +19,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 });
 
 const TextInputElem = styled.input`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  height: 2.375rem;
-  width: 100%;
+  ${baseInputStyles}
 
-  border: 1px solid rgba(190, 190, 190, 0.25);
-  box-sizing: border-box;
-  border-radius: 0.5rem;
+  height: 38px;
 `;

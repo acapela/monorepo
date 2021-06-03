@@ -691,9 +691,12 @@
           - owner_id
           - slug
         filter:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+          _or:
+            - owner_id:
+                _eq: X-Hasura-User-Id
+            - memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
@@ -854,6 +857,14 @@
     schema: public
     name: topic
   object_relationships:
+    - name: closed_by_user
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: user
+          column_mapping:
+            closed_by_user_id: id
     - name: room
       using:
         foreign_key_constraint_on: room_id
@@ -893,6 +904,9 @@
     - role: user
       permission:
         columns:
+          - closed_at
+          - closed_by_user_id
+          - closing_summary
           - id
           - index
           - name
@@ -910,6 +924,9 @@
     - role: user
       permission:
         columns:
+          - closed_at
+          - closed_by_user_id
+          - closing_summary
           - index
           - name
         filter:
@@ -1125,6 +1142,7 @@
               memberships:
                 user_id:
                   _eq: X-Hasura-User-Id
+        limit: 1
   update_permissions:
     - role: user
       permission:
