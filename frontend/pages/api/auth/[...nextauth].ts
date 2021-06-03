@@ -58,12 +58,12 @@ const authAdapterProvider: Adapter = {
         if (!whiteListEntry) {
           // automatically add a non-whitelisted user to whitelist
           await db.whitelist.create({
-            data: { email: profile.email.toLocaleLowerCase(), approved: false },
+            data: { email: profile.email.toLocaleLowerCase(), is_approved: false },
           });
           throw new Error("email not whitelisted");
         }
 
-        if (!whiteListEntry.approved) {
+        if (!whiteListEntry.is_approved) {
           throw new Error("email not approved");
         }
 

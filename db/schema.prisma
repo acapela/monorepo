@@ -246,7 +246,7 @@ model verification_requests {
 }
 
 model whitelist {
-  email     String   @id
-  timestamp DateTime @default(now()) @db.Timestamptz(6)
-  approved  Boolean  @default(false)
+  email       String   @id
+  timestamp   DateTime @default(now()) @db.Timestamptz(6)
+  is_approved Boolean  @default(false)
 }

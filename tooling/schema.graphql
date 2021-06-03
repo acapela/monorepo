@@ -9905,8 +9905,8 @@ input uuid_comparison_exp {
 columns and relationships of "whitelist"
 """
 type whitelist {
-  approved: Boolean!
   email: String!
+  is_approved: Boolean!
   timestamp: timestamptz!
 }
 
@@ -9951,8 +9951,8 @@ input whitelist_bool_exp {
   _and: [whitelist_bool_exp]
   _not: whitelist_bool_exp
   _or: [whitelist_bool_exp]
-  approved: Boolean_comparison_exp
   email: String_comparison_exp
+  is_approved: Boolean_comparison_exp
   timestamp: timestamptz_comparison_exp
 }
 
@@ -9968,8 +9968,8 @@ enum whitelist_constraint {
 input type for inserting data into table "whitelist"
 """
 input whitelist_insert_input {
-  approved: Boolean
   email: String
+  is_approved: Boolean
   timestamp: timestamptz
 }
 
@@ -10033,8 +10033,8 @@ input whitelist_on_conflict {
 ordering options when selecting data from "whitelist"
 """
 input whitelist_order_by {
-  approved: order_by
   email: order_by
+  is_approved: order_by
   timestamp: order_by
 }
 
@@ -10050,10 +10050,10 @@ select columns of table "whitelist"
 """
 enum whitelist_select_column {
   """column name"""
-  approved
+  email
 
   """column name"""
-  email
+  is_approved
 
   """column name"""
   timestamp
@@ -10063,8 +10063,8 @@ enum whitelist_select_column {
 input type for updating data in table "whitelist"
 """
 input whitelist_set_input {
-  approved: Boolean
   email: String
+  is_approved: Boolean
   timestamp: timestamptz
 }
 
@@ -10073,10 +10073,10 @@ update columns of table "whitelist"
 """
 enum whitelist_update_column {
   """column name"""
-  approved
+  email
 
   """column name"""
-  email
+  is_approved
 
   """column name"""
   timestamp
