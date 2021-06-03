@@ -23,6 +23,7 @@ export const ManageTopic = ({ topic }: Props) => {
       submitLabel: "Rename",
       placeholder: "Enter topic name",
     });
+
     if (!name?.trim()) {
       return;
     }
