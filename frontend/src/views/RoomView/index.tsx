@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
@@ -7,6 +7,7 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
+import { RoomContext, RoomContextProps } from "./RoomContext";
 
 interface Props {
   roomId: string;
@@ -40,8 +41,19 @@ export function RoomView({ roomId, topicId }: Props) {
     });
   }, [topicId, firstTopic]);
 
+  const roomContext = useMemo<RoomContextProps>(
+    () => ({
+      reloadRoom: () =>
+        routes.spaceRoom.replace({
+          roomId: roomData?.room?.id,
+          spaceId: roomData?.room?.space_id,
+        }),
+    }),
+    [roomData]
+  );
+
   return (
-    <>
+    <RoomContext.Provider value={roomContext}>
       <PageMeta title={roomData?.room?.name} />
       <UIHolder>
         <UITopicsHolder>
@@ -53,7 +65,7 @@ export function RoomView({ roomId, topicId }: Props) {
           </UITopicContentHolder>
         </AnimatePresence>
       </UIHolder>
-    </>
+    </RoomContext.Provider>
   );
 }
 

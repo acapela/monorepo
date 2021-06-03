@@ -33,6 +33,8 @@ import {
   ToggleCloseTopicMutationVariables,
   EditTopicMutation,
   EditTopicMutationVariables,
+  DeleteTopicMutation,
+  DeleteTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -362,6 +364,17 @@ export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopi
     ${TopicDetailedInfoFragment()}
     mutation EditTopic($name: String!, $topicId: uuid!) {
       topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { name: $name }) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+    mutation DeleteTopic($topicId: uuid!) {
+      topic: delete_topic_by_pk(id: $topicId) {
         ...TopicDetailedInfo
       }
     }

@@ -8716,6 +8716,19 @@ export type EditTopicMutation = (
   )> }
 );
 
+export type DeleteTopicMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type DeleteTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
 export type UserBasicInfoFragment = (
   { __typename?: 'user' }
   & Pick<User, 'id' | 'name' | 'avatar_url'>
