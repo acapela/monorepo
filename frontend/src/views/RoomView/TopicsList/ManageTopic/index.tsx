@@ -31,12 +31,12 @@ export const ManageTopic = ({ topic }: Props) => {
   }, [topic.name]);
 
   const handleDeleteSelect = useCallback(async () => {
-    const confirmation = await openConfirmPrompt({
+    const isDeleteConfirmed = await openConfirmPrompt({
       title: "Please confirm",
       description: `Are you sure you want to permanently delete "${topic.name}"?`,
       confirmLabel: "Delete",
     });
-    if (confirmation) {
+    if (isDeleteConfirmed) {
       await deleteTopic();
       roomContext?.reloadRoom();
     }
@@ -58,7 +58,7 @@ export const ManageTopic = ({ topic }: Props) => {
           },
         ]}
       >
-        <IconButton icon={<IconVerticalThreeDots />} />
+        <IconButton icon={<IconVerticalThreeDots />} tooltip={"Edit topic"} />
       </PopoverMenu>
     </>
   );
