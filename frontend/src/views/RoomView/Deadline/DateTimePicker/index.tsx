@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import DayPicker from "react-day-picker";
+import "react-day-picker/lib/style.css";
 
 interface Props {
-  date: Date;
+  initialValue: Date;
 }
 
-export const DateTimePicker = ({ date }: Props) => {
+export const DateTimePicker = ({ initialValue }: Props) => {
+  const [value, setValue] = useState<Date>(initialValue);
   return (
     <UIHolder>
-      <p>{date.toString()}</p>
+      <DayPicker selectedDays={value} onDayClick={setValue} />
     </UIHolder>
   );
 };

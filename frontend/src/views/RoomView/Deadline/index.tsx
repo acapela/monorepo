@@ -7,7 +7,8 @@ import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
-import { useClickAway } from "react-use";
+import { AnimatePresence } from "framer-motion";
+// import { useClickAway } from "react-use";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -18,13 +19,15 @@ export const Deadline = ({ room }: Props) => {
   const { deadline } = room;
   const [isPickerOpen, { toggle }] = useBoolean(false);
   const date = new Date(deadline);
-  useClickAway(ref, toggle);
+  // useClickAway(ref, toggle);
   return (
     <>
       {isPickerOpen && (
-        <Popover placement={"bottom-start"} anchorRef={ref}>
-          <DateTimePicker date={date} />
-        </Popover>
+        <AnimatePresence>
+          <Popover placement={"bottom-start"} anchorRef={ref}>
+            <DateTimePicker date={date} />
+          </Popover>
+        </AnimatePresence>
       )}
       <UIHolder onClick={toggle} ref={ref}>
         <UIText size={15}>{format(date, "dd.MM.yyyy, p")}</UIText>
