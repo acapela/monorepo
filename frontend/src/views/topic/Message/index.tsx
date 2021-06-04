@@ -15,6 +15,8 @@ import { MessageTranscription } from "~frontend/views/topic/Message/MessageTrans
 import { EditorContent } from "~richEditor/RichEditor";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./MessageAttachmentDisplayer";
+import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { SUCCESS_COLOR } from "~ui/colors";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
@@ -29,7 +31,7 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [updateMessage] = useUpdateTextMessageMutation();
-  const [isInEditMode, setIsInEditMode] = useState(false);
+  const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
   const [isActive, setIsActive] = useState(false);
   const holderRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,7 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
   }
 
   async function handleEditContentRequest(newContent: EditorContent) {
-    setIsInEditMode(false);
+    disableEditMode();
     await updateMessage({ id: message.id, content: newContent, isDraft: false });
   }
 
@@ -77,7 +79,12 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
           {isTopicSummary && <UIClosedMessageLabel>Closed this topic</UIClosedMessageLabel>}
           <UITimestamp>{format(new Date(message.createdAt), "p")}</UITimestamp>
         </UIMessageHead>
-        <MessageText message={message} isInEditMode={isInEditMode} onEditRequest={handleEditContentRequest} />
+        <MessageText
+          message={message}
+          isInEditMode={isInEditMode}
+          onEditRequest={handleEditContentRequest}
+          onEditCancelRequest={disableEditMode}
+        />
         {attachments.length > 0 && (
           <UIAttachments>
             {attachments.map(({ attachment }) => (
@@ -109,12 +116,12 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={POP_ANIMATION_CONFIG}
           >
             <MessageActions
               isActive={isActive}
               onActiveChange={setIsActive}
-              onEditRequest={() => setIsInEditMode(true)}
+              onEditRequest={enableEditMode}
               onRemoveRequest={handleRemove}
             />
           </UITools>
@@ -156,8 +163,8 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
 const UIMessageBody = styled.div<{ isSummary: boolean }>`
   padding: 1rem;
   border-radius: 1rem;
-  min-width: 280px;
-  max-width: 80%;
+  min-width: 360px;
+  max-width: 700px;
 
   ${({ isSummary }) => (isSummary ? "background-color: hsla(146, 64%, 96%, 1);" : "background-color: #eee;")}
 `;
@@ -178,7 +185,7 @@ const UIUserName = styled.span`
 
 const UIClosedMessageLabel = styled.div`
   margin-right: 12px;
-  color: hsla(149, 99%, 33%, 1);
+  color: ${SUCCESS_COLOR};
   font-weight: 400;
   opacity: 0.8;
 `;

@@ -10,6 +10,8 @@ import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { DANGER_COLOR } from "~ui/colors";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { Tooltip } from "./Tooltip";
+import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { shadow } from "~ui/baseStyles";
 
 type NonEmptyArray<T> = [T, ...T[]];
 
@@ -34,9 +36,10 @@ export interface PopoverMenuOptions {
 export const PopoverMenu = styled(
   ({ children: triggerElement, options, position = "bottom-start", className, onOpen, onClose, tooltip }: Props) => {
     const anchorRef = useRef<HTMLDivElement>(null);
+    const popoverMenuRef = useRef<HTMLDivElement>(null);
     const [isOpen, { unset: closePopover, set: openPopover }] = useBoolean(false);
 
-    useClickAway(anchorRef, closePopover);
+    useClickAway(popoverMenuRef, closePopover);
 
     useDependencyChangeEffect(() => {
       if (isOpen) {
@@ -59,8 +62,12 @@ export const PopoverMenu = styled(
             {isOpen && (
               <Popover anchorRef={anchorRef} placement={position}>
                 <UIMenu
-                  presenceStyles={{ opacity: [0, 1], scale: [0.95, 1] }}
-                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                  ref={popoverMenuRef}
+                  presenceStyles={POP_PRESENCE_STYLES}
+                  transition={POP_ANIMATION_CONFIG}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
                 >
                   {options.map(({ label, onSelect, icon, isDestructive = false }) => (
                     <UIMenuItem
@@ -95,7 +102,7 @@ const UIMenu = styled(PresenceAnimator)`
   background: #ffffff;
   border: 1px solid #e0e3e7;
   box-sizing: border-box;
-  box-shadow: 0px 8px 40px rgba(147, 158, 170, 0.2);
+  ${shadow.modal};
   border-radius: 6px;
   min-width: 200px;
 `;

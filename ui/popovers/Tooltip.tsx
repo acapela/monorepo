@@ -3,6 +3,7 @@ import React, { RefObject } from "react";
 import { useHoverDirty } from "react-use";
 import styled from "styled-components";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, colors, fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { Popover } from "./Popover";
@@ -22,7 +23,9 @@ export const Tooltip = styled(({ anchorRef, label, isDisabled }: Props) => {
     <AnimatePresence>
       {shouldShow && (
         <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement="top">
-          <UITooltip presenceStyles={{ opacity: [0, 1], y: [3, 0], scale: [0.95, 1] }}>{label}</UITooltip>
+          <UITooltip transition={POP_ANIMATION_CONFIG} presenceStyles={POP_PRESENCE_STYLES}>
+            {label}
+          </UITooltip>
         </Popover>
       )}
     </AnimatePresence>

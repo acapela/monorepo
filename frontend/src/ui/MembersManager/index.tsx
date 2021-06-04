@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { AnimatePresence } from "framer-motion";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
@@ -38,16 +39,18 @@ export const MembersManager = styled(function MembersManager({
 
   return (
     <>
-      {isPickingUser && (
-        <UserPickerModal
-          currentUsers={users}
-          currentUserLabel="Joined"
-          onCloseRequest={closeUserPicker}
-          onUserSelected={(selectedUser) => {
-            onAddMemberRequest(selectedUser.id);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {isPickingUser && (
+          <UserPickerModal
+            currentUsers={users}
+            currentUserLabel="Joined"
+            onCloseRequest={closeUserPicker}
+            onUserSelected={(selectedUser) => {
+              onAddMemberRequest(selectedUser.id);
+            }}
+          />
+        )}
+      </AnimatePresence>
       <UIHolder className={className}>
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}

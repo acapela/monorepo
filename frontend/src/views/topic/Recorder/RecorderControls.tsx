@@ -1,8 +1,11 @@
 import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
+import { Button } from "~ui/buttons/Button";
+import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { HStack } from "~ui/Stack";
+import { shadow } from "~ui/baseStyles";
 import { BodyPortal } from "~ui/BodyPortal";
-import { IconCrossCircle, IconStopCircle } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { VideoPreview } from "./VideoPreview";
 
@@ -45,15 +48,11 @@ export const RecorderControls = styled(
     const controlsNode = (
       <UIHolder className={className}>
         {previewStream && <VideoPreview stream={previewStream} flip={flipVideoPreview} />}
-        <UIControls>
+        <UIControls gap={8} alignItems="center">
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
-          <UIStopButton onClick={() => onStop()}>
-            <IconStopCircle />
-          </UIStopButton>
-          <UIVerticalSeparator />
-          <UICloseButton onClick={() => onCancel()}>
-            <IconCrossCircle />
-          </UICloseButton>
+
+          <TransparentButton onClick={() => onCancel()}>Cancel</TransparentButton>
+          <Button onClick={() => onStop()}>Submit</Button>
         </UIControls>
       </UIHolder>
     );
@@ -75,59 +74,26 @@ export const RecorderControls = styled(
 )``;
 
 const UIHolder = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
   ${VideoPreview} {
     margin-bottom: 1rem;
   }
 `;
 
-const UIControls = styled.div`
-  display: flex;
-  align-items: center;
+const UIControls = styled(HStack)`
   background: #f8f8f8;
   padding: 0.5rem;
   border-radius: 0.625rem;
   user-select: none;
-
-  button {
-    display: inline-block;
-    background: transparent;
-    padding: 0;
-  }
+  ${shadow.modal}
 `;
 
 const UIElapsedTime = styled.span`
   margin: 0 0.5rem;
-  min-width: 40px;
+  min-width: 48px;
   text-align: left;
   font-weight: 400;
-  font-size: 0.75rem;
   line-height: 1.125rem;
   color: #292829;
-`;
-
-const UIStopButton = styled.button`
-  margin: 0 0.5rem;
-  svg {
-    fill: #ea1537;
-  }
-`;
-
-const UIVerticalSeparator = styled.div`
-  display: inline-block;
-  height: 1rem;
-  width: 1px;
-  background-color: #eae9ea;
-`;
-
-const UICloseButton = styled.button`
-  margin: 0 0.5rem;
-  svg {
-    fill: #000;
-  }
 `;
 
 const UICornerOfScreen = styled.div`

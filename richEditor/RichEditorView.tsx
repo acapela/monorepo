@@ -15,6 +15,7 @@ import {
   EmojiModuleOptions,
   removeEmojiSearchTextUnderCursor,
 } from "./emoji/module";
+import { registerAutolinksModule, AUTOLINK_MODULE_NAME } from "./autoLinks/module";
 import { RichEditorContext } from "./context";
 import { useChannel } from "~shared/channel";
 import { EmojiSearchModal } from "./emoji/SearchModal";
@@ -45,6 +46,7 @@ export interface RichEditorProps {
 const ENTER_KEYCODE = 13;
 
 registerEmojiModule();
+registerAutolinksModule();
 
 export const RichEditor = ({
   value,
@@ -146,6 +148,7 @@ export const RichEditor = ({
               onChange={handleChange}
               modules={{
                 [EMOJI_MODULE_NAME]: emojiModuleOptions,
+                [AUTOLINK_MODULE_NAME]: {},
                 toolbar: toolbarRef.current,
               }}
             />
@@ -191,6 +194,7 @@ const UIEditorHolder = styled.div`
 
 const UIHolder = styled.div`
   width: 100%;
+  min-width: 570px;
   border: 1px solid #ccc;
   border-radius: 1rem;
 `;

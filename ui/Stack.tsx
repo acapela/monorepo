@@ -10,6 +10,7 @@ interface Props {
   children: React.ReactNode;
   wrap?: "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit";
   fullWidth?: boolean;
+  className?: string;
 }
 
 const alignItemsFlexbox = {

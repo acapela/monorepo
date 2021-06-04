@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { HIGHLIGHT_COLOR } from "~ui/colors";
 import { Transcription, Transcription_Status_Enum } from "~frontend/gql";
 
 export interface Word {
@@ -64,7 +65,7 @@ const UIWord = styled.span<{ isActive: boolean }>`
   ${({ isActive }) =>
     isActive &&
     css`
-      border-color: #f27121;
+      border-color: ${HIGHLIGHT_COLOR};
       background-color: #fff;
     `}
 `;

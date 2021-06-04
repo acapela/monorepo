@@ -14,6 +14,7 @@ import {
   IconTextItalic,
   IconTextStrikethrough,
 } from "~ui/icons";
+import { useRichEditorIsEmpty } from "./context";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
 import { ToggleEditorFormatButton } from "./ToggleEditorFormatButton";
@@ -30,6 +31,8 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   { onFilesSelected, onSubmit, onEmojiSelected },
   ref
 ) {
+  const isEmpty = useRichEditorIsEmpty();
+
   return (
     <UIHolder ref={ref}>
       <UISection>
@@ -61,7 +64,16 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
           <ToolbarButton tooltipLabel="Add attachment..." icon={<IconPaperclip />} />
         </FileInput>
 
-        <ToolbarButton tooltipLabel="Submit" onClick={onSubmit} icon={<IconSend />} />
+        {/* Only show submit button if onSubmit callback is provided */}
+        {onSubmit && (
+          <ToolbarButton
+            isDisabled={isEmpty}
+            isActive={!isEmpty}
+            tooltipLabel="Submit"
+            onClick={onSubmit}
+            icon={<IconSend />}
+          />
+        )}
       </UISection>
     </UIHolder>
   );

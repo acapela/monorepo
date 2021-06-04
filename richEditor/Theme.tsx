@@ -1,4 +1,5 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, css } from "styled-components";
+import { ACTIVE_COLOR } from "~ui/colors";
 
 /*!
  * Quill Editor v1.3.0
@@ -1088,7 +1089,7 @@ export const QuillTheme = createGlobalStyle`
   }
 
   a {
-    color: #06c;
+    color: ${ACTIVE_COLOR};
   }
 }
 
@@ -1099,10 +1100,6 @@ export const QuillTheme = createGlobalStyle`
 /* Custom */
 body .quill {
   .ql-editor {
-    strong: {
-      font-weight: bold;
-    }
-
     &.ql-blank {
       &::before {
         /* Empty editor placeholder styles */
@@ -1110,12 +1107,64 @@ body .quill {
         color: rgb(120, 134, 147);
       }
     }
+    ${() => richEditorContentCss};
   }
-
   .ql-container {
-    border: none;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
     border-bottom: none;
   }
 }
 
+`;
+
+export const richEditorContentCss = css`
+  line-height: 1.25;
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ul,
+  ol {
+    padding-left: 0;
+    list-style-position: inside;
+  }
+
+  li {
+    ::marker {
+      margin-right: 0.25rem;
+    }
+    ul,
+    ol {
+      padding-left: 1rem;
+    }
+  }
+
+  em {
+    font-style: italic;
+  }
+
+  code,
+  pre {
+    font-family: monospace;
+  }
+
+  a {
+    text-decoration: underline;
+    color: ${ACTIVE_COLOR};
+  }
+
+  blockquote {
+    border-left: 2px solid #888;
+    padding: 0.5rem 0 0.5rem 0.5rem;
+  }
+
+  strong {
+    font-weight: bold;
+  }
 `;
