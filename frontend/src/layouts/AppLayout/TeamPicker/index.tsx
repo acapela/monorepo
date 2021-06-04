@@ -7,7 +7,7 @@ import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 
 export function TeamPickerView() {
-  const [data] = useTeams.subscription();
+  const [data] = useTeams();
   const user = useAssertCurrentUser();
 
   const [createTeam] = useCreateTeam();
