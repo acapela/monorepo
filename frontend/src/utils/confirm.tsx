@@ -1,8 +1,8 @@
-import { useKey } from "react-use";
 import styled from "styled-components";
 import { Modal } from "~frontend/ui/Modal";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface PromptInput {
   title: string;
@@ -15,8 +15,8 @@ type PromptResult = boolean;
 
 export const openConfirmPrompt = createPromiseUI<PromptInput, PromptResult>(
   ({ title, confirmLabel = "Confirm", cancelLabel = "Cancel", description }, resolve) => {
-    useKey("Escape", () => resolve(false));
-    useKey("Enter", () => resolve(true));
+    useShortcut("Escape", () => resolve(false));
+    useShortcut("Enter", () => resolve(true));
 
     return (
       <Modal

@@ -1,5 +1,4 @@
 import { ReactNode, RefObject, useRef } from "react";
-import { useKey } from "react-use";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { BodyPortal } from "~ui/BodyPortal";
@@ -8,6 +7,7 @@ import { SecondaryText } from "~ui/typo";
 import { IconButton } from "~ui/buttons/IconButton";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { useClickAway } from "react-use";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 export interface ModalAnchor {
   ref: RefObject<HTMLElement>;
@@ -29,7 +29,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   const modalRef = useRef<HTMLDivElement>(null);
 
   useClickAway(modalRef, onCloseRequest);
-  useKey("Escape", onCloseRequest);
+  useShortcut("Escape", onCloseRequest);
 
   const modalBodyNode = (
     <UIModal
