@@ -1,6 +1,8 @@
-import React from "react";
+import { format } from "date-fns";
+import React, { useMemo } from "react";
 import styled from "styled-components";
-import { UIText } from "~frontend/../../ui/UIText";
+import { hoverActionCss } from "~ui/transitions";
+import { UIText } from "~ui/UIText";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 
 interface Props {
@@ -8,14 +10,17 @@ interface Props {
 }
 
 export const Deadline = ({ room }: Props) => {
+  const { deadline } = room;
+  const formattedDeadline = useMemo(() => format(new Date(deadline), "dd.MM.yyyy, p"), [deadline]);
   return (
     <UIHolder>
-      <UIText size={15}>{room.deadline}</UIText>
+      <UIText size={15}>{formattedDeadline}</UIText>
     </UIHolder>
   );
 };
 
 const UIHolder = styled.div`
+  ${hoverActionCss}
   padding: 8px 16px;
   cursor: pointer;
   background: #ffffff;
