@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { hoverActionCss } from "~ui/transitions";
+import { useStateList } from "react-use";
+import { hoverActionCss, hoverActionActiveCss } from "~ui/transitions";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props<T> {
   items: T[];
@@ -11,13 +13,25 @@ interface Props<T> {
 }
 
 export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: Props<T>) {
-  // TODO: Add keyboard support. https://linear.app/acapela/issue/ACA-399/add-keyboard-support-to-select-lists
+  const { state: activeItem = items[0], prev, next } = useStateList(items);
+
+  const activeKey = activeItem ? keyGetter(activeItem) : null;
+
+  useShortcut("Down", next);
+  useShortcut("Up", prev);
+  useShortcut("Enter", () => {
+    if (!activeItem) return;
+
+    onItemSelected(activeItem);
+  });
+
   return (
     <UIHolder>
       {items.map((item) => {
         const key = keyGetter(item);
+        const isActive = activeKey === key;
         return (
-          <UIItem onClick={() => onItemSelected(item)} key={key}>
+          <UIItem isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
             {renderItem(item)}
           </UIItem>
         );
@@ -41,7 +55,8 @@ const UIHolder = styled.div`
     0px 8.14815px 6.51852px rgba(0, 0, 0, 0.0274815), 0px 1.85185px 3.14815px rgba(0, 0, 0, 0.0168519);
   border-radius: 1rem;
 `;
-const UIItem = styled.div`
+
+const UIItem = styled.div<{ isActive: boolean }>`
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
   display: flex;
@@ -49,6 +64,8 @@ const UIItem = styled.div`
   cursor: pointer;
 
   ${hoverActionCss};
+
+  ${(props) => props.isActive && hoverActionActiveCss}
 
   border-radius: 0;
 `;
