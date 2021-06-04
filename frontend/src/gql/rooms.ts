@@ -41,6 +41,7 @@ export const RoomDetailedInfoFragment = () => gql`
     id
     name
     space_id
+    deadline
     members {
       user {
         ...UserBasicInfo

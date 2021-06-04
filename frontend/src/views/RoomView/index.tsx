@@ -7,6 +7,9 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
+import { VStack } from "~ui/Stack";
+import { UIText } from "~ui/UIText";
+import { Deadline } from "./Deadline";
 
 interface Props {
   roomId: string;
@@ -79,9 +82,21 @@ export function RoomView({ roomId, topicId }: Props) {
     <>
       <PageMeta title={roomData?.room?.name} />
       <UIHolder>
-        <UITopicsHolder>
+        <VStack gap={10}>
+          <UIText weight="bold" size={27}>
+            {roomData?.room?.name}
+          </UIText>
+          <VStack gap={16}>
+            <VStack gap={10}>
+              <UIText size={14} color="#7F7E7F">
+                Due date
+              </UIText>
+              {roomData?.room && <Deadline room={roomData.room} />}
+            </VStack>
+          </VStack>
+          <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
-        </UITopicsHolder>
+        </VStack>
         <AnimatePresence exitBeforeEnter>
           <UITopicContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
             {selectedTopicId && <TopicView id={selectedTopicId} />}
@@ -94,14 +109,17 @@ export function RoomView({ roomId, topicId }: Props) {
 
 const UIHolder = styled.div`
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 360px 1fr;
   width: 100%;
   flex-grow: 1;
   grid-gap: 2rem;
   min-height: 0;
 `;
 
-const UITopicsHolder = styled.div``;
+const UILine = styled.div`
+  height: 1px;
+  background: #ebebec;
+`;
 
 const UITopicContentHolder = styled(PresenceAnimator)`
   flex-grow: 1;

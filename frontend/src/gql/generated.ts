@@ -8071,7 +8071,7 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id'>
+  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
