@@ -5,7 +5,6 @@ import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useTopic } from "~frontend/topics/useTopic";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { useRoomContext } from "../../RoomContext";
 import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 
 export const ManageTopic = ({ topic }: Props) => {
   const { edit, deleteTopic } = useTopic(topic);
-  const roomContext = useRoomContext();
 
   const handleRenameSelect = useCallback(async () => {
     const name = await openUIPrompt({
@@ -38,7 +36,6 @@ export const ManageTopic = ({ topic }: Props) => {
     });
     if (isDeleteConfirmed) {
       await deleteTopic();
-      roomContext?.reloadRoom();
     }
   }, [topic.name]);
 

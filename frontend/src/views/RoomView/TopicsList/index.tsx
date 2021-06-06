@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { slugify } from "~shared/slugify";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
@@ -20,10 +20,32 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
   const [roomData] = useSingleRoomQuery({ id: roomId });
   const [unreadMessagesData] = useUnreadMessages();
   const [createTopic] = useCreateTopicMutation();
+  const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
 
   const room = roomData?.room;
 
   const topics = room?.topics ?? [];
+
+  /*
+    Routing on new topic
+
+    Routing to new topics is only done after finding our created topic inside a subscription.
+
+    This is done in order to prevent a race-condition between room data, and mechanisms
+    that handle routing in the Room page.
+  */
+  useEffect(() => {
+    const found = topics.find(({ id }) => id === newlyCreatedTopic);
+    if (found) {
+      const {
+        id: topicId,
+        room: { space_id: spaceId, id: roomId },
+      } = found;
+
+      setNewlyCreatedTopic(null);
+      routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
+    }
+  }, [topics]);
 
   async function handleCreateTopic() {
     const topicName = await openUIPrompt({
@@ -54,8 +76,7 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
     if (!topic) {
       return;
     }
-
-    routes.spaceRoomTopic.push({ topicId: topic.id, spaceId: topic.room.space_id, roomId: topic.room.id });
+    setNewlyCreatedTopic(topic.id);
   }
 
   return (

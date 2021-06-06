@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
@@ -7,7 +7,6 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
-import { RoomContext, RoomContextProps } from "./RoomContext";
 
 interface Props {
   roomId: string;
@@ -27,33 +26,57 @@ export function RoomView({ roomId, topicId }: Props) {
 
   const selectedTopicId = getSelectedTopicId();
 
-  // If this view is opened without topic, but room has some topic - redirect to the first one
+  /*
+    Routing on changes to topic
+
+    We verify that a topic provided by the url exists within the topics of the room.
+    This handle cases of deleted topics, and a "soft-catch" to potential 404 scenarios.
+
+    Empty rooms will be route to their path without topicId.
+    Topic ids given through url that are not found in the room, route to the first topic in room.
+  */
   useEffect(() => {
-    if (topicId) return;
-    if (!firstTopic) return;
+    const topicsInRoom = roomData?.room?.topics;
 
-    // Note! Use replace instead of push. If we used push it might result in this annoying UX
-    // when you click 'back' in your browser and it goes back for a moment and then returns to previous page.
-    routes.spaceRoomTopic.replace({
-      topicId: firstTopic.id,
-      roomId: firstTopic.room.id,
-      spaceId: firstTopic.room.space_id,
-    });
-  }, [topicId, firstTopic]);
+    // Newly created room stores topics as `null`
+    if (!topicsInRoom) {
+      return;
+    }
 
-  const roomContext = useMemo<RoomContextProps>(
-    () => ({
-      reloadRoom: () =>
-        routes.spaceRoom.replace({
-          roomId: roomData?.room?.id,
-          spaceId: roomData?.room?.space_id,
-        }),
-    }),
-    [roomData]
-  );
+    const topicIdGivenByUrl = topicId;
+    const roomHasTopics = topicsInRoom.length > 0;
+    const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
+
+    const { id: roomId, space_id: spaceId } = roomData?.room?.id;
+
+    const routeToRoomUrl = () =>
+      routes.spaceRoom.replace({
+        roomId,
+        spaceId,
+      });
+
+    const routeToFirstTopicUrl = () =>
+      routes.spaceRoomTopic.replace({
+        topicId: firstTopic?.id,
+        roomId,
+        spaceId,
+      });
+
+    if (topicIdGivenByUrl) {
+      if (!roomHasTopics) {
+        routeToRoomUrl();
+      } else if (roomHasTopics && !isFoundInRoom(topicIdGivenByUrl)) {
+        routeToFirstTopicUrl();
+      }
+    } else {
+      if (roomHasTopics) {
+        routeToFirstTopicUrl();
+      }
+    }
+  }, [topicId, firstTopic, roomData?.room?.topics]);
 
   return (
-    <RoomContext.Provider value={roomContext}>
+    <>
       <PageMeta title={roomData?.room?.name} />
       <UIHolder>
         <UITopicsHolder>
@@ -65,7 +88,7 @@ export function RoomView({ roomId, topicId }: Props) {
           </UITopicContentHolder>
         </AnimatePresence>
       </UIHolder>
-    </RoomContext.Provider>
+    </>
   );
 }
 
