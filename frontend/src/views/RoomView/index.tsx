@@ -39,7 +39,7 @@ export function RoomView({ roomId, topicId }: Props) {
     const topicsInRoom = roomData?.room?.topics;
 
     // Newly created room stores topics as `null`
-    if (!topicsInRoom) {
+    if (!roomData?.room || !topicsInRoom) {
       return;
     }
 
@@ -47,7 +47,7 @@ export function RoomView({ roomId, topicId }: Props) {
     const roomHasTopics = topicsInRoom.length > 0;
     const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
 
-    const { id: roomId, space_id: spaceId } = roomData?.room?.id;
+    const { id: roomId, space_id: spaceId } = roomData?.room;
 
     const routeToRoomUrl = () =>
       routes.spaceRoom.replace({

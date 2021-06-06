@@ -42,8 +42,8 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
         room: { space_id: spaceId, id: roomId },
       } = found;
 
-      setNewlyCreatedTopic(null);
       routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
+      setNewlyCreatedTopic(null);
     }
   }, [topics]);
 
