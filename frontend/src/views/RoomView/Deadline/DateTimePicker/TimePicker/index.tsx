@@ -21,14 +21,18 @@ const getMinutes = (): number[] => {
 
 export const TimePicker = ({ value, onChange }: Props) => {
   const dayStart = useMemo(() => startOfDay(new Date()), []);
+
   const selectedElement = useRef<HTMLDivElement>(null);
+
   const options = useMemo(getMinutes, []);
+
   useEffect(() => {
     selectedElement.current?.scrollIntoView({
       behavior: "smooth",
       block: "center",
     });
   }, [value]);
+
   return (
     <div>
       {options.map((minutes) => {
