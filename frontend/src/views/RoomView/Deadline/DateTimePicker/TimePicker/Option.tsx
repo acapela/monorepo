@@ -18,8 +18,8 @@ const Container = styled.label<{ selected: boolean }>`
   justify-content: center;
   align-items: center;
 
-  ${(p) =>
-    p.selected &&
+  ${({ selected }) =>
+    selected &&
     css`
       background: #f4f4f4;
     `}
