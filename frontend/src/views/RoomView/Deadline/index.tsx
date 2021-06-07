@@ -8,14 +8,14 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
-import { useEditRoomMutation } from "~frontend/gql/rooms";
+import { useUpdateRoomDeadlineMutation } from "~frontend/gql/rooms";
 
 interface Props {
   room: RoomDetailedInfoFragment;
 }
 
 export const Deadline = ({ room }: Props) => {
-  const [editRoom] = useEditRoomMutation();
+  const [editRoom] = useUpdateRoomDeadlineMutation();
   const ref = useRef<HTMLButtonElement>(null);
   const { deadline } = room;
   const [isPickerOpen, { toggle }] = useBoolean(false);

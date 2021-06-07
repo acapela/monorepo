@@ -8174,13 +8174,13 @@ export type RemoveRoomMemberMutation = (
   )> }
 );
 
-export type EditRoomMutationVariables = Exact<{
+export type UpdateRoomDeadlineMutationVariables = Exact<{
   deadline: Scalars['timestamptz'];
   roomId: Scalars['uuid'];
 }>;
 
 
-export type EditRoomMutation = (
+export type UpdateRoomDeadlineMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }

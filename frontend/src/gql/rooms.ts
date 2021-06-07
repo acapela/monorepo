@@ -12,8 +12,8 @@ import {
   AddRoomMemberMutationVariables,
   RemoveRoomMemberMutation,
   RemoveRoomMemberMutationVariables,
-  EditRoomMutation,
-  EditRoomMutationVariables,
+  UpdateRoomDeadlineMutation,
+  UpdateRoomDeadlineMutationVariables,
 } from "./generated";
 import { getSingleSpaceManager } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
@@ -142,10 +142,13 @@ export const [useRemoveRoomMember] = createMutation<RemoveRoomMemberMutation, Re
   `
 );
 
-export const [useEditRoomMutation] = createMutation<EditRoomMutation, EditRoomMutationVariables>(
+export const [useUpdateRoomDeadlineMutation] = createMutation<
+  UpdateRoomDeadlineMutation,
+  UpdateRoomDeadlineMutationVariables
+>(
   () => gql`
     ${RoomDetailedInfoFragment()}
-    mutation EditRoom($deadline: timestamptz!, $roomId: uuid!) {
+    mutation UpdateRoomDeadline($deadline: timestamptz!, $roomId: uuid!) {
       room: update_room_by_pk(pk_columns: { id: $roomId }, _set: { deadline: $deadline }) {
         ...RoomDetailedInfo
       }

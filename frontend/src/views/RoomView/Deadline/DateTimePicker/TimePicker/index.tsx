@@ -34,7 +34,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
       {options.map((minutes) => {
         const selected = minutes === value;
         return (
-          <div ref={selected ? selectedElement : undefined}>
+          <div key={minutes} ref={selected ? selectedElement : undefined}>
             <Option value={minutes} onSelect={() => onChange(minutes)} name="time" selected={selected}>
               <UIText size={15}>{format(addMinutes(dayStart, minutes), "p")}</UIText>
             </Option>
