@@ -9,7 +9,6 @@ import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { useEditRoomMutation } from "~frontend/gql/rooms";
-// import { useClickAway } from "react-use";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -21,7 +20,6 @@ export const Deadline = ({ room }: Props) => {
   const { deadline } = room;
   const [isPickerOpen, { toggle }] = useBoolean(false);
   const date = new Date(deadline);
-  // useClickAway(ref, toggle);
   const handleSubmit = useCallback((deadline: Date) => {
     toggle();
     editRoom({ roomId: room.id, deadline });

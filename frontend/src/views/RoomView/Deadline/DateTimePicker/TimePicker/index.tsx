@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import styled from "styled-components";
 import { Option } from "./Option";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
 import { UIText } from "~ui/UIText";
@@ -31,7 +30,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
     });
   }, [value]);
   return (
-    <UIHolder>
+    <div>
       {options.map((minutes) => {
         const selected = minutes === value;
         return (
@@ -42,12 +41,6 @@ export const TimePicker = ({ value, onChange }: Props) => {
           </div>
         );
       })}
-    </UIHolder>
+    </div>
   );
 };
-
-const UIHolder = styled.div`
-  max-height: 320px;
-  overflow: auto;
-  padding: 0 20px;
-`;

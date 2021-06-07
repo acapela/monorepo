@@ -37,7 +37,9 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
     >
       <UIPickers>
         <DayPicker selectedDays={value} onDayClick={setValue} />
-        <TimePicker onChange={handleTimeChange} value={minutes} />
+        <UITimePickerWr>
+          <TimePicker onChange={handleTimeChange} value={minutes} />
+        </UITimePickerWr>
       </UIPickers>
       <Button isDisabled={isSubmitDisabled}>Save</Button>
     </UIHolder>
@@ -49,7 +51,7 @@ const UIHolder = styled.form`
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   display: grid;
-  grid-gap: 12px;
+  grid-gap: 24px;
   grid-template-columns: 1fr;
   padding: 12px;
 `;
@@ -57,5 +59,12 @@ const UIHolder = styled.form`
 const UIPickers = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 20px;
+  gap: 10px;
+`;
+
+const UITimePickerWr = styled.div`
+  padding: 16px;
+  border-left: 1px solid #eae9ea;
+  overflow: auto;
+  max-height: 300px;
 `;
