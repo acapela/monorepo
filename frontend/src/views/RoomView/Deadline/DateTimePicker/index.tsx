@@ -1,8 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { getMinutes, getHours, minutesInHour, addMinutes, startOfDay } from "date-fns";
 import styled from "styled-components";
 import DayPicker from "react-day-picker";
 import "react-day-picker/lib/style.css";
-import { Button } from "~frontend/../../ui/button";
+import { Button } from "~ui/button";
+import { TimePicker } from "./TimePicker";
 
 interface Props {
   initialValue: Date;
@@ -17,6 +19,15 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
       onSubmit(value);
     }
   }, [isSubmitDisabled, onSubmit, value]);
+  const minutes = useMemo(() => {
+    const hours = getHours(value);
+    const minutes = getMinutes(value);
+    return hours * minutesInHour + minutes;
+  }, [value]);
+  const handleTimeChange = useCallback((minutes: number) => {
+    const date = addMinutes(startOfDay(value), minutes);
+    setValue(date);
+  }, []);
   return (
     <UIHolder
       onSubmit={(e) => {
@@ -24,7 +35,10 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
         handleSubmit();
       }}
     >
-      <DayPicker selectedDays={value} onDayClick={setValue} />
+      <UIPickers>
+        <DayPicker selectedDays={value} onDayClick={setValue} />
+        <TimePicker onChange={handleTimeChange} value={minutes} />
+      </UIPickers>
       <Button isDisabled={isSubmitDisabled}>Save</Button>
     </UIHolder>
   );
@@ -38,4 +52,10 @@ const UIHolder = styled.form`
   grid-gap: 12px;
   grid-template-columns: 1fr;
   padding: 12px;
+`;
+
+const UIPickers = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
 `;
