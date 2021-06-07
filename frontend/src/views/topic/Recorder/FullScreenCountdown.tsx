@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { useInterval, useKey } from "react-use";
+import { useInterval } from "react-use";
+
 import styled from "styled-components";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { BodyPortal } from "~ui/BodyPortal";
 
 interface CountdownParams {
@@ -12,9 +14,7 @@ interface CountdownParams {
 export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
   const [seconds, setSeconds] = useState(startFrom);
 
-  useKey("Escape", () => {
-    onCancelled();
-  });
+  useShortcut("Escape", onCancelled);
 
   useInterval(() => {
     const newSeconds = seconds - 1;

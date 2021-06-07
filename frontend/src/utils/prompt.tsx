@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useKey } from "react-use";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
@@ -21,8 +21,8 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
   ({ title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor }, resolve) => {
     const [value, setValue] = useState(initialValue);
 
-    useKey("Escape", () => resolve(null));
-    useKey("Enter", () => resolve(value));
+    useShortcut("Escape", () => resolve(null));
+    useShortcut("Enter", () => resolve(value));
 
     return (
       <Modal
