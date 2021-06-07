@@ -68,7 +68,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         {onSubmit && (
           <ToolbarButton
             isDisabled={isEmpty}
-            isActive={!isEmpty}
+            isHighlighted={!isEmpty}
             tooltipLabel="Submit"
             onClick={onSubmit}
             icon={<IconSend />}

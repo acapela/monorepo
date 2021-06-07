@@ -11,5 +11,5 @@ interface Props {
 
 export function ToggleEditorFormatButton({ icon, formatName, value, tooltipLabel }: Props) {
   const { isEnabled, toggle } = useRichEditorFormat(formatName, value);
-  return <ToolbarButton icon={icon} isActive={isEnabled} onClick={toggle} tooltipLabel={tooltipLabel} />;
+  return <ToolbarButton icon={icon} isHighlighted={isEnabled} onClick={toggle} tooltipLabel={tooltipLabel} />;
 }

@@ -8,20 +8,20 @@ import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 interface Props {
   icon: ReactNode;
   label?: string;
-  isActive?: boolean;
+  isHighlighted?: boolean;
   isDisabled?: boolean;
   onClick?: () => void;
   tooltipLabel?: string;
 }
 
 export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function ToolbarButton(
-  { icon, isActive = false, isDisabled = false, onClick, tooltipLabel }: Props,
+  { icon, isHighlighted = false, isDisabled = false, onClick, tooltipLabel }: Props,
   ref
 ) {
   const innerRef = useSharedRef<HTMLButtonElement | null>(null, [ref]);
 
   const buttonNode = (
-    <UIHolder ref={innerRef} isActive={isActive} isDisabled={isDisabled} onClickCapture={onClick}>
+    <UIHolder ref={innerRef} isActive={isHighlighted} isDisabled={isDisabled} onClickCapture={onClick}>
       {icon}
     </UIHolder>
   );

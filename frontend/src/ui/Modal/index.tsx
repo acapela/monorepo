@@ -94,18 +94,18 @@ const UIModal = styled(PresenceAnimator)`
   border: 1px solid #f8f8f8;
 
   ${shadow.modal};
-  border-radius: 1rem;
+  border-radius: 16px;
 `;
 
 const UIHead = styled.div`
   line-height: 1.5;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 `;
 
 const UIBody = styled.div`
   align-items: center;
-  padding: 1.5rem;
+  padding: 24px;
 `;
 
 const UIHeadTitle = styled.div``;
@@ -113,5 +113,5 @@ const UIHeadTitle = styled.div``;
 const UIToolbar = styled.div`
   display: flex;
   justify-content: flex-end;
-  padding: 1rem 1rem 0;
+  padding: 16px 16px 0;
 `;
