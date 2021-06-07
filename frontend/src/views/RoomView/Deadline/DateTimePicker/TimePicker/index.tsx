@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Option } from "./Option";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
+import { Option } from "~ui/forms/Option";
 import { UIText } from "~ui/UIText";
 
 interface Props {
