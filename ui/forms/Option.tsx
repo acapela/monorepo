@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 import styled, { css } from "styled-components";
 
 interface Props {
@@ -40,14 +40,11 @@ const Container = styled.label<{ selected: boolean }>`
 `;
 
 export const Option = ({ value, children, selected, onSelect, name }: Props) => {
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      if (event.target.value === value) {
-        onSelect();
-      }
-    },
-    [onSelect, value]
-  );
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value === value) {
+      onSelect();
+    }
+  };
 
   return (
     <Container onFocus={onSelect} selected={selected}>
