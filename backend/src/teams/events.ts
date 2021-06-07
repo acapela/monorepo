@@ -3,7 +3,7 @@ import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors";
 import { addTeamMember, getHasTeamMember } from "./helpers";
 
-export async function handleTeamUpdates(team: Team, userId: string) {
+export async function handleTeamUpdates(team: Team, userId: string | null) {
   const { owner_id: ownerId, id: teamId } = team;
   if (userId !== ownerId) {
     logger.error("User id of action caller does not match room creator", {

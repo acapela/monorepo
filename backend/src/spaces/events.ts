@@ -3,7 +3,7 @@ import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors";
 import { addSpaceMember, getSpaceHasMember } from "./helpers";
 
-export async function handleSpaceUpdates(space: Space, userId: string) {
+export async function handleSpaceUpdates(space: Space, userId: string | null) {
   const { creator_id: creatorId, id: spaceId } = space;
   if (userId !== creatorId) {
     logger.error("User id of action caller does not match room creator", {

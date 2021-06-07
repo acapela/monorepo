@@ -747,6 +747,9 @@
     - name: team
       using:
         foreign_key_constraint_on: team_id
+    - name: used_by_user
+      using:
+        foreign_key_constraint_on: used_by_user_id
   insert_permissions:
     - role: user
       permission:
@@ -770,7 +773,9 @@
           - id
           - inviting_user_id
           - team_id
+          - token
           - used_at
+          - used_by_user_id
         filter:
           team:
             memberships:
@@ -1154,3 +1159,26 @@
           id:
             _eq: X-Hasura-User-Id
         check: null
+  event_triggers:
+    - name: user_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        update:
+          columns:
+            - avatar_url
+            - email
+            - name
+            - created_at
+            - email_verified
+            - current_team_id
+            - id
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER

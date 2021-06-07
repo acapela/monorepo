@@ -8,6 +8,7 @@ import { hasuraEvents } from "./eventHandlers";
 import { handleMessageCreated } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
 import { handleTopicCreated } from "../topics/events";
+import { handleUserCreated } from "../users/events";
 
 export const router = Router();
 
@@ -17,6 +18,7 @@ hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates)
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
+hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
