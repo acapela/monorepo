@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import { Button } from "~frontend/../../ui/buttons/Button";
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
-import { IconChevronDown } from "~frontend/../../ui/icons";
-import { routes } from "~frontend/../routes";
+import { Button } from "~ui/buttons/Button";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconChevronDown } from "~ui/icons";
+import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
