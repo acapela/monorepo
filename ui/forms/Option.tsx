@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, ChangeEvent } from "react";
 import styled, { css } from "styled-components";
 
 interface Props {
@@ -41,7 +41,7 @@ const Container = styled.label<{ selected: boolean }>`
 
 export const Option = ({ value, children, selected, onSelect, name }: Props) => {
   const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       if (event.target.value === value) {
         onSelect();
       }
