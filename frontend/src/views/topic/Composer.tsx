@@ -111,6 +111,6 @@ const UIEditorContainer = styled.div`
 `;
 
 const UIAttachmentsPreviews = styled.div`
-  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}rem;
+  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
   display: flex;
 `;

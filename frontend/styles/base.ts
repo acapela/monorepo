@@ -32,10 +32,4 @@ export const base = css`
     display: block;
     vertical-align: middle;
   }
-
-  img,
-  video {
-    max-width: 100%;
-    height: auto;
-  }
 `;

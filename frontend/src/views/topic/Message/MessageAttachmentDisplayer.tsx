@@ -80,6 +80,8 @@ export const MessageAttachmentDisplayer = ({
 
 const UIHolder = styled(motion.div)`
   max-height: 100%;
+  min-width: 0;
+  display: flex;
 `;
 
 const ImageWrapper = styled.img`
@@ -93,6 +95,6 @@ const PlayableMediaWrapper = styled.div`
 
   audio,
   video {
-    max-width: 100%;
+    max-height: 100%;
   }
 `;
