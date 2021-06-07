@@ -3,8 +3,8 @@ import { getMinutes, getHours, minutesInHour, addMinutes, startOfDay } from "dat
 import styled from "styled-components";
 import DayPicker from "react-day-picker";
 import "react-day-picker/lib/style.css";
-import { Button } from "~ui/button";
 import { TimePicker } from "./TimePicker";
+import { Button } from "~ui/buttons/Button";
 
 interface Props {
   initialValue: Date;
@@ -24,10 +24,13 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
     const minutes = getMinutes(value);
     return hours * minutesInHour + minutes;
   }, [value]);
-  const handleTimeChange = useCallback((minutes: number) => {
-    const date = addMinutes(startOfDay(value), minutes);
-    setValue(date);
-  }, []);
+  const handleTimeChange = useCallback(
+    (minutes: number) => {
+      const date = addMinutes(startOfDay(value), minutes);
+      setValue(date);
+    },
+    [value]
+  );
   const handleDayChange = useCallback(
     (date: Date) => {
       const value = addMinutes(startOfDay(date), minutes);
