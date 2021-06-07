@@ -7245,10 +7245,10 @@ type team_invitation {
   team_id: uuid!
   token: uuid!
   used_at: date
-  used_by: uuid
 
   """An object relationship"""
   used_by_user: user
+  used_by_user_id: uuid
 }
 
 """
@@ -7301,8 +7301,8 @@ input team_invitation_bool_exp {
   team_id: uuid_comparison_exp
   token: uuid_comparison_exp
   used_at: date_comparison_exp
-  used_by: uuid_comparison_exp
   used_by_user: user_bool_exp
+  used_by_user_id: uuid_comparison_exp
 }
 
 """
@@ -7329,8 +7329,8 @@ input team_invitation_insert_input {
   team_id: uuid
   token: uuid
   used_at: date
-  used_by: uuid
   used_by_user: user_obj_rel_insert_input
+  used_by_user_id: uuid
 }
 
 """aggregate max on columns"""
@@ -7342,7 +7342,7 @@ type team_invitation_max_fields {
   team_id: uuid
   token: uuid
   used_at: date
-  used_by: uuid
+  used_by_user_id: uuid
 }
 
 """
@@ -7356,7 +7356,7 @@ input team_invitation_max_order_by {
   team_id: order_by
   token: order_by
   used_at: order_by
-  used_by: order_by
+  used_by_user_id: order_by
 }
 
 """aggregate min on columns"""
@@ -7368,7 +7368,7 @@ type team_invitation_min_fields {
   team_id: uuid
   token: uuid
   used_at: date
-  used_by: uuid
+  used_by_user_id: uuid
 }
 
 """
@@ -7382,7 +7382,7 @@ input team_invitation_min_order_by {
   team_id: order_by
   token: order_by
   used_at: order_by
-  used_by: order_by
+  used_by_user_id: order_by
 }
 
 """
@@ -7426,8 +7426,8 @@ input team_invitation_order_by {
   team_id: order_by
   token: order_by
   used_at: order_by
-  used_by: order_by
   used_by_user: user_order_by
+  used_by_user_id: order_by
 }
 
 """
@@ -7463,7 +7463,7 @@ enum team_invitation_select_column {
   used_at
 
   """column name"""
-  used_by
+  used_by_user_id
 }
 
 """
@@ -7477,7 +7477,7 @@ input team_invitation_set_input {
   team_id: uuid
   token: uuid
   used_at: date
-  used_by: uuid
+  used_by_user_id: uuid
 }
 
 """
@@ -7506,7 +7506,7 @@ enum team_invitation_update_column {
   used_at
 
   """column name"""
-  used_by
+  used_by_user_id
 }
 
 """aggregate max on columns"""

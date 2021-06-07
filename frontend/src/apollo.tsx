@@ -1,13 +1,14 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { IncomingMessage } from "http";
 import Cookie from "js-cookie";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
-import { IncomingMessage } from "node:http";
 import React, { ReactNode } from "react";
 import { getApolloInitialState } from "./gql/hydration";
 import { useConst } from "./hooks/useConst";
+import { readAppInitialPropByName } from "./utils/next";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -96,7 +97,8 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
         const definition = getMainDefinition(query);
         return definition.kind === "OperationDefinition" && definition.operation === "subscription";
       },
-      createSocketLink(options.websocketEndpoint),
+      // Try to read hasura endpoint from _app initial props if option is not provided.
+      createSocketLink(options.websocketEndpoint || readAppInitialPropByName("hasuraWebsocketEndpoint")),
       authTokenLink.concat(httpLink)
     );
   }

@@ -5,9 +5,11 @@ import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
 import { assert } from "~shared/assert";
-import { pluralize } from "~shared/numbers";
+import { formatNumberWithMaxCallback, pluralize } from "~shared/numbers";
 import { ItemTitle, SecondaryText } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -18,6 +20,8 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
   const user = useCurrentUser();
   const [addRoomMember] = useAddRoomMember();
   const [removeRoomMember] = useRemoveRoomMember();
+  const unreadCount = useRoomUnreadMessagesCount(room.id);
+
   const topicsCount = room.topics.length;
 
   const members = room.members.map((m) => m.user);
@@ -38,6 +42,9 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
+      {unreadCount > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
+      )}
       <ItemTitle>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>
       <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />
@@ -51,6 +58,7 @@ const UIHolder = styled.div`
   align-items: flex-start;
   width: 100%;
   cursor: pointer;
+  position: relative;
 
   ${ItemTitle} {
     margin-bottom: 0.5rem;

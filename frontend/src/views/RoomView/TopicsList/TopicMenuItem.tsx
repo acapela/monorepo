@@ -3,6 +3,9 @@ import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { formatNumberWithMaxCallback } from "~shared/numbers";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -13,10 +16,14 @@ interface Props {
 const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className }: Props) {
+  const unreadCount = useTopicUnreadMessagesCount(topic.id);
   return (
     <UIFlyingTooltipWrapper>
       <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
         <UIHolder className={className} isActive={isActive} isClosed={!!topic.closed_at}>
+          {unreadCount > 0 && (
+            <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
+          )}
           {topic.name}
         </UIHolder>
       </TopicLink>
