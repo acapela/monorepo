@@ -13,6 +13,7 @@ import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { useEffect } from "react";
+import { POP_ANIMATION_CONFIG } from "~ui/animations";
 
 interface AddedProps {
   session: Session;
@@ -49,7 +50,7 @@ export default function App({
       <CommonMetadata />
       <PromiseUIRenderer />
       <SessionProvider session={session}>
-        <MotionConfig transition={{ type: "spring", stiffness: 500, damping: 30 }}>
+        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG, duration: 0.15 }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
             <AnimatePresence>
               <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>

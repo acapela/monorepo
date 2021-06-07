@@ -9,7 +9,7 @@ interface Props extends HTMLMotionProps<"div"> {
 
 type MakePresenceTuple<T> = [initialAndExit: T, animate: T] | [initial: T, animate: T, exit: T];
 
-type PresenceStyles = {
+export type PresenceStyles = {
   [key in keyof MotionAnimations]: MakePresenceTuple<MotionAnimations[key]>;
 };
 

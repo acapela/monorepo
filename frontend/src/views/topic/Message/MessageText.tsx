@@ -3,11 +3,16 @@ import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { RichEditor, EditorContent } from "~richEditor/RichEditor";
+import { Button } from "~ui/buttons/Button";
+import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { HStack } from "~ui/Stack";
+import { richEditorContentCss } from "~richEditor/Theme";
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
   isInEditMode: boolean;
   onEditRequest(newContent: EditorContent): void;
+  onEditCancelRequest(): void;
 }
 
 function renderMessageContent(message: TopicMessageBasicInfoFragment) {
@@ -22,65 +27,42 @@ function renderMessageContent(message: TopicMessageBasicInfoFragment) {
   }
 }
 
-export function MessageText({ message, isInEditMode, onEditRequest }: Props) {
+export function MessageText({ message, isInEditMode, onEditRequest, onEditCancelRequest }: Props) {
   // We want to allow editing the text before we'll submit changes to save it. Therefore let's keep 'dynamic' aka dirty
   // version of content as a local state.
   const [dirtyContent, setDirtyContent] = useState<EditorContent>(message.content);
 
   useEffect(() => {
     setDirtyContent(message.content);
-  }, [message.content]);
+  }, [message.content, isInEditMode]);
 
   if (!isInEditMode) {
     return <UIHolder>{renderMessageContent(message)}</UIHolder>;
   }
 
+  // TODO: Editor display logic should probably not be part of MessageText.
+
   return (
     <>
       <RichEditor value={dirtyContent} onChange={setDirtyContent} />
-      <button
-        onClick={() => {
-          onEditRequest(dirtyContent);
-        }}
-      >
-        Save
-      </button>
+      <UIButtons gap={8} justifyContent="end">
+        <TransparentButton onClick={onEditCancelRequest}>Cancel</TransparentButton>
+        <Button
+          onClick={() => {
+            onEditRequest(dirtyContent);
+          }}
+        >
+          Save
+        </Button>
+      </UIButtons>
     </>
   );
 }
 
 const UIHolder = styled.div`
-  line-height: 1.25;
+  ${richEditorContentCss};
+`;
 
-  ol {
-    list-style-type: decimal;
-  }
-
-  ul {
-    list-style-type: disc;
-  }
-
-  ul,
-  ol {
-    list-style-position: inside;
-  }
-
-  li {
-    ::marker {
-      margin-right: 0.25rem;
-    }
-    ul,
-    ol {
-      padding-left: 1rem;
-    }
-  }
-
-  blockquote {
-    border-left: 2px solid #888;
-    padding: 0.5rem 0 0.5rem 0.5rem;
-  }
-
-  strong {
-    font-weight: bold;
-  }
+const UIButtons = styled(HStack)`
+  margin-top: 8px;
 `;

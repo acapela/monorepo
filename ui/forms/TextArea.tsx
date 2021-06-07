@@ -19,7 +19,10 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
 });
 
 const UITextArea = styled.textarea`
-  ${baseInputStyles}
+  ${baseInputStyles};
+
+  padding-top: 12px;
+  padding-bottom: 12px;
 
   height: 72px;
   resize: none;

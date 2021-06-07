@@ -6,6 +6,7 @@ import { Button } from "~ui/buttons/Button";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { CloseTopicModal } from "./CloseTopicModal";
 import { useTopic } from "~frontend/topics/useTopic";
+import { AnimatePresence } from "framer-motion";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -13,7 +14,7 @@ interface Props {
 }
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
-  const [isClosingTopic, { toggle: toggleClosingTopicModal }] = useBoolean(false);
+  const [isClosingTopic, { set: openClosingModal, unset: closeClosingModal }] = useBoolean(false);
 
   const { isClosed, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
@@ -32,17 +33,19 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
               Reopen Topic
             </Button>
           )}
-          {!isClosed && <Button onClick={toggleClosingTopicModal}>Close Topic</Button>}
+          {!isClosed && <Button onClick={openClosingModal}>Close Topic</Button>}
         </UIAction>
       </UIHolder>
-      {isClosingTopic && (
-        <CloseTopicModal
-          topicId={topic.id}
-          loading={loading}
-          onDismissRequested={() => toggleClosingTopicModal()}
-          onTopicClosed={(topicSummary) => closeTopic(topicSummary)}
-        />
-      )}
+      <AnimatePresence>
+        {isClosingTopic && (
+          <CloseTopicModal
+            topicId={topic.id}
+            loading={loading}
+            onDismissRequest={() => closeClosingModal()}
+            onTopicClosed={(topicSummary) => closeTopic(topicSummary)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 })``;

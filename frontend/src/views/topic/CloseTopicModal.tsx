@@ -5,29 +5,30 @@ import { Modal } from "~frontend/ui/Modal";
 import { TextArea } from "~ui/forms/TextArea";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { HStack } from "~ui/Stack";
 
 interface Props {
   topicId: string;
   loading: boolean;
-  onDismissRequested: () => void;
+  onDismissRequest: () => void;
   onTopicClosed: (summary: string) => void;
 }
 
-export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: Props) => {
+export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Props) => {
   const [topicSummary, setTopicSummary] = useState("");
 
   async function closeWithSummary() {
     onTopicClosed(topicSummary);
-    onDismissRequested();
+    onDismissRequest();
   }
 
   async function closeWithoutSummary() {
     onTopicClosed("");
-    onDismissRequested();
+    onDismissRequest();
   }
 
   return (
-    <Modal hasCloseButton={false} onCloseRequest={onDismissRequested}>
+    <Modal hasCloseButton={false} onCloseRequest={onDismissRequest}>
       <UIBody>
         <UITitle>Almost there 🎉</UITitle>
         <UIBodyText>
@@ -37,17 +38,24 @@ export const CloseTopicModal = ({ onDismissRequested, onTopicClosed, loading }: 
         </UIBodyText>
         <UITextArea
           autoFocus
-          placeholder={"Type here..."}
+          placeholder={"Topic summary..."}
           value={topicSummary}
           onChangeText={(value) => setTopicSummary(value)}
         />
-        <UIButtons>
-          <TransparentButton isLoading={loading} onClick={closeWithoutSummary}>
-            Skip
-          </TransparentButton>
-          <Button isLoading={loading} onClick={closeWithSummary}>
-            Share
-          </Button>
+        <UIButtons justifyContent="space-around">
+          <UIButtonsSection justifyContent="start">
+            <TransparentButton isLoading={loading} onClick={() => onDismissRequest()}>
+              Cancel
+            </TransparentButton>
+          </UIButtonsSection>
+          <UIButtonsSection justifyContent="end" gap={8}>
+            <TransparentButton isLoading={loading} onClick={closeWithoutSummary}>
+              Close without summary
+            </TransparentButton>
+            <Button isLoading={loading} onClick={closeWithSummary}>
+              Submit
+            </Button>
+          </UIButtonsSection>
         </UIButtons>
       </UIBody>
     </Modal>
@@ -69,21 +77,16 @@ const UITitle = styled(TextTitle)`
 const UIBodyText = styled.div`
   font-weight: 400;
   line-height: 1.5;
-  font-size: 0.75rem;
   padding-bottom: 32px;
 `;
 
 const UITextArea = styled(TextArea)`
   margin-bottom: 32px;
   background-color: hsla(0, 0%, 97%, 1);
-  font-size: 0.75rem;
 `;
 
-const UIButtons = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const UIButtons = styled(HStack)``;
 
-  ${Button} {
-    margin-left: 8px;
-  }
+const UIButtonsSection = styled(HStack)`
+  flex-grow: 1;
 `;

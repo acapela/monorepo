@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { shadow } from "~ui/baseStyles";
 import { Logo } from "~frontend/ui/Logo";
 
 interface Props {
@@ -25,7 +26,7 @@ const UIHolder = styled.div`
 
 const UIWindow = styled.div`
   background: #ffffff;
-  box-shadow: 1rem 0.5rem 6rem rgba(0, 0, 0, 0.1);
+  ${shadow.modal};
   border-radius: 1rem;
   padding: 2rem;
 `;

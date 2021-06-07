@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { namedLazy } from "~shared/namedLazy";
+import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { IconEmotionHappy } from "~ui/icons";
 import { EmojiMartStyles } from "./styles";
 
@@ -53,7 +54,7 @@ export function EmojiPicker({ onPicked, className }: Props) {
               initial={exitStyle}
               animate={isOpened ? enterStyle : exitStyle}
               exit={exitStyle}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              transition={POP_ANIMATION_CONFIG}
             >
               <EmojiPickerWindow
                 native

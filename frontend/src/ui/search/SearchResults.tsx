@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styled from "styled-components";
+import { HIGHLIGHT_COLOR } from "~ui/colors";
 import { SearchResultFragment } from "~frontend/gql";
 
 interface Props {
@@ -91,7 +92,7 @@ const UISearchResultLink = styled.a`
 const UISearchResultMatch = styled.span``;
 
 const UISearchResultMatchHighlight = styled.span`
-  background-color: #f1cf54;
+  background-color: ${HIGHLIGHT_COLOR};
 `;
 
 const UISearchResultBreadcrumb = styled.span`

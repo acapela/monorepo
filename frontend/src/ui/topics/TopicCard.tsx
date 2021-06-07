@@ -50,6 +50,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 const UIHolder = styled.div`
   ${hoverActionNegativeSpacingCss}
   ${hoverActionCss}
+  cursor: pointer;
 `;
 
 const UIInfo = styled.div`

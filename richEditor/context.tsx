@@ -44,6 +44,41 @@ export function useRichEditorSelection() {
   return selection;
 }
 
+export function useRichEditorIsEmpty(trim = true) {
+  const { reactQuillRef } = useRichEditorContext();
+  const [isEmpty, setIsEmpty] = useState(getIsEmptyNow);
+
+  function getText() {
+    const rawText = reactQuillRef.current?.editor?.getText() ?? "";
+
+    if (!trim) return rawText;
+
+    return rawText.trim();
+  }
+
+  function getIsEmptyNow() {
+    return getText().length === 0;
+  }
+
+  useEffect(() => {
+    const editor = reactQuillRef.current?.editor;
+
+    if (!editor) return;
+
+    function handleTextChange() {
+      setIsEmpty(getIsEmptyNow());
+    }
+
+    editor.on("text-change", handleTextChange);
+
+    return () => {
+      editor.off("text-change", handleTextChange);
+    };
+  }, [reactQuillRef, reactQuillRef.current]);
+
+  return isEmpty;
+}
+
 export function useRichEditorFormat(formatName: string, customValue?: string) {
   const selection = useRichEditorSelection();
   const { reactQuillRef } = useRichEditorContext();

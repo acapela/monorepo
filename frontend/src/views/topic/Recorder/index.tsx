@@ -147,7 +147,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   return (
     <div className={className} ref={popoverHandlerRef}>
       <PopoverMenu
-        tooltip="Record video"
+        tooltip="Record video..."
         options={[
           {
             label: "Record screen",
@@ -170,7 +170,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       </PopoverMenu>
       <RecordButton
         onClick={onAudioButtonClick}
-        tooltipLabel={isRecording ? undefined : "Record audio"}
+        tooltipLabel={isRecording ? undefined : "Start recording audio"}
         disabled={!!getRecorderError(MediaSource.MICROPHONE)}
         title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
       >

@@ -11,4 +11,6 @@ export const baseInputStyles = css`
   border: 1px solid hsla(0, 0%, 75%, 0.25);
   box-sizing: border-box;
   border-radius: 0.5rem;
+
+  outline: none;
 `;

@@ -21,5 +21,4 @@ export const UnreadTopicIndicator = styled(PureUnreadTopicIndicator)`
   background: #f97284;
   color: #fff;
   border-radius: 0.5rem;
-  font-size: 0.75rem;
 `;

@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
-import styled from "styled-components";
-import { PopoverMenu, PopoverPosition } from "~ui/PopoverMenu";
+import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { IconVerticalThreeDots } from "~ui/icons";
-import { ACTION_ACTIVE_COLOR, hoverTransition } from "~ui/transitions";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useEditTopicMutation } from "~frontend/gql/topics";
+import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -29,7 +28,7 @@ export const ManageTopic = ({ topic }: Props) => {
   return (
     <>
       <PopoverMenu
-        position={PopoverPosition.RIGHT_BOTTOM}
+        position="bottom-start"
         options={[
           {
             label: "Rename",
@@ -37,29 +36,8 @@ export const ManageTopic = ({ topic }: Props) => {
           },
         ]}
       >
-        <Toggle>
-          <IconVerticalThreeDots />
-        </Toggle>
+        <IconButton icon={<IconVerticalThreeDots />} />
       </PopoverMenu>
     </>
   );
 };
-
-const TOGGLE_SIZE_PX = 18;
-
-const Toggle = styled.button`
-  width: ${TOGGLE_SIZE_PX}px;
-  height: ${TOGGLE_SIZE_PX}px;
-  background: #ffffff;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ${hoverTransition()};
-  cursor: pointer;
-  @media (hover) {
-    :hover {
-      background-color: ${ACTION_ACTIVE_COLOR};
-    }
-  }
-`;

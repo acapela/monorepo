@@ -5,6 +5,7 @@ import { namedLazy } from "~shared/namedLazy";
 import { EmojiMartStyles } from "./styles";
 import { useClickAway } from "react-use";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
 export const EmojiPickerWindowLazy = namedLazy(() => import("emoji-mart"), "Picker");
@@ -26,7 +27,11 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
     <>
       <EmojiMartStyles />
       <Suspense fallback={null}>
-        <UIHolder ref={holderRef} presenceStyles={{ opacity: [0, 1], y: [5, 0] }} transition={{ delay: 0.2 }}>
+        <UIHolder
+          ref={holderRef}
+          presenceStyles={POP_PRESENCE_STYLES}
+          transition={{ ...POP_ANIMATION_CONFIG, delay: 0.2 }}
+        >
           <EmojiPickerWindowLazy {...pickerProps} />
         </UIHolder>
       </Suspense>
