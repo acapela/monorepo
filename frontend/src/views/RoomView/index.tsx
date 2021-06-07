@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function RoomView({ roomId, topicId }: Props) {
-  const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
+  const [roomData] = useSingleRoomQuery({ id: roomId });
 
   const firstTopic = roomData?.room?.topics?.[0] ?? null;
 

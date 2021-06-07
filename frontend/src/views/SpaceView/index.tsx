@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function SpaceView({ spaceId }: Props) {
-  const [data] = useSingleSpaceQuery.subscription({ id: spaceId });
+  const [data] = useSingleSpaceQuery({ id: spaceId });
 
   const space = data?.space ?? null;
 

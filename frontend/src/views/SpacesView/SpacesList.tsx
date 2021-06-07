@@ -7,7 +7,7 @@ import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser"
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();
-  const [data, { loading }] = useGetSpacesQuery.subscription({ teamId });
+  const [data, { loading }] = useGetSpacesQuery({ teamId });
 
   const spacesList = data?.space ?? [];
 

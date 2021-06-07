@@ -17,8 +17,8 @@ interface Props {
 
 export function TopicsList({ roomId, activeTopicId }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [roomData] = useSingleRoomQuery.subscription({ id: roomId });
-  const [unreadMessagesData] = useUnreadMessages.subscription();
+  const [roomData] = useSingleRoomQuery({ id: roomId });
+  const [unreadMessagesData] = useUnreadMessages();
   const [createTopic] = useCreateTopicMutation();
 
   const room = roomData?.room;

@@ -90,7 +90,7 @@ export const [useTeamDetails] = createQuery<TeamDetailsQuery, TeamDetailsQueryVa
 export function useCurrentTeamDetails() {
   const teamId = useAssertCurrentTeamId();
 
-  return useTeamDetails.subscription({ teamId });
+  return useTeamDetails({ teamId });
 }
 
 export const [useCreateTeamInvitation] = createMutation<

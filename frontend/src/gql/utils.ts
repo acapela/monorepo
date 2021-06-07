@@ -45,7 +45,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     return [data, subscriptionResult] as const;
   }
 
-  useQuery.subscription = useAsSubscription;
+  useAsSubscription.query = useQuery;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
     const client = getApolloClient();
@@ -89,7 +89,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     fetch,
   };
 
-  return [useQuery, manager] as const;
+  return [useAsSubscription, manager] as const;
 }
 
 function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {

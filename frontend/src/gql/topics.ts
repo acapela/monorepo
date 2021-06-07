@@ -133,7 +133,7 @@ export const [useCreateTopicMutation] = createMutation<CreateTopicMutation, Crea
   `
 );
 
-export const [useRoomTopicsSubscription] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
+export const [useRoomTopics] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
@@ -145,10 +145,7 @@ export const [useRoomTopicsSubscription] = createQuery<RoomTopicsQuery, RoomTopi
   `
 );
 
-export const [useTopicMessages, topicMessagesSubscriptionManager] = createQuery<
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables
->(
+export const [useTopicMessages, topicMessagesManager] = createQuery<TopicMessagesQuery, TopicMessagesQueryVariables>(
   () => gql`
     ${TopicMessageDetailedInfoFragment()}
 
@@ -188,7 +185,7 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
   `,
   {
     onSuccess: (data, variables) => {
-      topicMessagesSubscriptionManager.update({ topicId: variables.topicId }, (current) => {
+      topicMessagesManager.update({ topicId: variables.topicId }, (current) => {
         if (!data.message) {
           return;
         }
