@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 interface Props {
   color?: string;
-  weight?: "400" | "500" | "600" | "700" | "bold";
+  weight?: "400" | "500" | "600" | "bold";
   size?: string | number;
   lineHeight?: string;
 }

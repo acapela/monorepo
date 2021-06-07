@@ -8174,6 +8174,20 @@ export type RemoveRoomMemberMutation = (
   )> }
 );
 
+export type EditRoomMutationVariables = Exact<{
+  deadline: Scalars['timestamptz'];
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type EditRoomMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & RoomDetailedInfoFragment
+  )> }
+);
+
 export type SearchResultFragment = (
   { __typename?: 'full_text_search' }
   & Pick<Full_Text_Search, 'transcript'>
