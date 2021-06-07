@@ -6,6 +6,7 @@ import { useCreateMessageMutation } from "~frontend/gql/topics";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
+import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./Message/MessageAttachmentDisplayer";
 import { Recorder } from "./Recorder";
 import { uploadFile } from "./uploadFile";
 
@@ -81,29 +82,24 @@ export const MessageComposer = ({ topicId }: Props) => {
             attachmentsList.clear();
             setValue([]);
           }}
+          placeholder="Type here to start contributing..."
+          additionalContent={
+            attachments.length > 0 && (
+              <UIAttachmentsPreviews>
+                {attachments.map((attachment, index) => {
+                  return (
+                    <AttachmentPreview
+                      id={attachment.uuid}
+                      key={attachment.uuid}
+                      onRemoveRequest={() => attachmentsList.removeAt(index)}
+                    />
+                  );
+                })}
+              </UIAttachmentsPreviews>
+            )
+          }
         />
       </UIEditorContainer>
-
-      {attachments.length > 0 && (
-        <UIAttachmentsPreviews>
-          {attachments.map((attachment, index) => {
-            return (
-              <AttachmentPreview
-                id={attachment.uuid}
-                key={attachment.uuid}
-                onRemoveRequest={() => attachmentsList.removeAt(index)}
-              />
-            );
-          })}
-        </UIAttachmentsPreviews>
-      )}
-
-      {/* TODO: Restore emoji picker inside rich editor */}
-      {/* <EmojiPicker
-          onPicked={(emoji) => {
-            textField.appendAtCursor(emoji);
-          }}
-        /> */}
     </>
   );
 };
@@ -114,4 +110,7 @@ const UIEditorContainer = styled.div`
   align-items: center;
 `;
 
-const UIAttachmentsPreviews = styled.div``;
+const UIAttachmentsPreviews = styled.div`
+  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
+  display: flex;
+`;

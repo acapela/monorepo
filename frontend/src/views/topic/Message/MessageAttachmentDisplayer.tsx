@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { motion } from "framer-motion";
 
+export const ATTACHMENT_PREVIEW_HEIGHT_PX = 120;
+
 interface AttachmentProps {
   mediaRef: Ref<HTMLVideoElement>;
   attachment: AttachmentDetailedInfoFragment;
@@ -66,21 +68,33 @@ export const MessageAttachmentDisplayer = ({
   }
 
   return (
-    <UIHolder layoutId={layoutId ?? undefined} onClick={onClick}>
+    <UIHolder
+      layoutId={layoutId ?? undefined}
+      onClick={onClick}
+      transition={{ type: "spring", stiffness: 400, damping: 40 }}
+    >
       {renderAttachment()}
     </UIHolder>
   );
 };
 
-const UIHolder = styled(motion.div)``;
+const UIHolder = styled(motion.div)`
+  max-height: 100%;
+  min-width: 0;
+  display: flex;
+`;
 
-const ImageWrapper = styled.img``;
+const ImageWrapper = styled.img`
+  max-height: 100%;
+  user-select: none;
+  border-radius: 0.5rem;
+`;
 
 const PlayableMediaWrapper = styled.div`
-  max-width: 100%;
+  max-height: 100%;
 
   audio,
   video {
-    max-width: 100%;
+    max-height: 100%;
   }
 `;

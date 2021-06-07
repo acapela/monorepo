@@ -1102,10 +1102,18 @@ body .quill {
     strong: {
       font-weight: bold;
     }
+
+    &.ql-blank {
+      &::before {
+        /* Empty editor placeholder styles */
+        font-style: normal;
+        color: rgb(120, 134, 147);
+      }
+    }
   }
-.ql-container {
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+
+  .ql-container {
+    border: none;
     border-bottom: none;
   }
 }

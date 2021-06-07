@@ -51,6 +51,11 @@ const UIHolder = styled.div<{ size: Size }>`
   border-radius: 50%;
 
   overflow: hidden;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
 function getAvatarRemSize(size: Size) {

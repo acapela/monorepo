@@ -1,12 +1,13 @@
-import { AnimateSharedLayout } from "framer-motion";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
 import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
-import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -36,7 +37,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
   }, [mediaRef.current]);
 
   if (!url) {
-    return <div className={className}>Fetching</div>;
+    return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
   }
 
   if (!attachmentData?.attachment) return null;
@@ -61,15 +62,25 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
         {isFullscreenOpened && <UIAttachmentPlaceholder>{renderAttachment(true)}</UIAttachmentPlaceholder>}
       </UIInlineAttachmentHolder>
       <BodyPortal>
-        {isFullscreenOpened && (
-          <UIFullscreenHolder onClick={toggleIsFullscreenOpened}>{renderAttachment()}</UIFullscreenHolder>
-        )}
+        <AnimatePresence>
+          {isFullscreenOpened && (
+            <UIFullscreenHolder
+              presenceStyles={{
+                backgroundColor: ["#0000", "#0004"],
+                pointerEvents: ["none", "all"],
+              }}
+              onClick={toggleIsFullscreenOpened}
+            >
+              {renderAttachment()}
+            </UIFullscreenHolder>
+          )}
+        </AnimatePresence>
       </BodyPortal>
     </AnimateSharedLayout>
   );
 };
 
-const UIFullscreenHolder = styled.div`
+const UIFullscreenHolder = styled(PresenceAnimator)`
   position: fixed;
   z-index: ${zIndex.FullScreenPreview};
   top: 0;
@@ -82,13 +93,18 @@ const UIFullscreenHolder = styled.div`
   justify-content: center;
 `;
 
+const UILoadingPlaceholder = styled.div`
+  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}rem;
+`;
+
 const UIAttachmentPlaceholder = styled.div`
   visibility: hidden;
   opacity: 0;
+  display: flex;
 `;
 
 const UIInlineAttachmentHolder = styled.div`
-  max-width: 200px;
+  display: flex;
 `;
 
 export const MessageAttachment = styled(PureMessageAttachment)``;
