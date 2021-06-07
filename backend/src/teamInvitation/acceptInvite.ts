@@ -7,6 +7,19 @@ import { findInviteByCode, invalidateInvite } from "./invites";
 
 // Transactional
 export async function acceptTeamInvitation(invite: TeamInvitation, userId: string): Promise<Team> {
+  /**
+   * Make sure the invitation email is matching user email.
+   *
+   * TODO: I'm not sure it's correct product/ux wise. Eg I invite you to your personal email, but you want to accept it
+   * using your work google account.
+   */
+
+  const user = await db.user.findFirst({ where: { id: userId, email: invite.email } });
+
+  if (!user) {
+    throw new Error(`There is no team invitation matching this user email.`);
+  }
+
   const team = await db.team.update({
     where: {
       id: invite.team_id,

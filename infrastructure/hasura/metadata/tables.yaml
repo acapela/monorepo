@@ -749,7 +749,7 @@
         foreign_key_constraint_on: team_id
     - name: used_by_user
       using:
-        foreign_key_constraint_on: used_by
+        foreign_key_constraint_on: used_by_user_id
   insert_permissions:
     - role: user
       permission:
@@ -775,7 +775,7 @@
           - team_id
           - token
           - used_at
-          - used_by
+          - used_by_user_id
         filter:
           team:
             memberships:

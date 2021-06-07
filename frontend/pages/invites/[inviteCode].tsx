@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
+import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useTeamInvitationByToken } from "~frontend/gql/teams";
 import { routes } from "~frontend/routes";
-import { TeamInvitationView } from "~frontend/views/TeamInvitationView";
+import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
 
@@ -21,7 +22,22 @@ export default function InvitePage() {
 
   return (
     <WindowView>
-      {!user && <TeamInvitationView />}
+      {/* If there is no user - ask to log in */}
+      {!user && (
+        <UIHolder>
+          <>
+            You have been invited to join the team.
+            <div>
+              <LoginOptionsView />
+            </div>
+          </>
+        </UIHolder>
+      )}
+      {/* If there is user, show loading indicator. It might be a bit confusing: We show loading because we're waiting
+       * to be sure invitation is accepted. It will get accepted automatically and then `useInvitationAcceptedCallback`
+       * will redirect user to homepage.
+       * It means the flow will be > user logs in > sees loading > is redirected to home page as a member of the team.
+       */}
       {user && "Loading..."}
     </WindowView>
   );
@@ -30,7 +46,7 @@ export default function InvitePage() {
 function useInvitationAcceptedCallback(token: string, callback: () => void) {
   const user = useCurrentUser();
 
-  const [data] = useTeamInvitationByToken.subscription({ tokenId: token });
+  const [data] = useTeamInvitationByToken({ tokenId: token });
 
   const invitation = data?.team_invitation?.[0] ?? null;
 
@@ -51,3 +67,5 @@ function useInvitationAcceptedCallback(token: string, callback: () => void) {
     callback();
   }, [isSuccessfullyAccepted, callback]);
 }
+
+const UIHolder = styled.div``;
