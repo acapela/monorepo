@@ -28,7 +28,7 @@ export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Pr
   }
 
   return (
-    <Modal hasCloseButton={false} onCloseRequest={onDismissRequest}>
+    <Modal onCloseRequest={onDismissRequest}>
       <UIBody>
         <UITitle>Almost there 🎉</UITitle>
         <UIBodyText>
@@ -43,11 +43,6 @@ export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Pr
           onChangeText={(value) => setTopicSummary(value)}
         />
         <UIButtons justifyContent="space-around">
-          <UIButtonsSection justifyContent="start">
-            <TransparentButton isLoading={loading} onClick={() => onDismissRequest()}>
-              Cancel
-            </TransparentButton>
-          </UIButtonsSection>
           <UIButtonsSection justifyContent="end" gap={8}>
             <TransparentButton isLoading={loading} onClick={closeWithoutSummary}>
               Close without summary
