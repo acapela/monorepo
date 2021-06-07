@@ -10,6 +10,7 @@ import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -41,6 +42,7 @@ export function SpaceCard({ space }: Props) {
       title: "Change space name",
       placeholder: "e.g. Design team, Marketing department, iOS developers...",
       submitLabel: "Change name",
+      validateInput: createLengthValidator("Space name", 3),
     });
 
     if (!newSpaceName?.trim()) return;

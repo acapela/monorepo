@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { slugify } from "~shared/slugify";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useCreateTopicMutation, useUnreadMessages } from "~frontend/gql/topics";
-import { createNextIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
-import { UnreadTopicIndicator } from "~frontend/ui/UnreadTopicsIndicator";
-import { openUIPrompt } from "~frontend/utils/prompt";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
 
@@ -18,8 +14,6 @@ interface Props {
 export function TopicsList({ roomId, activeTopicId }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [roomData] = useSingleRoomQuery({ id: roomId });
-  const [unreadMessagesData] = useUnreadMessages();
-  const [createTopic] = useCreateTopicMutation();
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
 
   const room = roomData?.room;
@@ -48,35 +42,16 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
   }, [topics]);
 
   async function handleCreateTopic() {
-    const topicName = await openUIPrompt({
-      title: "New topic name",
-      submitLabel: "Create topic",
-      placeholder: "Our brand colors",
-      anchor: {
+    const topic = await startCreateNewTopicFlow({
+      roomId,
+      modalAnchor: {
         ref: buttonRef,
         placement: "bottom-start",
       },
-    });
-    if (!topicName?.trim()) {
-      return;
-    }
-
-    const index = createNextIndex();
-    const slug = slugify(topicName);
-
-    const { data: createTopicResult } = await createTopic({
-      name: topicName,
-      slug,
-      index,
-      roomId,
+      navigateAfterCreation: true,
     });
 
-    const topic = createTopicResult?.topic;
-
-    if (!topic) {
-      return;
-    }
-    setNewlyCreatedTopic(topic.id);
+    setNewlyCreatedTopic(topic?.id ?? null);
   }
 
   return (
@@ -84,13 +59,10 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
       {topics.length === 0 && <UINoAgendaMessage>This room has no topics yet.</UINoAgendaMessage>}
 
       {topics.map((topic) => {
-        const unreadMessages = unreadMessagesData?.messages.find((m) => m.topicId === topic.id)?.unreadMessages ?? 0;
-
         const isActive = activeTopicId === topic.id;
 
         return (
           <UITopic key={topic.id}>
-            <UnreadTopicIndicator unreadMessages={unreadMessages} />
             <TopicMenuItem topic={topic} isActive={isActive} />
           </UITopic>
         );

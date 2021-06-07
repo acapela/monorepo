@@ -1,5 +1,8 @@
+import { useRef } from "react";
 import styled from "styled-components";
+import { Button } from "~frontend/../../ui/buttons/Button";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { TopicCard } from "~frontend/ui/topics/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { Badge } from "~ui/Badge";
@@ -13,6 +16,18 @@ interface Props {
 }
 
 export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics, className }: Props) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  async function handleCreateTopic() {
+    await startCreateNewTopicFlow({
+      roomId: room.id,
+      modalAnchor: {
+        ref: buttonRef,
+        placement: "bottom-start",
+      },
+      navigateAfterCreation: true,
+    });
+  }
+
   return (
     <UIHolder className={className}>
       <UIHead>
@@ -28,6 +43,9 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
           return <TopicCard key={topic.id} topic={topic} />;
         })}
       </UITopics>
+      <Button ref={buttonRef} onClick={handleCreateTopic}>
+        Add topic
+      </Button>
     </UIHolder>
   );
 })``;
@@ -52,7 +70,9 @@ const UIHeadPrimary = styled.div`
 const UITopics = styled.div`
   ${TopicCard} {
     &:not(:last-child) {
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
     }
   }
+
+  margin-bottom: 24px;
 `;
