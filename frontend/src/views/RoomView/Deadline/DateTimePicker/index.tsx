@@ -28,6 +28,13 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
     const date = addMinutes(startOfDay(value), minutes);
     setValue(date);
   }, []);
+  const handleDayChange = useCallback(
+    (date: Date) => {
+      const value = addMinutes(startOfDay(date), minutes);
+      setValue(value);
+    },
+    [minutes]
+  );
   return (
     <UIHolder
       onSubmit={(e) => {
@@ -36,7 +43,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
       }}
     >
       <UIPickers>
-        <DayPicker selectedDays={value} onDayClick={setValue} />
+        <DayPicker selectedDays={value} onDayClick={handleDayChange} />
         <UITimePickerWr>
           <TimePicker onChange={handleTimeChange} value={minutes} />
         </UITimePickerWr>
