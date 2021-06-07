@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
+import { emailInputValidator } from "~shared/validation/inputValidation";
 import { useCreateTeamInvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -24,6 +25,7 @@ export function CurrentTeamInfoView() {
         ref: buttonRef,
         placement: "top-start",
       },
+      validateInput: emailInputValidator,
     });
 
     if (!email?.trim()) return;

@@ -1147,7 +1147,6 @@
               memberships:
                 user_id:
                   _eq: X-Hasura-User-Id
-        limit: 1
   update_permissions:
     - role: user
       permission:

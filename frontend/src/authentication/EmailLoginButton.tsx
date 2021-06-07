@@ -1,5 +1,6 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
+import { emailInputValidator } from "~shared/validation/inputValidation";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 
@@ -15,6 +16,7 @@ export const EmailLoginButton = ({
       title: "What is your email address",
       placeholder: "Email...",
       submitLabel: "Continue...",
+      validateInput: emailInputValidator,
     });
 
     if (!email?.trim()) return;

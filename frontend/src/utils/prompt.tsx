@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Button } from "~ui/buttons/Button";
 import { TextInput } from "~ui/forms/TextInput";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import styled from "styled-components";
+import { useBoolean } from "~frontend/hooks/useBoolean";
+import { InputValidatorFunction } from "~shared/validation/inputValidation";
 
 interface PromptInput {
   title: string;
@@ -13,16 +15,47 @@ interface PromptInput {
   submitLabel?: string;
   initialValue?: string;
   anchor?: ModalAnchor;
+  validateInput?: InputValidatorFunction;
 }
 
 type PromptResult = string | null;
 
 export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
-  ({ title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor }, resolve) => {
+  ({ title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor, validateInput }, resolve) => {
+    const inputRef = useRef<HTMLInputElement>(null);
     const [value, setValue] = useState(initialValue);
+    const [shouldShowValidationError, { set: showValidationErrors }] = useBoolean(false);
 
-    useShortcut("Escape", () => resolve(null));
-    useShortcut("Enter", () => resolve(value));
+    function handleClose() {
+      resolve(null);
+    }
+
+    function handleSubmit() {
+      showValidationErrors();
+      if (validationError) {
+        inputRef.current?.focus();
+        return;
+      }
+
+      resolve(value);
+    }
+
+    useShortcut("Escape", handleClose);
+    useShortcut("Enter", handleSubmit);
+
+    function getValidationError() {
+      if (!validateInput) return;
+
+      const validationResult = validateInput(value);
+
+      if (validationResult === true) {
+        return;
+      }
+
+      return validationResult;
+    }
+
+    const validationError = getValidationError();
 
     return (
       <Modal
@@ -31,11 +64,19 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
           title,
           description,
         }}
-        onCloseRequest={() => resolve(null)}
+        onCloseRequest={handleClose}
       >
         <UIContentWrapper>
-          <TextInput autoFocus placeholder={placeholder} value={value} onChangeText={setValue} />
-          <Button onClick={() => resolve(value)}>{submitLabel}</Button>
+          <TextInput
+            ref={inputRef}
+            onBlur={showValidationErrors}
+            autoFocus
+            placeholder={placeholder}
+            value={value}
+            onChangeText={setValue}
+            errorMessage={shouldShowValidationError ? validationError : undefined}
+          />
+          <Button onClick={handleSubmit}>{submitLabel}</Button>
         </UIContentWrapper>
       </Modal>
     );
@@ -45,7 +86,6 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
 const UIContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 
   ${Button} {
     margin-top: 1rem;

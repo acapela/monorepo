@@ -5,6 +5,7 @@ import { useCreateTeam, useTeams } from "~frontend/gql/teams";
 import { useChangeCurrentTeamId } from "~frontend/gql/user";
 import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 export function TeamPickerView() {
   const [data] = useTeams();
@@ -20,6 +21,7 @@ export function TeamPickerView() {
       title: "Team name",
       placeholder: "Team name...",
       submitLabel: "Create new team",
+      validateInput: createLengthValidator("Team name", 3),
     });
     if (!name?.trim()) {
       return;

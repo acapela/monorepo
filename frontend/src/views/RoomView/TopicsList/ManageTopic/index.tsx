@@ -6,6 +6,7 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 import { useTopic } from "~frontend/topics/useTopic";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { IconButton } from "~ui/buttons/IconButton";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -20,6 +21,7 @@ export const ManageTopic = ({ topic }: Props) => {
       title: "Rename topic",
       submitLabel: "Rename",
       placeholder: "Enter topic name",
+      validateInput: createLengthValidator("Topic name", 3),
     });
 
     if (!name?.trim()) {

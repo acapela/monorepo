@@ -10,6 +10,7 @@ import { Container } from "~ui/layout/Container";
 import { PageTitle } from "~ui/typo";
 import { SpaceRooms } from "./SpaceRooms";
 import { useRef } from "react";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface Props {
   spaceId: string;
@@ -34,6 +35,7 @@ export function SpaceView({ spaceId }: Props) {
         ref: buttonRef,
         placement: "bottom-end",
       },
+      validateInput: createLengthValidator("Room name", 3),
     });
 
     if (!roomName?.trim()) {
