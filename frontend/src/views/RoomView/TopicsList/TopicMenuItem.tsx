@@ -21,7 +21,7 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
     <UIFlyingTooltipWrapper>
       <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
         <UIHolder className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-          {unreadCount > 0 && (
+          {!isActive && unreadCount > 0 && (
             <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
           )}
           {topic.name}
