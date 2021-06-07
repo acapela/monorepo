@@ -3,7 +3,8 @@ import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { IconVerticalThreeDots } from "~ui/icons";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { useEditTopicMutation } from "~frontend/gql/topics";
+import { useTopic } from "~frontend/topics/useTopic";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
@@ -11,7 +12,8 @@ interface Props {
 }
 
 export const ManageTopic = ({ topic }: Props) => {
-  const [editTopic] = useEditTopicMutation();
+  const { edit, deleteTopic } = useTopic(topic);
+
   const handleRenameSelect = useCallback(async () => {
     const name = await openUIPrompt({
       initialValue: topic.name || "",
@@ -19,10 +21,22 @@ export const ManageTopic = ({ topic }: Props) => {
       submitLabel: "Rename",
       placeholder: "Enter topic name",
     });
+
     if (!name?.trim()) {
       return;
     }
-    await editTopic({ topicId: topic.id, name });
+    await edit(name);
+  }, [topic.name]);
+
+  const handleDeleteSelect = useCallback(async () => {
+    const isDeleteConfirmed = await openConfirmPrompt({
+      title: "Please confirm",
+      description: `Are you sure you want to permanently delete "${topic.name}"?`,
+      confirmLabel: "Delete",
+    });
+    if (isDeleteConfirmed) {
+      await deleteTopic();
+    }
   }, [topic.name]);
 
   return (
@@ -34,9 +48,14 @@ export const ManageTopic = ({ topic }: Props) => {
             label: "Rename",
             onSelect: handleRenameSelect,
           },
+          {
+            label: "Delete",
+            isDestructive: true,
+            onSelect: handleDeleteSelect,
+          },
         ]}
       >
-        <IconButton icon={<IconVerticalThreeDots />} />
+        <IconButton icon={<IconVerticalThreeDots />} tooltip={"Edit topic"} />
       </PopoverMenu>
     </>
   );

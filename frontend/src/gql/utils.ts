@@ -22,9 +22,11 @@ type EmptyObject = Record<string, never>;
 type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
 
 export function createQuery<Data, Variables>(query: () => DocumentNode) {
-  const getQuery = memoize(query);
   type VoidableVariables = VoidableIfEmpty<Variables>;
+
+  const getQuery = memoize(query);
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
+
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
     reportQueryUsage({ query: getQuery(), variables: variables });
 

@@ -26,19 +26,54 @@ export function RoomView({ roomId, topicId }: Props) {
 
   const selectedTopicId = getSelectedTopicId();
 
-  // If this view is opened without topic, but room has some topic - redirect to the first one
-  useEffect(() => {
-    if (topicId) return;
-    if (!firstTopic) return;
+  /*
+    Routing on changes to topic
 
-    // Note! Use replace instead of push. If we used push it might result in this annoying UX
-    // when you click 'back' in your browser and it goes back for a moment and then returns to previous page.
-    routes.spaceRoomTopic.replace({
-      topicId: firstTopic.id,
-      roomId: firstTopic.room.id,
-      spaceId: firstTopic.room.space_id,
-    });
-  }, [topicId, firstTopic]);
+    We verify that a topic provided by the url exists within the topics of the room.
+    This handle cases of deleted topics, and a "soft-catch" to potential 404 scenarios.
+
+    Empty rooms will be route to their path without topicId.
+    Topic ids given through url that are not found in the room, route to the first topic in room.
+  */
+  useEffect(() => {
+    const topicsInRoom = roomData?.room?.topics;
+
+    // Newly created room stores topics as `null`
+    if (!roomData?.room || !topicsInRoom) {
+      return;
+    }
+
+    const topicIdGivenByUrl = topicId;
+    const roomHasTopics = topicsInRoom.length > 0;
+    const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
+
+    const { id: roomId, space_id: spaceId } = roomData?.room;
+
+    const routeToRoomUrl = () =>
+      routes.spaceRoom.replace({
+        roomId,
+        spaceId,
+      });
+
+    const routeToFirstTopicUrl = () =>
+      routes.spaceRoomTopic.replace({
+        topicId: firstTopic?.id,
+        roomId,
+        spaceId,
+      });
+
+    if (topicIdGivenByUrl) {
+      if (!roomHasTopics) {
+        routeToRoomUrl();
+      } else if (roomHasTopics && !isFoundInRoom(topicIdGivenByUrl)) {
+        routeToFirstTopicUrl();
+      }
+    } else {
+      if (roomHasTopics) {
+        routeToFirstTopicUrl();
+      }
+    }
+  }, [topicId, firstTopic, roomData?.room?.topics]);
 
   return (
     <>
