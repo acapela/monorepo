@@ -5,6 +5,7 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
+import { PageTitle } from "~ui/typo";
 
 interface Props {
   roomId: string;
@@ -55,24 +56,49 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
   }
 
   return (
-    <>
-      {topics.length === 0 && <UINoAgendaMessage>This room has no topics yet.</UINoAgendaMessage>}
+    <UIHolder>
+      <UIHeader>
+        <UITitle>Topics</UITitle>
+        <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
+          New topic
+        </UINewTopicButton>
+      </UIHeader>
+      <UITopicsList>
+        {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
 
-      {topics.map((topic) => {
-        const isActive = activeTopicId === topic.id;
+        {topics.map((topic) => {
+          const isActive = activeTopicId === topic.id;
 
-        return (
-          <UITopic key={topic.id}>
-            <TopicMenuItem topic={topic} isActive={isActive} />
-          </UITopic>
-        );
-      })}
-      <Button ref={buttonRef} onClick={handleCreateTopic}>
-        Add topic
-      </Button>
-    </>
+          return (
+            <UITopic key={topic.id}>
+              <TopicMenuItem topic={topic} isActive={isActive} />
+            </UITopic>
+          );
+        })}
+      </UITopicsList>
+      )
+    </UIHolder>
   );
 }
+
+const UIHolder = styled.div`
+  overflow-y: hidden;
+`;
+
+const UITitle = styled(PageTitle)``;
+
+const UINewTopicButton = styled(Button)``;
+
+const UIHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+`;
+
+const UITopicsList = styled.div`
+  height: 100%;
+  overflow-y: auto;
+`;
 
 const UITopic = styled.div`
   position: relative;
@@ -84,6 +110,4 @@ const UITopic = styled.div`
   }
 `;
 
-const UINoAgendaMessage = styled.div`
-  margin-bottom: 16px;
-`;
+const UINoTopicsMessage = styled.div``;
