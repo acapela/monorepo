@@ -77,13 +77,13 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
 const UITopic = styled.div`
   position: relative;
 
-  margin-bottom: 1rem;
+  margin-bottom: 8px;
 
   ${TopicMenuItem} {
-    margin-bottom: 0.25rem;
+    margin-bottom: 4px;
   }
 `;
 
 const UINoAgendaMessage = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 `;
