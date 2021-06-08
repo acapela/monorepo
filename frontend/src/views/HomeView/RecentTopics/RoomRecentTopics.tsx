@@ -22,7 +22,7 @@ interface Props {
 const RoomLink = routes.spaceRoom.Link;
 
 export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics, className }: Props) {
-  const [isOpened, { toggle: toggleIsOpened }] = useBoolean(false);
+  const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
@@ -37,8 +37,8 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
 
   return (
     <UIHolder className={className}>
-      <UICollapseHolder isOpened={isOpened}>
-        <IconButton icon={<IconChevronDown />} onClick={toggleIsOpened} />
+      <UICollapseHolder isOpened={isOpen}>
+        <IconButton icon={<IconChevronDown />} onClick={toggleIsOpen} />
       </UICollapseHolder>
       <UIIndentBody>
         <UIHead>
@@ -53,7 +53,7 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
 
           <AvatarList users={room.members.map((membership) => membership.user)} />
         </UIHead>
-        {isOpened && (
+        {isOpen && (
           <>
             <UITopics>
               {topics.map((topic) => {
