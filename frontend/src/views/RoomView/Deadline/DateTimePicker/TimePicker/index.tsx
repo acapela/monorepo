@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
 import { Option } from "~ui/forms/Option";
-import { UIText } from "~ui/UIText";
+import { SecondaryText } from "~ui/typo";
 
 interface Props {
   value: number;
@@ -40,7 +40,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
         return (
           <div key={minutes} ref={isSelected ? selectedElement : undefined}>
             <Option value={minutes} onSelect={() => onChange(minutes)} name="time" selected={isSelected}>
-              <UIText size={15}>{format(addMinutes(dayStart, minutes), "p")}</UIText>
+              <SecondaryText>{format(addMinutes(dayStart, minutes), "p")}</SecondaryText>
             </Option>
           </div>
         );

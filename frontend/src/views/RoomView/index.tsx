@@ -8,8 +8,8 @@ import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
 import { VStack } from "~ui/Stack";
-import { UIText } from "~ui/UIText";
 import { Deadline } from "./Deadline";
+import { PageTitle, SecondaryText } from "~ui/typo";
 
 interface Props {
   roomId: string;
@@ -83,14 +83,10 @@ export function RoomView({ roomId, topicId }: Props) {
       <PageMeta title={roomData?.room?.name} />
       <UIHolder>
         <VStack gap={10}>
-          <UIText weight="bold" size={27}>
-            {roomData?.room?.name}
-          </UIText>
+          <PageTitle>{roomData?.room?.name}</PageTitle>
           <VStack gap={16}>
             <VStack gap={10}>
-              <UIText size={14} color="#7F7E7F">
-                Due date
-              </UIText>
+              <SecondaryText>Due date</SecondaryText>
               {roomData?.room && <Deadline room={roomData.room} />}
             </VStack>
           </VStack>

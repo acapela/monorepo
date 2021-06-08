@@ -2,13 +2,13 @@ import { format } from "date-fns";
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
-import { UIText } from "~ui/UIText";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { useUpdateRoomDeadlineMutation } from "~frontend/gql/rooms";
+import { SecondaryText } from "~ui/typo";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -40,7 +40,7 @@ export const Deadline = ({ room }: Props) => {
         </AnimatePresence>
       )}
       <UIHolder onClick={toggleOpenPicker} ref={ref}>
-        <UIText size={15}>{format(date, "dd.MM.yyyy, p")}</UIText>
+        <SecondaryText>{format(date, "dd.MM.yyyy, p")}</SecondaryText>
       </UIHolder>
     </>
   );
