@@ -47,7 +47,12 @@ interface Session {}
 type AuthAdapter = AdapterInstance<User, Profile, Session, VerificationRequest>;
 
 async function checkWhitelist(profile: Profile) {
-  const whiteListEntry = await db.whitelist.findFirst({ where: { email: profile.email.toLocaleLowerCase() } });
+  const email = profile.email.toLocaleLowerCase();
+
+  const teamInviteEntry = await db.team_invitation.findFirst({ where: { email } });
+  if (teamInviteEntry) return;
+
+  const whiteListEntry = await db.whitelist.findFirst({ where: { email } });
 
   if (!whiteListEntry) {
     // automatically add a non-whitelisted user to whitelist
