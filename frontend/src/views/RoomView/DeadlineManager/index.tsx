@@ -9,6 +9,7 @@ import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { useUpdateRoomDeadlineMutation } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";
+import { useClickAway } from "react-use";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -19,9 +20,11 @@ export const DeadlineManager = ({ room }: Props) => {
 
   const [updateRoomDeadline] = useUpdateRoomDeadlineMutation();
 
-  const ref = useRef<HTMLButtonElement>(null);
-
   const [isPickerOpen, { toggle: toggleOpenPicker }] = useBoolean(false);
+
+  const ref = useRef<HTMLButtonElement>(null);
+  const pickerHolderRef = useRef<HTMLDivElement>(null);
+  useClickAway(pickerHolderRef, toggleOpenPicker);
 
   const date = new Date(deadline);
 
@@ -35,7 +38,9 @@ export const DeadlineManager = ({ room }: Props) => {
       <AnimatePresence>
         {isPickerOpen && (
           <Popover placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker onSubmit={handleSubmit} initialValue={date} />
+            <UIPickerHolder ref={pickerHolderRef}>
+              <DateTimePicker onSubmit={handleSubmit} initialValue={date} />
+            </UIPickerHolder>
           </Popover>
         )}
       </AnimatePresence>
@@ -55,3 +60,5 @@ const UIHolder = styled.button`
   border: 1px solid #eae9ea;
   text-align: start;
 `;
+
+const UIPickerHolder = styled.div``;
