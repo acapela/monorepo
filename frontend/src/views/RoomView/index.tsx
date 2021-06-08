@@ -7,7 +7,7 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
-import { Deadline } from "./Deadline";
+import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
 
 interface Props {
@@ -85,7 +85,7 @@ export function RoomView({ roomId, topicId }: Props) {
           <PageTitle>{roomData?.room?.name}</PageTitle>
           <UIDeadline>
             <SecondaryText>Due date</SecondaryText>
-            {roomData?.room && <Deadline room={roomData.room} />}
+            {roomData?.room && <DeadlineManager room={roomData.room} />}
           </UIDeadline>
           <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />

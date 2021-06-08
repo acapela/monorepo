@@ -14,7 +14,7 @@ interface Props {
   room: RoomDetailedInfoFragment;
 }
 
-export const Deadline = ({ room }: Props) => {
+export const DeadlineManager = ({ room }: Props) => {
   const { deadline } = room;
 
   const [updateRoomDeadline] = useUpdateRoomDeadlineMutation();
