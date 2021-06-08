@@ -32,13 +32,13 @@ export const DeadlineManager = ({ room }: Props) => {
 
   return (
     <>
-      {isPickerOpen && (
-        <AnimatePresence>
+      <AnimatePresence>
+        {isPickerOpen && (
           <Popover placement={"bottom-start"} anchorRef={ref}>
             <DateTimePicker onSubmit={handleSubmit} initialValue={date} />
           </Popover>
-        </AnimatePresence>
-      )}
+        )}
+      </AnimatePresence>
       <UIHolder onClick={toggleOpenPicker} ref={ref}>
         <SecondaryText>{format(date, "dd.MM.yyyy, p")}</SecondaryText>
       </UIHolder>
