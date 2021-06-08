@@ -46,6 +46,7 @@ class Sonix {
 
   constructor({ key = process.env.SONIX_API_KEY }: SonixOptions = {}) {
     assert(key, "Sonix API key is required");
+    assert(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
 
     this.key = key;
   }
