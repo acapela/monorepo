@@ -5,7 +5,7 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
-import { PageTitle } from "~ui/typo";
+import { ItemTitle } from "~ui/typo";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
@@ -96,13 +96,14 @@ const UIHolder = styled.div`
   overflow-y: hidden;
 `;
 
-const UITitle = styled(PageTitle)``;
+const UITitle = styled(ItemTitle)``;
 
 const UINewTopicButton = styled(Button)``;
 
 const UIHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
 `;
 
