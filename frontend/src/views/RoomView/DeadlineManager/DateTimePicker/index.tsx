@@ -58,7 +58,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
 
 const UIDateTimePickerForm = styled.form`
   background: #ffffff;
-  box-shadow: ${shadow.medium};
+  ${shadow.medium};
   border-radius: 12px;
   display: grid;
   grid-gap: 24px;
