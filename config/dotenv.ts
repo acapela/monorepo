@@ -80,20 +80,10 @@ declare global {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function assertRequiredEnvVariablesLoaded() {
-  const app = process.env.APP;
-  let appSpecificEnvVars;
-  if (app === "frontend") {
-    appSpecificEnvVars = requiredEnvVarNamesFrontend;
-  } else if (app === "backend") {
-    appSpecificEnvVars = requiredEnvVarNamesBackend;
-  } else {
-    throw new Error(`invalid value for APP=${app}`);
-  }
-
+function assertEnvVarsLoaded(envVars: readonly string[]) {
   const missingEnvVars: string[] = [];
 
-  for (const envVarName of [...appSpecificEnvVars, ...requiredEnvVarNames]) {
+  for (const envVarName of envVars) {
     const envVarValue = process.env[envVarName];
 
     if (typeof envVarValue !== "undefined") {
@@ -142,4 +132,7 @@ assert(process.env.APP, "APP environment variable must always be set");
 
 loadRootDotEnv();
 
-assertRequiredEnvVariablesLoaded();
+assertEnvVarsLoaded(requiredEnvVarNames);
+
+if (process.env.APP === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
+if (process.env.APP === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
