@@ -15,15 +15,21 @@ interface Props {
 }
 
 export const Deadline = ({ room }: Props) => {
-  const [editRoom] = useUpdateRoomDeadlineMutation();
-  const ref = useRef<HTMLButtonElement>(null);
   const { deadline } = room;
+
+  const [editRoom] = useUpdateRoomDeadlineMutation();
+
+  const ref = useRef<HTMLButtonElement>(null);
+
   const [isPickerOpen, { toggle }] = useBoolean(false);
+
   const date = new Date(deadline);
+
   const handleSubmit = useCallback((deadline: Date) => {
     toggle();
     editRoom({ roomId: room.id, deadline });
   }, []);
+
   return (
     <>
       {isPickerOpen && (
