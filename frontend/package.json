@@ -35,6 +35,7 @@
     "next-auth": "^3.24.0",
     "react-popper": "^2.2.5",
     "styled-normalize": "^8.0.7",
+    "react-day-picker": "^7.4.10",
     "styled-reset": "^4.3.4",
     "subscriptions-transport-ws": "^0.9.18",
     "validator": "^13.6.0",

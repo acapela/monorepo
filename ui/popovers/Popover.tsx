@@ -2,6 +2,7 @@ import { Placement } from "@popperjs/core";
 import { throttle } from "lodash";
 import React, { ReactNode, RefObject, useState } from "react";
 import { usePopper } from "react-popper";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useRefValue } from "~shared/hooks/useRefValue";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
@@ -18,10 +19,11 @@ interface PopoverProps {
   className?: string;
   placement?: PopoverPlacement;
   distance?: number;
+  onClickOutside?: () => void;
 }
 
 export const Popover = styled(
-  ({ className, anchorRef, children, isDisabled, distance = 5, placement = "auto" }: PopoverProps) => {
+  ({ className, anchorRef, children, isDisabled, onClickOutside, distance = 5, placement = "auto" }: PopoverProps) => {
     const anchorElement = useRefValue(anchorRef);
 
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -49,6 +51,12 @@ export const Popover = styled(
     const throttledUpdate = throttle(update ?? (() => null), 200);
 
     const poperRef = useValueRef(popperElement);
+
+    useClickAway(poperRef, () => {
+      if (onClickOutside) {
+        onClickOutside();
+      }
+    });
 
     useResizeCallback(poperRef, () => {
       throttledUpdate?.();
