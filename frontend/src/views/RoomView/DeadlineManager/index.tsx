@@ -34,7 +34,7 @@ export const DeadlineManager = ({ room }: Props) => {
     <>
       <AnimatePresence>
         {isPickerOpen && (
-          <Popover placement={"bottom-start"} anchorRef={ref}>
+          <Popover onClickOutside={toggleOpenPicker} placement={"bottom-start"} anchorRef={ref}>
             <DateTimePicker onSubmit={handleSubmit} initialValue={date} />
           </Popover>
         )}
