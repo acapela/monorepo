@@ -7,7 +7,5 @@ export function pluralize(count: number, singular: string, plural: string) {
 }
 
 export function formatNumberWithMaxCallback(inputNumber: number, max: number) {
-  if (inputNumber < max) return `${inputNumber}`;
-
-  return `${max}+`;
+  return inputNumber < max ? inputNumber : `${max}+`;
 }

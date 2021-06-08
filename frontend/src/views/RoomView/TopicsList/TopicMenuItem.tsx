@@ -17,11 +17,12 @@ const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className }: Props) {
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
+  const shouldShowNotificationsBadge = !isActive && unreadCount;
   return (
     <UIFlyingTooltipWrapper>
       <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
         <UIHolder className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-          {!isActive && unreadCount > 0 && (
+          {shouldShowNotificationsBadge && (
             <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
           )}
           {topic.name}
