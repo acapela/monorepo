@@ -14,30 +14,29 @@ interface Props {
 export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   const [value, setValue] = useState<Date>(initialValue);
   const isSubmitDisabled = value === initialValue;
+
   const handleSubmit = useCallback(() => {
     if (!isSubmitDisabled) {
       onSubmit(value);
     }
   }, [isSubmitDisabled, onSubmit, value]);
-  const minutes = useMemo(() => {
+
+  const pickedMinutesValue = useMemo(() => {
     const hours = getHours(value);
     const minutes = getMinutes(value);
     return hours * minutesInHour + minutes;
   }, [value]);
-  const handleTimeChange = useCallback(
-    (minutes: number) => {
-      const date = addMinutes(startOfDay(value), minutes);
-      setValue(date);
-    },
-    [value]
-  );
-  const handleDayChange = useCallback(
-    (date: Date) => {
-      const value = addMinutes(startOfDay(date), minutes);
-      setValue(value);
-    },
-    [minutes]
-  );
+
+  const handleTimeChange = (minutes: number) => {
+    const date = addMinutes(startOfDay(value), minutes);
+    setValue(date);
+  };
+
+  const handleDayChange = (date: Date) => {
+    const value = addMinutes(startOfDay(date), pickedMinutesValue);
+    setValue(value);
+  };
+
   return (
     <UIHolder
       onSubmit={(e) => {
@@ -48,7 +47,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
       <UIPickers>
         <DayPicker selectedDays={value} onDayClick={handleDayChange} />
         <UITimePickerWr>
-          <TimePicker onChange={handleTimeChange} value={minutes} />
+          <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWr>
       </UIPickers>
       <Button isDisabled={isSubmitDisabled}>Save</Button>
