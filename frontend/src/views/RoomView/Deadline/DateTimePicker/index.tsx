@@ -14,10 +14,10 @@ interface Props {
 
 export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   const [value, setValue] = useState<Date>(initialValue);
-  const isSubmitDisabled = value === initialValue;
+  const didUserChangeInitialValue = value === initialValue;
 
   const handleSubmit = () => {
-    if (!isSubmitDisabled) {
+    if (!didUserChangeInitialValue) {
       onSubmit(value);
     }
   };
@@ -51,7 +51,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWr>
       </UIPickers>
-      <Button isDisabled={isSubmitDisabled}>Save</Button>
+      <Button isDisabled={didUserChangeInitialValue}>Save</Button>
     </UIDateTimePickerForm>
   );
 };
