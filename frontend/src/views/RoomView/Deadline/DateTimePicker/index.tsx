@@ -8,7 +8,7 @@ import { Button } from "~ui/buttons/Button";
 
 interface Props {
   initialValue: Date;
-  onSubmit: (d: Date) => void;
+  onSubmit: (date: Date) => void;
 }
 
 export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
