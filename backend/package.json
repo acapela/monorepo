@@ -4,8 +4,8 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "scripts": {
-    "test": "jest src --runInBand",
-    "test:watch": "jest src --runInBand --watch",
+    "test": "APP=backend jest src --runInBand",
+    "test:watch": "APP=backend jest src --runInBand --watch",
     "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
