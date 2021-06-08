@@ -1,3 +1,4 @@
+process.env.APP = "frontend";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
 const bundleAnalyzer = require("@next/bundle-analyzer");
