@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
-import { Option } from "~ui/forms/Option";
+import { RadioOption } from "~ui/forms/RadioOption";
 import { SecondaryText } from "~ui/typo";
 
 interface Props {
@@ -39,9 +39,9 @@ export const TimePicker = ({ value, onChange }: Props) => {
         const isSelected = minutes === value;
         return (
           <div key={minutes} ref={isSelected ? selectedElement : undefined}>
-            <Option value={minutes} onSelect={() => onChange(minutes)} name="time" selected={isSelected}>
+            <RadioOption value={minutes} onSelect={() => onChange(minutes)} name="time" selected={isSelected}>
               <SecondaryText>{format(addMinutes(dayStart, minutes), "p")}</SecondaryText>
-            </Option>
+            </RadioOption>
           </div>
         );
       })}
