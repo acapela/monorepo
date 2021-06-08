@@ -8071,7 +8071,7 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id'>
+  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -8171,6 +8171,20 @@ export type RemoveRoomMemberMutation = (
   & { delete_room_member?: Maybe<(
     { __typename?: 'room_member_mutation_response' }
     & Pick<Room_Member_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
+export type UpdateRoomDeadlineMutationVariables = Exact<{
+  deadline: Scalars['timestamptz'];
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type UpdateRoomDeadlineMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & RoomDetailedInfoFragment
   )> }
 );
 

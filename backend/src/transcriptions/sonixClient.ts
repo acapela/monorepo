@@ -46,6 +46,7 @@ class Sonix {
 
   constructor({ key = process.env.SONIX_API_KEY }: SonixOptions = {}) {
     assert(key, "Sonix API key is required");
+    assert(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
 
     this.key = key;
   }
@@ -56,7 +57,8 @@ class Sonix {
 
     assert(domain, "Failed to build callback URL");
 
-    return `${domain}${endpoint}?secret=${encodeURIComponent(process.env.SONIX_CALLBACK_SECRET)}`;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return `${domain}${endpoint}?secret=${encodeURIComponent(process.env.SONIX_CALLBACK_SECRET!)}`;
   }
 
   private async doRequest({ method, path, formData }: SonixRequestOptions) {

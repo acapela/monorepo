@@ -5,7 +5,7 @@ interface Props {
   direction: "row" | "column";
   style?: React.CSSProperties;
   gap?: number;
-  alignItems?: "center" | "start" | "end";
+  alignItems?: "center" | "start" | "end" | "stretch";
   justifyContent?: "start" | "end" | "center" | "space-between" | "space-around";
   children: React.ReactNode;
   wrap?: "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit";
@@ -17,6 +17,7 @@ const alignItemsFlexbox = {
   center: "center",
   start: "flex-start",
   end: "flex-end",
+  stretch: "stretch",
 };
 
 const justifyContentFlexbox = {
@@ -31,7 +32,7 @@ const Stack = styled.div<Props>`
   display: flex;
   flex-direction: ${(p) => p.direction};
   gap: ${(p) => p.gap || 0}px;
-  align-items: ${(p) => alignItemsFlexbox[p.alignItems || "start"]};
+  align-items: ${(p) => alignItemsFlexbox[p.alignItems || "stretch"]};
   justify-content: ${(p) => justifyContentFlexbox[p.justifyContent || "start"]};
   flex-wrap: ${(p) => p.wrap || "initial"};
   ${(p) =>

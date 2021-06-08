@@ -1,3 +1,4 @@
+process.env.APP = "backend";
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import { initializeSecrets } from "~config";
 
