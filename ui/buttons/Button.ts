@@ -27,4 +27,9 @@ export const Button = styled.button<Props>`
       display: block;
       width: 100%;
     `}
+  ${(props) =>
+    props.isDisabled &&
+    css`
+      pointer-events: none;
+    `}
 `;
