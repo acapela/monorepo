@@ -14,7 +14,7 @@ const END_HOUR = 24;
 
 export const getRange = (length: number) => [...Array(length).keys()];
 
-const getMinutes = (): number[] => {
+const getMinutesInHourRange = (): number[] => {
   const stepsNumber = ((END_HOUR - START_HOUR) * minutesInHour) / PICKER_MINUTES_STEP;
   return getRange(stepsNumber).map((i) => START_HOUR * minutesInHour + PICKER_MINUTES_STEP * i);
 };
@@ -24,7 +24,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
 
   const selectedElement = useRef<HTMLDivElement>(null);
 
-  const options = useMemo(getMinutes, []);
+  const options = useMemo(getMinutesInHourRange, []);
 
   useEffect(() => {
     selectedElement.current?.scrollIntoView({
