@@ -29,13 +29,13 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   }, [value]);
 
   const handleTimeChange = (minutes: number) => {
-    const date = addMinutes(startOfDay(value), minutes);
-    setValue(date);
+    const newDate = addMinutes(startOfDay(value), minutes);
+    setValue(newDate);
   };
 
   const handleDayChange = (date: Date) => {
-    const value = addMinutes(startOfDay(date), pickedMinutesValue);
-    setValue(value);
+    const newDate = addMinutes(startOfDay(date), pickedMinutesValue);
+    setValue(newDate);
   };
 
   return (
