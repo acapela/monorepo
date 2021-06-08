@@ -6,6 +6,8 @@ import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlo
 import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
 import { PageTitle } from "~ui/typo";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   roomId: string;
@@ -63,20 +65,29 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           New topic
         </UINewTopicButton>
       </UIHeader>
-      <UITopicsList>
-        {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
+      <DragDropContext onDragEnd={(props) => console.log(props)}>
+        <Droppable droppableId={"droppable-id-static"}>
+          {({ droppableProps, innerRef, placeholder: droppablePlaceholder }) => (
+            <UITopicsList {...droppableProps} ref={innerRef}>
+              {topics.map((topic, index) => {
+                const isActive = activeTopicId === topic.id;
 
-        {topics.map((topic) => {
-          const isActive = activeTopicId === topic.id;
-
-          return (
-            <UITopic key={topic.id}>
-              <TopicMenuItem topic={topic} isActive={isActive} />
-            </UITopic>
-          );
-        })}
-      </UITopicsList>
-      )
+                return (
+                  <Draggable key={topic.id} draggableId={topic.id} index={index}>
+                    {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
+                      <UITopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
+                        <TopicMenuItem topic={topic} isActive={isActive} />
+                      </UITopic>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {droppablePlaceholder}
+            </UITopicsList>
+          )}
+        </Droppable>
+      </DragDropContext>
+      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
     </UIHolder>
   );
 }
@@ -97,10 +108,16 @@ const UIHeader = styled.div`
 
 const UITopicsList = styled.div`
   height: 100%;
-  overflow-y: auto;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `;
 
-const UITopic = styled.div`
+const UITopic = styled.div<{ isDragging: boolean }>`
   position: relative;
 
   margin-bottom: 8px;
@@ -108,6 +125,14 @@ const UITopic = styled.div`
   ${TopicMenuItem} {
     margin-bottom: 4px;
   }
+
+  ${({ isDragging }) =>
+    isDragging
+      ? `
+  background: ${ACTION_ACTIVE_COLOR};
+  border-radius: 8px;
+  `
+      : ""}
 `;
 
 const UINoTopicsMessage = styled.div``;
