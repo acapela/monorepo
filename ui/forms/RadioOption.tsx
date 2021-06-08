@@ -39,7 +39,7 @@ const Container = styled.label<{ selected: boolean }>`
   }
 `;
 
-export const Option = ({ value, children, selected, onSelect, name }: Props) => {
+export const RadioOption = ({ value, children, selected, onSelect, name }: Props) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.value === value) {
       onSelect();
