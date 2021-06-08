@@ -39,7 +39,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   };
 
   return (
-    <UIHolder
+    <UIDateTimePickerForm
       onSubmit={(e) => {
         e.preventDefault();
         handleSubmit();
@@ -52,11 +52,11 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
         </UITimePickerWr>
       </UIPickers>
       <Button isDisabled={isSubmitDisabled}>Save</Button>
-    </UIHolder>
+    </UIDateTimePickerForm>
   );
 };
 
-const UIHolder = styled.form`
+const UIDateTimePickerForm = styled.form`
   background: #ffffff;
   box-shadow: ${shadow.medium};
   border-radius: 12px;
