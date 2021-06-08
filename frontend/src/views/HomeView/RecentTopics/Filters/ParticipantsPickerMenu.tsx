@@ -1,5 +1,4 @@
 import { RefObject } from "react";
-import styled from "styled-components";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
