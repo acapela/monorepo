@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "APP=frontend NODE_OPTIONS='--inspect' next dev",
-    "next:build": "APP=frontend next build",
-    "next:start": "APP=frontend next start",
-    "next:build:analyze": "APP=frontend ANALYZE=true next build",
-    "server:start": "APP=frontend node ./next-server.js",
-    "start": "APP=frontend berglas exec -- node ./next-server.js",
-    "test": "APP=frontend jest",
-    "test:watch": "APP=frontend jest --watch"
+    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:build:analyze": "ANALYZE=true next build",
+    "server:start": "node ./next-server.js",
+    "start": "berglas exec -- node ./next-server.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "peerDependencies": {
     "axios": "*",
