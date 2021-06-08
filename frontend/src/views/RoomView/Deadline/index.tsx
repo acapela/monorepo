@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { UIText } from "~ui/UIText";
@@ -21,14 +21,14 @@ export const Deadline = ({ room }: Props) => {
 
   const ref = useRef<HTMLButtonElement>(null);
 
-  const [isPickerOpen, { toggle }] = useBoolean(false);
+  const [isPickerOpen, { toggle: toggleOpenPicker }] = useBoolean(false);
 
   const date = new Date(deadline);
 
-  const handleSubmit = useCallback((deadline: Date) => {
-    toggle();
+  const handleSubmit = (deadline: Date) => {
+    toggleOpenPicker();
     editRoom({ roomId: room.id, deadline });
-  }, []);
+  };
 
   return (
     <>
@@ -39,7 +39,7 @@ export const Deadline = ({ room }: Props) => {
           </Popover>
         </AnimatePresence>
       )}
-      <UIHolder onClick={toggle} ref={ref}>
+      <UIHolder onClick={toggleOpenPicker} ref={ref}>
         <UIText size={15}>{format(date, "dd.MM.yyyy, p")}</UIText>
       </UIHolder>
     </>
