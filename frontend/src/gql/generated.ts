@@ -5911,9 +5911,9 @@ export type Team_Invitation = {
   team_id: Scalars['uuid'];
   token: Scalars['uuid'];
   used_at?: Maybe<Scalars['date']>;
-  used_by?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   used_by_user?: Maybe<User>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregated selection of "team_invitation" */
@@ -5965,8 +5965,8 @@ export type Team_Invitation_Bool_Exp = {
   team_id?: Maybe<Uuid_Comparison_Exp>;
   token?: Maybe<Uuid_Comparison_Exp>;
   used_at?: Maybe<Date_Comparison_Exp>;
-  used_by?: Maybe<Uuid_Comparison_Exp>;
   used_by_user?: Maybe<User_Bool_Exp>;
+  used_by_user_id?: Maybe<Uuid_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "team_invitation" */
@@ -5988,8 +5988,8 @@ export type Team_Invitation_Insert_Input = {
   team_id?: Maybe<Scalars['uuid']>;
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
-  used_by?: Maybe<Scalars['uuid']>;
   used_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 };
 
 /** aggregate max on columns */
@@ -6002,7 +6002,7 @@ export type Team_Invitation_Max_Fields = {
   team_id?: Maybe<Scalars['uuid']>;
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
-  used_by?: Maybe<Scalars['uuid']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 };
 
 /** order by max() on columns of table "team_invitation" */
@@ -6014,7 +6014,7 @@ export type Team_Invitation_Max_Order_By = {
   team_id?: Maybe<Order_By>;
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-  used_by?: Maybe<Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -6027,7 +6027,7 @@ export type Team_Invitation_Min_Fields = {
   team_id?: Maybe<Scalars['uuid']>;
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
-  used_by?: Maybe<Scalars['uuid']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 };
 
 /** order by min() on columns of table "team_invitation" */
@@ -6039,7 +6039,7 @@ export type Team_Invitation_Min_Order_By = {
   team_id?: Maybe<Order_By>;
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-  used_by?: Maybe<Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 };
 
 /** response of any mutation on the table "team_invitation" */
@@ -6075,8 +6075,8 @@ export type Team_Invitation_Order_By = {
   team_id?: Maybe<Order_By>;
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-  used_by?: Maybe<Order_By>;
   used_by_user?: Maybe<User_Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 };
 
 /** primary key columns input for table: "team_invitation" */
@@ -6101,7 +6101,7 @@ export enum Team_Invitation_Select_Column {
   /** column name */
   UsedAt = 'used_at',
   /** column name */
-  UsedBy = 'used_by'
+  UsedByUserId = 'used_by_user_id'
 }
 
 /** input type for updating data in table "team_invitation" */
@@ -6113,7 +6113,7 @@ export type Team_Invitation_Set_Input = {
   team_id?: Maybe<Scalars['uuid']>;
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
-  used_by?: Maybe<Scalars['uuid']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 };
 
 /** update columns of table "team_invitation" */
@@ -6133,7 +6133,7 @@ export enum Team_Invitation_Update_Column {
   /** column name */
   UsedAt = 'used_at',
   /** column name */
-  UsedBy = 'used_by'
+  UsedByUserId = 'used_by_user_id'
 }
 
 /** aggregate max on columns */
@@ -8414,7 +8414,7 @@ export type TeamInvitationQuery = (
   { __typename?: 'query_root' }
   & { team_invitation: Array<(
     { __typename?: 'team_invitation' }
-    & Pick<Team_Invitation, 'id' | 'team_id' | 'token' | 'used_by'>
+    & Pick<Team_Invitation, 'id' | 'team_id' | 'token' | 'used_by_user_id'>
   )> }
 );
 
@@ -8478,11 +8478,6 @@ export type TopicMessageDetailedInfoFragment = (
       & AttachmentDetailedInfoFragment
     ) }
   )> }
-);
-
-export type UnreadMessageFragmentFragment = (
-  { __typename?: 'unread_messages' }
-  & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
 );
 
 export type CreateTopicMutationVariables = Exact<{
@@ -8645,19 +8640,6 @@ export type RemoveTopicMemberMutation = (
   )> }
 );
 
-export type GetUnreadMessagesQueryVariables = Exact<{
-  roomId?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type GetUnreadMessagesQuery = (
-  { __typename?: 'query_root' }
-  & { messages: Array<(
-    { __typename?: 'unread_messages' }
-    & UnreadMessageFragmentFragment
-  )> }
-);
-
 export type UpdateLastSeenMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
   messageId: Scalars['uuid'];
@@ -8772,6 +8754,24 @@ export type TeamMembersQuery = (
   & { teamMembers: Array<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
+  )> }
+);
+
+export type UnreadMessageFragmentFragment = (
+  { __typename?: 'unread_messages' }
+  & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
+);
+
+export type UserUnreadMessagesQueryVariables = Exact<{
+  userId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type UserUnreadMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'unread_messages' }
+    & UnreadMessageFragmentFragment
   )> }
 );
 
@@ -9701,7 +9701,7 @@ export type team_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'team' | 'team_id' | 'token' | 'used_at' | 'used_by' | 'used_by_user' | team_invitationKeySpecifier)[];
+export type team_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'team' | 'team_id' | 'token' | 'used_at' | 'used_by_user' | 'used_by_user_id' | team_invitationKeySpecifier)[];
 export type team_invitationFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9712,8 +9712,8 @@ export type team_invitationFieldPolicy = {
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_by?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_by_user?: FieldPolicy<any> | FieldReadFunction<any>
+	used_by_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_invitation_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_invitation_aggregateKeySpecifier)[];
 export type team_invitation_aggregateFieldPolicy = {
@@ -9726,7 +9726,7 @@ export type team_invitation_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_invitation_max_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | 'used_by' | team_invitation_max_fieldsKeySpecifier)[];
+export type team_invitation_max_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user_id' | team_invitation_max_fieldsKeySpecifier)[];
 export type team_invitation_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9735,9 +9735,9 @@ export type team_invitation_max_fieldsFieldPolicy = {
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_by?: FieldPolicy<any> | FieldReadFunction<any>
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_invitation_min_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | 'used_by' | team_invitation_min_fieldsKeySpecifier)[];
+export type team_invitation_min_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user_id' | team_invitation_min_fieldsKeySpecifier)[];
 export type team_invitation_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9746,7 +9746,7 @@ export type team_invitation_min_fieldsFieldPolicy = {
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_by?: FieldPolicy<any> | FieldReadFunction<any>
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_invitation_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_invitation_mutation_responseKeySpecifier)[];
 export type team_invitation_mutation_responseFieldPolicy = {
