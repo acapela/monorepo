@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { getMinutes, getHours, minutesInHour, addMinutes, startOfDay } from "date-fns";
 import styled from "styled-components";
 import DayPicker from "react-day-picker";
@@ -15,11 +15,11 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   const [value, setValue] = useState<Date>(initialValue);
   const isSubmitDisabled = value === initialValue;
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (!isSubmitDisabled) {
       onSubmit(value);
     }
-  }, [isSubmitDisabled, onSubmit, value]);
+  };
 
   const pickedMinutesValue = useMemo(() => {
     const hours = getHours(value);
