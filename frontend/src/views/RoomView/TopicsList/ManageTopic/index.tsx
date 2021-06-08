@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { IconVerticalThreeDots } from "~ui/icons";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -43,8 +43,8 @@ export const ManageTopic = ({ topic }: Props) => {
 
   return (
     <>
-      <PopoverMenu
-        position="bottom-start"
+      <PopoverMenuTrigger
+        placement="bottom-start"
         options={[
           {
             label: "Rename",
@@ -58,7 +58,7 @@ export const ManageTopic = ({ topic }: Props) => {
         ]}
       >
         <IconButton icon={<IconVerticalThreeDots />} tooltip={"Edit topic"} />
-      </PopoverMenu>
+      </PopoverMenuTrigger>
     </>
   );
 };

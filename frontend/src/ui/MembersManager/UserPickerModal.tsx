@@ -1,11 +1,10 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserBasicInfoFragment } from "~frontend/gql";
-import { useTeamMembers } from "~frontend/gql/user";
+import { useCurrentTeamMembers } from "~frontend/gql/user";
+import { UserSelectCard } from "~frontend/ui/users/UserSelectCard";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { Modal } from "../Modal";
-import { UserSelectCard } from "~frontend/ui/users/UserSelectCard";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -16,11 +15,8 @@ interface Props {
 
 export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest, onUserSelected }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-  const user = useAssertCurrentUser();
 
-  const [data] = useTeamMembers({ teamId: user.currentTeamId });
-
-  const teamMembers = data?.teamMembers ?? [];
+  const teamMembers = useCurrentTeamMembers();
 
   return (
     <Modal

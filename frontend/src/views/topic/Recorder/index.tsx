@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { useBoolean } from "~frontend/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { FullScreenCountdown } from "./FullScreenCountdown";
@@ -146,7 +146,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   return (
     <div className={className} ref={popoverHandlerRef}>
-      <PopoverMenu
+      <PopoverMenuTrigger
         tooltip="Record video..."
         options={[
           {
@@ -167,7 +167,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         >
           <IconVideoCamera />
         </RecordButton>
-      </PopoverMenu>
+      </PopoverMenuTrigger>
       <RecordButton
         onClick={onAudioButtonClick}
         tooltipLabel={isRecording ? undefined : "Start recording audio"}

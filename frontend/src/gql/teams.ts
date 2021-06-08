@@ -116,7 +116,7 @@ export const [useTeamInvitationByToken] = createQuery<TeamInvitationQuery, TeamI
         id
         team_id
         token
-        used_by
+        used_by_user_id
       }
     }
   `

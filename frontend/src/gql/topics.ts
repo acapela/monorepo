@@ -331,13 +331,8 @@ export const [useRecentTopics] = createQuery<RecentTopicsQuery, RecentTopicsQuer
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    query RecentTopics($teamId: uuid!, $limit: Int = 10, $userId: uuid!) {
-      recentTopics: topic(
-        where: { members: { user_id: { _eq: $userId } }, room: { space: { team: { id: { _eq: $teamId } } } } }
-        limit: $limit
-        # TODO: I'm not sure about performance of this in large scale. Should be good tho if used with index.
-        order_by: { messages_aggregate: { max: { created_at: desc } } }
-      ) {
+    query RecentTopics($limit: Int = 10, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
+      recentTopics: topic(where: $where, limit: $limit, order_by: $orderBy) {
         ...TopicDetailedInfo
       }
     }

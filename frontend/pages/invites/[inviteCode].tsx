@@ -54,7 +54,7 @@ function useInvitationAcceptedCallback(token: string, callback: () => void) {
     if (!user) return false;
     if (!invitation) return false;
 
-    return invitation.used_by === user.id && invitation.token === token;
+    return invitation.used_by_user_id === user.id && invitation.token === token;
   }
 
   const isSuccessfullyAccepted = getIsAccepted();
