@@ -5,6 +5,7 @@ import DayPicker from "react-day-picker";
 import "react-day-picker/lib/style.css";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
+import { shadow } from "~ui/baseStyles";
 
 interface Props {
   initialValue: Date;
@@ -57,7 +58,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
 
 const UIHolder = styled.form`
   background: #ffffff;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadow.medium};
   border-radius: 12px;
   display: grid;
   grid-gap: 24px;
