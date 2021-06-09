@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from "react";
-import { createDocumentEvent } from "~shared/domEvents";
+import { useDocumentEvent } from "~shared/domEvents";
 import { TooltipLabel } from "./TooltipLabel";
 import { AnimatePresence } from "framer-motion";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
@@ -22,40 +22,36 @@ export function TooltipsRenderer() {
   // data-tooltip attribute might change while tooltip is rendered, let's make sure we're watching it's changes.
   const tooltipLabel = useDOMAttributeValue(anchorRef, "data-tooltip");
 
-  // We'll attach document-level mouse events to watch mouse entering/leaving data-tooltip attributed elements.
-  useEffect(() => {
-    const stopMouseEnter = createDocumentEvent(
-      "mouseenter",
-      (event) => {
-        // On mouse enter, try to check if it is data-tooltip element, if so - mark it as active tooltip ref.
-        const target = event.target as HTMLElement;
-        const tooltipInfo = getClosestElementTooltipInfo(target);
+  useDocumentEvent(
+    "mouseenter",
+    (event) => {
+      // On mouse enter, try to check if it is data-tooltip element, if so - mark it as active tooltip ref.
+      const target = event.target as HTMLElement;
+      const tooltipInfo = getClosestElementTooltipInfo(target);
 
-        if (tooltipInfo) {
-          setCurrentTooltipAnchor(tooltipInfo.element);
-        }
-      },
-      { capture: true }
-    );
+      if (tooltipInfo) {
+        setCurrentTooltipAnchor(tooltipInfo.element);
+      }
+    },
+    { capture: true }
+  );
 
-    const stopMouseLeave = createDocumentEvent(
-      "mouseleave",
-      (event) => {
-        const target = event.target as HTMLElement;
+  useDocumentEvent(
+    "mouseleave",
+    (event) => {
+      const target = event.target as HTMLElement;
 
-        // If it was current tooltip, clear it.
-        if (target === currentTooltipAnchor) {
-          setCurrentTooltipAnchor(null);
-        }
-      },
-      { capture: true }
-    );
+      // If it was current tooltip, clear it.
+      if (target === currentTooltipAnchor) {
+        setCurrentTooltipAnchor(null);
+      }
+    },
+    { capture: true }
+  );
 
-    return () => {
-      stopMouseEnter();
-      stopMouseLeave();
-    };
-  }, [currentTooltipAnchor]);
+  useDocumentEvent("blur", () => {
+    setCurrentTooltipAnchor(null);
+  });
 
   return (
     <AnimatePresence>
