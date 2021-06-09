@@ -32,7 +32,7 @@ export async function acceptTeamInvitation(invite: TeamInvitation, userId: strin
           },
           data: {
             used_at: new Date(),
-            used_by: userId,
+            used_by_user_id: userId,
           },
         },
       },
