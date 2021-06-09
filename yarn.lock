@@ -2084,6 +2084,11 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.2.tgz#93e25bf9ee75fe0fd80b594bc4feb0e862111b5a"
   integrity sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==
 
+"@types/mudder@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/mudder/-/mudder-1.0.0.tgz#73ea857f23462a9a0a53e2dc8c21be5988b213ce"
+  integrity sha512-eT7Ans7A3HHCgJ6RKFykQeuDQfH+phcwzp+d6EN0P7vnYtSypfYtUrVcxJfLjLAjFGzpW/DHJgr0RFgyzBq4zg==
+
 "@types/next-auth@^3.15.0":
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/@types/next-auth/-/next-auth-3.15.0.tgz#b602f4689b35fff3d2af09500c79ab11c4745bca"
@@ -8139,6 +8144,11 @@ msw@^0.29.0:
     strict-event-emitter "^0.2.0"
     type-fest "^1.1.3"
     yargs "^17.0.1"
+
+mudder@^1.0.0:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/mudder/-/mudder-1.0.10.tgz#ef8b96badba6bd84b58d175bebfaaca79bf2ab6b"
+  integrity sha512-7wPiDQtSpiSUNI1nR3bevXsqWDzYBWrHq674KVbT8N+2iX9m46NFUiov2XfYpiElh/s6EAkpKV/LgRX2xF2txg==
 
 mute-stream@0.0.7:
   version "0.0.7"
