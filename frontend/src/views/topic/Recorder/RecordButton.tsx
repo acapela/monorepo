@@ -1,19 +1,12 @@
-import { ButtonHTMLAttributes, useRef } from "react";
+import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components";
-import { Tooltip } from "~ui/popovers/Tooltip";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   tooltipLabel?: string;
 }
 
 export const RecordButton = styled(function RecordButton({ tooltipLabel, ...otherProps }: Props) {
-  const ref = useRef<HTMLButtonElement>(null);
-  return (
-    <>
-      <UIButton {...otherProps} ref={ref} />
-      {tooltipLabel && <Tooltip anchorRef={ref} label={tooltipLabel} />}
-    </>
-  );
+  return <UIButton data-tooltip={tooltipLabel} {...otherProps} />;
 })``;
 
 export const UIButton = styled.button`

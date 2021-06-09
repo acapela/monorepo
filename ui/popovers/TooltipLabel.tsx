@@ -1,8 +1,5 @@
-import { AnimatePresence } from "framer-motion";
 import React, { RefObject } from "react";
-import { useHoverDirty } from "react-use";
 import styled from "styled-components";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, colors, fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -14,21 +11,13 @@ interface Props {
   isDisabled?: boolean;
 }
 
-export const Tooltip = styled(({ anchorRef, label, isDisabled }: Props) => {
-  const isHovered = useHoverDirty(anchorRef);
-
-  const shouldShow = useDebouncedValue(isHovered, { onDelay: 150, offDelay: 0 });
-
+export const TooltipLabel = styled(({ anchorRef, label, isDisabled }: Props) => {
   return (
-    <AnimatePresence>
-      {shouldShow && (
-        <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement="top">
-          <UITooltip transition={POP_ANIMATION_CONFIG} presenceStyles={POP_PRESENCE_STYLES}>
-            {label}
-          </UITooltip>
-        </Popover>
-      )}
-    </AnimatePresence>
+    <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement="top">
+      <UITooltip transition={POP_ANIMATION_CONFIG} presenceStyles={POP_PRESENCE_STYLES}>
+        {label}
+      </UITooltip>
+    </Popover>
   );
 })``;
 

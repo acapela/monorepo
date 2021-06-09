@@ -14,6 +14,7 @@ import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { useEffect } from "react";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 
 interface AddedProps {
   session: Session;
@@ -49,6 +50,7 @@ export default function App({
       <BuiltInStyles />
       <CommonMetadata />
       <PromiseUIRenderer />
+      <TooltipsRenderer />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG, duration: 0.15 }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
