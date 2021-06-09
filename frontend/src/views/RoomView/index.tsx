@@ -9,6 +9,7 @@ import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
+import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 
 interface Props {
   roomId: string;
@@ -83,10 +84,16 @@ export function RoomView({ roomId, topicId }: Props) {
       <UIHolder>
         <UIRoomInfo>
           <PageTitle>{roomData?.room?.name}</PageTitle>
-          <UIDeadline>
-            <SecondaryText>Due date</SecondaryText>
-            {roomData?.room && <DeadlineManager room={roomData.room} />}
-          </UIDeadline>
+          <UIManageSections>
+            <UIManageSection>
+              <SecondaryText>Due date</SecondaryText>
+              {roomData?.room && <DeadlineManager room={roomData.room} />}
+            </UIManageSection>
+            <UIManageSection>
+              <SecondaryText>Participants</SecondaryText>
+              {roomData?.room && <ManageRoomMembers room={roomData.room} />}
+            </UIManageSection>
+          </UIManageSections>
           <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
         </UIRoomInfo>
@@ -116,11 +123,18 @@ const UIRoomInfo = styled.div`
   gap: 10px;
 `;
 
-const UIDeadline = styled.div`
+const UIManageSections = styled.div`
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
-  gap: 10px;
+  gap: 16px;
+`;
+
+const UIManageSection = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, auto);
+  align-content: start;
+  gap: 8px;
 `;
 
 const UILine = styled.div`
