@@ -9,6 +9,8 @@ export const NOTIFICATION_COLOR = `hsl(352, 92%, 71%)`;
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.
  *
  * They might be used eg. for random gradients, avatar backgrounds etc.
+ *
+ * To modify, play with this palette: https://coolors.co/ff5c5c-775cff-ffd275-49beaa-311847-b8d8d8-5cc8ff-e6c0e9-1e1e24-82ff9e
  */
 export const COLORS_PALETTE = {
   ORANGE_RED_CRAYOLA: "#ff5c5c",
