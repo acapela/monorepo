@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function RoomView({ roomId, topicId }: Props) {
+  const router = useRouter();
   const [roomData] = useSingleRoomQuery({ id: roomId });
 
   const firstTopic = roomData?.room?.topics?.[0] ?? null;
@@ -78,6 +80,10 @@ export function RoomView({ roomId, topicId }: Props) {
     }
   }, [topicId, firstTopic, roomData?.room?.topics]);
 
+  const handleRoomLeave = () => {
+    router.replace(`/space/${roomData?.room?.space_id || ""}`);
+  };
+
   return (
     <>
       <PageMeta title={roomData?.room?.name} />
@@ -92,7 +98,7 @@ export function RoomView({ roomId, topicId }: Props) {
               </UIManageSection>
               <UIManageSection>
                 <SecondaryText>Participants</SecondaryText>
-                <ManageRoomMembers room={roomData.room} />
+                <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={roomData.room} />
               </UIManageSection>
             </UIManageSections>
           )}

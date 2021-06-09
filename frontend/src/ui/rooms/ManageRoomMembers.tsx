@@ -6,9 +6,10 @@ import { RoomDetailedInfoFragment } from "~frontend/gql";
 
 interface Props {
   room: RoomDetailedInfoFragment;
+  onCurrentUserLeave?: () => void;
 }
 
-export const ManageRoomMembers = ({ room }: Props) => {
+export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const user = useCurrentUser();
   const members = room.members.map((m) => m.user);
 
@@ -23,6 +24,9 @@ export const ManageRoomMembers = ({ room }: Props) => {
   async function handleLeave() {
     assert(user, "user required");
     await removeRoomMember({ userId: user.id, roomId: room.id });
+    if (onCurrentUserLeave) {
+      onCurrentUserLeave();
+    }
   }
 
   return <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />;
