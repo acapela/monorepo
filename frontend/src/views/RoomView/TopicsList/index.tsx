@@ -102,33 +102,35 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           New topic
         </UINewTopicButton>
       </UIHeader>
-      <DragDropContext onDragEnd={handleDrag}>
-        <Droppable droppableId={"droppable-id-static"}>
-          {({ droppableProps, innerRef, placeholder: droppablePlaceholder }) => (
-            <UITopicsList {...droppableProps} ref={innerRef}>
-              {topics.map((topic, index) => {
-                const isActive = activeTopicId === topic.id;
+      <UIScrollContainer>
+        <DragDropContext onDragEnd={handleDrag}>
+          <Droppable droppableId={"droppable-id-static"}>
+            {({ droppableProps, innerRef, placeholder: droppablePlaceholder }) => (
+              <UITopicsList {...droppableProps} ref={innerRef}>
+                {topics.map((topic, index) => {
+                  const isActive = activeTopicId === topic.id;
 
-                return (
-                  <Draggable
-                    key={topic.id}
-                    draggableId={topic.id}
-                    index={index}
-                    isDragDisabled={isExecutingBulkReorder || isReordering}
-                  >
-                    {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
-                      <UITopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
-                        <TopicMenuItem topic={topic} isActive={isActive} />
-                      </UITopic>
-                    )}
-                  </Draggable>
-                );
-              })}
-              {droppablePlaceholder}
-            </UITopicsList>
-          )}
-        </Droppable>
-      </DragDropContext>
+                  return (
+                    <Draggable
+                      key={topic.id}
+                      draggableId={topic.id}
+                      index={index}
+                      isDragDisabled={isExecutingBulkReorder || isReordering}
+                    >
+                      {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
+                        <UITopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
+                          <TopicMenuItem topic={topic} isActive={isActive} />
+                        </UITopic>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {droppablePlaceholder}
+              </UITopicsList>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </UIScrollContainer>
       {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
     </UIHolder>
   );
@@ -149,14 +151,14 @@ const UIHeader = styled.div`
   margin-bottom: 16px;
 `;
 
-const UITopicsList = styled.div`
+const UIScrollContainer = styled.div`
   height: 100%;
-  -ms-overflow-style: none; /* for Internet Explorer, Edge */
-  scrollbar-width: none; /* for Firefox */
-  overflow-y: scroll;
+  overflow-y: auto;
+`;
 
-  &::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
+const UITopicsList = styled.div`
+  &:last-child {
+    margin-bottom: 72px;
   }
 `;
 
