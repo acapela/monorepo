@@ -26,5 +26,31 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
-  "cSpell.words": ["Hasura", "Scrollable", "Unprocessable", "immer", "timestamptz", "Userback"]
+  "cSpell.words": ["Hasura", "Scrollable", "Unprocessable", "immer", "timestamptz", "Userback"],
+  "colorInfo.languages": [
+    {
+      "selector": "css",
+      "colors": "css"
+    },
+    {
+      "selector": "sass",
+      "colors": "css"
+    },
+    {
+      "selector": "scss",
+      "colors": "css"
+    },
+    {
+      "selector": "less",
+      "colors": "css"
+    },
+    {
+      "selector": "typescript",
+      "colors": "css"
+    },
+    {
+      "selector": "typescriptreact",
+      "colors": "css"
+    }
+  ]
 }
