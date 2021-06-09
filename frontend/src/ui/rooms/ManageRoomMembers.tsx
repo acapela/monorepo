@@ -15,9 +15,9 @@ export const ManageRoomMembers = ({ room }: Props) => {
   const [addRoomMember] = useAddRoomMember();
   const [removeRoomMember] = useRemoveRoomMember();
 
-  async function handleJoin() {
+  async function handleJoin(userId: string) {
     assert(user, "user required");
-    await addRoomMember({ userId: user.id, roomId: room.id });
+    await addRoomMember({ userId, roomId: room.id });
   }
 
   async function handleLeave() {
