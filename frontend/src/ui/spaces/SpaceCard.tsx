@@ -112,8 +112,8 @@ const UIBanner = styled.div`
 const UIImage = styled.div<{ spaceId: string }>`
   padding-bottom: 58%;
   background-image: linear-gradient(to right bottom, ${(props) => getSpaceColors(props.spaceId).join(",")});
-  border-radius: 1rem;
-  margin-bottom: 1rem;
+  border-radius: 16px;
+  margin-bottom: 16px;
 `;
 
 const UIInfo = styled.div`

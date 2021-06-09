@@ -29,7 +29,7 @@ export function pickArrayItemWithSeed<T>(array: T[], seed: string) {
   const seedAsNumber = seed
     .split("")
     .map((seedChar) => seedChar.charCodeAt(0))
-    .reduce((nextCharNumber, buffer) => nextCharNumber * buffer, 1);
+    .reduce((nextCharNumber, buffer) => nextCharNumber + buffer, 1);
 
   const index = seedAsNumber % array.length;
 
