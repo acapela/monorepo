@@ -6,7 +6,6 @@ import { IconCross } from "~ui/icons";
 import { SecondaryText } from "~ui/typo";
 import { IconButton } from "~ui/buttons/IconButton";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { useClickAway } from "react-use";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { shadow } from "~ui/baseStyles";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
@@ -30,11 +29,16 @@ interface Props {
 export function Modal({ head, hasCloseButton = true, children, onCloseRequest, anchor }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useClickAway(modalRef, onCloseRequest);
   useShortcut("Escape", onCloseRequest);
 
   const modalBodyNode = (
-    <UIModal ref={modalRef} presenceStyles={POP_PRESENCE_STYLES} transition={POP_ANIMATION_CONFIG}>
+    <UIModal
+      ref={modalRef}
+      presenceStyles={POP_PRESENCE_STYLES}
+      transition={POP_ANIMATION_CONFIG}
+      // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
+      onClick={(event) => event.stopPropagation()}
+    >
       {hasCloseButton && (
         <UIToolbar>
           <IconButton icon={<IconCross />} onClick={onCloseRequest} />
@@ -56,14 +60,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   if (!anchor) {
     return (
       <BodyPortal>
-        <UIBodyCover
-          onClick={(event) => {
-            event.stopPropagation();
-            onCloseRequest();
-          }}
-        >
-          {modalBodyNode}
-        </UIBodyCover>
+        <UIBodyCover onClick={onCloseRequest}>{modalBodyNode}</UIBodyCover>
       </BodyPortal>
     );
   }
