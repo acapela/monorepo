@@ -3,8 +3,9 @@ import { assert } from "~shared/assert";
 import logger from "~shared/logger";
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError, BadRequestError } from "../errors";
+import { HttpStatus } from "../http";
 import { isValidDateString } from "../utils";
-import { CalendarAPIRequestBody } from "./googleCalendarClient";
+import { CalendarAPIRequestBody, fetchCalendarEventsInRange } from "./googleCalendarClient";
 
 export const router = Router();
 
@@ -30,22 +31,28 @@ router.post("/v1/calendar", async (req: Request, res: Response) => {
 
   assert(requestBody, "Calendar API request body is missing");
 
-  const isEventEndDateValid = requestBody.eventsEndDate === undefined || isValidDateString(requestBody.eventsEndDate);
-  const isEventStartDateValid =
-    requestBody.eventsStartDate === undefined || isValidDateString(requestBody.eventsStartDate);
+  const { oAuthToken, eventsEndDate, eventsStartDate } = requestBody;
 
-  if (!requestBody.oAuthToken || !isEventEndDateValid || !isEventStartDateValid) {
+  const isEventEndDateValid = eventsEndDate === undefined || isValidDateString(eventsEndDate);
+  const isEventStartDateValid = eventsStartDate === undefined || isValidDateString(eventsStartDate);
+
+  if (!oAuthToken || !isEventEndDateValid || !isEventStartDateValid) {
     throw new BadRequestError("Calendar events API request made with invalid body");
   }
 
-  const eventsStartDate = requestBody.eventsStartDate ? new Date(requestBody.eventsStartDate) : new Date();
-  let eventsEndDate = new Date();
-  if (!requestBody.eventsEndDate) {
+  const rangeStartDate = eventsStartDate ? new Date(eventsStartDate) : new Date();
+  let rangeEndDate = new Date();
+  if (!eventsEndDate) {
     const TWO_WEEKS_IN_DAYS = 14;
-    eventsEndDate.setDate(eventsStartDate.getDate() + TWO_WEEKS_IN_DAYS);
+    rangeEndDate.setDate(rangeStartDate.getDate() + TWO_WEEKS_IN_DAYS);
   } else {
-    eventsEndDate = new Date(requestBody.eventsEndDate);
+    rangeEndDate = new Date(eventsEndDate);
   }
-
-  res.status(204).end();
+  try {
+    const calendarEvents = await fetchCalendarEventsInRange(oAuthToken, rangeStartDate, rangeEndDate);
+    res.status(HttpStatus.OK).json(calendarEvents);
+  } catch (e) {
+    logger.info("Calendar API request failed");
+    res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 });
