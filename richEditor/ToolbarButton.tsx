@@ -16,7 +16,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function Toolb
   { icon, isHighlighted = false, isDisabled = false, onClick, tooltipLabel }: Props,
   ref
 ) {
-  const buttonNode = (
+  return (
     <UIHolder
       data-tooltip={tooltipLabel}
       isActive={isHighlighted}
@@ -27,8 +27,6 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function Toolb
       {icon}
     </UIHolder>
   );
-
-  return <>{buttonNode}</>;
 });
 
 const UIHolder = styled.button<{ isActive: boolean; isDisabled: boolean }>`
