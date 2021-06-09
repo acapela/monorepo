@@ -84,16 +84,18 @@ export function RoomView({ roomId, topicId }: Props) {
       <UIHolder>
         <UIRoomInfo>
           <PageTitle>{roomData?.room?.name}</PageTitle>
-          <UIManageSections>
-            <UIManageSection>
-              <SecondaryText>Due date</SecondaryText>
-              {roomData?.room && <DeadlineManager room={roomData.room} />}
-            </UIManageSection>
-            <UIManageSection>
-              <SecondaryText>Participants</SecondaryText>
-              {roomData?.room && <ManageRoomMembers room={roomData.room} />}
-            </UIManageSection>
-          </UIManageSections>
+          {roomData?.room && (
+            <UIManageSections>
+              <UIManageSection>
+                <SecondaryText>Due date</SecondaryText>
+                <DeadlineManager room={roomData.room} />
+              </UIManageSection>
+              <UIManageSection>
+                <SecondaryText>Participants</SecondaryText>
+                <ManageRoomMembers room={roomData.room} />
+              </UIManageSection>
+            </UIManageSections>
+          )}
           <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
         </UIRoomInfo>
