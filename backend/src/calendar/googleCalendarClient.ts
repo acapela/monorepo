@@ -41,6 +41,9 @@ function extractVideoCallLink(event: calendar_v3.Schema$Event): string | undefin
   return;
 }
 
+/**
+ * This function extracts only the relevant fields from the fetched Google Calendar Event
+ */
 const extractInfoFromGoogleCalendarEvent = (event: calendar_v3.Schema$Event): CalendarEvent => {
   const participantEmails = event.attendees
     ? (event.attendees as { email: string }[]).map((attendee) => attendee.email)
