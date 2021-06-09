@@ -11,11 +11,9 @@ interface Props {
 
 export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip }: Props) {
   return (
-    <>
-      <UIHolder data-tooltip={tooltip} onClick={onClick} className={className}>
-        <UIIconHolder>{icon}</UIIconHolder>
-      </UIHolder>
-    </>
+    <UIHolder data-tooltip={tooltip} onClick={onClick} className={className}>
+      <UIIconHolder>{icon}</UIIconHolder>
+    </UIHolder>
   );
 })``;
 
