@@ -25,11 +25,9 @@ export const Avatar = styled(({ url, name, className, size = "regular", disableN
   }
 
   return (
-    <>
-      <UIHolder data-tooltip={!disableNameTooltip && name} className={className} size={size}>
-        <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
-      </UIHolder>
-    </>
+    <UIHolder data-tooltip={!disableNameTooltip && name} className={className} size={size}>
+      <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
+    </UIHolder>
   );
 })``;
 
