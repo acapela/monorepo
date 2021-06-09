@@ -4,6 +4,17 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useReorderTopicMutation } from "~frontend/gql/topics";
 import { getIndexBetweenCurrentAndLast, getIndexBetweenFirstAndCurrent, getIndexBetweenItems } from "./order";
 
+/*
+  Use Room Topic List
+
+  This utility hook helps us do many things related to managing a list of topics.
+
+  It safe-guards from "flashes" provided by graphql subscription, when a list is
+  temporarily unordered.
+
+  It also provides an optimistic result of reordering operations while we wait for 
+  the result from the server.
+ */
 interface UseRoomTopicListProps {
   topics: TopicDetailedInfoFragment[];
   moveBetween: (
