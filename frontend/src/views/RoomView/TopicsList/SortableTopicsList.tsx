@@ -8,9 +8,9 @@ interface Props {
   topics: TopicDetailedInfoFragment[];
   isDisabled?: boolean;
   activeTopicId: string | null;
-  moveToStart: (toMove: TopicDetailedInfoFragment) => void;
-  moveToEnd: (toMove: TopicDetailedInfoFragment) => void;
-  moveBetween: (
+  onMoveToStart: (toMove: TopicDetailedInfoFragment) => void;
+  onMoveToEnd: (toMove: TopicDetailedInfoFragment) => void;
+  onMoveBetween: (
     toMove: TopicDetailedInfoFragment,
     start: TopicDetailedInfoFragment,
     end: TopicDetailedInfoFragment
@@ -21,9 +21,9 @@ export const SortableTopicsList = ({
   topics,
   activeTopicId,
   isDisabled,
-  moveToStart,
-  moveToEnd,
-  moveBetween,
+  onMoveToStart: moveToStart,
+  onMoveToEnd: moveToEnd,
+  onMoveBetween: moveBetween,
 }: Props) => {
   function handleDrag({ destination, source }: DropResult) {
     // Dropped outside of droppable area

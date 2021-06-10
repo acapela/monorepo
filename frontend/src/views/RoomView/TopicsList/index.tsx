@@ -76,9 +76,9 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
         topics={topics}
         activeTopicId={activeTopicId}
         isDisabled={isExecutingBulkReorder || isReordering}
-        moveBetween={moveBetween}
-        moveToStart={moveToStart}
-        moveToEnd={moveToEnd}
+        onMoveBetween={moveBetween}
+        onMoveToStart={moveToStart}
+        onMoveToEnd={moveToEnd}
       />
       {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
     </UIHolder>
