@@ -3,9 +3,8 @@ import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -17,14 +16,12 @@ const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className }: Props) {
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
-  const shouldShowNotificationsBadge = !isActive && unreadCount > 0;
+  const hasUnreadMessaged = !isActive && unreadCount > 0;
   return (
     <UIFlyingTooltipWrapper>
       <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
         <UIHolder className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-          {shouldShowNotificationsBadge && (
-            <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
-          )}
+          {hasUnreadMessaged && <UIUnreadMessagesNotification />}
           {topic.name}
         </UIHolder>
       </TopicLink>
@@ -39,10 +36,11 @@ const PADDING = "12px";
 
 const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   position: relative;
-  padding: ${PADDING};
+  padding: ${PADDING} 24px;
   cursor: pointer;
   display: flex;
   width: 100%;
+  align-items: center;
 
   ${hoverActionCss}
 
@@ -85,4 +83,15 @@ const UIFlyingTooltipWrapper = styled.div`
       opacity: 1;
     }
   }
+`;
+
+const UIUnreadMessagesNotification = styled.div`
+  position: absolute;
+  left: 8px;
+
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+
+  background-color: ${NOTIFICATION_COLOR};
 `;
