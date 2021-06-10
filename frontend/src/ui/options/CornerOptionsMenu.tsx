@@ -1,19 +1,20 @@
 import styled from "styled-components";
-import { IconMoreHoriz } from "~frontend/../../ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { IconButton } from "~ui/buttons/IconButton";
-import { PopoverMenu, PopoverMenuOptions } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
+import { OptionsButton } from "./OptionsButton";
 
 interface Props {
-  options: PopoverMenuOptions[];
+  options: PopoverMenuOption[];
   tooltip?: string;
 }
 
 export function CornerOptionsMenu({ options, tooltip }: Props) {
   return (
     <UIMenuIcon>
-      <PopoverMenu options={options}>
-        <IconButton tooltip={tooltip} icon={<IconMoreHoriz />} />
-      </PopoverMenu>
+      <PopoverMenuTrigger options={options}>
+        <OptionsButton tooltip={tooltip} />
+      </PopoverMenuTrigger>
     </UIMenuIcon>
   );
 }

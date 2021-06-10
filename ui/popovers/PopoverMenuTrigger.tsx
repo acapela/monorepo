@@ -8,12 +8,10 @@ import { zIndex } from "~ui/zIndex";
 import { PopoverPlacement } from "./Popover";
 import { PopoverMenu, PopoverMenuOption } from "./PopoverMenu";
 
-type NonEmptyArray<T> = [T, ...T[]];
-
 interface Props {
   className?: string;
   children: ReactNode;
-  options: NonEmptyArray<PopoverMenuOption>;
+  options: Array<PopoverMenuOption>;
   placement?: PopoverPlacement;
   onOpen?: () => void;
   onClose?: () => void;
@@ -36,7 +34,10 @@ export const PopoverMenuTrigger = styled(
         <UIHolder
           data-tooltip={tooltip && !isOpen && tooltip}
           ref={anchorRef}
-          onClick={togglePopover}
+          onClick={(event) => {
+            event.stopPropagation();
+            togglePopover();
+          }}
           className={className}
         >
           {triggerElement}

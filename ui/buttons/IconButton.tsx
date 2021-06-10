@@ -23,15 +23,15 @@ const UIHolder = styled.button`
   align-items: center;
   justify-content: center;
 
-  width: 1em;
-  height: 1em;
+  width: 1.5em;
+  height: 1.5em;
 
   border-radius: 0.25em;
   background-color: transparent;
   border: none;
   cursor: pointer;
 
-  font-size: 1.5rem;
+  font-size: 24px;
 
   ${hoverActionCss};
 

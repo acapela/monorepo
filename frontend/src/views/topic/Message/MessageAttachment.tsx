@@ -1,7 +1,7 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
 import { useBoolean } from "~frontend/hooks/useBoolean";

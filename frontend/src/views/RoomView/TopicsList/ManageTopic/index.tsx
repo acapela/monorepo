@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import { IconEdit, IconTrash, IconVerticalThreeDots } from "~ui/icons";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
-import { openUIPrompt } from "~frontend/utils/prompt";
 import { useTopic } from "~frontend/topics/useTopic";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { IconButton } from "~ui/buttons/IconButton";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { IconEdit, IconTrash } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -59,7 +59,7 @@ export const ManageTopic = ({ topic }: Props) => {
           },
         ]}
       >
-        <IconButton icon={<IconVerticalThreeDots />} tooltip={"Edit topic"} />
+        <OptionsButton />
       </PopoverMenuTrigger>
     </>
   );

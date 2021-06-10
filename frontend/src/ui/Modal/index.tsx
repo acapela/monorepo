@@ -1,14 +1,14 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { BodyPortal } from "~ui/BodyPortal";
-import { IconCross } from "~ui/icons";
-import { SecondaryText } from "~ui/typo";
-import { IconButton } from "~ui/buttons/IconButton";
-import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { shadow } from "~ui/baseStyles";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { shadow } from "~ui/baseStyles";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconCross } from "~ui/icons";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { SecondaryText } from "~ui/typo";
+import { ScreenCover } from "./ScreenCover";
 
 export interface ModalAnchor {
   ref: RefObject<HTMLElement>;
@@ -56,32 +56,19 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
     </UIModal>
   );
 
-  // Modal is attached to some element instead of center of the screen.
-  if (!anchor) {
-    return (
-      <BodyPortal>
-        <UIBodyCover onClick={onCloseRequest}>{modalBodyNode}</UIBodyCover>
-      </BodyPortal>
-    );
-  }
-
   return (
-    <Popover anchorRef={anchor.ref} placement={anchor.placement}>
-      {modalBodyNode}
-    </Popover>
+    <ScreenCover onCloseRequest={onCloseRequest}>
+      {/* Modal is attached to some element instead of center of the screen. */}
+      {anchor && (
+        <Popover anchorRef={anchor.ref} placement={anchor.placement}>
+          {modalBodyNode}
+        </Popover>
+      )}
+
+      {!anchor && modalBodyNode}
+    </ScreenCover>
   );
 }
-
-const UIBodyCover = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 const UIModal = styled(PresenceAnimator)`
   min-width: 368px;

@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -11,6 +11,9 @@ import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
+import { getRoomManagePopoverOptions, handleEditRoomName } from "~frontend/rooms/editOptions";
 
 interface Props {
   roomId: string;
@@ -19,9 +22,12 @@ interface Props {
 
 export function RoomView({ roomId, topicId }: Props) {
   const router = useRouter();
-  const [roomData] = useSingleRoomQuery({ id: roomId });
+  const titleHolderRef = useRef<HTMLDivElement>(null);
+  const [roomQuery] = useSingleRoomQuery({ id: roomId });
 
-  const firstTopic = roomData?.room?.topics?.[0] ?? null;
+  const room = roomQuery?.room;
+
+  const firstTopic = room?.topics?.[0] ?? null;
 
   function getSelectedTopicId() {
     if (topicId) return topicId;
@@ -41,10 +47,10 @@ export function RoomView({ roomId, topicId }: Props) {
     Topic ids given through url that are not found in the room, route to the first topic in room.
   */
   useEffect(() => {
-    const topicsInRoom = roomData?.room?.topics;
+    const topicsInRoom = room?.topics;
 
     // Newly created room stores topics as `null`
-    if (!roomData?.room || !topicsInRoom) {
+    if (!room || !topicsInRoom) {
       return;
     }
 
@@ -52,7 +58,7 @@ export function RoomView({ roomId, topicId }: Props) {
     const roomHasTopics = topicsInRoom.length > 0;
     const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
 
-    const { id: roomId, space_id: spaceId } = roomData?.room;
+    const { id: roomId, space_id: spaceId } = room;
 
     const routeToRoomUrl = () =>
       routes.spaceRoom.replace({
@@ -78,28 +84,42 @@ export function RoomView({ roomId, topicId }: Props) {
         routeToFirstTopicUrl();
       }
     }
-  }, [topicId, firstTopic, roomData?.room?.topics]);
+  }, [topicId, firstTopic, room?.topics]);
 
   const handleRoomLeave = () => {
-    router.replace(`/space/${roomData?.room?.space_id || ""}`);
+    router.replace(`/space/${room?.space_id || ""}`);
   };
 
   return (
     <>
-      <PageMeta title={roomData?.room?.name} />
+      <PageMeta title={room?.name} />
       <UIHolder>
         <UIRoomInfo>
-          <PageTitle>{roomData?.room?.name}</PageTitle>
+          {room && (
+            <UIRoomHead>
+              <UIRoomTitle
+                ref={titleHolderRef}
+                data-tooltip="Edit room name..."
+                onClick={() => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" })}
+              >
+                {room.name}
+              </UIRoomTitle>
+
+              <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
+                <OptionsButton />
+              </PopoverMenuTrigger>
+            </UIRoomHead>
+          )}
           <UIManageSections>
-            {roomData?.room && (
+            {room && (
               <>
                 <UIManageSection>
                   <SecondaryText>Due date</SecondaryText>
-                  <DeadlineManager room={roomData.room} />
+                  <DeadlineManager room={room} />
                 </UIManageSection>
                 <UIManageSection>
                   <SecondaryText>Participants</SecondaryText>
-                  <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={roomData.room} />
+                  <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
                 </UIManageSection>
               </>
             )}
@@ -161,4 +181,15 @@ const UITopicContentHolder = styled(PresenceAnimator)`
   border-radius: 1rem;
   padding: 2rem;
   min-height: 0;
+`;
+
+const UIRoomHead = styled(PageTitle)`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+`;
+
+const UIRoomTitle = styled.div`
+  cursor: pointer;
 `;

@@ -1,7 +1,7 @@
-import { IconButton } from "~ui/buttons/IconButton";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { IconEdit, IconMoreHoriz, IconTrash } from "~ui/icons";
+import { IconEdit, IconTrash } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 interface Props {
   isActive: boolean;
@@ -33,7 +33,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
           { label: "Delete message", onSelect: handleRemoveWithConfirm, isDestructive: true, icon: <IconTrash /> },
         ]}
       >
-        <IconButton icon={<IconMoreHoriz />} tooltip={isActive ? undefined : "Show Options"} />
+        <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
       </PopoverMenuTrigger>
     </>
   );
