@@ -6,9 +6,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
-import { IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
-import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -43,7 +41,7 @@ export const MembersManager = styled(function MembersManager({
       <UIHolder className={className}>
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}
-          <IconButton tooltip="Add member..." onClick={handleWithStopPropagation(openUserPicker)} icon={<IconPlus />} />
+          <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
         </UIMembers>
 
         <UIActions>
@@ -64,21 +62,17 @@ export const MembersManager = styled(function MembersManager({
 })``;
 
 const UIHolder = styled.div`
+  margin-top: 4px;
   display: flex;
   align-items: center;
   width: 100%;
 `;
 
 const UIMembers = styled.div`
-  display: flex;
-
-  ${AvatarList} {
-    margin-right: 0.5rem;
-  }
-
-  ${IconButton} {
-    font-size: 32px;
-  }
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px;
+  align-items: center;
 `;
 
 const UIActions = styled.div`
