@@ -32,6 +32,9 @@ const requiredEnvVarNames = [
   "LOGGING_LEVEL",
   "SENDGRID_API_KEY",
   "BACKEND_HOST",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "BACKEND_AUTH_TOKEN",
 ] as const;
 
 const requiredEnvVarNamesBackend = [
@@ -50,8 +53,6 @@ const requiredEnvVarNamesBackend = [
 
 const requiredEnvVarNamesFrontend = [
   "HASURA_HOST",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
   "AUTH_SECRET",
   "AUTH_JWT_TOKEN_SECRET",
   "NEXTAUTH_URL",

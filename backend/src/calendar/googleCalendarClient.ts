@@ -21,8 +21,8 @@ interface CalendarEvent {
   videoCallLink?: string;
 }
 
-const clientId = assertGet(process.env.CLIENT_ID, "CLIENT_ID is required");
-const clientSecret = assertGet(process.env.CLIENT_SECRET, "CLIENT_SECRET is required");
+const clientId = assertGet(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID is required");
+const clientSecret = assertGet(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET is required");
 
 function convertGoogleDate(googleDate?: calendar_v3.Schema$EventDateTime): Date | undefined {
   if (!googleDate) return;
