@@ -1,3 +1,7 @@
+// APP env var is required for config to load.
+// TODO: It's a bit awkward.
+process.env.APP = "tooling";
+
 import yargs from "yargs";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

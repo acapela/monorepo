@@ -4,7 +4,7 @@ import { IconFilter } from "~ui/icons";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
   Order_By,
-  RecentTopicsQueryVariables,
+  TopicsQueryVariables,
   Topic_Bool_Exp as TopicWhere,
   Topic_Order_By as TopicOrder,
   Topic_Order_By,
@@ -32,7 +32,7 @@ export function getTopicVariablesFromFilters(
   userId: string,
   teamId: string,
   filters: TopicFilter[]
-): RecentTopicsQueryVariables {
+): TopicsQueryVariables {
   const orders: Topic_Order_By[] = [];
   let where: TopicWhere = {
     room: {

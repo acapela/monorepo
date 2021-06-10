@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useRecentTopics } from "~frontend/gql/topics";
+import { useTopicsQuery } from "~frontend/gql/topics";
 import { useTopicFilterVariables } from "./Filters/filter";
 import { TopicFilters } from "./Filters/TopicFilters";
 import { groupBy } from "./groupBy";
@@ -12,9 +12,9 @@ interface Props {
 export const RecentTopics = styled(function RecentTopics({ className }: Props) {
   const [topicQueryVariables, setFilters] = useTopicFilterVariables();
 
-  const [data] = useRecentTopics(topicQueryVariables);
+  const [data] = useTopicsQuery(topicQueryVariables);
 
-  const topics = data?.recentTopics ?? [];
+  const topics = data?.topics ?? [];
 
   const roomGroups = groupBy(
     topics,

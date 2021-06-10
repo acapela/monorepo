@@ -25,8 +25,8 @@ import {
   RemoveTopicMemberMutationVariables,
   SingleTopicQuery,
   SingleTopicQueryVariables,
-  RecentTopicsQuery,
-  RecentTopicsQueryVariables,
+  TopicsQuery,
+  TopicsQueryVariables,
   ToggleCloseTopicMutation,
   ToggleCloseTopicMutationVariables,
   EditTopicMutation,
@@ -306,12 +306,12 @@ export const [useSingleTopicQuery, singleTopicQueryManager] = createQuery<Single
   `
 );
 
-export const [useRecentTopics] = createQuery<RecentTopicsQuery, RecentTopicsQueryVariables>(
+export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    query RecentTopics($limit: Int = 10, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
-      recentTopics: topic(where: $where, limit: $limit, order_by: $orderBy) {
+    query Topics($limit: Int = 10, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
+      topics: topic(where: $where, limit: $limit, order_by: $orderBy) {
         ...TopicDetailedInfo
       }
     }
