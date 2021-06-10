@@ -1,6 +1,6 @@
 import axios, { Method } from "axios";
 import querystring from "querystring";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 import { getTunnelPublicUrl } from "../localtunnel";
 import { isDev } from "../utils";
 
@@ -38,6 +38,8 @@ export interface JsonTranscriptResponse {
   }[];
 }
 
+const sonixCallbackSecret = assertGet(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
+
 let sonixClient: Sonix;
 
 class Sonix {
@@ -45,20 +47,18 @@ class Sonix {
   private key: string;
 
   constructor({ key = process.env.SONIX_API_KEY }: SonixOptions = {}) {
-    assert(key, "Sonix API key is required");
-    assert(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
+    const sonixApiKey = assertGet(key, "Sonix API key is required");
 
-    this.key = key;
+    this.key = sonixApiKey;
   }
 
   private async getCallbackUrl() {
     const domain = isDev() ? await getTunnelPublicUrl() : process.env.BACKEND_HOST;
     const endpoint = "/api/v1/transcriptions";
 
-    assert(domain, "Failed to build callback URL");
+    assertGet(domain, "Failed to build callback URL");
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return `${domain}${endpoint}?secret=${encodeURIComponent(process.env.SONIX_CALLBACK_SECRET!)}`;
+    return `${domain}${endpoint}?secret=${encodeURIComponent(sonixCallbackSecret)}`;
   }
 
   private async doRequest({ method, path, formData }: SonixRequestOptions) {

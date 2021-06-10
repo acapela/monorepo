@@ -1,7 +1,8 @@
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
+import { assertGet } from "~shared/assert";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const bucketName = process.env.GOOGLE_STORAGE_BUCKET!;
+const bucketName = assertGet(process.env.GOOGLE_STORAGE_BUCKET, "GOOGLE_STORAGE_BUCKET env variable is required");
+
 const directory = "attachments";
 
 /* We can have topic subdirectories if needed */

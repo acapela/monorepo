@@ -21,6 +21,9 @@ interface CalendarEvent {
   videoCallLink?: string;
 }
 
+const clientId = assertGet(process.env.CLIENT_ID, "CLIENT_ID is required");
+const clientSecret = assertGet(process.env.CLIENT_SECRET, "CLIENT_SECRET is required");
+
 function convertGoogleDate(googleDate?: calendar_v3.Schema$EventDateTime): Date | undefined {
   if (!googleDate) return;
 
@@ -67,10 +70,7 @@ function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): Ca
 }
 
 export async function fetchCalendarEventsInRange(oAuthToken: string, eventsStartDate: Date, eventsEndDate: Date) {
-  assertGet(process.env.CLIENT_ID, "CLIENT_ID is required");
-  assertGet(process.env.CLIENT_SECRET, "CLIENT_SECRET is required");
-
-  const oauth = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
+  const oauth = new google.auth.OAuth2(clientId, clientSecret);
 
   oauth.setCredentials({
     access_token: oAuthToken,
@@ -80,11 +80,11 @@ export async function fetchCalendarEventsInRange(oAuthToken: string, eventsStart
 
   try {
     const calendarEvents = await calendar.events.list({
-      calendarId: "primary",
+      calendarId: "primary", // chooses the primary calendar of the oauth token user
       timeMin: eventsStartDate.toISOString(),
       timeMax: eventsEndDate.toISOString(),
       showDeleted: false,
-      singleEvents: true,
+      singleEvents: true, // fetches individual recurring events, ignores parent event
       orderBy: "startTime",
     });
 

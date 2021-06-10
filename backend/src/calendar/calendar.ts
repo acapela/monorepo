@@ -1,11 +1,13 @@
 import { Request, Response, Router } from "express";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 import logger from "~shared/logger";
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError, BadRequestError } from "../errors";
 import { HttpStatus } from "../http";
 import { isValidOptionalDateArgument } from "../utils";
 import { CalendarAPIRequestBody, fetchCalendarEventsInRange } from "./googleCalendarClient";
+
+const backendAuthToken = assertGet(process.env.BACKEND_AUTH_TOKEN, "BACKEND_AUTH_TOKEN is required");
 
 export const router = Router();
 
@@ -15,16 +17,16 @@ export const router = Router();
 router.post("/v1/calendar", async (req: Request, res: Response) => {
   const token = extractAndAssertBearerToken(req.get("Authorization") || "");
 
-  assert(process.env.BACKEND_AUTH_TOKEN, "BACKEND_AUTH_TOKEN is required");
-
-  if (token !== process.env.BACKEND_AUTH_TOKEN) {
+  if (token !== backendAuthToken) {
     logger.info("Incorrect token provided for the calendar API request");
     throw new AuthenticationError("Calendar events API request made with invalid token");
   }
 
   const requestBody = req.body as CalendarAPIRequestBody;
 
-  assert(requestBody, "Calendar API request body is missing");
+  if (!requestBody) {
+    throw new BadRequestError("Calendar API request body is missing");
+  }
 
   const { oAuthToken, eventsEndDate, eventsStartDate } = requestBody;
 
