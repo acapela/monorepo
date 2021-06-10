@@ -1,6 +1,6 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { createTopic } from "~frontend/gql/topics";
-import { createNextIndex } from "~frontend/rooms/order";
+import { createLastItemIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -10,9 +10,15 @@ interface CreateTopicInput {
   roomId: string;
   modalAnchor?: ModalAnchor;
   navigateAfterCreation?: boolean;
+  currentLastIndex?: string;
 }
 
-export async function startCreateNewTopicFlow({ roomId, modalAnchor, navigateAfterCreation }: CreateTopicInput) {
+export async function startCreateNewTopicFlow({
+  roomId,
+  modalAnchor,
+  navigateAfterCreation,
+  currentLastIndex,
+}: CreateTopicInput) {
   const topicName = await openUIPrompt({
     title: "New topic name",
     submitLabel: "Create topic",
@@ -25,7 +31,7 @@ export async function startCreateNewTopicFlow({ roomId, modalAnchor, navigateAft
     return;
   }
 
-  const index = createNextIndex();
+  const index = createLastItemIndex(currentLastIndex);
   const slug = slugify(topicName);
 
   const { data: createTopicResult } = await createTopic({

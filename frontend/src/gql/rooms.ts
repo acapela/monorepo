@@ -51,7 +51,7 @@ export const RoomDetailedInfoFragment = () => gql`
       }
     }
 
-    topics {
+    topics(order_by: { index: asc }) {
       ...TopicDetailedInfo
     }
   }
