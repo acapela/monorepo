@@ -13,7 +13,7 @@ import { IconButton } from "~ui/buttons/IconButton";
 interface Props {
   users: UserBasicInfoFragment[];
   onAddMemberRequest: (userId: string) => Promise<void> | void;
-  onLeaveRequest: () => Promise<void> | void;
+  onLeaveRequest: (userId: string) => Promise<void> | void;
   className?: string;
 }
 
@@ -43,11 +43,9 @@ export const MembersManager = styled(function MembersManager({
         {isPickingUser && (
           <UserPickerModal
             currentUsers={users}
-            currentUserLabel="Joined"
             onCloseRequest={closeUserPicker}
-            onUserSelected={(selectedUser) => {
-              onAddMemberRequest(selectedUser.id);
-            }}
+            onAddUser={onAddMemberRequest}
+            onRemoveUser={onLeaveRequest}
           />
         )}
       </AnimatePresence>

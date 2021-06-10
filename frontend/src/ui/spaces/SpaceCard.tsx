@@ -15,6 +15,7 @@ import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
 import { getSpaceColors } from "./spaceGradient";
+import { routes } from "~frontend/../routes";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -22,8 +23,8 @@ interface Props {
 
 export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
-  const user = useAssertCurrentUser();
   const router = useRouter();
+  const user = useAssertCurrentUser();
   const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
   const [addSpaceMember] = useAddSpaceMember();
@@ -34,8 +35,11 @@ export function SpaceCard({ space }: Props) {
     await addSpaceMember({ userId, spaceId });
   }
 
-  async function handleLeave() {
-    await removeSpaceMember({ userId: user.id, spaceId });
+  async function handleLeave(userId: string) {
+    await removeSpaceMember({ userId, spaceId });
+    if (user.id === userId) {
+      routes.spaces.push({});
+    }
   }
 
   function handleOpen() {

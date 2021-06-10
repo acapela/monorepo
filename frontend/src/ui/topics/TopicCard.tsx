@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { hoverActionCss, hoverActionNegativeSpacingCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";
 import { TextTitle } from "~ui/typo";
@@ -17,18 +16,17 @@ interface Props {
 
 export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
-  const user = useAssertCurrentUser();
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
   const [addTopicMember] = useAddTopicMember();
   const [removeTopicMember] = useRemoveTopicMember();
 
-  async function handleJoin() {
-    await addTopicMember({ userId: user.id, topicId });
+  async function handleJoin(userId: string) {
+    await addTopicMember({ userId, topicId });
   }
 
-  async function handleLeave() {
-    await removeTopicMember({ userId: user.id, topicId });
+  async function handleLeave(userId: string) {
+    await removeTopicMember({ userId, topicId });
   }
 
   function handleOpen() {
