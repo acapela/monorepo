@@ -24,3 +24,7 @@ export function isDev() {
 export function isValidDateString(dateString: string) {
   return !isNaN(Date.parse(dateString));
 }
+
+export function isValidOptionalDateArgument(dateString?: string) {
+  return dateString === undefined || isValidDateString(dateString);
+}
