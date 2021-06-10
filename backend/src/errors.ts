@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { AssertError } from "~shared/assert";
 import logger from "~shared/logger";
 import { HttpStatus } from "./http";
 
@@ -23,6 +24,10 @@ export function errorHandling(
   const response: { message: string; stack?: string } = {
     message: err.message || "Something went wrong",
   };
+  // avoid leaking internal server errors from assertion failures externally
+  if (err instanceof AssertError) {
+    response.message = "Something went wrong";
+  }
   if (process.env.NODE_ENV !== "production" && err.stack) {
     response.stack = err.stack;
   }
