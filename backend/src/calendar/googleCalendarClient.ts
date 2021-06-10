@@ -41,18 +41,21 @@ function extractVideoCallLink(event: calendar_v3.Schema$Event): string | undefin
   return;
 }
 
+function extractParticipantEmailsFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): string[] {
+  if (event.attendees === undefined) {
+    return event.creator?.email ? [event.creator?.email] : [];
+  }
+
+  return (event.attendees as { email: string }[]).map((attendee) => attendee.email);
+}
+
 /**
  * This function extracts only the relevant fields from the fetched Google Calendar Event
  */
-const extractInfoFromGoogleCalendarEvent = (event: calendar_v3.Schema$Event): CalendarEvent => {
-  const participantEmails = event.attendees
-    ? (event.attendees as { email: string }[]).map((attendee) => attendee.email)
-    : event.creator?.email
-    ? [event.creator?.email]
-    : [];
+function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): CalendarEvent {
   return {
     title: event.summary ?? undefined,
-    participantEmails,
+    participantEmails: extractParticipantEmailsFromGoogleCalendarEvent(event),
     startTime: convertGoogleDate(event.start),
     endTime: convertGoogleDate(event.end),
     id: event.id ?? undefined,
@@ -61,7 +64,7 @@ const extractInfoFromGoogleCalendarEvent = (event: calendar_v3.Schema$Event): Ca
     description: event.description ?? undefined,
     videoCallLink: extractVideoCallLink(event),
   };
-};
+}
 
 export async function fetchCalendarEventsInRange(oAuthToken: string, eventsStartDate: Date, eventsEndDate: Date) {
   assert(process.env.CLIENT_ID, "CLIENT_ID is required");
