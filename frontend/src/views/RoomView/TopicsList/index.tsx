@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { TopicMenuItem } from "./TopicMenuItem";
 import { ItemTitle } from "~ui/typo";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
+import { SortableTopicsList } from "./SortableTopicsList";
 
 interface Props {
   roomId: string;
@@ -64,36 +64,6 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
     setNewlyCreatedTopic(topic?.id ?? null);
   }
 
-  function handleDrag({ destination, source }: DropResult) {
-    // Dropped outside of droppable area
-    if (!destination) {
-      return;
-    }
-
-    // Dropped in same position
-    if (destination.index === source.index) {
-      return;
-    }
-
-    if (destination.index === 0) {
-      moveToStart(topics[source.index]);
-      return;
-    }
-
-    if (destination.index === topics.length - 1) {
-      moveToEnd(topics[source.index]);
-      return;
-    }
-
-    // destination indexes differ depending if the source comes before/after item
-    const { start, end } =
-      destination.index > source.index
-        ? { start: destination.index, end: destination.index + 1 }
-        : { start: destination.index - 1, end: destination.index };
-
-    moveBetween(topics[source.index], topics[start], topics[end]);
-  }
-
   return (
     <UIHolder>
       <UIHeader>
@@ -102,35 +72,14 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           New topic
         </UINewTopicButton>
       </UIHeader>
-      <UIScrollContainer>
-        <DragDropContext onDragEnd={handleDrag}>
-          <Droppable droppableId={"droppable-id-static"}>
-            {({ droppableProps, innerRef, placeholder: droppablePlaceholder }) => (
-              <UITopicsList {...droppableProps} ref={innerRef}>
-                {topics.map((topic, index) => {
-                  const isActive = activeTopicId === topic.id;
-
-                  return (
-                    <Draggable
-                      key={topic.id}
-                      draggableId={topic.id}
-                      index={index}
-                      isDragDisabled={isExecutingBulkReorder || isReordering}
-                    >
-                      {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
-                        <UITopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
-                          <TopicMenuItem topic={topic} isActive={isActive} />
-                        </UITopic>
-                      )}
-                    </Draggable>
-                  );
-                })}
-                {droppablePlaceholder}
-              </UITopicsList>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </UIScrollContainer>
+      <SortableTopicsList
+        topics={topics}
+        activeTopicId={activeTopicId}
+        isDisabled={isExecutingBulkReorder || isReordering}
+        moveBetween={moveBetween}
+        moveToStart={moveToStart}
+        moveToEnd={moveToEnd}
+      />
       {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
     </UIHolder>
   );
@@ -151,18 +100,18 @@ const UIHeader = styled.div`
   margin-bottom: 16px;
 `;
 
-const UIScrollContainer = styled.div`
+export const UIScrollContainer = styled.div`
   height: 100%;
   overflow-y: auto;
 `;
 
-const UITopicsList = styled.div`
+export const UITopicsList = styled.div`
   &:last-child {
     margin-bottom: 72px;
   }
 `;
 
-const UITopic = styled.div<{ isDragging: boolean }>`
+export const UITopic = styled.div<{ isDragging: boolean }>`
   position: relative;
 
   margin-bottom: 8px;
@@ -173,10 +122,10 @@ const UITopic = styled.div<{ isDragging: boolean }>`
 
   ${({ isDragging }) =>
     isDragging
-      ? `
-  background: ${ACTION_ACTIVE_COLOR};
-  border-radius: 8px;
-  `
+      ? css`
+          background: ${ACTION_ACTIVE_COLOR};
+          border-radius: 8px;
+        `
       : ""}
 `;
 
