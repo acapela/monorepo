@@ -6,15 +6,16 @@ import { useTeamMembers } from "~frontend/gql/user";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { Modal } from "../Modal";
 import { UserSelectCard } from "~frontend/ui/users/UserSelectCard";
+import { Button } from "~frontend/../../ui/buttons/Button";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
-  currentUserLabel?: string;
   onCloseRequest: () => void;
-  onUserSelected?: (user: UserBasicInfoFragment) => void;
+  onAddUser: (userId: string) => void;
+  onRemoveUser: (userId: string) => void;
 }
 
-export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest, onUserSelected }: Props) {
+export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const user = useAssertCurrentUser();
 
@@ -27,8 +28,7 @@ export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest
       onCloseRequest={onCloseRequest}
       hasCloseButton={false}
       head={{
-        title: "Invite people to collaborate together",
-        description: "Invite existing team members or add new ones",
+        title: "Room participants",
       }}
     >
       <SearchInput placeholder="Search team members..." value={searchTerm} onChangeText={setSearchTerm} />
@@ -39,13 +39,11 @@ export function UserPickerModal({ currentUsers, currentUserLabel, onCloseRequest
             <UserSelectCard
               key={user.id}
               user={user}
-              actions={<>{isAlreadyPicked && currentUserLabel}</>}
-              isDisabled={isAlreadyPicked}
-              onSelected={(user) => {
-                if (isAlreadyPicked) return;
-
-                onUserSelected?.(user);
-              }}
+              actions={
+                <Button onClick={() => (isAlreadyPicked ? onRemoveUser(user.id) : onAddUser(user.id))}>
+                  {isAlreadyPicked ? "Remove" : "Add"}
+                </Button>
+              }
             />
           );
         })}

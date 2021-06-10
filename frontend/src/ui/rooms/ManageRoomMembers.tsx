@@ -21,10 +21,10 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     await addRoomMember({ userId, roomId: room.id });
   }
 
-  async function handleLeave() {
+  async function handleLeave(userId: string) {
     assert(user, "user required");
     await removeRoomMember({ userId: user.id, roomId: room.id });
-    if (onCurrentUserLeave) {
+    if (onCurrentUserLeave && userId === user.id) {
       onCurrentUserLeave();
     }
   }

@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { IconButton } from "~ui/buttons/IconButton";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -22,7 +21,6 @@ interface Props {
 
 export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
-  const user = useAssertCurrentUser();
   const router = useRouter();
   const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
@@ -34,8 +32,8 @@ export function SpaceCard({ space }: Props) {
     await addSpaceMember({ userId, spaceId });
   }
 
-  async function handleLeave() {
-    await removeSpaceMember({ userId: user.id, spaceId });
+  async function handleLeave(userId: string) {
+    await removeSpaceMember({ userId, spaceId });
   }
 
   function handleOpen() {
