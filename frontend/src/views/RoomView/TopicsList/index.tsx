@@ -1,10 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { routes } from "~frontend/routes";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
-import { TopicMenuItem } from "./TopicMenuItem";
+import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
+import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { namedLazy } from "~shared/namedLazy";
+import { StaticTopicsList } from "./StaticTopicsList";
+import styled from "styled-components";
+import { ItemTitle } from "~ui/typo";
+
+const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
+
+LazySortableTopicsList.preload();
 
 interface Props {
   roomId: string;
@@ -13,22 +21,27 @@ interface Props {
 
 export function TopicsList({ roomId, activeTopicId }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [roomData] = useSingleRoomQuery({ id: roomId });
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
 
-  const room = roomData?.room;
-
-  const topics = room?.topics ?? [];
+  const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
+  const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(roomId);
 
   /*
-    Routing on new topic
+    ## Routing on new topic
 
     Routing to new topics is only done after finding our created topic inside a subscription.
 
     This is done in order to prevent a race-condition between room data, and mechanisms
     that handle routing in the Room page.
+
+    ## Bulk reordering
+    -- go to hook definition for explanation
   */
   useEffect(() => {
+    if (topics && topics.every(({ index }) => !index || index.trim().length === 0)) {
+      const topicIds = topics.map(({ id }) => id);
+      bulkReorder(topicIds);
+    }
     const found = topics.find(({ id }) => id === newlyCreatedTopic);
     if (found) {
       const {
@@ -49,41 +62,48 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
         placement: "bottom-start",
       },
       navigateAfterCreation: true,
+      currentLastIndex,
     });
 
     setNewlyCreatedTopic(topic?.id ?? null);
   }
 
   return (
-    <>
-      {topics.length === 0 && <UINoAgendaMessage>This room has no topics yet.</UINoAgendaMessage>}
-
-      {topics.map((topic) => {
-        const isActive = activeTopicId === topic.id;
-
-        return (
-          <UITopic key={topic.id}>
-            <TopicMenuItem topic={topic} isActive={isActive} />
-          </UITopic>
-        );
-      })}
-      <Button ref={buttonRef} onClick={handleCreateTopic}>
-        Add topic
-      </Button>
-    </>
+    <UIHolder>
+      <UIHeader>
+        <ItemTitle>Topics</ItemTitle>
+        <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
+          New topic
+        </UINewTopicButton>
+      </UIHeader>
+      <ClientSideOnly>
+        <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
+          <LazySortableTopicsList
+            topics={topics}
+            activeTopicId={activeTopicId}
+            isDisabled={isExecutingBulkReorder || isReordering}
+            onMoveBetween={moveBetween}
+            onMoveToStart={moveToStart}
+            onMoveToEnd={moveToEnd}
+          />
+        </Suspense>
+      </ClientSideOnly>
+      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
+    </UIHolder>
   );
 }
 
-const UITopic = styled.div`
-  position: relative;
-
-  margin-bottom: 1rem;
-
-  ${TopicMenuItem} {
-    margin-bottom: 0.25rem;
-  }
+const UIHolder = styled.div`
+  overflow-y: hidden;
 `;
 
-const UINoAgendaMessage = styled.div`
-  margin-bottom: 1rem;
+const UINewTopicButton = styled(Button)``;
+
+const UIHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 `;
+
+const UINoTopicsMessage = styled.div``;

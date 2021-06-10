@@ -43,7 +43,9 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   cursor: pointer;
   display: flex;
   width: 100%;
+
   ${hoverActionCss}
+
   ${(props) => {
     if (props.isActive) {
       return css`
@@ -51,6 +53,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
       `;
     }
   }}
+
   ${(props) => {
     if (props.isClosed) {
       return css`
@@ -65,6 +68,7 @@ const UIManageTopicWr = styled.div`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
+
   @media (hover) {
     opacity: 0;
   }
@@ -75,6 +79,7 @@ const UIFlyingTooltipWrapper = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+
   @media (hover) {
     &:hover ${UIManageTopicWr} {
       opacity: 1;

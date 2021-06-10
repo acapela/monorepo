@@ -33,6 +33,8 @@ import {
   EditTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
+  ReorderTopicMutation,
+  ReorderTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -341,6 +343,18 @@ export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopi
     ${TopicDetailedInfoFragment()}
     mutation EditTopic($name: String!, $topicId: uuid!) {
       topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { name: $name }) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useReorderTopicMutation] = createMutation<ReorderTopicMutation, ReorderTopicMutationVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    mutation ReorderTopic($topicId: uuid!, $index: String!) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { index: $index }) {
         ...TopicDetailedInfo
       }
     }
