@@ -1,8 +1,6 @@
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { ACTIVE_COLOR } from "~ui/colors";
-import { Tooltip } from "~ui/popovers/Tooltip";
 import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 interface Props {
@@ -18,19 +16,16 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function Toolb
   { icon, isHighlighted = false, isDisabled = false, onClick, tooltipLabel }: Props,
   ref
 ) {
-  const innerRef = useSharedRef<HTMLButtonElement | null>(null, [ref]);
-
-  const buttonNode = (
-    <UIHolder ref={innerRef} isActive={isHighlighted} isDisabled={isDisabled} onClickCapture={onClick}>
+  return (
+    <UIHolder
+      data-tooltip={tooltipLabel}
+      isActive={isHighlighted}
+      isDisabled={isDisabled}
+      onClickCapture={onClick}
+      ref={ref}
+    >
       {icon}
     </UIHolder>
-  );
-
-  return (
-    <>
-      {buttonNode}
-      {tooltipLabel && <Tooltip label={tooltipLabel} anchorRef={innerRef} />}
-    </>
   );
 });
 

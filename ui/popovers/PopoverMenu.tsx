@@ -9,7 +9,6 @@ import { hoverActionCss } from "~ui/transitions";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { DANGER_COLOR } from "~ui/colors";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { Tooltip } from "./Tooltip";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 
@@ -54,8 +53,7 @@ export const PopoverMenu = styled(
 
     return (
       <>
-        {tooltip && !isOpen && <Tooltip anchorRef={anchorRef} label={tooltip} />}
-        <UIHolder ref={anchorRef} onClick={togglePopover} className={className}>
+        <UIHolder data-tooltip={!isOpen && tooltip} ref={anchorRef} onClick={togglePopover} className={className}>
           {triggerElement}
         </UIHolder>
         <AnimatePresence>
