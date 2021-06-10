@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { addToast } from "~ui/toasts/data";
 import {
   CreateSpaceMutation,
   CreateSpaceMutationVariables,
@@ -116,7 +117,12 @@ export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpa
         user_id
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Space member was added` });
+    },
+  }
 );
 
 export const [useRemoveSpaceMember] = createMutation<RemoveSpaceMemberMutation, RemoveSpaceMemberMutationVariables>(
@@ -126,5 +132,10 @@ export const [useRemoveSpaceMember] = createMutation<RemoveSpaceMemberMutation, 
         affected_rows
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Space member was removed` });
+    },
+  }
 );

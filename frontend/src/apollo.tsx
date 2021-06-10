@@ -1,5 +1,7 @@
 import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
+import { GraphQLError } from "graphql";
+import { onError } from "@apollo/client/link/error";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { IncomingMessage } from "http";
 import Cookie from "js-cookie";
@@ -8,6 +10,7 @@ import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
 import { getApolloInitialState } from "./gql/hydration";
 import { useConst } from "./hooks/useConst";
+import { addToast } from "~ui/toasts/data";
 import { readAppInitialPropByName } from "./utils/next";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
@@ -70,7 +73,29 @@ function getGraphqlUrl() {
   return `${rootUrl}/graphql`;
 }
 
-const httpLink = new HttpLink({ uri: getGraphqlUrl() });
+function formatGraphqlErrorMessage(error: GraphQLError) {
+  if (process.env.NODE_ENV === "development") {
+    const { message, locations, path } = error;
+    `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`;
+  }
+
+  return `Failed to finish the operation`;
+}
+
+// Log any GraphQL errors or network error that occurred
+const errorLink = onError(({ graphQLErrors = [], networkError }) => {
+  for (const graphqlError of graphQLErrors) {
+    const message = formatGraphqlErrorMessage(graphqlError);
+
+    addToast({ type: "error", content: message, timeout: 4000 });
+  }
+
+  if (networkError) {
+    addToast({ type: "error", content: "Network error", timeout: 4000 });
+  }
+});
+
+const httpLink = new HttpLink({ uri: getGraphqlUrl() }).concat(errorLink);
 
 interface ApolloClientOptions {
   forcedAuthToken?: string;
