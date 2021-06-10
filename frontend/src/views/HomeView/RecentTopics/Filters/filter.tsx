@@ -26,7 +26,7 @@ interface UserFilter extends BasicFilter {
 
 export type TopicFilter = UserFilter | BasicFilter;
 
-const DEFAULT_RECENT_TOPICS_COUNT = 50;
+const DEFAULT_RECENT_TOPICS_COUNT = 100;
 
 export function getTopicVariablesFromFilters(
   userId: string,
@@ -105,10 +105,10 @@ export function createSortByLatestActivityFilter(): BasicFilter {
 
 export function createSortByDueDateFilter(): BasicFilter {
   return {
-    label: "Sort by latest activity",
+    label: "Sort by due date",
     icon: <IconFilter />,
     orderGetter() {
-      return { messages_aggregate: { max: { created_at: Order_By.Desc } } };
+      return { room: { deadline: Order_By.Desc } };
     },
   };
 }
