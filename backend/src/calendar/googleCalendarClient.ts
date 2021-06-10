@@ -1,5 +1,5 @@
 import { google, calendar_v3 } from "googleapis";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 import logger from "~shared/logger";
 import { InternalServerError } from "../errors";
 
@@ -21,7 +21,7 @@ interface CalendarEvent {
   videoCallLink?: string;
 }
 
-function convertGoogleDate(googleDate: calendar_v3.Schema$EventDateTime | undefined): Date | undefined {
+function convertGoogleDate(googleDate?: calendar_v3.Schema$EventDateTime): Date | undefined {
   if (!googleDate) return;
 
   if (googleDate.dateTime) {
@@ -67,8 +67,8 @@ function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): Ca
 }
 
 export async function fetchCalendarEventsInRange(oAuthToken: string, eventsStartDate: Date, eventsEndDate: Date) {
-  assert(process.env.CLIENT_ID, "CLIENT_ID is required");
-  assert(process.env.CLIENT_SECRET, "CLIENT_SECRET is required");
+  assertGet(process.env.CLIENT_ID, "CLIENT_ID is required");
+  assertGet(process.env.CLIENT_SECRET, "CLIENT_SECRET is required");
 
   const oauth = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
 
