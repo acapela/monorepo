@@ -5,7 +5,7 @@ import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-au
 import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
 import { Account, db, User, VerificationRequest } from "~db";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 import { sendEmail } from "~shared/email";
 
 /**
@@ -17,7 +17,7 @@ import { sendEmail } from "~shared/email";
 // Fail quickly in case of missing env variables
 
 function assertEnvVariable(value: unknown, varName: string) {
-  assert(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
+  assertGet(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
 }
 
 assertEnvVariable(process.env.DB_USER, "DB_USER");
@@ -251,7 +251,7 @@ async function getAuthInitOptions() {
 
         return {
           ...token,
-          // Add some useful informations we might use in the frontend.
+          // Add some useful information we might use in the frontend.
           picture: user.avatar_url,
           name: profile.name,
           currentTeamId: user.current_team_id ?? null,
@@ -307,7 +307,7 @@ async function getAuthInitOptions() {
            * In order to provide this header, we need to know token on client side.
            *
            * By default next-auth uses http-only cookies to store token. This means token is only
-           * accessable for server during request and is 'invisible' on client side. This is more
+           * accessible for server during request and is 'invisible' on client side. This is more
            * secure as it makes it impossible for evil scripts to 'steal' the token on client side.
            *
            * Workaround could be to create proxy server that 'translates' request moving token from
