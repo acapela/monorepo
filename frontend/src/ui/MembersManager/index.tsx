@@ -28,15 +28,6 @@ export const MembersManager = styled(function MembersManager({
 
   const isMember = users.some((memberUser) => memberUser.id === user?.id);
 
-  const canJoin = !!user && !isMember;
-  const canLeave = !!user && isMember;
-
-  async function handleJoin() {
-    if (!user) return;
-
-    await onAddMemberRequest(user.id);
-  }
-
   return (
     <>
       <AnimatePresence>
@@ -56,8 +47,16 @@ export const MembersManager = styled(function MembersManager({
         </UIMembers>
 
         <UIActions>
-          {canLeave && <TransparentButton onClick={handleWithStopPropagation(onLeaveRequest)}>Leave</TransparentButton>}
-          {canJoin && <TransparentButton onClick={handleWithStopPropagation(handleJoin)}>Join</TransparentButton>}
+          {user && isMember && (
+            <TransparentButton onClick={handleWithStopPropagation(() => onLeaveRequest(user.id))}>
+              Leave
+            </TransparentButton>
+          )}
+          {user && !isMember && (
+            <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
+              Join
+            </TransparentButton>
+          )}
         </UIActions>
       </UIHolder>
     </>

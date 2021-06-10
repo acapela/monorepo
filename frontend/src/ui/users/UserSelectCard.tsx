@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { TextTitle, SecondaryText } from "~ui/typo";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { Avatar } from "./Avatar";
