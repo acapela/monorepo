@@ -5,7 +5,7 @@ import { SpaceBasicInfoFragment } from "~frontend/gql";
 import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconEdit, IconMoreHoriz } from "~ui/icons";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
@@ -64,7 +64,7 @@ export function SpaceCard({ space }: Props) {
         <UIBanner>
           <UIImage onClick={handleOpen} spaceId={space.id}></UIImage>
           <UIMenuIcon>
-            <PopoverMenu
+            <PopoverMenuTrigger
               options={[
                 {
                   label: "Edit name",
@@ -74,7 +74,7 @@ export function SpaceCard({ space }: Props) {
               ]}
             >
               <IconButton tooltip="Show options..." icon={<IconMoreHoriz />} />
-            </PopoverMenu>
+            </PopoverMenuTrigger>
           </UIMenuIcon>
         </UIBanner>
 

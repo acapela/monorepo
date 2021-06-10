@@ -3,15 +3,15 @@ import styled from "styled-components";
 import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
-export interface Props {
+interface Props {
   name?: Maybe<string>;
   url?: string | null;
   className?: string;
-  size?: Size;
+  size?: AvatarSize;
   disableNameTooltip?: boolean;
 }
 
-type Size = "regular" | "small";
+export type AvatarSize = "regular" | "small";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
@@ -31,7 +31,7 @@ export const Avatar = styled(({ url, name, className, size = "regular", disableN
   );
 })``;
 
-const UIHolder = styled.div<{ size: Size }>`
+const UIHolder = styled.div<{ size: AvatarSize }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,7 +53,7 @@ const UIHolder = styled.div<{ size: Size }>`
   }
 `;
 
-function getAvatarRemSize(size: Size) {
+function getAvatarRemSize(size: AvatarSize) {
   switch (size) {
     case "regular":
       return 2.5;

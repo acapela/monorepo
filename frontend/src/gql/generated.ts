@@ -8936,16 +8936,16 @@ export type SingleTopicQuery = (
   )> }
 );
 
-export type RecentTopicsQueryVariables = Exact<{
-  teamId: Scalars['uuid'];
+export type TopicsQueryVariables = Exact<{
   limit?: Maybe<Scalars['Int']>;
-  userId: Scalars['uuid'];
+  orderBy?: Maybe<Array<Topic_Order_By> | Topic_Order_By>;
+  where?: Maybe<Topic_Bool_Exp>;
 }>;
 
 
-export type RecentTopicsQuery = (
+export type TopicsQuery = (
   { __typename?: 'query_root' }
-  & { recentTopics: Array<(
+  & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }
