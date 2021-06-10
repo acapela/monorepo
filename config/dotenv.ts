@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 
 function getDotEnvPath() {
   if (!__dirname) {
@@ -128,11 +128,11 @@ function loadRootDotEnv(): void {
   dotenv.config({ path: dotEnvPath });
 }
 
-assert(process.env.APP, "APP environment variable must always be set");
+const appType = assertGet(process.env.APP, "APP environment variable must always be set");
 
 loadRootDotEnv();
 
 assertEnvVarsLoaded(requiredEnvVarNames);
 
-if (process.env.APP === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
-if (process.env.APP === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
+if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
+if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);

@@ -4,11 +4,11 @@ import { Request } from "express";
 import { ServerResponse } from "http";
 import pino from "pino";
 
-import { assert } from "./assert";
+import { assertGet } from "./assert";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 
-assert(
+const loggingLevel = assertGet(
   process.env.LOGGING_LEVEL,
   `LOGGING_LEVEL env variable is required. ('fatal', 'error', 'warn', 'info', 'debug', 'trace')`
 );
@@ -16,7 +16,7 @@ assert(
 const logger = pino({
   messageKey: "message",
   prettyPrint: process.env.NODE_ENV !== "production",
-  level: process.env.LOGGING_LEVEL,
+  level: loggingLevel,
   formatters: {
     // formatting severity to integrate into google cloud logging
     // https://cloud.google.com/logging/docs/agent/configuration#special-fields

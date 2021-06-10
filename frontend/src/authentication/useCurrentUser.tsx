@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/client";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 
 /**
  * We are passing custom data to session JWT token, so we have more data than default next-auth Session type.
@@ -51,15 +51,15 @@ export function useCurrentUser() {
 export function useAssertCurrentUser() {
   const user = useCurrentUser();
 
-  assert(user, `Using useAssertCurrentUser with null user`);
+  const validatedUser = assertGet(user, `Using useAssertCurrentUser with null user`);
 
-  return user;
+  return validatedUser;
 }
 
 export function useAssertCurrentTeamId() {
   const user = useAssertCurrentUser();
 
-  assert(user.currentTeamId, "No team id");
+  assertGet(user.currentTeamId, "No team id");
 
   return user.currentTeamId;
 }
