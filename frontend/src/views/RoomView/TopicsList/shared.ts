@@ -1,5 +1,4 @@
-import styled, { css } from "styled-components";
-import { ACTION_ACTIVE_COLOR } from "~frontend/../../ui/transitions";
+import styled from "styled-components";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 export const UIScrollContainer = styled.div`
@@ -21,12 +20,4 @@ export const UITopic = styled.div<{ isDragging: boolean }>`
   ${TopicMenuItem} {
     margin-bottom: 4px;
   }
-
-  ${({ isDragging }) =>
-    isDragging
-      ? css`
-          background: ${ACTION_ACTIVE_COLOR};
-          border-radius: 8px;
-        `
-      : ""}
 `;

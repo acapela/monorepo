@@ -1,5 +1,7 @@
 import React from "react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
+import styled, { css } from "styled-components";
+import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
@@ -67,9 +69,9 @@ export const SortableTopicsList = ({
                 return (
                   <Draggable key={topic.id} draggableId={topic.id} index={index} isDragDisabled={isDisabled}>
                     {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
-                      <UITopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
+                      <UIDraggableTopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
                         <TopicMenuItem topic={topic} isActive={isActive} />
-                      </UITopic>
+                      </UIDraggableTopic>
                     )}
                   </Draggable>
                 );
@@ -82,3 +84,13 @@ export const SortableTopicsList = ({
     </UIScrollContainer>
   );
 };
+
+const UIDraggableTopic = styled(UITopic)<{ isDragging: boolean }>`
+  ${({ isDragging }) =>
+    isDragging
+      ? css`
+          background: ${ACTION_ACTIVE_COLOR};
+          border-radius: 8px;
+        `
+      : ""}
+`;
