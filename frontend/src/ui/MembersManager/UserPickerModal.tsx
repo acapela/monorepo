@@ -28,8 +28,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       onCloseRequest={onCloseRequest}
       hasCloseButton={false}
       head={{
-        title: "Invite people to collaborate together",
-        description: "Invite existing team members or add new ones",
+        title: "Room participants",
       }}
     >
       <SearchInput placeholder="Search team members..." value={searchTerm} onChangeText={setSearchTerm} />
