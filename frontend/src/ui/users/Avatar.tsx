@@ -11,7 +11,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-type AvatarSize = "regular" | "small";
+export type AvatarSize = "regular" | "small";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);

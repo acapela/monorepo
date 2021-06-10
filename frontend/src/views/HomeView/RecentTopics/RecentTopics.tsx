@@ -1,9 +1,7 @@
-import { useState } from "react";
 import styled from "styled-components";
-import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useRecentTopics } from "~frontend/gql/topics";
-import { getRecentTopicVariablesFromFilters, RecentTopicsFilter } from "./Filters/filter";
-import { RecentTopicFilters } from "./Filters/RecentTopicFilters";
+import { useTopicFilterVariables } from "./Filters/filter";
+import { TopicFilters } from "./Filters/TopicFilters";
 import { groupBy } from "./groupBy";
 import { RoomRecentTopics } from "./RoomRecentTopics";
 
@@ -12,13 +10,9 @@ interface Props {
 }
 
 export const RecentTopics = styled(function RecentTopics({ className }: Props) {
-  const [filters, setFilters] = useState<RecentTopicsFilter[]>([]);
-  const teamId = useAssertCurrentTeamId();
-  const user = useAssertCurrentUser();
+  const [topicQueryVariables, setFilters] = useTopicFilterVariables();
 
-  const variables = getRecentTopicVariablesFromFilters(user.id, teamId, filters);
-
-  const [data] = useRecentTopics(variables);
+  const [data] = useRecentTopics(topicQueryVariables);
 
   const topics = data?.recentTopics ?? [];
 
@@ -30,7 +24,7 @@ export const RecentTopics = styled(function RecentTopics({ className }: Props) {
 
   return (
     <UIHolder className={className}>
-      <RecentTopicFilters onFiltersChange={setFilters} />
+      <TopicFilters onFiltersChange={setFilters} />
       {roomGroups.map((roomGroup) => {
         return (
           <UISingleRoomRecentTopics key={roomGroup.groupItem.id}>
@@ -43,7 +37,7 @@ export const RecentTopics = styled(function RecentTopics({ className }: Props) {
 })``;
 
 const UIHolder = styled.div`
-  ${RecentTopicFilters} {
+  ${TopicFilters} {
     margin-bottom: 32px;
   }
 `;

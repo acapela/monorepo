@@ -7,7 +7,6 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { zIndex } from "~ui/zIndex";
 import { PopoverPlacement } from "./Popover";
 import { PopoverMenu, PopoverMenuOption } from "./PopoverMenu";
-import { Tooltip } from "./Tooltip";
 
 type NonEmptyArray<T> = [T, ...T[]];
 
@@ -29,21 +28,17 @@ export const PopoverMenuTrigger = styled(
     useClickAway(anchorRef, closePopover);
 
     useDependencyChangeEffect(() => {
-      if (isOpen) {
-        onOpen?.();
-        return;
-      }
-
-      if (!isOpen) {
-        onClose?.();
-        return;
-      }
+      isOpen ? onOpen?.() : onClose?.();
     }, [isOpen]);
 
     return (
       <>
-        {tooltip && !isOpen && <Tooltip anchorRef={anchorRef} label={tooltip} />}
-        <UIHolder ref={anchorRef} onClick={togglePopover} className={className}>
+        <UIHolder
+          data-tooltip={tooltip && !isOpen && tooltip}
+          ref={anchorRef}
+          onClick={togglePopover}
+          className={className}
+        >
           {triggerElement}
         </UIHolder>
         <AnimatePresence>

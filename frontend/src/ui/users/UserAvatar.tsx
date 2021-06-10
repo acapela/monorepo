@@ -1,16 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
-import { Avatar } from "./Avatar";
+import { Avatar, AvatarSize } from "./Avatar";
 
 interface Props {
   user: UserBasicInfoFragment;
   className?: string;
-  size?: Size;
+  size?: AvatarSize;
   disableNameTooltip?: boolean;
 }
-
-type Size = "regular" | "small";
 
 export const UserAvatar = styled(({ user, className, size = "regular", disableNameTooltip }: Props) => {
   return (
