@@ -9,7 +9,7 @@ import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
 import { getApolloInitialState } from "./gql/hydration";
-import { useConst } from "./hooks/useConst";
+import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { readAppInitialPropByName } from "./utils/next";
 

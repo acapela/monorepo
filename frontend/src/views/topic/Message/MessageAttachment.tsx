@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { PresenceAnimator } from "~frontend/../../ui/PresenceAnimator";
 import { AttachmentDetailedInfoFragment } from "~frontend/gql";
 import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
