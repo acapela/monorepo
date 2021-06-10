@@ -1,14 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { routes } from "~frontend/routes";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
-import { TopicMenuItem } from "./TopicMenuItem";
-import { ItemTitle } from "~ui/typo";
-import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
-import { SortableTopicsList } from "./SortableTopicsList";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { namedLazy } from "~shared/namedLazy";
+import { StaticTopicsList } from "./StaticTopicsList";
+import styled from "styled-components";
+import { ItemTitle } from "~ui/typo";
+
+const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
+
+LazySortableTopicsList.preload();
 
 interface Props {
   roomId: string;
@@ -67,19 +71,23 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
   return (
     <UIHolder>
       <UIHeader>
-        <UITitle>Topics</UITitle>
+        <ItemTitle>Topics</ItemTitle>
         <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
           New topic
         </UINewTopicButton>
       </UIHeader>
-      <SortableTopicsList
-        topics={topics}
-        activeTopicId={activeTopicId}
-        isDisabled={isExecutingBulkReorder || isReordering}
-        onMoveBetween={moveBetween}
-        onMoveToStart={moveToStart}
-        onMoveToEnd={moveToEnd}
-      />
+      <ClientSideOnly>
+        <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
+          <LazySortableTopicsList
+            topics={topics}
+            activeTopicId={activeTopicId}
+            isDisabled={isExecutingBulkReorder || isReordering}
+            onMoveBetween={moveBetween}
+            onMoveToStart={moveToStart}
+            onMoveToEnd={moveToEnd}
+          />
+        </Suspense>
+      </ClientSideOnly>
       {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
     </UIHolder>
   );
@@ -89,8 +97,6 @@ const UIHolder = styled.div`
   overflow-y: hidden;
 `;
 
-const UITitle = styled(ItemTitle)``;
-
 const UINewTopicButton = styled(Button)``;
 
 const UIHeader = styled.div`
@@ -98,35 +104,6 @@ const UIHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-`;
-
-export const UIScrollContainer = styled.div`
-  height: 100%;
-  overflow-y: auto;
-`;
-
-export const UITopicsList = styled.div`
-  &:last-child {
-    margin-bottom: 72px;
-  }
-`;
-
-export const UITopic = styled.div<{ isDragging: boolean }>`
-  position: relative;
-
-  margin-bottom: 8px;
-
-  ${TopicMenuItem} {
-    margin-bottom: 4px;
-  }
-
-  ${({ isDragging }) =>
-    isDragging
-      ? css`
-          background: ${ACTION_ACTIVE_COLOR};
-          border-radius: 8px;
-        `
-      : ""}
 `;
 
 const UINoTopicsMessage = styled.div``;

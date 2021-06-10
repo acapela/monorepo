@@ -1,7 +1,7 @@
 import React from "react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
-import { UIScrollContainer, UITopicsList, UITopic } from ".";
+import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
