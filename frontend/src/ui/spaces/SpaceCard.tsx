@@ -15,7 +15,7 @@ import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
 import { getSpaceColors } from "./spaceGradient";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 
 interface Props {
   space: SpaceBasicInfoFragment;
