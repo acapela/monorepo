@@ -1,28 +1,24 @@
-import React, { ReactNode, useRef } from "react";
-import { zIndex } from "~ui/zIndex";
-import { AnimatePresence } from "framer-motion";
-import styled from "styled-components";
+import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
-import { useBoolean } from "~frontend/src/hooks/useBoolean";
-import { Popover, PopoverPlacement } from "./Popover";
-import { hoverActionCss } from "~ui/transitions";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { DANGER_COLOR } from "~ui/colors";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import styled from "styled-components";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
+import { DANGER_COLOR } from "~ui/colors";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { hoverActionCss } from "~ui/transitions";
+import { Popover, PopoverPlacement } from "./Popover";
 
 interface Props {
   className?: string;
-  children: ReactNode;
-  options: Array<PopoverMenuOptions>;
-  position?: PopoverPlacement;
-  onOpen?: () => void;
-  onClose?: () => void;
-  tooltip?: string;
+  anchorRef: RefObject<HTMLElement>;
+  options: PopoverMenuOption[];
+  onItemSelected?: (item: PopoverMenuOption) => void;
+  placement?: PopoverPlacement;
+  onCloseRequest?: () => void;
 }
 
-export interface PopoverMenuOptions {
+export interface PopoverMenuOption {
+  key?: string;
   label: string;
   icon?: ReactNode;
   isDisabled?: boolean;
@@ -31,58 +27,33 @@ export interface PopoverMenuOptions {
 }
 
 export const PopoverMenu = styled(
-  ({ children: triggerElement, options, position = "bottom-start", className, onOpen, onClose, tooltip }: Props) => {
-    const anchorRef = useRef<HTMLDivElement>(null);
-    const [isOpen, { unset: closePopover, toggle: togglePopover }] = useBoolean(false);
-
-    useClickAway(anchorRef, closePopover);
-
-    useDependencyChangeEffect(() => {
-      if (isOpen) {
-        onOpen?.();
-        return;
-      }
-
-      if (!isOpen) {
-        onClose?.();
-        return;
-      }
-    }, [isOpen]);
+  ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }: Props) => {
+    useClickAway(anchorRef, () => onCloseRequest?.());
 
     return (
-      <>
-        <UIHolder data-tooltip={!isOpen && tooltip} ref={anchorRef} onClick={togglePopover} className={className}>
-          {triggerElement}
-        </UIHolder>
-        <AnimatePresence>
-          {isOpen && (
-            <Popover anchorRef={anchorRef} placement={position}>
-              <UIMenu presenceStyles={POP_PRESENCE_STYLES} transition={POP_ANIMATION_CONFIG}>
-                {options.map(({ label, onSelect, icon, isDestructive = false }) => (
-                  <UIMenuItem
-                    isDestructive={isDestructive}
-                    key={label}
-                    onClick={() => {
-                      closePopover();
-                      onSelect();
-                    }}
-                  >
-                    {icon && <UIItemIcon>{icon}</UIItemIcon>}
-                    {label}
-                  </UIMenuItem>
-                ))}
-              </UIMenu>
-            </Popover>
-          )}
-        </AnimatePresence>
-      </>
+      <Popover anchorRef={anchorRef} placement={placement}>
+        <UIMenu presenceStyles={POP_PRESENCE_STYLES} transition={POP_ANIMATION_CONFIG} className={className}>
+          {options.map((option) => {
+            return (
+              <UIMenuItem
+                isDestructive={option.isDestructive ?? false}
+                key={option.key ?? option.label}
+                onClick={() => {
+                  onItemSelected?.(option);
+                  onCloseRequest?.();
+                  option.onSelect();
+                }}
+              >
+                {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
+                {option.label}
+              </UIMenuItem>
+            );
+          })}
+        </UIMenu>
+      </Popover>
     );
   }
 )``;
-
-const UIHolder = styled.div`
-  z-index: ${zIndex.Popover};
-`;
 
 const UIMenu = styled(PresenceAnimator)`
   padding: 9.5px;

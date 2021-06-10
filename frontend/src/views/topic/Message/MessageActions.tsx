@@ -1,5 +1,5 @@
 import { IconButton } from "~ui/buttons/IconButton";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { IconEdit, IconMoreHoriz, IconTrash } from "~ui/icons";
 
@@ -25,7 +25,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
 
   return (
     <>
-      <PopoverMenu
+      <PopoverMenuTrigger
         onOpen={() => onActiveChange(true)}
         onClose={() => onActiveChange(false)}
         options={[
@@ -34,7 +34,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
         ]}
       >
         <IconButton icon={<IconMoreHoriz />} tooltip={isActive ? undefined : "Show Options"} />
-      </PopoverMenu>
+      </PopoverMenuTrigger>
     </>
   );
 };

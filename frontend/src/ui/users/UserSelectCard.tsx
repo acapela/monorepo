@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { TextTitle, SecondaryText } from "~ui/typo";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { Avatar } from "./Avatar";
@@ -8,13 +8,11 @@ interface Props {
   user: UserBasicInfoFragment;
   className?: string;
   actions?: ReactNode;
-  onSelected?: (user: UserBasicInfoFragment) => void;
-  isDisabled?: boolean;
 }
 
-export function UserSelectCard({ user, actions, onSelected, isDisabled }: Props) {
+export function UserSelectCard({ user, actions }: Props) {
   return (
-    <UIHolder onClick={() => onSelected?.(user)} isDisabled={isDisabled}>
+    <UIHolder>
       <Avatar url={user.avatar_url} />
       <UIInfo>
         <TextTitle>{user.name}</TextTitle>
@@ -30,14 +28,6 @@ const UIHolder = styled.div<{ isDisabled?: boolean }>`
   align-items: center;
   width: 100%;
   cursor: pointer;
-
-  ${(props) => {
-    if (props.isDisabled)
-      return css`
-        opacity: 0.5;
-        pointer-events: none;
-      `;
-  }}
 `;
 
 const UIInfo = styled.div`

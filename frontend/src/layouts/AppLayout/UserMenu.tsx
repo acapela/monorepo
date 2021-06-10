@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { IconSignOut, IconUsers } from "~ui/icons";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/ui/users/Avatar";
@@ -10,7 +10,7 @@ export function UserMenu() {
 
   return (
     <UIHolder>
-      <PopoverMenu
+      <PopoverMenuTrigger
         options={[
           {
             label: "Manage team",
@@ -30,7 +30,7 @@ export function UserMenu() {
         ]}
       >
         <Avatar disableNameTooltip url={user.picture} name={user.name ?? undefined} />
-      </PopoverMenu>
+      </PopoverMenuTrigger>
     </UIHolder>
   );
 }

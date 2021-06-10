@@ -6,6 +6,7 @@ import {
   TeamMembersQuery,
   TeamMembersQueryVariables,
 } from "./generated";
+import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 export const UserBasicInfoFragment = () => gql`
   fragment UserBasicInfo on user {
@@ -39,3 +40,11 @@ export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVa
     }
   `
 );
+
+export function useCurrentTeamMembers() {
+  const teamId = useAssertCurrentTeamId();
+
+  const [data] = useTeamMembers({ teamId: teamId });
+
+  return data?.teamMembers ?? [];
+}

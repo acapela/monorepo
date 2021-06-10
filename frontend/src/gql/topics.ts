@@ -25,8 +25,8 @@ import {
   RemoveTopicMemberMutationVariables,
   SingleTopicQuery,
   SingleTopicQueryVariables,
-  RecentTopicsQuery,
-  RecentTopicsQueryVariables,
+  TopicsQuery,
+  TopicsQueryVariables,
   ToggleCloseTopicMutation,
   ToggleCloseTopicMutationVariables,
   EditTopicMutation,
@@ -306,17 +306,12 @@ export const [useSingleTopicQuery, singleTopicQueryManager] = createQuery<Single
   `
 );
 
-export const [useRecentTopics] = createQuery<RecentTopicsQuery, RecentTopicsQueryVariables>(
+export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    query RecentTopics($teamId: uuid!, $limit: Int = 10, $userId: uuid!) {
-      recentTopics: topic(
-        where: { members: { user_id: { _eq: $userId } }, room: { space: { team: { id: { _eq: $teamId } } } } }
-        limit: $limit
-        # TODO: I'm not sure about performance of this in large scale. Should be good tho if used with index.
-        order_by: { messages_aggregate: { max: { created_at: desc } } }
-      ) {
+    query Topics($limit: Int = 10, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
+      topics: topic(where: $where, limit: $limit, order_by: $orderBy) {
         ...TopicDetailedInfo
       }
     }
