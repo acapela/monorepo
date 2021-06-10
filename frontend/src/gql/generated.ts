@@ -8443,13 +8443,26 @@ export type RemoveRoomMemberMutation = (
   )> }
 );
 
-export type UpdateRoomDeadlineMutationVariables = Exact<{
-  deadline: Scalars['timestamptz'];
+export type UpdateRoomMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  input: Room_Set_Input;
+}>;
+
+
+export type UpdateRoomMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & RoomDetailedInfoFragment
+  )> }
+);
+
+export type DeleteRoomMutationVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
 
 
-export type UpdateRoomDeadlineMutation = (
+export type DeleteRoomMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
@@ -8561,6 +8574,19 @@ export type EditSpaceMutationVariables = Exact<{
 export type EditSpaceMutation = (
   { __typename?: 'mutation_root' }
   & { space?: Maybe<(
+    { __typename?: 'space' }
+    & SpaceBasicInfoFragment
+  )> }
+);
+
+export type DeleteSpaceMutationVariables = Exact<{
+  spaceId: Scalars['uuid'];
+}>;
+
+
+export type DeleteSpaceMutation = (
+  { __typename?: 'mutation_root' }
+  & { deletedSpace?: Maybe<(
     { __typename?: 'space' }
     & SpaceBasicInfoFragment
   )> }

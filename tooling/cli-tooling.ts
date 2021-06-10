@@ -1,3 +1,5 @@
+process.env.APP = "tooling";
+
 import yargs from "yargs";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

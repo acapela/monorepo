@@ -8,6 +8,8 @@ import { MembersManager } from "../MembersManager";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { ManageRoomMembers } from "./ManageRoomMembers";
+import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
+import { IconEdit, IconTrash } from "~ui/icons";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -25,6 +27,22 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
+      <CornerOptionsMenu
+        options={[
+          {
+            label: "Edit space name",
+            onSelect: console.log,
+            icon: <IconEdit />,
+          },
+          {
+            label: "Delete space",
+            onSelect: console.log,
+            icon: <IconTrash />,
+            isDestructive: true,
+          },
+        ]}
+        tooltip="Show options..."
+      />
       {unreadCount > 0 && (
         <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
       )}

@@ -12,12 +12,10 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 
-type NonEmptyArray<T> = [T, ...T[]];
-
 interface Props {
   className?: string;
   children: ReactNode;
-  options: NonEmptyArray<PopoverMenuOptions>;
+  options: Array<PopoverMenuOptions>;
   position?: PopoverPlacement;
   onOpen?: () => void;
   onClose?: () => void;

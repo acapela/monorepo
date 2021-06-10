@@ -7,7 +7,7 @@ import { useBoolean } from "~frontend/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
-import { useUpdateRoomDeadlineMutation } from "~frontend/gql/rooms";
+import { updateRoom } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";
 
 interface Props {
@@ -17,17 +17,15 @@ interface Props {
 export const DeadlineManager = ({ room }: Props) => {
   const { deadline } = room;
 
-  const [updateRoomDeadline] = useUpdateRoomDeadlineMutation();
-
   const ref = useRef<HTMLButtonElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker }] = useBoolean(false);
 
   const date = new Date(deadline);
 
-  const handleSubmit = (deadline: Date) => {
+  const handleSubmit = async (deadline: Date) => {
     toggleOpenPicker();
-    updateRoomDeadline({ roomId: room.id, deadline });
+    await updateRoom({ roomId: room.id, input: { deadline } });
   };
 
   return (

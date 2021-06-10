@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { IconVerticalThreeDots } from "~ui/icons";
+import { IconEdit, IconTrash, IconVerticalThreeDots } from "~ui/icons";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useTopic } from "~frontend/topics/useTopic";
@@ -47,13 +47,15 @@ export const ManageTopic = ({ topic }: Props) => {
         position="bottom-start"
         options={[
           {
-            label: "Rename",
+            label: "Rename topic",
             onSelect: handleRenameSelect,
+            icon: <IconEdit />,
           },
           {
-            label: "Delete",
+            label: "Delete topic",
             isDestructive: true,
             onSelect: handleDeleteSelect,
+            icon: <IconTrash />,
           },
         ]}
       >
