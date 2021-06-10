@@ -1934,6 +1934,10 @@ export type Mutation_Root = {
   delete_user?: Maybe<User_Mutation_Response>;
   /** delete single row from the table: "user" */
   delete_user_by_pk?: Maybe<User>;
+  /** delete data from the table: "whitelist" */
+  delete_whitelist?: Maybe<Whitelist_Mutation_Response>;
+  /** delete single row from the table: "whitelist" */
+  delete_whitelist_by_pk?: Maybe<Whitelist>;
   /** insert data into the table: "account" */
   insert_account?: Maybe<Account_Mutation_Response>;
   /** insert a single row into the table: "account" */
@@ -2018,6 +2022,10 @@ export type Mutation_Root = {
   insert_user?: Maybe<User_Mutation_Response>;
   /** insert a single row into the table: "user" */
   insert_user_one?: Maybe<User>;
+  /** insert data into the table: "whitelist" */
+  insert_whitelist?: Maybe<Whitelist_Mutation_Response>;
+  /** insert a single row into the table: "whitelist" */
+  insert_whitelist_one?: Maybe<Whitelist>;
   /** update data of the table: "account" */
   update_account?: Maybe<Account_Mutation_Response>;
   /** update single row of the table: "account" */
@@ -2100,6 +2108,10 @@ export type Mutation_Root = {
   update_user?: Maybe<User_Mutation_Response>;
   /** update single row of the table: "user" */
   update_user_by_pk?: Maybe<User>;
+  /** update data of the table: "whitelist" */
+  update_whitelist?: Maybe<Whitelist_Mutation_Response>;
+  /** update single row of the table: "whitelist" */
+  update_whitelist_by_pk?: Maybe<Whitelist>;
   /** perform the action: "upgrade_current_user" */
   upgrade_current_user?: Maybe<UpgradeUserResponse>;
 };
@@ -2360,6 +2372,18 @@ export type Mutation_RootDelete_UserArgs = {
 /** mutation root */
 export type Mutation_RootDelete_User_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_WhitelistArgs = {
+  where: Whitelist_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDelete_Whitelist_By_PkArgs = {
+  email: Scalars['String'];
 };
 
 
@@ -2652,6 +2676,20 @@ export type Mutation_RootInsert_UserArgs = {
 export type Mutation_RootInsert_User_OneArgs = {
   object: User_Insert_Input;
   on_conflict?: Maybe<User_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_WhitelistArgs = {
+  objects: Array<Whitelist_Insert_Input>;
+  on_conflict?: Maybe<Whitelist_On_Conflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsert_Whitelist_OneArgs = {
+  object: Whitelist_Insert_Input;
+  on_conflict?: Maybe<Whitelist_On_Conflict>;
 };
 
 
@@ -2961,6 +2999,20 @@ export type Mutation_RootUpdate_User_By_PkArgs = {
   pk_columns: User_Pk_Columns_Input;
 };
 
+
+/** mutation root */
+export type Mutation_RootUpdate_WhitelistArgs = {
+  _set?: Maybe<Whitelist_Set_Input>;
+  where: Whitelist_Bool_Exp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdate_Whitelist_By_PkArgs = {
+  _set?: Maybe<Whitelist_Set_Input>;
+  pk_columns: Whitelist_Pk_Columns_Input;
+};
+
 /** column ordering options */
 export enum Order_By {
   /** in the ascending order, nulls last */
@@ -3128,6 +3180,12 @@ export type Query_Root = {
   user_aggregate: User_Aggregate;
   /** fetch data from the table: "user" using primary key columns */
   user_by_pk?: Maybe<User>;
+  /** fetch data from the table: "whitelist" */
+  whitelist: Array<Whitelist>;
+  /** fetch aggregated fields from the table: "whitelist" */
+  whitelist_aggregate: Whitelist_Aggregate;
+  /** fetch data from the table: "whitelist" using primary key columns */
+  whitelist_by_pk?: Maybe<Whitelist>;
 };
 
 
@@ -3791,6 +3849,32 @@ export type Query_RootUser_AggregateArgs = {
 /** query root */
 export type Query_RootUser_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** query root */
+export type Query_RootWhitelistArgs = {
+  distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Whitelist_Order_By>>;
+  where?: Maybe<Whitelist_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootWhitelist_AggregateArgs = {
+  distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Whitelist_Order_By>>;
+  where?: Maybe<Whitelist_Bool_Exp>;
+};
+
+
+/** query root */
+export type Query_RootWhitelist_By_PkArgs = {
+  email: Scalars['String'];
 };
 
 /** columns and relationships of "room" */
@@ -5077,6 +5161,12 @@ export type Subscription_Root = {
   user_aggregate: User_Aggregate;
   /** fetch data from the table: "user" using primary key columns */
   user_by_pk?: Maybe<User>;
+  /** fetch data from the table: "whitelist" */
+  whitelist: Array<Whitelist>;
+  /** fetch aggregated fields from the table: "whitelist" */
+  whitelist_aggregate: Whitelist_Aggregate;
+  /** fetch data from the table: "whitelist" using primary key columns */
+  whitelist_by_pk?: Maybe<Whitelist>;
 };
 
 
@@ -5740,6 +5830,32 @@ export type Subscription_RootUser_AggregateArgs = {
 /** subscription root */
 export type Subscription_RootUser_By_PkArgs = {
   id: Scalars['uuid'];
+};
+
+
+/** subscription root */
+export type Subscription_RootWhitelistArgs = {
+  distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Whitelist_Order_By>>;
+  where?: Maybe<Whitelist_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootWhitelist_AggregateArgs = {
+  distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Whitelist_Order_By>>;
+  where?: Maybe<Whitelist_Bool_Exp>;
+};
+
+
+/** subscription root */
+export type Subscription_RootWhitelist_By_PkArgs = {
+  email: Scalars['String'];
 };
 
 /** columns and relationships of "team" */
@@ -8001,6 +8117,159 @@ export type Uuid_Comparison_Exp = {
   _nin?: Maybe<Array<Scalars['uuid']>>;
 };
 
+/** columns and relationships of "whitelist" */
+export type Whitelist = {
+  __typename?: 'whitelist';
+  email: Scalars['String'];
+  is_approved: Scalars['Boolean'];
+  timestamp: Scalars['timestamptz'];
+};
+
+/** aggregated selection of "whitelist" */
+export type Whitelist_Aggregate = {
+  __typename?: 'whitelist_aggregate';
+  aggregate?: Maybe<Whitelist_Aggregate_Fields>;
+  nodes: Array<Whitelist>;
+};
+
+/** aggregate fields of "whitelist" */
+export type Whitelist_Aggregate_Fields = {
+  __typename?: 'whitelist_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Whitelist_Max_Fields>;
+  min?: Maybe<Whitelist_Min_Fields>;
+};
+
+
+/** aggregate fields of "whitelist" */
+export type Whitelist_Aggregate_FieldsCountArgs = {
+  columns?: Maybe<Array<Whitelist_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+};
+
+/** order by aggregate values of table "whitelist" */
+export type Whitelist_Aggregate_Order_By = {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Whitelist_Max_Order_By>;
+  min?: Maybe<Whitelist_Min_Order_By>;
+};
+
+/** input type for inserting array relation for remote table "whitelist" */
+export type Whitelist_Arr_Rel_Insert_Input = {
+  data: Array<Whitelist_Insert_Input>;
+  on_conflict?: Maybe<Whitelist_On_Conflict>;
+};
+
+/** Boolean expression to filter rows from the table "whitelist". All fields are combined with a logical 'AND'. */
+export type Whitelist_Bool_Exp = {
+  _and?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
+  _not?: Maybe<Whitelist_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
+  email?: Maybe<String_Comparison_Exp>;
+  is_approved?: Maybe<Boolean_Comparison_Exp>;
+  timestamp?: Maybe<Timestamptz_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "whitelist" */
+export enum Whitelist_Constraint {
+  /** unique or primary key constraint */
+  WhitelistPkey = 'whitelist_pkey'
+}
+
+/** input type for inserting data into table "whitelist" */
+export type Whitelist_Insert_Input = {
+  email?: Maybe<Scalars['String']>;
+  is_approved?: Maybe<Scalars['Boolean']>;
+  timestamp?: Maybe<Scalars['timestamptz']>;
+};
+
+/** aggregate max on columns */
+export type Whitelist_Max_Fields = {
+  __typename?: 'whitelist_max_fields';
+  email?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['timestamptz']>;
+};
+
+/** order by max() on columns of table "whitelist" */
+export type Whitelist_Max_Order_By = {
+  email?: Maybe<Order_By>;
+  timestamp?: Maybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Whitelist_Min_Fields = {
+  __typename?: 'whitelist_min_fields';
+  email?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['timestamptz']>;
+};
+
+/** order by min() on columns of table "whitelist" */
+export type Whitelist_Min_Order_By = {
+  email?: Maybe<Order_By>;
+  timestamp?: Maybe<Order_By>;
+};
+
+/** response of any mutation on the table "whitelist" */
+export type Whitelist_Mutation_Response = {
+  __typename?: 'whitelist_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Whitelist>;
+};
+
+/** input type for inserting object relation for remote table "whitelist" */
+export type Whitelist_Obj_Rel_Insert_Input = {
+  data: Whitelist_Insert_Input;
+  on_conflict?: Maybe<Whitelist_On_Conflict>;
+};
+
+/** on conflict condition type for table "whitelist" */
+export type Whitelist_On_Conflict = {
+  constraint: Whitelist_Constraint;
+  update_columns: Array<Whitelist_Update_Column>;
+  where?: Maybe<Whitelist_Bool_Exp>;
+};
+
+/** ordering options when selecting data from "whitelist" */
+export type Whitelist_Order_By = {
+  email?: Maybe<Order_By>;
+  is_approved?: Maybe<Order_By>;
+  timestamp?: Maybe<Order_By>;
+};
+
+/** primary key columns input for table: "whitelist" */
+export type Whitelist_Pk_Columns_Input = {
+  email: Scalars['String'];
+};
+
+/** select columns of table "whitelist" */
+export enum Whitelist_Select_Column {
+  /** column name */
+  Email = 'email',
+  /** column name */
+  IsApproved = 'is_approved',
+  /** column name */
+  Timestamp = 'timestamp'
+}
+
+/** input type for updating data in table "whitelist" */
+export type Whitelist_Set_Input = {
+  email?: Maybe<Scalars['String']>;
+  is_approved?: Maybe<Scalars['Boolean']>;
+  timestamp?: Maybe<Scalars['timestamptz']>;
+};
+
+/** update columns of table "whitelist" */
+export enum Whitelist_Update_Column {
+  /** column name */
+  Email = 'email',
+  /** column name */
+  IsApproved = 'is_approved',
+  /** column name */
+  Timestamp = 'timestamp'
+}
+
 export type GetRoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8480,11 +8749,6 @@ export type TopicMessageDetailedInfoFragment = (
   )> }
 );
 
-export type UnreadMessageFragmentFragment = (
-  { __typename?: 'unread_messages' }
-  & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
-);
-
 export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -8645,19 +8909,6 @@ export type RemoveTopicMemberMutation = (
   )> }
 );
 
-export type GetUnreadMessagesQueryVariables = Exact<{
-  roomId?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type GetUnreadMessagesQuery = (
-  { __typename?: 'query_root' }
-  & { messages: Array<(
-    { __typename?: 'unread_messages' }
-    & UnreadMessageFragmentFragment
-  )> }
-);
-
 export type UpdateLastSeenMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
   messageId: Scalars['uuid'];
@@ -8772,6 +9023,24 @@ export type TeamMembersQuery = (
   & { teamMembers: Array<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
+  )> }
+);
+
+export type UnreadMessageFragmentFragment = (
+  { __typename?: 'unread_messages' }
+  & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
+);
+
+export type UserUnreadMessagesQueryVariables = Exact<{
+  userId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type UserUnreadMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'unread_messages' }
+    & UnreadMessageFragmentFragment
   )> }
 );
 
@@ -9170,7 +9439,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_attachment' | 'delete_message_attachment_by_pk' | 'delete_message_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_attachment' | 'insert_message_attachment_one' | 'insert_message_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_attachment' | 'update_message_attachment_by_pk' | 'update_message_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9214,6 +9483,8 @@ export type mutation_rootFieldPolicy = {
 	delete_transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_account_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9256,6 +9527,8 @@ export type mutation_rootFieldPolicy = {
 	insert_transcription_status_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_user_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_whitelist_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9297,9 +9570,11 @@ export type mutation_rootFieldPolicy = {
 	update_transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9374,7 +9649,10 @@ export type query_rootFieldPolicy = {
 	unread_messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
+	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
@@ -9599,7 +9877,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9674,7 +9952,10 @@ export type subscription_rootFieldPolicy = {
 	unread_messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
+	user_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
 export type teamFieldPolicy = {
@@ -10120,6 +10401,38 @@ export type user_min_fieldsFieldPolicy = {
 };
 export type user_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | user_mutation_responseKeySpecifier)[];
 export type user_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelistKeySpecifier = ('email' | 'is_approved' | 'timestamp' | whitelistKeySpecifier)[];
+export type whitelistFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	is_approved?: FieldPolicy<any> | FieldReadFunction<any>,
+	timestamp?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelist_aggregateKeySpecifier = ('aggregate' | 'nodes' | whitelist_aggregateKeySpecifier)[];
+export type whitelist_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelist_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | whitelist_aggregate_fieldsKeySpecifier)[];
+export type whitelist_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelist_max_fieldsKeySpecifier = ('email' | 'timestamp' | whitelist_max_fieldsKeySpecifier)[];
+export type whitelist_max_fieldsFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	timestamp?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelist_min_fieldsKeySpecifier = ('email' | 'timestamp' | whitelist_min_fieldsKeySpecifier)[];
+export type whitelist_min_fieldsFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	timestamp?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type whitelist_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | whitelist_mutation_responseKeySpecifier)[];
+export type whitelist_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -10747,6 +11060,30 @@ export type TypedTypePolicies = TypePolicies & {
 	user_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | user_mutation_responseKeySpecifier | (() => undefined | user_mutation_responseKeySpecifier),
 		fields?: user_mutation_responseFieldPolicy,
+	},
+	whitelist?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelistKeySpecifier | (() => undefined | whitelistKeySpecifier),
+		fields?: whitelistFieldPolicy,
+	},
+	whitelist_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelist_aggregateKeySpecifier | (() => undefined | whitelist_aggregateKeySpecifier),
+		fields?: whitelist_aggregateFieldPolicy,
+	},
+	whitelist_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelist_aggregate_fieldsKeySpecifier | (() => undefined | whitelist_aggregate_fieldsKeySpecifier),
+		fields?: whitelist_aggregate_fieldsFieldPolicy,
+	},
+	whitelist_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelist_max_fieldsKeySpecifier | (() => undefined | whitelist_max_fieldsKeySpecifier),
+		fields?: whitelist_max_fieldsFieldPolicy,
+	},
+	whitelist_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelist_min_fieldsKeySpecifier | (() => undefined | whitelist_min_fieldsKeySpecifier),
+		fields?: whitelist_min_fieldsFieldPolicy,
+	},
+	whitelist_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | whitelist_mutation_responseKeySpecifier | (() => undefined | whitelist_mutation_responseKeySpecifier),
+		fields?: whitelist_mutation_responseFieldPolicy,
 	}
 };
 

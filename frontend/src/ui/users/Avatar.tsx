@@ -1,6 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Tooltip } from "~ui/popovers/Tooltip";
 import { Maybe } from "~frontend/gql";
 import { getInitials } from "~frontend/utils";
 
@@ -15,7 +14,6 @@ interface Props {
 type AvatarSize = "regular" | "small";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
@@ -27,12 +25,9 @@ export const Avatar = styled(({ url, name, className, size = "regular", disableN
   }
 
   return (
-    <>
-      {!disableNameTooltip && name && <Tooltip label={name} anchorRef={ref} />}
-      <UIHolder className={className} size={size} ref={ref}>
-        <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
-      </UIHolder>
-    </>
+    <UIHolder data-tooltip={!disableNameTooltip && name} className={className} size={size}>
+      <img src={url} alt={`${name}'s avatar`} title={name ?? ""} onError={() => setFailedToLoad(true)} />
+    </UIHolder>
   );
 })``;
 

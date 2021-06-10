@@ -36,8 +36,12 @@ export function createChannel<T>(): Channel<T> {
     return lastValue.value;
   }
 
-  function subscribe(subscriber: Subscriber<T>) {
+  function subscribe(subscriber: Subscriber<T>, includeLastValue = true) {
     subscribers.add(subscriber);
+
+    if (includeLastValue && lastValue) {
+      subscriber(lastValue.value);
+    }
 
     return function clear() {
       subscribers.delete(subscriber);

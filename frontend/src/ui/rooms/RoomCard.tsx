@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
-import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
-import { assert } from "~shared/assert";
-import { pluralize } from "~shared/numbers";
+import { formatNumberWithMaxCallback, pluralize } from "~shared/numbers";
 import { ItemTitle, SecondaryText } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { ManageRoomMembers } from "./ManageRoomMembers";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -15,22 +15,9 @@ interface Props {
 }
 
 export const RoomCard = styled(function RoomCard({ room, className }: Props) {
-  const user = useCurrentUser();
-  const [addRoomMember] = useAddRoomMember();
-  const [removeRoomMember] = useRemoveRoomMember();
+  const unreadCount = useRoomUnreadMessagesCount(room.id);
+
   const topicsCount = room.topics.length;
-
-  const members = room.members.map((m) => m.user);
-
-  async function handleJoin() {
-    assert(user, "user required");
-    await addRoomMember({ userId: user.id, roomId: room.id });
-  }
-
-  async function handleLeave() {
-    assert(user, "user required");
-    await removeRoomMember({ userId: user.id, roomId: room.id });
-  }
 
   function handleOpen() {
     routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
@@ -38,9 +25,12 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
+      {unreadCount > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
+      )}
       <ItemTitle>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>
-      <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />
+      <ManageRoomMembers room={room} />
     </UIHolder>
   );
 })``;
@@ -51,6 +41,7 @@ const UIHolder = styled.div`
   align-items: flex-start;
   width: 100%;
   cursor: pointer;
+  position: relative;
 
   ${ItemTitle} {
     margin-bottom: 0.5rem;

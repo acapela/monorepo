@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { hoverActionCss } from "../transitions";
-import { ReactNode, useRef } from "react";
-import { Tooltip } from "~ui/popovers/Tooltip";
+import { ReactNode } from "react";
 
 interface Props {
   icon: ReactNode;
@@ -11,14 +10,10 @@ interface Props {
 }
 
 export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip }: Props) {
-  const holderRef = useRef<HTMLButtonElement>(null);
   return (
-    <>
-      {tooltip && <Tooltip anchorRef={holderRef} label={tooltip} />}
-      <UIHolder ref={holderRef} onClick={onClick} className={className}>
-        <UIIconHolder>{icon}</UIIconHolder>
-      </UIHolder>
-    </>
+    <UIHolder data-tooltip={tooltip} onClick={onClick} className={className}>
+      <UIIconHolder>{icon}</UIIconHolder>
+    </UIHolder>
   );
 })``;
 

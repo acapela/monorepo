@@ -84,11 +84,26 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     return response.data;
   }
 
+  function subscribe(variables: Variables, callback: (data: Data) => void) {
+    const subscription = getApolloClient()
+      .subscribe<Data, Variables>({ variables, query: getSubscriptionQuery() })
+      .subscribe((newResults) => {
+        if (!newResults.data) return;
+
+        callback(newResults.data);
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }
+
   const manager = {
     update,
     write,
     read,
     fetch,
+    subscribe,
   };
 
   return [useAsSubscription, manager] as const;

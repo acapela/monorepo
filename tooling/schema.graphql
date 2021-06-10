@@ -2402,6 +2402,19 @@ type mutation_root {
   delete_user_by_pk(id: uuid!): user
 
   """
+  delete data from the table: "whitelist"
+  """
+  delete_whitelist(
+    """filter the rows which have to be deleted"""
+    where: whitelist_bool_exp!
+  ): whitelist_mutation_response
+
+  """
+  delete single row from the table: "whitelist"
+  """
+  delete_whitelist_by_pk(email: String!): whitelist
+
+  """
   insert data into the table: "account"
   """
   insert_account(
@@ -2856,6 +2869,28 @@ type mutation_root {
     """on conflict condition"""
     on_conflict: user_on_conflict
   ): user
+
+  """
+  insert data into the table: "whitelist"
+  """
+  insert_whitelist(
+    """the rows to be inserted"""
+    objects: [whitelist_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: whitelist_on_conflict
+  ): whitelist_mutation_response
+
+  """
+  insert a single row into the table: "whitelist"
+  """
+  insert_whitelist_one(
+    """the row to be inserted"""
+    object: whitelist_insert_input!
+
+    """on conflict condition"""
+    on_conflict: whitelist_on_conflict
+  ): whitelist
 
   """
   update data of the table: "account"
@@ -3351,6 +3386,26 @@ type mutation_root {
     _set: user_set_input
     pk_columns: user_pk_columns_input!
   ): user
+
+  """
+  update data of the table: "whitelist"
+  """
+  update_whitelist(
+    """sets the columns of the filtered rows to the given values"""
+    _set: whitelist_set_input
+
+    """filter the rows which have to be updated"""
+    where: whitelist_bool_exp!
+  ): whitelist_mutation_response
+
+  """
+  update single row of the table: "whitelist"
+  """
+  update_whitelist_by_pk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: whitelist_set_input
+    pk_columns: whitelist_pk_columns_input!
+  ): whitelist
 
   """
   perform the action: "upgrade_current_user"
@@ -4518,6 +4573,49 @@ type query_root {
 
   """fetch data from the table: "user" using primary key columns"""
   user_by_pk(id: uuid!): user
+
+  """
+  fetch data from the table: "whitelist"
+  """
+  whitelist(
+    """distinct select on columns"""
+    distinct_on: [whitelist_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [whitelist_order_by!]
+
+    """filter the rows returned"""
+    where: whitelist_bool_exp
+  ): [whitelist!]!
+
+  """
+  fetch aggregated fields from the table: "whitelist"
+  """
+  whitelist_aggregate(
+    """distinct select on columns"""
+    distinct_on: [whitelist_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [whitelist_order_by!]
+
+    """filter the rows returned"""
+    where: whitelist_bool_exp
+  ): whitelist_aggregate!
+
+  """fetch data from the table: "whitelist" using primary key columns"""
+  whitelist_by_pk(email: String!): whitelist
 }
 
 """
@@ -7026,6 +7124,49 @@ type subscription_root {
 
   """fetch data from the table: "user" using primary key columns"""
   user_by_pk(id: uuid!): user
+
+  """
+  fetch data from the table: "whitelist"
+  """
+  whitelist(
+    """distinct select on columns"""
+    distinct_on: [whitelist_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [whitelist_order_by!]
+
+    """filter the rows returned"""
+    where: whitelist_bool_exp
+  ): [whitelist!]!
+
+  """
+  fetch aggregated fields from the table: "whitelist"
+  """
+  whitelist_aggregate(
+    """distinct select on columns"""
+    distinct_on: [whitelist_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [whitelist_order_by!]
+
+    """filter the rows returned"""
+    where: whitelist_bool_exp
+  ): whitelist_aggregate!
+
+  """fetch data from the table: "whitelist" using primary key columns"""
+  whitelist_by_pk(email: String!): whitelist
 }
 
 """
@@ -9758,4 +9899,185 @@ input uuid_comparison_exp {
   _lte: uuid
   _neq: uuid
   _nin: [uuid!]
+}
+
+"""
+columns and relationships of "whitelist"
+"""
+type whitelist {
+  email: String!
+  is_approved: Boolean!
+  timestamp: timestamptz!
+}
+
+"""
+aggregated selection of "whitelist"
+"""
+type whitelist_aggregate {
+  aggregate: whitelist_aggregate_fields
+  nodes: [whitelist!]!
+}
+
+"""
+aggregate fields of "whitelist"
+"""
+type whitelist_aggregate_fields {
+  count(columns: [whitelist_select_column!], distinct: Boolean): Int
+  max: whitelist_max_fields
+  min: whitelist_min_fields
+}
+
+"""
+order by aggregate values of table "whitelist"
+"""
+input whitelist_aggregate_order_by {
+  count: order_by
+  max: whitelist_max_order_by
+  min: whitelist_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "whitelist"
+"""
+input whitelist_arr_rel_insert_input {
+  data: [whitelist_insert_input!]!
+  on_conflict: whitelist_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "whitelist". All fields are combined with a logical 'AND'.
+"""
+input whitelist_bool_exp {
+  _and: [whitelist_bool_exp]
+  _not: whitelist_bool_exp
+  _or: [whitelist_bool_exp]
+  email: String_comparison_exp
+  is_approved: Boolean_comparison_exp
+  timestamp: timestamptz_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "whitelist"
+"""
+enum whitelist_constraint {
+  """unique or primary key constraint"""
+  whitelist_pkey
+}
+
+"""
+input type for inserting data into table "whitelist"
+"""
+input whitelist_insert_input {
+  email: String
+  is_approved: Boolean
+  timestamp: timestamptz
+}
+
+"""aggregate max on columns"""
+type whitelist_max_fields {
+  email: String
+  timestamp: timestamptz
+}
+
+"""
+order by max() on columns of table "whitelist"
+"""
+input whitelist_max_order_by {
+  email: order_by
+  timestamp: order_by
+}
+
+"""aggregate min on columns"""
+type whitelist_min_fields {
+  email: String
+  timestamp: timestamptz
+}
+
+"""
+order by min() on columns of table "whitelist"
+"""
+input whitelist_min_order_by {
+  email: order_by
+  timestamp: order_by
+}
+
+"""
+response of any mutation on the table "whitelist"
+"""
+type whitelist_mutation_response {
+  """number of affected rows by the mutation"""
+  affected_rows: Int!
+
+  """data of the affected rows by the mutation"""
+  returning: [whitelist!]!
+}
+
+"""
+input type for inserting object relation for remote table "whitelist"
+"""
+input whitelist_obj_rel_insert_input {
+  data: whitelist_insert_input!
+  on_conflict: whitelist_on_conflict
+}
+
+"""
+on conflict condition type for table "whitelist"
+"""
+input whitelist_on_conflict {
+  constraint: whitelist_constraint!
+  update_columns: [whitelist_update_column!]!
+  where: whitelist_bool_exp
+}
+
+"""
+ordering options when selecting data from "whitelist"
+"""
+input whitelist_order_by {
+  email: order_by
+  is_approved: order_by
+  timestamp: order_by
+}
+
+"""
+primary key columns input for table: "whitelist"
+"""
+input whitelist_pk_columns_input {
+  email: String!
+}
+
+"""
+select columns of table "whitelist"
+"""
+enum whitelist_select_column {
+  """column name"""
+  email
+
+  """column name"""
+  is_approved
+
+  """column name"""
+  timestamp
+}
+
+"""
+input type for updating data in table "whitelist"
+"""
+input whitelist_set_input {
+  email: String
+  is_approved: Boolean
+  timestamp: timestamptz
+}
+
+"""
+update columns of table "whitelist"
+"""
+enum whitelist_update_column {
+  """column name"""
+  email
+
+  """column name"""
+  is_approved
+
+  """column name"""
+  timestamp
 }

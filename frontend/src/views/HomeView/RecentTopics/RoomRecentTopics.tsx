@@ -1,7 +1,11 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import { Button } from "~frontend/../../ui/buttons/Button";
+import { Button } from "~ui/buttons/Button";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconChevronDown } from "~ui/icons";
+import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
+import { useBoolean } from "~frontend/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { TopicCard } from "~frontend/ui/topics/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
@@ -15,7 +19,10 @@ interface Props {
   className?: string;
 }
 
+const RoomLink = routes.spaceRoom.Link;
+
 export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics, className }: Props) {
+  const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
@@ -30,27 +37,59 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
 
   return (
     <UIHolder className={className}>
-      <UIHead>
-        <UIHeadPrimary>
-          <Badge>Room</Badge>
-          <ItemTitle>{room.name}</ItemTitle>
-        </UIHeadPrimary>
+      <UICollapseHolder isOpened={isOpen}>
+        <IconButton icon={<IconChevronDown />} onClick={toggleIsOpen} />
+      </UICollapseHolder>
+      <UIIndentBody>
+        <UIHead>
+          <UIHeadPrimary>
+            <Badge>Room</Badge>
+            <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
+              <a>
+                <ItemTitle>{room.name}</ItemTitle>
+              </a>
+            </RoomLink>
+          </UIHeadPrimary>
 
-        <AvatarList users={room.members.map((membership) => membership.user)} />
-      </UIHead>
-      <UITopics>
-        {topics.map((topic) => {
-          return <TopicCard key={topic.id} topic={topic} />;
-        })}
-      </UITopics>
-      <Button ref={buttonRef} onClick={handleCreateTopic}>
-        Add topic
-      </Button>
+          <AvatarList users={room.members.map((membership) => membership.user)} />
+        </UIHead>
+        {isOpen && (
+          <>
+            <UITopics>
+              {topics.map((topic) => {
+                return <TopicCard key={topic.id} topic={topic} />;
+              })}
+            </UITopics>
+            <Button ref={buttonRef} onClick={handleCreateTopic}>
+              Add topic
+            </Button>
+          </>
+        )}
+      </UIIndentBody>
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled(CardBase)``;
+const UIHolder = styled(CardBase)`
+  display: flex;
+`;
+const UICollapseHolder = styled.div<{ isOpened: boolean }>`
+  padding-right: 16px;
+
+  ${IconButton} {
+    font-size: 2rem;
+
+    svg {
+      transform: rotateZ(
+        ${(props) => {
+          return props.isOpened ? "-180deg" : "0deg";
+        }}
+      );
+      transition: 0.15s all;
+    }
+  }
+`;
+const UIIndentBody = styled.div``;
 const UIHead = styled.div`
   display: flex;
   align-items: center;

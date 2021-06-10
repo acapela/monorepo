@@ -1058,6 +1058,7 @@
           - room_id
           - topic_id
           - unread_messages
+          - user_id
         filter:
           user_id:
             _eq: X-Hasura-User-Id
@@ -1181,3 +1182,6 @@
       headers:
         - name: Authorization
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: whitelist

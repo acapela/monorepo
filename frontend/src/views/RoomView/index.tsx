@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
@@ -9,6 +10,7 @@ import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
+import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 
 interface Props {
   roomId: string;
@@ -16,6 +18,7 @@ interface Props {
 }
 
 export function RoomView({ roomId, topicId }: Props) {
+  const router = useRouter();
   const [roomData] = useSingleRoomQuery({ id: roomId });
 
   const firstTopic = roomData?.room?.topics?.[0] ?? null;
@@ -77,16 +80,30 @@ export function RoomView({ roomId, topicId }: Props) {
     }
   }, [topicId, firstTopic, roomData?.room?.topics]);
 
+  const handleRoomLeave = () => {
+    router.replace(`/space/${roomData?.room?.space_id || ""}`);
+  };
+
   return (
     <>
       <PageMeta title={roomData?.room?.name} />
       <UIHolder>
         <UIRoomInfo>
           <PageTitle>{roomData?.room?.name}</PageTitle>
-          <UIDeadline>
-            <SecondaryText>Due date</SecondaryText>
-            {roomData?.room && <DeadlineManager room={roomData.room} />}
-          </UIDeadline>
+          <UIManageSections>
+            {roomData?.room && (
+              <>
+                <UIManageSection>
+                  <SecondaryText>Due date</SecondaryText>
+                  <DeadlineManager room={roomData.room} />
+                </UIManageSection>
+                <UIManageSection>
+                  <SecondaryText>Participants</SecondaryText>
+                  <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={roomData.room} />
+                </UIManageSection>
+              </>
+            )}
+          </UIManageSections>
           <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
         </UIRoomInfo>
@@ -116,11 +133,18 @@ const UIRoomInfo = styled.div`
   gap: 10px;
 `;
 
-const UIDeadline = styled.div`
+const UIManageSections = styled.div`
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
-  gap: 10px;
+  gap: 16px;
+`;
+
+const UIManageSection = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, auto);
+  align-content: start;
+  gap: 8px;
 `;
 
 const UILine = styled.div`

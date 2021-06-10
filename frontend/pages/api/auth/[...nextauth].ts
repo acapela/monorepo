@@ -46,6 +46,27 @@ interface Session {}
 // To make sure TypeScript guards us when defining auth <> db adapter, lets use types provided by next-auth
 type AuthAdapter = AdapterInstance<User, Profile, Session, VerificationRequest>;
 
+async function checkWhitelist(profile: Profile) {
+  const email = profile.email.toLocaleLowerCase();
+
+  const teamInviteEntry = await db.team_invitation.findFirst({ where: { email } });
+  if (teamInviteEntry) return;
+
+  const whiteListEntry = await db.whitelist.findFirst({ where: { email } });
+
+  if (!whiteListEntry) {
+    // automatically add a non-whitelisted user to whitelist
+    await db.whitelist.create({
+      data: { email: profile.email.toLocaleLowerCase(), is_approved: false },
+    });
+    throw new Error("email not whitelisted");
+  }
+
+  if (!whiteListEntry.is_approved) {
+    throw new Error("email not approved");
+  }
+}
+
 const authAdapterProvider: Adapter = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAdapter(appOptions): Promise<AuthAdapter> {
@@ -53,6 +74,8 @@ const authAdapterProvider: Adapter = {
 
     return {
       async createUser(profile) {
+        if (process.env.ENABLE_WHITELIST) await checkWhitelist(profile);
+
         // noinspection UnnecessaryLocalVariableJS
         const user = await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },

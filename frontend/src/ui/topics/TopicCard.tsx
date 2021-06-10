@@ -6,6 +6,9 @@ import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";
 import { TextTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
+import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { formatNumberWithMaxCallback } from "~shared/numbers";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -15,6 +18,7 @@ interface Props {
 export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
   const user = useAssertCurrentUser();
+  const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
   const [addTopicMember] = useAddTopicMember();
   const [removeTopicMember] = useRemoveTopicMember();
@@ -33,6 +37,9 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
+      {unreadCount > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
+      )}
       <UIInfo>
         <TextTitle>Topic: {topic.name}</TextTitle>
         <UIMembers>
@@ -51,6 +58,7 @@ const UIHolder = styled.div`
   ${hoverActionNegativeSpacingCss}
   ${hoverActionCss}
   cursor: pointer;
+  position: relative;
 `;
 
 const UIInfo = styled.div`

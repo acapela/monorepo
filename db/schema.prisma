@@ -151,17 +151,17 @@ model team {
 }
 
 model team_invitation {
-  id                                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email                              String
-  used_at                            DateTime? @db.Date
-  token                              String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at                         DateTime  @default(now()) @db.Timestamptz(6)
-  inviting_user_id                   String    @db.Uuid
-  team_id                            String    @db.Uuid
-  used_by                            String?   @db.Uuid
-  user                               user      @relation(fields: [inviting_user_id], references: [id])
-  team                               team      @relation(fields: [team_id], references: [id])
-  user_team_invitation_used_byTouser user?     @relation("team_invitation_used_byTouser", fields: [used_by], references: [id])
+  id                                         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                      String
+  used_at                                    DateTime? @db.Date
+  token                                      String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at                                 DateTime  @default(now()) @db.Timestamptz(6)
+  inviting_user_id                           String    @db.Uuid
+  team_id                                    String    @db.Uuid
+  used_by_user_id                            String?   @db.Uuid
+  user                                       user      @relation(fields: [inviting_user_id], references: [id])
+  team                                       team      @relation(fields: [team_id], references: [id])
+  user_team_invitation_used_by_user_idTouser user?     @relation("team_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
 }
 
 model team_member {
@@ -174,14 +174,17 @@ model team_member {
 }
 
 model topic {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id      String         @db.Uuid
-  name         String?
-  index        String
-  slug         String
-  room         room           @relation(fields: [room_id], references: [id])
-  message      message[]
-  topic_member topic_member[]
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  room_id           String         @db.Uuid
+  name              String?
+  index             String
+  slug              String
+  closed_at         DateTime?      @db.Timestamp(6)
+  closed_by_user_id String?        @db.Uuid
+  closing_summary   String?
+  room              room           @relation(fields: [room_id], references: [id])
+  message           message[]
+  topic_member      topic_member[]
 
   @@unique([slug, room_id], name: "topic_slug_room_id_key")
 }
@@ -212,25 +215,25 @@ model transcription_status {
 }
 
 model user {
-  id                                            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email                                         String?           @unique
-  name                                          String?
-  avatar_url                                    String?
-  created_at                                    DateTime          @default(now()) @db.Timestamptz(6)
-  email_verified                                DateTime?         @db.Timestamptz(6)
-  current_team_id                               String?           @db.Uuid
-  team_teamTouser_current_team_id               team?             @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
-  account                                       account[]
-  message                                       message[]
-  room                                          room[]
-  room_invites                                  room_invites[]
-  room_member                                   room_member[]
-  space_member                                  space_member[]
-  team_team_owner_idTouser                      team[]            @relation("team_owner_idTouser")
-  team_invitation                               team_invitation[]
-  team_invitation_team_invitation_used_byTouser team_invitation[] @relation("team_invitation_used_byTouser")
-  team_member                                   team_member[]
-  topic_member                                  topic_member[]
+  id                                                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                                 String?           @unique
+  name                                                  String?
+  avatar_url                                            String?
+  created_at                                            DateTime          @default(now()) @db.Timestamptz(6)
+  email_verified                                        DateTime?         @db.Timestamptz(6)
+  current_team_id                                       String?           @db.Uuid
+  team_teamTouser_current_team_id                       team?             @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
+  account                                               account[]
+  message                                               message[]
+  room                                                  room[]
+  room_invites                                          room_invites[]
+  room_member                                           room_member[]
+  space_member                                          space_member[]
+  team_team_owner_idTouser                              team[]            @relation("team_owner_idTouser")
+  team_invitation                                       team_invitation[]
+  team_invitation_team_invitation_used_by_user_idTouser team_invitation[] @relation("team_invitation_used_by_user_idTouser")
+  team_member                                           team_member[]
+  topic_member                                          topic_member[]
 }
 
 model verification_requests {
@@ -240,4 +243,10 @@ model verification_requests {
   identifier String
   token      String
   expires    DateTime @db.Timestamptz(6)
+}
+
+model whitelist {
+  email       String   @id
+  timestamp   DateTime @default(now()) @db.Timestamptz(6)
+  is_approved Boolean  @default(false)
 }

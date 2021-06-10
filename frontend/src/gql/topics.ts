@@ -10,8 +10,6 @@ import {
   GetAttachmentQueryVariables,
   GetDownloadUrlQuery,
   GetDownloadUrlQueryVariables,
-  GetUnreadMessagesQuery,
-  GetUnreadMessagesQueryVariables,
   GetUploadUrlQuery,
   GetUploadUrlQueryVariables,
   RoomTopicsQuery,
@@ -113,14 +111,6 @@ const TopicMessageDetailedInfoFragment = () => gql`
         ...AttachmentDetailedInfo
       }
     }
-  }
-`;
-
-const UnreadMessageFragment = () => gql`
-  fragment UnreadMessageFragment on unread_messages {
-    roomId: room_id
-    topicId: topic_id
-    unreadMessages: unread_messages
   }
 `;
 
@@ -283,17 +273,6 @@ export const [useRemoveTopicMember] = createMutation<RemoveTopicMemberMutation, 
     mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
       delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {
         affected_rows
-      }
-    }
-  `
-);
-
-export const [useUnreadMessages] = createQuery<GetUnreadMessagesQuery, GetUnreadMessagesQueryVariables>(
-  () => gql`
-    ${UnreadMessageFragment()}
-    query GetUnreadMessages($roomId: uuid) {
-      messages: unread_messages(where: { room_id: { _eq: $roomId } }) {
-        ...UnreadMessageFragment
       }
     }
   `
