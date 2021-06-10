@@ -15,20 +15,8 @@ import { getIndexBetweenCurrentAndLast, getIndexBetweenFirstAndCurrent, getIndex
   It also provides an optimistic result of reordering operations while we wait for 
   the result from the server.
  */
-interface UseRoomTopicListProps {
-  topics: TopicDetailedInfoFragment[];
-  moveBetween: (
-    toMove: TopicDetailedInfoFragment,
-    betweenStart: TopicDetailedInfoFragment,
-    betweenEnd: TopicDetailedInfoFragment
-  ) => void;
-  moveToEnd: (toMove: TopicDetailedInfoFragment) => void;
-  moveToStart: (toMove: TopicDetailedInfoFragment) => void;
-  isReordering: boolean;
-  currentLastIndex?: string;
-}
 
-export function useRoomTopicList(roomId: string): UseRoomTopicListProps {
+export function useRoomTopicList(roomId: string) {
   const [roomData] = useSingleRoomQuery({ id: roomId });
   const currentTopics = roomData?.room?.topics ?? [];
   const [reorderTopic, { loading: isReordering }] = useReorderTopicMutation();
@@ -83,5 +71,5 @@ export function useRoomTopicList(roomId: string): UseRoomTopicListProps {
     moveToEnd,
     isReordering,
     currentLastIndex: topics.length > 0 ? topics[topics.length - 1].index : undefined,
-  };
+  } as const;
 }

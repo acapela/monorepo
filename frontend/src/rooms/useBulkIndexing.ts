@@ -10,12 +10,7 @@ import { getInitialIndexes } from "./order";
   Eventually, all rooms will be moved to do proper indexes and this can be removed.
 */
 
-type UseBulkTopicIndexingProps = [
-  (topicIds: string[]) => Promise<void>,
-  { loading: boolean; deleteAll: (topicIds: string[]) => Promise<void> }
-];
-
-export function useBulkTopicIndexing(): UseBulkTopicIndexingProps {
+export function useBulkTopicIndexing() {
   const [reorder] = useReorderTopicMutation();
 
   let loading = false;
@@ -36,5 +31,5 @@ export function useBulkTopicIndexing(): UseBulkTopicIndexingProps {
       loading = false;
     });
   }
-  return [run, { loading, deleteAll }];
+  return [run, { loading, deleteAll }] as const;
 }
