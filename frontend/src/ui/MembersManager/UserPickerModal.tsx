@@ -41,7 +41,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
               key={user.id}
               user={user}
               actions={
-                <Button onClick={() => (isAlreadyPicked ? onRemoveUser : onAddUser)(user.id)}>
+                <Button onClick={() => (isAlreadyPicked ? onRemoveUser(user.id) : onAddUser(user.id))}>
                   {isAlreadyPicked ? "Remove" : "Add"}
                 </Button>
               }
