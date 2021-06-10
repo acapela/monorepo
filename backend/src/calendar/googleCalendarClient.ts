@@ -28,6 +28,10 @@ function convertGoogleDate(googleDate?: calendar_v3.Schema$EventDateTime): Date 
   if (!googleDate) return;
 
   if (googleDate.dateTime) {
+    /**
+     * Always includes timezone for single events so is safe to use with new Date(). More info:
+     * https://googleapis.dev/nodejs/googleapis/latest/calendar/interfaces/Schema$EventDateTime.html#dateTime
+     */
     return new Date(googleDate.dateTime);
   }
   if (googleDate.date) {
