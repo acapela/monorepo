@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { hoverActionCss } from "../transitions";
 import { ReactNode } from "react";
+import { handleWithStopPropagation } from "~shared/events";
 
 interface Props {
   icon: ReactNode;

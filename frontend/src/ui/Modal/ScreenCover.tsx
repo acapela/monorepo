@@ -1,5 +1,6 @@
 import { ReactNode, RefObject } from "react";
 import styled from "styled-components";
+import { handleWithStopPropagation } from "~frontend/../../shared/events";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PopoverPlacement } from "~ui/popovers/Popover";
 
@@ -15,7 +16,7 @@ interface Props {
 export function ScreenCover({ children, onCloseRequest }: Props) {
   return (
     <BodyPortal>
-      <UIBodyCover onClick={onCloseRequest}>{children}</UIBodyCover>
+      <UIBodyCover onClick={handleWithStopPropagation(onCloseRequest)}>{children}</UIBodyCover>
     </BodyPortal>
   );
 }

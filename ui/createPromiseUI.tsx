@@ -38,7 +38,7 @@ import { createChannel } from "~shared/channel";
  * async function getName() {
  *   const name = await openPrompt({title: 'What is your name?'});
  *
- *   console.log(`Your name is ${name}`);
+ *   console.info(`Your name is ${name}`);
  * }
  */
 
@@ -135,9 +135,9 @@ export function createPromiseUI<I, O>(renderer: PromiseUIRenderer<I, O>) {
  * const [promise, resolve] = createResolvablePromise<string>();
  *
  * async function foo() {
- *   console.log('foo start');
+ *   console.info('foo start');
  *   const value = await promise;
- *   console.log(`foo ended with ${value}`)
+ *   console.info(`foo ended with ${value}`)
  * }
  *
  * foo(); // Logs 'foo start'
