@@ -119,6 +119,8 @@ const UIHolder = styled.div`
   margin: -1rem;
   cursor: pointer;
   position: relative;
+  /* Don't over-stretch inside grid/flex if has wide content */
+  min-width: 0;
 
   ${hoverActionCss}
 `;

@@ -20,6 +20,15 @@ export const AvatarList = styled(function AvatarList({ users, className }: Props
 
 const UIHolder = styled.div`
   display: flex;
+  /* Hide overflow if has some */
+  min-width: 0;
+  mask-image: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 90%);
+
+  &:hover {
+    mask-image: none;
+    z-index: 2;
+    overflow: visible;
+  }
 
   /* Shifts each child Avatar starting from the second one a bit to the left for them to overlap */
 
