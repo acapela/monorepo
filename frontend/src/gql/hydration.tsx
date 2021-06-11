@@ -61,6 +61,8 @@ export const getApolloInitialState = () => {
 export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {
   // For each used query - fetch it using the client
 
+  const errors: string[] = [];
+
   await Promise.all(
     recordings.map(async (query) => {
       try {
@@ -71,8 +73,14 @@ export async function prefetchRecordedQueries(client: ApolloClient<unknown>, rec
 
         client.writeQuery({ data, query: query.query, variables: query.variables });
       } catch (error) {
+        const message = Reflect.get(error, "message") ?? "Unknown error";
+        errors.push(message);
         //
       }
     })
   );
+
+  if (errors.length) {
+    console.warn(`Prefetch errors`, errors.join(", "));
+  }
 }
