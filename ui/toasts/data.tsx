@@ -46,9 +46,9 @@ export function addToast(toast: ToastData) {
 }
 
 export function removeToast(toast: ToastData) {
-  const newToasts = getToasts().filter((existingToast) => existingToast !== toast);
+  const remainingToasts = getToasts().filter((existingToast) => existingToast !== toast);
 
-  toastsChannel.publish(newToasts);
+  toastsChannel.publish(remainingToasts);
 }
 
 export function useToasts() {

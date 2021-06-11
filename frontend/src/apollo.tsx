@@ -76,7 +76,7 @@ function getGraphqlUrl() {
 function formatGraphqlErrorMessage(error: GraphQLError) {
   if (process.env.NODE_ENV === "development") {
     const { message, locations, path } = error;
-    `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`;
+    return `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`;
   }
 
   return `Failed to finish the operation`;
