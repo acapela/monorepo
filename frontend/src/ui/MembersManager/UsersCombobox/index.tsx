@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
 import { UserBasicInfoFragment } from "~frontend/gql";
@@ -14,6 +14,14 @@ interface Props {
 
 export const UsersCombobox = ({ users, onSelect }: Props) => {
   const [inputItems, setInputItems] = useState(users);
+  const handleInputChange = (inputValue: string | undefined) => {
+    const lowerCaseInputValue = (inputValue || "").toLowerCase();
+    const newItems = users.filter((user) => {
+      const joinedFields = [user.email, user.name].join("").toLowerCase();
+      return joinedFields.includes(lowerCaseInputValue);
+    });
+    setInputItems(newItems);
+  };
   const {
     isOpen,
     selectedItem,
@@ -24,19 +32,17 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     getItemProps,
     openMenu,
     reset,
+    inputValue,
   } = useCombobox({
     items: users,
     defaultHighlightedIndex: 0,
-    onInputValueChange: ({ inputValue }) => {
-      const lowerCaseInputValue = (inputValue || "").toLowerCase();
-      const newItems = users.filter((user) => {
-        const joinedFields = [user.email, user.name].join("").toLowerCase();
-        return joinedFields.includes(lowerCaseInputValue);
-      });
-      setInputItems(newItems);
-    },
+    onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
     itemToString: (user) => user?.email || "",
   });
+
+  useEffect(() => {
+    handleInputChange(inputValue);
+  }, [users]);
   const areResultsVisible = isOpen && inputItems.length > 0;
   return (
     <UIForm
