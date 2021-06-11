@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { hoverActionCss } from "../transitions";
 import { ReactNode } from "react";
+import { handleWithStopPropagation } from "~shared/events";
 
 interface Props {
   icon: ReactNode;
@@ -23,8 +24,8 @@ const UIHolder = styled.button`
   align-items: center;
   justify-content: center;
 
-  width: 1em;
-  height: 1em;
+  width: 1.5em;
+  height: 1.5em;
 
   border-radius: 0.25em;
   background-color: transparent;

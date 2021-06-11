@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
 import { Modal } from "~frontend/ui/Modal";
 import { Button } from "~ui/buttons/Button";
@@ -6,7 +7,7 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface PromptInput {
   title: string;
-  description?: string;
+  description?: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
 }

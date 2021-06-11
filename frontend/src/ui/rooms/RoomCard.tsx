@@ -8,6 +8,8 @@ import { MembersManager } from "../MembersManager";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { ManageRoomMembers } from "./ManageRoomMembers";
+import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
+import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -25,6 +27,7 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
+      <CornerOptionsMenu options={getRoomManagePopoverOptions(room)} tooltip="Show options..." />
       {unreadCount > 0 && (
         <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
       )}

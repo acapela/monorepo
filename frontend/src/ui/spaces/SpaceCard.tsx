@@ -1,18 +1,18 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { IconButton } from "~ui/buttons/IconButton";
 import { SpaceBasicInfoFragment } from "~frontend/gql";
-import { useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { deleteSpace, useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconEdit, IconMoreHoriz } from "~ui/icons";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { createLengthValidator } from "~shared/validation/inputValidation";
+import { IconEdit, IconTrash } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { getSpaceColors } from "./spaceGradient";
 
 interface Props {
@@ -46,6 +46,7 @@ export function SpaceCard({ space }: Props) {
       placeholder: "e.g. Design team, Marketing department, iOS developers...",
       submitLabel: "Change name",
       validateInput: createLengthValidator("Space name", 3),
+      initialValue: space.name,
     });
 
     if (!newSpaceName?.trim()) return;
@@ -55,6 +56,22 @@ export function SpaceCard({ space }: Props) {
     await editSpace({ spaceId: space?.id, name: newSpaceName });
   }
 
+  async function handleDeleteSpace() {
+    const didConfirm = await openConfirmPrompt({
+      title: `Remove space`,
+      description: (
+        <>
+          Are you sure you want to remove space <strong>{space.name}</strong>
+        </>
+      ),
+      confirmLabel: `Remove`,
+    });
+
+    if (!didConfirm) return;
+
+    await deleteSpace({ spaceId: space.id });
+  }
+
   return (
     <>
       <UIHolder>
@@ -62,20 +79,23 @@ export function SpaceCard({ space }: Props) {
           <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
         )}
         <UIBanner>
+          <CornerOptionsMenu
+            options={[
+              {
+                label: "Edit space name",
+                onSelect: handleEditSpace,
+                icon: <IconEdit />,
+              },
+              {
+                label: "Delete space",
+                onSelect: handleDeleteSpace,
+                icon: <IconTrash />,
+                isDestructive: true,
+              },
+            ]}
+            tooltip="Show options..."
+          />
           <UIImage onClick={handleOpen} spaceId={space.id}></UIImage>
-          <UIMenuIcon>
-            <PopoverMenuTrigger
-              options={[
-                {
-                  label: "Edit name",
-                  onSelect: handleEditSpace,
-                  icon: <IconEdit />,
-                },
-              ]}
-            >
-              <IconButton tooltip="Show options..." icon={<IconMoreHoriz />} />
-            </PopoverMenuTrigger>
-          </UIMenuIcon>
         </UIBanner>
 
         <UIInfo>
@@ -116,18 +136,6 @@ const UIImage = styled.div<{ spaceId: string }>`
 
 const UIInfo = styled.div`
   text-align: center;
-`;
-
-const UIMenuIcon = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  color: #fff;
-  cursor: pointer;
-
-  ${IconButton} {
-    color: #fff;
-  }
 `;
 
 const UIMembers = styled.div``;

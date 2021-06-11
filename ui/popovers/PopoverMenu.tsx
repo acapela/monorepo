@@ -1,6 +1,7 @@
 import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
+import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 import { DANGER_COLOR } from "~ui/colors";
@@ -31,26 +32,33 @@ export const PopoverMenu = styled(
     useClickAway(anchorRef, () => onCloseRequest?.());
 
     return (
-      <Popover anchorRef={anchorRef} placement={placement}>
-        <UIMenu presenceStyles={POP_PRESENCE_STYLES} transition={POP_ANIMATION_CONFIG} className={className}>
-          {options.map((option) => {
-            return (
-              <UIMenuItem
-                isDestructive={option.isDestructive ?? false}
-                key={option.key ?? option.label}
-                onClick={() => {
-                  onItemSelected?.(option);
-                  onCloseRequest?.();
-                  option.onSelect();
-                }}
-              >
-                {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
-                {option.label}
-              </UIMenuItem>
-            );
-          })}
-        </UIMenu>
-      </Popover>
+      <ScreenCover onCloseRequest={onCloseRequest}>
+        <Popover anchorRef={anchorRef} placement={placement}>
+          <UIMenu
+            presenceStyles={POP_PRESENCE_STYLES}
+            transition={POP_ANIMATION_CONFIG}
+            className={className}
+            onClick={(event) => event.stopPropagation()}
+          >
+            {options.map((option) => {
+              return (
+                <UIMenuItem
+                  isDestructive={option.isDestructive ?? false}
+                  key={option.key ?? option.label}
+                  onClick={() => {
+                    onItemSelected?.(option);
+                    onCloseRequest?.();
+                    option.onSelect();
+                  }}
+                >
+                  {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
+                  {option.label}
+                </UIMenuItem>
+              );
+            })}
+          </UIMenu>
+        </Popover>
+      </ScreenCover>
     );
   }
 )``;

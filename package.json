@@ -45,6 +45,7 @@
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
+    "hasura:update": "yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta",
     "frontend:gql-types": "tooling gql frontend --watch",
     "postinstall": "yarn workspace ~db generate",
     "lint": "eslint . && prettier --check .",
