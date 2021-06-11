@@ -2,10 +2,11 @@ import { useState } from "react";
 import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { UserSelectCard } from "~frontend/ui/users/UserSelectCard";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { Modal } from "~frontend/ui/Modal";
-import { Button } from "~ui/buttons/Button";
+import { UserMedia } from "../users/UserMedia";
+import { IconCross } from "~frontend/../../ui/icons";
+
 interface Props {
   currentUsers: UserBasicInfoFragment[];
   onCloseRequest: () => void;
@@ -27,32 +28,47 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       }}
     >
       <SearchInput placeholder="Search team members..." value={searchTerm} onChangeText={setSearchTerm} />
-      <UIMembers>
-        {teamMembers.map((user) => {
-          const isAlreadyPicked = currentUsers.some((currentUser) => currentUser.id === user.id);
-          return (
-            <UserSelectCard
-              key={user.id}
-              user={user}
-              actions={
-                <Button onClick={() => (isAlreadyPicked ? onRemoveUser(user.id) : onAddUser(user.id))}>
-                  {isAlreadyPicked ? "Remove" : "Add"}
-                </Button>
-              }
-            />
-          );
-        })}
-      </UIMembers>
+      {currentUsers.length > 0 && (
+        <UIMembers>
+          {currentUsers.map((user) => {
+            return (
+              <UIMember>
+                <UserMedia user={user} />
+                <UIRemoveMember onClick={() => onRemoveUser(user.id)}>
+                  <IconCross />
+                </UIRemoveMember>
+              </UIMember>
+            );
+          })}
+        </UIMembers>
+      )}
     </Modal>
   );
 }
 
 const UIMembers = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 1rem;
-
-  & > * {
-    margin-bottom: 1rem;
+  width: 640px;
+  border: 1px solid #eae9ea;
+  border-radius: 20px;
+  @media (max-width: 800px) {
+    width: 100px;
   }
+`;
+
+const UIMember = styled.div`
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eae9ea;
+  :last-child {
+    border-bottom: none;
+  }
+`;
+
+const UIRemoveMember = styled.button`
+  padding: 6px;
+  background: #f4f4f4;
+  cursor: pointer;
+  border-radius: 100000px;
 `;
