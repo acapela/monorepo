@@ -5,7 +5,7 @@ import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
 import { UserMedia } from "../users/UserMedia";
 import { IconCross } from "~frontend/../../ui/icons";
-import { UsersSearch } from "./UsersSearch";
+import { UsersCombobox } from "./UsersCombobox";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -30,7 +30,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       }}
     >
       <UIHolder>
-        <UsersSearch users={potentialUsers} onSelect={onAddUser} />
+        <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
         {currentUsers.length > 0 && (
           <UIMembers>
             {currentUsers.map((user) => {
