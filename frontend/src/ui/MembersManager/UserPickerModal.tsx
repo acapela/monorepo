@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { SearchInput } from "~ui/forms/SearchInput";
 import { Modal } from "~frontend/ui/Modal";
 import { UserMedia } from "../users/UserMedia";
 import { IconCross } from "~frontend/../../ui/icons";
+import { UsersSearch } from "./UsersSearch";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -15,9 +15,11 @@ interface Props {
 }
 
 export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser }: Props) {
-  const [searchTerm, setSearchTerm] = useState("");
-
   const teamMembers = useCurrentTeamMembers();
+  const potentialUsers = useMemo(() => {
+    const currentUsersIdsSet = new Set<string>(currentUsers.map(({ id }) => id));
+    return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
+  }, [teamMembers, currentUsers]);
 
   return (
     <Modal
@@ -27,24 +29,32 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
         title: "Room participants",
       }}
     >
-      <SearchInput placeholder="Search team members..." value={searchTerm} onChangeText={setSearchTerm} />
-      {currentUsers.length > 0 && (
-        <UIMembers>
-          {currentUsers.map((user) => {
-            return (
-              <UIMember>
-                <UserMedia user={user} />
-                <UIRemoveMember onClick={() => onRemoveUser(user.id)}>
-                  <IconCross />
-                </UIRemoveMember>
-              </UIMember>
-            );
-          })}
-        </UIMembers>
-      )}
+      <UIHolder>
+        <UsersSearch users={potentialUsers} onSelect={onAddUser} />
+        {currentUsers.length > 0 && (
+          <UIMembers>
+            {currentUsers.map((user) => {
+              return (
+                <UIMember>
+                  <UserMedia user={user} />
+                  <UIRemoveMember onClick={() => onRemoveUser(user.id)}>
+                    <IconCross />
+                  </UIRemoveMember>
+                </UIMember>
+              );
+            })}
+          </UIMembers>
+        )}
+      </UIHolder>
     </Modal>
   );
 }
+
+const UIHolder = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+`;
 
 const UIMembers = styled.div`
   width: 640px;
