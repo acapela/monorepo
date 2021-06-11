@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
-import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 import { IconButton } from "~ui/buttons/IconButton";
 import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/colors";
@@ -32,7 +32,6 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
     <UIHolder
       layoutId={getObjectKey(toast)}
       presenceStyles={POP_PRESENCE_STYLES}
-      transition={POP_ANIMATION_CONFIG}
       type={toast.type}
       className={className}
     >

@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { AnimatePresence, motion, MotionProps } from "framer-motion";
+import { AnimatePresence, MotionProps } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
@@ -15,8 +15,8 @@ import { MessageTranscription } from "~frontend/views/topic/Message/MessageTrans
 import { EditorContent } from "~richEditor/RichEditor";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./MessageAttachmentDisplayer";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { SUCCESS_COLOR } from "~ui/colors";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
@@ -112,12 +112,7 @@ export const Message = ({ message, isTopicSummary = false }: Props) => {
       <AnimatePresence>
         {/* TODO: For consistent layout, needs to be always present and hidden with `visibility` */}
         {shouldShowTools && (
-          <UITools
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={POP_ANIMATION_CONFIG}
-          >
+          <UITools presenceStyles={{ opacity: [0, 1] }}>
             <MessageActions
               isActive={isActive}
               onActiveChange={setIsActive}
@@ -195,7 +190,7 @@ const UITimestamp = styled.span`
   opacity: 0.4;
 `;
 
-const UITools = styled(motion.div)`
+const UITools = styled(PresenceAnimator)`
   margin-top: 0.25rem;
 `;
 
