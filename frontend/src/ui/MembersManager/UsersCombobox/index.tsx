@@ -23,6 +23,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     highlightedIndex,
     getItemProps,
     setInputValue,
+    openMenu,
   } = useCombobox({
     items: users,
     onInputValueChange: ({ inputValue }) => {
@@ -34,6 +35,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
       setInputItems(newItems);
     },
   });
+  const areResultsVisible = isOpen && inputItems.length;
   return (
     <UIForm
       onSubmit={(event) => {
@@ -45,17 +47,28 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
       }}
       {...getComboboxProps()}
     >
-      <UIInput placeholder="Search with name or email" {...getInputProps} />
+      <UICombobox>
+        <UIInput
+          areResultsVisible={areResultsVisible}
+          onFocus={() => {
+            if (!isOpen) {
+              openMenu();
+            }
+          }}
+          placeholder="Search with name or email"
+          {...getInputProps}
+        />
+        <UIMenu {...getMenuProps()} isOpen={isOpen}>
+          {areResultsVisible &&
+            inputItems.map((user, index) => (
+              <UIOption isHighlighted={highlightedIndex === index} {...getItemProps({ item: user, index })}>
+                <UserMedia user={user} />
+              </UIOption>
+            ))}
+        </UIMenu>
+      </UICombobox>
+
       <Button isDisabled={!selectedItem}>Add member</Button>
-      <UIMenu {...getMenuProps()} isOpen={isOpen}>
-        {isOpen &&
-          inputItems.length &&
-          inputItems.map((user, index) => (
-            <UIOption isHighlighted={highlightedIndex === index} {...getItemProps({ item: user, index })}>
-              <UserMedia user={user} />
-            </UIOption>
-          ))}
-      </UIMenu>
     </UIForm>
   );
 };
@@ -67,26 +80,42 @@ const UIForm = styled.form`
   gap: 16px;
 `;
 
-const UIInput = styled.input`
+const UICombobox = styled.div`
+  position: relative;
+`;
+
+const UIInput = styled.input<{ areResultsVisible: boolean }>`
   ${baseInputStyles}
   height: 42px;
   width: 100%;
+  ${(props) =>
+    props.areResultsVisible &&
+    css`
+      border-bottom-color: transparent;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    `}
 `;
 
 const UIMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
-  bottom: 8px;
+  border-left: 1px solid #eae9ea;
+  border-right: 1px solid #eae9ea;
+  border-bottom: 1px solid #eae9ea;
   left: 0;
   width: 100%;
   visibility: ${({ isOpen }) => (isOpen ? "visible" : "hidden")};
+  border-radius: 0 0 16px 16px;
+  background: #ffffff;
 `;
 
 const UIOption = styled.div<{ isHighlighted: boolean }>`
-  padding: 8px;
+  padding: 16px;
   border-bottom: 1px solid #eae9ea;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
   ${hoverActionCss};
   ${(p) =>
     p.isHighlighted &&
