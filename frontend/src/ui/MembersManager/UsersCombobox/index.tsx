@@ -35,7 +35,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
       setInputItems(newItems);
     },
   });
-  const areResultsVisible = isOpen && inputItems.length;
+  const areResultsVisible = isOpen && inputItems.length > 0;
   return (
     <UIForm
       onSubmit={(event) => {
@@ -56,7 +56,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
             }
           }}
           placeholder="Search with name or email"
-          {...getInputProps}
+          {...getInputProps()}
         />
         <UIMenu {...getMenuProps()} isOpen={isOpen}>
           {areResultsVisible &&
