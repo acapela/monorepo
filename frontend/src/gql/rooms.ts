@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { addToast } from "~ui/toasts/data";
 import {
   CreateRoomMutation,
   CreateRoomMutationVariables,
@@ -52,7 +53,7 @@ export const RoomDetailedInfoFragment = () => gql`
       }
     }
 
-    topics {
+    topics(order_by: { index: asc }) {
       ...TopicDetailedInfo
     }
   }
@@ -131,7 +132,12 @@ export const [useAddRoomMember] = createMutation<AddRoomMemberMutation, AddRoomM
         user_id
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Room member was added` });
+    },
+  }
 );
 
 export const [useRemoveRoomMember] = createMutation<RemoveRoomMemberMutation, RemoveRoomMemberMutationVariables>(
@@ -141,7 +147,12 @@ export const [useRemoveRoomMember] = createMutation<RemoveRoomMemberMutation, Re
         affected_rows
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Room member was removed` });
+    },
+  }
 );
 
 export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<

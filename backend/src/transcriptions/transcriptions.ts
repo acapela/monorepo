@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Transcription_Status_Enum } from "~frontend/src/gql";
-import { assert } from "~shared/assert";
 import logger from "~shared/logger";
+import { BadRequestError } from "../errors";
 import { MediaResponse } from "./sonixClient";
 import { updateMessageTranscription } from "./transcriptionService";
 
@@ -21,7 +21,9 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
 
   const media = req.body as MediaResponse;
 
-  assert(media, "Sonix call has no body");
+  if (!media) {
+    throw new BadRequestError("Sonix call has no body");
+  }
 
   if (media.status === Transcription_Status_Enum.Completed) {
     await updateMessageTranscription(media);

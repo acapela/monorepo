@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";

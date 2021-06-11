@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useBoolean } from "~frontend/src/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";

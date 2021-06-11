@@ -1,11 +1,12 @@
 import os from "os";
 import localtunnel, { Tunnel } from "localtunnel";
+import { assertGet } from "~shared/assert";
+
+const backendPort = assertGet(process.env.BACKEND_PORT, "BACKEND_PORT env variable is required");
 
 const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 
 let tunnel: Tunnel | null = null;
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const backendPort = process.env.BACKEND_PORT!;
 /**
  * localtunnel creates a tunnel from localhost to a publicly available URL
  * This way it's possible to receive webhooks to the dev environment

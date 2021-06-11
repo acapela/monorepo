@@ -5,7 +5,7 @@ import { TextInput } from "~ui/forms/TextInput";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import styled from "styled-components";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { InputValidatorFunction } from "~shared/validation/inputValidation";
 
 interface PromptInput {

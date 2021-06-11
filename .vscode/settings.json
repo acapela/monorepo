@@ -26,7 +26,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
-  "cSpell.words": ["Hasura", "Scrollable", "Unprocessable", "immer", "timestamptz", "Userback"],
   "colorInfo.languages": [
     {
       "selector": "css",
@@ -52,5 +51,22 @@
       "selector": "typescriptreact",
       "colors": "css"
     }
+  ],
+  "cSpell.words": [
+    "Hasura",
+    "Scrollable",
+    "Unprocessable",
+    "immer",
+    "timestamptz",
+    "Userback",
+    "godaddy",
+    "healthz",
+    "sonix",
+    "Sonix",
+    "acapela",
+    "sendgrid",
+    "pino",
+    "gmail",
+    "nextauth"
   ]
 }

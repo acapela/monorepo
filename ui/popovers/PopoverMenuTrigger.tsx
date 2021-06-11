@@ -2,7 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { useBoolean } from "~frontend/src/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { zIndex } from "~ui/zIndex";
 import { PopoverPlacement } from "./Popover";

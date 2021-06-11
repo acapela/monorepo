@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { addToast } from "~ui/toasts/data";
 import {
   CreateMessageMutation,
   CreateMessageMutationVariables,
@@ -33,6 +34,8 @@ import {
   EditTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
+  ReorderTopicMutation,
+  ReorderTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -347,6 +350,18 @@ export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopi
   `
 );
 
+export const [useReorderTopicMutation] = createMutation<ReorderTopicMutation, ReorderTopicMutationVariables>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+
+    mutation ReorderTopic($topicId: uuid!, $index: String!) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { index: $index }) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
 export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
@@ -355,5 +370,10 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Topic was removed` });
+    },
+  }
 );

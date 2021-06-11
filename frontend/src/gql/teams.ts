@@ -15,6 +15,7 @@ import { createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { addToast } from "~ui/toasts/data";
 
 const TeamBasicInfoFragment = () => gql`
   fragment TeamBasicInfo on team {
@@ -106,7 +107,12 @@ export const [useCreateTeamInvitation] = createMutation<
         ...TeamInvitationBasicInfo
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Team invitation was sent` });
+    },
+  }
 );
 
 export const [useTeamInvitationByToken] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(

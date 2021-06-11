@@ -13,7 +13,7 @@ import {
 import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { useRef } from "react";
-import { assert } from "~shared/assert";
+import { assertGet } from "~shared/assert";
 import { getApolloClient } from "~frontend/apollo";
 import { reportQueryUsage } from "./hydration";
 import { memoize } from "lodash";
@@ -112,8 +112,8 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
 function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
   const subscriptionSource = print(queryNode);
 
-  assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
-  assert(
+  assertGet(subscriptionSource, "Incorrect query string cannot be converted to subscription");
+  assertGet(
     subscriptionSource.includes("query"),
     "Incorrect query string cannot be converted to subscription (provided graphql definition is not a query)"
   );

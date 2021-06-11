@@ -150,7 +150,8 @@ const UIRoomInfo = styled.div`
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
-  gap: 10px;
+  gap: 24px;
+  overflow-y: hidden;
 `;
 
 const UIManageSections = styled.div`

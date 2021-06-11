@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserBasicInfoFragment } from "~frontend/gql";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { TransparentButton } from "~ui/buttons/TransparentButton";

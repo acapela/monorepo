@@ -20,3 +20,11 @@ export function middlewareRequireBearerToken(secretValue: string, errorMessage: 
 export function isDev() {
   return !["staging", "production"].includes(process.env.STAGE);
 }
+
+export function isValidDateString(dateString: string) {
+  return !isNaN(Date.parse(dateString));
+}
+
+export function isValidOptionalDateArgument(dateString?: string) {
+  return dateString === undefined || isValidDateString(dateString);
+}

@@ -9007,6 +9007,20 @@ export type EditTopicMutation = (
   )> }
 );
 
+export type ReorderTopicMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  index: Scalars['String'];
+}>;
+
+
+export type ReorderTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & TopicDetailedInfoFragment
+  )> }
+);
+
 export type DeleteTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
 }>;
