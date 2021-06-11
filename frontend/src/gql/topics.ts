@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { addToast } from "~ui/toasts/data";
 import {
   CreateMessageMutation,
   CreateMessageMutationVariables,
@@ -369,5 +370,10 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    onSuccess() {
+      addToast({ type: "info", content: `Topic was removed` });
+    },
+  }
 );

@@ -7,7 +7,7 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
-import { useBoolean } from "~frontend/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { MessageActions } from "~frontend/views/topic/Message/MessageActions";
 import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachment";
 import { MessageText } from "~frontend/views/topic/Message/MessageText";

@@ -31,6 +31,8 @@ const UIHolder = styled.button`
   border: none;
   cursor: pointer;
 
+  color: inherit;
+
   font-size: 1.5rem;
 
   ${hoverActionCss};
