@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
 import { UserBasicInfoFragment } from "~frontend/gql";
-import { baseInputStyles } from "~frontend/../../ui/forms/utils";
-import { Button } from "~frontend/../../ui/buttons/Button";
+import { baseInputStyles } from "~ui/forms/utils";
+import { Button } from "~ui/buttons/Button";
 import { UserMedia } from "~frontend/ui/users/UserMedia";
-import { hoverActionCss } from "~frontend/../../ui/transitions";
+import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -22,18 +22,20 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     getComboboxProps,
     highlightedIndex,
     getItemProps,
-    setInputValue,
     openMenu,
+    reset,
   } = useCombobox({
     items: users,
+    defaultHighlightedIndex: 0,
     onInputValueChange: ({ inputValue }) => {
       const lowerCaseInputValue = (inputValue || "").toLowerCase();
       const newItems = users.filter((user) => {
-        const joinedFields = [user.email, user.name].join("");
+        const joinedFields = [user.email, user.name].join("").toLowerCase();
         return joinedFields.includes(lowerCaseInputValue);
       });
       setInputItems(newItems);
     },
+    itemToString: (user) => user?.email || "",
   });
   const areResultsVisible = isOpen && inputItems.length > 0;
   return (
@@ -42,7 +44,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
         event.preventDefault();
         if (selectedItem) {
           onSelect(selectedItem.id);
-          setInputValue("");
+          reset();
         }
       }}
       {...getComboboxProps()}
@@ -61,14 +63,19 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
         <UIMenu {...getMenuProps()} isOpen={isOpen}>
           {areResultsVisible &&
             inputItems.map((user, index) => (
-              <UIOption isHighlighted={highlightedIndex === index} {...getItemProps({ item: user, index })}>
+              <UIOption
+                key={user.id}
+                isHighlighted={highlightedIndex === index}
+                {...getItemProps({ item: user, index })}
+              >
                 <UserMedia user={user} />
               </UIOption>
             ))}
         </UIMenu>
       </UICombobox>
-
-      <Button isDisabled={!selectedItem}>Add member</Button>
+      <Button onClick={() => null} isDisabled={!selectedItem}>
+        Add member
+      </Button>
     </UIForm>
   );
 };
@@ -99,6 +106,7 @@ const UIInput = styled.input<{ areResultsVisible: boolean }>`
 
 const UIMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
+  overflow: hidden;
   border-left: 1px solid #eae9ea;
   border-right: 1px solid #eae9ea;
   border-bottom: 1px solid #eae9ea;
@@ -116,11 +124,11 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  ${hoverActionCss};
+  border-radius: 0;
   ${(p) =>
     p.isHighlighted &&
     css`
-      filter: saturate(1.2);
+      background-color: ${ACTION_ACTIVE_COLOR};
     `}
   :last-child {
     border-bottom: none;
