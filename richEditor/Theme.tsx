@@ -973,8 +973,7 @@ export const QuillTheme = createGlobalStyle`
   }
 }
 
-.ql-toolbar.ql-snow {
-  border: 1px solid #ccc;
+.ql-toolbar.ql-snow {  
   box-sizing: border-box;
   padding: 8px;
 
@@ -1093,9 +1092,6 @@ export const QuillTheme = createGlobalStyle`
   }
 }
 
-.ql-container.ql-snow {
-  border: 1px solid #ccc;
-}
 
 /* Custom */
 body .quill {
@@ -1108,11 +1104,6 @@ body .quill {
       }
     }
     ${() => richEditorContentCss};
-  }
-  .ql-container {
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    border-bottom: none;
   }
 }
 

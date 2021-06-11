@@ -85,7 +85,7 @@ const UIHolder = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: none;
+    border-top: 1px solid #ccc;
 
     &&&:after {
       display: none;
