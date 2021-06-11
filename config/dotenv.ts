@@ -57,12 +57,14 @@ const requiredEnvVarNamesFrontend = [
   "AUTH_JWT_TOKEN_SECRET",
   "NEXTAUTH_URL",
   "HASURA_WEBSOCKET_ENDPOINT",
+  "FRONTEND_URL",
 ] as const;
 
 // Out of array of variable names, prepare types for process.env
 
-type EnvVarName = typeof requiredEnvVarNames[number];
-type EnvVariablesMap = Record<EnvVarName, string>;
+type EnvVariablesMap = Record<typeof requiredEnvVarNames[number], string> &
+  Record<typeof requiredEnvVarNamesBackend[number], string> &
+  Record<typeof requiredEnvVarNamesFrontend[number], string>;
 
 // It is possible to mark some env vars as optional by providing their default value.
 const optionalEnvVars: Partial<NodeJS.ProcessEnv> = {

@@ -68,7 +68,7 @@ function createSocketLink(websocketEndpoint?: string) {
 }
 
 function getGraphqlUrl() {
-  const rootUrl = process.env.FRONTEND_URL ?? "";
+  const rootUrl = process.env.FRONTEND_URL ?? process.env.NEXTAUTH_URL ?? "";
 
   return `${rootUrl}/graphql`;
 }
