@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
-import { UserMedia } from "../users/UserMedia";
+import { UserBasicInfo } from "../users/UserBasicInfo";
 import { IconCross } from "~ui/icons";
 import { UsersCombobox } from "./UsersCombobox";
 import { LIGHT_GRAY } from "~ui/colors";
@@ -38,7 +38,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
             {currentUsers.map((user) => {
               return (
                 <UIMember>
-                  <UserMedia user={user} />
+                  <UserBasicInfo user={user} />
                   <UIRemoveMemberButton onClick={() => onRemoveUser(user.id)}>
                     <IconCross />
                   </UIRemoveMemberButton>

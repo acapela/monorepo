@@ -4,7 +4,7 @@ import { useCombobox } from "downshift";
 import { UserBasicInfoFragment } from "~frontend/gql";
 import { baseInputStyles } from "~ui/forms/utils";
 import { Button } from "~ui/buttons/Button";
-import { UserMedia } from "~frontend/ui/users/UserMedia";
+import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { LIGHT_GRAY } from "~ui/colors";
 
@@ -85,7 +85,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
                 isHighlighted={highlightedIndex === index}
                 {...getItemProps({ item: user, index })}
               >
-                <UserMedia user={user} />
+                <UserBasicInfo user={user} />
               </UIOption>
             ))}
         </UIMenu>

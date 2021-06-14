@@ -8,7 +8,7 @@ interface Props {
   user: UserBasicInfoFragment;
 }
 
-export const UserMedia = ({ user }: Props) => {
+export const UserBasicInfo = ({ user }: Props) => {
   return (
     <UIHolder>
       <Avatar url={user.avatar_url} />
