@@ -6,6 +6,7 @@ import "react-day-picker/lib/style.css";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
 import { shadow } from "~ui/baseStyles";
+import { LIGHT_GRAY } from "~ui/colors";
 
 interface Props {
   initialValue: Date;
@@ -74,7 +75,7 @@ const UIPickers = styled.div`
 
 const UITimePickerWr = styled.div`
   padding: 16px;
-  border-left: 1px solid #eae9ea;
+  border-left: 1px solid ${LIGHT_GRAY};
   overflow: auto;
   max-height: 300px;
 `;

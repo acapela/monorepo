@@ -12,6 +12,7 @@ export const UserBasicInfoFragment = () => gql`
   fragment UserBasicInfo on user {
     id
     name
+    email
     avatar_url
   }
 `;
