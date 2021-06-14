@@ -32,15 +32,9 @@ export interface Boolean_Comparison_Exp {
   _nin?: Maybe<Array<Scalars['Boolean']>>;
 }
 
-export interface GetDownloadUrlResponse {
-  __typename?: 'GetDownloadUrlResponse';
+export interface DownloadUrlResponse {
+  __typename?: 'DownloadUrlResponse';
   downloadUrl: Scalars['String'];
-}
-
-export interface GetUploadUrlResponse {
-  __typename?: 'GetUploadUrlResponse';
-  uploadUrl: Scalars['String'];
-  uuid: Scalars['ID'];
 }
 
 export interface InviteAcceptCommand {
@@ -78,6 +72,12 @@ export interface UpgradeUserResponse {
   __typename?: 'UpgradeUserResponse';
   user?: Maybe<User>;
   user_id: Scalars['ID'];
+}
+
+export interface UploadUrlResponse {
+  __typename?: 'UploadUrlResponse';
+  uploadUrl: Scalars['String'];
+  uuid: Scalars['ID'];
 }
 
 /**
@@ -3024,9 +3024,9 @@ export interface Query_Root {
   /** fetch aggregated fields from the table: "full_text_search" */
   full_text_search_aggregate: Full_Text_Search_Aggregate;
   /** perform the action: "get_download_url" */
-  get_download_url?: Maybe<GetDownloadUrlResponse>;
+  get_download_url?: Maybe<DownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
-  get_upload_url?: Maybe<GetUploadUrlResponse>;
+  get_upload_url?: Maybe<UploadUrlResponse>;
   /** fetch data from the table: "last_seen_message" */
   last_seen_message: Array<Last_Seen_Message>;
   /** fetch aggregated fields from the table: "last_seen_message" */
@@ -4990,9 +4990,9 @@ export interface Subscription_Root {
   /** fetch aggregated fields from the table: "full_text_search" */
   full_text_search_aggregate: Full_Text_Search_Aggregate;
   /** perform the action: "get_download_url" */
-  get_download_url?: Maybe<GetDownloadUrlResponse>;
+  get_download_url?: Maybe<DownloadUrlResponse>;
   /** perform the action: "get_upload_url" */
-  get_upload_url?: Maybe<GetUploadUrlResponse>;
+  get_upload_url?: Maybe<UploadUrlResponse>;
   /** fetch data from the table: "last_seen_message" */
   last_seen_message: Array<Last_Seen_Message>;
   /** fetch aggregated fields from the table: "last_seen_message" */
@@ -8244,7 +8244,7 @@ export type AcceptInviteMutation = (
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id'>
+  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -8256,17 +8256,11 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
-  & { members: Array<(
-    { __typename?: 'room_member' }
-    & { user: (
-      { __typename?: 'user' }
-      & UserBasicInfoFragment
-    ) }
-  )>, topics: Array<(
+  & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )> }
+  & RoomBasicInfoFragment
 );
 
 export type RoomParticipantBasicInfoFragment = (
@@ -8418,6 +8412,7 @@ export type SpaceBasicInfoFragment = (
   & Pick<Space, 'id' | 'name'>
   & { members: Array<(
     { __typename?: 'space_member' }
+    & Pick<Space_Member, 'space_id' | 'user_id'>
     & { user: (
       { __typename?: 'user' }
       & UserBasicInfoFragment
@@ -8427,17 +8422,12 @@ export type SpaceBasicInfoFragment = (
 
 export type SpaceDetailedInfoFragment = (
   { __typename?: 'space' }
-  & Pick<Space, 'id' | 'name'>
-  & { members: Array<(
-    { __typename?: 'space_member' }
-    & { user: (
-      { __typename?: 'user' }
-      & UserBasicInfoFragment
-    ) }
-  )>, rooms: Array<(
+  & Pick<Space, 'team_id'>
+  & { rooms: Array<(
     { __typename?: 'room' }
     & RoomDetailedInfoFragment
   )> }
+  & SpaceBasicInfoFragment
 );
 
 export type SpacesQueryVariables = Exact<{
@@ -8491,7 +8481,7 @@ export type EditSpaceMutation = (
   { __typename?: 'mutation_root' }
   & { space?: Maybe<(
     { __typename?: 'space' }
-    & SpaceBasicInfoFragment
+    & SpaceDetailedInfoFragment
   )> }
 );
 
@@ -8504,7 +8494,7 @@ export type DeleteSpaceMutation = (
   { __typename?: 'mutation_root' }
   & { deletedSpace?: Maybe<(
     { __typename?: 'space' }
-    & SpaceBasicInfoFragment
+    & SpaceDetailedInfoFragment
   )> }
 );
 
@@ -8792,8 +8782,8 @@ export type UploadUrlQueryVariables = Exact<{
 export type UploadUrlQuery = (
   { __typename?: 'query_root' }
   & { uploadUrlInfo?: Maybe<(
-    { __typename?: 'GetUploadUrlResponse' }
-    & Pick<GetUploadUrlResponse, 'uploadUrl' | 'uuid'>
+    { __typename?: 'UploadUrlResponse' }
+    & Pick<UploadUrlResponse, 'uploadUrl' | 'uuid'>
   )> }
 );
 
@@ -8805,8 +8795,8 @@ export type DownloadUrlQueryVariables = Exact<{
 export type DownloadUrlQuery = (
   { __typename?: 'query_root' }
   & { get_download_url?: Maybe<(
-    { __typename?: 'GetDownloadUrlResponse' }
-    & Pick<GetDownloadUrlResponse, 'downloadUrl'>
+    { __typename?: 'DownloadUrlResponse' }
+    & Pick<DownloadUrlResponse, 'downloadUrl'>
   )> }
 );
 
@@ -9000,14 +8990,9 @@ export type UserUnreadMessagesQuery = (
   )> }
 );
 
-export type GetDownloadUrlResponseKeySpecifier = ('downloadUrl' | GetDownloadUrlResponseKeySpecifier)[];
-export type GetDownloadUrlResponseFieldPolicy = {
+export type DownloadUrlResponseKeySpecifier = ('downloadUrl' | DownloadUrlResponseKeySpecifier)[];
+export type DownloadUrlResponseFieldPolicy = {
 	downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type GetUploadUrlResponseKeySpecifier = ('uploadUrl' | 'uuid' | GetUploadUrlResponseKeySpecifier)[];
-export type GetUploadUrlResponseFieldPolicy = {
-	uploadUrl?: FieldPolicy<any> | FieldReadFunction<any>,
-	uuid?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type InviteAcceptResponseKeySpecifier = ('invite' | 'invite_id' | 'team' | 'team_id' | InviteAcceptResponseKeySpecifier)[];
 export type InviteAcceptResponseFieldPolicy = {
@@ -9020,6 +9005,11 @@ export type UpgradeUserResponseKeySpecifier = ('user' | 'user_id' | UpgradeUserR
 export type UpgradeUserResponseFieldPolicy = {
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UploadUrlResponseKeySpecifier = ('uploadUrl' | 'uuid' | UploadUrlResponseKeySpecifier)[];
+export type UploadUrlResponseFieldPolicy = {
+	uploadUrl?: FieldPolicy<any> | FieldReadFunction<any>,
+	uuid?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type accountKeySpecifier = ('access_token' | 'access_token_expires' | 'created_at' | 'id' | 'provider_account_id' | 'provider_id' | 'provider_type' | 'refresh_token' | 'updated_at' | 'user' | 'user_id' | accountKeySpecifier)[];
 export type accountFieldPolicy = {
@@ -10393,13 +10383,9 @@ export type whitelist_mutation_responseFieldPolicy = {
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type TypedTypePolicies = TypePolicies & {
-	GetDownloadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | GetDownloadUrlResponseKeySpecifier | (() => undefined | GetDownloadUrlResponseKeySpecifier),
-		fields?: GetDownloadUrlResponseFieldPolicy,
-	},
-	GetUploadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | GetUploadUrlResponseKeySpecifier | (() => undefined | GetUploadUrlResponseKeySpecifier),
-		fields?: GetUploadUrlResponseFieldPolicy,
+	DownloadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | DownloadUrlResponseKeySpecifier | (() => undefined | DownloadUrlResponseKeySpecifier),
+		fields?: DownloadUrlResponseFieldPolicy,
 	},
 	InviteAcceptResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | InviteAcceptResponseKeySpecifier | (() => undefined | InviteAcceptResponseKeySpecifier),
@@ -10408,6 +10394,10 @@ export type TypedTypePolicies = TypePolicies & {
 	UpgradeUserResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UpgradeUserResponseKeySpecifier | (() => undefined | UpgradeUserResponseKeySpecifier),
 		fields?: UpgradeUserResponseFieldPolicy,
+	},
+	UploadUrlResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UploadUrlResponseKeySpecifier | (() => undefined | UploadUrlResponseKeySpecifier),
+		fields?: UploadUrlResponseFieldPolicy,
 	},
 	account?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | accountKeySpecifier | (() => undefined | accountKeySpecifier),

@@ -24,7 +24,7 @@ interface MessageTranscriptionProps {
 }
 
 const PureMessageTranscription = ({ transcription, actualMediaTime, onSeek, className }: MessageTranscriptionProps) => {
-  if (transcription.status === Transcription_Status_Enum.Completed) {
+  if (transcription.status === "completed") {
     return (
       <div className={className}>
         {!transcription.transcript.length && <span>We couldn't transcribe this message, retry?</span>}

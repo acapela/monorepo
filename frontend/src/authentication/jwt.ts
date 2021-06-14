@@ -1,7 +1,7 @@
 /**
  * Will return JWT content as object without validating the signature.
  */
-export function parseJWTWithoutValidation<T extends Record<string, unknown>>(token: string): T {
+export function parseJWTWithoutValidation<T extends Record<string, any>>(token: string): T {
   const [, tokenContent] = token.split(".");
 
   const base64 = tokenContent.replace(/-/g, "+").replace(/_/g, "/");

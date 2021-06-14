@@ -19,13 +19,8 @@ input Boolean_comparison_exp {
   _nin: [Boolean!]
 }
 
-type GetDownloadUrlResponse {
+type DownloadUrlResponse {
   downloadUrl: String!
-}
-
-type GetUploadUrlResponse {
-  uploadUrl: String!
-  uuid: ID!
 }
 
 input InviteAcceptCommand {
@@ -63,6 +58,11 @@ input String_comparison_exp {
 type UpgradeUserResponse {
   user: user
   user_id: ID!
+}
+
+type UploadUrlResponse {
+  uploadUrl: String!
+  uuid: ID!
 }
 
 """
@@ -4309,12 +4309,12 @@ type query_root {
   """
   perform the action: "get_download_url"
   """
-  get_download_url(uuid: uuid!): GetDownloadUrlResponse
+  get_download_url(uuid: uuid!): DownloadUrlResponse
 
   """
   perform the action: "get_upload_url"
   """
-  get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
+  get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 
   """
   fetch data from the table: "last_seen_message"
@@ -7740,12 +7740,12 @@ type subscription_root {
   """
   perform the action: "get_download_url"
   """
-  get_download_url(uuid: uuid!): GetDownloadUrlResponse
+  get_download_url(uuid: uuid!): DownloadUrlResponse
 
   """
   perform the action: "get_upload_url"
   """
-  get_upload_url(fileName: String!, mimeType: String!): GetUploadUrlResponse
+  get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 
   """
   fetch data from the table: "last_seen_message"

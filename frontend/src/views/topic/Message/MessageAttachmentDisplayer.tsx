@@ -26,7 +26,7 @@ export const MessageAttachmentDisplayer = ({
   const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
   function renderAttachment() {
-    if (messageType === Message_Type_Enum.Video) {
+    if (messageType === "VIDEO") {
       return (
         <PlayableMediaWrapper>
           <video ref={mediaRef} className={className} src={attachmentUrl} controls>
@@ -36,7 +36,7 @@ export const MessageAttachmentDisplayer = ({
       );
     }
 
-    if (messageType === Message_Type_Enum.Audio) {
+    if (messageType === "AUDIO") {
       return (
         <PlayableMediaWrapper>
           <audio ref={mediaRef} className={className} src={attachmentUrl} controls>
@@ -46,7 +46,7 @@ export const MessageAttachmentDisplayer = ({
       );
     }
 
-    if (messageType === Message_Type_Enum.Text) {
+    if (messageType === "TEXT") {
       const [type] = attachment.mimeType.split("/");
 
       if (type === "image") {

@@ -21,7 +21,7 @@ export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => (
     key={"closing-topic"}
     message={{
       id: "closing-topic",
-      type: Message_Type_Enum.Text,
+      type: "TEXT",
       content: enrichSummary(summary),
       createdAt: closedAt,
       user: closedBy,
