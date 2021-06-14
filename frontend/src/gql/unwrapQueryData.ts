@@ -16,7 +16,7 @@ export type UnwrapQueryData<T> = T extends Primitive
   : T;
 
 /**
- * This function will pick nested graphql query data if possible.
+ * This function will pick graphql query data if possible.
  *
  * Possible = there is only one query in gql document (which is 95-100% of the cases in our current codebase)
  *
@@ -54,26 +54,6 @@ export type UnwrapQueryData<T> = T extends Primitive
  *
  * This function is fully type safe and will only process (both object and it's type) if there is only one key in data object (excluding __typename key which is always ignored)
  *
- * --------
- *
- * This function also works for multi-level nested data:
- *
- * query CurrentTeamOwner {
- *   currentTeam {
- *     ownerUser {
- *       id
- *       email
- *     }
- *   }
- * }
- *
- * const [user] = useCurrentTeamOwner();
- *
- * const id = user?.id;
- *
- * // instead of
- * const [data] = useCurrentTeamOwner();
- * const user = data?.currentTeam?.ownerUser;
  */
 export function unwrapQueryData<T>(data: T): UnwrapQueryData<T> {
   type Result = UnwrapQueryData<T>;
