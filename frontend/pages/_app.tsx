@@ -50,12 +50,12 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <PromiseUIRenderer />
-      <TooltipsRenderer />
-      <ToastsRenderer />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG, duration: 0.15 }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
             <AnimatePresence>
               <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
                 {renderWithPageLayout(Component, pageProps)}
