@@ -17,12 +17,14 @@ import {
   DeleteRoomMutationVariables,
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
+  RoomBasicInfoFragment as RoomBasicInfoFragmentType,
 } from "~gql";
 import { singleSpaceQueryManager } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 
 import { createMutation, createQuery } from "./utils";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const RoomBasicInfoFragment = () => gql`
   ${UserBasicInfoFragment()}
@@ -91,6 +93,12 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
     }
   `
 );
+
+export function useAmIRoomMember(room?: RoomBasicInfoFragmentType) {
+  const user = useAssertCurrentUser();
+
+  return room?.members.some((member) => member.user.id === user.id) ?? false;
+}
 
 export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, CreateRoomMutationVariables>(
   () => gql`

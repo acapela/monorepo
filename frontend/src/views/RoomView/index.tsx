@@ -1,10 +1,10 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
+import { useAmIRoomMember, useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "../topic/TopicView";
 import { TopicsList } from "./TopicsList";
@@ -24,6 +24,7 @@ export function RoomView({ roomId, topicId }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [room] = useSingleRoomQuery({ id: roomId });
+  const amIMember = useAmIRoomMember(room);
 
   const firstTopic = room?.topics?.[0] ?? null;
 
@@ -97,15 +98,21 @@ export function RoomView({ roomId, topicId }: Props) {
             <UIRoomHead>
               <UIRoomTitle
                 ref={titleHolderRef}
-                data-tooltip="Edit room name..."
-                onClick={() => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" })}
+                {...(amIMember
+                  ? {
+                      ["data-tooltip"]: "Edit room name...",
+                      onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
+                    }
+                  : {})}
               >
                 {room.name}
               </UIRoomTitle>
 
-              <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
-                <OptionsButton />
-              </PopoverMenuTrigger>
+              {amIMember && (
+                <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
+                  <OptionsButton />
+                </PopoverMenuTrigger>
+              )}
             </UIRoomHead>
           )}
           <UIManageSections>
@@ -113,7 +120,7 @@ export function RoomView({ roomId, topicId }: Props) {
               <>
                 <UIManageSection>
                   <SecondaryText>Due date</SecondaryText>
-                  <DeadlineManager room={room} />
+                  <DeadlineManager room={room} isReadonly={!amIMember} />
                 </UIManageSection>
                 <UIManageSection>
                   <SecondaryText>Participants</SecondaryText>
@@ -123,7 +130,7 @@ export function RoomView({ roomId, topicId }: Props) {
             )}
           </UIManageSections>
           <UILine />
-          <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
+          {room && <TopicsList room={room} activeTopicId={selectedTopicId} />}
         </UIRoomInfo>
         <AnimatePresence exitBeforeEnter>
           <UITopicContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
@@ -190,5 +197,9 @@ const UIRoomHead = styled(PageTitle)`
 `;
 
 const UIRoomTitle = styled.div`
-  cursor: pointer;
+  ${(props) =>
+    props.onClick &&
+    css`
+      cursor: pointer;
+    `}
 `;

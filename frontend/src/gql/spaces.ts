@@ -15,11 +15,14 @@ import {
   EditSpaceMutationVariables,
   DeleteSpaceMutation,
   DeleteSpaceMutationVariables,
+  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
+  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
 } from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 
 import { createMutation, createQuery } from "./utils";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const SpaceBasicInfoFragment = () => gql`
   ${UserBasicInfoFragment()}
@@ -77,6 +80,12 @@ export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<Single
     }
   `
 );
+
+export function useAmISpaceMember(space?: SpaceBasicInfoFragmentType) {
+  const user = useAssertCurrentUser();
+
+  return space?.members.some((member) => member.user.id === user.id) ?? false;
+}
 
 export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, CreateSpaceMutationVariables>(
   () => gql`

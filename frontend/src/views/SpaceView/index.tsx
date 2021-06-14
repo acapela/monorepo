@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useAmISpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -18,6 +18,7 @@ interface Props {
 
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });
+  const amIMember = useAmISpaceMember(space ?? undefined);
 
   const rooms = space?.rooms ?? [];
 
@@ -61,7 +62,12 @@ export function SpaceView({ spaceId }: Props) {
           <UIContent>
             <UITitle>
               <PageTitle>Rooms</PageTitle>
-              <Button ref={buttonRef} onClick={onCreate}>
+
+              <Button
+                ref={buttonRef}
+                onClick={onCreate}
+                isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
+              >
                 Create room
               </Button>
             </UITitle>
