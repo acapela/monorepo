@@ -17,6 +17,8 @@ import {
   DeleteRoomMutationVariables,
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
+  CloseOpenTopicsMutation,
+  CloseOpenTopicsMutationVariables,
 } from "./generated";
 import { getSingleSpaceManager } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
@@ -178,6 +180,19 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
     mutation DeleteRoom($roomId: uuid!) {
       room: delete_room_by_pk(id: $roomId) {
         ...RoomDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useCloseOpenTopicsMutation] = createMutation<CloseOpenTopicsMutation, CloseOpenTopicsMutationVariables>(
+  () => gql`
+    mutation CloseOpenTopics($roomId: uuid!, $closedAt: timestamp, $closedByUserId: uuid) {
+      update_topic(
+        where: { room_id: { _eq: $roomId } }
+        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId }
+      ) {
+        affected_rows
       }
     }
   `

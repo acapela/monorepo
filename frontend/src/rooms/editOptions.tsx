@@ -4,8 +4,9 @@ import { RoomBasicInfoFragment } from "~frontend/gql";
 import { deleteRoom, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
+import { roomCloseModal } from "~frontend/views/RoomView/RoomCloseModal";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -40,6 +41,17 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   await deleteRoom({ roomId: room.id });
 }
 
+export async function handleCloseRoom(room: RoomBasicInfoFragment) {
+  const response = await roomCloseModal({
+    room,
+  });
+
+  console.log(response);
+  if (response) {
+    // TODO: route to topic summary
+  }
+}
+
 export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): PopoverMenuOption[] {
   return [
     {
@@ -47,6 +59,12 @@ export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): Popove
       onSelect: () => handleEditRoomName(room),
       icon: <IconEdit />,
     },
+    {
+      label: "Close room...",
+      onSelect: () => handleCloseRoom(room),
+      icon: <IconCheck />,
+    },
+
     {
       label: "Delete room...",
       onSelect: () => handleDeleteRoom(room),

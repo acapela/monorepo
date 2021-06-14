@@ -8470,6 +8470,21 @@ export type DeleteRoomMutation = (
   )> }
 );
 
+export type CloseOpenTopicsMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  closedAt?: Maybe<Scalars['timestamp']>;
+  closedByUserId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CloseOpenTopicsMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_topic?: Maybe<(
+    { __typename?: 'topic_mutation_response' }
+    & Pick<Topic_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
 export type SearchResultFragment = (
   { __typename?: 'full_text_search' }
   & Pick<Full_Text_Search, 'transcript'>
