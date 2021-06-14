@@ -6,7 +6,7 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
-import { roomCloseModal } from "~frontend/views/RoomView/RoomCloseModal";
+import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -42,13 +42,12 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
 }
 
 export async function handleCloseRoom(room: RoomBasicInfoFragment) {
-  const response = await roomCloseModal({
+  const canCloseRoom = await closeOpenTopicsPrompt({
     room,
   });
 
-  console.log(response);
-  if (response) {
-    // TODO: route to topic summary
+  if (canCloseRoom) {
+    await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
   }
 }
 
