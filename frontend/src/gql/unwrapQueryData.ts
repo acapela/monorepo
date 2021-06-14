@@ -78,9 +78,5 @@ export function unwrapQueryData<T>(data: T): UnwrapQueryData<T> {
 
   const pickedValue = data?.[theOnlyKeyName];
 
-  if (pickedValue === undefined) {
-    return pickedValue as Result;
-  }
-
   return pickedValue as Result;
 }
