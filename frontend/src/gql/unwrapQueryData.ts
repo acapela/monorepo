@@ -7,6 +7,9 @@ type HasManyProps<T> = IsUnion<keyof T>;
 type HasExactlyOneProp<T> = HasManyProps<T> extends true ? false : true;
 type Empty = null | undefined;
 
+type WithTypename<T> = T & { __typename?: string };
+type WithoutTypename<T> = Omit<T, "__typename">;
+
 export type UnwrapQueryData<T> = T extends Primitive
   ? T
   : T extends Empty
@@ -81,7 +84,3 @@ export function unwrapQueryData<T>(data: T): UnwrapQueryData<T> {
 
   return pickedValue as Result;
 }
-
-type WithTypename<T> = T & { __typename?: string };
-
-type WithoutTypename<T> = Omit<T, "__typename">;

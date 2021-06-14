@@ -59,7 +59,5 @@ export function useAssertCurrentUser() {
 export function useAssertCurrentTeamId() {
   const user = useAssertCurrentUser();
 
-  assertGet(user.currentTeamId, "No team id");
-
-  return user.currentTeamId;
+  return assertGet(user.currentTeamId, "No team id");
 }

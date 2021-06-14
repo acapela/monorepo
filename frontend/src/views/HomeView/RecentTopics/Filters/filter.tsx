@@ -3,7 +3,6 @@ import { ReactNode, useState } from "react";
 import { IconFilter } from "~ui/icons";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
-  Order_By,
   TopicsQueryVariables,
   Topic_Bool_Exp as TopicWhere,
   Topic_Order_By as TopicOrder,
@@ -58,7 +57,7 @@ export function getTopicVariablesFromFilters(
 
   // If there is no other orders, by default let's order by the latest messages.
   if (!orders.length) {
-    orders.push({ messages_aggregate: { max: { created_at: Order_By.Desc } } });
+    orders.push({ messages_aggregate: { max: { created_at: "desc" } } });
   }
 
   return {
@@ -97,7 +96,7 @@ export function createSortByLatestActivityFilter(): BasicFilter {
     label: "Sort by latest activity",
     icon: <IconFilter />,
     orderGetter() {
-      return { messages_aggregate: { max: { created_at: Order_By.Desc } } };
+      return { messages_aggregate: { max: { created_at: "desc" } } };
     },
   };
 }
@@ -107,7 +106,7 @@ export function createSortByDueDateFilter(): BasicFilter {
     label: "Sort by due date",
     icon: <IconFilter />,
     orderGetter() {
-      return { room: { deadline: Order_By.Desc } };
+      return { room: { deadline: "desc" } };
     },
   };
 }
