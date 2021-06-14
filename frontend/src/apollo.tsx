@@ -23,7 +23,7 @@ import { readAppInitialPropByName } from "./utils/next";
 import { assertGet } from "~shared/assert";
 import { TOKEN_COOKIE_NAME, readCurrentToken } from "./authentication/cookie";
 
-const mergeUsingIncoming: FieldMergeFunction<any, any> = (old, fresh) => fresh;
+const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
 const typePolicies: TypedTypePolicies = {
   space_member: {

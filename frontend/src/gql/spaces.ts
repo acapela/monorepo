@@ -165,7 +165,7 @@ export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
         deletedSpace: space,
       };
     },
-    onResult(deletedSpace, variables) {
+    onResult(deletedSpace) {
       TeamDetailedInfoFragment.update(deletedSpace.team_id, (team) => {
         team.spaces = team.spaces.filter((space) => space.id !== deletedSpace.id);
       });
@@ -218,7 +218,7 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
     }
   `,
   {
-    optimisticResponse(vars) {
+    optimisticResponse() {
       return {
         __typename: "mutation_root",
         delete_space_member: {

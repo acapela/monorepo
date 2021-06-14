@@ -21,7 +21,7 @@ import {
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
 } from "~gql";
-import { singleSpaceQueryManager, SpaceDetailedInfoFragment } from "./spaces";
+import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
@@ -179,7 +179,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
     }
   `,
   {
-    optimisticResponse(vars) {
+    optimisticResponse() {
       return {
         __typename: "mutation_root",
         delete_room_member: { __typename: "room_member_mutation_response", affected_rows: 1 },

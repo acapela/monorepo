@@ -1,6 +1,7 @@
 /**
  * Will return JWT content as object without validating the signature.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseJWTWithoutValidation<T extends Record<string, any>>(token: string): T {
   const [, tokenContent] = token.split(".");
 

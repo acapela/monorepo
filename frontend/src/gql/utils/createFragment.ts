@@ -68,11 +68,6 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
     const fullId = getFragmentId(id);
 
     const client = getCurrentApolloClientHandler();
-    console.log(
-      { fullId, client },
-      client.readFragment<Data>({ id: fullId, fragment: getFragment(), fragmentName: getPrimaryFragmentName() }),
-      { id: fullId, fragment: getFragment(), fragmentName: getPrimaryFragmentName() }
-    );
     return client.readFragment<Data>({ id: fullId, fragment: getFragment(), fragmentName: getPrimaryFragmentName() });
   }
 
@@ -98,8 +93,6 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
 
   function update(id: string, updater: (dataDraft: Draft<Data>) => void) {
     const newData = produce(id, updater);
-
-    console.log("nd", newData);
 
     if (newData === undefined) {
       return;

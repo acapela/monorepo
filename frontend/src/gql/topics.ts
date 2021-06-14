@@ -165,10 +165,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
       };
     },
     onResult(topic, variables) {
-      console.log("success");
-      if (!topic?.id) return;
       RoomDetailedInfoFragment.update(variables.roomId, (data) => {
-        console.log("trying inside", data);
         data.topics.push(topic);
       });
     },
