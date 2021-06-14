@@ -39,9 +39,9 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
               return (
                 <UIMember>
                   <UserMedia user={user} />
-                  <UIRemoveMember onClick={() => onRemoveUser(user.id)}>
+                  <UIRemoveMemberButton onClick={() => onRemoveUser(user.id)}>
                     <IconCross />
-                  </UIRemoveMember>
+                  </UIRemoveMemberButton>
                 </UIMember>
               );
             })}
@@ -78,7 +78,7 @@ const UIMember = styled.div`
   }
 `;
 
-const UIRemoveMember = styled.button`
+const UIRemoveMemberButton = styled.button`
   padding: 6px;
   background: ${LIGHT_GRAY};
   cursor: pointer;
