@@ -13,7 +13,8 @@ import { PageTitle, SecondaryText } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
-import { getRoomManagePopoverOptions, handleEditRoomName } from "~frontend/rooms/editOptions";
+import { getRoomManagePopoverOptions, handleEditRoomName, handleCloseRoom } from "~frontend/rooms/editOptions";
+import { Button } from "~ui/buttons/Button";
 
 interface Props {
   roomId: string;
@@ -126,6 +127,13 @@ export function RoomView({ roomId, topicId }: Props) {
           </UIManageSections>
           <UILine />
           <TopicsList roomId={roomId} activeTopicId={selectedTopicId} />
+          {room && (
+            <UIFlyingCloseRoomToggle>
+              <Button isWide={true} onClick={() => handleCloseRoom(room)}>
+                Close room
+              </Button>
+            </UIFlyingCloseRoomToggle>
+          )}
         </UIRoomInfo>
         <AnimatePresence exitBeforeEnter>
           <UITopicContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
@@ -147,6 +155,7 @@ const UIHolder = styled.div`
 `;
 
 const UIRoomInfo = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
@@ -193,4 +202,11 @@ const UIRoomHead = styled(PageTitle)`
 
 const UIRoomTitle = styled.div`
   cursor: pointer;
+`;
+
+const UIFlyingCloseRoomToggle = styled.div`
+  position: absolute;
+  width: 100%;
+  padding: 0 16px;
+  bottom: 0;
 `;

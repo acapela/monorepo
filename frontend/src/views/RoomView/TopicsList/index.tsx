@@ -88,7 +88,7 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
           />
         </Suspense>
       </ClientSideOnly>
-      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
+      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
     </UIHolder>
   );
 }
