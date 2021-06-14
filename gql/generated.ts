@@ -8952,7 +8952,7 @@ export type DeleteTopicMutation = (
 
 export type UserBasicInfoFragment = (
   { __typename?: 'user' }
-  & Pick<User, 'id' | 'name' | 'avatar_url'>
+  & Pick<User, 'id' | 'name' | 'email' | 'avatar_url'>
 );
 
 export type ChangeCurrentTeamIdMutationVariables = Exact<{

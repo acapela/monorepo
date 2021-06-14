@@ -41,6 +41,7 @@
     "validator": "^13.6.0",
     "react-beautiful-dnd": "^13.0.0",
     "mudder": "^1.0.0",
+    "downshift": "^6.1.3",
     "~config": "0.1.0",
     "~db": "0.1.0",
     "~richEditor": "0.1.0",
