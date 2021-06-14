@@ -34,8 +34,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     reset,
     inputValue,
   } = useCombobox({
-    items: users,
-    defaultHighlightedIndex: 0,
+    items: inputItems,
     onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
     itemToString: (user) => user?.email || "",
   });
@@ -66,7 +65,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
           placeholder="Search with name or email"
           {...getInputProps()}
         />
-        <UIMenu {...getMenuProps()} isOpen={isOpen}>
+        <UIMenu {...getMenuProps()} isVisible={areResultsVisible}>
           {areResultsVisible &&
             inputItems.map((user, index) => (
               <UIOption
@@ -110,7 +109,7 @@ const UIInput = styled.input<{ areResultsVisible: boolean }>`
     `}
 `;
 
-const UIMenu = styled.div<{ isOpen: boolean }>`
+const UIMenu = styled.div<{ isVisible: boolean }>`
   position: absolute;
   overflow: hidden;
   border-left: 1px solid #eae9ea;
@@ -118,7 +117,7 @@ const UIMenu = styled.div<{ isOpen: boolean }>`
   border-bottom: 1px solid #eae9ea;
   left: 0;
   width: 100%;
-  visibility: ${({ isOpen }) => (isOpen ? "visible" : "hidden")};
+  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
   border-radius: 0 0 16px 16px;
   background: #ffffff;
 `;
