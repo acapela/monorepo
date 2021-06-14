@@ -7,7 +7,7 @@ import { PropsWithChildren } from "react";
 import { ApolloClientProvider as ApolloProvider } from "./apollo";
 import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
 import { useCurrentUser } from "./authentication/useCurrentUser";
-import { useGetSpaceRoomsQuery } from "./gql/rooms";
+import { useSpaceRoomsQuery } from "./gql/rooms";
 
 jest.mock(
   "next-auth/client",
@@ -28,7 +28,7 @@ jest.mock(
 );
 
 const mockBackend = setupServer(
-  graphql.query("GetRooms", (_, res, ctx) => res(ctx.data({ room: [{ id: "test-room-id" }] }))),
+  graphql.query("Rooms", (_, res, ctx) => res(ctx.data({ room: [{ id: "test-room-id" }] }))),
   rest.post("/api/backend/v1/users", (_, res, ctx) => res(ctx.json({ id: "testUserId" }))),
   rest.get("/api/auth/session", (req, res, ctx) => {
     return res(ctx.json({ id: "foo" }));
@@ -39,7 +39,7 @@ describe("Apollo setup", () => {
   beforeAll(() => mockBackend.listen({ onUnhandledRequest: "warn" }));
   afterAll(() => mockBackend.close());
   // TODO: this test is currently failing because the TestQueryComponent
-  // receives an empty room list from the useGetRoomsQuery() function
+  // receives an empty room list from the useRoomsQuery() function
   it.skip("sets up graphql link correctly when you are authenticated", async () => {
     render(
       <Provider session={undefined}>
@@ -58,7 +58,7 @@ describe("Apollo setup", () => {
 });
 
 gql`
-  query GetRoomsTestQuery {
+  query RoomsTestQuery {
     room {
       id
     }
@@ -74,8 +74,8 @@ function TestComponent() {
 }
 
 function TestQueryComponent() {
-  const { data } = useGetSpaceRoomsQuery();
-  return <>Rooms: {data ? data.room.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
+  const [rooms] = useSpaceRoomsQuery();
+  return <>Rooms: {rooms ? rooms.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
 }
 
 function login() {

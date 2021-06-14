@@ -7,12 +7,12 @@ import {
   CreateTopicMutationVariables,
   DeleteTextMessageMutation,
   DeleteTextMessageMutationVariables,
-  GetAttachmentQuery,
-  GetAttachmentQueryVariables,
-  GetDownloadUrlQuery,
-  GetDownloadUrlQueryVariables,
-  GetUploadUrlQuery,
-  GetUploadUrlQueryVariables,
+  AttachmentQuery,
+  AttachmentQueryVariables,
+  DownloadUrlQuery,
+  DownloadUrlQueryVariables,
+  UploadUrlQuery,
+  UploadUrlQueryVariables,
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
   TopicMessagesQuery,
@@ -36,7 +36,7 @@ import {
   DeleteTopicMutationVariables,
   ReorderTopicMutation,
   ReorderTopicMutationVariables,
-} from "./generated";
+} from "~gql";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery } from "./utils";
@@ -131,7 +131,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
   `
 );
 
-export const [useRoomTopics] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
+export const [useRoomTopicsQuery] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
@@ -143,7 +143,10 @@ export const [useRoomTopics] = createQuery<RoomTopicsQuery, RoomTopicsQueryVaria
   `
 );
 
-export const [useTopicMessages, topicMessagesManager] = createQuery<TopicMessagesQuery, TopicMessagesQueryVariables>(
+export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
+  TopicMessagesQuery,
+  TopicMessagesQueryVariables
+>(
   () => gql`
     ${TopicMessageDetailedInfoFragment()}
 
@@ -182,12 +185,12 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
     }
   `,
   {
-    onSuccess: (data, variables) => {
-      topicMessagesManager.update({ topicId: variables.topicId }, (current) => {
-        if (!data.message) {
+    onSuccess: (message, variables) => {
+      topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
+        if (!message) {
           return;
         }
-        current.messages.push(data.message);
+        current.messages.push(message);
       });
     },
   }
@@ -225,12 +228,9 @@ export const [useDeleteTextMessageMutation] = createMutation<
   `
 );
 
-export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
-  GetUploadUrlQuery,
-  GetUploadUrlQueryVariables
->(
+export const [useUploadUrlQuery, uploadUrlQueryManager] = createQuery<UploadUrlQuery, UploadUrlQueryVariables>(
   () => gql`
-    query GetUploadUrl($fileName: String!, $mimeType: String!) {
+    query UploadUrl($fileName: String!, $mimeType: String!) {
       uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
         uploadUrl
         uuid
@@ -239,9 +239,9 @@ export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
   `
 );
 
-export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>(
+export const [useDownloadUrlQuery] = createQuery<DownloadUrlQuery, DownloadUrlQueryVariables>(
   () => gql`
-    query GetDownloadUrl($id: uuid!) {
+    query DownloadUrl($id: uuid!) {
       get_download_url(uuid: $id) {
         downloadUrl
       }
@@ -249,10 +249,10 @@ export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDown
   `
 );
 
-export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(
+export const [useAttachmentQuery] = createQuery<AttachmentQuery, AttachmentQueryVariables>(
   () => gql`
     ${AttachmentDetailedInfoFragment()}
-    query GetAttachment($id: uuid!) {
+    query Attachment($id: uuid!) {
       attachment: attachment_by_pk(id: $id) {
         ...AttachmentDetailedInfo
       }
@@ -260,7 +260,7 @@ export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttach
   `
 );
 
-export const [useAddTopicMember] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
+export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
   () => gql`
     mutation AddTopicMember($topicId: uuid!, $userId: uuid!) {
       insert_topic_member_one(object: { topic_id: $topicId, user_id: $userId }) {
@@ -271,7 +271,10 @@ export const [useAddTopicMember] = createMutation<AddTopicMemberMutation, AddTop
   `
 );
 
-export const [useRemoveTopicMember] = createMutation<RemoveTopicMemberMutation, RemoveTopicMemberMutationVariables>(
+export const [useRemoveTopicMemberMutation] = createMutation<
+  RemoveTopicMemberMutation,
+  RemoveTopicMemberMutationVariables
+>(
   () => gql`
     mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
       delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {

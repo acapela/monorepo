@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Maybe } from "~frontend/gql";
+import { Maybe } from "~gql";
 import { getInitials } from "~frontend/utils";
 
 interface Props {

@@ -2,8 +2,8 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { AttachmentDetailedInfoFragment } from "~frontend/gql";
-import { useGetAttachmentQuery, useGetDownloadUrlQuery } from "~frontend/gql/topics";
+import { AttachmentDetailedInfoFragment } from "~gql";
+import { useDownloadUrlQuery } from "~frontend/gql/topics";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
@@ -18,9 +18,7 @@ interface AttachmentProps {
 
 const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
   const mediaRef = useRef<HTMLVideoElement>(null);
-  const [downloadUrlData] = useGetDownloadUrlQuery({ id: attachment.id });
-  const url = downloadUrlData?.get_download_url?.downloadUrl;
-  const [attachmentData] = useGetAttachmentQuery({ id: attachment.id });
+  const [url] = useDownloadUrlQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
   const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);
@@ -40,14 +38,14 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
     return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
   }
 
-  if (!attachmentData?.attachment) return null;
+  if (!attachment) return null;
 
   const renderAttachment = (isPlaceholder = false) => {
     return (
       <MessageAttachmentDisplayer
         mediaRef={mediaRef}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        attachment={attachmentData.attachment!}
+        attachment={attachment!}
         attachmentUrl={url}
         onClick={toggleIsFullscreenOpened}
         layoutId={isPlaceholder ? null : `attachment-${attachment.id}`}

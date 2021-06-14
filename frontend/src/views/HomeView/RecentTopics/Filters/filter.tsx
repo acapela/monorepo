@@ -7,9 +7,8 @@ import {
   TopicsQueryVariables,
   Topic_Bool_Exp as TopicWhere,
   Topic_Order_By as TopicOrder,
-  Topic_Order_By,
   UserBasicInfoFragment,
-} from "~frontend/gql/generated";
+} from "~gql";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 export interface BasicFilter {
@@ -33,7 +32,7 @@ export function getTopicVariablesFromFilters(
   teamId: string,
   filters: TopicFilter[]
 ): TopicsQueryVariables {
-  const orders: Topic_Order_By[] = [];
+  const orders: TopicOrder[] = [];
   let where: TopicWhere = {
     room: {
       space: {

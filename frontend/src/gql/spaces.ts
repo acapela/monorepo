@@ -3,8 +3,8 @@ import { addToast } from "~ui/toasts/data";
 import {
   CreateSpaceMutation,
   CreateSpaceMutationVariables,
-  GetSpacesQuery,
-  GetSpacesQueryVariables,
+  SpacesQuery,
+  SpacesQueryVariables,
   SingleSpaceQuery,
   SingleSpaceQueryVariables,
   AddSpaceMemberMutation,
@@ -15,7 +15,7 @@ import {
   EditSpaceMutationVariables,
   DeleteSpaceMutation,
   DeleteSpaceMutationVariables,
-} from "./generated";
+} from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 
@@ -54,11 +54,11 @@ export const SpaceDetailedInfoFragment = () => gql`
   }
 `;
 
-export const [useGetSpacesQuery, getSpacesQueryManager] = createQuery<GetSpacesQuery, GetSpacesQueryVariables>(
+export const [useSpacesQuery, spacesQueryManager] = createQuery<SpacesQuery, SpacesQueryVariables>(
   () => gql`
     ${SpaceBasicInfoFragment()}
 
-    query GetSpaces($teamId: uuid!) {
+    query Spaces($teamId: uuid!) {
       space(where: { team_id: { _eq: $teamId } }) {
         ...SpaceBasicInfo
       }
@@ -66,7 +66,7 @@ export const [useGetSpacesQuery, getSpacesQueryManager] = createQuery<GetSpacesQ
   `
 );
 
-export const [useSingleSpaceQuery, getSingleSpaceManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
+export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
@@ -89,11 +89,11 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
     }
   `,
   {
-    onSuccess(data, { teamId }) {
-      getSpacesQueryManager.update({ teamId }, (draft) => {
-        if (!data.space) return;
+    onSuccess(space, { teamId }) {
+      spacesQueryManager.update({ teamId }, (draft) => {
+        if (!space) return;
 
-        draft.space.push(data.space);
+        draft.space.push(space);
       });
     },
   }
@@ -126,7 +126,7 @@ export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
   `
 );
 
-export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpaceMemberMutationVariables>(
+export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation, AddSpaceMemberMutationVariables>(
   () => gql`
     mutation AddSpaceMember($spaceId: uuid!, $userId: uuid!) {
       insert_space_member_one(object: { space_id: $spaceId, user_id: $userId }) {
@@ -142,7 +142,10 @@ export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpa
   }
 );
 
-export const [useRemoveSpaceMember] = createMutation<RemoveSpaceMemberMutation, RemoveSpaceMemberMutationVariables>(
+export const [useRemoveSpaceMemberMutation] = createMutation<
+  RemoveSpaceMemberMutation,
+  RemoveSpaceMemberMutationVariables
+>(
   () => gql`
     mutation RemoveSpaceMember($spaceId: uuid!, $userId: uuid!) {
       delete_space_member(where: { space_id: { _eq: $spaceId }, user_id: { _eq: $userId } }) {

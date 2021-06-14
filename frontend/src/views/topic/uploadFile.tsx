@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getUploadUrlQueryManager } from "~frontend/gql/topics";
+import { uploadUrlQueryManager } from "~frontend/gql/topics";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;
@@ -7,7 +7,7 @@ interface UploadFileConfig {
 
 export async function uploadFile(file: File, config: UploadFileConfig = {}) {
   const { name: fileName, type: mimeType } = file;
-  const { uploadUrlInfo } = await getUploadUrlQueryManager.fetch({ fileName, mimeType });
+  const { uploadUrlInfo } = await uploadUrlQueryManager.fetch({ fileName, mimeType });
 
   if (!uploadUrlInfo) {
     throw new Error("unable to upload file");

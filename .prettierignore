@@ -1,7 +1,7 @@
 backend/dist
 frontend/.next
 frontend/dist
-frontend/src/gql/generated.ts
+gql/generated.ts
 tooling/schema.graphql
 .yarn/**/*.*
 infrastructure/hasura/metadata/actions.graphql

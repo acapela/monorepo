@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { TextTitle, SecondaryText } from "~ui/typo";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
 import { ReactNode } from "react";
 

@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { GetSearchResultsQuery, GetSearchResultsQueryVariables } from "./generated";
+import { SearchResultsQuery, SearchResultsQueryVariables } from "~gql";
 import { createQuery } from "./utils";
 
 const SearchResult = () => gql`
@@ -21,10 +21,10 @@ const SearchResult = () => gql`
   }
 `;
 
-export const [useFullTextSearch] = createQuery<GetSearchResultsQuery, GetSearchResultsQueryVariables>(
+export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
   () => gql`
     ${SearchResult()}
-    query GetSearchResults($term: String!) {
+    query SearchResults($term: String!) {
       results: search_full_text_topic(args: { search: $term }) {
         ...SearchResult
       }

@@ -1,6 +1,6 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { RoomBasicInfoFragment } from "~frontend/gql";
+import { RoomBasicInfoFragment } from "~gql";
 import { deleteRoom, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";

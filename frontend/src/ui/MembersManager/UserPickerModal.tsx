@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserSelectCard } from "~frontend/ui/users/UserSelectCard";
 import { SearchInput } from "~ui/forms/SearchInput";

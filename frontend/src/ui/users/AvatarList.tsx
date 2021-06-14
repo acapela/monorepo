@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "~frontend/ui/users/Avatar";
 
 interface Props {

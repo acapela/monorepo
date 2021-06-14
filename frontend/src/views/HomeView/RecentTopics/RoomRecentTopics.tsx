@@ -4,7 +4,7 @@ import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconChevronDown } from "~ui/icons";
 import { routes } from "~frontend/routes";
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { TopicCard } from "~frontend/ui/topics/TopicCard";

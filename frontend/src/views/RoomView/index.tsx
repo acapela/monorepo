@@ -23,9 +23,7 @@ interface Props {
 export function RoomView({ roomId, topicId }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
-  const [roomQuery] = useSingleRoomQuery({ id: roomId });
-
-  const room = roomQuery?.room;
+  const [room] = useSingleRoomQuery({ id: roomId });
 
   const firstTopic = room?.topics?.[0] ?? null;
 

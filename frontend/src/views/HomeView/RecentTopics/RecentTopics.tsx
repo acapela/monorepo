@@ -12,9 +12,7 @@ interface Props {
 export const RecentTopics = styled(function RecentTopics({ className }: Props) {
   const [topicQueryVariables, setFilters] = useTopicFilterVariables();
 
-  const [data] = useTopicsQuery(topicQueryVariables);
-
-  const topics = data?.topics ?? [];
+  const [topics = []] = useTopicsQuery(topicQueryVariables);
 
   const roomGroups = groupBy(
     topics,

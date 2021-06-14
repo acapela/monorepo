@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 import { log } from "~shared/logger";
 import { SCHEMA_FILE_PATH, updateSchemaFile } from "./fetchSchema";
+import { GQL_PACKAGE_PATH, ROOT_PATH } from "./files";
 
 interface ToolingGenerateOptions {
-  packageName: string;
   watch: boolean;
 }
 
@@ -21,11 +21,11 @@ function isDir(dirPath: string): boolean {
   return true;
 }
 
-export async function startGeneratingGraphqlTypes({ packageName, watch }: ToolingGenerateOptions): Promise<void> {
-  const packageDir = path.resolve(__dirname, "..", packageName);
+const PACKAGES_WITH_GQL_DOCUMENTS = ["frontend"];
 
-  if (!isDir(packageDir)) {
-    throw new Error(`Provided package name is not found (path: ${packageDir}) `);
+export async function startGeneratingGraphqlTypes({ watch }: ToolingGenerateOptions): Promise<void> {
+  if (!isDir(ROOT_PATH)) {
+    throw new Error(`Incorrect project root (not a dir) (path: ${ROOT_PATH}) `);
   }
 
   log.info("Updating graphql schema");
@@ -33,18 +33,35 @@ export async function startGeneratingGraphqlTypes({ packageName, watch }: Toolin
   await updateSchemaFile();
 
   await generate({
-    cwd: packageDir,
+    cwd: ROOT_PATH,
     schema: SCHEMA_FILE_PATH,
     watch,
     documents: [
-      "./**/*.{ts,tsx}",
+      ...PACKAGES_WITH_GQL_DOCUMENTS.map((packageName) => {
+        return `./${packageName}/**/*.{ts,tsx}`;
+      }),
       // Ignore generated file itself. (IMO codegen could be aware what it generated and ignore it automatically ¯\_(ツ)_/¯)
-      "!./**/gql/generated.ts",
+      "!./gql/generated.ts",
     ],
 
     generates: {
-      [path.resolve(packageDir, "src/gql/generated.ts")]: {
+      [path.resolve(GQL_PACKAGE_PATH, "generated.ts")]: {
         plugins: ["typescript", "typescript-operations", "typescript-apollo-client-helpers", "fragment-matcher"],
+        config: {
+          enumsAsTypes: true,
+          declarationKind: "interface",
+          strictScalars: true,
+          scalars: {
+            // Hasura has bunch of custom scalars. Let's inform gql codegen about corresponding typescript types.
+            bigint: "number",
+            date: "Date",
+            json: "any",
+            jsonb: "any",
+            timestamp: "Date",
+            timestamptz: "Date",
+            uuid: "string",
+          },
+        },
       },
     },
   });

@@ -8,7 +8,7 @@ type Mutation {
 type Query {
   get_download_url (
     uuid: uuid!
-  ): GetDownloadUrlResponse
+  ): DownloadUrlResponse
 }
 
 
@@ -16,7 +16,7 @@ type Query {
   get_upload_url (
     fileName: String!
     mimeType: String!
-  ): GetUploadUrlResponse
+  ): UploadUrlResponse
 }
 
 
@@ -40,12 +40,12 @@ type UpgradeUserResponse {
   user_id : ID!
 }
 
-type GetUploadUrlResponse {
+type UploadUrlResponse {
   uploadUrl : String!
   uuid : ID!
 }
 
-type GetDownloadUrlResponse {
+type DownloadUrlResponse {
   downloadUrl : String!
 }
 

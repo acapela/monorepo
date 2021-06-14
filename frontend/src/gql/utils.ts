@@ -17,6 +17,7 @@ import { assertGet } from "~shared/assert";
 import { getApolloClient } from "~frontend/apollo";
 import { reportQueryUsage } from "./hydration";
 import { memoize } from "lodash";
+import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
 
 type EmptyObject = Record<string, never>;
 type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
@@ -32,7 +33,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
 
     const { data, ...rest } = useRawQuery(getQuery(), { ...options, variables: variables as Variables });
 
-    return [data, rest] as const;
+    return [unwrapQueryData(data), rest] as const;
   }
 
   function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
@@ -42,7 +43,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
       variables: variables as Variables,
     });
 
-    const data = useLatest(subscriptionResult.data, queryData);
+    const data = useLatest(unwrapQueryData(subscriptionResult.data), queryData);
 
     return [data, subscriptionResult] as const;
   }
@@ -128,7 +129,7 @@ function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode
 }
 
 interface MutationDefinitionOptions<Data, Variables> {
-  onSuccess?: (data: Data, variables: Variables) => void;
+  onSuccess?: (data: UnwrapQueryData<Data>, variables: Variables) => void;
 }
 
 export function createMutation<Data, Variables>(
@@ -136,17 +137,20 @@ export function createMutation<Data, Variables>(
   mutationDefinitionOptions?: MutationDefinitionOptions<Data, Variables>
 ) {
   const getMutation = memoize(mutation);
+
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
     const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
       const rawResult = await runMutationRaw({ ...options, variables });
 
-      if (rawResult.data) {
-        mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
+      const resultData = unwrapQueryData(rawResult.data);
+
+      if (resultData) {
+        mutationDefinitionOptions?.onSuccess?.(resultData, variables);
       }
 
-      return rawResult;
+      return [resultData, rawResult] as const;
     }
 
     return [runMutation, result] as const;
@@ -159,11 +163,13 @@ export function createMutation<Data, Variables>(
       variables,
     });
 
-    if (rawResult.data) {
-      mutationDefinitionOptions?.onSuccess?.(rawResult.data, variables);
+    const resultData = unwrapQueryData(rawResult.data);
+
+    if (resultData) {
+      mutationDefinitionOptions?.onSuccess?.(resultData, variables);
     }
 
-    return rawResult;
+    return [resultData, rawResult] as const;
   }
 
   const manager = {
@@ -208,6 +214,12 @@ export function useLatest<T>(...items: T[]) {
       itemsAddSet.current.delete(existingItem);
     }
   });
+
+  // We're ignoring empty values as 'last values', but if every value is empty, return it instead of last non-empty value.
+  if (items.every((item) => item === undefined)) {
+    // We can assume T type includes undefined here.
+    return undefined as unknown as T;
+  }
 
   return latestRef.current;
 }

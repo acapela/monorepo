@@ -5,7 +5,7 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Avatar } from "~frontend/ui/users/Avatar";
-import { TopicMessageDetailedInfoFragment } from "~frontend/gql";
+import { TopicMessageDetailedInfoFragment } from "~gql";
 import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { MessageActions } from "~frontend/views/topic/Message/MessageActions";
