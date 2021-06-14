@@ -35,6 +35,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     inputValue,
   } = useCombobox({
     items: inputItems,
+    defaultHighlightedIndex: 0,
     onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
     itemToString: (user) => user?.email || "",
   });
