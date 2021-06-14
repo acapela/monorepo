@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { RoomCard } from "~frontend/ui/rooms/RoomCard";
 
 interface Props {

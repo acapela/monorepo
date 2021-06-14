@@ -15,7 +15,8 @@
       "shared",
       "db",
       "tooling",
-      "richEditor"
+      "richEditor",
+      "gql"
     ]
   },
   "scripts": {

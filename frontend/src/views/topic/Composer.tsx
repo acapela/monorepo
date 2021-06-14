@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { Message_Type_Enum } from "~frontend/gql";
+import { Message_Type_Enum } from "~gql";
 import { useCreateMessageMutation } from "~frontend/gql/topics";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";

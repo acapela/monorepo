@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { TextTitle } from "~ui/typo";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CloseTopicModal } from "./CloseTopicModal";

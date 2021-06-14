@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styled from "styled-components";
 import { HIGHLIGHT_COLOR } from "~ui/colors";
-import { SearchResultFragment } from "~frontend/gql";
+import { SearchResultFragment } from "~gql";
 
 interface Props {
   className?: string;

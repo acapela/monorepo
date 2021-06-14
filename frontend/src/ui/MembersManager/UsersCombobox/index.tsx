@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { baseInputStyles } from "~ui/forms/utils";
 import { Button } from "~ui/buttons/Button";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";

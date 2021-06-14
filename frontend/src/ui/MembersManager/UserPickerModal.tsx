@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
 import { UserBasicInfo } from "../users/UserBasicInfo";

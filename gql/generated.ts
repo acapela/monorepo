@@ -4,23 +4,23 @@ export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K]
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
+export interface Scalars {
   ID: string;
   String: string;
   Boolean: boolean;
   Int: number;
   Float: number;
-  bigint: any;
-  date: any;
+  bigint: number;
+  date: Date;
   json: any;
   jsonb: any;
-  timestamp: any;
-  timestamptz: any;
-  uuid: any;
-};
+  timestamp: Date;
+  timestamptz: Date;
+  uuid: string;
+}
 
 /** expression to compare columns of type Boolean. All fields are combined with logical 'AND'. */
-export type Boolean_Comparison_Exp = {
+export interface Boolean_Comparison_Exp {
   _eq?: Maybe<Scalars['Boolean']>;
   _gt?: Maybe<Scalars['Boolean']>;
   _gte?: Maybe<Scalars['Boolean']>;
@@ -30,33 +30,33 @@ export type Boolean_Comparison_Exp = {
   _lte?: Maybe<Scalars['Boolean']>;
   _neq?: Maybe<Scalars['Boolean']>;
   _nin?: Maybe<Array<Scalars['Boolean']>>;
-};
+}
 
-export type GetDownloadUrlResponse = {
+export interface GetDownloadUrlResponse {
   __typename?: 'GetDownloadUrlResponse';
   downloadUrl: Scalars['String'];
-};
+}
 
-export type GetUploadUrlResponse = {
+export interface GetUploadUrlResponse {
   __typename?: 'GetUploadUrlResponse';
   uploadUrl: Scalars['String'];
   uuid: Scalars['ID'];
-};
+}
 
-export type InviteAcceptCommand = {
+export interface InviteAcceptCommand {
   code: Scalars['String'];
-};
+}
 
-export type InviteAcceptResponse = {
+export interface InviteAcceptResponse {
   __typename?: 'InviteAcceptResponse';
   invite?: Maybe<Room_Invites>;
   invite_id: Scalars['ID'];
   team?: Maybe<Team>;
   team_id: Scalars['ID'];
-};
+}
 
 /** expression to compare columns of type String. All fields are combined with logical 'AND'. */
-export type String_Comparison_Exp = {
+export interface String_Comparison_Exp {
   _eq?: Maybe<Scalars['String']>;
   _gt?: Maybe<Scalars['String']>;
   _gte?: Maybe<Scalars['String']>;
@@ -72,13 +72,13 @@ export type String_Comparison_Exp = {
   _nlike?: Maybe<Scalars['String']>;
   _nsimilar?: Maybe<Scalars['String']>;
   _similar?: Maybe<Scalars['String']>;
-};
+}
 
-export type UpgradeUserResponse = {
+export interface UpgradeUserResponse {
   __typename?: 'UpgradeUserResponse';
   user?: Maybe<User>;
   user_id: Scalars['ID'];
-};
+}
 
 /**
  * Account represents 3rd party login methods used by given user.
@@ -86,7 +86,7 @@ export type UpgradeUserResponse = {
  *
  * columns and relationships of "account"
  */
-export type Account = {
+export interface Account {
   __typename?: 'account';
   access_token?: Maybe<Scalars['String']>;
   access_token_expires?: Maybe<Scalars['timestamptz']>;
@@ -100,45 +100,45 @@ export type Account = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "account" */
-export type Account_Aggregate = {
+export interface Account_Aggregate {
   __typename?: 'account_aggregate';
   aggregate?: Maybe<Account_Aggregate_Fields>;
   nodes: Array<Account>;
-};
+}
 
 /** aggregate fields of "account" */
-export type Account_Aggregate_Fields = {
+export interface Account_Aggregate_Fields {
   __typename?: 'account_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Account_Max_Fields>;
   min?: Maybe<Account_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "account" */
-export type Account_Aggregate_FieldsCountArgs = {
+export interface Account_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Account_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "account" */
-export type Account_Aggregate_Order_By = {
+export interface Account_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Account_Max_Order_By>;
   min?: Maybe<Account_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "account" */
-export type Account_Arr_Rel_Insert_Input = {
+export interface Account_Arr_Rel_Insert_Input {
   data: Array<Account_Insert_Input>;
   on_conflict?: Maybe<Account_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "account". All fields are combined with a logical 'AND'. */
-export type Account_Bool_Exp = {
+export interface Account_Bool_Exp {
   _and?: Maybe<Array<Maybe<Account_Bool_Exp>>>;
   _not?: Maybe<Account_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Account_Bool_Exp>>>;
@@ -153,16 +153,15 @@ export type Account_Bool_Exp = {
   updated_at?: Maybe<Timestamptz_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "account" */
-export enum Account_Constraint {
-  /** unique or primary key constraint */
-  AccountPkey = 'account_pkey'
 }
 
+/** unique or primary key constraints on table "account" */
+export type Account_Constraint =
+  /** unique or primary key constraint */
+  | 'account_pkey';
+
 /** input type for inserting data into table "account" */
-export type Account_Insert_Input = {
+export interface Account_Insert_Input {
   access_token?: Maybe<Scalars['String']>;
   access_token_expires?: Maybe<Scalars['timestamptz']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -174,10 +173,10 @@ export type Account_Insert_Input = {
   updated_at?: Maybe<Scalars['timestamptz']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Account_Max_Fields = {
+export interface Account_Max_Fields {
   __typename?: 'account_max_fields';
   access_token?: Maybe<Scalars['String']>;
   access_token_expires?: Maybe<Scalars['timestamptz']>;
@@ -189,10 +188,10 @@ export type Account_Max_Fields = {
   refresh_token?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "account" */
-export type Account_Max_Order_By = {
+export interface Account_Max_Order_By {
   access_token?: Maybe<Order_By>;
   access_token_expires?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -203,10 +202,10 @@ export type Account_Max_Order_By = {
   refresh_token?: Maybe<Order_By>;
   updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Account_Min_Fields = {
+export interface Account_Min_Fields {
   __typename?: 'account_min_fields';
   access_token?: Maybe<Scalars['String']>;
   access_token_expires?: Maybe<Scalars['timestamptz']>;
@@ -218,10 +217,10 @@ export type Account_Min_Fields = {
   refresh_token?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "account" */
-export type Account_Min_Order_By = {
+export interface Account_Min_Order_By {
   access_token?: Maybe<Order_By>;
   access_token_expires?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -232,32 +231,32 @@ export type Account_Min_Order_By = {
   refresh_token?: Maybe<Order_By>;
   updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "account" */
-export type Account_Mutation_Response = {
+export interface Account_Mutation_Response {
   __typename?: 'account_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Account>;
-};
+}
 
 /** input type for inserting object relation for remote table "account" */
-export type Account_Obj_Rel_Insert_Input = {
+export interface Account_Obj_Rel_Insert_Input {
   data: Account_Insert_Input;
   on_conflict?: Maybe<Account_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "account" */
-export type Account_On_Conflict = {
+export interface Account_On_Conflict {
   constraint: Account_Constraint;
   update_columns: Array<Account_Update_Column>;
   where?: Maybe<Account_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "account" */
-export type Account_Order_By = {
+export interface Account_Order_By {
   access_token?: Maybe<Order_By>;
   access_token_expires?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
@@ -269,39 +268,38 @@ export type Account_Order_By = {
   updated_at?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "account" */
-export type Account_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "account" */
-export enum Account_Select_Column {
-  /** column name */
-  AccessToken = 'access_token',
-  /** column name */
-  AccessTokenExpires = 'access_token_expires',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  ProviderAccountId = 'provider_account_id',
-  /** column name */
-  ProviderId = 'provider_id',
-  /** column name */
-  ProviderType = 'provider_type',
-  /** column name */
-  RefreshToken = 'refresh_token',
-  /** column name */
-  UpdatedAt = 'updated_at',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** primary key columns input for table: "account" */
+export interface Account_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "account" */
+export type Account_Select_Column =
+  /** column name */
+  | 'access_token'
+  /** column name */
+  | 'access_token_expires'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'provider_account_id'
+  /** column name */
+  | 'provider_id'
+  /** column name */
+  | 'provider_type'
+  /** column name */
+  | 'refresh_token'
+  /** column name */
+  | 'updated_at'
+  /** column name */
+  | 'user_id';
+
 /** input type for updating data in table "account" */
-export type Account_Set_Input = {
+export interface Account_Set_Input {
   access_token?: Maybe<Scalars['String']>;
   access_token_expires?: Maybe<Scalars['timestamptz']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -312,78 +310,77 @@ export type Account_Set_Input = {
   refresh_token?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "account" */
-export enum Account_Update_Column {
-  /** column name */
-  AccessToken = 'access_token',
-  /** column name */
-  AccessTokenExpires = 'access_token_expires',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  ProviderAccountId = 'provider_account_id',
-  /** column name */
-  ProviderId = 'provider_id',
-  /** column name */
-  ProviderType = 'provider_type',
-  /** column name */
-  RefreshToken = 'refresh_token',
-  /** column name */
-  UpdatedAt = 'updated_at',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "account" */
+export type Account_Update_Column =
+  /** column name */
+  | 'access_token'
+  /** column name */
+  | 'access_token_expires'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'provider_account_id'
+  /** column name */
+  | 'provider_id'
+  /** column name */
+  | 'provider_type'
+  /** column name */
+  | 'refresh_token'
+  /** column name */
+  | 'updated_at'
+  /** column name */
+  | 'user_id';
+
 /** columns and relationships of "attachment" */
-export type Attachment = {
+export interface Attachment {
   __typename?: 'attachment';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
   mime_type: Scalars['String'];
   original_name: Scalars['String'];
-};
+}
 
 /** aggregated selection of "attachment" */
-export type Attachment_Aggregate = {
+export interface Attachment_Aggregate {
   __typename?: 'attachment_aggregate';
   aggregate?: Maybe<Attachment_Aggregate_Fields>;
   nodes: Array<Attachment>;
-};
+}
 
 /** aggregate fields of "attachment" */
-export type Attachment_Aggregate_Fields = {
+export interface Attachment_Aggregate_Fields {
   __typename?: 'attachment_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Attachment_Max_Fields>;
   min?: Maybe<Attachment_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "attachment" */
-export type Attachment_Aggregate_FieldsCountArgs = {
+export interface Attachment_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Attachment_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "attachment" */
-export type Attachment_Aggregate_Order_By = {
+export interface Attachment_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Attachment_Max_Order_By>;
   min?: Maybe<Attachment_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "attachment" */
-export type Attachment_Arr_Rel_Insert_Input = {
+export interface Attachment_Arr_Rel_Insert_Input {
   data: Array<Attachment_Insert_Input>;
   on_conflict?: Maybe<Attachment_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'. */
-export type Attachment_Bool_Exp = {
+export interface Attachment_Bool_Exp {
   _and?: Maybe<Array<Maybe<Attachment_Bool_Exp>>>;
   _not?: Maybe<Attachment_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Attachment_Bool_Exp>>>;
@@ -391,128 +388,125 @@ export type Attachment_Bool_Exp = {
   id?: Maybe<Uuid_Comparison_Exp>;
   mime_type?: Maybe<String_Comparison_Exp>;
   original_name?: Maybe<String_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "attachment" */
-export enum Attachment_Constraint {
-  /** unique or primary key constraint */
-  AttachmentIdKey = 'attachment_id_key',
-  /** unique or primary key constraint */
-  AttachmentPkey = 'attachment_pkey'
 }
 
+/** unique or primary key constraints on table "attachment" */
+export type Attachment_Constraint =
+  /** unique or primary key constraint */
+  | 'attachment_id_key'
+  /** unique or primary key constraint */
+  | 'attachment_pkey';
+
 /** input type for inserting data into table "attachment" */
-export type Attachment_Insert_Input = {
+export interface Attachment_Insert_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregate max on columns */
-export type Attachment_Max_Fields = {
+export interface Attachment_Max_Fields {
   __typename?: 'attachment_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "attachment" */
-export type Attachment_Max_Order_By = {
+export interface Attachment_Max_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Attachment_Min_Fields = {
+export interface Attachment_Min_Fields {
   __typename?: 'attachment_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "attachment" */
-export type Attachment_Min_Order_By = {
+export interface Attachment_Min_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "attachment" */
-export type Attachment_Mutation_Response = {
+export interface Attachment_Mutation_Response {
   __typename?: 'attachment_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Attachment>;
-};
+}
 
 /** input type for inserting object relation for remote table "attachment" */
-export type Attachment_Obj_Rel_Insert_Input = {
+export interface Attachment_Obj_Rel_Insert_Input {
   data: Attachment_Insert_Input;
   on_conflict?: Maybe<Attachment_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "attachment" */
-export type Attachment_On_Conflict = {
+export interface Attachment_On_Conflict {
   constraint: Attachment_Constraint;
   update_columns: Array<Attachment_Update_Column>;
   where?: Maybe<Attachment_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "attachment" */
-export type Attachment_Order_By = {
+export interface Attachment_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "attachment" */
-export type Attachment_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "attachment" */
-export enum Attachment_Select_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  MimeType = 'mime_type',
-  /** column name */
-  OriginalName = 'original_name'
 }
 
+/** primary key columns input for table: "attachment" */
+export interface Attachment_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "attachment" */
+export type Attachment_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'mime_type'
+  /** column name */
+  | 'original_name';
+
 /** input type for updating data in table "attachment" */
-export type Attachment_Set_Input = {
+export interface Attachment_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
-};
+}
 
 /** update columns of table "attachment" */
-export enum Attachment_Update_Column {
+export type Attachment_Update_Column =
   /** column name */
-  CreatedAt = 'created_at',
+  | 'created_at'
   /** column name */
-  Id = 'id',
+  | 'id'
   /** column name */
-  MimeType = 'mime_type',
+  | 'mime_type'
   /** column name */
-  OriginalName = 'original_name'
-}
+  | 'original_name';
 
 
 /** expression to compare columns of type bigint. All fields are combined with logical 'AND'. */
-export type Bigint_Comparison_Exp = {
+export interface Bigint_Comparison_Exp {
   _eq?: Maybe<Scalars['bigint']>;
   _gt?: Maybe<Scalars['bigint']>;
   _gte?: Maybe<Scalars['bigint']>;
@@ -522,11 +516,11 @@ export type Bigint_Comparison_Exp = {
   _lte?: Maybe<Scalars['bigint']>;
   _neq?: Maybe<Scalars['bigint']>;
   _nin?: Maybe<Array<Scalars['bigint']>>;
-};
+}
 
 
 /** expression to compare columns of type date. All fields are combined with logical 'AND'. */
-export type Date_Comparison_Exp = {
+export interface Date_Comparison_Exp {
   _eq?: Maybe<Scalars['date']>;
   _gt?: Maybe<Scalars['date']>;
   _gte?: Maybe<Scalars['date']>;
@@ -536,10 +530,10 @@ export type Date_Comparison_Exp = {
   _lte?: Maybe<Scalars['date']>;
   _neq?: Maybe<Scalars['date']>;
   _nin?: Maybe<Array<Scalars['date']>>;
-};
+}
 
 /** columns and relationships of "full_text_search" */
-export type Full_Text_Search = {
+export interface Full_Text_Search {
   __typename?: 'full_text_search';
   attachment_id?: Maybe<Scalars['uuid']>;
   attachment_name?: Maybe<Scalars['String']>;
@@ -556,44 +550,44 @@ export type Full_Text_Search = {
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregated selection of "full_text_search" */
-export type Full_Text_Search_Aggregate = {
+export interface Full_Text_Search_Aggregate {
   __typename?: 'full_text_search_aggregate';
   aggregate?: Maybe<Full_Text_Search_Aggregate_Fields>;
   nodes: Array<Full_Text_Search>;
-};
+}
 
 /** aggregate fields of "full_text_search" */
-export type Full_Text_Search_Aggregate_Fields = {
+export interface Full_Text_Search_Aggregate_Fields {
   __typename?: 'full_text_search_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Full_Text_Search_Max_Fields>;
   min?: Maybe<Full_Text_Search_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "full_text_search" */
-export type Full_Text_Search_Aggregate_FieldsCountArgs = {
+export interface Full_Text_Search_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Full_Text_Search_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "full_text_search" */
-export type Full_Text_Search_Aggregate_Order_By = {
+export interface Full_Text_Search_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Full_Text_Search_Max_Order_By>;
   min?: Maybe<Full_Text_Search_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "full_text_search" */
-export type Full_Text_Search_Arr_Rel_Insert_Input = {
+export interface Full_Text_Search_Arr_Rel_Insert_Input {
   data: Array<Full_Text_Search_Insert_Input>;
-};
+}
 
 /** Boolean expression to filter rows from the table "full_text_search". All fields are combined with a logical 'AND'. */
-export type Full_Text_Search_Bool_Exp = {
+export interface Full_Text_Search_Bool_Exp {
   _and?: Maybe<Array<Maybe<Full_Text_Search_Bool_Exp>>>;
   _not?: Maybe<Full_Text_Search_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Full_Text_Search_Bool_Exp>>>;
@@ -611,10 +605,10 @@ export type Full_Text_Search_Bool_Exp = {
   transcript?: Maybe<String_Comparison_Exp>;
   transcription_id?: Maybe<Uuid_Comparison_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
+}
 
 /** input type for inserting data into table "full_text_search" */
-export type Full_Text_Search_Insert_Input = {
+export interface Full_Text_Search_Insert_Input {
   attachment_id?: Maybe<Scalars['uuid']>;
   attachment_name?: Maybe<Scalars['String']>;
   message_content?: Maybe<Scalars['String']>;
@@ -629,10 +623,10 @@ export type Full_Text_Search_Insert_Input = {
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Full_Text_Search_Max_Fields = {
+export interface Full_Text_Search_Max_Fields {
   __typename?: 'full_text_search_max_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   attachment_name?: Maybe<Scalars['String']>;
@@ -647,10 +641,10 @@ export type Full_Text_Search_Max_Fields = {
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "full_text_search" */
-export type Full_Text_Search_Max_Order_By = {
+export interface Full_Text_Search_Max_Order_By {
   attachment_id?: Maybe<Order_By>;
   attachment_name?: Maybe<Order_By>;
   message_content?: Maybe<Order_By>;
@@ -664,10 +658,10 @@ export type Full_Text_Search_Max_Order_By = {
   transcript?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Full_Text_Search_Min_Fields = {
+export interface Full_Text_Search_Min_Fields {
   __typename?: 'full_text_search_min_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   attachment_name?: Maybe<Scalars['String']>;
@@ -682,10 +676,10 @@ export type Full_Text_Search_Min_Fields = {
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "full_text_search" */
-export type Full_Text_Search_Min_Order_By = {
+export interface Full_Text_Search_Min_Order_By {
   attachment_id?: Maybe<Order_By>;
   attachment_name?: Maybe<Order_By>;
   message_content?: Maybe<Order_By>;
@@ -699,24 +693,24 @@ export type Full_Text_Search_Min_Order_By = {
   transcript?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "full_text_search" */
-export type Full_Text_Search_Mutation_Response = {
+export interface Full_Text_Search_Mutation_Response {
   __typename?: 'full_text_search_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Full_Text_Search>;
-};
+}
 
 /** input type for inserting object relation for remote table "full_text_search" */
-export type Full_Text_Search_Obj_Rel_Insert_Input = {
+export interface Full_Text_Search_Obj_Rel_Insert_Input {
   data: Full_Text_Search_Insert_Input;
-};
+}
 
 /** ordering options when selecting data from "full_text_search" */
-export type Full_Text_Search_Order_By = {
+export interface Full_Text_Search_Order_By {
   attachment_id?: Maybe<Order_By>;
   attachment_name?: Maybe<Order_By>;
   message_content?: Maybe<Order_By>;
@@ -731,40 +725,39 @@ export type Full_Text_Search_Order_By = {
   transcript?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
-
-/** select columns of table "full_text_search" */
-export enum Full_Text_Search_Select_Column {
-  /** column name */
-  AttachmentId = 'attachment_id',
-  /** column name */
-  AttachmentName = 'attachment_name',
-  /** column name */
-  MessageContent = 'message_content',
-  /** column name */
-  MessageCreatedAt = 'message_created_at',
-  /** column name */
-  MessageId = 'message_id',
-  /** column name */
-  MessageType = 'message_type',
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  RoomName = 'room_name',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  TopicName = 'topic_name',
-  /** column name */
-  Transcript = 'transcript',
-  /** column name */
-  TranscriptionId = 'transcription_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** select columns of table "full_text_search" */
+export type Full_Text_Search_Select_Column =
+  /** column name */
+  | 'attachment_id'
+  /** column name */
+  | 'attachment_name'
+  /** column name */
+  | 'message_content'
+  /** column name */
+  | 'message_created_at'
+  /** column name */
+  | 'message_id'
+  /** column name */
+  | 'message_type'
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'room_name'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'topic_name'
+  /** column name */
+  | 'transcript'
+  /** column name */
+  | 'transcription_id'
+  /** column name */
+  | 'user_id';
+
 /** input type for updating data in table "full_text_search" */
-export type Full_Text_Search_Set_Input = {
+export interface Full_Text_Search_Set_Input {
   attachment_id?: Maybe<Scalars['uuid']>;
   attachment_name?: Maybe<Scalars['String']>;
   message_content?: Maybe<Scalars['String']>;
@@ -778,11 +771,11 @@ export type Full_Text_Search_Set_Input = {
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 
 /** expression to compare columns of type json. All fields are combined with logical 'AND'. */
-export type Json_Comparison_Exp = {
+export interface Json_Comparison_Exp {
   _eq?: Maybe<Scalars['json']>;
   _gt?: Maybe<Scalars['json']>;
   _gte?: Maybe<Scalars['json']>;
@@ -792,11 +785,11 @@ export type Json_Comparison_Exp = {
   _lte?: Maybe<Scalars['json']>;
   _neq?: Maybe<Scalars['json']>;
   _nin?: Maybe<Array<Scalars['json']>>;
-};
+}
 
 
 /** expression to compare columns of type jsonb. All fields are combined with logical 'AND'. */
-export type Jsonb_Comparison_Exp = {
+export interface Jsonb_Comparison_Exp {
   /** is the column contained in the given json value */
   _contained_in?: Maybe<Scalars['jsonb']>;
   /** does the column contain the given json value at the top level */
@@ -816,54 +809,54 @@ export type Jsonb_Comparison_Exp = {
   _lte?: Maybe<Scalars['jsonb']>;
   _neq?: Maybe<Scalars['jsonb']>;
   _nin?: Maybe<Array<Scalars['jsonb']>>;
-};
+}
 
 /** columns and relationships of "last_seen_message" */
-export type Last_Seen_Message = {
+export interface Last_Seen_Message {
   __typename?: 'last_seen_message';
   message_id: Scalars['uuid'];
   seen_at: Scalars['timestamptz'];
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "last_seen_message" */
-export type Last_Seen_Message_Aggregate = {
+export interface Last_Seen_Message_Aggregate {
   __typename?: 'last_seen_message_aggregate';
   aggregate?: Maybe<Last_Seen_Message_Aggregate_Fields>;
   nodes: Array<Last_Seen_Message>;
-};
+}
 
 /** aggregate fields of "last_seen_message" */
-export type Last_Seen_Message_Aggregate_Fields = {
+export interface Last_Seen_Message_Aggregate_Fields {
   __typename?: 'last_seen_message_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Last_Seen_Message_Max_Fields>;
   min?: Maybe<Last_Seen_Message_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "last_seen_message" */
-export type Last_Seen_Message_Aggregate_FieldsCountArgs = {
+export interface Last_Seen_Message_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Last_Seen_Message_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "last_seen_message" */
-export type Last_Seen_Message_Aggregate_Order_By = {
+export interface Last_Seen_Message_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Last_Seen_Message_Max_Order_By>;
   min?: Maybe<Last_Seen_Message_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "last_seen_message" */
-export type Last_Seen_Message_Arr_Rel_Insert_Input = {
+export interface Last_Seen_Message_Arr_Rel_Insert_Input {
   data: Array<Last_Seen_Message_Insert_Input>;
   on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "last_seen_message". All fields are combined with a logical 'AND'. */
-export type Last_Seen_Message_Bool_Exp = {
+export interface Last_Seen_Message_Bool_Exp {
   _and?: Maybe<Array<Maybe<Last_Seen_Message_Bool_Exp>>>;
   _not?: Maybe<Last_Seen_Message_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Last_Seen_Message_Bool_Exp>>>;
@@ -871,257 +864,251 @@ export type Last_Seen_Message_Bool_Exp = {
   seen_at?: Maybe<Timestamptz_Comparison_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "last_seen_message" */
-export enum Last_Seen_Message_Constraint {
-  /** unique or primary key constraint */
-  LastSeenMessagePkey = 'last_seen_message_pkey'
 }
 
+/** unique or primary key constraints on table "last_seen_message" */
+export type Last_Seen_Message_Constraint =
+  /** unique or primary key constraint */
+  | 'last_seen_message_pkey';
+
 /** input type for inserting data into table "last_seen_message" */
-export type Last_Seen_Message_Insert_Input = {
+export interface Last_Seen_Message_Insert_Input {
   message_id?: Maybe<Scalars['uuid']>;
   seen_at?: Maybe<Scalars['timestamptz']>;
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Last_Seen_Message_Max_Fields = {
+export interface Last_Seen_Message_Max_Fields {
   __typename?: 'last_seen_message_max_fields';
   message_id?: Maybe<Scalars['uuid']>;
   seen_at?: Maybe<Scalars['timestamptz']>;
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "last_seen_message" */
-export type Last_Seen_Message_Max_Order_By = {
+export interface Last_Seen_Message_Max_Order_By {
   message_id?: Maybe<Order_By>;
   seen_at?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Last_Seen_Message_Min_Fields = {
+export interface Last_Seen_Message_Min_Fields {
   __typename?: 'last_seen_message_min_fields';
   message_id?: Maybe<Scalars['uuid']>;
   seen_at?: Maybe<Scalars['timestamptz']>;
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "last_seen_message" */
-export type Last_Seen_Message_Min_Order_By = {
+export interface Last_Seen_Message_Min_Order_By {
   message_id?: Maybe<Order_By>;
   seen_at?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "last_seen_message" */
-export type Last_Seen_Message_Mutation_Response = {
+export interface Last_Seen_Message_Mutation_Response {
   __typename?: 'last_seen_message_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Last_Seen_Message>;
-};
+}
 
 /** input type for inserting object relation for remote table "last_seen_message" */
-export type Last_Seen_Message_Obj_Rel_Insert_Input = {
+export interface Last_Seen_Message_Obj_Rel_Insert_Input {
   data: Last_Seen_Message_Insert_Input;
   on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "last_seen_message" */
-export type Last_Seen_Message_On_Conflict = {
+export interface Last_Seen_Message_On_Conflict {
   constraint: Last_Seen_Message_Constraint;
   update_columns: Array<Last_Seen_Message_Update_Column>;
   where?: Maybe<Last_Seen_Message_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "last_seen_message" */
-export type Last_Seen_Message_Order_By = {
+export interface Last_Seen_Message_Order_By {
   message_id?: Maybe<Order_By>;
   seen_at?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "last_seen_message" */
-export type Last_Seen_Message_Pk_Columns_Input = {
-  topic_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
-};
-
-/** select columns of table "last_seen_message" */
-export enum Last_Seen_Message_Select_Column {
-  /** column name */
-  MessageId = 'message_id',
-  /** column name */
-  SeenAt = 'seen_at',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** primary key columns input for table: "last_seen_message" */
+export interface Last_Seen_Message_Pk_Columns_Input {
+  topic_id: Scalars['uuid'];
+  user_id: Scalars['uuid'];
+}
+
+/** select columns of table "last_seen_message" */
+export type Last_Seen_Message_Select_Column =
+  /** column name */
+  | 'message_id'
+  /** column name */
+  | 'seen_at'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'user_id';
+
 /** input type for updating data in table "last_seen_message" */
-export type Last_Seen_Message_Set_Input = {
+export interface Last_Seen_Message_Set_Input {
   message_id?: Maybe<Scalars['uuid']>;
   seen_at?: Maybe<Scalars['timestamptz']>;
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "last_seen_message" */
-export enum Last_Seen_Message_Update_Column {
-  /** column name */
-  MessageId = 'message_id',
-  /** column name */
-  SeenAt = 'seen_at',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "last_seen_message" */
+export type Last_Seen_Message_Update_Column =
+  /** column name */
+  | 'message_id'
+  /** column name */
+  | 'seen_at'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'user_id';
+
 /** columns and relationships of "membership_status" */
-export type Membership_Status = {
+export interface Membership_Status {
   __typename?: 'membership_status';
   value: Scalars['String'];
-};
+}
 
 /** aggregated selection of "membership_status" */
-export type Membership_Status_Aggregate = {
+export interface Membership_Status_Aggregate {
   __typename?: 'membership_status_aggregate';
   aggregate?: Maybe<Membership_Status_Aggregate_Fields>;
   nodes: Array<Membership_Status>;
-};
+}
 
 /** aggregate fields of "membership_status" */
-export type Membership_Status_Aggregate_Fields = {
+export interface Membership_Status_Aggregate_Fields {
   __typename?: 'membership_status_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Membership_Status_Max_Fields>;
   min?: Maybe<Membership_Status_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "membership_status" */
-export type Membership_Status_Aggregate_FieldsCountArgs = {
+export interface Membership_Status_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Membership_Status_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "membership_status" */
-export type Membership_Status_Aggregate_Order_By = {
+export interface Membership_Status_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Membership_Status_Max_Order_By>;
   min?: Maybe<Membership_Status_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "membership_status" */
-export type Membership_Status_Arr_Rel_Insert_Input = {
+export interface Membership_Status_Arr_Rel_Insert_Input {
   data: Array<Membership_Status_Insert_Input>;
   on_conflict?: Maybe<Membership_Status_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "membership_status". All fields are combined with a logical 'AND'. */
-export type Membership_Status_Bool_Exp = {
+export interface Membership_Status_Bool_Exp {
   _and?: Maybe<Array<Maybe<Membership_Status_Bool_Exp>>>;
   _not?: Maybe<Membership_Status_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Membership_Status_Bool_Exp>>>;
   value?: Maybe<String_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "membership_status" */
-export enum Membership_Status_Constraint {
-  /** unique or primary key constraint */
-  TeamMembershipStatusPkey = 'team_membership_status_pkey'
 }
 
+/** unique or primary key constraints on table "membership_status" */
+export type Membership_Status_Constraint =
+  /** unique or primary key constraint */
+  | 'team_membership_status_pkey';
+
 /** input type for inserting data into table "membership_status" */
-export type Membership_Status_Insert_Input = {
+export interface Membership_Status_Insert_Input {
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregate max on columns */
-export type Membership_Status_Max_Fields = {
+export interface Membership_Status_Max_Fields {
   __typename?: 'membership_status_max_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "membership_status" */
-export type Membership_Status_Max_Order_By = {
+export interface Membership_Status_Max_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Membership_Status_Min_Fields = {
+export interface Membership_Status_Min_Fields {
   __typename?: 'membership_status_min_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "membership_status" */
-export type Membership_Status_Min_Order_By = {
+export interface Membership_Status_Min_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "membership_status" */
-export type Membership_Status_Mutation_Response = {
+export interface Membership_Status_Mutation_Response {
   __typename?: 'membership_status_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Membership_Status>;
-};
+}
 
 /** input type for inserting object relation for remote table "membership_status" */
-export type Membership_Status_Obj_Rel_Insert_Input = {
+export interface Membership_Status_Obj_Rel_Insert_Input {
   data: Membership_Status_Insert_Input;
   on_conflict?: Maybe<Membership_Status_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "membership_status" */
-export type Membership_Status_On_Conflict = {
+export interface Membership_Status_On_Conflict {
   constraint: Membership_Status_Constraint;
   update_columns: Array<Membership_Status_Update_Column>;
   where?: Maybe<Membership_Status_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "membership_status" */
-export type Membership_Status_Order_By = {
+export interface Membership_Status_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "membership_status" */
-export type Membership_Status_Pk_Columns_Input = {
+export interface Membership_Status_Pk_Columns_Input {
   value: Scalars['String'];
-};
+}
 
 /** select columns of table "membership_status" */
-export enum Membership_Status_Select_Column {
+export type Membership_Status_Select_Column =
   /** column name */
-  Value = 'value'
-}
+  | 'value';
 
 /** input type for updating data in table "membership_status" */
-export type Membership_Status_Set_Input = {
+export interface Membership_Status_Set_Input {
   value?: Maybe<Scalars['String']>;
-};
-
-/** update columns of table "membership_status" */
-export enum Membership_Status_Update_Column {
-  /** column name */
-  Value = 'value'
 }
 
+/** update columns of table "membership_status" */
+export type Membership_Status_Update_Column =
+  /** column name */
+  | 'value';
+
 /** columns and relationships of "message" */
-export type Message = {
+export interface Message {
   __typename?: 'message';
   content: Scalars['jsonb'];
   created_at: Scalars['timestamptz'];
@@ -1143,76 +1130,76 @@ export type Message = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** columns and relationships of "message" */
-export type MessageContentArgs = {
+export interface MessageContentArgs {
   path?: Maybe<Scalars['String']>;
-};
+}
 
 
 /** columns and relationships of "message" */
-export type MessageMessage_AttachmentsArgs = {
+export interface MessageMessage_AttachmentsArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "message" */
-export type MessageMessage_Attachments_AggregateArgs = {
+export interface MessageMessage_Attachments_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "message" */
-export type Message_Aggregate = {
+export interface Message_Aggregate {
   __typename?: 'message_aggregate';
   aggregate?: Maybe<Message_Aggregate_Fields>;
   nodes: Array<Message>;
-};
+}
 
 /** aggregate fields of "message" */
-export type Message_Aggregate_Fields = {
+export interface Message_Aggregate_Fields {
   __typename?: 'message_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Message_Max_Fields>;
   min?: Maybe<Message_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "message" */
-export type Message_Aggregate_FieldsCountArgs = {
+export interface Message_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Message_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "message" */
-export type Message_Aggregate_Order_By = {
+export interface Message_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Message_Max_Order_By>;
   min?: Maybe<Message_Min_Order_By>;
-};
+}
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type Message_Append_Input = {
+export interface Message_Append_Input {
   content?: Maybe<Scalars['jsonb']>;
-};
+}
 
 /** input type for inserting array relation for remote table "message" */
-export type Message_Arr_Rel_Insert_Input = {
+export interface Message_Arr_Rel_Insert_Input {
   data: Array<Message_Insert_Input>;
   on_conflict?: Maybe<Message_On_Conflict>;
-};
+}
 
 /** columns and relationships of "message_attachment" */
-export type Message_Attachment = {
+export interface Message_Attachment {
   __typename?: 'message_attachment';
   /** An object relationship */
   attachment: Attachment;
@@ -1220,45 +1207,45 @@ export type Message_Attachment = {
   /** An object relationship */
   message: Message;
   message_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "message_attachment" */
-export type Message_Attachment_Aggregate = {
+export interface Message_Attachment_Aggregate {
   __typename?: 'message_attachment_aggregate';
   aggregate?: Maybe<Message_Attachment_Aggregate_Fields>;
   nodes: Array<Message_Attachment>;
-};
+}
 
 /** aggregate fields of "message_attachment" */
-export type Message_Attachment_Aggregate_Fields = {
+export interface Message_Attachment_Aggregate_Fields {
   __typename?: 'message_attachment_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Message_Attachment_Max_Fields>;
   min?: Maybe<Message_Attachment_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "message_attachment" */
-export type Message_Attachment_Aggregate_FieldsCountArgs = {
+export interface Message_Attachment_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Message_Attachment_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "message_attachment" */
-export type Message_Attachment_Aggregate_Order_By = {
+export interface Message_Attachment_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Message_Attachment_Max_Order_By>;
   min?: Maybe<Message_Attachment_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "message_attachment" */
-export type Message_Attachment_Arr_Rel_Insert_Input = {
+export interface Message_Attachment_Arr_Rel_Insert_Input {
   data: Array<Message_Attachment_Insert_Input>;
   on_conflict?: Maybe<Message_Attachment_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "message_attachment". All fields are combined with a logical 'AND'. */
-export type Message_Attachment_Bool_Exp = {
+export interface Message_Attachment_Bool_Exp {
   _and?: Maybe<Array<Maybe<Message_Attachment_Bool_Exp>>>;
   _not?: Maybe<Message_Attachment_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Attachment_Bool_Exp>>>;
@@ -1266,108 +1253,105 @@ export type Message_Attachment_Bool_Exp = {
   attachment_id?: Maybe<Uuid_Comparison_Exp>;
   message?: Maybe<Message_Bool_Exp>;
   message_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "message_attachment" */
-export enum Message_Attachment_Constraint {
-  /** unique or primary key constraint */
-  MessageAttachmentsPkey = 'message_attachments_pkey'
 }
 
+/** unique or primary key constraints on table "message_attachment" */
+export type Message_Attachment_Constraint =
+  /** unique or primary key constraint */
+  | 'message_attachments_pkey';
+
 /** input type for inserting data into table "message_attachment" */
-export type Message_Attachment_Insert_Input = {
+export interface Message_Attachment_Insert_Input {
   attachment?: Maybe<Attachment_Obj_Rel_Insert_Input>;
   attachment_id?: Maybe<Scalars['uuid']>;
   message?: Maybe<Message_Obj_Rel_Insert_Input>;
   message_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Message_Attachment_Max_Fields = {
+export interface Message_Attachment_Max_Fields {
   __typename?: 'message_attachment_max_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "message_attachment" */
-export type Message_Attachment_Max_Order_By = {
+export interface Message_Attachment_Max_Order_By {
   attachment_id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Message_Attachment_Min_Fields = {
+export interface Message_Attachment_Min_Fields {
   __typename?: 'message_attachment_min_fields';
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "message_attachment" */
-export type Message_Attachment_Min_Order_By = {
+export interface Message_Attachment_Min_Order_By {
   attachment_id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "message_attachment" */
-export type Message_Attachment_Mutation_Response = {
+export interface Message_Attachment_Mutation_Response {
   __typename?: 'message_attachment_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Message_Attachment>;
-};
+}
 
 /** input type for inserting object relation for remote table "message_attachment" */
-export type Message_Attachment_Obj_Rel_Insert_Input = {
+export interface Message_Attachment_Obj_Rel_Insert_Input {
   data: Message_Attachment_Insert_Input;
   on_conflict?: Maybe<Message_Attachment_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "message_attachment" */
-export type Message_Attachment_On_Conflict = {
+export interface Message_Attachment_On_Conflict {
   constraint: Message_Attachment_Constraint;
   update_columns: Array<Message_Attachment_Update_Column>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "message_attachment" */
-export type Message_Attachment_Order_By = {
+export interface Message_Attachment_Order_By {
   attachment?: Maybe<Attachment_Order_By>;
   attachment_id?: Maybe<Order_By>;
   message?: Maybe<Message_Order_By>;
   message_id?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "message_attachment" */
-export type Message_Attachment_Pk_Columns_Input = {
+export interface Message_Attachment_Pk_Columns_Input {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
-};
+}
 
 /** select columns of table "message_attachment" */
-export enum Message_Attachment_Select_Column {
+export type Message_Attachment_Select_Column =
   /** column name */
-  AttachmentId = 'attachment_id',
+  | 'attachment_id'
   /** column name */
-  MessageId = 'message_id'
-}
+  | 'message_id';
 
 /** input type for updating data in table "message_attachment" */
-export type Message_Attachment_Set_Input = {
+export interface Message_Attachment_Set_Input {
   attachment_id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "message_attachment" */
-export enum Message_Attachment_Update_Column {
-  /** column name */
-  AttachmentId = 'attachment_id',
-  /** column name */
-  MessageId = 'message_id'
 }
 
+/** update columns of table "message_attachment" */
+export type Message_Attachment_Update_Column =
+  /** column name */
+  | 'attachment_id'
+  /** column name */
+  | 'message_id';
+
 /** Boolean expression to filter rows from the table "message". All fields are combined with a logical 'AND'. */
-export type Message_Bool_Exp = {
+export interface Message_Bool_Exp {
   _and?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
   _not?: Maybe<Message_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
@@ -1384,33 +1368,32 @@ export type Message_Bool_Exp = {
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "message" */
-export enum Message_Constraint {
-  /** unique or primary key constraint */
-  MessageIdKey = 'message_id_key',
-  /** unique or primary key constraint */
-  MessagePkey = 'message_pkey'
 }
 
+/** unique or primary key constraints on table "message" */
+export type Message_Constraint =
+  /** unique or primary key constraint */
+  | 'message_id_key'
+  /** unique or primary key constraint */
+  | 'message_pkey';
+
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type Message_Delete_At_Path_Input = {
+export interface Message_Delete_At_Path_Input {
   content?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type Message_Delete_Elem_Input = {
+export interface Message_Delete_Elem_Input {
   content?: Maybe<Scalars['Int']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type Message_Delete_Key_Input = {
+export interface Message_Delete_Key_Input {
   content?: Maybe<Scalars['String']>;
-};
+}
 
 /** columns and relationships of "message_full_text" */
-export type Message_Full_Text = {
+export interface Message_Full_Text {
   __typename?: 'message_full_text';
   content_txt?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -1419,39 +1402,39 @@ export type Message_Full_Text = {
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregated selection of "message_full_text" */
-export type Message_Full_Text_Aggregate = {
+export interface Message_Full_Text_Aggregate {
   __typename?: 'message_full_text_aggregate';
   aggregate?: Maybe<Message_Full_Text_Aggregate_Fields>;
   nodes: Array<Message_Full_Text>;
-};
+}
 
 /** aggregate fields of "message_full_text" */
-export type Message_Full_Text_Aggregate_Fields = {
+export interface Message_Full_Text_Aggregate_Fields {
   __typename?: 'message_full_text_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Message_Full_Text_Max_Fields>;
   min?: Maybe<Message_Full_Text_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "message_full_text" */
-export type Message_Full_Text_Aggregate_FieldsCountArgs = {
+export interface Message_Full_Text_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Message_Full_Text_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "message_full_text" */
-export type Message_Full_Text_Aggregate_Order_By = {
+export interface Message_Full_Text_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Message_Full_Text_Max_Order_By>;
   min?: Maybe<Message_Full_Text_Min_Order_By>;
-};
+}
 
 /** Boolean expression to filter rows from the table "message_full_text". All fields are combined with a logical 'AND'. */
-export type Message_Full_Text_Bool_Exp = {
+export interface Message_Full_Text_Bool_Exp {
   _and?: Maybe<Array<Maybe<Message_Full_Text_Bool_Exp>>>;
   _not?: Maybe<Message_Full_Text_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Full_Text_Bool_Exp>>>;
@@ -1462,10 +1445,10 @@ export type Message_Full_Text_Bool_Exp = {
   transcription_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<String_Comparison_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
+}
 
 /** aggregate max on columns */
-export type Message_Full_Text_Max_Fields = {
+export interface Message_Full_Text_Max_Fields {
   __typename?: 'message_full_text_max_fields';
   content_txt?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -1474,10 +1457,10 @@ export type Message_Full_Text_Max_Fields = {
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "message_full_text" */
-export type Message_Full_Text_Max_Order_By = {
+export interface Message_Full_Text_Max_Order_By {
   content_txt?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -1485,10 +1468,10 @@ export type Message_Full_Text_Max_Order_By = {
   transcription_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Message_Full_Text_Min_Fields = {
+export interface Message_Full_Text_Min_Fields {
   __typename?: 'message_full_text_min_fields';
   content_txt?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -1497,50 +1480,49 @@ export type Message_Full_Text_Min_Fields = {
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Scalars['String']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "message_full_text" */
-export type Message_Full_Text_Min_Order_By = {
-  content_txt?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  id?: Maybe<Order_By>;
-  topic_id?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-  type?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** ordering options when selecting data from "message_full_text" */
-export type Message_Full_Text_Order_By = {
-  content_txt?: Maybe<Order_By>;
-  created_at?: Maybe<Order_By>;
-  id?: Maybe<Order_By>;
-  topic_id?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-  type?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** select columns of table "message_full_text" */
-export enum Message_Full_Text_Select_Column {
-  /** column name */
-  ContentTxt = 'content_txt',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  TranscriptionId = 'transcription_id',
-  /** column name */
-  Type = 'type',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** order by min() on columns of table "message_full_text" */
+export interface Message_Full_Text_Min_Order_By {
+  content_txt?: Maybe<Order_By>;
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  type?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** ordering options when selecting data from "message_full_text" */
+export interface Message_Full_Text_Order_By {
+  content_txt?: Maybe<Order_By>;
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+  type?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** select columns of table "message_full_text" */
+export type Message_Full_Text_Select_Column =
+  /** column name */
+  | 'content_txt'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'transcription_id'
+  /** column name */
+  | 'type'
+  /** column name */
+  | 'user_id';
+
 /** input type for inserting data into table "message" */
-export type Message_Insert_Input = {
+export interface Message_Insert_Input {
   content?: Maybe<Scalars['jsonb']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
@@ -1554,70 +1536,70 @@ export type Message_Insert_Input = {
   type?: Maybe<Message_Type_Enum>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Message_Max_Fields = {
+export interface Message_Max_Fields {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "message" */
-export type Message_Max_Order_By = {
+export interface Message_Max_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Message_Min_Fields = {
+export interface Message_Min_Fields {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "message" */
-export type Message_Min_Order_By = {
+export interface Message_Min_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "message" */
-export type Message_Mutation_Response = {
+export interface Message_Mutation_Response {
   __typename?: 'message_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Message>;
-};
+}
 
 /** input type for inserting object relation for remote table "message" */
-export type Message_Obj_Rel_Insert_Input = {
+export interface Message_Obj_Rel_Insert_Input {
   data: Message_Insert_Input;
   on_conflict?: Maybe<Message_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "message" */
-export type Message_On_Conflict = {
+export interface Message_On_Conflict {
   constraint: Message_Constraint;
   update_columns: Array<Message_Update_Column>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "message" */
-export type Message_Order_By = {
+export interface Message_Order_By {
   content?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -1631,40 +1613,39 @@ export type Message_Order_By = {
   type?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "message" */
-export type Message_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type Message_Prepend_Input = {
-  content?: Maybe<Scalars['jsonb']>;
-};
-
-/** select columns of table "message" */
-export enum Message_Select_Column {
-  /** column name */
-  Content = 'content',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  IsDraft = 'is_draft',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  TranscriptionId = 'transcription_id',
-  /** column name */
-  Type = 'type',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** primary key columns input for table: "message" */
+export interface Message_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export interface Message_Prepend_Input {
+  content?: Maybe<Scalars['jsonb']>;
+}
+
+/** select columns of table "message" */
+export type Message_Select_Column =
+  /** column name */
+  | 'content'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'is_draft'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'transcription_id'
+  /** column name */
+  | 'type'
+  /** column name */
+  | 'user_id';
+
 /** input type for updating data in table "message" */
-export type Message_Set_Input = {
+export interface Message_Set_Input {
   content?: Maybe<Scalars['jsonb']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
@@ -1673,7 +1654,7 @@ export type Message_Set_Input = {
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /**
  * Used as an ENUM for the message type field constraint.
@@ -1681,174 +1662,169 @@ export type Message_Set_Input = {
  *
  * columns and relationships of "message_type"
  */
-export type Message_Type = {
+export interface Message_Type {
   __typename?: 'message_type';
   value: Scalars['String'];
-};
+}
 
 /** aggregated selection of "message_type" */
-export type Message_Type_Aggregate = {
+export interface Message_Type_Aggregate {
   __typename?: 'message_type_aggregate';
   aggregate?: Maybe<Message_Type_Aggregate_Fields>;
   nodes: Array<Message_Type>;
-};
+}
 
 /** aggregate fields of "message_type" */
-export type Message_Type_Aggregate_Fields = {
+export interface Message_Type_Aggregate_Fields {
   __typename?: 'message_type_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Message_Type_Max_Fields>;
   min?: Maybe<Message_Type_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "message_type" */
-export type Message_Type_Aggregate_FieldsCountArgs = {
+export interface Message_Type_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Message_Type_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "message_type" */
-export type Message_Type_Aggregate_Order_By = {
+export interface Message_Type_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Message_Type_Max_Order_By>;
   min?: Maybe<Message_Type_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "message_type" */
-export type Message_Type_Arr_Rel_Insert_Input = {
+export interface Message_Type_Arr_Rel_Insert_Input {
   data: Array<Message_Type_Insert_Input>;
   on_conflict?: Maybe<Message_Type_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "message_type". All fields are combined with a logical 'AND'. */
-export type Message_Type_Bool_Exp = {
+export interface Message_Type_Bool_Exp {
   _and?: Maybe<Array<Maybe<Message_Type_Bool_Exp>>>;
   _not?: Maybe<Message_Type_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Type_Bool_Exp>>>;
   value?: Maybe<String_Comparison_Exp>;
-};
+}
 
 /** unique or primary key constraints on table "message_type" */
-export enum Message_Type_Constraint {
+export type Message_Type_Constraint =
   /** unique or primary key constraint */
-  MessageTypePkey = 'message_type_pkey'
-}
+  | 'message_type_pkey';
 
-export enum Message_Type_Enum {
-  Audio = 'AUDIO',
-  File = 'FILE',
-  Text = 'TEXT',
-  Video = 'VIDEO'
-}
+export type Message_Type_Enum =
+  | 'AUDIO'
+  | 'FILE'
+  | 'TEXT'
+  | 'VIDEO';
 
 /** expression to compare columns of type message_type_enum. All fields are combined with logical 'AND'. */
-export type Message_Type_Enum_Comparison_Exp = {
+export interface Message_Type_Enum_Comparison_Exp {
   _eq?: Maybe<Message_Type_Enum>;
   _in?: Maybe<Array<Message_Type_Enum>>;
   _is_null?: Maybe<Scalars['Boolean']>;
   _neq?: Maybe<Message_Type_Enum>;
   _nin?: Maybe<Array<Message_Type_Enum>>;
-};
+}
 
 /** input type for inserting data into table "message_type" */
-export type Message_Type_Insert_Input = {
+export interface Message_Type_Insert_Input {
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregate max on columns */
-export type Message_Type_Max_Fields = {
+export interface Message_Type_Max_Fields {
   __typename?: 'message_type_max_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "message_type" */
-export type Message_Type_Max_Order_By = {
+export interface Message_Type_Max_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Message_Type_Min_Fields = {
+export interface Message_Type_Min_Fields {
   __typename?: 'message_type_min_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "message_type" */
-export type Message_Type_Min_Order_By = {
+export interface Message_Type_Min_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "message_type" */
-export type Message_Type_Mutation_Response = {
+export interface Message_Type_Mutation_Response {
   __typename?: 'message_type_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Message_Type>;
-};
+}
 
 /** input type for inserting object relation for remote table "message_type" */
-export type Message_Type_Obj_Rel_Insert_Input = {
+export interface Message_Type_Obj_Rel_Insert_Input {
   data: Message_Type_Insert_Input;
   on_conflict?: Maybe<Message_Type_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "message_type" */
-export type Message_Type_On_Conflict = {
+export interface Message_Type_On_Conflict {
   constraint: Message_Type_Constraint;
   update_columns: Array<Message_Type_Update_Column>;
   where?: Maybe<Message_Type_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "message_type" */
-export type Message_Type_Order_By = {
+export interface Message_Type_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "message_type" */
-export type Message_Type_Pk_Columns_Input = {
+export interface Message_Type_Pk_Columns_Input {
   value: Scalars['String'];
-};
+}
 
 /** select columns of table "message_type" */
-export enum Message_Type_Select_Column {
+export type Message_Type_Select_Column =
   /** column name */
-  Value = 'value'
-}
+  | 'value';
 
 /** input type for updating data in table "message_type" */
-export type Message_Type_Set_Input = {
+export interface Message_Type_Set_Input {
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** update columns of table "message_type" */
-export enum Message_Type_Update_Column {
+export type Message_Type_Update_Column =
   /** column name */
-  Value = 'value'
-}
+  | 'value';
 
 /** update columns of table "message" */
-export enum Message_Update_Column {
+export type Message_Update_Column =
   /** column name */
-  Content = 'content',
+  | 'content'
   /** column name */
-  CreatedAt = 'created_at',
+  | 'created_at'
   /** column name */
-  Id = 'id',
+  | 'id'
   /** column name */
-  IsDraft = 'is_draft',
+  | 'is_draft'
   /** column name */
-  TopicId = 'topic_id',
+  | 'topic_id'
   /** column name */
-  TranscriptionId = 'transcription_id',
+  | 'transcription_id'
   /** column name */
-  Type = 'type',
+  | 'type'
   /** column name */
-  UserId = 'user_id'
-}
+  | 'user_id';
 
 /** mutation root */
-export type Mutation_Root = {
+export interface Mutation_Root {
   __typename?: 'mutation_root';
   /** perform the action: "accept_invite" */
   accept_invite?: Maybe<InviteAcceptResponse>;
@@ -2114,650 +2090,650 @@ export type Mutation_Root = {
   update_whitelist_by_pk?: Maybe<Whitelist>;
   /** perform the action: "upgrade_current_user" */
   upgrade_current_user?: Maybe<UpgradeUserResponse>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootAccept_InviteArgs = {
+export interface Mutation_RootAccept_InviteArgs {
   token: Scalars['String'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_AccountArgs = {
+export interface Mutation_RootDelete_AccountArgs {
   where: Account_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Account_By_PkArgs = {
+export interface Mutation_RootDelete_Account_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_AttachmentArgs = {
+export interface Mutation_RootDelete_AttachmentArgs {
   where: Attachment_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Attachment_By_PkArgs = {
+export interface Mutation_RootDelete_Attachment_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Full_Text_SearchArgs = {
+export interface Mutation_RootDelete_Full_Text_SearchArgs {
   where: Full_Text_Search_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Last_Seen_MessageArgs = {
+export interface Mutation_RootDelete_Last_Seen_MessageArgs {
   where: Last_Seen_Message_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Last_Seen_Message_By_PkArgs = {
+export interface Mutation_RootDelete_Last_Seen_Message_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Membership_StatusArgs = {
+export interface Mutation_RootDelete_Membership_StatusArgs {
   where: Membership_Status_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Membership_Status_By_PkArgs = {
+export interface Mutation_RootDelete_Membership_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_MessageArgs = {
+export interface Mutation_RootDelete_MessageArgs {
   where: Message_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_AttachmentArgs = {
+export interface Mutation_RootDelete_Message_AttachmentArgs {
   where: Message_Attachment_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_Attachment_By_PkArgs = {
+export interface Mutation_RootDelete_Message_Attachment_By_PkArgs {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_By_PkArgs = {
+export interface Mutation_RootDelete_Message_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_TypeArgs = {
+export interface Mutation_RootDelete_Message_TypeArgs {
   where: Message_Type_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Message_Type_By_PkArgs = {
+export interface Mutation_RootDelete_Message_Type_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_RoomArgs = {
+export interface Mutation_RootDelete_RoomArgs {
   where: Room_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_By_PkArgs = {
+export interface Mutation_RootDelete_Room_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_InvitesArgs = {
+export interface Mutation_RootDelete_Room_InvitesArgs {
   where: Room_Invites_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_Invites_By_PkArgs = {
+export interface Mutation_RootDelete_Room_Invites_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_MemberArgs = {
+export interface Mutation_RootDelete_Room_MemberArgs {
   where: Room_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Room_Member_By_PkArgs = {
+export interface Mutation_RootDelete_Room_Member_By_PkArgs {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_SpaceArgs = {
+export interface Mutation_RootDelete_SpaceArgs {
   where: Space_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Space_By_PkArgs = {
+export interface Mutation_RootDelete_Space_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Space_MemberArgs = {
+export interface Mutation_RootDelete_Space_MemberArgs {
   where: Space_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Space_Member_By_PkArgs = {
+export interface Mutation_RootDelete_Space_Member_By_PkArgs {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_TeamArgs = {
+export interface Mutation_RootDelete_TeamArgs {
   where: Team_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Team_By_PkArgs = {
+export interface Mutation_RootDelete_Team_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Team_InvitationArgs = {
+export interface Mutation_RootDelete_Team_InvitationArgs {
   where: Team_Invitation_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Team_Invitation_By_PkArgs = {
+export interface Mutation_RootDelete_Team_Invitation_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Team_MemberArgs = {
+export interface Mutation_RootDelete_Team_MemberArgs {
   where: Team_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Team_Member_By_PkArgs = {
+export interface Mutation_RootDelete_Team_Member_By_PkArgs {
   team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_TopicArgs = {
+export interface Mutation_RootDelete_TopicArgs {
   where: Topic_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Topic_By_PkArgs = {
+export interface Mutation_RootDelete_Topic_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Topic_MemberArgs = {
+export interface Mutation_RootDelete_Topic_MemberArgs {
   where: Topic_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Topic_Member_By_PkArgs = {
+export interface Mutation_RootDelete_Topic_Member_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_TranscriptionArgs = {
+export interface Mutation_RootDelete_TranscriptionArgs {
   where: Transcription_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Transcription_By_PkArgs = {
+export interface Mutation_RootDelete_Transcription_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Transcription_StatusArgs = {
+export interface Mutation_RootDelete_Transcription_StatusArgs {
   where: Transcription_Status_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Transcription_Status_By_PkArgs = {
+export interface Mutation_RootDelete_Transcription_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_UserArgs = {
+export interface Mutation_RootDelete_UserArgs {
   where: User_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_User_By_PkArgs = {
+export interface Mutation_RootDelete_User_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_WhitelistArgs = {
+export interface Mutation_RootDelete_WhitelistArgs {
   where: Whitelist_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootDelete_Whitelist_By_PkArgs = {
+export interface Mutation_RootDelete_Whitelist_By_PkArgs {
   email: Scalars['String'];
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_AccountArgs = {
+export interface Mutation_RootInsert_AccountArgs {
   objects: Array<Account_Insert_Input>;
   on_conflict?: Maybe<Account_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Account_OneArgs = {
+export interface Mutation_RootInsert_Account_OneArgs {
   object: Account_Insert_Input;
   on_conflict?: Maybe<Account_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_AttachmentArgs = {
+export interface Mutation_RootInsert_AttachmentArgs {
   objects: Array<Attachment_Insert_Input>;
   on_conflict?: Maybe<Attachment_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Attachment_OneArgs = {
+export interface Mutation_RootInsert_Attachment_OneArgs {
   object: Attachment_Insert_Input;
   on_conflict?: Maybe<Attachment_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Full_Text_SearchArgs = {
+export interface Mutation_RootInsert_Full_Text_SearchArgs {
   objects: Array<Full_Text_Search_Insert_Input>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Full_Text_Search_OneArgs = {
+export interface Mutation_RootInsert_Full_Text_Search_OneArgs {
   object: Full_Text_Search_Insert_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Last_Seen_MessageArgs = {
+export interface Mutation_RootInsert_Last_Seen_MessageArgs {
   objects: Array<Last_Seen_Message_Insert_Input>;
   on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Last_Seen_Message_OneArgs = {
+export interface Mutation_RootInsert_Last_Seen_Message_OneArgs {
   object: Last_Seen_Message_Insert_Input;
   on_conflict?: Maybe<Last_Seen_Message_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Membership_StatusArgs = {
+export interface Mutation_RootInsert_Membership_StatusArgs {
   objects: Array<Membership_Status_Insert_Input>;
   on_conflict?: Maybe<Membership_Status_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Membership_Status_OneArgs = {
+export interface Mutation_RootInsert_Membership_Status_OneArgs {
   object: Membership_Status_Insert_Input;
   on_conflict?: Maybe<Membership_Status_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_MessageArgs = {
+export interface Mutation_RootInsert_MessageArgs {
   objects: Array<Message_Insert_Input>;
   on_conflict?: Maybe<Message_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_AttachmentArgs = {
+export interface Mutation_RootInsert_Message_AttachmentArgs {
   objects: Array<Message_Attachment_Insert_Input>;
   on_conflict?: Maybe<Message_Attachment_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_Attachment_OneArgs = {
+export interface Mutation_RootInsert_Message_Attachment_OneArgs {
   object: Message_Attachment_Insert_Input;
   on_conflict?: Maybe<Message_Attachment_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_OneArgs = {
+export interface Mutation_RootInsert_Message_OneArgs {
   object: Message_Insert_Input;
   on_conflict?: Maybe<Message_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_TypeArgs = {
+export interface Mutation_RootInsert_Message_TypeArgs {
   objects: Array<Message_Type_Insert_Input>;
   on_conflict?: Maybe<Message_Type_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Message_Type_OneArgs = {
+export interface Mutation_RootInsert_Message_Type_OneArgs {
   object: Message_Type_Insert_Input;
   on_conflict?: Maybe<Message_Type_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_RoomArgs = {
+export interface Mutation_RootInsert_RoomArgs {
   objects: Array<Room_Insert_Input>;
   on_conflict?: Maybe<Room_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Room_InvitesArgs = {
+export interface Mutation_RootInsert_Room_InvitesArgs {
   objects: Array<Room_Invites_Insert_Input>;
   on_conflict?: Maybe<Room_Invites_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Room_Invites_OneArgs = {
+export interface Mutation_RootInsert_Room_Invites_OneArgs {
   object: Room_Invites_Insert_Input;
   on_conflict?: Maybe<Room_Invites_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Room_MemberArgs = {
+export interface Mutation_RootInsert_Room_MemberArgs {
   objects: Array<Room_Member_Insert_Input>;
   on_conflict?: Maybe<Room_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Room_Member_OneArgs = {
+export interface Mutation_RootInsert_Room_Member_OneArgs {
   object: Room_Member_Insert_Input;
   on_conflict?: Maybe<Room_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Room_OneArgs = {
+export interface Mutation_RootInsert_Room_OneArgs {
   object: Room_Insert_Input;
   on_conflict?: Maybe<Room_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_SpaceArgs = {
+export interface Mutation_RootInsert_SpaceArgs {
   objects: Array<Space_Insert_Input>;
   on_conflict?: Maybe<Space_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Space_MemberArgs = {
+export interface Mutation_RootInsert_Space_MemberArgs {
   objects: Array<Space_Member_Insert_Input>;
   on_conflict?: Maybe<Space_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Space_Member_OneArgs = {
+export interface Mutation_RootInsert_Space_Member_OneArgs {
   object: Space_Member_Insert_Input;
   on_conflict?: Maybe<Space_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Space_OneArgs = {
+export interface Mutation_RootInsert_Space_OneArgs {
   object: Space_Insert_Input;
   on_conflict?: Maybe<Space_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_TeamArgs = {
+export interface Mutation_RootInsert_TeamArgs {
   objects: Array<Team_Insert_Input>;
   on_conflict?: Maybe<Team_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Team_InvitationArgs = {
+export interface Mutation_RootInsert_Team_InvitationArgs {
   objects: Array<Team_Invitation_Insert_Input>;
   on_conflict?: Maybe<Team_Invitation_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Team_Invitation_OneArgs = {
+export interface Mutation_RootInsert_Team_Invitation_OneArgs {
   object: Team_Invitation_Insert_Input;
   on_conflict?: Maybe<Team_Invitation_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Team_MemberArgs = {
+export interface Mutation_RootInsert_Team_MemberArgs {
   objects: Array<Team_Member_Insert_Input>;
   on_conflict?: Maybe<Team_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Team_Member_OneArgs = {
+export interface Mutation_RootInsert_Team_Member_OneArgs {
   object: Team_Member_Insert_Input;
   on_conflict?: Maybe<Team_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Team_OneArgs = {
+export interface Mutation_RootInsert_Team_OneArgs {
   object: Team_Insert_Input;
   on_conflict?: Maybe<Team_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_TopicArgs = {
+export interface Mutation_RootInsert_TopicArgs {
   objects: Array<Topic_Insert_Input>;
   on_conflict?: Maybe<Topic_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Topic_MemberArgs = {
+export interface Mutation_RootInsert_Topic_MemberArgs {
   objects: Array<Topic_Member_Insert_Input>;
   on_conflict?: Maybe<Topic_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Topic_Member_OneArgs = {
+export interface Mutation_RootInsert_Topic_Member_OneArgs {
   object: Topic_Member_Insert_Input;
   on_conflict?: Maybe<Topic_Member_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Topic_OneArgs = {
+export interface Mutation_RootInsert_Topic_OneArgs {
   object: Topic_Insert_Input;
   on_conflict?: Maybe<Topic_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_TranscriptionArgs = {
+export interface Mutation_RootInsert_TranscriptionArgs {
   objects: Array<Transcription_Insert_Input>;
   on_conflict?: Maybe<Transcription_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Transcription_OneArgs = {
+export interface Mutation_RootInsert_Transcription_OneArgs {
   object: Transcription_Insert_Input;
   on_conflict?: Maybe<Transcription_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Transcription_StatusArgs = {
+export interface Mutation_RootInsert_Transcription_StatusArgs {
   objects: Array<Transcription_Status_Insert_Input>;
   on_conflict?: Maybe<Transcription_Status_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Transcription_Status_OneArgs = {
+export interface Mutation_RootInsert_Transcription_Status_OneArgs {
   object: Transcription_Status_Insert_Input;
   on_conflict?: Maybe<Transcription_Status_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_UserArgs = {
+export interface Mutation_RootInsert_UserArgs {
   objects: Array<User_Insert_Input>;
   on_conflict?: Maybe<User_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_User_OneArgs = {
+export interface Mutation_RootInsert_User_OneArgs {
   object: User_Insert_Input;
   on_conflict?: Maybe<User_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_WhitelistArgs = {
+export interface Mutation_RootInsert_WhitelistArgs {
   objects: Array<Whitelist_Insert_Input>;
   on_conflict?: Maybe<Whitelist_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootInsert_Whitelist_OneArgs = {
+export interface Mutation_RootInsert_Whitelist_OneArgs {
   object: Whitelist_Insert_Input;
   on_conflict?: Maybe<Whitelist_On_Conflict>;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_AccountArgs = {
+export interface Mutation_RootUpdate_AccountArgs {
   _set?: Maybe<Account_Set_Input>;
   where: Account_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Account_By_PkArgs = {
+export interface Mutation_RootUpdate_Account_By_PkArgs {
   _set?: Maybe<Account_Set_Input>;
   pk_columns: Account_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_AttachmentArgs = {
+export interface Mutation_RootUpdate_AttachmentArgs {
   _set?: Maybe<Attachment_Set_Input>;
   where: Attachment_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Attachment_By_PkArgs = {
+export interface Mutation_RootUpdate_Attachment_By_PkArgs {
   _set?: Maybe<Attachment_Set_Input>;
   pk_columns: Attachment_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Full_Text_SearchArgs = {
+export interface Mutation_RootUpdate_Full_Text_SearchArgs {
   _set?: Maybe<Full_Text_Search_Set_Input>;
   where: Full_Text_Search_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Last_Seen_MessageArgs = {
+export interface Mutation_RootUpdate_Last_Seen_MessageArgs {
   _set?: Maybe<Last_Seen_Message_Set_Input>;
   where: Last_Seen_Message_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Last_Seen_Message_By_PkArgs = {
+export interface Mutation_RootUpdate_Last_Seen_Message_By_PkArgs {
   _set?: Maybe<Last_Seen_Message_Set_Input>;
   pk_columns: Last_Seen_Message_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Membership_StatusArgs = {
+export interface Mutation_RootUpdate_Membership_StatusArgs {
   _set?: Maybe<Membership_Status_Set_Input>;
   where: Membership_Status_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Membership_Status_By_PkArgs = {
+export interface Mutation_RootUpdate_Membership_Status_By_PkArgs {
   _set?: Maybe<Membership_Status_Set_Input>;
   pk_columns: Membership_Status_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_MessageArgs = {
+export interface Mutation_RootUpdate_MessageArgs {
   _append?: Maybe<Message_Append_Input>;
   _delete_at_path?: Maybe<Message_Delete_At_Path_Input>;
   _delete_elem?: Maybe<Message_Delete_Elem_Input>;
@@ -2765,25 +2741,25 @@ export type Mutation_RootUpdate_MessageArgs = {
   _prepend?: Maybe<Message_Prepend_Input>;
   _set?: Maybe<Message_Set_Input>;
   where: Message_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_AttachmentArgs = {
+export interface Mutation_RootUpdate_Message_AttachmentArgs {
   _set?: Maybe<Message_Attachment_Set_Input>;
   where: Message_Attachment_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_Attachment_By_PkArgs = {
+export interface Mutation_RootUpdate_Message_Attachment_By_PkArgs {
   _set?: Maybe<Message_Attachment_Set_Input>;
   pk_columns: Message_Attachment_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_By_PkArgs = {
+export interface Mutation_RootUpdate_Message_By_PkArgs {
   _append?: Maybe<Message_Append_Input>;
   _delete_at_path?: Maybe<Message_Delete_At_Path_Input>;
   _delete_elem?: Maybe<Message_Delete_Elem_Input>;
@@ -2791,165 +2767,165 @@ export type Mutation_RootUpdate_Message_By_PkArgs = {
   _prepend?: Maybe<Message_Prepend_Input>;
   _set?: Maybe<Message_Set_Input>;
   pk_columns: Message_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_TypeArgs = {
+export interface Mutation_RootUpdate_Message_TypeArgs {
   _set?: Maybe<Message_Type_Set_Input>;
   where: Message_Type_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Message_Type_By_PkArgs = {
+export interface Mutation_RootUpdate_Message_Type_By_PkArgs {
   _set?: Maybe<Message_Type_Set_Input>;
   pk_columns: Message_Type_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_RoomArgs = {
+export interface Mutation_RootUpdate_RoomArgs {
   _set?: Maybe<Room_Set_Input>;
   where: Room_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_By_PkArgs = {
+export interface Mutation_RootUpdate_Room_By_PkArgs {
   _set?: Maybe<Room_Set_Input>;
   pk_columns: Room_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_InvitesArgs = {
+export interface Mutation_RootUpdate_Room_InvitesArgs {
   _set?: Maybe<Room_Invites_Set_Input>;
   where: Room_Invites_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_Invites_By_PkArgs = {
+export interface Mutation_RootUpdate_Room_Invites_By_PkArgs {
   _set?: Maybe<Room_Invites_Set_Input>;
   pk_columns: Room_Invites_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_MemberArgs = {
+export interface Mutation_RootUpdate_Room_MemberArgs {
   _set?: Maybe<Room_Member_Set_Input>;
   where: Room_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Room_Member_By_PkArgs = {
+export interface Mutation_RootUpdate_Room_Member_By_PkArgs {
   _set?: Maybe<Room_Member_Set_Input>;
   pk_columns: Room_Member_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_SpaceArgs = {
+export interface Mutation_RootUpdate_SpaceArgs {
   _set?: Maybe<Space_Set_Input>;
   where: Space_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Space_By_PkArgs = {
+export interface Mutation_RootUpdate_Space_By_PkArgs {
   _set?: Maybe<Space_Set_Input>;
   pk_columns: Space_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Space_MemberArgs = {
+export interface Mutation_RootUpdate_Space_MemberArgs {
   _set?: Maybe<Space_Member_Set_Input>;
   where: Space_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Space_Member_By_PkArgs = {
+export interface Mutation_RootUpdate_Space_Member_By_PkArgs {
   _set?: Maybe<Space_Member_Set_Input>;
   pk_columns: Space_Member_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_TeamArgs = {
+export interface Mutation_RootUpdate_TeamArgs {
   _set?: Maybe<Team_Set_Input>;
   where: Team_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Team_By_PkArgs = {
+export interface Mutation_RootUpdate_Team_By_PkArgs {
   _set?: Maybe<Team_Set_Input>;
   pk_columns: Team_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Team_InvitationArgs = {
+export interface Mutation_RootUpdate_Team_InvitationArgs {
   _set?: Maybe<Team_Invitation_Set_Input>;
   where: Team_Invitation_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Team_Invitation_By_PkArgs = {
+export interface Mutation_RootUpdate_Team_Invitation_By_PkArgs {
   _set?: Maybe<Team_Invitation_Set_Input>;
   pk_columns: Team_Invitation_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Team_MemberArgs = {
+export interface Mutation_RootUpdate_Team_MemberArgs {
   _set?: Maybe<Team_Member_Set_Input>;
   where: Team_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Team_Member_By_PkArgs = {
+export interface Mutation_RootUpdate_Team_Member_By_PkArgs {
   _set?: Maybe<Team_Member_Set_Input>;
   pk_columns: Team_Member_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_TopicArgs = {
+export interface Mutation_RootUpdate_TopicArgs {
   _set?: Maybe<Topic_Set_Input>;
   where: Topic_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Topic_By_PkArgs = {
+export interface Mutation_RootUpdate_Topic_By_PkArgs {
   _set?: Maybe<Topic_Set_Input>;
   pk_columns: Topic_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Topic_MemberArgs = {
+export interface Mutation_RootUpdate_Topic_MemberArgs {
   _set?: Maybe<Topic_Member_Set_Input>;
   where: Topic_Member_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Topic_Member_By_PkArgs = {
+export interface Mutation_RootUpdate_Topic_Member_By_PkArgs {
   _set?: Maybe<Topic_Member_Set_Input>;
   pk_columns: Topic_Member_Pk_Columns_Input;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_TranscriptionArgs = {
+export interface Mutation_RootUpdate_TranscriptionArgs {
   _append?: Maybe<Transcription_Append_Input>;
   _delete_at_path?: Maybe<Transcription_Delete_At_Path_Input>;
   _delete_elem?: Maybe<Transcription_Delete_Elem_Input>;
@@ -2957,11 +2933,11 @@ export type Mutation_RootUpdate_TranscriptionArgs = {
   _prepend?: Maybe<Transcription_Prepend_Input>;
   _set?: Maybe<Transcription_Set_Input>;
   where: Transcription_Bool_Exp;
-};
+}
 
 
 /** mutation root */
-export type Mutation_RootUpdate_Transcription_By_PkArgs = {
+export interface Mutation_RootUpdate_Transcription_By_PkArgs {
   _append?: Maybe<Transcription_Append_Input>;
   _delete_at_path?: Maybe<Transcription_Delete_At_Path_Input>;
   _delete_elem?: Maybe<Transcription_Delete_Elem_Input>;
@@ -2969,68 +2945,67 @@ export type Mutation_RootUpdate_Transcription_By_PkArgs = {
   _prepend?: Maybe<Transcription_Prepend_Input>;
   _set?: Maybe<Transcription_Set_Input>;
   pk_columns: Transcription_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Transcription_StatusArgs = {
-  _set?: Maybe<Transcription_Status_Set_Input>;
-  where: Transcription_Status_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Transcription_Status_By_PkArgs = {
-  _set?: Maybe<Transcription_Status_Set_Input>;
-  pk_columns: Transcription_Status_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_UserArgs = {
-  _set?: Maybe<User_Set_Input>;
-  where: User_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_User_By_PkArgs = {
-  _set?: Maybe<User_Set_Input>;
-  pk_columns: User_Pk_Columns_Input;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_WhitelistArgs = {
-  _set?: Maybe<Whitelist_Set_Input>;
-  where: Whitelist_Bool_Exp;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdate_Whitelist_By_PkArgs = {
-  _set?: Maybe<Whitelist_Set_Input>;
-  pk_columns: Whitelist_Pk_Columns_Input;
-};
-
-/** column ordering options */
-export enum Order_By {
-  /** in the ascending order, nulls last */
-  Asc = 'asc',
-  /** in the ascending order, nulls first */
-  AscNullsFirst = 'asc_nulls_first',
-  /** in the ascending order, nulls last */
-  AscNullsLast = 'asc_nulls_last',
-  /** in the descending order, nulls first */
-  Desc = 'desc',
-  /** in the descending order, nulls first */
-  DescNullsFirst = 'desc_nulls_first',
-  /** in the descending order, nulls last */
-  DescNullsLast = 'desc_nulls_last'
 }
 
+
+/** mutation root */
+export interface Mutation_RootUpdate_Transcription_StatusArgs {
+  _set?: Maybe<Transcription_Status_Set_Input>;
+  where: Transcription_Status_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_Transcription_Status_By_PkArgs {
+  _set?: Maybe<Transcription_Status_Set_Input>;
+  pk_columns: Transcription_Status_Pk_Columns_Input;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_UserArgs {
+  _set?: Maybe<User_Set_Input>;
+  where: User_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_User_By_PkArgs {
+  _set?: Maybe<User_Set_Input>;
+  pk_columns: User_Pk_Columns_Input;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_WhitelistArgs {
+  _set?: Maybe<Whitelist_Set_Input>;
+  where: Whitelist_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_Whitelist_By_PkArgs {
+  _set?: Maybe<Whitelist_Set_Input>;
+  pk_columns: Whitelist_Pk_Columns_Input;
+}
+
+/** column ordering options */
+export type Order_By =
+  /** in the ascending order, nulls last */
+  | 'asc'
+  /** in the ascending order, nulls first */
+  | 'asc_nulls_first'
+  /** in the ascending order, nulls last */
+  | 'asc_nulls_last'
+  /** in the descending order, nulls first */
+  | 'desc'
+  /** in the descending order, nulls first */
+  | 'desc_nulls_first'
+  /** in the descending order, nulls last */
+  | 'desc_nulls_last';
+
 /** query root */
-export type Query_Root = {
+export interface Query_Root {
   __typename?: 'query_root';
   /** fetch data from the table: "account" */
   account: Array<Account>;
@@ -3186,699 +3161,699 @@ export type Query_Root = {
   whitelist_aggregate: Whitelist_Aggregate;
   /** fetch data from the table: "whitelist" using primary key columns */
   whitelist_by_pk?: Maybe<Whitelist>;
-};
+}
 
 
 /** query root */
-export type Query_RootAccountArgs = {
+export interface Query_RootAccountArgs {
   distinct_on?: Maybe<Array<Account_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Account_Order_By>>;
   where?: Maybe<Account_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootAccount_AggregateArgs = {
+export interface Query_RootAccount_AggregateArgs {
   distinct_on?: Maybe<Array<Account_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Account_Order_By>>;
   where?: Maybe<Account_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootAccount_By_PkArgs = {
+export interface Query_RootAccount_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootAttachmentArgs = {
+export interface Query_RootAttachmentArgs {
   distinct_on?: Maybe<Array<Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Attachment_Order_By>>;
   where?: Maybe<Attachment_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootAttachment_AggregateArgs = {
+export interface Query_RootAttachment_AggregateArgs {
   distinct_on?: Maybe<Array<Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Attachment_Order_By>>;
   where?: Maybe<Attachment_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootAttachment_By_PkArgs = {
+export interface Query_RootAttachment_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootFull_Text_SearchArgs = {
+export interface Query_RootFull_Text_SearchArgs {
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootFull_Text_Search_AggregateArgs = {
+export interface Query_RootFull_Text_Search_AggregateArgs {
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootGet_Download_UrlArgs = {
+export interface Query_RootGet_Download_UrlArgs {
   uuid: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootGet_Upload_UrlArgs = {
+export interface Query_RootGet_Upload_UrlArgs {
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
-};
+}
 
 
 /** query root */
-export type Query_RootLast_Seen_MessageArgs = {
+export interface Query_RootLast_Seen_MessageArgs {
   distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
   where?: Maybe<Last_Seen_Message_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootLast_Seen_Message_AggregateArgs = {
+export interface Query_RootLast_Seen_Message_AggregateArgs {
   distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
   where?: Maybe<Last_Seen_Message_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootLast_Seen_Message_By_PkArgs = {
+export interface Query_RootLast_Seen_Message_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootMembership_StatusArgs = {
+export interface Query_RootMembership_StatusArgs {
   distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Membership_Status_Order_By>>;
   where?: Maybe<Membership_Status_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMembership_Status_AggregateArgs = {
+export interface Query_RootMembership_Status_AggregateArgs {
   distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Membership_Status_Order_By>>;
   where?: Maybe<Membership_Status_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMembership_Status_By_PkArgs = {
+export interface Query_RootMembership_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** query root */
-export type Query_RootMessageArgs = {
+export interface Query_RootMessageArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_AggregateArgs = {
+export interface Query_RootMessage_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_AttachmentArgs = {
+export interface Query_RootMessage_AttachmentArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Attachment_AggregateArgs = {
+export interface Query_RootMessage_Attachment_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Attachment_By_PkArgs = {
+export interface Query_RootMessage_Attachment_By_PkArgs {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_By_PkArgs = {
+export interface Query_RootMessage_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Full_TextArgs = {
+export interface Query_RootMessage_Full_TextArgs {
   distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
   where?: Maybe<Message_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Full_Text_AggregateArgs = {
+export interface Query_RootMessage_Full_Text_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
   where?: Maybe<Message_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_TypeArgs = {
+export interface Query_RootMessage_TypeArgs {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Type_Order_By>>;
   where?: Maybe<Message_Type_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Type_AggregateArgs = {
+export interface Query_RootMessage_Type_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Type_Order_By>>;
   where?: Maybe<Message_Type_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootMessage_Type_By_PkArgs = {
+export interface Query_RootMessage_Type_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** query root */
-export type Query_RootRoomArgs = {
+export interface Query_RootRoomArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_AggregateArgs = {
+export interface Query_RootRoom_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_By_PkArgs = {
+export interface Query_RootRoom_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_InvitesArgs = {
+export interface Query_RootRoom_InvitesArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_Invites_AggregateArgs = {
+export interface Query_RootRoom_Invites_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_Invites_By_PkArgs = {
+export interface Query_RootRoom_Invites_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_MemberArgs = {
+export interface Query_RootRoom_MemberArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_Member_AggregateArgs = {
+export interface Query_RootRoom_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootRoom_Member_By_PkArgs = {
+export interface Query_RootRoom_Member_By_PkArgs {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootSearch_Full_TextArgs = {
+export interface Query_RootSearch_Full_TextArgs {
   args: Search_Full_Text_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSearch_Full_Text_AggregateArgs = {
+export interface Query_RootSearch_Full_Text_AggregateArgs {
   args: Search_Full_Text_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSearch_Full_Text_TopicArgs = {
+export interface Query_RootSearch_Full_Text_TopicArgs {
   args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSearch_Full_Text_Topic_AggregateArgs = {
+export interface Query_RootSearch_Full_Text_Topic_AggregateArgs {
   args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSpaceArgs = {
+export interface Query_RootSpaceArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSpace_AggregateArgs = {
+export interface Query_RootSpace_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSpace_By_PkArgs = {
+export interface Query_RootSpace_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootSpace_MemberArgs = {
+export interface Query_RootSpace_MemberArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSpace_Member_AggregateArgs = {
+export interface Query_RootSpace_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootSpace_Member_By_PkArgs = {
+export interface Query_RootSpace_Member_By_PkArgs {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTeamArgs = {
+export interface Query_RootTeamArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_AggregateArgs = {
+export interface Query_RootTeam_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_By_PkArgs = {
+export interface Query_RootTeam_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_InvitationArgs = {
+export interface Query_RootTeam_InvitationArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_Invitation_AggregateArgs = {
+export interface Query_RootTeam_Invitation_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_Invitation_By_PkArgs = {
+export interface Query_RootTeam_Invitation_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_MemberArgs = {
+export interface Query_RootTeam_MemberArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_Member_AggregateArgs = {
+export interface Query_RootTeam_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTeam_Member_By_PkArgs = {
+export interface Query_RootTeam_Member_By_PkArgs {
   team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTopicArgs = {
+export interface Query_RootTopicArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTopic_AggregateArgs = {
+export interface Query_RootTopic_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTopic_By_PkArgs = {
+export interface Query_RootTopic_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTopic_MemberArgs = {
+export interface Query_RootTopic_MemberArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTopic_Member_AggregateArgs = {
+export interface Query_RootTopic_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTopic_Member_By_PkArgs = {
+export interface Query_RootTopic_Member_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTranscriptionArgs = {
+export interface Query_RootTranscriptionArgs {
   distinct_on?: Maybe<Array<Transcription_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Order_By>>;
   where?: Maybe<Transcription_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_AggregateArgs = {
+export interface Query_RootTranscription_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Order_By>>;
   where?: Maybe<Transcription_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_By_PkArgs = {
+export interface Query_RootTranscription_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_Full_TextArgs = {
+export interface Query_RootTranscription_Full_TextArgs {
   distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
   where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_Full_Text_AggregateArgs = {
+export interface Query_RootTranscription_Full_Text_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
   where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_StatusArgs = {
+export interface Query_RootTranscription_StatusArgs {
   distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Status_Order_By>>;
   where?: Maybe<Transcription_Status_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_Status_AggregateArgs = {
+export interface Query_RootTranscription_Status_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Status_Order_By>>;
   where?: Maybe<Transcription_Status_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootTranscription_Status_By_PkArgs = {
+export interface Query_RootTranscription_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** query root */
-export type Query_RootUnread_MessagesArgs = {
+export interface Query_RootUnread_MessagesArgs {
   distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Unread_Messages_Order_By>>;
   where?: Maybe<Unread_Messages_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootUnread_Messages_AggregateArgs = {
+export interface Query_RootUnread_Messages_AggregateArgs {
   distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Unread_Messages_Order_By>>;
   where?: Maybe<Unread_Messages_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootUserArgs = {
+export interface Query_RootUserArgs {
   distinct_on?: Maybe<Array<User_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<User_Order_By>>;
   where?: Maybe<User_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootUser_AggregateArgs = {
+export interface Query_RootUser_AggregateArgs {
   distinct_on?: Maybe<Array<User_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<User_Order_By>>;
   where?: Maybe<User_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootUser_By_PkArgs = {
+export interface Query_RootUser_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** query root */
-export type Query_RootWhitelistArgs = {
+export interface Query_RootWhitelistArgs {
   distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Whitelist_Order_By>>;
   where?: Maybe<Whitelist_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootWhitelist_AggregateArgs = {
+export interface Query_RootWhitelist_AggregateArgs {
   distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Whitelist_Order_By>>;
   where?: Maybe<Whitelist_Bool_Exp>;
-};
+}
 
 
 /** query root */
-export type Query_RootWhitelist_By_PkArgs = {
+export interface Query_RootWhitelist_By_PkArgs {
   email: Scalars['String'];
-};
+}
 
 /** columns and relationships of "room" */
-export type Room = {
+export interface Room {
   __typename?: 'room';
   created_at: Scalars['timestamptz'];
   /** An object relationship */
@@ -3906,105 +3881,105 @@ export type Room = {
   topics: Array<Topic>;
   /** An aggregated array relationship */
   topics_aggregate: Topic_Aggregate;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomMembersArgs = {
+export interface RoomMembersArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomMembers_AggregateArgs = {
+export interface RoomMembers_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomRoom_InvitesArgs = {
+export interface RoomRoom_InvitesArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomRoom_Invites_AggregateArgs = {
+export interface RoomRoom_Invites_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomTopicsArgs = {
+export interface RoomTopicsArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "room" */
-export type RoomTopics_AggregateArgs = {
+export interface RoomTopics_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "room" */
-export type Room_Aggregate = {
+export interface Room_Aggregate {
   __typename?: 'room_aggregate';
   aggregate?: Maybe<Room_Aggregate_Fields>;
   nodes: Array<Room>;
-};
+}
 
 /** aggregate fields of "room" */
-export type Room_Aggregate_Fields = {
+export interface Room_Aggregate_Fields {
   __typename?: 'room_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Room_Max_Fields>;
   min?: Maybe<Room_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "room" */
-export type Room_Aggregate_FieldsCountArgs = {
+export interface Room_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Room_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "room" */
-export type Room_Aggregate_Order_By = {
+export interface Room_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Room_Max_Order_By>;
   min?: Maybe<Room_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "room" */
-export type Room_Arr_Rel_Insert_Input = {
+export interface Room_Arr_Rel_Insert_Input {
   data: Array<Room_Insert_Input>;
   on_conflict?: Maybe<Room_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "room". All fields are combined with a logical 'AND'. */
-export type Room_Bool_Exp = {
+export interface Room_Bool_Exp {
   _and?: Maybe<Array<Maybe<Room_Bool_Exp>>>;
   _not?: Maybe<Room_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Room_Bool_Exp>>>;
@@ -4023,18 +3998,17 @@ export type Room_Bool_Exp = {
   space_id?: Maybe<Uuid_Comparison_Exp>;
   summary?: Maybe<String_Comparison_Exp>;
   topics?: Maybe<Topic_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "room" */
-export enum Room_Constraint {
-  /** unique or primary key constraint */
-  RoomPkey = 'room_pkey',
-  /** unique or primary key constraint */
-  RoomSlugSpaceIdKey = 'room_slug_space_id_key'
 }
 
+/** unique or primary key constraints on table "room" */
+export type Room_Constraint =
+  /** unique or primary key constraint */
+  | 'room_pkey'
+  /** unique or primary key constraint */
+  | 'room_slug_space_id_key';
+
 /** input type for inserting data into table "room" */
-export type Room_Insert_Input = {
+export interface Room_Insert_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   creator?: Maybe<User_Obj_Rel_Insert_Input>;
   creator_id?: Maybe<Scalars['uuid']>;
@@ -4050,10 +4024,10 @@ export type Room_Insert_Input = {
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
   topics?: Maybe<Topic_Arr_Rel_Insert_Input>;
-};
+}
 
 /** columns and relationships of "room_invites" */
-export type Room_Invites = {
+export interface Room_Invites {
   __typename?: 'room_invites';
   code: Scalars['uuid'];
   created_at: Scalars['timestamptz'];
@@ -4066,45 +4040,45 @@ export type Room_Invites = {
   room: Room;
   room_id: Scalars['uuid'];
   used_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** aggregated selection of "room_invites" */
-export type Room_Invites_Aggregate = {
+export interface Room_Invites_Aggregate {
   __typename?: 'room_invites_aggregate';
   aggregate?: Maybe<Room_Invites_Aggregate_Fields>;
   nodes: Array<Room_Invites>;
-};
+}
 
 /** aggregate fields of "room_invites" */
-export type Room_Invites_Aggregate_Fields = {
+export interface Room_Invites_Aggregate_Fields {
   __typename?: 'room_invites_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Room_Invites_Max_Fields>;
   min?: Maybe<Room_Invites_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "room_invites" */
-export type Room_Invites_Aggregate_FieldsCountArgs = {
+export interface Room_Invites_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Room_Invites_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "room_invites" */
-export type Room_Invites_Aggregate_Order_By = {
+export interface Room_Invites_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Room_Invites_Max_Order_By>;
   min?: Maybe<Room_Invites_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "room_invites" */
-export type Room_Invites_Arr_Rel_Insert_Input = {
+export interface Room_Invites_Arr_Rel_Insert_Input {
   data: Array<Room_Invites_Insert_Input>;
   on_conflict?: Maybe<Room_Invites_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "room_invites". All fields are combined with a logical 'AND'. */
-export type Room_Invites_Bool_Exp = {
+export interface Room_Invites_Bool_Exp {
   _and?: Maybe<Array<Maybe<Room_Invites_Bool_Exp>>>;
   _not?: Maybe<Room_Invites_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Room_Invites_Bool_Exp>>>;
@@ -4117,20 +4091,19 @@ export type Room_Invites_Bool_Exp = {
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
   used_at?: Maybe<Timestamptz_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "room_invites" */
-export enum Room_Invites_Constraint {
-  /** unique or primary key constraint */
-  RoomInvitesCodeKey = 'room_invites_code_key',
-  /** unique or primary key constraint */
-  RoomInvitesPkey = 'room_invites_pkey',
-  /** unique or primary key constraint */
-  RoomInvitesRoomIdEmailKey = 'room_invites_room_id_email_key'
 }
 
+/** unique or primary key constraints on table "room_invites" */
+export type Room_Invites_Constraint =
+  /** unique or primary key constraint */
+  | 'room_invites_code_key'
+  /** unique or primary key constraint */
+  | 'room_invites_pkey'
+  /** unique or primary key constraint */
+  | 'room_invites_room_id_email_key';
+
 /** input type for inserting data into table "room_invites" */
-export type Room_Invites_Insert_Input = {
+export interface Room_Invites_Insert_Input {
   code?: Maybe<Scalars['uuid']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
@@ -4140,10 +4113,10 @@ export type Room_Invites_Insert_Input = {
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** aggregate max on columns */
-export type Room_Invites_Max_Fields = {
+export interface Room_Invites_Max_Fields {
   __typename?: 'room_invites_max_fields';
   code?: Maybe<Scalars['uuid']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -4152,10 +4125,10 @@ export type Room_Invites_Max_Fields = {
   inviter_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by max() on columns of table "room_invites" */
-export type Room_Invites_Max_Order_By = {
+export interface Room_Invites_Max_Order_By {
   code?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
@@ -4163,10 +4136,10 @@ export type Room_Invites_Max_Order_By = {
   inviter_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Room_Invites_Min_Fields = {
+export interface Room_Invites_Min_Fields {
   __typename?: 'room_invites_min_fields';
   code?: Maybe<Scalars['uuid']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -4175,10 +4148,10 @@ export type Room_Invites_Min_Fields = {
   inviter_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by min() on columns of table "room_invites" */
-export type Room_Invites_Min_Order_By = {
+export interface Room_Invites_Min_Order_By {
   code?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
@@ -4186,32 +4159,32 @@ export type Room_Invites_Min_Order_By = {
   inviter_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "room_invites" */
-export type Room_Invites_Mutation_Response = {
+export interface Room_Invites_Mutation_Response {
   __typename?: 'room_invites_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Room_Invites>;
-};
+}
 
 /** input type for inserting object relation for remote table "room_invites" */
-export type Room_Invites_Obj_Rel_Insert_Input = {
+export interface Room_Invites_Obj_Rel_Insert_Input {
   data: Room_Invites_Insert_Input;
   on_conflict?: Maybe<Room_Invites_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "room_invites" */
-export type Room_Invites_On_Conflict = {
+export interface Room_Invites_On_Conflict {
   constraint: Room_Invites_Constraint;
   update_columns: Array<Room_Invites_Update_Column>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "room_invites" */
-export type Room_Invites_Order_By = {
+export interface Room_Invites_Order_By {
   code?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
@@ -4221,33 +4194,32 @@ export type Room_Invites_Order_By = {
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "room_invites" */
-export type Room_Invites_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "room_invites" */
-export enum Room_Invites_Select_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  InviterId = 'inviter_id',
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  UsedAt = 'used_at'
 }
 
+/** primary key columns input for table: "room_invites" */
+export interface Room_Invites_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "room_invites" */
+export type Room_Invites_Select_Column =
+  /** column name */
+  | 'code'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'inviter_id'
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'used_at';
+
 /** input type for updating data in table "room_invites" */
-export type Room_Invites_Set_Input = {
+export interface Room_Invites_Set_Input {
   code?: Maybe<Scalars['uuid']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
@@ -4255,28 +4227,27 @@ export type Room_Invites_Set_Input = {
   inviter_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['timestamptz']>;
-};
-
-/** update columns of table "room_invites" */
-export enum Room_Invites_Update_Column {
-  /** column name */
-  Code = 'code',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  InviterId = 'inviter_id',
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  UsedAt = 'used_at'
 }
 
+/** update columns of table "room_invites" */
+export type Room_Invites_Update_Column =
+  /** column name */
+  | 'code'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'inviter_id'
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'used_at';
+
 /** aggregate max on columns */
-export type Room_Max_Fields = {
+export interface Room_Max_Fields {
   __typename?: 'room_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   creator_id?: Maybe<Scalars['uuid']>;
@@ -4288,10 +4259,10 @@ export type Room_Max_Fields = {
   slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "room" */
-export type Room_Max_Order_By = {
+export interface Room_Max_Order_By {
   created_at?: Maybe<Order_By>;
   creator_id?: Maybe<Order_By>;
   deadline?: Maybe<Order_By>;
@@ -4302,10 +4273,10 @@ export type Room_Max_Order_By = {
   slug?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
-};
+}
 
 /** columns and relationships of "room_member" */
-export type Room_Member = {
+export interface Room_Member {
   __typename?: 'room_member';
   /** An object relationship */
   room: Room;
@@ -4313,45 +4284,45 @@ export type Room_Member = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "room_member" */
-export type Room_Member_Aggregate = {
+export interface Room_Member_Aggregate {
   __typename?: 'room_member_aggregate';
   aggregate?: Maybe<Room_Member_Aggregate_Fields>;
   nodes: Array<Room_Member>;
-};
+}
 
 /** aggregate fields of "room_member" */
-export type Room_Member_Aggregate_Fields = {
+export interface Room_Member_Aggregate_Fields {
   __typename?: 'room_member_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Room_Member_Max_Fields>;
   min?: Maybe<Room_Member_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "room_member" */
-export type Room_Member_Aggregate_FieldsCountArgs = {
+export interface Room_Member_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Room_Member_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "room_member" */
-export type Room_Member_Aggregate_Order_By = {
+export interface Room_Member_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Room_Member_Max_Order_By>;
   min?: Maybe<Room_Member_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "room_member" */
-export type Room_Member_Arr_Rel_Insert_Input = {
+export interface Room_Member_Arr_Rel_Insert_Input {
   data: Array<Room_Member_Insert_Input>;
   on_conflict?: Maybe<Room_Member_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "room_member". All fields are combined with a logical 'AND'. */
-export type Room_Member_Bool_Exp = {
+export interface Room_Member_Bool_Exp {
   _and?: Maybe<Array<Maybe<Room_Member_Bool_Exp>>>;
   _not?: Maybe<Room_Member_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Room_Member_Bool_Exp>>>;
@@ -4359,110 +4330,107 @@ export type Room_Member_Bool_Exp = {
   room_id?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "room_member" */
-export enum Room_Member_Constraint {
-  /** unique or primary key constraint */
-  RoomParticipantsPkey = 'room_participants_pkey',
-  /** unique or primary key constraint */
-  RoomParticipantsRoomIdUserIdKey = 'room_participants_room_id_user_id_key'
 }
 
+/** unique or primary key constraints on table "room_member" */
+export type Room_Member_Constraint =
+  /** unique or primary key constraint */
+  | 'room_participants_pkey'
+  /** unique or primary key constraint */
+  | 'room_participants_room_id_user_id_key';
+
 /** input type for inserting data into table "room_member" */
-export type Room_Member_Insert_Input = {
+export interface Room_Member_Insert_Input {
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Room_Member_Max_Fields = {
+export interface Room_Member_Max_Fields {
   __typename?: 'room_member_max_fields';
   room_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "room_member" */
-export type Room_Member_Max_Order_By = {
+export interface Room_Member_Max_Order_By {
   room_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Room_Member_Min_Fields = {
+export interface Room_Member_Min_Fields {
   __typename?: 'room_member_min_fields';
   room_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "room_member" */
-export type Room_Member_Min_Order_By = {
+export interface Room_Member_Min_Order_By {
   room_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "room_member" */
-export type Room_Member_Mutation_Response = {
+export interface Room_Member_Mutation_Response {
   __typename?: 'room_member_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Room_Member>;
-};
+}
 
 /** input type for inserting object relation for remote table "room_member" */
-export type Room_Member_Obj_Rel_Insert_Input = {
+export interface Room_Member_Obj_Rel_Insert_Input {
   data: Room_Member_Insert_Input;
   on_conflict?: Maybe<Room_Member_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "room_member" */
-export type Room_Member_On_Conflict = {
+export interface Room_Member_On_Conflict {
   constraint: Room_Member_Constraint;
   update_columns: Array<Room_Member_Update_Column>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "room_member" */
-export type Room_Member_Order_By = {
+export interface Room_Member_Order_By {
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "room_member" */
-export type Room_Member_Pk_Columns_Input = {
+export interface Room_Member_Pk_Columns_Input {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 /** select columns of table "room_member" */
-export enum Room_Member_Select_Column {
+export type Room_Member_Select_Column =
   /** column name */
-  RoomId = 'room_id',
+  | 'room_id'
   /** column name */
-  UserId = 'user_id'
-}
+  | 'user_id';
 
 /** input type for updating data in table "room_member" */
-export type Room_Member_Set_Input = {
+export interface Room_Member_Set_Input {
   room_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "room_member" */
-export enum Room_Member_Update_Column {
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "room_member" */
+export type Room_Member_Update_Column =
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'user_id';
+
 /** aggregate min on columns */
-export type Room_Min_Fields = {
+export interface Room_Min_Fields {
   __typename?: 'room_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   creator_id?: Maybe<Scalars['uuid']>;
@@ -4474,10 +4442,10 @@ export type Room_Min_Fields = {
   slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "room" */
-export type Room_Min_Order_By = {
+export interface Room_Min_Order_By {
   created_at?: Maybe<Order_By>;
   creator_id?: Maybe<Order_By>;
   deadline?: Maybe<Order_By>;
@@ -4488,32 +4456,32 @@ export type Room_Min_Order_By = {
   slug?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "room" */
-export type Room_Mutation_Response = {
+export interface Room_Mutation_Response {
   __typename?: 'room_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Room>;
-};
+}
 
 /** input type for inserting object relation for remote table "room" */
-export type Room_Obj_Rel_Insert_Input = {
+export interface Room_Obj_Rel_Insert_Input {
   data: Room_Insert_Input;
   on_conflict?: Maybe<Room_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "room" */
-export type Room_On_Conflict = {
+export interface Room_On_Conflict {
   constraint: Room_Constraint;
   update_columns: Array<Room_Update_Column>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "room" */
-export type Room_Order_By = {
+export interface Room_Order_By {
   created_at?: Maybe<Order_By>;
   creator?: Maybe<User_Order_By>;
   creator_id?: Maybe<Order_By>;
@@ -4529,39 +4497,38 @@ export type Room_Order_By = {
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
   topics_aggregate?: Maybe<Topic_Aggregate_Order_By>;
-};
-
-/** primary key columns input for table: "room" */
-export type Room_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "room" */
-export enum Room_Select_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  CreatorId = 'creator_id',
-  /** column name */
-  Deadline = 'deadline',
-  /** column name */
-  FinishedAt = 'finished_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  NotificationJobId = 'notification_job_id',
-  /** column name */
-  Slug = 'slug',
-  /** column name */
-  SpaceId = 'space_id',
-  /** column name */
-  Summary = 'summary'
 }
 
+/** primary key columns input for table: "room" */
+export interface Room_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "room" */
+export type Room_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'creator_id'
+  /** column name */
+  | 'deadline'
+  /** column name */
+  | 'finished_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'notification_job_id'
+  /** column name */
+  | 'slug'
+  /** column name */
+  | 'space_id'
+  /** column name */
+  | 'summary';
+
 /** input type for updating data in table "room" */
-export type Room_Set_Input = {
+export interface Room_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   creator_id?: Maybe<Scalars['uuid']>;
   deadline?: Maybe<Scalars['timestamptz']>;
@@ -4572,42 +4539,41 @@ export type Room_Set_Input = {
   slug?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
-};
-
-/** update columns of table "room" */
-export enum Room_Update_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  CreatorId = 'creator_id',
-  /** column name */
-  Deadline = 'deadline',
-  /** column name */
-  FinishedAt = 'finished_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  NotificationJobId = 'notification_job_id',
-  /** column name */
-  Slug = 'slug',
-  /** column name */
-  SpaceId = 'space_id',
-  /** column name */
-  Summary = 'summary'
 }
 
-export type Search_Full_Text_Args = {
-  search?: Maybe<Scalars['String']>;
-};
+/** update columns of table "room" */
+export type Room_Update_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'creator_id'
+  /** column name */
+  | 'deadline'
+  /** column name */
+  | 'finished_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'notification_job_id'
+  /** column name */
+  | 'slug'
+  /** column name */
+  | 'space_id'
+  /** column name */
+  | 'summary';
 
-export type Search_Full_Text_Topic_Args = {
+export interface Search_Full_Text_Args {
   search?: Maybe<Scalars['String']>;
-};
+}
+
+export interface Search_Full_Text_Topic_Args {
+  search?: Maybe<Scalars['String']>;
+}
 
 /** columns and relationships of "space" */
-export type Space = {
+export interface Space {
   __typename?: 'space';
   /** An object relationship */
   creator?: Maybe<User>;
@@ -4626,85 +4592,85 @@ export type Space = {
   /** An object relationship */
   team: Team;
   team_id: Scalars['uuid'];
-};
+}
 
 
 /** columns and relationships of "space" */
-export type SpaceMembersArgs = {
+export interface SpaceMembersArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "space" */
-export type SpaceMembers_AggregateArgs = {
+export interface SpaceMembers_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "space" */
-export type SpaceRoomsArgs = {
+export interface SpaceRoomsArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "space" */
-export type SpaceRooms_AggregateArgs = {
+export interface SpaceRooms_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "space" */
-export type Space_Aggregate = {
+export interface Space_Aggregate {
   __typename?: 'space_aggregate';
   aggregate?: Maybe<Space_Aggregate_Fields>;
   nodes: Array<Space>;
-};
+}
 
 /** aggregate fields of "space" */
-export type Space_Aggregate_Fields = {
+export interface Space_Aggregate_Fields {
   __typename?: 'space_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Space_Max_Fields>;
   min?: Maybe<Space_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "space" */
-export type Space_Aggregate_FieldsCountArgs = {
+export interface Space_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Space_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "space" */
-export type Space_Aggregate_Order_By = {
+export interface Space_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Space_Max_Order_By>;
   min?: Maybe<Space_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "space" */
-export type Space_Arr_Rel_Insert_Input = {
+export interface Space_Arr_Rel_Insert_Input {
   data: Array<Space_Insert_Input>;
   on_conflict?: Maybe<Space_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "space". All fields are combined with a logical 'AND'. */
-export type Space_Bool_Exp = {
+export interface Space_Bool_Exp {
   _and?: Maybe<Array<Maybe<Space_Bool_Exp>>>;
   _not?: Maybe<Space_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Space_Bool_Exp>>>;
@@ -4717,18 +4683,17 @@ export type Space_Bool_Exp = {
   slug?: Maybe<String_Comparison_Exp>;
   team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "space" */
-export enum Space_Constraint {
-  /** unique or primary key constraint */
-  SpacePkey = 'space_pkey',
-  /** unique or primary key constraint */
-  SpaceTeamIdSlugKey = 'space_team_id_slug_key'
 }
 
+/** unique or primary key constraints on table "space" */
+export type Space_Constraint =
+  /** unique or primary key constraint */
+  | 'space_pkey'
+  /** unique or primary key constraint */
+  | 'space_team_id_slug_key';
+
 /** input type for inserting data into table "space" */
-export type Space_Insert_Input = {
+export interface Space_Insert_Input {
   creator?: Maybe<User_Obj_Rel_Insert_Input>;
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
@@ -4738,29 +4703,29 @@ export type Space_Insert_Input = {
   slug?: Maybe<Scalars['String']>;
   team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Space_Max_Fields = {
+export interface Space_Max_Fields {
   __typename?: 'space_max_fields';
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "space" */
-export type Space_Max_Order_By = {
+export interface Space_Max_Order_By {
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
-};
+}
 
 /** columns and relationships of "space_member" */
-export type Space_Member = {
+export interface Space_Member {
   __typename?: 'space_member';
   /** An object relationship */
   space: Space;
@@ -4768,45 +4733,45 @@ export type Space_Member = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "space_member" */
-export type Space_Member_Aggregate = {
+export interface Space_Member_Aggregate {
   __typename?: 'space_member_aggregate';
   aggregate?: Maybe<Space_Member_Aggregate_Fields>;
   nodes: Array<Space_Member>;
-};
+}
 
 /** aggregate fields of "space_member" */
-export type Space_Member_Aggregate_Fields = {
+export interface Space_Member_Aggregate_Fields {
   __typename?: 'space_member_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Space_Member_Max_Fields>;
   min?: Maybe<Space_Member_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "space_member" */
-export type Space_Member_Aggregate_FieldsCountArgs = {
+export interface Space_Member_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Space_Member_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "space_member" */
-export type Space_Member_Aggregate_Order_By = {
+export interface Space_Member_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Space_Member_Max_Order_By>;
   min?: Maybe<Space_Member_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "space_member" */
-export type Space_Member_Arr_Rel_Insert_Input = {
+export interface Space_Member_Arr_Rel_Insert_Input {
   data: Array<Space_Member_Insert_Input>;
   on_conflict?: Maybe<Space_Member_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "space_member". All fields are combined with a logical 'AND'. */
-export type Space_Member_Bool_Exp = {
+export interface Space_Member_Bool_Exp {
   _and?: Maybe<Array<Maybe<Space_Member_Bool_Exp>>>;
   _not?: Maybe<Space_Member_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Space_Member_Bool_Exp>>>;
@@ -4814,149 +4779,146 @@ export type Space_Member_Bool_Exp = {
   space_id?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "space_member" */
-export enum Space_Member_Constraint {
-  /** unique or primary key constraint */
-  SpaceParticipantsPkey = 'space_participants_pkey'
 }
 
+/** unique or primary key constraints on table "space_member" */
+export type Space_Member_Constraint =
+  /** unique or primary key constraint */
+  | 'space_participants_pkey';
+
 /** input type for inserting data into table "space_member" */
-export type Space_Member_Insert_Input = {
+export interface Space_Member_Insert_Input {
   space?: Maybe<Space_Obj_Rel_Insert_Input>;
   space_id?: Maybe<Scalars['uuid']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Space_Member_Max_Fields = {
+export interface Space_Member_Max_Fields {
   __typename?: 'space_member_max_fields';
   space_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "space_member" */
-export type Space_Member_Max_Order_By = {
+export interface Space_Member_Max_Order_By {
   space_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Space_Member_Min_Fields = {
+export interface Space_Member_Min_Fields {
   __typename?: 'space_member_min_fields';
   space_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "space_member" */
-export type Space_Member_Min_Order_By = {
+export interface Space_Member_Min_Order_By {
   space_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "space_member" */
-export type Space_Member_Mutation_Response = {
+export interface Space_Member_Mutation_Response {
   __typename?: 'space_member_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Space_Member>;
-};
+}
 
 /** input type for inserting object relation for remote table "space_member" */
-export type Space_Member_Obj_Rel_Insert_Input = {
+export interface Space_Member_Obj_Rel_Insert_Input {
   data: Space_Member_Insert_Input;
   on_conflict?: Maybe<Space_Member_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "space_member" */
-export type Space_Member_On_Conflict = {
+export interface Space_Member_On_Conflict {
   constraint: Space_Member_Constraint;
   update_columns: Array<Space_Member_Update_Column>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "space_member" */
-export type Space_Member_Order_By = {
+export interface Space_Member_Order_By {
   space?: Maybe<Space_Order_By>;
   space_id?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "space_member" */
-export type Space_Member_Pk_Columns_Input = {
+export interface Space_Member_Pk_Columns_Input {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 /** select columns of table "space_member" */
-export enum Space_Member_Select_Column {
+export type Space_Member_Select_Column =
   /** column name */
-  SpaceId = 'space_id',
+  | 'space_id'
   /** column name */
-  UserId = 'user_id'
-}
+  | 'user_id';
 
 /** input type for updating data in table "space_member" */
-export type Space_Member_Set_Input = {
+export interface Space_Member_Set_Input {
   space_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "space_member" */
-export enum Space_Member_Update_Column {
-  /** column name */
-  SpaceId = 'space_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "space_member" */
+export type Space_Member_Update_Column =
+  /** column name */
+  | 'space_id'
+  /** column name */
+  | 'user_id';
+
 /** aggregate min on columns */
-export type Space_Min_Fields = {
+export interface Space_Min_Fields {
   __typename?: 'space_min_fields';
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "space" */
-export type Space_Min_Order_By = {
+export interface Space_Min_Order_By {
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "space" */
-export type Space_Mutation_Response = {
+export interface Space_Mutation_Response {
   __typename?: 'space_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Space>;
-};
+}
 
 /** input type for inserting object relation for remote table "space" */
-export type Space_Obj_Rel_Insert_Input = {
+export interface Space_Obj_Rel_Insert_Input {
   data: Space_Insert_Input;
   on_conflict?: Maybe<Space_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "space" */
-export type Space_On_Conflict = {
+export interface Space_On_Conflict {
   constraint: Space_Constraint;
   update_columns: Array<Space_Update_Column>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "space" */
-export type Space_Order_By = {
+export interface Space_Order_By {
   creator?: Maybe<User_Order_By>;
   creator_id?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -4966,52 +4928,50 @@ export type Space_Order_By = {
   slug?: Maybe<Order_By>;
   team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "space" */
-export type Space_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "space" */
-export enum Space_Select_Column {
-  /** column name */
-  CreatorId = 'creator_id',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Slug = 'slug',
-  /** column name */
-  TeamId = 'team_id'
 }
 
+/** primary key columns input for table: "space" */
+export interface Space_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "space" */
+export type Space_Select_Column =
+  /** column name */
+  | 'creator_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'slug'
+  /** column name */
+  | 'team_id';
+
 /** input type for updating data in table "space" */
-export type Space_Set_Input = {
+export interface Space_Set_Input {
   creator_id?: Maybe<Scalars['uuid']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "space" */
-export enum Space_Update_Column {
-  /** column name */
-  CreatorId = 'creator_id',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  Slug = 'slug',
-  /** column name */
-  TeamId = 'team_id'
 }
 
+/** update columns of table "space" */
+export type Space_Update_Column =
+  /** column name */
+  | 'creator_id'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'slug'
+  /** column name */
+  | 'team_id';
+
 /** subscription root */
-export type Subscription_Root = {
+export interface Subscription_Root {
   __typename?: 'subscription_root';
   /** fetch data from the table: "account" */
   account: Array<Account>;
@@ -5167,699 +5127,699 @@ export type Subscription_Root = {
   whitelist_aggregate: Whitelist_Aggregate;
   /** fetch data from the table: "whitelist" using primary key columns */
   whitelist_by_pk?: Maybe<Whitelist>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAccountArgs = {
+export interface Subscription_RootAccountArgs {
   distinct_on?: Maybe<Array<Account_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Account_Order_By>>;
   where?: Maybe<Account_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAccount_AggregateArgs = {
+export interface Subscription_RootAccount_AggregateArgs {
   distinct_on?: Maybe<Array<Account_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Account_Order_By>>;
   where?: Maybe<Account_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAccount_By_PkArgs = {
+export interface Subscription_RootAccount_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAttachmentArgs = {
+export interface Subscription_RootAttachmentArgs {
   distinct_on?: Maybe<Array<Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Attachment_Order_By>>;
   where?: Maybe<Attachment_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAttachment_AggregateArgs = {
+export interface Subscription_RootAttachment_AggregateArgs {
   distinct_on?: Maybe<Array<Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Attachment_Order_By>>;
   where?: Maybe<Attachment_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootAttachment_By_PkArgs = {
+export interface Subscription_RootAttachment_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootFull_Text_SearchArgs = {
+export interface Subscription_RootFull_Text_SearchArgs {
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootFull_Text_Search_AggregateArgs = {
+export interface Subscription_RootFull_Text_Search_AggregateArgs {
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootGet_Download_UrlArgs = {
+export interface Subscription_RootGet_Download_UrlArgs {
   uuid: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootGet_Upload_UrlArgs = {
+export interface Subscription_RootGet_Upload_UrlArgs {
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootLast_Seen_MessageArgs = {
+export interface Subscription_RootLast_Seen_MessageArgs {
   distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
   where?: Maybe<Last_Seen_Message_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootLast_Seen_Message_AggregateArgs = {
+export interface Subscription_RootLast_Seen_Message_AggregateArgs {
   distinct_on?: Maybe<Array<Last_Seen_Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Last_Seen_Message_Order_By>>;
   where?: Maybe<Last_Seen_Message_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootLast_Seen_Message_By_PkArgs = {
+export interface Subscription_RootLast_Seen_Message_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMembership_StatusArgs = {
+export interface Subscription_RootMembership_StatusArgs {
   distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Membership_Status_Order_By>>;
   where?: Maybe<Membership_Status_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMembership_Status_AggregateArgs = {
+export interface Subscription_RootMembership_Status_AggregateArgs {
   distinct_on?: Maybe<Array<Membership_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Membership_Status_Order_By>>;
   where?: Maybe<Membership_Status_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMembership_Status_By_PkArgs = {
+export interface Subscription_RootMembership_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessageArgs = {
+export interface Subscription_RootMessageArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_AggregateArgs = {
+export interface Subscription_RootMessage_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_AttachmentArgs = {
+export interface Subscription_RootMessage_AttachmentArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Attachment_AggregateArgs = {
+export interface Subscription_RootMessage_Attachment_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Attachment_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Attachment_Order_By>>;
   where?: Maybe<Message_Attachment_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Attachment_By_PkArgs = {
+export interface Subscription_RootMessage_Attachment_By_PkArgs {
   attachment_id: Scalars['uuid'];
   message_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_By_PkArgs = {
+export interface Subscription_RootMessage_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Full_TextArgs = {
+export interface Subscription_RootMessage_Full_TextArgs {
   distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
   where?: Maybe<Message_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Full_Text_AggregateArgs = {
+export interface Subscription_RootMessage_Full_Text_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Full_Text_Order_By>>;
   where?: Maybe<Message_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_TypeArgs = {
+export interface Subscription_RootMessage_TypeArgs {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Type_Order_By>>;
   where?: Maybe<Message_Type_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Type_AggregateArgs = {
+export interface Subscription_RootMessage_Type_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Type_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Type_Order_By>>;
   where?: Maybe<Message_Type_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootMessage_Type_By_PkArgs = {
+export interface Subscription_RootMessage_Type_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoomArgs = {
+export interface Subscription_RootRoomArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_AggregateArgs = {
+export interface Subscription_RootRoom_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_By_PkArgs = {
+export interface Subscription_RootRoom_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_InvitesArgs = {
+export interface Subscription_RootRoom_InvitesArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_Invites_AggregateArgs = {
+export interface Subscription_RootRoom_Invites_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_Invites_By_PkArgs = {
+export interface Subscription_RootRoom_Invites_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_MemberArgs = {
+export interface Subscription_RootRoom_MemberArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_Member_AggregateArgs = {
+export interface Subscription_RootRoom_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootRoom_Member_By_PkArgs = {
+export interface Subscription_RootRoom_Member_By_PkArgs {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSearch_Full_TextArgs = {
+export interface Subscription_RootSearch_Full_TextArgs {
   args: Search_Full_Text_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSearch_Full_Text_AggregateArgs = {
+export interface Subscription_RootSearch_Full_Text_AggregateArgs {
   args: Search_Full_Text_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSearch_Full_Text_TopicArgs = {
+export interface Subscription_RootSearch_Full_Text_TopicArgs {
   args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSearch_Full_Text_Topic_AggregateArgs = {
+export interface Subscription_RootSearch_Full_Text_Topic_AggregateArgs {
   args: Search_Full_Text_Topic_Args;
   distinct_on?: Maybe<Array<Full_Text_Search_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Full_Text_Search_Order_By>>;
   where?: Maybe<Full_Text_Search_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpaceArgs = {
+export interface Subscription_RootSpaceArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpace_AggregateArgs = {
+export interface Subscription_RootSpace_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpace_By_PkArgs = {
+export interface Subscription_RootSpace_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpace_MemberArgs = {
+export interface Subscription_RootSpace_MemberArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpace_Member_AggregateArgs = {
+export interface Subscription_RootSpace_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootSpace_Member_By_PkArgs = {
+export interface Subscription_RootSpace_Member_By_PkArgs {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeamArgs = {
+export interface Subscription_RootTeamArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_AggregateArgs = {
+export interface Subscription_RootTeam_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_By_PkArgs = {
+export interface Subscription_RootTeam_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_InvitationArgs = {
+export interface Subscription_RootTeam_InvitationArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_Invitation_AggregateArgs = {
+export interface Subscription_RootTeam_Invitation_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_Invitation_By_PkArgs = {
+export interface Subscription_RootTeam_Invitation_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_MemberArgs = {
+export interface Subscription_RootTeam_MemberArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_Member_AggregateArgs = {
+export interface Subscription_RootTeam_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTeam_Member_By_PkArgs = {
+export interface Subscription_RootTeam_Member_By_PkArgs {
   team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopicArgs = {
+export interface Subscription_RootTopicArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopic_AggregateArgs = {
+export interface Subscription_RootTopic_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Order_By>>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopic_By_PkArgs = {
+export interface Subscription_RootTopic_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopic_MemberArgs = {
+export interface Subscription_RootTopic_MemberArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopic_Member_AggregateArgs = {
+export interface Subscription_RootTopic_Member_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTopic_Member_By_PkArgs = {
+export interface Subscription_RootTopic_Member_By_PkArgs {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscriptionArgs = {
+export interface Subscription_RootTranscriptionArgs {
   distinct_on?: Maybe<Array<Transcription_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Order_By>>;
   where?: Maybe<Transcription_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_AggregateArgs = {
+export interface Subscription_RootTranscription_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Order_By>>;
   where?: Maybe<Transcription_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_By_PkArgs = {
+export interface Subscription_RootTranscription_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_Full_TextArgs = {
+export interface Subscription_RootTranscription_Full_TextArgs {
   distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
   where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_Full_Text_AggregateArgs = {
+export interface Subscription_RootTranscription_Full_Text_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
   where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_StatusArgs = {
+export interface Subscription_RootTranscription_StatusArgs {
   distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Status_Order_By>>;
   where?: Maybe<Transcription_Status_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_Status_AggregateArgs = {
+export interface Subscription_RootTranscription_Status_AggregateArgs {
   distinct_on?: Maybe<Array<Transcription_Status_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Transcription_Status_Order_By>>;
   where?: Maybe<Transcription_Status_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootTranscription_Status_By_PkArgs = {
+export interface Subscription_RootTranscription_Status_By_PkArgs {
   value: Scalars['String'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootUnread_MessagesArgs = {
+export interface Subscription_RootUnread_MessagesArgs {
   distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Unread_Messages_Order_By>>;
   where?: Maybe<Unread_Messages_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootUnread_Messages_AggregateArgs = {
+export interface Subscription_RootUnread_Messages_AggregateArgs {
   distinct_on?: Maybe<Array<Unread_Messages_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Unread_Messages_Order_By>>;
   where?: Maybe<Unread_Messages_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootUserArgs = {
+export interface Subscription_RootUserArgs {
   distinct_on?: Maybe<Array<User_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<User_Order_By>>;
   where?: Maybe<User_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootUser_AggregateArgs = {
+export interface Subscription_RootUser_AggregateArgs {
   distinct_on?: Maybe<Array<User_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<User_Order_By>>;
   where?: Maybe<User_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootUser_By_PkArgs = {
+export interface Subscription_RootUser_By_PkArgs {
   id: Scalars['uuid'];
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootWhitelistArgs = {
+export interface Subscription_RootWhitelistArgs {
   distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Whitelist_Order_By>>;
   where?: Maybe<Whitelist_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootWhitelist_AggregateArgs = {
+export interface Subscription_RootWhitelist_AggregateArgs {
   distinct_on?: Maybe<Array<Whitelist_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Whitelist_Order_By>>;
   where?: Maybe<Whitelist_Bool_Exp>;
-};
+}
 
 
 /** subscription root */
-export type Subscription_RootWhitelist_By_PkArgs = {
+export interface Subscription_RootWhitelist_By_PkArgs {
   email: Scalars['String'];
-};
+}
 
 /** columns and relationships of "team" */
-export type Team = {
+export interface Team {
   __typename?: 'team';
   id: Scalars['uuid'];
   /** An array relationship */
@@ -5879,105 +5839,105 @@ export type Team = {
   spaces: Array<Space>;
   /** An aggregated array relationship */
   spaces_aggregate: Space_Aggregate;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamInvitationsArgs = {
+export interface TeamInvitationsArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamInvitations_AggregateArgs = {
+export interface TeamInvitations_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamMembershipsArgs = {
+export interface TeamMembershipsArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamMemberships_AggregateArgs = {
+export interface TeamMemberships_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamSpacesArgs = {
+export interface TeamSpacesArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "team" */
-export type TeamSpaces_AggregateArgs = {
+export interface TeamSpaces_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Order_By>>;
   where?: Maybe<Space_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "team" */
-export type Team_Aggregate = {
+export interface Team_Aggregate {
   __typename?: 'team_aggregate';
   aggregate?: Maybe<Team_Aggregate_Fields>;
   nodes: Array<Team>;
-};
+}
 
 /** aggregate fields of "team" */
-export type Team_Aggregate_Fields = {
+export interface Team_Aggregate_Fields {
   __typename?: 'team_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Team_Max_Fields>;
   min?: Maybe<Team_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "team" */
-export type Team_Aggregate_FieldsCountArgs = {
+export interface Team_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Team_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "team" */
-export type Team_Aggregate_Order_By = {
+export interface Team_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Team_Max_Order_By>;
   min?: Maybe<Team_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "team" */
-export type Team_Arr_Rel_Insert_Input = {
+export interface Team_Arr_Rel_Insert_Input {
   data: Array<Team_Insert_Input>;
   on_conflict?: Maybe<Team_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "team". All fields are combined with a logical 'AND'. */
-export type Team_Bool_Exp = {
+export interface Team_Bool_Exp {
   _and?: Maybe<Array<Maybe<Team_Bool_Exp>>>;
   _not?: Maybe<Team_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Team_Bool_Exp>>>;
@@ -5989,20 +5949,19 @@ export type Team_Bool_Exp = {
   owner_id?: Maybe<Uuid_Comparison_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
   spaces?: Maybe<Space_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "team" */
-export enum Team_Constraint {
-  /** unique or primary key constraint */
-  TeamIdKey = 'team_id_key',
-  /** unique or primary key constraint */
-  TeamPkey = 'team_pkey',
-  /** unique or primary key constraint */
-  TeamSlugKey = 'team_slug_key'
 }
 
+/** unique or primary key constraints on table "team" */
+export type Team_Constraint =
+  /** unique or primary key constraint */
+  | 'team_id_key'
+  /** unique or primary key constraint */
+  | 'team_pkey'
+  /** unique or primary key constraint */
+  | 'team_slug_key';
+
 /** input type for inserting data into table "team" */
-export type Team_Insert_Input = {
+export interface Team_Insert_Input {
   id?: Maybe<Scalars['uuid']>;
   invitations?: Maybe<Team_Invitation_Arr_Rel_Insert_Input>;
   memberships?: Maybe<Team_Member_Arr_Rel_Insert_Input>;
@@ -6011,10 +5970,10 @@ export type Team_Insert_Input = {
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
   spaces?: Maybe<Space_Arr_Rel_Insert_Input>;
-};
+}
 
 /** columns and relationships of "team_invitation" */
-export type Team_Invitation = {
+export interface Team_Invitation {
   __typename?: 'team_invitation';
   created_at: Scalars['timestamptz'];
   email: Scalars['String'];
@@ -6030,45 +5989,45 @@ export type Team_Invitation = {
   /** An object relationship */
   used_by_user?: Maybe<User>;
   used_by_user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregated selection of "team_invitation" */
-export type Team_Invitation_Aggregate = {
+export interface Team_Invitation_Aggregate {
   __typename?: 'team_invitation_aggregate';
   aggregate?: Maybe<Team_Invitation_Aggregate_Fields>;
   nodes: Array<Team_Invitation>;
-};
+}
 
 /** aggregate fields of "team_invitation" */
-export type Team_Invitation_Aggregate_Fields = {
+export interface Team_Invitation_Aggregate_Fields {
   __typename?: 'team_invitation_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Team_Invitation_Max_Fields>;
   min?: Maybe<Team_Invitation_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "team_invitation" */
-export type Team_Invitation_Aggregate_FieldsCountArgs = {
+export interface Team_Invitation_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Team_Invitation_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "team_invitation" */
-export type Team_Invitation_Aggregate_Order_By = {
+export interface Team_Invitation_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Team_Invitation_Max_Order_By>;
   min?: Maybe<Team_Invitation_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "team_invitation" */
-export type Team_Invitation_Arr_Rel_Insert_Input = {
+export interface Team_Invitation_Arr_Rel_Insert_Input {
   data: Array<Team_Invitation_Insert_Input>;
   on_conflict?: Maybe<Team_Invitation_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "team_invitation". All fields are combined with a logical 'AND'. */
-export type Team_Invitation_Bool_Exp = {
+export interface Team_Invitation_Bool_Exp {
   _and?: Maybe<Array<Maybe<Team_Invitation_Bool_Exp>>>;
   _not?: Maybe<Team_Invitation_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Team_Invitation_Bool_Exp>>>;
@@ -6083,18 +6042,17 @@ export type Team_Invitation_Bool_Exp = {
   used_at?: Maybe<Date_Comparison_Exp>;
   used_by_user?: Maybe<User_Bool_Exp>;
   used_by_user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "team_invitation" */
-export enum Team_Invitation_Constraint {
-  /** unique or primary key constraint */
-  TeamInvitationPkey = 'team_invitation_pkey',
-  /** unique or primary key constraint */
-  TeamInvitationTokenKey = 'team_invitation_token_key'
 }
 
+/** unique or primary key constraints on table "team_invitation" */
+export type Team_Invitation_Constraint =
+  /** unique or primary key constraint */
+  | 'team_invitation_pkey'
+  /** unique or primary key constraint */
+  | 'team_invitation_token_key';
+
 /** input type for inserting data into table "team_invitation" */
-export type Team_Invitation_Insert_Input = {
+export interface Team_Invitation_Insert_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
@@ -6106,10 +6064,10 @@ export type Team_Invitation_Insert_Input = {
   used_at?: Maybe<Scalars['date']>;
   used_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
   used_by_user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Team_Invitation_Max_Fields = {
+export interface Team_Invitation_Max_Fields {
   __typename?: 'team_invitation_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
@@ -6119,10 +6077,10 @@ export type Team_Invitation_Max_Fields = {
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
   used_by_user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "team_invitation" */
-export type Team_Invitation_Max_Order_By = {
+export interface Team_Invitation_Max_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -6131,10 +6089,10 @@ export type Team_Invitation_Max_Order_By = {
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
   used_by_user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Team_Invitation_Min_Fields = {
+export interface Team_Invitation_Min_Fields {
   __typename?: 'team_invitation_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
@@ -6144,10 +6102,10 @@ export type Team_Invitation_Min_Fields = {
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
   used_by_user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "team_invitation" */
-export type Team_Invitation_Min_Order_By = {
+export interface Team_Invitation_Min_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -6156,32 +6114,32 @@ export type Team_Invitation_Min_Order_By = {
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
   used_by_user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "team_invitation" */
-export type Team_Invitation_Mutation_Response = {
+export interface Team_Invitation_Mutation_Response {
   __typename?: 'team_invitation_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Team_Invitation>;
-};
+}
 
 /** input type for inserting object relation for remote table "team_invitation" */
-export type Team_Invitation_Obj_Rel_Insert_Input = {
+export interface Team_Invitation_Obj_Rel_Insert_Input {
   data: Team_Invitation_Insert_Input;
   on_conflict?: Maybe<Team_Invitation_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "team_invitation" */
-export type Team_Invitation_On_Conflict = {
+export interface Team_Invitation_On_Conflict {
   constraint: Team_Invitation_Constraint;
   update_columns: Array<Team_Invitation_Update_Column>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "team_invitation" */
-export type Team_Invitation_Order_By = {
+export interface Team_Invitation_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
@@ -6193,35 +6151,34 @@ export type Team_Invitation_Order_By = {
   used_at?: Maybe<Order_By>;
   used_by_user?: Maybe<User_Order_By>;
   used_by_user_id?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "team_invitation" */
-export type Team_Invitation_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "team_invitation" */
-export enum Team_Invitation_Select_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  InvitingUserId = 'inviting_user_id',
-  /** column name */
-  TeamId = 'team_id',
-  /** column name */
-  Token = 'token',
-  /** column name */
-  UsedAt = 'used_at',
-  /** column name */
-  UsedByUserId = 'used_by_user_id'
 }
 
+/** primary key columns input for table: "team_invitation" */
+export interface Team_Invitation_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "team_invitation" */
+export type Team_Invitation_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'inviting_user_id'
+  /** column name */
+  | 'team_id'
+  /** column name */
+  | 'token'
+  /** column name */
+  | 'used_at'
+  /** column name */
+  | 'used_by_user_id';
+
 /** input type for updating data in table "team_invitation" */
-export type Team_Invitation_Set_Input = {
+export interface Team_Invitation_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
@@ -6230,47 +6187,46 @@ export type Team_Invitation_Set_Input = {
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
   used_by_user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "team_invitation" */
-export enum Team_Invitation_Update_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  InvitingUserId = 'inviting_user_id',
-  /** column name */
-  TeamId = 'team_id',
-  /** column name */
-  Token = 'token',
-  /** column name */
-  UsedAt = 'used_at',
-  /** column name */
-  UsedByUserId = 'used_by_user_id'
 }
 
+/** update columns of table "team_invitation" */
+export type Team_Invitation_Update_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'inviting_user_id'
+  /** column name */
+  | 'team_id'
+  /** column name */
+  | 'token'
+  /** column name */
+  | 'used_at'
+  /** column name */
+  | 'used_by_user_id';
+
 /** aggregate max on columns */
-export type Team_Max_Fields = {
+export interface Team_Max_Fields {
   __typename?: 'team_max_fields';
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "team" */
-export type Team_Max_Order_By = {
+export interface Team_Max_Order_By {
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
-};
+}
 
 /** columns and relationships of "team_member" */
-export type Team_Member = {
+export interface Team_Member {
   __typename?: 'team_member';
   /** An object relationship */
   team: Team;
@@ -6278,45 +6234,45 @@ export type Team_Member = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "team_member" */
-export type Team_Member_Aggregate = {
+export interface Team_Member_Aggregate {
   __typename?: 'team_member_aggregate';
   aggregate?: Maybe<Team_Member_Aggregate_Fields>;
   nodes: Array<Team_Member>;
-};
+}
 
 /** aggregate fields of "team_member" */
-export type Team_Member_Aggregate_Fields = {
+export interface Team_Member_Aggregate_Fields {
   __typename?: 'team_member_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Team_Member_Max_Fields>;
   min?: Maybe<Team_Member_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "team_member" */
-export type Team_Member_Aggregate_FieldsCountArgs = {
+export interface Team_Member_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Team_Member_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "team_member" */
-export type Team_Member_Aggregate_Order_By = {
+export interface Team_Member_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Team_Member_Max_Order_By>;
   min?: Maybe<Team_Member_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "team_member" */
-export type Team_Member_Arr_Rel_Insert_Input = {
+export interface Team_Member_Arr_Rel_Insert_Input {
   data: Array<Team_Member_Insert_Input>;
   on_conflict?: Maybe<Team_Member_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "team_member". All fields are combined with a logical 'AND'. */
-export type Team_Member_Bool_Exp = {
+export interface Team_Member_Bool_Exp {
   _and?: Maybe<Array<Maybe<Team_Member_Bool_Exp>>>;
   _not?: Maybe<Team_Member_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Team_Member_Bool_Exp>>>;
@@ -6324,147 +6280,144 @@ export type Team_Member_Bool_Exp = {
   team_id?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "team_member" */
-export enum Team_Member_Constraint {
-  /** unique or primary key constraint */
-  TeamMembershipPkey = 'team_membership_pkey'
 }
 
+/** unique or primary key constraints on table "team_member" */
+export type Team_Member_Constraint =
+  /** unique or primary key constraint */
+  | 'team_membership_pkey';
+
 /** input type for inserting data into table "team_member" */
-export type Team_Member_Insert_Input = {
+export interface Team_Member_Insert_Input {
   team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Team_Member_Max_Fields = {
+export interface Team_Member_Max_Fields {
   __typename?: 'team_member_max_fields';
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "team_member" */
-export type Team_Member_Max_Order_By = {
+export interface Team_Member_Max_Order_By {
   team_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Team_Member_Min_Fields = {
+export interface Team_Member_Min_Fields {
   __typename?: 'team_member_min_fields';
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "team_member" */
-export type Team_Member_Min_Order_By = {
+export interface Team_Member_Min_Order_By {
   team_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "team_member" */
-export type Team_Member_Mutation_Response = {
+export interface Team_Member_Mutation_Response {
   __typename?: 'team_member_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Team_Member>;
-};
+}
 
 /** input type for inserting object relation for remote table "team_member" */
-export type Team_Member_Obj_Rel_Insert_Input = {
+export interface Team_Member_Obj_Rel_Insert_Input {
   data: Team_Member_Insert_Input;
   on_conflict?: Maybe<Team_Member_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "team_member" */
-export type Team_Member_On_Conflict = {
+export interface Team_Member_On_Conflict {
   constraint: Team_Member_Constraint;
   update_columns: Array<Team_Member_Update_Column>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "team_member" */
-export type Team_Member_Order_By = {
+export interface Team_Member_Order_By {
   team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "team_member" */
-export type Team_Member_Pk_Columns_Input = {
+export interface Team_Member_Pk_Columns_Input {
   team_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 /** select columns of table "team_member" */
-export enum Team_Member_Select_Column {
+export type Team_Member_Select_Column =
   /** column name */
-  TeamId = 'team_id',
+  | 'team_id'
   /** column name */
-  UserId = 'user_id'
-}
+  | 'user_id';
 
 /** input type for updating data in table "team_member" */
-export type Team_Member_Set_Input = {
+export interface Team_Member_Set_Input {
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "team_member" */
-export enum Team_Member_Update_Column {
-  /** column name */
-  TeamId = 'team_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "team_member" */
+export type Team_Member_Update_Column =
+  /** column name */
+  | 'team_id'
+  /** column name */
+  | 'user_id';
+
 /** aggregate min on columns */
-export type Team_Min_Fields = {
+export interface Team_Min_Fields {
   __typename?: 'team_min_fields';
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "team" */
-export type Team_Min_Order_By = {
+export interface Team_Min_Order_By {
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "team" */
-export type Team_Mutation_Response = {
+export interface Team_Mutation_Response {
   __typename?: 'team_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Team>;
-};
+}
 
 /** input type for inserting object relation for remote table "team" */
-export type Team_Obj_Rel_Insert_Input = {
+export interface Team_Obj_Rel_Insert_Input {
   data: Team_Insert_Input;
   on_conflict?: Maybe<Team_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "team" */
-export type Team_On_Conflict = {
+export interface Team_On_Conflict {
   constraint: Team_Constraint;
   update_columns: Array<Team_Update_Column>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "team" */
-export type Team_Order_By = {
+export interface Team_Order_By {
   id?: Maybe<Order_By>;
   invitations_aggregate?: Maybe<Team_Invitation_Aggregate_Order_By>;
   memberships_aggregate?: Maybe<Team_Member_Aggregate_Order_By>;
@@ -6473,48 +6426,46 @@ export type Team_Order_By = {
   owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   spaces_aggregate?: Maybe<Space_Aggregate_Order_By>;
-};
-
-/** primary key columns input for table: "team" */
-export type Team_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "team" */
-export enum Team_Select_Column {
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  OwnerId = 'owner_id',
-  /** column name */
-  Slug = 'slug'
 }
 
+/** primary key columns input for table: "team" */
+export interface Team_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "team" */
+export type Team_Select_Column =
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'owner_id'
+  /** column name */
+  | 'slug';
+
 /** input type for updating data in table "team" */
-export type Team_Set_Input = {
+export interface Team_Set_Input {
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** update columns of table "team" */
-export enum Team_Update_Column {
+export type Team_Update_Column =
   /** column name */
-  Id = 'id',
+  | 'id'
   /** column name */
-  Name = 'name',
+  | 'name'
   /** column name */
-  OwnerId = 'owner_id',
+  | 'owner_id'
   /** column name */
-  Slug = 'slug'
-}
+  | 'slug';
 
 
 /** expression to compare columns of type timestamp. All fields are combined with logical 'AND'. */
-export type Timestamp_Comparison_Exp = {
+export interface Timestamp_Comparison_Exp {
   _eq?: Maybe<Scalars['timestamp']>;
   _gt?: Maybe<Scalars['timestamp']>;
   _gte?: Maybe<Scalars['timestamp']>;
@@ -6524,11 +6475,11 @@ export type Timestamp_Comparison_Exp = {
   _lte?: Maybe<Scalars['timestamp']>;
   _neq?: Maybe<Scalars['timestamp']>;
   _nin?: Maybe<Array<Scalars['timestamp']>>;
-};
+}
 
 
 /** expression to compare columns of type timestamptz. All fields are combined with logical 'AND'. */
-export type Timestamptz_Comparison_Exp = {
+export interface Timestamptz_Comparison_Exp {
   _eq?: Maybe<Scalars['timestamptz']>;
   _gt?: Maybe<Scalars['timestamptz']>;
   _gte?: Maybe<Scalars['timestamptz']>;
@@ -6538,10 +6489,10 @@ export type Timestamptz_Comparison_Exp = {
   _lte?: Maybe<Scalars['timestamptz']>;
   _neq?: Maybe<Scalars['timestamptz']>;
   _nin?: Maybe<Array<Scalars['timestamptz']>>;
-};
+}
 
 /** columns and relationships of "topic" */
-export type Topic = {
+export interface Topic {
   __typename?: 'topic';
   closed_at?: Maybe<Scalars['timestamp']>;
   /** An object relationship */
@@ -6563,85 +6514,85 @@ export type Topic = {
   room: Room;
   room_id: Scalars['uuid'];
   slug: Scalars['String'];
-};
+}
 
 
 /** columns and relationships of "topic" */
-export type TopicMembersArgs = {
+export interface TopicMembersArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "topic" */
-export type TopicMembers_AggregateArgs = {
+export interface TopicMembers_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "topic" */
-export type TopicMessagesArgs = {
+export interface TopicMessagesArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "topic" */
-export type TopicMessages_AggregateArgs = {
+export interface TopicMessages_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "topic" */
-export type Topic_Aggregate = {
+export interface Topic_Aggregate {
   __typename?: 'topic_aggregate';
   aggregate?: Maybe<Topic_Aggregate_Fields>;
   nodes: Array<Topic>;
-};
+}
 
 /** aggregate fields of "topic" */
-export type Topic_Aggregate_Fields = {
+export interface Topic_Aggregate_Fields {
   __typename?: 'topic_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Topic_Max_Fields>;
   min?: Maybe<Topic_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "topic" */
-export type Topic_Aggregate_FieldsCountArgs = {
+export interface Topic_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Topic_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "topic" */
-export type Topic_Aggregate_Order_By = {
+export interface Topic_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Topic_Max_Order_By>;
   min?: Maybe<Topic_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "topic" */
-export type Topic_Arr_Rel_Insert_Input = {
+export interface Topic_Arr_Rel_Insert_Input {
   data: Array<Topic_Insert_Input>;
   on_conflict?: Maybe<Topic_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "topic". All fields are combined with a logical 'AND'. */
-export type Topic_Bool_Exp = {
+export interface Topic_Bool_Exp {
   _and?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Bool_Exp>>>;
@@ -6657,18 +6608,17 @@ export type Topic_Bool_Exp = {
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "topic" */
-export enum Topic_Constraint {
-  /** unique or primary key constraint */
-  ThreadPkey = 'thread_pkey',
-  /** unique or primary key constraint */
-  TopicSlugRoomIdKey = 'topic_slug_room_id_key'
 }
 
+/** unique or primary key constraints on table "topic" */
+export type Topic_Constraint =
+  /** unique or primary key constraint */
+  | 'thread_pkey'
+  /** unique or primary key constraint */
+  | 'topic_slug_room_id_key';
+
 /** input type for inserting data into table "topic" */
-export type Topic_Insert_Input = {
+export interface Topic_Insert_Input {
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
@@ -6681,10 +6631,10 @@ export type Topic_Insert_Input = {
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregate max on columns */
-export type Topic_Max_Fields = {
+export interface Topic_Max_Fields {
   __typename?: 'topic_max_fields';
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
@@ -6694,10 +6644,10 @@ export type Topic_Max_Fields = {
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "topic" */
-export type Topic_Max_Order_By = {
+export interface Topic_Max_Order_By {
   closed_at?: Maybe<Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
@@ -6706,10 +6656,10 @@ export type Topic_Max_Order_By = {
   name?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
-};
+}
 
 /** columns and relationships of "topic_member" */
-export type Topic_Member = {
+export interface Topic_Member {
   __typename?: 'topic_member';
   /** An object relationship */
   topic: Topic;
@@ -6717,45 +6667,45 @@ export type Topic_Member = {
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
-};
+}
 
 /** aggregated selection of "topic_member" */
-export type Topic_Member_Aggregate = {
+export interface Topic_Member_Aggregate {
   __typename?: 'topic_member_aggregate';
   aggregate?: Maybe<Topic_Member_Aggregate_Fields>;
   nodes: Array<Topic_Member>;
-};
+}
 
 /** aggregate fields of "topic_member" */
-export type Topic_Member_Aggregate_Fields = {
+export interface Topic_Member_Aggregate_Fields {
   __typename?: 'topic_member_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Topic_Member_Max_Fields>;
   min?: Maybe<Topic_Member_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "topic_member" */
-export type Topic_Member_Aggregate_FieldsCountArgs = {
+export interface Topic_Member_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Topic_Member_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "topic_member" */
-export type Topic_Member_Aggregate_Order_By = {
+export interface Topic_Member_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Topic_Member_Max_Order_By>;
   min?: Maybe<Topic_Member_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "topic_member" */
-export type Topic_Member_Arr_Rel_Insert_Input = {
+export interface Topic_Member_Arr_Rel_Insert_Input {
   data: Array<Topic_Member_Insert_Input>;
   on_conflict?: Maybe<Topic_Member_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "topic_member". All fields are combined with a logical 'AND'. */
-export type Topic_Member_Bool_Exp = {
+export interface Topic_Member_Bool_Exp {
   _and?: Maybe<Array<Maybe<Topic_Member_Bool_Exp>>>;
   _not?: Maybe<Topic_Member_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Topic_Member_Bool_Exp>>>;
@@ -6763,108 +6713,105 @@ export type Topic_Member_Bool_Exp = {
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "topic_member" */
-export enum Topic_Member_Constraint {
-  /** unique or primary key constraint */
-  TopicParticipantsPkey = 'topic_participants_pkey'
 }
 
+/** unique or primary key constraints on table "topic_member" */
+export type Topic_Member_Constraint =
+  /** unique or primary key constraint */
+  | 'topic_participants_pkey';
+
 /** input type for inserting data into table "topic_member" */
-export type Topic_Member_Insert_Input = {
+export interface Topic_Member_Insert_Input {
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregate max on columns */
-export type Topic_Member_Max_Fields = {
+export interface Topic_Member_Max_Fields {
   __typename?: 'topic_member_max_fields';
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "topic_member" */
-export type Topic_Member_Max_Order_By = {
+export interface Topic_Member_Max_Order_By {
   topic_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Topic_Member_Min_Fields = {
+export interface Topic_Member_Min_Fields {
   __typename?: 'topic_member_min_fields';
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by min() on columns of table "topic_member" */
-export type Topic_Member_Min_Order_By = {
+export interface Topic_Member_Min_Order_By {
   topic_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "topic_member" */
-export type Topic_Member_Mutation_Response = {
+export interface Topic_Member_Mutation_Response {
   __typename?: 'topic_member_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Topic_Member>;
-};
+}
 
 /** input type for inserting object relation for remote table "topic_member" */
-export type Topic_Member_Obj_Rel_Insert_Input = {
+export interface Topic_Member_Obj_Rel_Insert_Input {
   data: Topic_Member_Insert_Input;
   on_conflict?: Maybe<Topic_Member_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "topic_member" */
-export type Topic_Member_On_Conflict = {
+export interface Topic_Member_On_Conflict {
   constraint: Topic_Member_Constraint;
   update_columns: Array<Topic_Member_Update_Column>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "topic_member" */
-export type Topic_Member_Order_By = {
+export interface Topic_Member_Order_By {
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "topic_member" */
-export type Topic_Member_Pk_Columns_Input = {
+export interface Topic_Member_Pk_Columns_Input {
   topic_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-};
+}
 
 /** select columns of table "topic_member" */
-export enum Topic_Member_Select_Column {
+export type Topic_Member_Select_Column =
   /** column name */
-  TopicId = 'topic_id',
+  | 'topic_id'
   /** column name */
-  UserId = 'user_id'
-}
+  | 'user_id';
 
 /** input type for updating data in table "topic_member" */
-export type Topic_Member_Set_Input = {
+export interface Topic_Member_Set_Input {
   topic_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** update columns of table "topic_member" */
-export enum Topic_Member_Update_Column {
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** update columns of table "topic_member" */
+export type Topic_Member_Update_Column =
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'user_id';
+
 /** aggregate min on columns */
-export type Topic_Min_Fields = {
+export interface Topic_Min_Fields {
   __typename?: 'topic_min_fields';
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
@@ -6874,10 +6821,10 @@ export type Topic_Min_Fields = {
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "topic" */
-export type Topic_Min_Order_By = {
+export interface Topic_Min_Order_By {
   closed_at?: Maybe<Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
@@ -6886,32 +6833,32 @@ export type Topic_Min_Order_By = {
   name?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "topic" */
-export type Topic_Mutation_Response = {
+export interface Topic_Mutation_Response {
   __typename?: 'topic_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Topic>;
-};
+}
 
 /** input type for inserting object relation for remote table "topic" */
-export type Topic_Obj_Rel_Insert_Input = {
+export interface Topic_Obj_Rel_Insert_Input {
   data: Topic_Insert_Input;
   on_conflict?: Maybe<Topic_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "topic" */
-export type Topic_On_Conflict = {
+export interface Topic_On_Conflict {
   constraint: Topic_Constraint;
   update_columns: Array<Topic_Update_Column>;
   where?: Maybe<Topic_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "topic" */
-export type Topic_Order_By = {
+export interface Topic_Order_By {
   closed_at?: Maybe<Order_By>;
   closed_by_user?: Maybe<User_Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
@@ -6924,35 +6871,34 @@ export type Topic_Order_By = {
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "topic" */
-export type Topic_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "topic" */
-export enum Topic_Select_Column {
-  /** column name */
-  ClosedAt = 'closed_at',
-  /** column name */
-  ClosedByUserId = 'closed_by_user_id',
-  /** column name */
-  ClosingSummary = 'closing_summary',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Index = 'index',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  Slug = 'slug'
 }
 
+/** primary key columns input for table: "topic" */
+export interface Topic_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "topic" */
+export type Topic_Select_Column =
+  /** column name */
+  | 'closed_at'
+  /** column name */
+  | 'closed_by_user_id'
+  /** column name */
+  | 'closing_summary'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'index'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'slug';
+
 /** input type for updating data in table "topic" */
-export type Topic_Set_Input = {
+export interface Topic_Set_Input {
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
@@ -6961,30 +6907,29 @@ export type Topic_Set_Input = {
   name?: Maybe<Scalars['String']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
-};
-
-/** update columns of table "topic" */
-export enum Topic_Update_Column {
-  /** column name */
-  ClosedAt = 'closed_at',
-  /** column name */
-  ClosedByUserId = 'closed_by_user_id',
-  /** column name */
-  ClosingSummary = 'closing_summary',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Index = 'index',
-  /** column name */
-  Name = 'name',
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  Slug = 'slug'
 }
 
+/** update columns of table "topic" */
+export type Topic_Update_Column =
+  /** column name */
+  | 'closed_at'
+  /** column name */
+  | 'closed_by_user_id'
+  /** column name */
+  | 'closing_summary'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'index'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'slug';
+
 /** columns and relationships of "transcription" */
-export type Transcription = {
+export interface Transcription {
   __typename?: 'transcription';
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
@@ -6992,56 +6937,56 @@ export type Transcription = {
   status: Transcription_Status_Enum;
   transcript?: Maybe<Scalars['jsonb']>;
   updated_at: Scalars['timestamptz'];
-};
+}
 
 
 /** columns and relationships of "transcription" */
-export type TranscriptionTranscriptArgs = {
+export interface TranscriptionTranscriptArgs {
   path?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregated selection of "transcription" */
-export type Transcription_Aggregate = {
+export interface Transcription_Aggregate {
   __typename?: 'transcription_aggregate';
   aggregate?: Maybe<Transcription_Aggregate_Fields>;
   nodes: Array<Transcription>;
-};
+}
 
 /** aggregate fields of "transcription" */
-export type Transcription_Aggregate_Fields = {
+export interface Transcription_Aggregate_Fields {
   __typename?: 'transcription_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Transcription_Max_Fields>;
   min?: Maybe<Transcription_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "transcription" */
-export type Transcription_Aggregate_FieldsCountArgs = {
+export interface Transcription_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Transcription_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "transcription" */
-export type Transcription_Aggregate_Order_By = {
+export interface Transcription_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Transcription_Max_Order_By>;
   min?: Maybe<Transcription_Min_Order_By>;
-};
+}
 
 /** append existing jsonb value of filtered columns with new jsonb value */
-export type Transcription_Append_Input = {
+export interface Transcription_Append_Input {
   transcript?: Maybe<Scalars['jsonb']>;
-};
+}
 
 /** input type for inserting array relation for remote table "transcription" */
-export type Transcription_Arr_Rel_Insert_Input = {
+export interface Transcription_Arr_Rel_Insert_Input {
   data: Array<Transcription_Insert_Input>;
   on_conflict?: Maybe<Transcription_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "transcription". All fields are combined with a logical 'AND'. */
-export type Transcription_Bool_Exp = {
+export interface Transcription_Bool_Exp {
   _and?: Maybe<Array<Maybe<Transcription_Bool_Exp>>>;
   _not?: Maybe<Transcription_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Transcription_Bool_Exp>>>;
@@ -7051,410 +6996,402 @@ export type Transcription_Bool_Exp = {
   status?: Maybe<Transcription_Status_Enum_Comparison_Exp>;
   transcript?: Maybe<Jsonb_Comparison_Exp>;
   updated_at?: Maybe<Timestamptz_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "transcription" */
-export enum Transcription_Constraint {
-  /** unique or primary key constraint */
-  TranscriptionPkey = 'transcription_pkey',
-  /** unique or primary key constraint */
-  TranscriptionSonixMediaIdKey = 'transcription_sonix_media_id_key'
 }
 
+/** unique or primary key constraints on table "transcription" */
+export type Transcription_Constraint =
+  /** unique or primary key constraint */
+  | 'transcription_pkey'
+  /** unique or primary key constraint */
+  | 'transcription_sonix_media_id_key';
+
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type Transcription_Delete_At_Path_Input = {
+export interface Transcription_Delete_At_Path_Input {
   transcript?: Maybe<Array<Maybe<Scalars['String']>>>;
-};
+}
 
 /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type Transcription_Delete_Elem_Input = {
+export interface Transcription_Delete_Elem_Input {
   transcript?: Maybe<Scalars['Int']>;
-};
+}
 
 /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type Transcription_Delete_Key_Input = {
+export interface Transcription_Delete_Key_Input {
   transcript?: Maybe<Scalars['String']>;
-};
+}
 
 /** columns and relationships of "transcription_full_text" */
-export type Transcription_Full_Text = {
+export interface Transcription_Full_Text {
   __typename?: 'transcription_full_text';
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregated selection of "transcription_full_text" */
-export type Transcription_Full_Text_Aggregate = {
+export interface Transcription_Full_Text_Aggregate {
   __typename?: 'transcription_full_text_aggregate';
   aggregate?: Maybe<Transcription_Full_Text_Aggregate_Fields>;
   nodes: Array<Transcription_Full_Text>;
-};
+}
 
 /** aggregate fields of "transcription_full_text" */
-export type Transcription_Full_Text_Aggregate_Fields = {
+export interface Transcription_Full_Text_Aggregate_Fields {
   __typename?: 'transcription_full_text_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Transcription_Full_Text_Max_Fields>;
   min?: Maybe<Transcription_Full_Text_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "transcription_full_text" */
-export type Transcription_Full_Text_Aggregate_FieldsCountArgs = {
+export interface Transcription_Full_Text_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "transcription_full_text" */
-export type Transcription_Full_Text_Aggregate_Order_By = {
+export interface Transcription_Full_Text_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Transcription_Full_Text_Max_Order_By>;
   min?: Maybe<Transcription_Full_Text_Min_Order_By>;
-};
+}
 
 /** Boolean expression to filter rows from the table "transcription_full_text". All fields are combined with a logical 'AND'. */
-export type Transcription_Full_Text_Bool_Exp = {
+export interface Transcription_Full_Text_Bool_Exp {
   _and?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
   _not?: Maybe<Transcription_Full_Text_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
   transcript?: Maybe<String_Comparison_Exp>;
   transcription_id?: Maybe<Uuid_Comparison_Exp>;
-};
+}
 
 /** aggregate max on columns */
-export type Transcription_Full_Text_Max_Fields = {
+export interface Transcription_Full_Text_Max_Fields {
   __typename?: 'transcription_full_text_max_fields';
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "transcription_full_text" */
-export type Transcription_Full_Text_Max_Order_By = {
+export interface Transcription_Full_Text_Max_Order_By {
   transcript?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Transcription_Full_Text_Min_Fields = {
+export interface Transcription_Full_Text_Min_Fields {
   __typename?: 'transcription_full_text_min_fields';
   transcript?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "transcription_full_text" */
-export type Transcription_Full_Text_Min_Order_By = {
-  transcript?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-};
-
-/** ordering options when selecting data from "transcription_full_text" */
-export type Transcription_Full_Text_Order_By = {
-  transcript?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-};
-
-/** select columns of table "transcription_full_text" */
-export enum Transcription_Full_Text_Select_Column {
-  /** column name */
-  Transcript = 'transcript',
-  /** column name */
-  TranscriptionId = 'transcription_id'
 }
 
+/** order by min() on columns of table "transcription_full_text" */
+export interface Transcription_Full_Text_Min_Order_By {
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+}
+
+/** ordering options when selecting data from "transcription_full_text" */
+export interface Transcription_Full_Text_Order_By {
+  transcript?: Maybe<Order_By>;
+  transcription_id?: Maybe<Order_By>;
+}
+
+/** select columns of table "transcription_full_text" */
+export type Transcription_Full_Text_Select_Column =
+  /** column name */
+  | 'transcript'
+  /** column name */
+  | 'transcription_id';
+
 /** input type for inserting data into table "transcription" */
-export type Transcription_Insert_Input = {
+export interface Transcription_Insert_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   sonix_media_id?: Maybe<Scalars['String']>;
   status?: Maybe<Transcription_Status_Enum>;
   transcript?: Maybe<Scalars['jsonb']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** aggregate max on columns */
-export type Transcription_Max_Fields = {
+export interface Transcription_Max_Fields {
   __typename?: 'transcription_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   sonix_media_id?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by max() on columns of table "transcription" */
-export type Transcription_Max_Order_By = {
+export interface Transcription_Max_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   sonix_media_id?: Maybe<Order_By>;
   updated_at?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Transcription_Min_Fields = {
+export interface Transcription_Min_Fields {
   __typename?: 'transcription_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   sonix_media_id?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by min() on columns of table "transcription" */
-export type Transcription_Min_Order_By = {
+export interface Transcription_Min_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   sonix_media_id?: Maybe<Order_By>;
   updated_at?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "transcription" */
-export type Transcription_Mutation_Response = {
+export interface Transcription_Mutation_Response {
   __typename?: 'transcription_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Transcription>;
-};
+}
 
 /** input type for inserting object relation for remote table "transcription" */
-export type Transcription_Obj_Rel_Insert_Input = {
+export interface Transcription_Obj_Rel_Insert_Input {
   data: Transcription_Insert_Input;
   on_conflict?: Maybe<Transcription_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "transcription" */
-export type Transcription_On_Conflict = {
+export interface Transcription_On_Conflict {
   constraint: Transcription_Constraint;
   update_columns: Array<Transcription_Update_Column>;
   where?: Maybe<Transcription_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "transcription" */
-export type Transcription_Order_By = {
+export interface Transcription_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   sonix_media_id?: Maybe<Order_By>;
   status?: Maybe<Order_By>;
   transcript?: Maybe<Order_By>;
   updated_at?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "transcription" */
-export type Transcription_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type Transcription_Prepend_Input = {
-  transcript?: Maybe<Scalars['jsonb']>;
-};
-
-/** select columns of table "transcription" */
-export enum Transcription_Select_Column {
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  SonixMediaId = 'sonix_media_id',
-  /** column name */
-  Status = 'status',
-  /** column name */
-  Transcript = 'transcript',
-  /** column name */
-  UpdatedAt = 'updated_at'
 }
 
+/** primary key columns input for table: "transcription" */
+export interface Transcription_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export interface Transcription_Prepend_Input {
+  transcript?: Maybe<Scalars['jsonb']>;
+}
+
+/** select columns of table "transcription" */
+export type Transcription_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'sonix_media_id'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'transcript'
+  /** column name */
+  | 'updated_at';
+
 /** input type for updating data in table "transcription" */
-export type Transcription_Set_Input = {
+export interface Transcription_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   sonix_media_id?: Maybe<Scalars['String']>;
   status?: Maybe<Transcription_Status_Enum>;
   transcript?: Maybe<Scalars['jsonb']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** columns and relationships of "transcription_status" */
-export type Transcription_Status = {
+export interface Transcription_Status {
   __typename?: 'transcription_status';
   value: Scalars['String'];
-};
+}
 
 /** aggregated selection of "transcription_status" */
-export type Transcription_Status_Aggregate = {
+export interface Transcription_Status_Aggregate {
   __typename?: 'transcription_status_aggregate';
   aggregate?: Maybe<Transcription_Status_Aggregate_Fields>;
   nodes: Array<Transcription_Status>;
-};
+}
 
 /** aggregate fields of "transcription_status" */
-export type Transcription_Status_Aggregate_Fields = {
+export interface Transcription_Status_Aggregate_Fields {
   __typename?: 'transcription_status_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Transcription_Status_Max_Fields>;
   min?: Maybe<Transcription_Status_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "transcription_status" */
-export type Transcription_Status_Aggregate_FieldsCountArgs = {
+export interface Transcription_Status_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Transcription_Status_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "transcription_status" */
-export type Transcription_Status_Aggregate_Order_By = {
+export interface Transcription_Status_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Transcription_Status_Max_Order_By>;
   min?: Maybe<Transcription_Status_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "transcription_status" */
-export type Transcription_Status_Arr_Rel_Insert_Input = {
+export interface Transcription_Status_Arr_Rel_Insert_Input {
   data: Array<Transcription_Status_Insert_Input>;
   on_conflict?: Maybe<Transcription_Status_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "transcription_status". All fields are combined with a logical 'AND'. */
-export type Transcription_Status_Bool_Exp = {
+export interface Transcription_Status_Bool_Exp {
   _and?: Maybe<Array<Maybe<Transcription_Status_Bool_Exp>>>;
   _not?: Maybe<Transcription_Status_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Transcription_Status_Bool_Exp>>>;
   value?: Maybe<String_Comparison_Exp>;
-};
+}
 
 /** unique or primary key constraints on table "transcription_status" */
-export enum Transcription_Status_Constraint {
+export type Transcription_Status_Constraint =
   /** unique or primary key constraint */
-  TranscriptionStatusPkey = 'transcription_status_pkey'
-}
+  | 'transcription_status_pkey';
 
-export enum Transcription_Status_Enum {
-  Blocked = 'blocked',
-  Completed = 'completed',
-  Failed = 'failed',
-  Preparing = 'preparing',
-  Transcribing = 'transcribing'
-}
+export type Transcription_Status_Enum =
+  | 'blocked'
+  | 'completed'
+  | 'failed'
+  | 'preparing'
+  | 'transcribing';
 
 /** expression to compare columns of type transcription_status_enum. All fields are combined with logical 'AND'. */
-export type Transcription_Status_Enum_Comparison_Exp = {
+export interface Transcription_Status_Enum_Comparison_Exp {
   _eq?: Maybe<Transcription_Status_Enum>;
   _in?: Maybe<Array<Transcription_Status_Enum>>;
   _is_null?: Maybe<Scalars['Boolean']>;
   _neq?: Maybe<Transcription_Status_Enum>;
   _nin?: Maybe<Array<Transcription_Status_Enum>>;
-};
+}
 
 /** input type for inserting data into table "transcription_status" */
-export type Transcription_Status_Insert_Input = {
+export interface Transcription_Status_Insert_Input {
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** aggregate max on columns */
-export type Transcription_Status_Max_Fields = {
+export interface Transcription_Status_Max_Fields {
   __typename?: 'transcription_status_max_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "transcription_status" */
-export type Transcription_Status_Max_Order_By = {
+export interface Transcription_Status_Max_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Transcription_Status_Min_Fields = {
+export interface Transcription_Status_Min_Fields {
   __typename?: 'transcription_status_min_fields';
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "transcription_status" */
-export type Transcription_Status_Min_Order_By = {
+export interface Transcription_Status_Min_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "transcription_status" */
-export type Transcription_Status_Mutation_Response = {
+export interface Transcription_Status_Mutation_Response {
   __typename?: 'transcription_status_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Transcription_Status>;
-};
+}
 
 /** input type for inserting object relation for remote table "transcription_status" */
-export type Transcription_Status_Obj_Rel_Insert_Input = {
+export interface Transcription_Status_Obj_Rel_Insert_Input {
   data: Transcription_Status_Insert_Input;
   on_conflict?: Maybe<Transcription_Status_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "transcription_status" */
-export type Transcription_Status_On_Conflict = {
+export interface Transcription_Status_On_Conflict {
   constraint: Transcription_Status_Constraint;
   update_columns: Array<Transcription_Status_Update_Column>;
   where?: Maybe<Transcription_Status_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "transcription_status" */
-export type Transcription_Status_Order_By = {
+export interface Transcription_Status_Order_By {
   value?: Maybe<Order_By>;
-};
+}
 
 /** primary key columns input for table: "transcription_status" */
-export type Transcription_Status_Pk_Columns_Input = {
+export interface Transcription_Status_Pk_Columns_Input {
   value: Scalars['String'];
-};
+}
 
 /** select columns of table "transcription_status" */
-export enum Transcription_Status_Select_Column {
+export type Transcription_Status_Select_Column =
   /** column name */
-  Value = 'value'
-}
+  | 'value';
 
 /** input type for updating data in table "transcription_status" */
-export type Transcription_Status_Set_Input = {
+export interface Transcription_Status_Set_Input {
   value?: Maybe<Scalars['String']>;
-};
+}
 
 /** update columns of table "transcription_status" */
-export enum Transcription_Status_Update_Column {
+export type Transcription_Status_Update_Column =
   /** column name */
-  Value = 'value'
-}
+  | 'value';
 
 /** update columns of table "transcription" */
-export enum Transcription_Update_Column {
+export type Transcription_Update_Column =
   /** column name */
-  CreatedAt = 'created_at',
+  | 'created_at'
   /** column name */
-  Id = 'id',
+  | 'id'
   /** column name */
-  SonixMediaId = 'sonix_media_id',
+  | 'sonix_media_id'
   /** column name */
-  Status = 'status',
+  | 'status'
   /** column name */
-  Transcript = 'transcript',
+  | 'transcript'
   /** column name */
-  UpdatedAt = 'updated_at'
-}
+  | 'updated_at';
 
 /** columns and relationships of "unread_messages" */
-export type Unread_Messages = {
+export interface Unread_Messages {
   __typename?: 'unread_messages';
   room_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   unread_messages?: Maybe<Scalars['bigint']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** aggregated selection of "unread_messages" */
-export type Unread_Messages_Aggregate = {
+export interface Unread_Messages_Aggregate {
   __typename?: 'unread_messages_aggregate';
   aggregate?: Maybe<Unread_Messages_Aggregate_Fields>;
   nodes: Array<Unread_Messages>;
-};
+}
 
 /** aggregate fields of "unread_messages" */
-export type Unread_Messages_Aggregate_Fields = {
+export interface Unread_Messages_Aggregate_Fields {
   __typename?: 'unread_messages_aggregate_fields';
   avg?: Maybe<Unread_Messages_Avg_Fields>;
   count?: Maybe<Scalars['Int']>;
@@ -7467,17 +7404,17 @@ export type Unread_Messages_Aggregate_Fields = {
   var_pop?: Maybe<Unread_Messages_Var_Pop_Fields>;
   var_samp?: Maybe<Unread_Messages_Var_Samp_Fields>;
   variance?: Maybe<Unread_Messages_Variance_Fields>;
-};
+}
 
 
 /** aggregate fields of "unread_messages" */
-export type Unread_Messages_Aggregate_FieldsCountArgs = {
+export interface Unread_Messages_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Unread_Messages_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "unread_messages" */
-export type Unread_Messages_Aggregate_Order_By = {
+export interface Unread_Messages_Aggregate_Order_By {
   avg?: Maybe<Unread_Messages_Avg_Order_By>;
   count?: Maybe<Order_By>;
   max?: Maybe<Unread_Messages_Max_Order_By>;
@@ -7489,21 +7426,21 @@ export type Unread_Messages_Aggregate_Order_By = {
   var_pop?: Maybe<Unread_Messages_Var_Pop_Order_By>;
   var_samp?: Maybe<Unread_Messages_Var_Samp_Order_By>;
   variance?: Maybe<Unread_Messages_Variance_Order_By>;
-};
+}
 
 /** aggregate avg on columns */
-export type Unread_Messages_Avg_Fields = {
+export interface Unread_Messages_Avg_Fields {
   __typename?: 'unread_messages_avg_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by avg() on columns of table "unread_messages" */
-export type Unread_Messages_Avg_Order_By = {
+export interface Unread_Messages_Avg_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** Boolean expression to filter rows from the table "unread_messages". All fields are combined with a logical 'AND'. */
-export type Unread_Messages_Bool_Exp = {
+export interface Unread_Messages_Bool_Exp {
   _and?: Maybe<Array<Maybe<Unread_Messages_Bool_Exp>>>;
   _not?: Maybe<Unread_Messages_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Unread_Messages_Bool_Exp>>>;
@@ -7511,141 +7448,140 @@ export type Unread_Messages_Bool_Exp = {
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   unread_messages?: Maybe<Bigint_Comparison_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
-};
+}
 
 /** aggregate max on columns */
-export type Unread_Messages_Max_Fields = {
+export interface Unread_Messages_Max_Fields {
   __typename?: 'unread_messages_max_fields';
   room_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   unread_messages?: Maybe<Scalars['bigint']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
+}
 
 /** order by max() on columns of table "unread_messages" */
-export type Unread_Messages_Max_Order_By = {
+export interface Unread_Messages_Max_Order_By {
   room_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   unread_messages?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Unread_Messages_Min_Fields = {
+export interface Unread_Messages_Min_Fields {
   __typename?: 'unread_messages_min_fields';
   room_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   unread_messages?: Maybe<Scalars['bigint']>;
   user_id?: Maybe<Scalars['uuid']>;
-};
-
-/** order by min() on columns of table "unread_messages" */
-export type Unread_Messages_Min_Order_By = {
-  room_id?: Maybe<Order_By>;
-  topic_id?: Maybe<Order_By>;
-  unread_messages?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** ordering options when selecting data from "unread_messages" */
-export type Unread_Messages_Order_By = {
-  room_id?: Maybe<Order_By>;
-  topic_id?: Maybe<Order_By>;
-  unread_messages?: Maybe<Order_By>;
-  user_id?: Maybe<Order_By>;
-};
-
-/** select columns of table "unread_messages" */
-export enum Unread_Messages_Select_Column {
-  /** column name */
-  RoomId = 'room_id',
-  /** column name */
-  TopicId = 'topic_id',
-  /** column name */
-  UnreadMessages = 'unread_messages',
-  /** column name */
-  UserId = 'user_id'
 }
 
+/** order by min() on columns of table "unread_messages" */
+export interface Unread_Messages_Min_Order_By {
+  room_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  unread_messages?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** ordering options when selecting data from "unread_messages" */
+export interface Unread_Messages_Order_By {
+  room_id?: Maybe<Order_By>;
+  topic_id?: Maybe<Order_By>;
+  unread_messages?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** select columns of table "unread_messages" */
+export type Unread_Messages_Select_Column =
+  /** column name */
+  | 'room_id'
+  /** column name */
+  | 'topic_id'
+  /** column name */
+  | 'unread_messages'
+  /** column name */
+  | 'user_id';
+
 /** aggregate stddev on columns */
-export type Unread_Messages_Stddev_Fields = {
+export interface Unread_Messages_Stddev_Fields {
   __typename?: 'unread_messages_stddev_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by stddev() on columns of table "unread_messages" */
-export type Unread_Messages_Stddev_Order_By = {
+export interface Unread_Messages_Stddev_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate stddev_pop on columns */
-export type Unread_Messages_Stddev_Pop_Fields = {
+export interface Unread_Messages_Stddev_Pop_Fields {
   __typename?: 'unread_messages_stddev_pop_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by stddev_pop() on columns of table "unread_messages" */
-export type Unread_Messages_Stddev_Pop_Order_By = {
+export interface Unread_Messages_Stddev_Pop_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate stddev_samp on columns */
-export type Unread_Messages_Stddev_Samp_Fields = {
+export interface Unread_Messages_Stddev_Samp_Fields {
   __typename?: 'unread_messages_stddev_samp_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by stddev_samp() on columns of table "unread_messages" */
-export type Unread_Messages_Stddev_Samp_Order_By = {
+export interface Unread_Messages_Stddev_Samp_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate sum on columns */
-export type Unread_Messages_Sum_Fields = {
+export interface Unread_Messages_Sum_Fields {
   __typename?: 'unread_messages_sum_fields';
   unread_messages?: Maybe<Scalars['bigint']>;
-};
+}
 
 /** order by sum() on columns of table "unread_messages" */
-export type Unread_Messages_Sum_Order_By = {
+export interface Unread_Messages_Sum_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate var_pop on columns */
-export type Unread_Messages_Var_Pop_Fields = {
+export interface Unread_Messages_Var_Pop_Fields {
   __typename?: 'unread_messages_var_pop_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by var_pop() on columns of table "unread_messages" */
-export type Unread_Messages_Var_Pop_Order_By = {
+export interface Unread_Messages_Var_Pop_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate var_samp on columns */
-export type Unread_Messages_Var_Samp_Fields = {
+export interface Unread_Messages_Var_Samp_Fields {
   __typename?: 'unread_messages_var_samp_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by var_samp() on columns of table "unread_messages" */
-export type Unread_Messages_Var_Samp_Order_By = {
+export interface Unread_Messages_Var_Samp_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** aggregate variance on columns */
-export type Unread_Messages_Variance_Fields = {
+export interface Unread_Messages_Variance_Fields {
   __typename?: 'unread_messages_variance_fields';
   unread_messages?: Maybe<Scalars['Float']>;
-};
+}
 
 /** order by variance() on columns of table "unread_messages" */
-export type Unread_Messages_Variance_Order_By = {
+export interface Unread_Messages_Variance_Order_By {
   unread_messages?: Maybe<Order_By>;
-};
+}
 
 /** columns and relationships of "user" */
-export type User = {
+export interface User {
   __typename?: 'user';
   avatar_url?: Maybe<Scalars['String']>;
   created_at: Scalars['timestamptz'];
@@ -7692,225 +7628,225 @@ export type User = {
   topic_memberships: Array<Topic_Member>;
   /** An aggregated array relationship */
   topic_memberships_aggregate: Topic_Member_Aggregate;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserCreated_RoomsArgs = {
+export interface UserCreated_RoomsArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserCreated_Rooms_AggregateArgs = {
+export interface UserCreated_Rooms_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Order_By>>;
   where?: Maybe<Room_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserCreated_Team_InvitationsArgs = {
+export interface UserCreated_Team_InvitationsArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserCreated_Team_Invitations_AggregateArgs = {
+export interface UserCreated_Team_Invitations_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserInvitesArgs = {
+export interface UserInvitesArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserInvites_AggregateArgs = {
+export interface UserInvites_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Invites_Order_By>>;
   where?: Maybe<Room_Invites_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserMessagesArgs = {
+export interface UserMessagesArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserMessages_AggregateArgs = {
+export interface UserMessages_AggregateArgs {
   distinct_on?: Maybe<Array<Message_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserOwned_TeamsArgs = {
+export interface UserOwned_TeamsArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserOwned_Teams_AggregateArgs = {
+export interface UserOwned_Teams_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Order_By>>;
   where?: Maybe<Team_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserRoomsArgs = {
+export interface UserRoomsArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserRooms_AggregateArgs = {
+export interface UserRooms_AggregateArgs {
   distinct_on?: Maybe<Array<Room_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserSpace_MembershipsArgs = {
+export interface UserSpace_MembershipsArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserSpace_Memberships_AggregateArgs = {
+export interface UserSpace_Memberships_AggregateArgs {
   distinct_on?: Maybe<Array<Space_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Space_Member_Order_By>>;
   where?: Maybe<Space_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserTeam_MembershipsArgs = {
+export interface UserTeam_MembershipsArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserTeam_Memberships_AggregateArgs = {
+export interface UserTeam_Memberships_AggregateArgs {
   distinct_on?: Maybe<Array<Team_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Member_Order_By>>;
   where?: Maybe<Team_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserTopic_MembershipsArgs = {
+export interface UserTopic_MembershipsArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 
 /** columns and relationships of "user" */
-export type UserTopic_Memberships_AggregateArgs = {
+export interface UserTopic_Memberships_AggregateArgs {
   distinct_on?: Maybe<Array<Topic_Member_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Topic_Member_Order_By>>;
   where?: Maybe<Topic_Member_Bool_Exp>;
-};
+}
 
 /** aggregated selection of "user" */
-export type User_Aggregate = {
+export interface User_Aggregate {
   __typename?: 'user_aggregate';
   aggregate?: Maybe<User_Aggregate_Fields>;
   nodes: Array<User>;
-};
+}
 
 /** aggregate fields of "user" */
-export type User_Aggregate_Fields = {
+export interface User_Aggregate_Fields {
   __typename?: 'user_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<User_Max_Fields>;
   min?: Maybe<User_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "user" */
-export type User_Aggregate_FieldsCountArgs = {
+export interface User_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<User_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "user" */
-export type User_Aggregate_Order_By = {
+export interface User_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<User_Max_Order_By>;
   min?: Maybe<User_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "user" */
-export type User_Arr_Rel_Insert_Input = {
+export interface User_Arr_Rel_Insert_Input {
   data: Array<User_Insert_Input>;
   on_conflict?: Maybe<User_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "user". All fields are combined with a logical 'AND'. */
-export type User_Bool_Exp = {
+export interface User_Bool_Exp {
   _and?: Maybe<Array<Maybe<User_Bool_Exp>>>;
   _not?: Maybe<User_Bool_Exp>;
   _or?: Maybe<Array<Maybe<User_Bool_Exp>>>;
@@ -7931,18 +7867,17 @@ export type User_Bool_Exp = {
   space_memberships?: Maybe<Space_Member_Bool_Exp>;
   team_memberships?: Maybe<Team_Member_Bool_Exp>;
   topic_memberships?: Maybe<Topic_Member_Bool_Exp>;
-};
-
-/** unique or primary key constraints on table "user" */
-export enum User_Constraint {
-  /** unique or primary key constraint */
-  UserEmailKey = 'user_email_key',
-  /** unique or primary key constraint */
-  UserPkey = 'user_pkey'
 }
 
+/** unique or primary key constraints on table "user" */
+export type User_Constraint =
+  /** unique or primary key constraint */
+  | 'user_email_key'
+  /** unique or primary key constraint */
+  | 'user_pkey';
+
 /** input type for inserting data into table "user" */
-export type User_Insert_Input = {
+export interface User_Insert_Input {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   created_rooms?: Maybe<Room_Arr_Rel_Insert_Input>;
@@ -7960,10 +7895,10 @@ export type User_Insert_Input = {
   space_memberships?: Maybe<Space_Member_Arr_Rel_Insert_Input>;
   team_memberships?: Maybe<Team_Member_Arr_Rel_Insert_Input>;
   topic_memberships?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
-};
+}
 
 /** aggregate max on columns */
-export type User_Max_Fields = {
+export interface User_Max_Fields {
   __typename?: 'user_max_fields';
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -7972,10 +7907,10 @@ export type User_Max_Fields = {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by max() on columns of table "user" */
-export type User_Max_Order_By = {
+export interface User_Max_Order_By {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   current_team_id?: Maybe<Order_By>;
@@ -7983,10 +7918,10 @@ export type User_Max_Order_By = {
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type User_Min_Fields = {
+export interface User_Min_Fields {
   __typename?: 'user_min_fields';
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
@@ -7995,10 +7930,10 @@ export type User_Min_Fields = {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
-};
+}
 
 /** order by min() on columns of table "user" */
-export type User_Min_Order_By = {
+export interface User_Min_Order_By {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   current_team_id?: Maybe<Order_By>;
@@ -8006,32 +7941,32 @@ export type User_Min_Order_By = {
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "user" */
-export type User_Mutation_Response = {
+export interface User_Mutation_Response {
   __typename?: 'user_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<User>;
-};
+}
 
 /** input type for inserting object relation for remote table "user" */
-export type User_Obj_Rel_Insert_Input = {
+export interface User_Obj_Rel_Insert_Input {
   data: User_Insert_Input;
   on_conflict?: Maybe<User_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "user" */
-export type User_On_Conflict = {
+export interface User_On_Conflict {
   constraint: User_Constraint;
   update_columns: Array<User_Update_Column>;
   where?: Maybe<User_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "user" */
-export type User_Order_By = {
+export interface User_Order_By {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   created_rooms_aggregate?: Maybe<Room_Aggregate_Order_By>;
@@ -8049,33 +7984,32 @@ export type User_Order_By = {
   space_memberships_aggregate?: Maybe<Space_Member_Aggregate_Order_By>;
   team_memberships_aggregate?: Maybe<Team_Member_Aggregate_Order_By>;
   topic_memberships_aggregate?: Maybe<Topic_Member_Aggregate_Order_By>;
-};
-
-/** primary key columns input for table: "user" */
-export type User_Pk_Columns_Input = {
-  id: Scalars['uuid'];
-};
-
-/** select columns of table "user" */
-export enum User_Select_Column {
-  /** column name */
-  AvatarUrl = 'avatar_url',
-  /** column name */
-  CreatedAt = 'created_at',
-  /** column name */
-  CurrentTeamId = 'current_team_id',
-  /** column name */
-  Email = 'email',
-  /** column name */
-  EmailVerified = 'email_verified',
-  /** column name */
-  Id = 'id',
-  /** column name */
-  Name = 'name'
 }
 
+/** primary key columns input for table: "user" */
+export interface User_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "user" */
+export type User_Select_Column =
+  /** column name */
+  | 'avatar_url'
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'current_team_id'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'email_verified'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'name';
+
 /** input type for updating data in table "user" */
-export type User_Set_Input = {
+export interface User_Set_Input {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   current_team_id?: Maybe<Scalars['uuid']>;
@@ -8083,29 +8017,28 @@ export type User_Set_Input = {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
-};
+}
 
 /** update columns of table "user" */
-export enum User_Update_Column {
+export type User_Update_Column =
   /** column name */
-  AvatarUrl = 'avatar_url',
+  | 'avatar_url'
   /** column name */
-  CreatedAt = 'created_at',
+  | 'created_at'
   /** column name */
-  CurrentTeamId = 'current_team_id',
+  | 'current_team_id'
   /** column name */
-  Email = 'email',
+  | 'email'
   /** column name */
-  EmailVerified = 'email_verified',
+  | 'email_verified'
   /** column name */
-  Id = 'id',
+  | 'id'
   /** column name */
-  Name = 'name'
-}
+  | 'name';
 
 
 /** expression to compare columns of type uuid. All fields are combined with logical 'AND'. */
-export type Uuid_Comparison_Exp = {
+export interface Uuid_Comparison_Exp {
   _eq?: Maybe<Scalars['uuid']>;
   _gt?: Maybe<Scalars['uuid']>;
   _gte?: Maybe<Scalars['uuid']>;
@@ -8115,165 +8048,162 @@ export type Uuid_Comparison_Exp = {
   _lte?: Maybe<Scalars['uuid']>;
   _neq?: Maybe<Scalars['uuid']>;
   _nin?: Maybe<Array<Scalars['uuid']>>;
-};
+}
 
 /** columns and relationships of "whitelist" */
-export type Whitelist = {
+export interface Whitelist {
   __typename?: 'whitelist';
   email: Scalars['String'];
   is_approved: Scalars['Boolean'];
   timestamp: Scalars['timestamptz'];
-};
+}
 
 /** aggregated selection of "whitelist" */
-export type Whitelist_Aggregate = {
+export interface Whitelist_Aggregate {
   __typename?: 'whitelist_aggregate';
   aggregate?: Maybe<Whitelist_Aggregate_Fields>;
   nodes: Array<Whitelist>;
-};
+}
 
 /** aggregate fields of "whitelist" */
-export type Whitelist_Aggregate_Fields = {
+export interface Whitelist_Aggregate_Fields {
   __typename?: 'whitelist_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
   max?: Maybe<Whitelist_Max_Fields>;
   min?: Maybe<Whitelist_Min_Fields>;
-};
+}
 
 
 /** aggregate fields of "whitelist" */
-export type Whitelist_Aggregate_FieldsCountArgs = {
+export interface Whitelist_Aggregate_FieldsCountArgs {
   columns?: Maybe<Array<Whitelist_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
-};
+}
 
 /** order by aggregate values of table "whitelist" */
-export type Whitelist_Aggregate_Order_By = {
+export interface Whitelist_Aggregate_Order_By {
   count?: Maybe<Order_By>;
   max?: Maybe<Whitelist_Max_Order_By>;
   min?: Maybe<Whitelist_Min_Order_By>;
-};
+}
 
 /** input type for inserting array relation for remote table "whitelist" */
-export type Whitelist_Arr_Rel_Insert_Input = {
+export interface Whitelist_Arr_Rel_Insert_Input {
   data: Array<Whitelist_Insert_Input>;
   on_conflict?: Maybe<Whitelist_On_Conflict>;
-};
+}
 
 /** Boolean expression to filter rows from the table "whitelist". All fields are combined with a logical 'AND'. */
-export type Whitelist_Bool_Exp = {
+export interface Whitelist_Bool_Exp {
   _and?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
   _not?: Maybe<Whitelist_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Whitelist_Bool_Exp>>>;
   email?: Maybe<String_Comparison_Exp>;
   is_approved?: Maybe<Boolean_Comparison_Exp>;
   timestamp?: Maybe<Timestamptz_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "whitelist" */
-export enum Whitelist_Constraint {
-  /** unique or primary key constraint */
-  WhitelistPkey = 'whitelist_pkey'
 }
 
+/** unique or primary key constraints on table "whitelist" */
+export type Whitelist_Constraint =
+  /** unique or primary key constraint */
+  | 'whitelist_pkey';
+
 /** input type for inserting data into table "whitelist" */
-export type Whitelist_Insert_Input = {
+export interface Whitelist_Insert_Input {
   email?: Maybe<Scalars['String']>;
   is_approved?: Maybe<Scalars['Boolean']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** aggregate max on columns */
-export type Whitelist_Max_Fields = {
+export interface Whitelist_Max_Fields {
   __typename?: 'whitelist_max_fields';
   email?: Maybe<Scalars['String']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by max() on columns of table "whitelist" */
-export type Whitelist_Max_Order_By = {
+export interface Whitelist_Max_Order_By {
   email?: Maybe<Order_By>;
   timestamp?: Maybe<Order_By>;
-};
+}
 
 /** aggregate min on columns */
-export type Whitelist_Min_Fields = {
+export interface Whitelist_Min_Fields {
   __typename?: 'whitelist_min_fields';
   email?: Maybe<Scalars['String']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
-};
+}
 
 /** order by min() on columns of table "whitelist" */
-export type Whitelist_Min_Order_By = {
+export interface Whitelist_Min_Order_By {
   email?: Maybe<Order_By>;
   timestamp?: Maybe<Order_By>;
-};
+}
 
 /** response of any mutation on the table "whitelist" */
-export type Whitelist_Mutation_Response = {
+export interface Whitelist_Mutation_Response {
   __typename?: 'whitelist_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
   returning: Array<Whitelist>;
-};
+}
 
 /** input type for inserting object relation for remote table "whitelist" */
-export type Whitelist_Obj_Rel_Insert_Input = {
+export interface Whitelist_Obj_Rel_Insert_Input {
   data: Whitelist_Insert_Input;
   on_conflict?: Maybe<Whitelist_On_Conflict>;
-};
+}
 
 /** on conflict condition type for table "whitelist" */
-export type Whitelist_On_Conflict = {
+export interface Whitelist_On_Conflict {
   constraint: Whitelist_Constraint;
   update_columns: Array<Whitelist_Update_Column>;
   where?: Maybe<Whitelist_Bool_Exp>;
-};
+}
 
 /** ordering options when selecting data from "whitelist" */
-export type Whitelist_Order_By = {
+export interface Whitelist_Order_By {
   email?: Maybe<Order_By>;
   is_approved?: Maybe<Order_By>;
   timestamp?: Maybe<Order_By>;
-};
-
-/** primary key columns input for table: "whitelist" */
-export type Whitelist_Pk_Columns_Input = {
-  email: Scalars['String'];
-};
-
-/** select columns of table "whitelist" */
-export enum Whitelist_Select_Column {
-  /** column name */
-  Email = 'email',
-  /** column name */
-  IsApproved = 'is_approved',
-  /** column name */
-  Timestamp = 'timestamp'
 }
 
+/** primary key columns input for table: "whitelist" */
+export interface Whitelist_Pk_Columns_Input {
+  email: Scalars['String'];
+}
+
+/** select columns of table "whitelist" */
+export type Whitelist_Select_Column =
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'is_approved'
+  /** column name */
+  | 'timestamp';
+
 /** input type for updating data in table "whitelist" */
-export type Whitelist_Set_Input = {
+export interface Whitelist_Set_Input {
   email?: Maybe<Scalars['String']>;
   is_approved?: Maybe<Scalars['Boolean']>;
   timestamp?: Maybe<Scalars['timestamptz']>;
-};
-
-/** update columns of table "whitelist" */
-export enum Whitelist_Update_Column {
-  /** column name */
-  Email = 'email',
-  /** column name */
-  IsApproved = 'is_approved',
-  /** column name */
-  Timestamp = 'timestamp'
 }
 
-export type GetRoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
+/** update columns of table "whitelist" */
+export type Whitelist_Update_Column =
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'is_approved'
+  /** column name */
+  | 'timestamp';
+
+export type RoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRoomsTestQueryQuery = (
+export type RoomsTestQueryQuery = (
   { __typename?: 'query_root' }
   & { room: Array<(
     { __typename?: 'room' }
@@ -8290,20 +8220,6 @@ export type CreateInviteMutationVariables = Exact<{
 export type CreateInviteMutation = (
   { __typename?: 'mutation_root' }
   & { invite?: Maybe<(
-    { __typename?: 'room_invites' }
-    & Pick<Room_Invites, 'id' | 'email'>
-    & { usedAt: Room_Invites['used_at'] }
-  )> }
-);
-
-export type GetRoomInvitesQueryVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type GetRoomInvitesQuery = (
-  { __typename?: 'query_root' }
-  & { invites: Array<(
     { __typename?: 'room_invites' }
     & Pick<Room_Invites, 'id' | 'email'>
     & { usedAt: Room_Invites['used_at'] }
@@ -8361,12 +8277,12 @@ export type RoomParticipantBasicInfoFragment = (
   ) }
 );
 
-export type GetRoomsQueryVariables = Exact<{
+export type RoomsQueryVariables = Exact<{
   spaceId: Scalars['uuid'];
 }>;
 
 
-export type GetRoomsQuery = (
+export type RoomsQuery = (
   { __typename?: 'query_root' }
   & { room: Array<(
     { __typename?: 'room' }
@@ -8484,12 +8400,12 @@ export type SearchResultFragment = (
   )> }
 );
 
-export type GetSearchResultsQueryVariables = Exact<{
+export type SearchResultsQueryVariables = Exact<{
   term: Scalars['String'];
 }>;
 
 
-export type GetSearchResultsQuery = (
+export type SearchResultsQuery = (
   { __typename?: 'query_root' }
   & { results: Array<(
     { __typename?: 'full_text_search' }
@@ -8524,12 +8440,12 @@ export type SpaceDetailedInfoFragment = (
   )> }
 );
 
-export type GetSpacesQueryVariables = Exact<{
+export type SpacesQueryVariables = Exact<{
   teamId: Scalars['uuid'];
 }>;
 
 
-export type GetSpacesQuery = (
+export type SpacesQuery = (
   { __typename?: 'query_root' }
   & { space: Array<(
     { __typename?: 'space' }
@@ -8867,13 +8783,13 @@ export type DeleteTextMessageMutation = (
   )> }
 );
 
-export type GetUploadUrlQueryVariables = Exact<{
+export type UploadUrlQueryVariables = Exact<{
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
 }>;
 
 
-export type GetUploadUrlQuery = (
+export type UploadUrlQuery = (
   { __typename?: 'query_root' }
   & { uploadUrlInfo?: Maybe<(
     { __typename?: 'GetUploadUrlResponse' }
@@ -8881,12 +8797,12 @@ export type GetUploadUrlQuery = (
   )> }
 );
 
-export type GetDownloadUrlQueryVariables = Exact<{
+export type DownloadUrlQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type GetDownloadUrlQuery = (
+export type DownloadUrlQuery = (
   { __typename?: 'query_root' }
   & { get_download_url?: Maybe<(
     { __typename?: 'GetDownloadUrlResponse' }
@@ -8894,12 +8810,12 @@ export type GetDownloadUrlQuery = (
   )> }
 );
 
-export type GetAttachmentQueryVariables = Exact<{
+export type AttachmentQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
 
 
-export type GetAttachmentQuery = (
+export type AttachmentQuery = (
   { __typename?: 'query_root' }
   & { attachment?: Maybe<(
     { __typename?: 'attachment' }

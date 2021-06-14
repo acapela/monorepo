@@ -1,8 +1,8 @@
 import { MembersManager } from "../MembersManager";
-import { useAddRoomMember, useRemoveRoomMember } from "~frontend/gql/rooms";
+import { useAddRoomMemberMutation, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertGet } from "~shared/assert";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -13,8 +13,8 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
 
-  const [addRoomMember] = useAddRoomMember();
-  const [removeRoomMember] = useRemoveRoomMember();
+  const [addRoomMember] = useAddRoomMemberMutation();
+  const [removeRoomMember] = useRemoveRoomMemberMutation();
 
   async function handleJoin(userId: string) {
     await addRoomMember({ userId, roomId: room.id });

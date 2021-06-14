@@ -5,7 +5,7 @@ import {
   ChangeCurrentTeamIdMutationVariables,
   TeamMembersQuery,
   TeamMembersQueryVariables,
-} from "./generated";
+} from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 export const UserBasicInfoFragment = () => gql`
@@ -17,7 +17,7 @@ export const UserBasicInfoFragment = () => gql`
   }
 `;
 
-export const [useChangeCurrentTeamId] = createMutation<
+export const [useChangeCurrentTeamIdMutation] = createMutation<
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables
 >(
@@ -30,7 +30,7 @@ export const [useChangeCurrentTeamId] = createMutation<
   `
 );
 
-export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
+export const [useTeamMembersQuery] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
   () => gql`
     ${UserBasicInfoFragment()}
 
@@ -45,7 +45,7 @@ export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVa
 export function useCurrentTeamMembers() {
   const teamId = useAssertCurrentTeamId();
 
-  const [data] = useTeamMembers({ teamId: teamId });
+  const [teamMembers = []] = useTeamMembersQuery({ teamId: teamId });
 
-  return data?.teamMembers ?? [];
+  return teamMembers;
 }

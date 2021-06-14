@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { routes } from "~frontend/routes";
 import { formatNumberWithMaxCallback, pluralize } from "~shared/numbers";
 import { ItemTitle, SecondaryText } from "~ui/typo";
@@ -22,6 +22,8 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
   const topicsCount = room.topics.length;
 
   function handleOpen() {
+    if (!room.space_id) return;
+
     routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
   }
 

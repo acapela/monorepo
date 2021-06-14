@@ -65,6 +65,6 @@ custom_types:
           type: object
           field_mapping:
             user_id: id
-    - name: GetUploadUrlResponse
-    - name: GetDownloadUrlResponse
+    - name: UploadUrlResponse
+    - name: DownloadUrlResponse
   scalars: []

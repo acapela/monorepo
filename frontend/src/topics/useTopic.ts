@@ -1,5 +1,5 @@
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicDetailedInfoFragment } from "~frontend/gql/generated";
+import { TopicDetailedInfoFragment } from "~gql";
 import { useDeleteTopicMutation, useEditTopicMutation, useToggleCloseTopicMutation } from "~frontend/gql/topics";
 
 function nowAsTimestamp(): string {

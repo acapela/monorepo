@@ -1,6 +1,6 @@
 import { ReactNode, RefObject } from "react";
 import styled from "styled-components";
-import { handleWithStopPropagation } from "~frontend/../../shared/events";
+import { handleWithStopPropagation } from "~shared/events";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PopoverPlacement } from "~ui/popovers/Popover";
 

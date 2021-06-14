@@ -3,12 +3,8 @@ import { memoize } from "lodash";
 import { useEffect, useState } from "react";
 import { createCleanupObject } from "~shared/cleanup";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import {
-  UnreadMessageFragmentFragment,
-  UserUnreadMessagesQuery,
-  UserUnreadMessagesQueryVariables,
-} from "~frontend/gql/generated";
-import { useGetSpaceRoomsQuery } from "~frontend/gql/rooms";
+import { UnreadMessageFragmentFragment, UserUnreadMessagesQuery, UserUnreadMessagesQueryVariables } from "~gql";
+import { useSpaceRoomsQuery } from "~frontend/gql/rooms";
 import { createQuery } from "~frontend/gql/utils";
 import { createChannel } from "~shared/channel";
 import { onDocumentReady } from "~shared/document";
@@ -34,7 +30,7 @@ function countRoomUnreadMessages(unreadData: UnreadMessageFragmentFragment[], ro
 
   for (const unread of unreadData) {
     if (unread.roomId === roomId) {
-      count += unread.unreadMessages;
+      count += unread.unreadMessages ?? 0;
     }
   }
 
@@ -135,9 +131,9 @@ export function useSpaceUnreadMessagesCount(spaceId: string) {
   const user = useAssertCurrentUser();
 
   // Get all rooms of a space so we can add up theirs unread counts
-  const [rooms] = useGetSpaceRoomsQuery({ spaceId });
+  const [rooms = []] = useSpaceRoomsQuery({ spaceId });
 
-  const roomIds: string[] = rooms?.room.map((room) => room.id) ?? [];
+  const roomIds: string[] = rooms.map((room) => room.id);
 
   useEffect(() => {
     function getSpaceUnreadCount() {

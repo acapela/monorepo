@@ -1,5 +1,5 @@
 import React from "react";
-import { Message_Type_Enum, UserBasicInfoFragment } from "~frontend/gql";
+import { Message_Type_Enum, UserBasicInfoFragment } from "~gql";
 import { Message } from ".";
 
 interface Props {

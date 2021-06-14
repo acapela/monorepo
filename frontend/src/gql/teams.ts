@@ -10,7 +10,7 @@ import {
   CreateTeamInvitationMutationVariables,
   TeamInvitationQuery,
   TeamInvitationQueryVariables,
-} from "./generated";
+} from "~gql";
 import { createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
@@ -56,7 +56,7 @@ const TeamDetailedInfoFragment = () => gql`
   }
 `;
 
-export const [useCreateTeam] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
+export const [useCreateTeamMutation] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
   () => gql`
     ${TeamDetailedInfoFragment()}
     mutation CreateTeam($slug: String!, $name: String!) {
@@ -67,7 +67,7 @@ export const [useCreateTeam] = createMutation<CreateTeamMutation, CreateTeamMuta
   `
 );
 
-export const [useTeams] = createQuery<TeamsQuery, TeamsQueryVariables>(
+export const [useTeamsQuery] = createQuery<TeamsQuery, TeamsQueryVariables>(
   () => gql`
     ${TeamBasicInfoFragment()}
 
@@ -79,7 +79,7 @@ export const [useTeams] = createQuery<TeamsQuery, TeamsQueryVariables>(
   `
 );
 
-export const [useTeamDetails] = createQuery<TeamDetailsQuery, TeamDetailsQueryVariables>(
+export const [useTeamDetailsQuery] = createQuery<TeamDetailsQuery, TeamDetailsQueryVariables>(
   () => gql`
     ${TeamDetailedInfoFragment()}
     query TeamDetails($teamId: uuid!) {
@@ -93,10 +93,10 @@ export const [useTeamDetails] = createQuery<TeamDetailsQuery, TeamDetailsQueryVa
 export function useCurrentTeamDetails() {
   const teamId = useAssertCurrentTeamId();
 
-  return useTeamDetails({ teamId });
+  return useTeamDetailsQuery({ teamId });
 }
 
-export const [useCreateTeamInvitation] = createMutation<
+export const [useCreateTeamInvitationMutation] = createMutation<
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables
 >(
@@ -115,7 +115,7 @@ export const [useCreateTeamInvitation] = createMutation<
   }
 );
 
-export const [useTeamInvitationByToken] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(
+export const [useTeamInvitationByTokenQuery] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(
   () => gql`
     query TeamInvitation($tokenId: uuid!) {
       team_invitation(where: { token: { _eq: $tokenId } }) {

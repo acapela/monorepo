@@ -1,5 +1,5 @@
 import React from "react";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 

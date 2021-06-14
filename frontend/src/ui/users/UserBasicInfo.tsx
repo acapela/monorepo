@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { SecondaryText, TextTitle } from "~frontend/../../ui/typo";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { SecondaryText, TextTitle } from "~ui/typo";
+import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
 
 interface Props {

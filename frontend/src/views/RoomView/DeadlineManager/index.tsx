@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
