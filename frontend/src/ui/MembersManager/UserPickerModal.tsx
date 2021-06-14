@@ -4,7 +4,7 @@ import { UserBasicInfoFragment } from "~frontend/gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
 import { UserMedia } from "../users/UserMedia";
-import { IconCross } from "~frontend/../../ui/icons";
+import { IconCross } from "~ui/icons";
 import { UsersCombobox } from "./UsersCombobox";
 
 interface Props {
@@ -16,6 +16,7 @@ interface Props {
 
 export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser }: Props) {
   const teamMembers = useCurrentTeamMembers();
+
   const potentialUsers = useMemo(() => {
     const currentUsersIdsSet = new Set<string>(currentUsers.map(({ id }) => id));
     return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
@@ -61,7 +62,7 @@ const UIMembers = styled.div`
   border: 1px solid #eae9ea;
   border-radius: 20px;
   @media (max-width: 800px) {
-    width: 100px;
+    width: 100%;
   }
 `;
 
