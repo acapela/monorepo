@@ -102,14 +102,15 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
 
   ${(props) => (props.kind === "regular" ? regularKindCSS : ghostKindCSS)};
 
+  border-radius: ${(props) => (props.isRounded ? "10000px" : "0.5rem")};
+
   ${(props) =>
     // Enable pointer cursor only if button is clickable (has onClick)
     props.isClickable &&
+    !props.isDisabled &&
     css`
       cursor: ${props.isLoading ? "wait" : "pointer"};
     `}
-
-  border-radius: ${(props) => (props.isRounded ? "10000px" : "0.5rem")};
 
   ${(props) =>
     props.isWide &&
