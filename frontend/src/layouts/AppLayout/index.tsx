@@ -74,6 +74,10 @@ const UILogo = styled.a`
   display: block;
   font-size: 1.5rem;
   margin-right: 2rem;
+
+  ${SmallLogo} {
+    height: 32px;
+  }
 `;
 
 const UIMainContent = styled.div`
