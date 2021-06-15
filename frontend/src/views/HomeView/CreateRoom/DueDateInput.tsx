@@ -3,14 +3,14 @@ import { FieldLabel } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 
 interface Props {
-  value: string;
-  onChange: (value: string) => void;
+  value: Date;
+  onChange: (value: Date) => void;
 }
 
-export const SpaceNameInput = ({ value, onChange }: Props) => {
+export const DueDateInput = ({ value, onChange }: Props) => {
   return (
     <UIFormField>
-      <FieldLabel>Space name</FieldLabel>
+      <FieldLabel>Due date</FieldLabel>
     </UIFormField>
   );
 };

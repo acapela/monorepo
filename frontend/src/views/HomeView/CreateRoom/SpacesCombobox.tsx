@@ -1,5 +1,8 @@
 import React from "react";
+import styled from "styled-components";
 import { SpaceBasicInfoFragment } from "~gql";
+import { FieldLabel } from "~ui/typo";
+import { UIFormField } from "./UIFormField";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
@@ -7,5 +10,9 @@ interface Props {
 }
 
 export const SpacesCombobox = ({ items, onSelect }: Props) => {
-  return <p>SpaceCombobox will be here</p>;
+  return (
+    <UIFormField>
+      <FieldLabel>Select space</FieldLabel>
+    </UIFormField>
+  );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { add, roundToNearestMinutes } from "date-fns";
 import { validate } from "./validate";
 import { Button } from "~ui/buttons/Button";
 import { handleWithPreventDefault } from "~shared/events";
@@ -7,14 +8,22 @@ import { useSpacesQuery } from "~frontend/gql/spaces";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { SpacesCombobox } from "./SpacesCombobox";
 import { SpaceNameInput } from "./SpaceNameInput";
+import { DueDateInput } from "./DueDateInput";
+
 interface Props {
   onCancel: () => void;
 }
+
+const getDefaultDueDate = () => {
+  const date = add(new Date(), { days: 1 });
+  return roundToNearestMinutes(date, { nearestTo: 15 });
+};
 
 export const Form = ({ onCancel }: Props) => {
   const [roomName, setRoomName] = useState<string>("");
   const [spaceId, setSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
+  const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
 
   const teamId = useAssertCurrentTeamId();
   const [spacesList = []] = useSpacesQuery({ teamId });
@@ -50,6 +59,7 @@ export const Form = ({ onCancel }: Props) => {
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}
+      <DueDateInput value={dueDate} onChange={setDueDate} />
       <UIButtons>
         <Button isDisabled={isSubmitDisabled} kind="ghost" isRounded type="reset" onClick={onCancel}>
           Cancel
