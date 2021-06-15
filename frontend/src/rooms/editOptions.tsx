@@ -41,18 +41,22 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   await deleteRoom({ roomId: room.id });
 }
 
-export async function handleToggleCloseRoom(room: RoomBasicInfoFragment) {
+type isRoomOpen = boolean;
+export async function handleToggleCloseRoom(room: RoomBasicInfoFragment): Promise<isRoomOpen> {
   const isOpenRoom = !room.finished_at;
   if (isOpenRoom) {
     const canCloseRoom = await closeOpenTopicsPrompt({
       room,
     });
 
-    if (canCloseRoom) {
-      return await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
+    if (!canCloseRoom) {
+      return true;
     }
+    await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
+    return false;
   } else {
-    return await updateRoom({ roomId: room.id, input: { finished_at: null } });
+    await updateRoom({ roomId: room.id, input: { finished_at: null } });
+    return true;
   }
 }
 

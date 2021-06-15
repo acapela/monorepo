@@ -28,8 +28,6 @@ export function RoomSummaryView({ roomId }: Props) {
 
   useDebounce(
     () => {
-      console.log("debaunced");
-      console.log(roomSummary);
       updateRoom({
         roomId: room?.id,
         input: {

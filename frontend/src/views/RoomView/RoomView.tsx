@@ -39,9 +39,9 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
 
     startLoading();
 
-    await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
+    const isRoomOpen = await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
 
-    if (isRoomOpen) {
+    if (!isRoomOpen) {
       routes.spaceRoomSummary.replace({
         roomId: room.id,
         spaceId: room.space_id,

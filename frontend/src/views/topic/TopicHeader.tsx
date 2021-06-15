@@ -67,6 +67,9 @@ const UIHolder = styled.div`
 `;
 
 const UITitle = styled(PageTitle)<{ isClosed: boolean }>`
+  padding: 0 25%;
+  text-align: center;
+
   ${(props) => {
     if (props.isClosed) {
       return css`
