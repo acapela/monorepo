@@ -33,6 +33,8 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
 
     topicCloseInfo: getTopicCloseInfo(value),
 
+    isParentRoomOpen: !value?.room.finished_at,
+
     edit: (name: string) =>
       updateTopic({
         topicId,
