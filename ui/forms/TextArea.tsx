@@ -1,4 +1,4 @@
-import React, { forwardRef, InputHTMLAttributes, useRef, useState, MutableRefObject } from "react";
+import React, { forwardRef, InputHTMLAttributes, useRef, useState, MutableRefObject, useEffect } from "react";
 import styled from "styled-components";
 import { baseInputStyles } from "./utils";
 
@@ -7,20 +7,21 @@ export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> 
   isResizable?: boolean;
 }
 
-const MINIMUM_HEIGHT_PX = 48;
-
-export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(props, forwardedRef) {
-  const { onChangeText, isResizable, ...regularProps } = props;
-
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
+  { onChangeText, isResizable, ...regularProps },
+  forwardedRef
+) {
   const internalRef = useRef<HTMLTextAreaElement>(null);
-  const [textAreaHeight, setTextAreaHeight] = useState<number>(MINIMUM_HEIGHT_PX);
+  const [textAreaHeight, setTextAreaHeight] = useState<string>("auto");
+
+  useEffect(() => {
+    if (isResizable) {
+      // Make it run after all DOM painting and updates done
+      queueMicrotask(() => setTextAreaHeight(`${internalRef.current?.scrollHeight}px`));
+    }
+  }, [regularProps.value]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (isResizable) {
-      const size = Math.max(MINIMUM_HEIGHT_PX, internalRef.current?.scrollHeight ?? 0);
-      setTextAreaHeight(size);
-    }
-
     regularProps?.onChange?.(event);
     onChangeText?.(event.target.value);
   };
@@ -43,14 +44,14 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
   );
 });
 
-const UITextArea = styled.textarea<{ height: number }>`
+const UITextArea = styled.textarea<{ height: string }>`
   ${baseInputStyles};
 
   padding-top: 12px;
   padding-bottom: 12px;
 
-  height: ${({ height }) => `${height}px`};
+  height: ${({ height }) => height};
   resize: none;
-  overflow: hidden;
-  min-height: ${MINIMUM_HEIGHT_PX}px;
+  overflow-y: hidden;
+  min-height: 2rem;
 `;

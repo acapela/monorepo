@@ -45,7 +45,7 @@ const UITopicSummary = styled.div`
   display: grid;
   gap: 8px;
 
-  min-height: 40px;
+  min-height: 32px;
   width: 100%;
 
   padding: 16px;
