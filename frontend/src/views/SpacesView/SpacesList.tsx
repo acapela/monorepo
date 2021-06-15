@@ -34,6 +34,6 @@ const UIHolder = styled.div`
 
 const UISpaces = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-gap: 3rem;
 `;
