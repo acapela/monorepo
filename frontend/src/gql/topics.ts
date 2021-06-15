@@ -331,7 +331,24 @@ export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation
         user_id
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        insert_topic_member_one: {
+          __typename: "topic_member",
+          topic_id: vars.topicId,
+          user_id: vars.userId,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members.push({ __typename: "topic_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
+      });
+    },
+  }
 );
 
 export const [useRemoveTopicMemberMutation] = createMutation<
@@ -344,7 +361,23 @@ export const [useRemoveTopicMemberMutation] = createMutation<
         affected_rows
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        delete_topic_member: {
+          __typename: "topic_member_mutation_response",
+          affected_rows: 1,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members = topic.members.filter((member) => member.user.id !== vars.userId);
+      });
+    },
+  }
 );
 
 export const [useLastSeenMessageMutation] = createMutation<
@@ -358,6 +391,7 @@ export const [useLastSeenMessageMutation] = createMutation<
         on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
       ) {
         message_id
+        seen_at
       }
     }
   `

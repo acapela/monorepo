@@ -63,11 +63,11 @@ export const SpaceDetailedInfoFragment = createFragment<SpaceDetailedInfoFragmen
 
 export const [useSpacesQuery, spacesQueryManager] = createQuery<SpacesQuery, SpacesQueryVariables>(
   () => gql`
-    ${SpaceBasicInfoFragment()}
+    ${SpaceDetailedInfoFragment()}
 
     query Spaces($teamId: uuid!) {
       space(where: { team_id: { _eq: $teamId } }) {
-        ...SpaceBasicInfo
+        ...SpaceDetailedInfo
       }
     }
   `
@@ -103,10 +103,8 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
       };
     },
     onResult(space, { teamId }) {
-      spacesQueryManager.update({ teamId }, (draft) => {
-        if (!space) return;
-
-        draft.space.push(space);
+      TeamDetailedInfoFragment.update(teamId, (team) => {
+        team.spaces.push(space);
       });
     },
   }
@@ -134,11 +132,6 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
         __typename: "mutation_root",
         space: updatedSpace,
       };
-    },
-    onResult(deletedSpace) {
-      TeamDetailedInfoFragment.update(deletedSpace.team_id, (team) => {
-        team.spaces = team.spaces.filter((space) => space.id !== deletedSpace.id);
-      });
     },
   }
 );
@@ -193,7 +186,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
       };
     },
     onResult(data, variables) {
-      SpaceDetailedInfoFragment.update(variables.spaceId, (space) => {
+      SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members.push({
           __typename: "space_member",
           user: UserBasicInfoFragment.assertRead(variables.userId),
@@ -228,7 +221,7 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
       };
     },
     onResult(data, variables) {
-      SpaceDetailedInfoFragment.update(variables.spaceId, (space) => {
+      SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members = space.members.filter((member) => member.user.id !== variables.userId);
       });
       addToast({ type: "info", content: `Space member was removed` });

@@ -8439,7 +8439,7 @@ export type SpacesQuery = (
   { __typename?: 'query_root' }
   & { space: Array<(
     { __typename?: 'space' }
-    & SpaceBasicInfoFragment
+    & SpaceDetailedInfoFragment
   )> }
 );
 
@@ -8851,7 +8851,7 @@ export type UpdateLastSeenMessageMutation = (
   { __typename?: 'mutation_root' }
   & { insert_last_seen_message_one?: Maybe<(
     { __typename?: 'last_seen_message' }
-    & Pick<Last_Seen_Message, 'message_id'>
+    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
   )> }
 );
 
