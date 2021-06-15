@@ -112,7 +112,7 @@ ALTER TABLE ONLY public.team
     ADD CONSTRAINT team_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public."user"(id) ON
         UPDATE CASCADE
         ON
-            DELETE CASCADE;
+            DELETE RESTRICT;
 
 
 ALTER TABLE public.topic_member
