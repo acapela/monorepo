@@ -36,8 +36,9 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   justify-content: center;
   align-items: center;
 
-  width: ${(props) => getAvatarRemSize(props.size)}rem;
-  height: ${(props) => getAvatarRemSize(props.size)}rem;
+  width: ${(props) => getAvatarPxSize(props.size)}px;
+  min-width: ${(props) => getAvatarPxSize(props.size)}px;
+  height: ${(props) => getAvatarPxSize(props.size)}px;
 
   font-weight: 600;
 
@@ -53,12 +54,12 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   }
 `;
 
-function getAvatarRemSize(size: AvatarSize) {
+function getAvatarPxSize(size: AvatarSize) {
   switch (size) {
     case "regular":
-      return 2.5;
+      return 40;
     case "small":
-      return 2;
+      return 32;
   }
 
   throw new Error("Incorrect avatar size");

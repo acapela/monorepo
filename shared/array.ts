@@ -5,6 +5,16 @@ export function removeElementFromArray<T>(arr: T[], element: T) {
   }
 }
 
+export function removeElementsFromArrayByFilter<T>(arr: T[], filter: (item: T) => boolean) {
+  for (const item of arr) {
+    const shouldRemove = filter(item);
+
+    if (shouldRemove) {
+      removeElementFromArray(arr, item);
+    }
+  }
+}
+
 export function convertMaybeArrayToArray<T>(input: T | T[]): T[] {
   if (Array.isArray(input)) return input;
 

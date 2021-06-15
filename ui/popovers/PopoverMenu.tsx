@@ -2,7 +2,7 @@ import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
-import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 import { DANGER_COLOR } from "~ui/colors";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -36,7 +36,6 @@ export const PopoverMenu = styled(
         <Popover anchorRef={anchorRef} placement={placement}>
           <UIMenu
             presenceStyles={POP_PRESENCE_STYLES}
-            transition={POP_ANIMATION_CONFIG}
             className={className}
             onClick={(event) => event.stopPropagation()}
           >

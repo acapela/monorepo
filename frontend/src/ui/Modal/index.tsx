@@ -1,6 +1,6 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
-import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
@@ -35,7 +35,6 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
     <UIModal
       ref={modalRef}
       presenceStyles={POP_PRESENCE_STYLES}
-      transition={POP_ANIMATION_CONFIG}
       // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
       onClick={(event) => event.stopPropagation()}
     >
