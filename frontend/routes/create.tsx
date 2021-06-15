@@ -45,7 +45,11 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   function useIsActive() {
     const router = useRouter();
 
-    return router.route === path;
+    return isActive(router.route);
+  }
+
+  function isActive(route: string) {
+    return route === path;
   }
 
   function push(params: Params) {
@@ -80,6 +84,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     push,
     replace,
     useIsActive,
+    isActive,
     Link,
     getUrlWithParams,
   };

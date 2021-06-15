@@ -4,7 +4,7 @@ import { RoomBasicInfoFragment } from "~frontend/gql";
 import { deleteRoom, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash, IconUndo } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 
@@ -41,13 +41,18 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   await deleteRoom({ roomId: room.id });
 }
 
-export async function handleCloseRoom(room: RoomBasicInfoFragment) {
-  const canCloseRoom = await closeOpenTopicsPrompt({
-    room,
-  });
+export async function handleToggleCloseRoom(room: RoomBasicInfoFragment) {
+  const isOpenRoom = !room.finished_at;
+  if (isOpenRoom) {
+    const canCloseRoom = await closeOpenTopicsPrompt({
+      room,
+    });
 
-  if (canCloseRoom) {
-    await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
+    if (canCloseRoom) {
+      return await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
+    }
+  } else {
+    return await updateRoom({ roomId: room.id, input: { finished_at: null } });
   }
 }
 
@@ -59,11 +64,10 @@ export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): Popove
       icon: <IconEdit />,
     },
     {
-      label: "Close room...",
-      onSelect: () => handleCloseRoom(room),
-      icon: <IconCheck />,
+      label: room.finished_at ? "Reopen room..." : "Close room...",
+      onSelect: () => handleToggleCloseRoom(room),
+      icon: room.finished_at ? <IconUndo /> : <IconCheck />,
     },
-
     {
       label: "Delete room...",
       onSelect: () => handleDeleteRoom(room),

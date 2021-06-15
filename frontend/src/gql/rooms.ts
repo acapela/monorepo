@@ -32,6 +32,7 @@ export const RoomBasicInfoFragment = () => gql`
     id
     name
     space_id
+    finished_at
     members {
       user {
         ...UserBasicInfo

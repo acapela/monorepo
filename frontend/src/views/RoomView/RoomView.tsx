@@ -10,9 +10,11 @@ import { PageTitle, SecondaryText } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
-import { getRoomManagePopoverOptions, handleEditRoomName, handleCloseRoom } from "~frontend/rooms/editOptions";
+import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
 import { Button } from "~ui/buttons/Button";
 import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
+import { routes } from "~frontend/../routes";
 
 interface Props {
   room?: RoomDetailedInfoFragment | null;
@@ -24,8 +26,34 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
 
+  const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
+
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);
+  };
+
+  const isRoomOpen = !room?.finished_at;
+
+  const onCloseRoomToggleClicked = async () => {
+    if (!room) return;
+
+    startLoading();
+
+    await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
+
+    if (isRoomOpen) {
+      routes.spaceRoomSummary.replace({
+        roomId: room.id,
+        spaceId: room.space_id,
+      });
+    } else if (routes.spaceRoomSummary.isActive(router.route)) {
+      routes.spaceRoom.replace({
+        roomId: room.id,
+        spaceId: room.space_id,
+      });
+    } else {
+      endLoading();
+    }
   };
 
   return (
@@ -64,13 +92,12 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
           </UIManageSections>
           <UILine />
           <TopicsList roomId={room?.id} activeTopicId={selectedTopicId} />
-          {room && (
-            <UIFlyingCloseRoomToggle>
-              <Button isWide={true} onClick={() => handleCloseRoom(room)}>
-                Close room
-              </Button>
-            </UIFlyingCloseRoomToggle>
-          )}
+          <UIFlyingCloseRoomToggle>
+            <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
+              {!isRoomOpen && "Reopen room"}
+              {isRoomOpen && "Close room"}
+            </Button>
+          </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
         <AnimatePresence exitBeforeEnter>
           <UIContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
