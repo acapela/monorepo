@@ -3,10 +3,14 @@ on:
   push:
     branches:
       - "**"
+
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -25,6 +29,9 @@ jobs:
     name: Frontend
     runs-on: ubuntu-latest
     needs: lint
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -46,6 +53,9 @@ jobs:
     name: Backend
     runs-on: ubuntu-latest
     needs: lint
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     services:
       postgres:
         image: postgres:12
