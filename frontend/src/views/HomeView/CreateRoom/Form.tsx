@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { validate } from "./validate";
 import { Button } from "~ui/buttons/Button";
+import { handleWithPreventDefault } from "~shared/events";
 
 interface Props {
   onCancel: () => void;
@@ -9,13 +10,14 @@ interface Props {
 
 export const Form = ({ onCancel }: Props) => {
   const [roomName, setRoomName] = useState<string>("");
+  const [spaceId, setSpaceId] = useState<string | null>(null);
+  const [spaceName, setSpaceName] = useState<string>("");
 
   const validationError = validate({
     roomName,
   });
 
   const isSubmitDisabled = Boolean(validationError);
-  console.log(validationError, isSubmitDisabled);
   const handleSubmit = () => {
     if (isSubmitDisabled) {
       return;
@@ -26,12 +28,7 @@ export const Form = ({ onCancel }: Props) => {
   };
 
   return (
-    <UIForm
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
+    <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
       <UIRoomNameInput
         value={roomName}
         onChange={(e) => setRoomName(e.target.value)}
