@@ -1,9 +1,14 @@
 import { ApolloLink, FetchResult, Observable } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { DocumentNode } from "graphql";
-import { isObject, mapValues } from "lodash";
+import { isArray, isObject, mapValues } from "lodash";
+import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
 
 export function mapObjectValues<T>(object: T, callback: (value: unknown) => unknown): any {
+  if (isArray(object)) {
+    return object.map((value) => mapObjectValues(value, callback));
+  }
+
   if (!isObject(object)) {
     return callback(object);
   }
@@ -11,22 +16,13 @@ export function mapObjectValues<T>(object: T, callback: (value: unknown) => unkn
   return mapValues(object, (value) => mapObjectValues(value, callback));
 }
 
-function tryParseDateString(input: unknown): unknown {
-  if (typeof input !== "string") {
-    return input;
-  }
-
-  const parsedDate = Date.parse(input);
-
-  if (isNaN(parsedDate)) {
-    return input;
-  }
-
-  return new Date(parsedDate);
+if (typeof window !== "undefined") {
+  Reflect.set(window, "par", tryParseStringDate);
 }
+console.log("parser", tryParseStringDate);
 
 export function parseStringDatesInObject<T>(object: T): void {
-  mapObjectValues(object, tryParseDateString);
+  return mapObjectValues(object, tryParseStringDate);
 }
 
 export function isSubscription(query: DocumentNode) {
@@ -37,7 +33,21 @@ export function isSubscription(query: DocumentNode) {
 
 function parseResponse(response: FetchResult) {
   if (response.data) {
-    parseStringDatesInObject(response.data);
+    console.log("yoyoyo", response);
+    try {
+      const foo = parseStringDatesInObject(response.data);
+
+      if (foo) {
+        console.log("HERE WE GO", { foo, response });
+        response.data = foo;
+      }
+
+      console.log(foo);
+    } catch (err) {
+      console.log("err", err);
+    }
+
+    // return foo;
   }
 
   return response;

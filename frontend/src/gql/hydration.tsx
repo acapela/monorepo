@@ -1,4 +1,5 @@
 import { ApolloClient, DocumentNode } from "@apollo/client";
+import { parseJsonWithDates } from "~shared/dates/parseJSONWithDates";
 
 interface QueryUseageData {
   query: DocumentNode;
@@ -55,7 +56,9 @@ export const getApolloInitialState = () => {
 
   if (!queriesDataElement) return null;
 
-  return JSON.parse(queriesDataElement.innerHTML);
+  console.log("test", parseJsonWithDates(queriesDataElement.innerHTML));
+
+  return parseJsonWithDates(queriesDataElement.innerHTML);
 };
 
 export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {

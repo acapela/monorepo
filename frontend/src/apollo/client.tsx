@@ -8,11 +8,11 @@ import Cookie from "js-cookie";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
-import { getApolloInitialState } from "./gql/hydration";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
-import { readAppInitialPropByName } from "./utils/next";
 import { createDateParseLink } from "./dateStringParseLink";
+import { readAppInitialPropByName } from "~frontend/utils/next";
+import { getApolloInitialState } from "~frontend/gql/hydration";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -99,7 +99,7 @@ const errorLink = onError(({ graphQLErrors = [], networkError }) => {
 const httpRawLink = new HttpLink({ uri: getGraphqlUrl() });
 const parseDatesLink = createDateParseLink();
 
-const httpLink = errorLink.concat(httpRawLink).concat(parseDatesLink);
+const httpLink = parseDatesLink.concat(httpRawLink);
 
 interface ApolloClientOptions {
   forcedAuthToken?: string;

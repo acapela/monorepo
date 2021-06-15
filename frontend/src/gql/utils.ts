@@ -14,7 +14,7 @@ import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { useRef } from "react";
 import { assertGet } from "~shared/assert";
-import { getApolloClient } from "~frontend/apollo";
+import { getApolloClient } from "~frontend/apollo/client";
 import { reportQueryUsage } from "./hydration";
 import { memoize } from "lodash";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";

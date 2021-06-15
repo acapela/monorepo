@@ -15,8 +15,11 @@ function enrichSummary(summary: string) {
   return [{ insert: "🎉", attributes: { bold: true } }];
 }
 
-export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => (
-  <MessageLikeContent user={closedBy} date={closedAt} messageTypeLabel="closed this topic">
-    <strong> Outcome of the topic: {summary}</strong>
-  </MessageLikeContent>
-);
+export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => {
+  console.log({ closedAt });
+  return (
+    <MessageLikeContent user={closedBy} date={closedAt} messageTypeLabel="closed this topic">
+      <strong> Outcome of the topic: {summary}</strong>
+    </MessageLikeContent>
+  );
+};

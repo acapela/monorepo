@@ -50,6 +50,8 @@ export const Message = ({ message }: Props) => {
 
   const shouldShowTools = useDebouncedValue(getShouldShowTools(), { onDelay: 0, offDelay: 200 });
 
+  console.log("willlll", { t: message.createdAt });
+
   return (
     <MessageLikeContent
       tools={
