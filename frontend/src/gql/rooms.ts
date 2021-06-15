@@ -50,6 +50,7 @@ export const RoomDetailedInfoFragment = () => gql`
     space_id
     deadline
     finished_at
+    summary
     members {
       user {
         ...UserBasicInfo

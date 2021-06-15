@@ -19,7 +19,7 @@ export const TopicSummary = ({ topic }: Props) => {
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateSummary(summary);
+      updateSummary(summary.trim());
     }
   }
 

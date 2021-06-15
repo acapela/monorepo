@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { PageTitle, SecondaryText } from "~ui/typo";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
+import { useSingleRoomQuery, useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { RoomView } from "./RoomView";
 import { TextArea } from "~ui/forms/TextArea";
 import { TopicSummary } from "./TopicSummary";
+import { useDebounce } from "react-use";
 
 interface Props {
   roomId: string;
@@ -15,9 +16,28 @@ const localeOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: "nume
 
 export const parseDate = (str: string) => new Date(str).toLocaleDateString(undefined, localeOptions);
 
+const DEBOUNCE_DELAY_MS = 400;
+
 export function RoomSummaryView({ roomId }: Props) {
   const [roomQuery] = useSingleRoomQuery({ id: roomId });
+  const [updateRoom] = useUpdateRoomMutation();
+
   const room = roomQuery?.room;
+
+  const [roomSummary, setRoomSummary] = useState(room?.summary ?? "");
+
+  useDebounce(
+    () => {
+      updateRoom({
+        roomId: room?.id,
+        input: {
+          summary: roomSummary,
+        },
+      });
+    },
+    DEBOUNCE_DELAY_MS,
+    [roomSummary]
+  );
 
   const { topics } = useRoomTopicList(room?.id);
 
@@ -33,7 +53,11 @@ export function RoomSummaryView({ roomId }: Props) {
             <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
-        <UIAdditionalNotes placeholder={"Add any additional notes..."} isResizable={true}></UIAdditionalNotes>
+        <UIAdditionalNotes
+          placeholder={"Add any additional notes..."}
+          isResizable={true}
+          onChangeText={setRoomSummary}
+        />
       </UIHolder>
     </RoomView>
   );
