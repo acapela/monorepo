@@ -28,6 +28,8 @@ export function RoomSummaryView({ roomId }: Props) {
 
   useDebounce(
     () => {
+      console.log("debaunced");
+      console.log(roomSummary);
       updateRoom({
         roomId: room?.id,
         input: {
@@ -55,6 +57,7 @@ export function RoomSummaryView({ roomId }: Props) {
         </UITopicSummaries>
         <UIAdditionalNotes
           placeholder={"Add any additional notes..."}
+          value={roomSummary}
           isResizable={true}
           onChangeText={setRoomSummary}
         />
