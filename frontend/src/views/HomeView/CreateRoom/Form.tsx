@@ -8,7 +8,9 @@ import { useSpacesQuery } from "~frontend/gql/spaces";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { SpacesCombobox } from "./SpacesCombobox";
 import { SpaceNameInput } from "./SpaceNameInput";
-import { DueDateInput } from "./DueDateInput";
+import { DateTimeInput } from "~frontend/ui/DateTimeInput";
+import { FieldLabel } from "~ui/typo";
+import { UIFormField } from "./UIFormField";
 
 interface Props {
   onCancel: () => void;
@@ -59,12 +61,15 @@ export const Form = ({ onCancel }: Props) => {
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}
-      <DueDateInput value={dueDate} onChange={setDueDate} />
+      <UIFormField>
+        <FieldLabel>Due date</FieldLabel>
+        <DateTimeInput value={dueDate} onChange={setDueDate} />
+      </UIFormField>
       <UIButtons>
-        <Button isDisabled={isSubmitDisabled} kind="ghost" isRounded type="reset" onClick={onCancel}>
+        <Button kind="ghost" isRounded type="reset" onClick={onCancel}>
           Cancel
         </Button>
-        <Button isRounded onClick={() => null}>
+        <Button isDisabled={isSubmitDisabled} isRounded onClick={() => null}>
           Create
         </Button>
       </UIButtons>
