@@ -54,7 +54,7 @@ export default function App({
       <TooltipsRenderer />
       <ToastsRenderer />
       <SessionProvider session={session}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG, duration: 0.15 }}>
+        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
             <AnimatePresence>
               <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
