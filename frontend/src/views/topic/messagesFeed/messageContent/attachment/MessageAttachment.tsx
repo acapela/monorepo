@@ -11,8 +11,8 @@ import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./Mess
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
-  selectedMediaTime: number | null;
-  onMediaTimeUpdate: (time: number) => void;
+  selectedMediaTime?: number | null;
+  onMediaTimeUpdate?: (time: number) => void;
   className?: string;
 }
 
@@ -21,7 +21,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
   const [url] = useDownloadUrlQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
-  const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);
+  const onTimeUpdate = () => onMediaTimeUpdate?.(mediaRef.current?.currentTime ?? 0);
 
   useEffect(() => {
     if (typeof selectedMediaTime === "number" && mediaRef.current) {
@@ -46,7 +46,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
         mediaRef={mediaRef}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         attachment={attachment!}
-        attachmentUrl={url}
+        attachmentUrl={url.downloadUrl}
         onClick={toggleIsFullscreenOpened}
         layoutId={isPlaceholder ? null : `attachment-${attachment.id}`}
       />

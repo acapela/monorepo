@@ -8,12 +8,12 @@ import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
-import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
-import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
 import { useTopic } from "~frontend/topics/useTopic";
+import { TopicSummaryMessage } from "./messagesFeed/TopicSummary";
+import { MessagesFeed } from "./messagesFeed/MessagesFeed";
 
 interface Props {
   id: string;
@@ -52,9 +52,8 @@ export const TopicView = ({ id }: Props) => {
           <ScrollableMessages>
             <UIAnimatedMessagesWrapper>
               <AnimateSharedLayout>
-                {messages.map((message) => (
-                  <Message key={message.id} message={message} />
-                ))}
+                <MessagesFeed messages={messages} />
+
                 {topicCloseInfo && (
                   <TopicSummaryMessage
                     summary={topicCloseInfo.summary}

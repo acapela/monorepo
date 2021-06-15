@@ -12,6 +12,7 @@ import { getApolloInitialState } from "./gql/hydration";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { readAppInitialPropByName } from "./utils/next";
+import { createDateParseLink } from "./dateStringParseLink";
 
 const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -95,7 +96,10 @@ const errorLink = onError(({ graphQLErrors = [], networkError }) => {
   }
 });
 
-const httpLink = new HttpLink({ uri: getGraphqlUrl() }).concat(errorLink);
+const httpRawLink = new HttpLink({ uri: getGraphqlUrl() });
+const parseDatesLink = createDateParseLink();
+
+const httpLink = errorLink.concat(httpRawLink).concat(parseDatesLink);
 
 interface ApolloClientOptions {
   forcedAuthToken?: string;

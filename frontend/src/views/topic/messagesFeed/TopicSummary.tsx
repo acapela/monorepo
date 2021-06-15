@@ -1,10 +1,10 @@
 import React from "react";
 import { Message_Type_Enum, UserBasicInfoFragment } from "~gql";
-import { Message } from ".";
+import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
   summary: string;
-  closedAt: string;
+  closedAt: Date;
   closedBy: UserBasicInfoFragment;
 }
 
@@ -16,17 +16,7 @@ function enrichSummary(summary: string) {
 }
 
 export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => (
-  <Message
-    isTopicSummary={true}
-    key={"closing-topic"}
-    message={{
-      id: "closing-topic",
-      type: Message_Type_Enum.Text,
-      content: enrichSummary(summary),
-      createdAt: closedAt,
-      user: closedBy,
-      transcription: null,
-      message_attachments: [],
-    }}
-  />
+  <MessageLikeContent user={closedBy} date={closedAt} messageTypeLabel="closed this topic">
+    <strong> Outcome of the topic: {summary}</strong>
+  </MessageLikeContent>
 );
