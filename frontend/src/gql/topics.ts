@@ -363,7 +363,7 @@ export const [useRemoveTopicMemberMutation] = createMutation<
     }
   `,
   {
-    optimisticResponse(vars) {
+    optimisticResponse() {
       return {
         __typename: "mutation_root",
         delete_topic_member: {

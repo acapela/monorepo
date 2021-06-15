@@ -1,5 +1,4 @@
 import {
-  ApolloCache,
   DocumentNode,
   MutationFunctionOptions,
   MutationHookOptions,
@@ -35,6 +34,7 @@ export function createMutation<Data, Variables>(
             const resultData = unwrapQueryData(rawResult.data);
 
             if (resultData) {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               mutationDefinitionOptions?.onResult?.(resultData!, variables);
             }
           });
@@ -60,6 +60,7 @@ export function createMutation<Data, Variables>(
           const resultData = unwrapQueryData(rawResult.data);
 
           if (resultData) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             mutationDefinitionOptions?.onResult?.(resultData!, variables);
           }
         });

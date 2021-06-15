@@ -1,5 +1,5 @@
 import React, { Ref } from "react";
-import { AttachmentDetailedInfoFragment, Message_Type_Enum } from "~gql";
+import { AttachmentDetailedInfoFragment } from "~gql";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { motion } from "framer-motion";
