@@ -50,3 +50,21 @@ export function getObjectKey(input: unknown) {
 
   return newKey;
 }
+
+type NonUndefined<T> = T extends undefined ? never : T;
+
+type WithoutUndefined<T> = {
+  [P in keyof T]-?: NonUndefined<T[P]>;
+};
+
+export function removeUndefinedFromObject<T>(input: T): WithoutUndefined<T> {
+  const clone = { ...input };
+
+  typedKeys(clone).forEach((key) => {
+    if (clone[key] === undefined) {
+      delete clone[key];
+    }
+  });
+
+  return clone;
+}

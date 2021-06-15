@@ -26,6 +26,7 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
+import { removeUndefinedFromObject } from "~frontend/../../shared/object";
 
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
   () => gql`
@@ -208,18 +209,18 @@ export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
   `,
   {
     optimisticResponse(vars) {
-      const { name, slug, summary, deadline, finished_at } = vars.input;
+      const { name, slug, summary, deadline, finished_at } = removeUndefinedFromObject(vars.input);
+      const inputToReplace = removeUndefinedFromObject({ name, slug, summary, deadline, finished_at });
+
       const existingData = RoomDetailedInfoFragment.assertRead(vars.roomId);
       return {
         __typename: "mutation_root",
         room: {
           __typename: "room",
+
           ...existingData,
-          name,
-          slug,
-          summary,
+          ...inputToReplace,
           deadline: deadline ?? existingData.deadline,
-          finished_at,
         },
       };
     },

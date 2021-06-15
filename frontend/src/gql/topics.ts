@@ -489,7 +489,7 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
     optimisticResponse(vars) {
       const topic = TopicDetailedInfoFragment.assertRead(vars.topicId);
 
-      return { topic };
+      return { __typename: "mutation_root", topic };
     },
     onResult(removedTopic) {
       RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {

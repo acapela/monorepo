@@ -15,6 +15,15 @@ interface MutationDefinitionOptions<Data, Variables> {
   optimisticResponse?: (vars: Variables) => Data;
 }
 
+/**
+ * This function allows creating type-safe mutation wrapper around mutation gql document.
+ *
+ * When creating, it is required to provide 2 generic types for data and variables.
+ *
+ * It returns tuple with [react hook, {mutate}].
+ *
+ * Both tuple elements work almost the same, but hook has loading/error state attached.
+ */
 export function createMutation<Data, Variables>(
   mutation: () => DocumentNode,
   mutationDefinitionOptions?: MutationDefinitionOptions<Data, Variables>
