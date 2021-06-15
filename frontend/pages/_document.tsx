@@ -2,7 +2,7 @@ import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, Next
 
 import { ServerStyleSheet } from "styled-components";
 import { getApolloClient, readTokenFromRequest } from "~frontend/apollo/client";
-import { ApolloInitialState, prefetchRecordedQueries, startRecordingUsedQueries } from "~frontend/gql/hydration";
+import { ApolloInitialState, prefetchRecordedQueries, startRecordingUsedQueries } from "~frontend/gql/utils/hydration";
 
 type Props = DocumentInitialProps & {
   apolloInitialState?: unknown;

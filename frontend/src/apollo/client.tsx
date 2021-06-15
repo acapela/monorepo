@@ -1,24 +1,48 @@
-import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
-import { WebSocketLink } from "@apollo/client/link/ws";
-import { GraphQLError } from "graphql";
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  FieldMergeFunction,
+  HttpLink,
+  InMemoryCache,
+  split as splitLinks,
+} from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { GraphQLError } from "graphql";
 import { IncomingMessage } from "http";
-import Cookie from "js-cookie";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
+import { readCurrentToken, TOKEN_COOKIE_NAME } from "~frontend/authentication/cookie";
+import { getApolloInitialState } from "~frontend/gql/utils/hydration";
+import { readAppInitialPropByName } from "~frontend/utils/next";
+import { TypedTypePolicies } from "~gql";
+import { assertGet } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { createDateParseLink } from "./dateStringParseLink";
-import { readAppInitialPropByName } from "~frontend/utils/next";
-import { getApolloInitialState } from "~frontend/gql/hydration";
 
-const TOKEN_COOKIE_NAME = "next-auth.session-token";
+const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
-function readCurrentToken(): string | null {
-  return Cookie.get(TOKEN_COOKIE_NAME) ?? null;
-}
+const typePolicies: TypedTypePolicies = {
+  space_member: {
+    keyFields: ["space_id", "user_id"],
+    merge: mergeUsingIncoming,
+  },
+  space: {
+    fields: {
+      members: {
+        keyArgs: ["user_id"],
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+};
+
+// Create cache and try to populate it if there is pre-fetched data
+const cache = new InMemoryCache({ typePolicies });
 
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
@@ -134,8 +158,6 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
 
   const link = getLink();
 
-  // Create cache and try to populate it if there is pre-fetched data
-  const cache = new InMemoryCache();
   const initialCacheState = getApolloInitialState();
 
   if (initialCacheState) {
@@ -157,6 +179,12 @@ interface ApolloClientProviderProps {
   websocketEndpoint?: string | null;
 }
 
+let renderedApolloClient: ApolloClient<unknown> | null;
+
+export function getRenderedApolloClient() {
+  return assertGet(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
+}
+
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
   const client = useConst(() =>
     getApolloClient({
@@ -164,6 +192,8 @@ export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint
       websocketEndpoint: websocketEndpoint ?? undefined,
     })
   );
+
+  renderedApolloClient = client;
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

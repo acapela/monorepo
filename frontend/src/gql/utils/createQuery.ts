@@ -1,26 +1,21 @@
 import {
   DocumentNode,
   gql,
-  MutationFunctionOptions,
-  MutationHookOptions,
-  MutationOptions,
   QueryHookOptions,
   SubscriptionHookOptions,
-  useMutation as useRawMutation,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
 import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
-import { useRef } from "react";
-import { assertGet } from "~shared/assert";
-import { getApolloClient } from "~frontend/apollo/client";
-import { reportQueryUsage } from "./hydration";
 import { memoize } from "lodash";
-import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
-
-type EmptyObject = Record<string, never>;
-type VoidableIfEmpty<V> = EmptyObject extends V ? V | void : V;
+import { useRef } from "react";
+import { VoidableIfEmpty } from "~shared/types";
+import { assertGet } from "~shared/assert";
+import { reportQueryUsage } from "./hydration";
+import { unwrapQueryData } from "./unwrapQueryData";
+import { getCurrentApolloClientHandler } from "./proxy";
+import { getRenderedApolloClient } from "~frontend/apollo/client";
 
 export function createQuery<Data, Variables>(query: () => DocumentNode) {
   type VoidableVariables = VoidableIfEmpty<Variables>;
@@ -51,7 +46,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   useAsSubscription.query = useQuery;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
-    const client = getApolloClient();
+    const client = getCurrentApolloClientHandler();
     const currentData = client.readQuery<Data, Variables>({ query: getQuery(), variables });
 
     if (currentData === null) {
@@ -68,15 +63,15 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   }
 
   function write(variables: Variables, data: Data) {
-    getApolloClient().writeQuery<Data, Variables>({ query: getQuery(), variables, data });
+    getCurrentApolloClientHandler().writeQuery<Data, Variables>({ query: getQuery(), variables, data });
   }
 
   function read(variables: Variables) {
-    return getApolloClient().readQuery<Data, Variables>({ query: getQuery(), variables });
+    return getCurrentApolloClientHandler().readQuery<Data, Variables>({ query: getQuery(), variables });
   }
 
   async function fetch(variables: Variables) {
-    const response = await getApolloClient().query<Data, Variables>({ query: getQuery(), variables });
+    const response = await getRenderedApolloClient().query<Data, Variables>({ query: getQuery(), variables });
 
     if (response.error) {
       throw response.error;
@@ -86,7 +81,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   }
 
   function subscribe(variables: Variables, callback: (data: Data) => void) {
-    const subscription = getApolloClient()
+    const subscription = getRenderedApolloClient()
       .subscribe<Data, Variables>({ variables, query: getSubscriptionQuery() })
       .subscribe((newResults) => {
         if (!newResults.data) return;
@@ -126,57 +121,6 @@ function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode
   `;
 
   return subscriptionNode;
-}
-
-interface MutationDefinitionOptions<Data, Variables> {
-  onSuccess?: (data: UnwrapQueryData<Data>, variables: Variables) => void;
-}
-
-export function createMutation<Data, Variables>(
-  mutation: () => DocumentNode,
-  mutationDefinitionOptions?: MutationDefinitionOptions<Data, Variables>
-) {
-  const getMutation = memoize(mutation);
-
-  function useMutation(options?: MutationHookOptions<Data, Variables>) {
-    const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
-
-    async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
-      const rawResult = await runMutationRaw({ ...options, variables });
-
-      const resultData = unwrapQueryData(rawResult.data);
-
-      if (resultData) {
-        mutationDefinitionOptions?.onSuccess?.(resultData, variables);
-      }
-
-      return [resultData, rawResult] as const;
-    }
-
-    return [runMutation, result] as const;
-  }
-
-  async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    const rawResult = await getApolloClient().mutate<Data, Variables>({
-      ...options,
-      mutation: getMutation(),
-      variables,
-    });
-
-    const resultData = unwrapQueryData(rawResult.data);
-
-    if (resultData) {
-      mutationDefinitionOptions?.onSuccess?.(resultData, variables);
-    }
-
-    return [resultData, rawResult] as const;
-  }
-
-  const manager = {
-    mutate,
-  };
-
-  return [useMutation, manager] as const;
 }
 
 /**
