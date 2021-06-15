@@ -17,56 +17,60 @@ import {
   DeleteRoomMutationVariables,
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
+  RoomBasicInfoFragment as RoomBasicInfoFragmentType,
+  RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
+  RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
 } from "~gql";
-import { singleSpaceQueryManager } from "./spaces";
+import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
+import { createMutation, createQuery, createFragment } from "./utils";
+import { getUUID } from "~shared/uuid";
+import { removeUndefinedFromObject } from "~frontend/../../shared/object";
 
-import { createMutation, createQuery } from "./utils";
+export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    fragment RoomBasicInfo on room {
+      id
+      name
+      space_id
+      deadline
+      members {
+        user {
+          ...UserBasicInfo
+        }
+      }
+    }
+  `
+);
 
-export const RoomBasicInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  fragment RoomBasicInfo on room {
-    id
-    name
-    space_id
-    members {
+export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentType>(
+  () => gql`
+    ${TopicDetailedInfoFragment()}
+    ${UserBasicInfoFragment()}
+    ${RoomBasicInfoFragment()}
+
+    fragment RoomDetailedInfo on room {
+      ...RoomBasicInfo
+
+      topics(order_by: { index: asc }) {
+        ...TopicDetailedInfo
+      }
+    }
+  `
+);
+
+const RoomParticipantBasicInfoFragment = createFragment<RoomParticipantBasicInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    fragment RoomParticipantBasicInfo on room_member {
       user {
         ...UserBasicInfo
       }
     }
-  }
-`;
-
-export const RoomDetailedInfoFragment = () => gql`
-  ${TopicDetailedInfoFragment()}
-  ${UserBasicInfoFragment()}
-
-  fragment RoomDetailedInfo on room {
-    id
-    name
-    space_id
-    deadline
-    members {
-      user {
-        ...UserBasicInfo
-      }
-    }
-
-    topics(order_by: { index: asc }) {
-      ...TopicDetailedInfo
-    }
-  }
-`;
-
-const RoomParticipantBasicInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  fragment RoomParticipantBasicInfo on room_member {
-    user {
-      ...UserBasicInfo
-    }
-  }
-`;
+  `
+);
 
 export const [useSpaceRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
   () => gql`
@@ -103,11 +107,26 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
     }
   `,
   {
-    onSuccess(room, variables) {
-      singleSpaceQueryManager.update({ id: variables.spaceId }, (spaceQuery) => {
-        if (!room) return;
-        spaceQuery.space?.rooms.push(room);
+    onResult(room, variables) {
+      if (!room) return;
+
+      SpaceDetailedInfoFragment.update(variables.spaceId, (space) => {
+        space.rooms.push(room);
       });
+    },
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        room: {
+          __typename: "room",
+          deadline: new Date(),
+          id: getUUID(),
+          members: [],
+          topics: [],
+          name: variables.name,
+          space_id: variables.spaceId,
+        },
+      };
     },
   }
 );
@@ -134,7 +153,16 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
     }
   `,
   {
-    onSuccess() {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        insert_room_member_one: { __typename: "room_member", user_id: vars.userId, room_id: vars.roomId },
+      };
+    },
+    onResult(data, vars) {
+      RoomDetailedInfoFragment.update(vars.roomId, (room) => {
+        room.members.push({ __typename: "room_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
+      });
       addToast({ type: "info", content: `Room member was added` });
     },
   }
@@ -152,8 +180,17 @@ export const [useRemoveRoomMemberMutation] = createMutation<
     }
   `,
   {
-    onSuccess() {
-      addToast({ type: "info", content: `Room member was removed` });
+    optimisticResponse() {
+      return {
+        __typename: "mutation_root",
+        delete_room_member: { __typename: "room_member_mutation_response", affected_rows: 1 },
+      };
+    },
+    onResult(data, vars) {
+      RoomDetailedInfoFragment.update(vars.roomId, (room) => {
+        room.members = room.members.filter((member) => member.user.id !== vars.userId);
+      });
+      addToast({ type: "info", content: `Room member was added` });
     },
   }
 );
@@ -169,7 +206,25 @@ export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
         ...RoomDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      const { name, slug, summary, deadline, finished_at } = removeUndefinedFromObject(vars.input);
+      const inputToReplace = removeUndefinedFromObject({ name, slug, summary, deadline, finished_at });
+
+      const existingData = RoomDetailedInfoFragment.assertRead(vars.roomId);
+      return {
+        __typename: "mutation_root",
+        room: {
+          __typename: "room",
+
+          ...existingData,
+          ...inputToReplace,
+          deadline: deadline ?? existingData.deadline,
+        },
+      };
+    },
+  }
 );
 
 export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
@@ -183,5 +238,19 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
         ...RoomDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        room: RoomDetailedInfoFragment.assertRead(vars.roomId),
+      };
+    },
+    onResult(removedRoom) {
+      if (!removedRoom.space_id) return;
+      SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
+        space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
+      });
+    },
+  }
 );

@@ -1,7 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import { HIGHLIGHT_COLOR } from "~ui/colors";
-import { Transcription, Transcription_Status_Enum } from "~gql";
+import { Transcription } from "~gql";
 
 export interface Word {
   text: string;
@@ -24,7 +24,7 @@ interface MessageTranscriptionProps {
 }
 
 const PureMessageTranscription = ({ transcription, actualMediaTime, onSeek, className }: MessageTranscriptionProps) => {
-  if (transcription.status === Transcription_Status_Enum.Completed) {
+  if (transcription.status === "completed") {
     return (
       <div className={className}>
         {!transcription.transcript.length && <span>We couldn't transcribe this message, retry?</span>}

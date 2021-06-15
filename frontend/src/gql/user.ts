@@ -1,21 +1,24 @@
 import { gql } from "@apollo/client";
-import { createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
   TeamMembersQuery,
   TeamMembersQueryVariables,
+  UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
-export const UserBasicInfoFragment = () => gql`
-  fragment UserBasicInfo on user {
-    id
-    name
-    email
-    avatar_url
-  }
-`;
+export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
+  () => gql`
+    fragment UserBasicInfo on user {
+      id
+      name
+      email
+      avatar_url
+    }
+  `
+);
 
 export const [useChangeCurrentTeamIdMutation] = createMutation<
   ChangeCurrentTeamIdMutation,

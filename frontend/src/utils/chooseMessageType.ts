@@ -5,11 +5,11 @@ export function chooseMessageTypeFromMimeType(mimeType: string): Message_Type_En
 
   switch (category) {
     case "audio":
-      return Message_Type_Enum.Audio;
+      return "AUDIO";
     case "video":
-      return Message_Type_Enum.Video;
+      return "VIDEO";
     default:
       // Message_Type_Enum.File is not used
-      return Message_Type_Enum.Text;
+      return "TEXT";
   }
 }
