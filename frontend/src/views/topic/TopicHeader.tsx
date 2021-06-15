@@ -85,7 +85,6 @@ const UIActions = styled.div`
   right: 0;
   position: absolute;
   align-items: center;
-  justify-self: end;
 `;
 
 const UIToggleCloseButton = styled(Button)`
