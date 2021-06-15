@@ -3,7 +3,10 @@ import styled from "styled-components";
 import { validate } from "./validate";
 import { Button } from "~ui/buttons/Button";
 import { handleWithPreventDefault } from "~shared/events";
-
+import { useSpacesQuery } from "~frontend/gql/spaces";
+import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { SpacesCombobox } from "./SpacesCombobox";
+import { SpaceNameInput } from "./SpaceNameInput";
 interface Props {
   onCancel: () => void;
 }
@@ -13,8 +16,13 @@ export const Form = ({ onCancel }: Props) => {
   const [spaceId, setSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
 
+  const teamId = useAssertCurrentTeamId();
+  const [spacesList = []] = useSpacesQuery({ teamId });
+
   const validationError = validate({
     roomName,
+    spaceName,
+    spaceId,
   });
 
   const isSubmitDisabled = Boolean(validationError);
@@ -24,6 +32,8 @@ export const Form = ({ onCancel }: Props) => {
     }
     console.log({
       roomName,
+      spaceName,
+      spaceId,
     });
   };
 
@@ -35,6 +45,11 @@ export const Form = ({ onCancel }: Props) => {
         autoFocus
         placeholder="Room name"
       />
+      {spacesList.length > 0 ? (
+        <SpacesCombobox items={spacesList} onSelect={setSpaceId} />
+      ) : (
+        <SpaceNameInput value={spaceName} onChange={setSpaceName} />
+      )}
       <UIButtons>
         <Button isDisabled={isSubmitDisabled} kind="ghost" isRounded type="reset" onClick={onCancel}>
           Cancel
