@@ -3,7 +3,8 @@ import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { fontSize } from "~ui/baseStyles";
-import { getButtonColorStyles } from "~ui/transitions";
+import { LIGHT_GRAY } from "~ui/colors";
+import { hoverActionCssWithCustomColor } from "../transitions";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -18,11 +19,13 @@ interface Props extends HTMLMotionProps<"button"> {
   isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
   tooltip?: string;
+  isRounded?: boolean;
+  kind?: "regular" | "ghost";
 }
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", children, ...htmlProps },
+    { isLoading, isDisabled, isWide, isRounded, icon, tooltip, iconPosition = "end", kind = "regular", children, ...htmlProps },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -49,6 +52,9 @@ export const Button = styled(
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}
         {...finalProps}
+        isRounded={isRounded}
+        kind={kind}
+        {...htmlProps}
       >
         {iconPosition === "start" && iconNode}
         {/* We wrap it in span so icon can detect weather it is :last-child or :first-child for spacing */}
@@ -59,28 +65,51 @@ export const Button = styled(
   })
 )``;
 
+const regularKindCSS = css<Props & { isClickable: boolean }>`
+  color: #fff;
+  background: #474f5a;
+  ${(props) =>
+    // Enable hover effect only if button is clickable (has onClick)
+    props.isClickable &&
+    css`
+      ${hoverActionCssWithCustomColor("#26313E")};
+    `}
+`;
+
+const ghostKindCSS = css<Props & { isClickable: boolean }>`
+  color: #474f5a;
+  background: transparent;
+  border: 1px solid ${LIGHT_GRAY};
+  ${(props) =>
+    // Enable hover effect only if button is clickable (has onClick)
+    props.isClickable &&
+    css`
+      ${hoverActionCssWithCustomColor(LIGHT_GRAY)};
+    `}
+`;
+
 export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 12px 16px;
   font: inherit;
   font-size: ${fontSize.copy};
   font-weight: 600;
-  color: #fff;
-
-  background: #474f5a;
-  ${getButtonColorStyles("#474f5a")}
-  border-radius: 0.5rem;
-  justify-content: center;
 
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
+  opacity: ${(props) => (props.isLoading ? 0.5 : 1)};
+
+  ${(props) => (props.kind === "regular" ? regularKindCSS : ghostKindCSS)};
 
   ${(props) =>
-    // Enable hover effect and pointer cursor only if button is clickable (has onClick)
+    // Enable pointer cursor only if button is clickable (has onClick)
     props.isClickable &&
     css`
       cursor: ${props.isLoading ? "wait" : "pointer"};
     `}
+
+  border-radius: ${(props) => (props.isRounded ? "10000px" : "0.5rem")};
 
   ${(props) =>
     props.isWide &&
