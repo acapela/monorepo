@@ -16,10 +16,12 @@ LazySortableTopicsList.preload();
 
 interface Props {
   roomId: string;
+  spaceId: string;
   activeTopicId: string | null;
+  isRoomOpen: boolean;
 }
 
-export function TopicsList({ roomId, activeTopicId }: Props) {
+export function TopicsList({ roomId, spaceId, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
 
@@ -72,9 +74,16 @@ export function TopicsList({ roomId, activeTopicId }: Props) {
     <UIHolder>
       <UIHeader>
         <ItemTitle>Topics</ItemTitle>
-        <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
-          New topic
-        </UINewTopicButton>
+        {isRoomOpen && (
+          <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
+            New topic
+          </UINewTopicButton>
+        )}
+        {!isRoomOpen && (
+          <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
+            <UIOpenRoomSummaryButton ref={buttonRef}>Room summary</UIOpenRoomSummaryButton>
+          </routes.spaceRoomSummary.Link>
+        )}
       </UIHeader>
       <ClientSideOnly>
         <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
@@ -98,6 +107,8 @@ const UIHolder = styled.div`
 `;
 
 const UINewTopicButton = styled(Button)``;
+
+const UIOpenRoomSummaryButton = styled(Button)``;
 
 const UIHeader = styled.div`
   display: flex;

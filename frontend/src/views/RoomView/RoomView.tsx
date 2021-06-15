@@ -91,7 +91,12 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             )}
           </UIManageSections>
           <UILine />
-          <TopicsList roomId={room?.id} activeTopicId={selectedTopicId} />
+          <TopicsList
+            roomId={room?.id}
+            spaceId={room?.space_id}
+            activeTopicId={selectedTopicId}
+            isRoomOpen={isRoomOpen}
+          />
           <UIFlyingCloseRoomToggle>
             <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
               {!isRoomOpen && "Reopen room"}
