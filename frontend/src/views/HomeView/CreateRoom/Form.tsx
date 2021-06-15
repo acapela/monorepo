@@ -57,7 +57,7 @@ export const Form = ({ onCancel }: Props) => {
         placeholder="Room name"
       />
       {spacesList.length > 0 ? (
-        <SpacesCombobox items={spacesList} onSelect={setSpaceId} />
+        <SpacesCombobox selectedItemId={spaceId} items={spacesList} onChange={setSpaceId} />
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}
