@@ -8328,7 +8328,7 @@ export type AcceptInviteMutation = (
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id' | 'finished_at'>
+  & Pick<Room, 'id' | 'name' | 'space_id'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -8340,7 +8340,7 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
+  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline' | 'finished_at'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
