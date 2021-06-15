@@ -78,6 +78,7 @@ const UIBodyText = styled.div`
 const UITextArea = styled(TextArea)`
   margin-bottom: 32px;
   background-color: hsla(0, 0%, 97%, 1);
+  height: 72px;
 `;
 
 const UIButtons = styled(HStack)``;

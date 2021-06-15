@@ -1,11 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { PageTitle, SecondaryText, TextTitle } from "~ui/typo";
+import { PageTitle, SecondaryText } from "~ui/typo";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { RoomView } from "./RoomView";
-import { fontSize } from "~ui/baseStyles";
-import { TextArea } from "~frontend/../../ui/forms/TextArea";
+import { TextArea } from "~ui/forms/TextArea";
 import { TopicSummary } from "./TopicSummary";
 
 interface Props {
@@ -34,7 +33,7 @@ export function RoomSummaryView({ roomId }: Props) {
             <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
-        <UIAdditionalNotes></UIAdditionalNotes>
+        <UIAdditionalNotes placeholder={"Add any additional notes..."} isResizable={true}></UIAdditionalNotes>
       </UIHolder>
     </RoomView>
   );
@@ -47,7 +46,6 @@ const UIHolder = styled.div`
 `;
 
 const UIHeader = styled.div`
-  padding-bottom: 40px;
   ${SecondaryText} {
     line-height: 2rem;
   }
@@ -56,45 +54,11 @@ const UIHeader = styled.div`
 const UITopicSummaries = styled.div`
   display: grid;
   gap: 16px;
+  padding: 40px 0;
 `;
 
-const UITopicSummary = styled.div`
-  display: grid;
-  gap: 8px;
-
-  min-height: 40px;
-  width: 100%;
-
-  padding: 16px;
-
-  border-left: 3px solid hsla(300, 2%, 92%, 1);
-  border-bottom: 1px solid hsla(300, 2%, 92%, 1);
-  border-top: 1px solid hsla(300, 2%, 92%, 1);
-  border-right: 1px solid hsla(300, 2%, 92%, 1);
-
-  font-size: ${fontSize.label};
-  font-weight: 400;
-  line-height: 1.5;
-`;
-
-const UITopicSummaryMetadata = styled.div`
-  display: flex;
-  align-items: center;
-
-  ${TextTitle} {
-    font-size: 1rem;
-    padding-right: 4px;
-  }
-`;
-
-const UIClosingMember = styled.span`
-  padding: 0 4px;
-  font-weight: 600;
-`;
-
-const UITopicSummaryContent = styled(TextArea)`
+const UIAdditionalNotes = styled(TextArea)`
   padding: 0;
   border: 0;
+  width: 100%;
 `;
-
-const UIAdditionalNotes = styled.div``;

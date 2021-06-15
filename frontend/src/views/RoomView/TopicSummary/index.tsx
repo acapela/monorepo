@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { fontSize } from "~frontend/../../ui/baseStyles";
-import { TextArea } from "~frontend/../../ui/forms/TextArea";
-import { TextTitle } from "~frontend/../../ui/typo";
+import { fontSize } from "~ui/baseStyles";
+import { TextArea } from "~ui/forms/TextArea";
+import { TextTitle } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useTopic } from "~frontend/topics/useTopic";
 import { parseDate } from "../RoomSummaryView";
@@ -30,6 +30,7 @@ export const TopicSummary = ({ topic }: Props) => {
         <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {parseDate(topic.closed_at)}
       </UITopicSummaryMetadata>
       <UITopicSummaryContent
+        isResizable={true}
         disabled={loading}
         value={summary}
         placeholder={"Type here to write topic outcome..."}
@@ -75,7 +76,8 @@ const UIClosingMember = styled.span`
 `;
 
 const UITopicSummaryContent = styled(TextArea)`
-  padding: 0;
-  border: 0;
-  height: 48px;
+  &&& {
+    padding: 0;
+    border: 0;
+  }
 `;
