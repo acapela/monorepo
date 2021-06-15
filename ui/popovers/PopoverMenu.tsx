@@ -1,6 +1,6 @@
 import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { shadow } from "~ui/baseStyles";
@@ -43,6 +43,7 @@ export const PopoverMenu = styled(
               return (
                 <UIMenuItem
                   isDestructive={option.isDestructive ?? false}
+                  isDisabled={option.isDisabled ?? false}
                   key={option.key ?? option.label}
                   onClick={() => {
                     onItemSelected?.(option);
@@ -73,7 +74,7 @@ const UIMenu = styled(PresenceAnimator)`
   min-width: 200px;
 `;
 
-const UIMenuItem = styled.li<{ isDestructive: boolean }>`
+const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -84,6 +85,13 @@ const UIMenuItem = styled.li<{ isDestructive: boolean }>`
   line-height: 2em;
 
   ${hoverActionCss}
+
+  ${(props) =>
+    props.isDisabled &&
+    css`
+      opacity: 0.3;
+      pointer-events: none;
+    `}
 
   color: ${(props) => (props.isDestructive ? DANGER_COLOR : "#232b35")};
 

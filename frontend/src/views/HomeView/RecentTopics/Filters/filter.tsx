@@ -11,6 +11,7 @@ import {
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 export interface BasicFilter {
+  key: string;
   label: string;
   icon?: ReactNode;
   whereApplier?: (draft: TopicWhere) => void;
@@ -20,6 +21,10 @@ export interface BasicFilter {
 interface UserFilter extends BasicFilter {
   type: "user";
   user: UserBasicInfoFragment;
+}
+
+export function getIsUserFilter(filter: BasicFilter): filter is UserFilter {
+  return Reflect.get(filter, "type") === "user";
 }
 
 export type TopicFilter = UserFilter | BasicFilter;
@@ -79,6 +84,7 @@ export function useTopicFilterVariables() {
 
 export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
   return {
+    key: `user-${user.id}`,
     type: "user",
     user,
     label: user.name ?? "Unknown user",
@@ -93,6 +99,7 @@ export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
 
 export function createSortByLatestActivityFilter(): BasicFilter {
   return {
+    key: "latest-activity",
     label: "Sort by latest activity",
     icon: <IconFilter />,
     orderGetter() {
@@ -103,6 +110,7 @@ export function createSortByLatestActivityFilter(): BasicFilter {
 
 export function createSortByDueDateFilter(): BasicFilter {
   return {
+    key: "due-date",
     label: "Sort by due date",
     icon: <IconFilter />,
     orderGetter() {

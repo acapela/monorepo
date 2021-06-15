@@ -2,10 +2,17 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
+import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter, TopicFilter } from "./filter";
+import {
+  createSortByDueDateFilter,
+  createSortByLatestActivityFilter,
+  createUserFilter,
+  getIsUserFilter,
+  TopicFilter,
+} from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
@@ -16,11 +23,37 @@ interface Props {
   className?: string;
 }
 
+function getSelectedUsersFromTopicFilters(filters: TopicFilter[]) {
+  const selectedMembers: UserBasicInfoFragment[] = [];
+
+  for (const filter of filters) {
+    if (!getIsUserFilter(filter)) {
+      continue;
+    }
+
+    selectedMembers.push(filter.user);
+  }
+
+  return selectedMembers;
+}
+
 export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
   const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<TopicFilter>();
 
   function removeFilter(filterToRemove: TopicFilter) {
     applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
+  }
+
+  function handleAddFilter(filterToAdd: TopicFilter) {
+    if (hasFilter(filterToAdd)) {
+      return;
+    }
+
+    addFilter(filterToAdd);
+  }
+
+  function hasFilter(filterToCheck: TopicFilter) {
+    return filters.some((existingFilter) => existingFilter.key === filterToCheck.key);
   }
 
   useEffect(() => {
@@ -29,6 +62,7 @@ export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange
 
   const [stage, setStage] = useState<FilterPickingStage>("off");
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   return (
     <AnimateSharedLayout>
       <UIHolder className={className}>
@@ -47,11 +81,13 @@ export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange
                 },
                 {
                   label: "Sort by due date",
-                  onSelect: () => addFilter(createSortByDueDateFilter()),
+                  onSelect: () => handleAddFilter(createSortByDueDateFilter()),
+                  isDisabled: hasFilter(createSortByDueDateFilter()),
                 },
                 {
                   label: "Sort by latest activity",
-                  onSelect: () => addFilter(createSortByLatestActivityFilter()),
+                  onSelect: () => handleAddFilter(createSortByLatestActivityFilter()),
+                  isDisabled: hasFilter(createSortByLatestActivityFilter()),
                 },
               ]}
               onCloseRequest={() => setStage("off")}
@@ -64,10 +100,10 @@ export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange
             <ParticipantsPickerMenu
               anchorRef={buttonRef}
               onCloseRequest={() => setStage("off")}
-              selectedUsers={[]}
+              selectedUsers={getSelectedUsersFromTopicFilters(filters)}
               onUserSelected={(user) => {
                 setStage("off");
-                addFilter(createUserFilter(user));
+                handleAddFilter(createUserFilter(user));
               }}
             />
           )}
