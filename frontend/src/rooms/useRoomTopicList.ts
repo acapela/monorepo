@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { TopicDetailedInfoFragment } from "~frontend/gql";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useReorderTopicMutation } from "~frontend/gql/topics";
+import { useUpdateTopicMutation } from "~frontend/gql/topics";
 import { getIndexBetweenCurrentAndLast, getIndexBetweenFirstAndCurrent, getIndexBetweenItems } from "./order";
 
 /*
@@ -19,7 +19,7 @@ import { getIndexBetweenCurrentAndLast, getIndexBetweenFirstAndCurrent, getIndex
 export function useRoomTopicList(roomId: string) {
   const [roomData] = useSingleRoomQuery({ id: roomId });
   const currentTopics = roomData?.room?.topics ?? [];
-  const [reorderTopic, { loading: isReordering }] = useReorderTopicMutation();
+  const [updateTopic, { loading: isReordering }] = useUpdateTopicMutation();
 
   const [topics, setTopicsToShow] = useState<TopicDetailedInfoFragment[]>([...currentTopics]);
 
@@ -40,7 +40,13 @@ export function useRoomTopicList(roomId: string) {
 
   function moveTo(toMove: TopicDetailedInfoFragment, index: string) {
     const topicId = toMove.id;
-    reorderTopic({ topicId, index });
+
+    updateTopic({
+      topicId,
+      input: {
+        index,
+      },
+    });
 
     const allExceptMovedTopic = ({ id }: TopicDetailedInfoFragment) => id !== topicId;
     setTopicsToShow([...currentTopics.filter(allExceptMovedTopic), { ...toMove, index }].sort(byIndexAscending));

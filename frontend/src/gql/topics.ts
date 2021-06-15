@@ -28,14 +28,10 @@ import {
   SingleTopicQueryVariables,
   TopicsQuery,
   TopicsQueryVariables,
-  ToggleCloseTopicMutation,
-  ToggleCloseTopicMutationVariables,
-  EditTopicMutation,
-  EditTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
-  ReorderTopicMutation,
-  ReorderTopicMutationVariables,
+  UpdateTopicMutation,
+  UpdateTopicMutationVariables,
 } from "./generated";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -321,41 +317,11 @@ export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   `
 );
 
-export const [useToggleCloseTopicMutation] = createMutation<
-  ToggleCloseTopicMutation,
-  ToggleCloseTopicMutationVariables
->(
+export const [useUpdateTopicMutation] = createMutation<UpdateTopicMutation, UpdateTopicMutationVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
-
-    mutation ToggleCloseTopic($topicId: uuid!, $closedAt: timestamp, $closedByUserId: uuid, $summary: String) {
-      topic: update_topic_by_pk(
-        pk_columns: { id: $topicId }
-        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId, closing_summary: $summary }
-      ) {
-        ...TopicDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopicMutationVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-    mutation EditTopic($name: String!, $topicId: uuid!) {
-      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { name: $name }) {
-        ...TopicDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useReorderTopicMutation] = createMutation<ReorderTopicMutation, ReorderTopicMutationVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-
-    mutation ReorderTopic($topicId: uuid!, $index: String!) {
-      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { index: $index }) {
+    mutation UpdateTopic($topicId: uuid!, $input: topic_set_input) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: $input) {
         ...TopicDetailedInfo
       }
     }

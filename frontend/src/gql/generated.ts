@@ -8992,43 +8992,13 @@ export type TopicsQuery = (
   )> }
 );
 
-export type ToggleCloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  closedAt?: Maybe<Scalars['timestamp']>;
-  closedByUserId?: Maybe<Scalars['uuid']>;
-  summary?: Maybe<Scalars['String']>;
+  input?: Maybe<Topic_Set_Input>;
 }>;
 
 
-export type ToggleCloseTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & TopicDetailedInfoFragment
-  )> }
-);
-
-export type EditTopicMutationVariables = Exact<{
-  name: Scalars['String'];
-  topicId: Scalars['uuid'];
-}>;
-
-
-export type EditTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & TopicDetailedInfoFragment
-  )> }
-);
-
-export type ReorderTopicMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  index: Scalars['String'];
-}>;
-
-
-export type ReorderTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }

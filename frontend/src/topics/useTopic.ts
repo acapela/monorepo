@@ -1,6 +1,6 @@
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment } from "~frontend/gql/generated";
-import { useDeleteTopicMutation, useEditTopicMutation, useToggleCloseTopicMutation } from "~frontend/gql/topics";
+import { useDeleteTopicMutation, useUpdateTopicMutation } from "~frontend/gql/topics";
 
 function nowAsTimestamp(): string {
   return new Date().toISOString();
@@ -17,14 +17,12 @@ function getTopicCloseInfo(value?: TopicDetailedInfoFragment | null) {
 }
 
 export function useTopic(value?: TopicDetailedInfoFragment | null) {
-  const { id: closedByUserId } = useAssertCurrentUser();
-
-  const [toggleClosed, { loading: loadingToggleClose }] = useToggleCloseTopicMutation();
-  const [edit, { loading: loadingEdit }] = useEditTopicMutation();
+  const { id: currentUserId } = useAssertCurrentUser();
   const [deleteTopic, { loading: loadingDelete }] = useDeleteTopicMutation();
+  const [updateTopic, { loading: isUpdating }] = useUpdateTopicMutation();
 
   const topicId = value?.id;
-  const loading = [loadingEdit, loadingToggleClose, loadingDelete].some((l) => l);
+  const loading = [loadingDelete, isUpdating].some((l) => l);
 
   return {
     hasTopic: !!value,
@@ -35,12 +33,41 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
 
     topicCloseInfo: getTopicCloseInfo(value),
 
-    edit: (name: string) => edit({ topicId, name }),
+    edit: (name: string) =>
+      updateTopic({
+        topicId,
+        input: {
+          name,
+        },
+      }),
 
-    close: (summary: string) => toggleClosed({ topicId, closedAt: nowAsTimestamp(), closedByUserId, summary }),
+    close: (closing_summary: string) =>
+      updateTopic({
+        topicId,
+        input: {
+          closed_at: nowAsTimestamp(),
+          closed_by_user_id: currentUserId,
+          closing_summary,
+        },
+      }),
 
-    open: () => toggleClosed({ topicId, closedAt: null, closedByUserId: null }),
+    open: () =>
+      updateTopic({
+        topicId,
+        input: {
+          closed_at: null,
+          closed_by_user_id: null,
+        },
+      }),
 
     deleteTopic: () => deleteTopic({ topicId }),
+
+    updateSummary: (closing_summary: string) =>
+      updateTopic({
+        topicId,
+        input: {
+          closing_summary,
+        },
+      }),
   } as const;
 }

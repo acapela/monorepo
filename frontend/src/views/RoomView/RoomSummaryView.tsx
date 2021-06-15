@@ -5,6 +5,8 @@ import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { RoomView } from "./RoomView";
 import { fontSize } from "~ui/baseStyles";
+import { TextArea } from "~frontend/../../ui/forms/TextArea";
+import { TopicSummary } from "./TopicSummary";
 
 interface Props {
   roomId: string;
@@ -12,7 +14,7 @@ interface Props {
 
 const localeOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
-const parseDate = (str: string) => new Date(str).toLocaleDateString(undefined, localeOptions);
+export const parseDate = (str: string) => new Date(str).toLocaleDateString(undefined, localeOptions);
 
 export function RoomSummaryView({ roomId }: Props) {
   const [roomQuery] = useSingleRoomQuery({ id: roomId });
@@ -29,13 +31,7 @@ export function RoomSummaryView({ roomId }: Props) {
         </UIHeader>
         <UITopicSummaries>
           {topics.map((topic) => (
-            <UITopicSummary>
-              <UITopicSummaryMetadata>
-                <TextTitle>{topic.name}</TextTitle> was closed by{" "}
-                <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {parseDate(topic.closed_at)}
-              </UITopicSummaryMetadata>
-              <UITopicSummaryContent>{topic.closing_summary}</UITopicSummaryContent>
-            </UITopicSummary>
+            <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
         <UIAdditionalNotes></UIAdditionalNotes>
@@ -96,6 +92,9 @@ const UIClosingMember = styled.span`
   font-weight: 600;
 `;
 
-const UITopicSummaryContent = styled.div``;
+const UITopicSummaryContent = styled(TextArea)`
+  padding: 0;
+  border: 0;
+`;
 
 const UIAdditionalNotes = styled.div``;
