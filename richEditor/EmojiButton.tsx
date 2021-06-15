@@ -4,6 +4,7 @@ import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { ToolbarButton } from "./ToolbarButton";
+import { AnimatePresence } from "framer-motion";
 import type { EmojiData, BaseEmoji } from "emoji-mart";
 
 interface Props {
@@ -17,22 +18,24 @@ export function EmojiButton({ onEmojiSelected }: Props) {
   return (
     <>
       <ToolbarButton ref={buttonRef} tooltipLabel="Add emoji..." onClick={open} icon={<IconEmotionSmile />} />
-      {isPicking && (
-        <Popover anchorRef={buttonRef} placement="top">
-          <EmojiPickerWindow
-            onCloseRequest={close}
-            onSelect={(emoji) => {
-              if (!isBaseEmoji(emoji)) {
-                console.warn("Custom emojis are not supported");
-                return;
-              }
+      <AnimatePresence>
+        {isPicking && (
+          <Popover anchorRef={buttonRef} placement="top">
+            <EmojiPickerWindow
+              onCloseRequest={close}
+              onSelect={(emoji) => {
+                if (!isBaseEmoji(emoji)) {
+                  console.warn("Custom emojis are not supported");
+                  return;
+                }
 
-              onEmojiSelected(emoji.native);
-              close();
-            }}
-          />
-        </Popover>
-      )}
+                onEmojiSelected(emoji.native);
+                close();
+              }}
+            />
+          </Popover>
+        )}
+      </AnimatePresence>
     </>
   );
 }

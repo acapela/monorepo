@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import styled from "styled-components";
-import { POP_ANIMATION_CONFIG, POP_PRESENCE_STYLES } from "~ui/animations";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, colors, fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { Popover } from "./Popover";
@@ -14,9 +14,7 @@ interface Props {
 export const TooltipLabel = styled(({ anchorRef, label, isDisabled }: Props) => {
   return (
     <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement="top">
-      <UITooltip transition={POP_ANIMATION_CONFIG} presenceStyles={POP_PRESENCE_STYLES}>
-        {label}
-      </UITooltip>
+      <UITooltip presenceStyles={POP_PRESENCE_STYLES}>{label}</UITooltip>
     </Popover>
   );
 })``;

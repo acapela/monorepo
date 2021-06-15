@@ -48,6 +48,9 @@ const UIHolder = styled.div`
   cursor: pointer;
   position: relative;
 
+  /* Don't over-stretch inside grid/flex if has wide content */
+  min-width: 0;
+
   ${ItemTitle} {
     margin-bottom: 0.5rem;
   }

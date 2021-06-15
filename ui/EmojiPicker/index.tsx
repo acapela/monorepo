@@ -1,11 +1,11 @@
 import type { BaseEmoji } from "emoji-mart";
-import { AnimatePresence, motion, Target, TargetAndTransition } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { namedLazy } from "~shared/namedLazy";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { IconEmotionHappy } from "~ui/icons";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { EmojiMartStyles } from "./styles";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.
@@ -18,15 +18,11 @@ interface Props {
 
 export function EmojiPicker({ onPicked, className }: Props) {
   const [isOpened, setIsOpened] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const holderRef = useRef<HTMLDivElement>(null);
   useClickAway(holderRef, () => {
     setIsOpened(false);
   });
-
-  const exitStyle: Target = { y: 10, opacity: 0 };
-  const enterStyle: TargetAndTransition = { scale: 1, opacity: 1, y: 0 };
 
   useEffect(() => {
     if (!isOpened) return;
@@ -38,24 +34,13 @@ export function EmojiPicker({ onPicked, className }: Props) {
   }, [isOpened]);
 
   return (
-    <UIHolder
-      ref={holderRef}
-      className={className}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <UIHolder ref={holderRef} className={className}>
       <UIOpenIcon onClick={() => setIsOpened(!isOpened)} />
       <EmojiMartStyles />
-
-      <Suspense fallback={null}>
-        <AnimatePresence>
-          {(isOpened || isHovered) && (
-            <UIPopupHolder
-              initial={exitStyle}
-              animate={isOpened ? enterStyle : exitStyle}
-              exit={exitStyle}
-              transition={POP_ANIMATION_CONFIG}
-            >
+      <AnimatePresence>
+        <Suspense fallback={null}>
+          {isOpened && (
+            <UIPopupHolder presenceStyles={{ y: [0, 10], opacity: [0, 1] }}>
               <EmojiPickerWindow
                 native
                 emojiTooltip
@@ -67,8 +52,8 @@ export function EmojiPicker({ onPicked, className }: Props) {
               />
             </UIPopupHolder>
           )}
-        </AnimatePresence>
-      </Suspense>
+        </Suspense>
+      </AnimatePresence>
     </UIHolder>
   );
 }
@@ -99,7 +84,7 @@ const UIOpenIcon = styled(IconEmotionHappy)`
   }
 `;
 
-const UIPopupHolder = styled(motion.div)`
+const UIPopupHolder = styled(PresenceAnimator)`
   position: absolute;
   bottom: 100%;
   margin-bottom: 10px;
