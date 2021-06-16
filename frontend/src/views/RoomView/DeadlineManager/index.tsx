@@ -9,7 +9,7 @@ import { DateTimePicker } from "~ui/time/DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { updateRoom } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -51,6 +51,6 @@ const UIHolder = styled.button`
   cursor: pointer;
   background: #ffffff;
   border-radius: 6px;
-  border: 1px solid ${LIGHT_GRAY};
+  border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
 `;

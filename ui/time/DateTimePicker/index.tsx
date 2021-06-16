@@ -5,7 +5,7 @@ import { Calendar } from "~ui/time/Calendar";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
 import { shadow } from "~ui/baseStyles";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {
@@ -72,7 +72,7 @@ const UIPickers = styled.div`
 
 const UITimePickerWrapper = styled.div`
   padding: 16px;
-  border-left: 1px solid ${LIGHT_GRAY};
+  border-left: 1px solid ${BACKGROUND_ACCENT};
   overflow: auto;
   max-height: 300px;
 `;

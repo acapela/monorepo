@@ -39,7 +39,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
         <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
       )}
       <UIInfo>
-        <TextTitle>Topic: {topic.name}</TextTitle>
+        <TextTitle>{topic.name}</TextTitle>
         <UIMembers>
           <MembersManager
             users={topic.members.map((m) => m.user)}
@@ -57,12 +57,18 @@ const UIHolder = styled.div`
   ${hoverActionCss}
   cursor: pointer;
   position: relative;
+  /* width: 100%; */
 `;
 
 const UIInfo = styled.div`
   ${TextTitle} {
     margin-bottom: 0.5rem;
   }
+`;
+
+const UIInfoHead = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const UIMembers = styled.div``;

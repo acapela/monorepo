@@ -29,12 +29,9 @@ export function Calendar({ date, onDateChange }: Props) {
 const UICalendar = styled.div`
   position: relative;
   z-index: 2;
-  background-color: white;
-  border-radius: 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  padding: 20px;
   flex: 1;
 `;
 
