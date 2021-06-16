@@ -72,16 +72,13 @@ export const TopicView = ({ id }: Props) => {
               )}
             </UIAnimatedMessagesWrapper>
           </ScrollableMessages>
-
           {isTopicClosed && <TopicClosureNote />}
 
-          {!isTopicClosed && (
-            <ClientSideOnly>
-              <UIMessageComposer isDisabled={!isMember}>
-                <MessageComposer topicId={id} />
-              </UIMessageComposer>
-            </ClientSideOnly>
-          )}
+          <ClientSideOnly>
+            <UIMessageComposer isDisabled={!isMember}>
+              <MessageComposer topicId={id} />
+            </UIMessageComposer>
+          </ClientSideOnly>
         </TopicRoot>
       )}
     </>

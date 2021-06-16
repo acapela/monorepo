@@ -6,7 +6,7 @@ import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
 import { useAmIRoomMember, useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { TopicView } from "../topic/TopicView";
+import { TopicView } from "~frontend/views/topic/TopicView";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
@@ -24,9 +24,11 @@ export function RoomView({ roomId, topicId }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [room] = useSingleRoomQuery({ id: roomId });
-  const amIMember = useAmIRoomMember(room);
+  const amIMember = useAmIRoomMember(room ?? undefined);
 
   const firstTopic = room?.topics?.[0] ?? null;
+
+  const spaceId = room?.space_id;
 
   function getSelectedTopicId() {
     if (topicId) return topicId;
@@ -49,7 +51,7 @@ export function RoomView({ roomId, topicId }: Props) {
     const topicsInRoom = room?.topics;
 
     // Newly created room stores topics as `null`
-    if (!room || !topicsInRoom) {
+    if (!room || !topicsInRoom || !spaceId) {
       return;
     }
 
@@ -57,7 +59,7 @@ export function RoomView({ roomId, topicId }: Props) {
     const roomHasTopics = topicsInRoom.length > 0;
     const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
 
-    const { id: roomId, space_id: spaceId } = room;
+    const { id: roomId } = room;
 
     const routeToRoomUrl = () =>
       routes.spaceRoom.replace({
@@ -65,12 +67,15 @@ export function RoomView({ roomId, topicId }: Props) {
         spaceId,
       });
 
-    const routeToFirstTopicUrl = () =>
+    const routeToFirstTopicUrl = () => {
+      if (!firstTopic) return;
+
       routes.spaceRoomTopic.replace({
         topicId: firstTopic?.id,
         roomId,
         spaceId,
       });
+    };
 
     if (topicIdGivenByUrl) {
       if (!roomHasTopics) {
@@ -83,7 +88,7 @@ export function RoomView({ roomId, topicId }: Props) {
         routeToFirstTopicUrl();
       }
     }
-  }, [topicId, firstTopic, room?.topics]);
+  }, [topicId, firstTopic, room?.topics, spaceId]);
 
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);

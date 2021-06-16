@@ -24,6 +24,7 @@ interface Props {
 export function TopicsList({ room, activeTopicId }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
+  const roomId = room.id;
 
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
   const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(room.id);
