@@ -15,6 +15,7 @@ import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
+import { InputError } from "~frontend/../../ui/forms/InputError";
 
 interface Props {
   onCancel: () => void;
@@ -34,6 +35,8 @@ export const Form = ({ onCancel }: Props) => {
   const [spaceName, setSpaceName] = useState<string>("");
   const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
 
+  const [formErrorMessage, setFormErrorMessage] = useState<string>();
+
   const teamId = useAssertCurrentTeamId();
   const [spacesList = []] = useSpacesQuery({ teamId });
 
@@ -43,65 +46,87 @@ export const Form = ({ onCancel }: Props) => {
     }
   }, [spacesList, spaceId]);
 
-  const validationError = validate({
+  useEffect(() => {
+    setFormErrorMessage(undefined);
+  }, [roomName, spaceId, spaceName]);
+
+  const validationErrorMessage = validate({
     roomName,
     spaceName,
     spaceId,
   });
 
-  const isSubmitDisabled = Boolean(validationError);
   const isSubmitLoading = createSpaceLoading || createRoomLoading;
 
   const handleSubmit = async () => {
-    if (isSubmitDisabled) {
+    const errorMessage = formErrorMessage || validationErrorMessage;
+    if (errorMessage) {
+      setFormErrorMessage(errorMessage);
       return;
     }
 
-    let finalSpaceId = spaceId;
-    if (!finalSpaceId) {
-      const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
-      if (space) {
-        finalSpaceId = space.id;
+    try {
+      let finalSpaceId = spaceId;
+      if (!finalSpaceId) {
+        const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
+        if (space) {
+          finalSpaceId = space.id;
+        }
       }
-    }
 
-    if (!finalSpaceId) {
-      return;
-    }
+      if (!finalSpaceId) {
+        return;
+      }
 
-    const [room] = await createRoom({ name: roomName, spaceId: finalSpaceId, slug: slugify(roomName) });
-    if (!room) {
-      return;
-    }
+      try {
+        const [room] = await createRoom({ name: roomName, spaceId: finalSpaceId, slug: slugify(roomName) });
+        if (!room) {
+          return;
+        }
 
-    routes.spaceRoom.push({ spaceId: finalSpaceId, roomId: room.id });
+        routes.spaceRoom.push({ spaceId: finalSpaceId, roomId: room.id });
+      } catch (err) {
+        if (err.message.includes("Uniqueness violation")) {
+          setFormErrorMessage("Room with this name already exists");
+        } else {
+          throw err;
+        }
+      }
+    } catch (err) {
+      setFormErrorMessage("Oops something went wrong");
+    }
   };
 
   return (
     <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
-      <UIRoomNameInput
-        value={roomName}
-        onChange={(e) => setRoomName(e.target.value)}
-        autoFocus
-        placeholder="Room name"
-      />
-      {spacesList.length > 0 ? (
-        <SpacesCombobox itemId={spaceId} items={spacesList} onChange={setSpaceId} />
-      ) : (
-        <SpaceNameInput value={spaceName} onChange={setSpaceName} />
-      )}
-      <UIFormField>
-        <FieldLabel>Due date</FieldLabel>
-        <DateTimeInput value={dueDate} onChange={setDueDate} />
-      </UIFormField>
-      <UIButtons>
-        <Button kind="ghost" isRounded type="reset" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button isLoading={isSubmitLoading} isDisabled={isSubmitDisabled} isRounded onClick={() => null}>
-          Create
-        </Button>
-      </UIButtons>
+      <UIFormFields>
+        <UIRoomNameInput
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          autoFocus
+          placeholder="Room name"
+        />
+        {spacesList.length > 0 ? (
+          <SpacesCombobox itemId={spaceId} items={spacesList} onChange={setSpaceId} />
+        ) : (
+          <SpaceNameInput value={spaceName} onChange={setSpaceName} />
+        )}
+        <UIFormField>
+          <FieldLabel>Due date</FieldLabel>
+          <DateTimeInput value={dueDate} onChange={setDueDate} />
+        </UIFormField>
+      </UIFormFields>
+      <UIBottomArea>
+        {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
+        <UIButtons>
+          <Button kind="ghost" isRounded type="reset" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button isLoading={isSubmitLoading} isRounded onClick={() => null}>
+            Create
+          </Button>
+        </UIButtons>
+      </UIBottomArea>
     </UIForm>
   );
 };
@@ -110,6 +135,12 @@ const UIForm = styled.form`
   display: grid;
   grid-template-columns: 320px;
   align-items: center;
+  gap: 60px;
+`;
+
+const UIFormFields = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 36px;
 `;
 
@@ -122,6 +153,12 @@ const UIRoomNameInput = styled.input`
   ::placeholder {
     color: #b4b4b4;
   }
+`;
+
+const UIBottomArea = styled.div`
+  display: grid;
+  grid-template-rows: 20px auto;
+  gap: 10px;
 `;
 
 const UIButtons = styled.div`
