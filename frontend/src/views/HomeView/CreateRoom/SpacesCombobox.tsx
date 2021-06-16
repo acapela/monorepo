@@ -6,7 +6,7 @@ import { hoverActionCss } from "~ui/transitions";
 import { SpaceBasicInfoFragment } from "~gql";
 import { FieldLabel, SecondaryText } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
-import { IconChevronDown } from "~ui/icons";
+import { IconCheckCircle, IconChevronDown } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
@@ -32,7 +32,13 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
   } = useCombobox({
     items,
     defaultHighlightedIndex: 0,
+    selectedItem: items.find((item) => item.id === selectedItemId),
     itemToString: (item) => item?.id || "",
+    onSelectedItemChange: ({ selectedItem }) => {
+      if (selectedItem) {
+        onChange(selectedItem.id);
+      }
+    },
   });
 
   const inputText = selectedItem?.name || "Select space";
@@ -47,16 +53,17 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
   return (
     <UIFormField>
       <FieldLabel>Select space</FieldLabel>
-      <UICombobox ref={comboboxRef} {...getToggleButtonProps()}>
-        <UIComboboxContent>
+      <UICombobox ref={comboboxRef}>
+        <UIMenuOpener {...getInputProps()} {...getToggleButtonProps()}>
           <SecondaryText>{inputText}</SecondaryText>
           <IconChevronDown />
-        </UIComboboxContent>
+        </UIMenuOpener>
         <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={isOpen}>
           {isOpen &&
             items.map((item, index) => (
               <UIOption key={item.id} isHighlighted={highlightedIndex === index} {...getItemProps({ item, index })}>
                 <SecondaryText>{item.name}</SecondaryText>
+                {item.id === selectedItemId && <IconCheckCircle />}
               </UIOption>
             ))}
         </UIMenu>
@@ -65,7 +72,16 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
   );
 };
 
-const UICombobox = styled.button`
+const UICombobox = styled.div`
+  position: relative;
+`;
+
+const UIMenuOpener = styled.div`
+  outline: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   ${hoverActionCss}
   padding: 8px 16px;
   cursor: pointer;
@@ -73,13 +89,6 @@ const UICombobox = styled.button`
   border-radius: 6px;
   border: 1px solid ${LIGHT_GRAY};
   text-align: start;
-  position: relative;
-`;
-
-const UIComboboxContent = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 `;
 
 const UIMenu = styled.div<{ isVisible: boolean }>`
@@ -95,6 +104,8 @@ const UIMenu = styled.div<{ isVisible: boolean }>`
 `;
 
 const UIOption = styled.div<{ isHighlighted: boolean }>`
+  display: flex;
+  align-items: center;
   padding: 0 16px;
   height: 42px;
   border-bottom: 1px solid ${LIGHT_GRAY};
