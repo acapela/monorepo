@@ -19,12 +19,14 @@ LazySortableTopicsList.preload();
 interface Props {
   room: RoomDetailedInfoFragment;
   activeTopicId: string | null;
+  isRoomOpen: boolean;
 }
 
-export function TopicsList({ room, activeTopicId }: Props) {
+export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
   const roomId = room.id;
+  const spaceId = room.space_id;
 
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
   const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(room.id);
@@ -76,13 +78,20 @@ export function TopicsList({ room, activeTopicId }: Props) {
     <UIHolder>
       <UIHeader>
         <ItemTitle>Topics</ItemTitle>
-        <UINewTopicButton
-          ref={buttonRef}
-          onClick={handleCreateTopic}
-          isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
-        >
-          New topic
-        </UINewTopicButton>
+        {isRoomOpen && (
+          <UINewTopicButton
+            ref={buttonRef}
+            onClick={handleCreateTopic}
+            isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
+          >
+            New topic
+          </UINewTopicButton>
+        )}
+        {!isRoomOpen && (
+          <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
+            <UIOpenRoomSummaryButton ref={buttonRef}>Room summary</UIOpenRoomSummaryButton>
+          </routes.spaceRoomSummary.Link>
+        )}
       </UIHeader>
       <ClientSideOnly>
         <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
@@ -96,7 +105,7 @@ export function TopicsList({ room, activeTopicId }: Props) {
           />
         </Suspense>
       </ClientSideOnly>
-      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>})
+      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
     </UIHolder>
   );
 }
@@ -106,6 +115,8 @@ const UIHolder = styled.div`
 `;
 
 const UINewTopicButton = styled(Button)``;
+
+const UIOpenRoomSummaryButton = styled(Button)``;
 
 const UIHeader = styled.div`
   display: flex;

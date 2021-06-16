@@ -45,7 +45,7 @@ export const TopicView = ({ id }: Props) => {
 
   useMarkTopicAsRead(id, messages);
 
-  const { hasTopic, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
+  const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
   return (
     <>
@@ -72,13 +72,15 @@ export const TopicView = ({ id }: Props) => {
               )}
             </UIAnimatedMessagesWrapper>
           </ScrollableMessages>
-          {isTopicClosed && <TopicClosureNote />}
 
-          <ClientSideOnly>
-            <UIMessageComposer isDisabled={!isMember}>
-              <MessageComposer topicId={id} />
-            </UIMessageComposer>
-          </ClientSideOnly>
+          {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+          {!isTopicClosed && (
+            <ClientSideOnly>
+              <UIMessageComposer isDisabled={!isMember}>
+                <MessageComposer topicId={id} />
+              </UIMessageComposer>
+            </ClientSideOnly>
+          )}
         </TopicRoot>
       )}
     </>

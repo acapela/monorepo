@@ -17,6 +17,8 @@ import {
   DeleteRoomMutationVariables,
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
+  CloseOpenTopicsMutation,
+  CloseOpenTopicsMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
@@ -38,6 +40,8 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       name
       space_id
       deadline
+      summary
+      finished_at
       members {
         user {
           ...UserBasicInfo
@@ -261,4 +265,17 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
       });
     },
   }
+);
+
+export const [useCloseOpenTopicsMutation] = createMutation<CloseOpenTopicsMutation, CloseOpenTopicsMutationVariables>(
+  () => gql`
+    mutation CloseOpenTopics($roomId: uuid!, $closedAt: timestamp, $closedByUserId: uuid) {
+      update_topic(
+        where: { room_id: { _eq: $roomId } }
+        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId }
+      ) {
+        affected_rows
+      }
+    }
+  `
 );

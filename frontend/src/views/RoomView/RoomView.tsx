@@ -1,97 +1,61 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useRouter } from "next/router";
 import styled, { css } from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { routes } from "~frontend/routes";
-import { isCurrentUserRoomMember, useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { TopicView } from "~frontend/views/topic/TopicView";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
 import { PageTitle, SecondaryText } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
-import { getRoomManagePopoverOptions, handleEditRoomName } from "~frontend/rooms/editOptions";
+import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
+import { Button } from "~ui/buttons/Button";
+import { RoomDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { routes } from "~frontend/routes";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
-  roomId: string;
-  topicId: string | null;
+  room?: RoomDetailedInfoFragment | null;
+  selectedTopicId: string | null;
+  children: React.ReactNode;
 }
 
-export function RoomView({ roomId, topicId }: Props) {
+export function RoomView({ room, selectedTopicId, children }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
-  const [room] = useSingleRoomQuery({ id: roomId });
+
+  const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
-
-  const firstTopic = room?.topics?.[0] ?? null;
-
-  const spaceId = room?.space_id;
-
-  function getSelectedTopicId() {
-    if (topicId) return topicId;
-
-    return firstTopic?.id ?? null;
-  }
-
-  const selectedTopicId = getSelectedTopicId();
-
-  /*
-    Routing on changes to topic
-
-    We verify that a topic provided by the url exists within the topics of the room.
-    This handle cases of deleted topics, and a "soft-catch" to potential 404 scenarios.
-
-    Empty rooms will be route to their path without topicId.
-    Topic ids given through url that are not found in the room, route to the first topic in room.
-  */
-  useEffect(() => {
-    const topicsInRoom = room?.topics;
-
-    // Newly created room stores topics as `null`
-    if (!room || !topicsInRoom || !spaceId) {
-      return;
-    }
-
-    const topicIdGivenByUrl = topicId;
-    const roomHasTopics = topicsInRoom.length > 0;
-    const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
-
-    const { id: roomId } = room;
-
-    const routeToRoomUrl = () =>
-      routes.spaceRoom.replace({
-        roomId,
-        spaceId,
-      });
-
-    const routeToFirstTopicUrl = () => {
-      if (!firstTopic) return;
-
-      routes.spaceRoomTopic.replace({
-        topicId: firstTopic?.id,
-        roomId,
-        spaceId,
-      });
-    };
-
-    if (topicIdGivenByUrl) {
-      if (!roomHasTopics) {
-        routeToRoomUrl();
-      } else if (roomHasTopics && !isFoundInRoom(topicIdGivenByUrl)) {
-        routeToFirstTopicUrl();
-      }
-    } else {
-      if (roomHasTopics) {
-        routeToFirstTopicUrl();
-      }
-    }
-  }, [topicId, firstTopic, room?.topics, spaceId]);
 
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);
+  };
+
+  const isRoomOpen = !room?.finished_at;
+
+  const onCloseRoomToggleClicked = async () => {
+    if (!room) return;
+
+    startLoading();
+
+    const isRoomOpen = await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
+
+    if (!isRoomOpen) {
+      routes.spaceRoomSummary.replace({
+        roomId: room.id,
+        spaceId: room.space_id,
+      });
+    } else if (routes.spaceRoomSummary.isActive(router.route)) {
+      routes.spaceRoom.replace({
+        roomId: room.id,
+        spaceId: room.space_id,
+      });
+    } else {
+      endLoading();
+    }
   };
 
   return (
@@ -135,12 +99,18 @@ export function RoomView({ roomId, topicId }: Props) {
             )}
           </UIManageSections>
           <UILine />
-          {room && <TopicsList room={room} activeTopicId={selectedTopicId} />}
+          {room && <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />}
+          <UIFlyingCloseRoomToggle>
+            <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
+              {!isRoomOpen && "Reopen room"}
+              {isRoomOpen && "Close room"}
+            </Button>
+          </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
         <AnimatePresence exitBeforeEnter>
-          <UITopicContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
-            {selectedTopicId && <TopicView id={selectedTopicId} />}
-          </UITopicContentHolder>
+          <UIContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
+            {children}
+          </UIContentHolder>
         </AnimatePresence>
       </UIHolder>
     </>
@@ -157,6 +127,7 @@ const UIHolder = styled.div`
 `;
 
 const UIRoomInfo = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
@@ -183,7 +154,7 @@ const UILine = styled.div`
   background: #ebebec;
 `;
 
-const UITopicContentHolder = styled(PresenceAnimator)`
+const UIContentHolder = styled(PresenceAnimator)`
   flex-grow: 1;
   background: #ffffff;
   border: 1px solid #f8f8f8;
@@ -207,4 +178,11 @@ const UIRoomTitle = styled.div`
     css`
       cursor: pointer;
     `}
+`;
+
+const UIFlyingCloseRoomToggle = styled.div`
+  position: absolute;
+  width: 100%;
+  padding: 0 16px;
+  bottom: 0;
 `;

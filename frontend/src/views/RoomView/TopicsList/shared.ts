@@ -8,7 +8,7 @@ export const UIScrollContainer = styled.div`
 
 export const UITopicsList = styled.div`
   &:last-child {
-    margin-bottom: 72px;
+    margin-bottom: 106px;
   }
 `;
 

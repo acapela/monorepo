@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { TextTitle } from "~ui/typo";
+import styled, { css } from "styled-components";
+import { PageTitle } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -18,16 +18,24 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const isMember = isCurrentUserRoomMember(topic?.room);
 
-  const { isClosed, loading, open: openTopic, close: closeTopic } = useTopic(topic);
+  const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;
   }
 
+  if (!isParentRoomOpen) {
+    return (
+      <UIHolder className={className}>
+        <UITitle isClosed={isClosed}>{topic.name}</UITitle>
+      </UIHolder>
+    );
+  }
+
   return (
     <>
       <UIHolder className={className}>
-        <UITitle>{topic.name}</UITitle>
+        <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
         <UIActions>
           {isClosed && (
@@ -66,14 +74,29 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
 
 const UIHolder = styled.div`
   display: flex;
+  height: 60px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 `;
 
-const UITitle = styled(TextTitle)``;
+const UITitle = styled(PageTitle)<{ isClosed: boolean }>`
+  padding: 0 25%;
+  text-align: center;
+
+  ${(props) => {
+    if (props.isClosed) {
+      return css`
+        text-decoration: line-through;
+        color: hsla(211, 12%, 62%, 1);
+      `;
+    }
+  }}
+`;
 
 const UIActions = styled.div`
   display: flex;
+  right: 0;
+  position: absolute;
   align-items: center;
 `;
 
