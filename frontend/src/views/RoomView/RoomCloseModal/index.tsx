@@ -1,18 +1,18 @@
 import React from "react";
 
-import { createPromiseUI } from "~frontend/../../ui/createPromiseUI";
+import { createPromiseUI } from "~ui/createPromiseUI";
 
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~frontend/gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { Modal } from "~frontend/ui/Modal";
-import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useCloseOpenTopicsMutation } from "~frontend/gql/rooms";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import styled from "styled-components";
-import { Button } from "~frontend/../../ui/buttons/Button";
-import { PageTitle, SecondaryText } from "~frontend/../../ui/typo";
+import { Button } from "~ui/buttons/Button";
+import { PageTitle, SecondaryText } from "~ui/typo";
 
 interface RoomCloseModalInput {
-  room: RoomBasicInfoFragment;
+  roomId: string;
+  openTopics: TopicDetailedInfoFragment[];
 }
 
 type RoomCloseModalResult = boolean;
@@ -35,54 +35,50 @@ function splitTopicsIntoColumns(topics: TopicDetailedInfoFragment[]): TopicDetai
   return columns;
 }
 
-export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCloseModalResult>(({ room }, resolve) => {
-  const { topics } = useRoomTopicList(room.id);
-  const { id: closedByUserId } = useAssertCurrentUser();
+export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCloseModalResult>(
+  ({ roomId, openTopics }, resolve) => {
+    const { id: closedByUserId } = useAssertCurrentUser();
 
-  const [closeOpenTopics, { loading: isClosingOpenTopics }] = useCloseOpenTopicsMutation();
+    const [closeOpenTopics, { loading: isClosingOpenTopics }] = useCloseOpenTopicsMutation();
 
-  const openTopics = topics.filter((topic) => !topic.closed_at);
+    async function handleCloseOpenTopics() {
+      await closeOpenTopics({
+        roomId,
+        closedAt: new Date().toISOString(),
+        closedByUserId,
+      });
+      resolve(true);
+      return;
+    }
 
-  async function handleCloseOpenTopics() {
-    await closeOpenTopics({
-      roomId: room.id,
-      closedAt: new Date(),
-      closedByUserId,
-    });
-    resolve(true);
+    const columnsOfTopics = splitTopicsIntoColumns(openTopics);
+
+    return (
+      <Modal onCloseRequest={() => resolve(false)}>
+        <UIContentWrapper>
+          <PageTitle>Just a sec, there are open topics!</PageTitle>
+          <UITopicClosingInfo>
+            In order to close the room, all topics must be closed. We can do it for you now or you go back to the room
+            and do it manually. Just a quick reminder, here is the list of open topics:
+          </UITopicClosingInfo>
+
+          <UIOpenTopicsColumns>
+            {columnsOfTopics.map((topicsColumn, columnIndex) => (
+              <UIOpenTopicsColumn key={columnIndex}>
+                {topicsColumn.map((topic) => (
+                  <UIOpenTopicItem key={topic.id}>{topic.name}</UIOpenTopicItem>
+                ))}
+              </UIOpenTopicsColumn>
+            ))}
+          </UIOpenTopicsColumns>
+          <Button isLoading={isClosingOpenTopics} onClick={handleCloseOpenTopics}>
+            Close all open topics
+          </Button>
+        </UIContentWrapper>
+      </Modal>
+    );
   }
-
-  if (openTopics.length === 0) {
-    resolve(true);
-  }
-
-  const columnsOfTopics = splitTopicsIntoColumns(openTopics);
-
-  return (
-    <Modal onCloseRequest={() => resolve(false)}>
-      <UIContentWrapper>
-        <PageTitle>Just a sec, there are open topics!</PageTitle>
-        <UITopicClosingInfo>
-          In order to close the room, all topics must be closed. We can do it for you now or you go back to the room and
-          do it manually. Just a quick reminder, here is the list of open topics:
-        </UITopicClosingInfo>
-
-        <UIOpenTopicsColumns>
-          {columnsOfTopics.map((topicsColumn, columnIndex) => (
-            <UIOpenTopicsColumn key={columnIndex}>
-              {topicsColumn.map((topic) => (
-                <UIOpenTopicItem key={topic.id}>{topic.name}</UIOpenTopicItem>
-              ))}
-            </UIOpenTopicsColumn>
-          ))}
-        </UIOpenTopicsColumns>
-        <Button isLoading={isClosingOpenTopics} onClick={handleCloseOpenTopics}>
-          Close all open topics
-        </Button>
-      </UIContentWrapper>
-    </Modal>
-  );
-});
+);
 
 const UIContentWrapper = styled.div`
   display: flex;

@@ -14,8 +14,8 @@ export interface Scalars {
   date: Date;
   json: any;
   jsonb: any;
-  timestamp: Date;
-  timestamptz: Date;
+  timestamp: string;
+  timestamptz: string;
   uuid: string;
 }
 
@@ -3874,8 +3874,8 @@ export interface Room {
   room_invites_aggregate: Room_Invites_Aggregate;
   slug: Scalars['String'];
   /** An object relationship */
-  space?: Maybe<Space>;
-  space_id?: Maybe<Scalars['uuid']>;
+  space: Space;
+  space_id: Scalars['uuid'];
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
   topics: Array<Topic>;
@@ -8402,10 +8402,10 @@ export type SearchResultFragment = (
   & { room?: Maybe<(
     { __typename?: 'room' }
     & Pick<Room, 'id' | 'name'>
-    & { space?: Maybe<(
+    & { space: (
       { __typename?: 'space' }
       & Pick<Space, 'id' | 'name'>
-    )> }
+    ) }
   )> }
 );
 

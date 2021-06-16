@@ -1,7 +1,7 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { RoomBasicInfoFragment } from "~gql";
-import { deleteRoom, updateRoom } from "~frontend/gql/rooms";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { deleteRoom, getSingleRoomQueryManager, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconCheck, IconEdit, IconTrash, IconUndo } from "~ui/icons";
@@ -42,20 +42,32 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
 }
 
 type isRoomOpen = boolean;
-export async function handleToggleCloseRoom(room: RoomBasicInfoFragment): Promise<isRoomOpen> {
-  const isOpenRoom = !room.finished_at;
-  if (isOpenRoom) {
-    const canCloseRoom = await closeOpenTopicsPrompt({
-      room,
-    });
+
+async function closeRoom(roomId: string, topics: TopicDetailedInfoFragment[]): Promise<isRoomOpen> {
+  const openTopics = topics.filter((topic) => !topic.closed_at);
+
+  if (openTopics.length > 0) {
+    const canCloseRoom = await closeOpenTopicsPrompt({ roomId, openTopics });
 
     if (!canCloseRoom) {
       return true;
     }
-    await updateRoom({ roomId: room.id, input: { finished_at: new Date() } });
-    return false;
+  }
+
+  await updateRoom({ roomId, input: { finished_at: new Date().toISOString() } });
+  return false;
+}
+
+export async function handleToggleCloseRoom(basicRoom: RoomBasicInfoFragment): Promise<isRoomOpen> {
+  const roomId = basicRoom.id;
+  const detailedRoom = await getSingleRoomQueryManager.fetch({ id: roomId });
+
+  const isOpenRoom = !basicRoom.finished_at;
+  if (isOpenRoom) {
+    const isRoomStillOpen = await closeRoom(roomId, detailedRoom?.room?.topics ?? []);
+    return isRoomStillOpen;
   } else {
-    await updateRoom({ roomId: room.id, input: { finished_at: null } });
+    await updateRoom({ roomId, input: { finished_at: null } });
     return true;
   }
 }

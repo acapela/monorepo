@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { TextTitle } from "~ui/typo";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { useTopic } from "~frontend/topics/useTopic";
-import { parseDate } from "../RoomSummaryView";
+import { formatDate } from "../shared";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -27,7 +27,7 @@ export const TopicSummary = ({ topic }: Props) => {
     <UITopicSummary>
       <UITopicSummaryMetadata>
         <TextTitle>{topic.name}</TextTitle> was closed by{" "}
-        <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {parseDate(topic.closed_at)}
+        <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
       </UITopicSummaryMetadata>
       <UITopicSummaryContent
         isResizable={true}
@@ -50,10 +50,8 @@ const UITopicSummary = styled.div`
 
   padding: 16px;
 
-  border-left: 3px solid hsla(300, 2%, 92%, 1);
-  border-bottom: 1px solid hsla(300, 2%, 92%, 1);
-  border-top: 1px solid hsla(300, 2%, 92%, 1);
-  border-right: 1px solid hsla(300, 2%, 92%, 1);
+  border: 1px solid hsla(300, 2%, 92%, 1);
+  border-left-width: 3px;
 
   font-size: ${fontSize.label};
   font-weight: 400;

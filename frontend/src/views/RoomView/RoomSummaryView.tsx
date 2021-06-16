@@ -2,52 +2,48 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { PageTitle, SecondaryText } from "~ui/typo";
 import { useSingleRoomQuery, useUpdateRoomMutation } from "~frontend/gql/rooms";
-import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { RoomView } from "./RoomView";
 import { TextArea } from "~ui/forms/TextArea";
 import { TopicSummary } from "./TopicSummary";
 import { useDebounce } from "react-use";
+import { formatDate } from "./shared";
 
 interface Props {
   roomId: string;
 }
 
-const localeOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-
-export const parseDate = (str: string) => new Date(str).toLocaleDateString(undefined, localeOptions);
-
 const DEBOUNCE_DELAY_MS = 400;
 
 export function RoomSummaryView({ roomId }: Props) {
   const [room] = useSingleRoomQuery({ id: roomId });
-  const [updateRoom] = useUpdateRoomMutation();
 
   const [roomSummary, setRoomSummary] = useState(room?.summary ?? "");
 
+  const [updateRoom] = useUpdateRoomMutation();
+
   useDebounce(
     () => {
-      updateRoom({
-        roomId: room?.id,
-        input: {
-          summary: roomSummary,
-        },
-      });
+      room &&
+        updateRoom({
+          roomId: room.id,
+          input: {
+            summary: roomSummary,
+          },
+        });
     },
     DEBOUNCE_DELAY_MS,
     [roomSummary]
   );
-
-  const { topics } = useRoomTopicList(room?.id);
 
   return (
     <RoomView room={room} selectedTopicId={null}>
       <UIHolder>
         <UIHeader>
           <PageTitle>Summary</PageTitle>
-          <SecondaryText>Created {parseDate(room?.finished_at)}</SecondaryText>
+          {room && room.finished_at && <SecondaryText>Created {formatDate(room.finished_at)}</SecondaryText>}
         </UIHeader>
         <UITopicSummaries>
-          {topics.map((topic) => (
+          {room?.topics.map((topic) => (
             <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
