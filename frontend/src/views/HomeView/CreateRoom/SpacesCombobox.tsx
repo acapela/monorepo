@@ -8,14 +8,14 @@ import { FieldLabel, SecondaryText } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 import { IconCheckCircle, IconChevronDown } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
-import { useKey } from "react-use";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
+  initialItemId?: string;
   onChange: (itemId: string) => void;
 }
 
-export const SpacesCombobox = ({ items, onChange }: Props) => {
+export const SpacesCombobox = ({ items, onChange, initialItemId }: Props) => {
   const {
     isOpen,
     selectedItem,
@@ -28,6 +28,7 @@ export const SpacesCombobox = ({ items, onChange }: Props) => {
     getLabelProps,
   } = useCombobox({
     items,
+    initialSelectedItem: items.find(({ id }) => id === initialItemId),
     defaultHighlightedIndex: 0,
     itemToString: (item) => item?.name || "",
     onSelectedItemChange: ({ selectedItem }) => {
