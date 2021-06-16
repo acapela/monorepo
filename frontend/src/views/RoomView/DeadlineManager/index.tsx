@@ -5,7 +5,7 @@ import { hoverActionCss } from "~ui/transitions";
 import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
-import { DateTimePicker } from "./DateTimePicker";
+import { DateTimePicker } from "~ui/time/DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { updateRoom } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";

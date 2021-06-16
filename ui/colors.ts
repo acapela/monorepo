@@ -1,4 +1,5 @@
 export const BLACK = "#000";
+export const WHITE = "#fff";
 export const LIGHT_GRAY = "hsl(300, 2%, 92%)";
 export const DANGER_COLOR = `hsl(0, 100%, 68%)`;
 export const ACTIVE_COLOR = `hsl(250, 100%, 68%)`;
