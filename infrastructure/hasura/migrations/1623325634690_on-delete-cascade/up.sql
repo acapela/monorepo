@@ -44,9 +44,9 @@ ALTER TABLE ONLY public.room
 
 
 ALTER TABLE public.space_member
-    DROP CONSTRAINT space_participants_space_id_fkey;
+    DROP CONSTRAINT space_member_space_id_fkey;
 ALTER TABLE ONLY public.space_member
-    ADD CONSTRAINT space_participants_space_id_fkey FOREIGN KEY (space_id) REFERENCES public.space(id) ON
+    ADD CONSTRAINT space_member_space_id_fkey FOREIGN KEY (space_id) REFERENCES public.space(id) ON
         UPDATE CASCADE
         ON
             DELETE CASCADE;
@@ -55,7 +55,7 @@ ALTER TABLE ONLY public.space_member
 ALTER TABLE public.space_member
     DROP CONSTRAINT space_participants_user_id_fkey;
 ALTER TABLE ONLY public.space_member
-    ADD CONSTRAINT space_participants_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."user"(id) ON
+    ADD CONSTRAINT space_member_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."user"(id) ON
         UPDATE CASCADE
         ON
             DELETE CASCADE;
