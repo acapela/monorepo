@@ -41,6 +41,7 @@ export interface RichEditorProps {
   onSubmit?: () => void;
   additionalContent?: ReactNode;
   placeholder?: string;
+  autofocusKey?: string;
 }
 
 const ENTER_KEYCODE = 13;
@@ -55,6 +56,7 @@ export const RichEditor = ({
   onFilesSelected,
   additionalContent,
   placeholder,
+  autofocusKey,
 }: RichEditorProps) => {
   const quillRef = useRef<ReactQuill>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -71,7 +73,6 @@ export const RichEditor = ({
 
     onChange(content);
   }
-
   useIsomorphicLayoutEffect(() => {
     // We update on first render as we need toolbar dom ref ready when rendering quill
     // for the first time.
@@ -89,13 +90,17 @@ export const RichEditor = ({
   });
 
   useEffect(() => {
+    quillRef.current?.focus();
+  }, [autofocusKey, quillRef.current]);
+
+  useEffect(() => {
     const editor = quillRef.current?.editor;
 
     if (!editor) return;
 
     const cmdEnterSubmit: KeyboardBinding = {
       key: ENTER_KEYCODE,
-      metaKey: true,
+      metaKey: false,
       handler: () => {
         onSubmit?.();
       },
