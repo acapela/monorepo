@@ -9,14 +9,14 @@ interface ValidateParams {
 export const validate = ({ roomName, spaceId, spaceName }: ValidateParams) => {
   const validateRoomNameLength = createLengthValidator("Room name", 3);
   const roomNameLengthError = validateRoomNameLength(roomName);
-  if (roomNameLengthError) {
+  if (roomNameLengthError !== true) {
     return roomNameLengthError;
   }
 
   if (!spaceId) {
     const validateSpaceNameLength = createLengthValidator("Space name", 3);
     const spaceNameLengthError = validateSpaceNameLength(spaceName);
-    if (spaceNameLengthError) {
+    if (spaceNameLengthError !== true) {
       return spaceNameLengthError;
     }
   }

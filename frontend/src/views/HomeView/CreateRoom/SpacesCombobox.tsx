@@ -11,11 +11,10 @@ import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
-  selectedItemId: string | null;
   onChange: (itemId: string) => void;
 }
 
-export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
+export const SpacesCombobox = ({ items, onChange }: Props) => {
   const {
     isOpen,
     selectedItem,
@@ -29,8 +28,7 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
   } = useCombobox({
     items,
     defaultHighlightedIndex: 0,
-    selectedItem: items.find((item) => item.id === selectedItemId),
-    itemToString: (item) => item?.id || "",
+    itemToString: (item) => item?.name || "",
     onSelectedItemChange: ({ selectedItem }) => {
       if (selectedItem) {
         onChange(selectedItem.id);
@@ -57,7 +55,6 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
               openMenu();
             }
           }}
-          value={selectedItem?.name}
         />
         <UIMenuOpenerIconWr>
           <IconChevronDown />
@@ -67,7 +64,7 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
             items.map((item, index) => (
               <UIOption key={item.id} isHighlighted={highlightedIndex === index} {...getItemProps({ item, index })}>
                 <SecondaryText>{item.name}</SecondaryText>
-                {item.id === selectedItemId && <IconCheckCircle />}
+                {item.id === selectedItem?.id && <IconCheckCircle />}
               </UIOption>
             ))}
         </UIMenu>
