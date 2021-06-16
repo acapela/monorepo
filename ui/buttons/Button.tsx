@@ -2,8 +2,8 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { fontSize } from "../baseStyles";
-import { getButtonColorStyles } from "../transitions";
+import { fontSize } from "~ui/baseStyles";
+import { getButtonColorStyles } from "~ui/transitions";
 
 export type ButtonIconPosition = "start" | "end";
 
