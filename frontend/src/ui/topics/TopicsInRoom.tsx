@@ -12,7 +12,7 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { Badge } from "~ui/Badge";
 import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
-import { EmptyStatePlaceholder } from "~frontend/../../ui/empty/EmptyStatePlaceholder";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -45,11 +45,13 @@ export const TopicsInRoom = styled(function RoomRecentTopics({ room, topics, cla
         <UIHead>
           <UIHeadPrimary>
             <Badge>Room</Badge>
-            <RoomLink params={{ roomId: room.id, spaceId: room.space_id! }}>
-              <a>
-                <ItemTitle>{room.name}</ItemTitle>
-              </a>
-            </RoomLink>
+            {room && (
+              <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
+                <a>
+                  <ItemTitle>{room.name}</ItemTitle>
+                </a>
+              </RoomLink>
+            )}
           </UIHeadPrimary>
 
           <AvatarList users={room.members.map((membership) => membership.user)} />

@@ -66,9 +66,4 @@ const UIInfo = styled.div`
   }
 `;
 
-const UIInfoHead = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const UIMembers = styled.div``;

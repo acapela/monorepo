@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { TopicDetailedInfoFragment, TopicsQueryVariables } from "~gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { groupBy } from "~shared/groupBy";
 import { TopicsInRoom } from "./TopicsInRoom";
 

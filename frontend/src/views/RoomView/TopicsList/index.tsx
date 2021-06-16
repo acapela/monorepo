@@ -9,7 +9,7 @@ import { namedLazy } from "~shared/namedLazy";
 import { StaticTopicsList } from "./StaticTopicsList";
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
-import { RoomDetailedInfoFragment } from "~frontend/../../gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
