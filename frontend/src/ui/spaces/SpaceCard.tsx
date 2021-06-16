@@ -4,7 +4,7 @@ import { SpaceBasicInfoFragment } from "~gql";
 import {
   deleteSpace,
   useAddSpaceMemberMutation,
-  useAmISpaceMember,
+  isCurrentUserSpaceMember,
   useEditSpaceMutation,
   useRemoveSpaceMemberMutation,
 } from "~frontend/gql/spaces";
@@ -28,7 +28,7 @@ interface Props {
 export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
   const router = useRouter();
-  const amIMember = useAmISpaceMember(space);
+  const amIMember = isCurrentUserSpaceMember(space);
   const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
   const [addSpaceMember] = useAddSpaceMemberMutation();

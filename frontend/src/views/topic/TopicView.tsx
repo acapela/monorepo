@@ -14,7 +14,7 @@ import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
 import { useTopic } from "~frontend/topics/useTopic";
-import { useAmIRoomMember } from "~frontend/gql/rooms";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { disabledCss } from "~ui/disabled";
 
 interface Props {
@@ -41,7 +41,7 @@ export const TopicView = ({ id }: Props) => {
     topicId: id,
   });
 
-  const isMember = useAmIRoomMember(topic?.room);
+  const isMember = isCurrentUserRoomMember(topic?.room);
 
   useMarkTopicAsRead(id, messages);
 

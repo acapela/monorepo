@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
-import { useAmISpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { isCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -18,7 +18,7 @@ interface Props {
 
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });
-  const amIMember = useAmISpaceMember(space ?? undefined);
+  const amIMember = isCurrentUserSpaceMember(space ?? undefined);
 
   const rooms = space?.rooms ?? [];
 

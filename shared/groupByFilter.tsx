@@ -1,17 +1,17 @@
 export function groupByFilter<T>(inputList: T[], filter: (item: T) => boolean) {
-  const passingItems: T[] = [];
+  const acceptedItems: T[] = [];
 
-  const notPassingItems: T[] = [];
+  const rejectedItems: T[] = [];
 
   for (const item of inputList) {
     const isPassing = filter(item);
 
     if (isPassing) {
-      passingItems.push(item);
+      acceptedItems.push(item);
     } else {
-      notPassingItems.push(item);
+      rejectedItems.push(item);
     }
   }
 
-  return [passingItems, notPassingItems] as const;
+  return [acceptedItems, rejectedItems] as const;
 }

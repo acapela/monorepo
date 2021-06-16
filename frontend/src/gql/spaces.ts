@@ -86,7 +86,7 @@ export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<Single
   `
 );
 
-export function useAmISpaceMember(space?: SpaceBasicInfoFragmentType) {
+export function isCurrentUserSpaceMember(space?: SpaceBasicInfoFragmentType) {
   const user = useAssertCurrentUser();
 
   return space?.members.some((member) => member.user.id === user.id) ?? false;

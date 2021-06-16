@@ -10,7 +10,7 @@ import { StaticTopicsList } from "./StaticTopicsList";
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~frontend/../../gql";
-import { useAmIRoomMember } from "~frontend/gql/rooms";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
 
@@ -28,7 +28,7 @@ export function TopicsList({ room, activeTopicId }: Props) {
 
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
   const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(room.id);
-  const amIMember = useAmIRoomMember(room);
+  const amIMember = isCurrentUserRoomMember(room);
 
   /*
     ## Routing on new topic

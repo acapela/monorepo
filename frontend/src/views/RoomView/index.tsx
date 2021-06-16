@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import styled, { css } from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { routes } from "~frontend/routes";
-import { useAmIRoomMember, useSingleRoomQuery } from "~frontend/gql/rooms";
+import { isCurrentUserRoomMember, useSingleRoomQuery } from "~frontend/gql/rooms";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicView } from "~frontend/views/topic/TopicView";
 import { TopicsList } from "./TopicsList";
@@ -24,7 +24,7 @@ export function RoomView({ roomId, topicId }: Props) {
   const router = useRouter();
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [room] = useSingleRoomQuery({ id: roomId });
-  const amIMember = useAmIRoomMember(room ?? undefined);
+  const amIMember = isCurrentUserRoomMember(room ?? undefined);
 
   const firstTopic = room?.topics?.[0] ?? null;
 

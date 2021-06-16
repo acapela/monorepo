@@ -7,7 +7,7 @@ import { CloseTopicModal } from "./CloseTopicModal";
 import { useTopic } from "~frontend/topics/useTopic";
 import { AnimatePresence } from "framer-motion";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
-import { useAmIRoomMember } from "~frontend/gql/rooms";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -16,7 +16,7 @@ interface Props {
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isMember = useAmIRoomMember(topic?.room);
+  const isMember = isCurrentUserRoomMember(topic?.room);
 
   const { isClosed, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 

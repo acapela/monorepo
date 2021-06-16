@@ -10,7 +10,7 @@ import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge"
 import { ManageRoomMembers } from "./ManageRoomMembers";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
-import { useAmIRoomMember } from "~frontend/gql/rooms";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -19,7 +19,7 @@ interface Props {
 
 export const RoomCard = styled(function RoomCard({ room, className }: Props) {
   const unreadCount = useRoomUnreadMessagesCount(room.id);
-  const amIMember = useAmIRoomMember(room);
+  const amIMember = isCurrentUserRoomMember(room);
 
   const topicsCount = room.topics.length;
 
