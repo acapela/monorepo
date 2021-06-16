@@ -9,24 +9,28 @@ import { namedLazy } from "~shared/namedLazy";
 import { StaticTopicsList } from "./StaticTopicsList";
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
+import { RoomDetailedInfoFragment } from "~frontend/../../gql";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
 
 LazySortableTopicsList.preload();
 
 interface Props {
-  roomId: string;
-  spaceId: string;
+  room: RoomDetailedInfoFragment;
   activeTopicId: string | null;
   isRoomOpen: boolean;
 }
 
-export function TopicsList({ roomId, spaceId, activeTopicId, isRoomOpen }: Props) {
+export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
+  const roomId = room.id;
+  const spaceId = room.space_id;
 
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
-  const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(roomId);
+  const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(room.id);
+  const amIMember = isCurrentUserRoomMember(room);
 
   /*
     ## Routing on new topic
@@ -75,7 +79,11 @@ export function TopicsList({ roomId, spaceId, activeTopicId, isRoomOpen }: Props
       <UIHeader>
         <ItemTitle>Topics</ItemTitle>
         {isRoomOpen && (
-          <UINewTopicButton ref={buttonRef} onClick={handleCreateTopic}>
+          <UINewTopicButton
+            ref={buttonRef}
+            onClick={handleCreateTopic}
+            isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
+          >
             New topic
           </UINewTopicButton>
         )}

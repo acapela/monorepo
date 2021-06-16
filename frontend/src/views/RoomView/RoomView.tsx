@@ -1,7 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { useRouter } from "next/router";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicsList } from "./TopicsList";
@@ -13,8 +13,9 @@ import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
 import { Button } from "~ui/buttons/Button";
 import { RoomDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { routes } from "~frontend/../routes";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { routes } from "~frontend/routes";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
   room?: RoomDetailedInfoFragment | null;
@@ -27,6 +28,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
 
   const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
+  const amIMember = isCurrentUserRoomMember(room ?? undefined);
 
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);
@@ -65,15 +67,21 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             <UIRoomHead>
               <UIRoomTitle
                 ref={titleHolderRef}
-                data-tooltip="Edit room name..."
-                onClick={() => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" })}
+                {...(amIMember
+                  ? {
+                      ["data-tooltip"]: "Edit room name...",
+                      onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
+                    }
+                  : {})}
               >
                 {room.name}
               </UIRoomTitle>
 
-              <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
-                <OptionsButton />
-              </PopoverMenuTrigger>
+              {amIMember && (
+                <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
+                  <OptionsButton />
+                </PopoverMenuTrigger>
+              )}
             </UIRoomHead>
           )}
           <UIManageSections>
@@ -81,7 +89,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
               <>
                 <UIManageSection>
                   <SecondaryText>Due date</SecondaryText>
-                  <DeadlineManager room={room} />
+                  <DeadlineManager room={room} isReadonly={!amIMember} />
                 </UIManageSection>
                 <UIManageSection>
                   <SecondaryText>Participants</SecondaryText>
@@ -91,14 +99,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             )}
           </UIManageSections>
           <UILine />
-          {room && (
-            <TopicsList
-              roomId={room?.id}
-              spaceId={room?.space_id}
-              activeTopicId={selectedTopicId}
-              isRoomOpen={isRoomOpen}
-            />
-          )}
+          {room && <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />}
           <UIFlyingCloseRoomToggle>
             <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
               {!isRoomOpen && "Reopen room"}
@@ -172,7 +173,11 @@ const UIRoomHead = styled(PageTitle)`
 `;
 
 const UIRoomTitle = styled.div`
-  cursor: pointer;
+  ${(props) =>
+    props.onClick &&
+    css`
+      cursor: pointer;
+    `}
 `;
 
 const UIFlyingCloseRoomToggle = styled.div`

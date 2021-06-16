@@ -28,7 +28,9 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
-import { removeUndefinedFromObject } from "~frontend/../../shared/object";
+import { removeUndefinedFromObject } from "~shared/object";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
   () => gql`
@@ -99,6 +101,12 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
     }
   `
 );
+
+export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
+  const user = useAssertCurrentUser();
+
+  return room?.members.some((member) => member.user.id === user.id) ?? false;
+}
 
 export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, CreateRoomMutationVariables>(
   () => gql`

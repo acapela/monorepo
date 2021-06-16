@@ -77,7 +77,7 @@ model room {
   creator_id          String         @db.Uuid
   name                String?
   created_at          DateTime       @default(now()) @db.Timestamptz(6)
-  deadline            DateTime       @default(now()) @db.Timestamptz(6)
+  deadline            DateTime       @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
   notification_job_id String?
   summary             String?
   finished_at         DateTime?      @db.Timestamptz(6)
