@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { add, roundToNearestMinutes } from "date-fns";
 import { validate } from "./validate";
@@ -11,6 +11,10 @@ import { SpaceNameInput } from "./SpaceNameInput";
 import { DateTimeInput } from "~frontend/ui/DateTimeInput";
 import { FieldLabel } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
+import { useCreateSpaceMutation } from "~frontend/gql/spaces";
+import { slugify } from "~shared/slugify";
+import { useCreateRoomMutation } from "~frontend/gql/rooms";
+import { routes } from "~frontend/routes";
 
 interface Props {
   onCancel: () => void;
@@ -22,8 +26,11 @@ const getDefaultDueDate = () => {
 };
 
 export const Form = ({ onCancel }: Props) => {
+  const [createSpace, { loading: createSpaceLoading }] = useCreateSpaceMutation();
+  const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
+
   const [roomName, setRoomName] = useState<string>("");
-  const [spaceId, setSpaceId] = useState<string | null>(null);
+  const spaceId = useRef<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
   const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
 
@@ -33,19 +40,35 @@ export const Form = ({ onCancel }: Props) => {
   const validationError = validate({
     roomName,
     spaceName,
-    spaceId,
+    spaceId: spaceId.current,
   });
 
   const isSubmitDisabled = Boolean(validationError);
-  const handleSubmit = () => {
+  const isSubmitLoading = createSpaceLoading || createRoomLoading;
+
+  const handleSubmit = async () => {
     if (isSubmitDisabled) {
       return;
     }
-    console.log({
-      roomName,
-      spaceName,
-      spaceId,
-    });
+
+    if (!spaceId.current) {
+      const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
+      if (space) {
+        spaceId.current = space.id;
+      }
+    }
+
+    if (!spaceId.current) {
+      return;
+    }
+
+    const [room] = await createRoom({ name: roomName, spaceId: spaceId.current, slug: slugify(roomName) });
+
+    if (!room) {
+      return;
+    }
+
+    routes.spaceRoom.push({ spaceId: spaceId.current, roomId: room.id });
   };
 
   return (
@@ -57,7 +80,12 @@ export const Form = ({ onCancel }: Props) => {
         placeholder="Room name"
       />
       {spacesList.length > 0 ? (
-        <SpacesCombobox items={spacesList} onChange={setSpaceId} />
+        <SpacesCombobox
+          items={spacesList}
+          onChange={(id) => {
+            spaceId.current = id;
+          }}
+        />
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}
@@ -69,7 +97,7 @@ export const Form = ({ onCancel }: Props) => {
         <Button kind="ghost" isRounded type="reset" onClick={onCancel}>
           Cancel
         </Button>
-        <Button isDisabled={isSubmitDisabled} isRounded onClick={() => null}>
+        <Button isLoading={isSubmitLoading} isDisabled={isSubmitDisabled} isRounded onClick={() => null}>
           Create
         </Button>
       </UIButtons>
