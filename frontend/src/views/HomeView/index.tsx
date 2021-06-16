@@ -3,10 +3,13 @@ import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
-import { RecentTopics } from "./RecentTopics/RecentTopics";
+import { QueriedTopicsList } from "./RecentTopics/RecentTopics";
+import { useTopicFilterVariables } from "./RecentTopics/Filters/filter";
+import { TopicFilters } from "./RecentTopics/Filters/TopicFilters";
 
 export function HomeView() {
   const user = useAssertCurrentUser();
+  const [topicQuery, setFilters] = useTopicFilterVariables();
 
   return (
     <UIHolder>
@@ -17,14 +20,19 @@ export function HomeView() {
         <PageTitle>Hello, {user.name}!</PageTitle>
         <div>Here are rooms & topics with recent activity.</div>
       </UIGreeting>
-      <RecentTopics />
+      <TopicFilters onFiltersChange={setFilters} />
+      <QueriedTopicsList query={topicQuery} />
     </UIHolder>
   );
 }
 
 const UIHolder = styled(Container)`
-  ${RecentTopics} {
-    margin-bottom: 2rem;
+  ${TopicFilters} {
+    margin-bottom: 32px;
+  }
+
+  ${QueriedTopicsList} {
+    margin-bottom: 32px;
   }
 `;
 
