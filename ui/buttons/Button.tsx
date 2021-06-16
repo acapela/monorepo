@@ -108,6 +108,7 @@ const UIIconHolder = styled.div`
   }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function removeProps<T extends Record<string, any>>(input: T, listOfPropsToRemove: Array<keyof T>) {
   const clone = { ...input };
 
