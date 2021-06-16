@@ -16,3 +16,7 @@ export function assertGet<T>(input: T | Empty, message: string): T {
   }
   throw new AssertError(message);
 }
+
+export function assert(input: unknown, message: string): asserts input {
+  assertGet(input, message);
+}

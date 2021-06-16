@@ -36,86 +36,102 @@ import {
   DeleteTopicMutationVariables,
   ReorderTopicMutation,
   ReorderTopicMutationVariables,
+  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
+  TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
+  AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
+  TopicMessageDetailedInfoFragment as TopicMessageDetailedInfoFragmentType,
 } from "~gql";
-import { RoomBasicInfoFragment } from "./rooms";
+import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
-import { createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
+import { assert } from "~shared/assert";
+import { getUUID } from "~shared/uuid";
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 
-export const TopicDetailedInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  ${RoomBasicInfoFragment()}
-  fragment TopicDetailedInfo on topic {
-    id
-    name
-    index
-    slug
-    closed_at
-    closing_summary
-    closed_by_user {
-      ...UserBasicInfo
+export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    ${RoomBasicInfoFragment()}
+
+    fragment TopicDetailedInfo on topic {
+      id
+      name
+      index
+      slug
+      closed_at
+      closing_summary
+      closed_by_user {
+        ...UserBasicInfo
+      }
+      room {
+        ...RoomBasicInfo
+      }
+      members {
+        user {
+          ...UserBasicInfo
+        }
+      }
+      lastMessage: messages_aggregate {
+        aggregate {
+          max {
+            created_at
+          }
+        }
+      }
     }
-    room {
-      ...RoomBasicInfo
-    }
-    members {
+  `
+);
+
+const TopicMessageBasicInfoFragment = createFragment<TopicMessageBasicInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    fragment TopicMessageBasicInfo on message {
+      id
+      createdAt: created_at
+      content
       user {
         ...UserBasicInfo
       }
     }
-    lastMessage: messages_aggregate {
-      aggregate {
-        max {
-          created_at
+  `
+);
+
+const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedInfoFragmentType>(
+  () => gql`
+    fragment AttachmentDetailedInfo on attachment {
+      id
+      originalName: original_name
+      mimeType: mime_type
+    }
+  `
+);
+
+const TopicMessageDetailedInfoFragment = createFragment<TopicMessageDetailedInfoFragmentType>(
+  () => gql`
+    ${AttachmentDetailedInfoFragment()}
+    ${UserBasicInfoFragment()}
+
+    fragment TopicMessageDetailedInfo on message {
+      id
+      content
+      createdAt: created_at
+      content
+      type
+      transcription {
+        status
+        transcript
+      }
+      user {
+        ...UserBasicInfo
+      }
+      message_attachments {
+        attachment {
+          ...AttachmentDetailedInfo
         }
       }
     }
-  }
-`;
-
-const TopicMessageBasicInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  fragment TopicMessageBasicInfo on message {
-    id
-    createdAt: created_at
-    content
-    user {
-      ...UserBasicInfo
-    }
-  }
-`;
-
-const AttachmentDetailedInfoFragment = () => gql`
-  fragment AttachmentDetailedInfo on attachment {
-    id
-    originalName: original_name
-    mimeType: mime_type
-  }
-`;
-
-const TopicMessageDetailedInfoFragment = () => gql`
-  ${AttachmentDetailedInfoFragment()}
-  ${UserBasicInfoFragment()}
-
-  fragment TopicMessageDetailedInfo on message {
-    id
-    content
-    createdAt: created_at
-    content
-    type
-    transcription {
-      status
-      transcript
-    }
-    user {
-      ...UserBasicInfo
-    }
-    message_attachments {
-      attachment {
-        ...AttachmentDetailedInfo
-      }
-    }
-  }
-`;
+  `
+);
 
 export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
   CreateTopicMutation,
@@ -128,7 +144,32 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        topic: {
+          __typename: "topic",
+          id: getUUID(),
+          index: variables.index,
+          lastMessage: {
+            __typename: "message_aggregate",
+            aggregate: { __typename: "message_aggregate_fields", max: null },
+          },
+          members: [],
+          room: RoomBasicInfoFragment.assertRead(variables.roomId),
+          name: variables.name,
+          slug: variables.slug,
+        },
+      };
+    },
+    onResult(topic, variables) {
+      RoomDetailedInfoFragment.update(variables.roomId, (data) => {
+        data.topics.push(topic);
+      });
+    },
+  }
 );
 
 export const [useRoomTopicsQuery] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
@@ -185,7 +226,29 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
     }
   `,
   {
-    onSuccess: (message, variables) => {
+    optimisticResponse(vars) {
+      const userData = assertReadUserDataFromCookie();
+
+      return {
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          createdAt: new Date(),
+          message_attachments: [],
+          type: vars.type,
+          user: {
+            id: userData.id,
+            __typename: "user",
+            avatar_url: userData.picture,
+            email: userData.email,
+            name: userData.name,
+          },
+          id: getUUID(),
+          content: vars.content,
+        },
+      };
+    },
+    onResult: (message, variables) => {
       topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
         if (!message) {
           return;
@@ -268,7 +331,24 @@ export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation
         user_id
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        insert_topic_member_one: {
+          __typename: "topic_member",
+          topic_id: vars.topicId,
+          user_id: vars.userId,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members.push({ __typename: "topic_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
+      });
+    },
+  }
 );
 
 export const [useRemoveTopicMemberMutation] = createMutation<
@@ -281,7 +361,23 @@ export const [useRemoveTopicMemberMutation] = createMutation<
         affected_rows
       }
     }
-  `
+  `,
+  {
+    optimisticResponse() {
+      return {
+        __typename: "mutation_root",
+        delete_topic_member: {
+          __typename: "topic_member_mutation_response",
+          affected_rows: 1,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members = topic.members.filter((member) => member.user.id !== vars.userId);
+      });
+    },
+  }
 );
 
 export const [useLastSeenMessageMutation] = createMutation<
@@ -295,6 +391,7 @@ export const [useLastSeenMessageMutation] = createMutation<
         on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
       ) {
         message_id
+        seen_at
       }
     }
   `
@@ -350,7 +447,21 @@ export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopi
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      const updatedTopic = TopicDetailedInfoFragment.produce(vars.topicId, (current) => {
+        current.name = vars.name;
+      });
+
+      assert(updatedTopic, "Failed to create optimistic update for EditTopic");
+
+      return {
+        __typename: "mutation_root",
+        topic: updatedTopic,
+      };
+    },
+  }
 );
 
 export const [useReorderTopicMutation] = createMutation<ReorderTopicMutation, ReorderTopicMutationVariables>(
@@ -375,7 +486,15 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
     }
   `,
   {
-    onSuccess() {
+    optimisticResponse(vars) {
+      const topic = TopicDetailedInfoFragment.assertRead(vars.topicId);
+
+      return { __typename: "mutation_root", topic };
+    },
+    onResult(removedTopic) {
+      RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {
+        room.topics = room.topics.filter((topic) => topic.id !== removedTopic.id);
+      });
       addToast({ type: "info", content: `Topic was removed` });
     },
   }

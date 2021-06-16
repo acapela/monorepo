@@ -18,7 +18,7 @@ interface AttachmentProps {
 
 const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdate, className }: AttachmentProps) => {
   const mediaRef = useRef<HTMLVideoElement>(null);
-  const [url] = useDownloadUrlQuery({ id: attachment.id });
+  const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
   const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
   const onTimeUpdate = () => onMediaTimeUpdate(mediaRef.current?.currentTime ?? 0);
@@ -34,7 +34,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
     return () => mediaRef.current?.removeEventListener("timeupdate", onTimeUpdate);
   }, [mediaRef.current]);
 
-  if (!url) {
+  if (!attachmentInfo) {
     return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
   }
 
@@ -46,7 +46,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
         mediaRef={mediaRef}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         attachment={attachment!}
-        attachmentUrl={url}
+        attachmentUrl={attachmentInfo.downloadUrl}
         onClick={toggleIsFullscreenOpened}
         layoutId={isPlaceholder ? null : `attachment-${attachment.id}`}
       />
