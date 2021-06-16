@@ -2,7 +2,7 @@ import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface ValidateParams {
   roomName: string;
-  spaceId: string | null;
+  spaceId?: string;
   spaceName: string;
 }
 

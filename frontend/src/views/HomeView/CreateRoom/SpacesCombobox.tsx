@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
 import { LIGHT_GRAY } from "~ui/colors";
@@ -11,11 +11,11 @@ import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
-  initialItemId?: string;
+  itemId?: string;
   onChange: (itemId: string) => void;
 }
 
-export const SpacesCombobox = ({ items, onChange, initialItemId }: Props) => {
+export const SpacesCombobox = ({ items, onChange, itemId }: Props) => {
   const {
     isOpen,
     selectedItem,
@@ -26,9 +26,10 @@ export const SpacesCombobox = ({ items, onChange, initialItemId }: Props) => {
     getItemProps,
     openMenu,
     getLabelProps,
+    selectItem,
+    reset,
   } = useCombobox({
     items,
-    initialSelectedItem: items.find(({ id }) => id === initialItemId),
     defaultHighlightedIndex: 0,
     itemToString: (item) => item?.name || "",
     onSelectedItemChange: ({ selectedItem }) => {
@@ -37,6 +38,15 @@ export const SpacesCombobox = ({ items, onChange, initialItemId }: Props) => {
       }
     },
   });
+
+  useEffect(() => {
+    const item = items.find(({ id }) => id === itemId);
+    if (item) {
+      selectItem(item);
+    } else {
+      reset();
+    }
+  }, [itemId]);
 
   const comboboxRef = useRef<HTMLDivElement | null>(null);
   let menuMaxHeight;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { add, roundToNearestMinutes } from "date-fns";
 import { validate } from "./validate";
@@ -30,17 +30,23 @@ export const Form = ({ onCancel }: Props) => {
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 
   const [roomName, setRoomName] = useState<string>("");
-  const [spaceId, setSpaceId] = useState<string | null>(null);
+  const [spaceId, setSpaceId] = useState<string>();
   const [spaceName, setSpaceName] = useState<string>("");
   const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
 
   const teamId = useAssertCurrentTeamId();
   const [spacesList = []] = useSpacesQuery({ teamId });
 
+  useEffect(() => {
+    if (!spaceId && spacesList.length === 1) {
+      setSpaceId(spacesList[0].id);
+    }
+  }, [spacesList, spaceId]);
+
   const validationError = validate({
     roomName,
     spaceName,
-    spaceId: spaceId,
+    spaceId,
   });
 
   const isSubmitDisabled = Boolean(validationError);
@@ -64,7 +70,6 @@ export const Form = ({ onCancel }: Props) => {
     }
 
     const [room] = await createRoom({ name: roomName, spaceId: finalSpaceId, slug: slugify(roomName) });
-
     if (!room) {
       return;
     }
@@ -81,11 +86,7 @@ export const Form = ({ onCancel }: Props) => {
         placeholder="Room name"
       />
       {spacesList.length > 0 ? (
-        <SpacesCombobox
-          initialItemId={spacesList.length === 1 ? spacesList[0].id : undefined}
-          items={spacesList}
-          onChange={setSpaceId}
-        />
+        <SpacesCombobox itemId={spaceId} items={spacesList} onChange={setSpaceId} />
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}
