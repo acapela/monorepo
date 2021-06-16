@@ -8,6 +8,7 @@ export const routes = {
   space: createRoute("/space/[spaceId]", { spaceId: "string" }),
 
   spaceRoom: createRoute("/space/[spaceId]/[roomId]", { spaceId: "string", roomId: "string" }),
+  spaceRoomSummary: createRoute("/space/[spaceId]/[roomId]/summary", { spaceId: "string", roomId: "string" }),
   spaceRoomTopic: createRoute("/space/[spaceId]/[roomId]/[topicId]", {
     spaceId: "string",
     roomId: "string",

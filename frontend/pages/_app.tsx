@@ -50,12 +50,12 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <PromiseUIRenderer />
-      <TooltipsRenderer />
-      <ToastsRenderer />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
             <AnimatePresence>
               <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
                 {renderWithPageLayout(Component, pageProps)}
@@ -72,7 +72,7 @@ const CommonMetadata = () => {
   return (
     <Head>
       <title>Acapela</title>
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/icon.png" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     </Head>

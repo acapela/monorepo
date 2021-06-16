@@ -2,14 +2,25 @@ import styled from "styled-components";
 
 interface Props {
   className?: string;
+  isParentRoomOpen: boolean;
 }
 
-export const TopicClosureBanner = ({ className }: Props) => {
+export const TopicClosureBanner = ({ className, isParentRoomOpen }: Props) => {
   return (
     <UIBanner className={className}>
       <UIClosingInfo>
-        <UIStrongText>Note:</UIStrongText> If you would like to add something to this Topic, please reopen it to
-        continue all discussions here.
+        {isParentRoomOpen && (
+          <>
+            <UIStrongText>Note:</UIStrongText> If you would like to add something to this Topic, please reopen it to
+            continue all discussions here.
+          </>
+        )}
+
+        {!isParentRoomOpen && (
+          <>
+            <UIStrongText>Note:</UIStrongText> If you would like to reopen this Topic, please reopen the room before.
+          </>
+        )}
       </UIClosingInfo>
     </UIBanner>
   );

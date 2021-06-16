@@ -1,5 +1,5 @@
 import { MembersManager } from "../MembersManager";
-import { useAddRoomMemberMutation, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertGet } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
@@ -12,6 +12,7 @@ interface Props {
 export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
+  const amIMember = isCurrentUserRoomMember(room);
 
   const [addRoomMember] = useAddRoomMemberMutation();
   const [removeRoomMember] = useRemoveRoomMemberMutation();
@@ -28,5 +29,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     }
   }
 
-  return <MembersManager users={members} onAddMemberRequest={handleJoin} onLeaveRequest={handleLeave} />;
+  return (
+    <MembersManager
+      isReadonly={!amIMember}
+      users={members}
+      onAddMemberRequest={handleJoin}
+      onLeaveRequest={handleLeave}
+    />
+  );
 };

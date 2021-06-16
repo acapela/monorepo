@@ -28,14 +28,10 @@ import {
   SingleTopicQueryVariables,
   TopicsQuery,
   TopicsQueryVariables,
-  ToggleCloseTopicMutation,
-  ToggleCloseTopicMutationVariables,
-  EditTopicMutation,
-  EditTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
-  ReorderTopicMutation,
-  ReorderTopicMutationVariables,
+  UpdateTopicMutation,
+  UpdateTopicMutationVariables,
   TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
   TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
   AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
@@ -44,7 +40,6 @@ import {
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { assert } from "~shared/assert";
 import { getUUID } from "~shared/uuid";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 
@@ -421,55 +416,11 @@ export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   `
 );
 
-export const [useToggleCloseTopicMutation] = createMutation<
-  ToggleCloseTopicMutation,
-  ToggleCloseTopicMutationVariables
->(
+export const [useUpdateTopicMutation] = createMutation<UpdateTopicMutation, UpdateTopicMutationVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
-
-    mutation ToggleCloseTopic($topicId: uuid!, $closedAt: timestamp, $closedByUserId: uuid, $summary: String) {
-      topic: update_topic_by_pk(
-        pk_columns: { id: $topicId }
-        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId, closing_summary: $summary }
-      ) {
-        ...TopicDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useEditTopicMutation] = createMutation<EditTopicMutation, EditTopicMutationVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-    mutation EditTopic($name: String!, $topicId: uuid!) {
-      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { name: $name }) {
-        ...TopicDetailedInfo
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      const updatedTopic = TopicDetailedInfoFragment.produce(vars.topicId, (current) => {
-        current.name = vars.name;
-      });
-
-      assert(updatedTopic, "Failed to create optimistic update for EditTopic");
-
-      return {
-        __typename: "mutation_root",
-        topic: updatedTopic,
-      };
-    },
-  }
-);
-
-export const [useReorderTopicMutation] = createMutation<ReorderTopicMutation, ReorderTopicMutationVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-
-    mutation ReorderTopic($topicId: uuid!, $index: String!) {
-      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: { index: $index }) {
+    mutation UpdateTopic($topicId: uuid!, $input: topic_set_input) {
+      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: $input) {
         ...TopicDetailedInfo
       }
     }

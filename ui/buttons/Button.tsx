@@ -1,34 +1,54 @@
 import { HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
+import { disabledOpacityCss } from "~ui/disabled";
 import { fontSize } from "../baseStyles";
 import { hoverActionCssWithCustomColor } from "../transitions";
 
 export type ButtonIconPosition = "start" | "end";
 
+export interface ButtonDisabledInfo {
+  reason: string;
+}
+
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
   iconPosition?: ButtonIconPosition;
   isLoading?: boolean;
-  isDisabled?: boolean;
+  isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
+  tooltip?: string;
 }
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    { isLoading, isDisabled, isWide, icon, iconPosition = "end", children, ...htmlProps },
+    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", children, ...htmlProps },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
-    const isClickable = !!htmlProps.onClick;
+    const isClickable = !!htmlProps.onClick && !isDisabled;
+
+    const isDisabledBoolean = !!isDisabled;
+
+    function getTooltipLabel() {
+      if (isDisabled && typeof isDisabled !== "boolean") {
+        return isDisabled.reason;
+      }
+
+      return tooltip ?? null;
+    }
+
+    const finalProps = isClickable ? htmlProps : removeProps(htmlProps, ["onClick"]);
+
     return (
       <UIButton
         ref={ref}
         isLoading={isLoading}
-        isDisabled={isDisabled}
+        isDisabled={isDisabledBoolean}
         isWide={isWide}
         isClickable={isClickable}
-        {...htmlProps}
+        data-tooltip={getTooltipLabel()}
+        {...finalProps}
       >
         {iconPosition === "start" && iconNode}
         {/* We wrap it in span so icon can detect weather it is :last-child or :first-child for spacing */}
@@ -47,9 +67,12 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   font-size: ${fontSize.copy};
   font-weight: 600;
   color: #fff;
-  opacity: ${(props) => (props.isLoading ? 0.5 : 1)};
+
   background: #474f5a;
   border-radius: 0.5rem;
+  justify-content: center;
+
+  ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
 
   ${(props) =>
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)
@@ -57,12 +80,6 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
     css`
       ${hoverActionCssWithCustomColor("#26313E")};
       cursor: ${props.isLoading ? "wait" : "pointer"};
-    `}
-
-  ${(props) =>
-    props.isDisabled &&
-    css`
-      pointer-events: none;
     `}
 
   ${(props) =>
@@ -76,6 +93,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
 const UIContentHolder = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const UIIconHolder = styled.div`
@@ -91,3 +109,14 @@ const UIIconHolder = styled.div`
     margin-left: 0.25em;
   }
 `;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function removeProps<T extends Record<string, any>>(input: T, listOfPropsToRemove: Array<keyof T>) {
+  const clone = { ...input };
+
+  for (const propToRemove of listOfPropsToRemove) {
+    Reflect.deleteProperty(clone, propToRemove);
+  }
+
+  return clone;
+}

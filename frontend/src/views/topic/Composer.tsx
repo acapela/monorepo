@@ -47,6 +47,7 @@ export const MessageComposer = ({ topicId }: Props) => {
 
   return (
     <>
+      kljjlk
       <UIEditorContainer>
         <Recorder
           onRecordingReady={async (recording) => {

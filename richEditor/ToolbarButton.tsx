@@ -1,6 +1,7 @@
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { ACTIVE_COLOR } from "~ui/colors";
+import { disabledCss } from "~ui/disabled";
 import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 interface Props {
@@ -42,12 +43,7 @@ const UIHolder = styled.button<{ isActive: boolean; isDisabled: boolean }>`
 
     ${hoverActionCss}
 
-    ${(props) =>
-      props.isDisabled &&
-      css`
-        opacity: 0.4;
-        pointer-events: none;
-      `}
+    ${(props) => props.isDisabled && disabledCss}
 
     ${(props) => {
       if (props.isActive) {

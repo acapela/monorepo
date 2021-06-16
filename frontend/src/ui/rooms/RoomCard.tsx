@@ -10,6 +10,7 @@ import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge"
 import { ManageRoomMembers } from "./ManageRoomMembers";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -18,6 +19,7 @@ interface Props {
 
 export const RoomCard = styled(function RoomCard({ room, className }: Props) {
   const unreadCount = useRoomUnreadMessagesCount(room.id);
+  const amIMember = isCurrentUserRoomMember(room);
 
   const topicsCount = room.topics.length;
 
@@ -29,8 +31,8 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
-      <CornerOptionsMenu options={getRoomManagePopoverOptions(room)} tooltip="Show options..." />
-      {unreadCount > 0 && (
+      {amIMember && <CornerOptionsMenu options={getRoomManagePopoverOptions(room)} tooltip="Show options..." />}
+      {amIMember && unreadCount > 0 && (
         <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
       )}
       <ItemTitle>{room.name}</ItemTitle>

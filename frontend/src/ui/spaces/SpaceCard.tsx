@@ -4,6 +4,7 @@ import { SpaceBasicInfoFragment } from "~gql";
 import {
   deleteSpace,
   useAddSpaceMemberMutation,
+  isCurrentUserSpaceMember,
   useEditSpaceMutation,
   useRemoveSpaceMemberMutation,
 } from "~frontend/gql/spaces";
@@ -27,6 +28,7 @@ interface Props {
 export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
   const router = useRouter();
+  const amIMember = isCurrentUserSpaceMember(space);
   const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
   const [addSpaceMember] = useAddSpaceMemberMutation();
@@ -84,22 +86,24 @@ export function SpaceCard({ space }: Props) {
           <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
         )}
         <UIBanner>
-          <CornerOptionsMenu
-            options={[
-              {
-                label: "Edit space name",
-                onSelect: handleEditSpace,
-                icon: <IconEdit />,
-              },
-              {
-                label: "Delete space",
-                onSelect: handleDeleteSpace,
-                icon: <IconTrash />,
-                isDestructive: true,
-              },
-            ]}
-            tooltip="Show options..."
-          />
+          {amIMember && (
+            <CornerOptionsMenu
+              options={[
+                {
+                  label: "Edit space name",
+                  onSelect: handleEditSpace,
+                  icon: <IconEdit />,
+                },
+                {
+                  label: "Delete space",
+                  onSelect: handleDeleteSpace,
+                  icon: <IconTrash />,
+                  isDestructive: true,
+                },
+              ]}
+              tooltip="Show options..."
+            />
+          )}
           <UIImage onClick={handleOpen} spaceId={space.id}></UIImage>
         </UIBanner>
 
@@ -111,6 +115,7 @@ export function SpaceCard({ space }: Props) {
               users={space.members.map((m) => m.user)}
               onAddMemberRequest={handleJoin}
               onLeaveRequest={handleLeave}
+              isReadonly={!amIMember}
             />
           </UIMembers>
         </UIInfo>

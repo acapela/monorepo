@@ -41,7 +41,7 @@ export function useSharedRef<T>(initialValue: T, refsToShare: Array<InputRef<T>>
   }
 
   const innerRef: MutableRefObject<T> = useMemo(() => {
-    return createRefWithCallback(innerRef?.current ?? initialValue, publishRef);
+    return createRefWithCallback(initialValue, publishRef);
   }, [refsToShare]);
 
   return innerRef;
