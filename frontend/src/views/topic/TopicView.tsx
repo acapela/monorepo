@@ -3,7 +3,7 @@ import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
-import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessages } from "~frontend/gql/topics";
+import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
@@ -34,23 +34,21 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ id }: Props) => {
-  const [topicData] = useSingleTopicQuery({ id });
-  const [data] = useTopicMessages({
+  const [topic] = useSingleTopicQuery({ id });
+  const [messages = []] = useTopicMessagesQuery({
     topicId: id,
   });
 
-  const messages = data?.messages ?? [];
-
   useMarkTopicAsRead(id, messages);
 
-  const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topicData?.topic);
+  const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
   return (
     <>
       {hasTopic && (
         <TopicRoot>
           {/* We need to render the topic header or else flex bugs out on page reload */}
-          <TopicHeader topic={topicData?.topic} />
+          <TopicHeader topic={topic} />
           <ScrollableMessages>
             <UIAnimatedMessagesWrapper>
               <AnimateSharedLayout>

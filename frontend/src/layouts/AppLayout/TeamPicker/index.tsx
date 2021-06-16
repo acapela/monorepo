@@ -1,20 +1,18 @@
 import { slugify } from "~shared/slugify";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useCreateTeam, useTeams } from "~frontend/gql/teams";
-import { useChangeCurrentTeamId } from "~frontend/gql/user";
+import { useCreateTeamMutation, useTeamsQuery } from "~frontend/gql/teams";
+import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
 import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 
 export function TeamPickerView() {
-  const [data] = useTeams();
+  const [teams = []] = useTeamsQuery();
   const user = useAssertCurrentUser();
 
-  const [createTeam] = useCreateTeam();
-  const [changeCurrentTeam] = useChangeCurrentTeamId();
-
-  const teams = data?.teams ?? [];
+  const [createTeam] = useCreateTeamMutation();
+  const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
 
   async function handleCreateNewTeam() {
     const name = await openUIPrompt({

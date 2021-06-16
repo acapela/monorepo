@@ -1,6 +1,6 @@
 import { RefObject } from "react";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
@@ -11,12 +11,19 @@ interface Props {
   onUserSelected: (user: UserBasicInfoFragment) => void;
 }
 
-export function ParticipantsPickerMenu({ anchorRef, onCloseRequest, onUserSelected }: Props) {
+export function ParticipantsPickerMenu({ anchorRef, onCloseRequest, onUserSelected, selectedUsers }: Props) {
   const teamMembers = useCurrentTeamMembers();
+
+  function getCanSelectUser(user: UserBasicInfoFragment) {
+    return !selectedUsers.some((selectedUser) => selectedUser.id === user.id);
+  }
+
+  const membersToShow = teamMembers.filter(getCanSelectUser);
+
   return (
     <PopoverMenu
       anchorRef={anchorRef}
-      options={teamMembers.map((member) => {
+      options={membersToShow.map((member) => {
         return {
           key: member.id,
           label: member.name ?? "",

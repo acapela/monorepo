@@ -3,8 +3,8 @@ import { addToast } from "~ui/toasts/data";
 import {
   CreateSpaceMutation,
   CreateSpaceMutationVariables,
-  GetSpacesQuery,
-  GetSpacesQueryVariables,
+  SpacesQuery,
+  SpacesQueryVariables,
   SingleSpaceQuery,
   SingleSpaceQueryVariables,
   AddSpaceMemberMutation,
@@ -15,58 +15,65 @@ import {
   EditSpaceMutationVariables,
   DeleteSpaceMutation,
   DeleteSpaceMutationVariables,
-} from "./generated";
+  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
+  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
+} from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 
-import { createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
+import { getUUID } from "~shared/uuid";
+import { TeamDetailedInfoFragment } from "./teams";
+import { assert } from "~shared/assert";
 
-export const SpaceBasicInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  ${RoomBasicInfoFragment()}
-
-  fragment SpaceBasicInfo on space {
-    id
-    name
-    members {
-      user {
-        ...UserBasicInfo
-      }
-    }
-  }
-`;
-
-export const SpaceDetailedInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  ${RoomDetailedInfoFragment()}
-
-  fragment SpaceDetailedInfo on space {
-    id
-    name
-    members {
-      user {
-        ...UserBasicInfo
-      }
-    }
-    rooms {
-      ...RoomDetailedInfo
-    }
-  }
-`;
-
-export const [useGetSpacesQuery, getSpacesQueryManager] = createQuery<GetSpacesQuery, GetSpacesQueryVariables>(
+export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
-    ${SpaceBasicInfoFragment()}
+    ${UserBasicInfoFragment()}
+    ${RoomBasicInfoFragment()}
 
-    query GetSpaces($teamId: uuid!) {
-      space(where: { team_id: { _eq: $teamId } }) {
-        ...SpaceBasicInfo
+    fragment SpaceBasicInfo on space {
+      id
+      name
+      members {
+        space_id
+        user_id
+        user {
+          ...UserBasicInfo
+        }
       }
     }
   `
 );
 
-export const [useSingleSpaceQuery, getSingleSpaceManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
+export const SpaceDetailedInfoFragment = createFragment<SpaceDetailedInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    ${RoomDetailedInfoFragment()}
+    ${SpaceBasicInfoFragment()}
+
+    fragment SpaceDetailedInfo on space {
+      ...SpaceBasicInfo
+      rooms {
+        ...RoomDetailedInfo
+      }
+      team_id
+    }
+  `
+);
+
+export const [useSpacesQuery, spacesQueryManager] = createQuery<SpacesQuery, SpacesQueryVariables>(
+  () => gql`
+    ${SpaceDetailedInfoFragment()}
+
+    query Spaces($teamId: uuid!) {
+      space(where: { team_id: { _eq: $teamId } }) {
+        ...SpaceDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
@@ -89,11 +96,15 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
     }
   `,
   {
-    onSuccess(data, { teamId }) {
-      getSpacesQueryManager.update({ teamId }, (draft) => {
-        if (!data.space) return;
-
-        draft.space.push(data.space);
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        space: { id: getUUID(), name: variables.name, __typename: "space", members: [] },
+      };
+    },
+    onResult(space, { teamId }) {
+      TeamDetailedInfoFragment.update(teamId, (team) => {
+        team.spaces.push(space);
       });
     },
   }
@@ -101,14 +112,28 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
 
 export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpaceMutationVariables>(
   () => gql`
-    ${SpaceBasicInfoFragment()}
+    ${SpaceDetailedInfoFragment()}
 
     mutation EditSpace($name: String!, $spaceId: uuid!) {
       space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: { name: $name }) {
-        ...SpaceBasicInfo
+        ...SpaceDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      const updatedSpace = SpaceDetailedInfoFragment.produce(vars.spaceId, (space) => {
+        space.name = vars.name;
+      });
+
+      assert(updatedSpace, "Cannot create optimistic update for edit space");
+
+      return {
+        __typename: "mutation_root",
+        space: updatedSpace,
+      };
+    },
+  }
 );
 
 export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
@@ -116,17 +141,32 @@ export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
   DeleteSpaceMutationVariables
 >(
   () => gql`
-    ${SpaceBasicInfoFragment()}
+    ${SpaceDetailedInfoFragment()}
 
     mutation DeleteSpace($spaceId: uuid!) {
       deletedSpace: delete_space_by_pk(id: $spaceId) {
-        ...SpaceBasicInfo
+        ...SpaceDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(variables) {
+      const space = SpaceDetailedInfoFragment.assertRead(variables.spaceId);
+
+      return {
+        __typename: "mutation_root",
+        deletedSpace: space,
+      };
+    },
+    onResult(deletedSpace) {
+      TeamDetailedInfoFragment.update(deletedSpace.team_id, (team) => {
+        team.spaces = team.spaces.filter((space) => space.id !== deletedSpace.id);
+      });
+    },
+  }
 );
 
-export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpaceMemberMutationVariables>(
+export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation, AddSpaceMemberMutationVariables>(
   () => gql`
     mutation AddSpaceMember($spaceId: uuid!, $userId: uuid!) {
       insert_space_member_one(object: { space_id: $spaceId, user_id: $userId }) {
@@ -136,13 +176,33 @@ export const [useAddSpaceMember] = createMutation<AddSpaceMemberMutation, AddSpa
     }
   `,
   {
-    onSuccess() {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        insert_space_member_one: {
+          space_id: vars.spaceId,
+          user_id: vars.userId,
+        },
+      };
+    },
+    onResult(data, variables) {
+      SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
+        space.members.push({
+          __typename: "space_member",
+          user: UserBasicInfoFragment.assertRead(variables.userId),
+          user_id: variables.userId,
+          space_id: variables.spaceId,
+        });
+      });
       addToast({ type: "info", content: `Space member was added` });
     },
   }
 );
 
-export const [useRemoveSpaceMember] = createMutation<RemoveSpaceMemberMutation, RemoveSpaceMemberMutationVariables>(
+export const [useRemoveSpaceMemberMutation] = createMutation<
+  RemoveSpaceMemberMutation,
+  RemoveSpaceMemberMutationVariables
+>(
   () => gql`
     mutation RemoveSpaceMember($spaceId: uuid!, $userId: uuid!) {
       delete_space_member(where: { space_id: { _eq: $spaceId }, user_id: { _eq: $userId } }) {
@@ -151,7 +211,19 @@ export const [useRemoveSpaceMember] = createMutation<RemoveSpaceMemberMutation, 
     }
   `,
   {
-    onSuccess() {
+    optimisticResponse() {
+      return {
+        __typename: "mutation_root",
+        delete_space_member: {
+          __typename: "space_member_mutation_response",
+          affected_rows: 1,
+        },
+      };
+    },
+    onResult(data, variables) {
+      SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
+        space.members = space.members.filter((member) => member.user.id !== variables.userId);
+      });
       addToast({ type: "info", content: `Space member was removed` });
     },
   }

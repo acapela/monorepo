@@ -4,6 +4,6 @@ db/client/* linguist-vendored
 db/client/**/*.* linguist-vendored
 
 # Let's collapse generated files in PR's browser
-frontend/src/gql/generated.ts linguist-generated
+gql/generated.ts linguist-generated
 db/schema.prisma linguist-generated
 tooling/schema.graphql linguist-generated

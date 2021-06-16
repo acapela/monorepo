@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { hoverActionCss, hoverActionNegativeSpacingCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
-import { useAddTopicMember, useRemoveTopicMember } from "~frontend/gql/topics";
+import { TopicDetailedInfoFragment } from "~gql";
+import { useAddTopicMemberMutation, useRemoveTopicMemberMutation } from "~frontend/gql/topics";
 import { TextTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -18,8 +18,8 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
   const topicId = topic.id;
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
-  const [addTopicMember] = useAddTopicMember();
-  const [removeTopicMember] = useRemoveTopicMember();
+  const [addTopicMember] = useAddTopicMemberMutation();
+  const [removeTopicMember] = useRemoveTopicMemberMutation();
 
   async function handleJoin(userId: string) {
     await addTopicMember({ userId, topicId });

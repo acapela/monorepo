@@ -4,6 +4,7 @@ import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/u
 import path from "path";
 import "~config/dotenv";
 import { log } from "~shared/logger";
+import { GQL_PACKAGE_PATH } from "./files";
 
 export interface ProcessEnv {
   [key: string]: string | undefined;
@@ -32,7 +33,7 @@ export async function fetchGraphQLSchema(): Promise<string> {
   return readableSchema;
 }
 
-export const SCHEMA_FILE_PATH = path.resolve(__dirname, "schema.graphql");
+export const SCHEMA_FILE_PATH = path.resolve(GQL_PACKAGE_PATH, "schema.graphql");
 
 export async function updateSchemaFile(): Promise<void> {
   const schema = await fetchGraphQLSchema();

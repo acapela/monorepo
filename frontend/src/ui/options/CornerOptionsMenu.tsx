@@ -3,7 +3,7 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { IconButton } from "~ui/buttons/IconButton";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { OptionsButton } from "./OptionsButton";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
+import { useBoolean } from "~shared/hooks/useBoolean";
 
 interface Props {
   options: PopoverMenuOption[];

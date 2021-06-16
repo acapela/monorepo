@@ -1,5 +1,5 @@
 import React from "react";
-import { Message_Type_Enum, UserBasicInfoFragment } from "~frontend/gql";
+import { UserBasicInfoFragment } from "~gql";
 import { Message } from ".";
 
 interface Props {
@@ -21,9 +21,9 @@ export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => (
     key={"closing-topic"}
     message={{
       id: "closing-topic",
-      type: Message_Type_Enum.Text,
+      type: "TEXT",
       content: enrichSummary(summary),
-      createdAt: closedAt,
+      createdAt: new Date(closedAt),
       user: closedBy,
       transcription: null,
       message_attachments: [],

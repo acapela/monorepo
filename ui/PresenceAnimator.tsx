@@ -2,6 +2,7 @@ import { HTMLMotionProps, motion, Target as MotionAnimations } from "framer-moti
 import { forwardRef } from "react";
 import styled from "styled-components";
 import { objectMap } from "~shared/object";
+import { POP_ANIMATION_CONFIG } from "./animations";
 
 interface Props extends HTMLMotionProps<"div"> {
   presenceStyles: PresenceStyles;
@@ -14,11 +15,21 @@ export type PresenceStyles = {
 };
 
 export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function PresenceAnimator(
-  { presenceStyles, ...motionProps }: Props,
+  { presenceStyles, transition, ...motionProps }: Props,
   ref
 ) {
+  transition = { ...POP_ANIMATION_CONFIG, ...transition };
   const { animate, exit, initial } = parsePresenceStyles(presenceStyles);
-  return <UIHolder ref={ref} initial={initial} animate={animate} exit={exit} {...motionProps}></UIHolder>;
+  return (
+    <UIHolder
+      ref={ref}
+      transition={transition}
+      initial={initial}
+      animate={animate}
+      exit={exit}
+      {...motionProps}
+    ></UIHolder>
+  );
 });
 
 const UIHolder = styled(motion.div)`

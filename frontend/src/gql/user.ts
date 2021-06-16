@@ -1,22 +1,26 @@
 import { gql } from "@apollo/client";
-import { createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
   TeamMembersQuery,
   TeamMembersQueryVariables,
-} from "./generated";
+  UserBasicInfoFragment as UserBasicInfoFragmentType,
+} from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
-export const UserBasicInfoFragment = () => gql`
-  fragment UserBasicInfo on user {
-    id
-    name
-    avatar_url
-  }
-`;
+export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
+  () => gql`
+    fragment UserBasicInfo on user {
+      id
+      name
+      email
+      avatar_url
+    }
+  `
+);
 
-export const [useChangeCurrentTeamId] = createMutation<
+export const [useChangeCurrentTeamIdMutation] = createMutation<
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables
 >(
@@ -29,7 +33,7 @@ export const [useChangeCurrentTeamId] = createMutation<
   `
 );
 
-export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
+export const [useTeamMembersQuery] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
   () => gql`
     ${UserBasicInfoFragment()}
 
@@ -44,7 +48,7 @@ export const [useTeamMembers] = createQuery<TeamMembersQuery, TeamMembersQueryVa
 export function useCurrentTeamMembers() {
   const teamId = useAssertCurrentTeamId();
 
-  const [data] = useTeamMembers({ teamId: teamId });
+  const [teamMembers = []] = useTeamMembersQuery({ teamId: teamId });
 
-  return data?.teamMembers ?? [];
+  return teamMembers;
 }

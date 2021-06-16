@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { Transcription_Status_Enum } from "~frontend/src/gql";
 import logger from "~shared/logger";
 import { BadRequestError } from "../errors";
 import { MediaResponse } from "./sonixClient";
@@ -25,7 +24,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
     throw new BadRequestError("Sonix call has no body");
   }
 
-  if (media.status === Transcription_Status_Enum.Completed) {
+  if (media.status === "completed") {
     await updateMessageTranscription(media);
   }
 

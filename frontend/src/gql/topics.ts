@@ -7,12 +7,12 @@ import {
   CreateTopicMutationVariables,
   DeleteTextMessageMutation,
   DeleteTextMessageMutationVariables,
-  GetAttachmentQuery,
-  GetAttachmentQueryVariables,
-  GetDownloadUrlQuery,
-  GetDownloadUrlQueryVariables,
-  GetUploadUrlQuery,
-  GetUploadUrlQueryVariables,
+  AttachmentQuery,
+  AttachmentQueryVariables,
+  DownloadUrlQuery,
+  DownloadUrlQueryVariables,
+  UploadUrlQuery,
+  UploadUrlQueryVariables,
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
   TopicMessagesQuery,
@@ -32,86 +32,102 @@ import {
   DeleteTopicMutationVariables,
   UpdateTopicMutation,
   UpdateTopicMutationVariables,
-} from "./generated";
-import { RoomBasicInfoFragment } from "./rooms";
+  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
+  TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
+  AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
+  TopicMessageDetailedInfoFragment as TopicMessageDetailedInfoFragmentType,
+} from "~gql";
+import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
-import { createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
+import { assert } from "~shared/assert";
+import { getUUID } from "~shared/uuid";
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 
-export const TopicDetailedInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  ${RoomBasicInfoFragment()}
-  fragment TopicDetailedInfo on topic {
-    id
-    name
-    index
-    slug
-    closed_at
-    closing_summary
-    closed_by_user {
-      ...UserBasicInfo
+export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    ${RoomBasicInfoFragment()}
+
+    fragment TopicDetailedInfo on topic {
+      id
+      name
+      index
+      slug
+      closed_at
+      closing_summary
+      closed_by_user {
+        ...UserBasicInfo
+      }
+      room {
+        ...RoomBasicInfo
+      }
+      members {
+        user {
+          ...UserBasicInfo
+        }
+      }
+      lastMessage: messages_aggregate {
+        aggregate {
+          max {
+            created_at
+          }
+        }
+      }
     }
-    room {
-      ...RoomBasicInfo
-    }
-    members {
+  `
+);
+
+const TopicMessageBasicInfoFragment = createFragment<TopicMessageBasicInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    fragment TopicMessageBasicInfo on message {
+      id
+      createdAt: created_at
+      content
       user {
         ...UserBasicInfo
       }
     }
-    lastMessage: messages_aggregate {
-      aggregate {
-        max {
-          created_at
+  `
+);
+
+const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedInfoFragmentType>(
+  () => gql`
+    fragment AttachmentDetailedInfo on attachment {
+      id
+      originalName: original_name
+      mimeType: mime_type
+    }
+  `
+);
+
+const TopicMessageDetailedInfoFragment = createFragment<TopicMessageDetailedInfoFragmentType>(
+  () => gql`
+    ${AttachmentDetailedInfoFragment()}
+    ${UserBasicInfoFragment()}
+
+    fragment TopicMessageDetailedInfo on message {
+      id
+      content
+      createdAt: created_at
+      content
+      type
+      transcription {
+        status
+        transcript
+      }
+      user {
+        ...UserBasicInfo
+      }
+      message_attachments {
+        attachment {
+          ...AttachmentDetailedInfo
         }
       }
     }
-  }
-`;
-
-const TopicMessageBasicInfoFragment = () => gql`
-  ${UserBasicInfoFragment()}
-  fragment TopicMessageBasicInfo on message {
-    id
-    createdAt: created_at
-    content
-    user {
-      ...UserBasicInfo
-    }
-  }
-`;
-
-const AttachmentDetailedInfoFragment = () => gql`
-  fragment AttachmentDetailedInfo on attachment {
-    id
-    originalName: original_name
-    mimeType: mime_type
-  }
-`;
-
-const TopicMessageDetailedInfoFragment = () => gql`
-  ${AttachmentDetailedInfoFragment()}
-  ${UserBasicInfoFragment()}
-
-  fragment TopicMessageDetailedInfo on message {
-    id
-    content
-    createdAt: created_at
-    content
-    type
-    transcription {
-      status
-      transcript
-    }
-    user {
-      ...UserBasicInfo
-    }
-    message_attachments {
-      attachment {
-        ...AttachmentDetailedInfo
-      }
-    }
-  }
-`;
+  `
+);
 
 export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
   CreateTopicMutation,
@@ -124,10 +140,35 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        topic: {
+          __typename: "topic",
+          id: getUUID(),
+          index: variables.index,
+          lastMessage: {
+            __typename: "message_aggregate",
+            aggregate: { __typename: "message_aggregate_fields", max: null },
+          },
+          members: [],
+          room: RoomBasicInfoFragment.assertRead(variables.roomId),
+          name: variables.name,
+          slug: variables.slug,
+        },
+      };
+    },
+    onResult(topic, variables) {
+      RoomDetailedInfoFragment.update(variables.roomId, (data) => {
+        data.topics.push(topic);
+      });
+    },
+  }
 );
 
-export const [useRoomTopics] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
+export const [useRoomTopicsQuery] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
@@ -139,7 +180,10 @@ export const [useRoomTopics] = createQuery<RoomTopicsQuery, RoomTopicsQueryVaria
   `
 );
 
-export const [useTopicMessages, topicMessagesManager] = createQuery<TopicMessagesQuery, TopicMessagesQueryVariables>(
+export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
+  TopicMessagesQuery,
+  TopicMessagesQueryVariables
+>(
   () => gql`
     ${TopicMessageDetailedInfoFragment()}
 
@@ -178,12 +222,34 @@ export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, 
     }
   `,
   {
-    onSuccess: (data, variables) => {
-      topicMessagesManager.update({ topicId: variables.topicId }, (current) => {
-        if (!data.message) {
+    optimisticResponse(vars) {
+      const userData = assertReadUserDataFromCookie();
+
+      return {
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          createdAt: new Date(),
+          message_attachments: [],
+          type: vars.type,
+          user: {
+            id: userData.id,
+            __typename: "user",
+            avatar_url: userData.picture,
+            email: userData.email,
+            name: userData.name,
+          },
+          id: getUUID(),
+          content: vars.content,
+        },
+      };
+    },
+    onResult: (message, variables) => {
+      topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
+        if (!message) {
           return;
         }
-        current.messages.push(data.message);
+        current.messages.push(message);
       });
     },
   }
@@ -221,12 +287,9 @@ export const [useDeleteTextMessageMutation] = createMutation<
   `
 );
 
-export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
-  GetUploadUrlQuery,
-  GetUploadUrlQueryVariables
->(
+export const [useUploadUrlQuery, uploadUrlQueryManager] = createQuery<UploadUrlQuery, UploadUrlQueryVariables>(
   () => gql`
-    query GetUploadUrl($fileName: String!, $mimeType: String!) {
+    query UploadUrl($fileName: String!, $mimeType: String!) {
       uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
         uploadUrl
         uuid
@@ -235,9 +298,9 @@ export const [useGetUploadUrlQuery, getUploadUrlQueryManager] = createQuery<
   `
 );
 
-export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDownloadUrlQueryVariables>(
+export const [useDownloadUrlQuery] = createQuery<DownloadUrlQuery, DownloadUrlQueryVariables>(
   () => gql`
-    query GetDownloadUrl($id: uuid!) {
+    query DownloadUrl($id: uuid!) {
       get_download_url(uuid: $id) {
         downloadUrl
       }
@@ -245,10 +308,10 @@ export const [useGetDownloadUrlQuery] = createQuery<GetDownloadUrlQuery, GetDown
   `
 );
 
-export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttachmentQueryVariables>(
+export const [useAttachmentQuery] = createQuery<AttachmentQuery, AttachmentQueryVariables>(
   () => gql`
     ${AttachmentDetailedInfoFragment()}
-    query GetAttachment($id: uuid!) {
+    query Attachment($id: uuid!) {
       attachment: attachment_by_pk(id: $id) {
         ...AttachmentDetailedInfo
       }
@@ -256,7 +319,7 @@ export const [useGetAttachmentQuery] = createQuery<GetAttachmentQuery, GetAttach
   `
 );
 
-export const [useAddTopicMember] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
+export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
   () => gql`
     mutation AddTopicMember($topicId: uuid!, $userId: uuid!) {
       insert_topic_member_one(object: { topic_id: $topicId, user_id: $userId }) {
@@ -264,17 +327,53 @@ export const [useAddTopicMember] = createMutation<AddTopicMemberMutation, AddTop
         user_id
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(vars) {
+      return {
+        __typename: "mutation_root",
+        insert_topic_member_one: {
+          __typename: "topic_member",
+          topic_id: vars.topicId,
+          user_id: vars.userId,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members.push({ __typename: "topic_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
+      });
+    },
+  }
 );
 
-export const [useRemoveTopicMember] = createMutation<RemoveTopicMemberMutation, RemoveTopicMemberMutationVariables>(
+export const [useRemoveTopicMemberMutation] = createMutation<
+  RemoveTopicMemberMutation,
+  RemoveTopicMemberMutationVariables
+>(
   () => gql`
     mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
       delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {
         affected_rows
       }
     }
-  `
+  `,
+  {
+    optimisticResponse() {
+      return {
+        __typename: "mutation_root",
+        delete_topic_member: {
+          __typename: "topic_member_mutation_response",
+          affected_rows: 1,
+        },
+      };
+    },
+    onResult(data, vars) {
+      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
+        topic.members = topic.members.filter((member) => member.user.id !== vars.userId);
+      });
+    },
+  }
 );
 
 export const [useLastSeenMessageMutation] = createMutation<
@@ -288,6 +387,7 @@ export const [useLastSeenMessageMutation] = createMutation<
         on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
       ) {
         message_id
+        seen_at
       }
     }
   `
@@ -338,7 +438,15 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
     }
   `,
   {
-    onSuccess() {
+    optimisticResponse(vars) {
+      const topic = TopicDetailedInfoFragment.assertRead(vars.topicId);
+
+      return { __typename: "mutation_root", topic };
+    },
+    onResult(removedTopic) {
+      RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {
+        room.topics = room.topics.filter((topic) => topic.id !== removedTopic.id);
+      });
       addToast({ type: "info", content: `Topic was removed` });
     },
   }

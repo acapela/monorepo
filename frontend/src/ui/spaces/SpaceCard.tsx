@@ -1,7 +1,12 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { SpaceBasicInfoFragment } from "~frontend/gql";
-import { deleteSpace, useAddSpaceMember, useEditSpaceMutation, useRemoveSpaceMember } from "~frontend/gql/spaces";
+import { SpaceBasicInfoFragment } from "~gql";
+import {
+  deleteSpace,
+  useAddSpaceMemberMutation,
+  useEditSpaceMutation,
+  useRemoveSpaceMemberMutation,
+} from "~frontend/gql/spaces";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -24,8 +29,8 @@ export function SpaceCard({ space }: Props) {
   const router = useRouter();
   const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
-  const [addSpaceMember] = useAddSpaceMember();
-  const [removeSpaceMember] = useRemoveSpaceMember();
+  const [addSpaceMember] = useAddSpaceMemberMutation();
+  const [removeSpaceMember] = useRemoveSpaceMemberMutation();
   const [editSpace] = useEditSpaceMutation();
 
   async function handleJoin(userId: string) {
@@ -119,6 +124,8 @@ const UIHolder = styled.div`
   margin: -1rem;
   cursor: pointer;
   position: relative;
+  /* Don't over-stretch inside grid/flex if has wide content */
+  min-width: 0;
 
   ${hoverActionCss}
 `;

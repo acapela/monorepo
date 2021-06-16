@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useTeamInvitationByToken } from "~frontend/gql/teams";
+import { useTeamInvitationByTokenQuery } from "~frontend/gql/teams";
 import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -46,9 +46,9 @@ export default function InvitePage() {
 function useInvitationAcceptedCallback(token: string, callback: () => void) {
   const user = useCurrentUser();
 
-  const [data] = useTeamInvitationByToken({ tokenId: token });
+  const [teamInvitations] = useTeamInvitationByTokenQuery({ tokenId: token });
 
-  const invitation = data?.team_invitation?.[0] ?? null;
+  const invitation = teamInvitations?.[0] ?? null;
 
   function getIsAccepted() {
     if (!user) return false;

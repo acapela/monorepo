@@ -19,10 +19,8 @@ export const parseDate = (str: string) => new Date(str).toLocaleDateString(undef
 const DEBOUNCE_DELAY_MS = 400;
 
 export function RoomSummaryView({ roomId }: Props) {
-  const [roomQuery] = useSingleRoomQuery({ id: roomId });
+  const [room] = useSingleRoomQuery({ id: roomId });
   const [updateRoom] = useUpdateRoomMutation();
-
-  const room = roomQuery?.room;
 
   const [roomSummary, setRoomSummary] = useState(room?.summary ?? "");
 

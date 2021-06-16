@@ -12,7 +12,7 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
 import { Button } from "~ui/buttons/Button";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
 import { routes } from "~frontend/../routes";
 

@@ -17,9 +17,7 @@ interface Props {
 }
 
 export function SpaceView({ spaceId }: Props) {
-  const [data] = useSingleSpaceQuery({ id: spaceId });
-
-  const space = data?.space ?? null;
+  const [space] = useSingleSpaceQuery({ id: spaceId });
 
   const rooms = space?.rooms ?? [];
 
@@ -44,9 +42,9 @@ export function SpaceView({ spaceId }: Props) {
 
     const slug = slugify(roomName);
 
-    const { data: createRoomResult } = await createRoom({ name: roomName, spaceId, slug });
+    const [room] = await createRoom({ name: roomName, spaceId, slug });
 
-    const roomId = createRoomResult?.room?.id;
+    const roomId = room?.id;
 
     if (!roomId) {
       return;

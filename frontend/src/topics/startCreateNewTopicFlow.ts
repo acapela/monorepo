@@ -34,14 +34,12 @@ export async function startCreateNewTopicFlow({
   const index = createLastItemIndex(currentLastIndex);
   const slug = slugify(topicName);
 
-  const { data: createTopicResult } = await createTopic({
+  const [topic] = await createTopic({
     name: topicName,
     slug,
     index,
     roomId,
   });
-
-  const topic = createTopicResult?.topic;
 
   if (!topic) {
     return;

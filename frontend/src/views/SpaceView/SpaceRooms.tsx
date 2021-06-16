@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { RoomCard } from "~frontend/ui/rooms/RoomCard";
 
 interface Props {
@@ -18,7 +18,7 @@ export function SpaceRooms({ rooms }: Props) {
 
 const UIHolder = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-row-gap: 3rem;
   grid-column-gap: 1rem;
 `;

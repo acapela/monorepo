@@ -2,17 +2,17 @@ import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { db } from "~db";
 import { getSignedDownloadUrl, getSignedUploadUrl } from "./googleStorage";
 
-interface GetUploadUrlParams {
+interface UploadUrlParams {
   fileName: string;
   mimeType: string;
 }
 
-interface GetUploadUrlResponse {
+interface UploadUrlResponse {
   uploadUrl: string;
   uuid: string;
 }
 
-export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlResponse> = {
+export const getUploadUrl: ActionHandler<UploadUrlParams, UploadUrlResponse> = {
   actionName: "get_upload_url",
 
   async handle(_userId, { fileName, mimeType }) {
@@ -29,15 +29,15 @@ export const getUploadUrl: ActionHandler<GetUploadUrlParams, GetUploadUrlRespons
   },
 };
 
-interface GetDownloadUrlParams {
+interface DownloadUrlParams {
   uuid: string;
 }
 
-interface GetDownloadUrlResponse {
+interface DownloadUrlResponse {
   downloadUrl: string;
 }
 
-export const getDownloadUrl: ActionHandler<GetDownloadUrlParams, GetDownloadUrlResponse> = {
+export const getDownloadUrl: ActionHandler<DownloadUrlParams, DownloadUrlResponse> = {
   actionName: "get_download_url",
 
   async handle(_userId, { uuid }) {

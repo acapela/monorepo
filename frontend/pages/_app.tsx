@@ -51,7 +51,7 @@ export default function App({
       <BuiltInStyles />
       <CommonMetadata />
       <SessionProvider session={session}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG, duration: 0.15 }}>
+        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
             <PromiseUIRenderer />
             <TooltipsRenderer />

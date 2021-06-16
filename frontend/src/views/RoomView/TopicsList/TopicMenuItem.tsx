@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
-import { TopicDetailedInfoFragment } from "~frontend/gql";
+import { TopicDetailedInfoFragment } from "~gql";
 import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
 import { NOTIFICATION_COLOR } from "~ui/colors";

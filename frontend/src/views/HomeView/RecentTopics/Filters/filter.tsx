@@ -3,16 +3,15 @@ import { ReactNode, useState } from "react";
 import { IconFilter } from "~ui/icons";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
-  Order_By,
   TopicsQueryVariables,
   Topic_Bool_Exp as TopicWhere,
   Topic_Order_By as TopicOrder,
-  Topic_Order_By,
   UserBasicInfoFragment,
-} from "~frontend/gql/generated";
+} from "~gql";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 export interface BasicFilter {
+  key: string;
   label: string;
   icon?: ReactNode;
   whereApplier?: (draft: TopicWhere) => void;
@@ -24,6 +23,10 @@ interface UserFilter extends BasicFilter {
   user: UserBasicInfoFragment;
 }
 
+export function getIsUserFilter(filter: BasicFilter): filter is UserFilter {
+  return Reflect.get(filter, "type") === "user";
+}
+
 export type TopicFilter = UserFilter | BasicFilter;
 
 const DEFAULT_RECENT_TOPICS_COUNT = 100;
@@ -33,7 +36,7 @@ export function getTopicVariablesFromFilters(
   teamId: string,
   filters: TopicFilter[]
 ): TopicsQueryVariables {
-  const orders: Topic_Order_By[] = [];
+  const orders: TopicOrder[] = [];
   let where: TopicWhere = {
     room: {
       space: {
@@ -59,7 +62,7 @@ export function getTopicVariablesFromFilters(
 
   // If there is no other orders, by default let's order by the latest messages.
   if (!orders.length) {
-    orders.push({ messages_aggregate: { max: { created_at: Order_By.Desc } } });
+    orders.push({ messages_aggregate: { max: { created_at: "desc" } } });
   }
 
   return {
@@ -81,6 +84,7 @@ export function useTopicFilterVariables() {
 
 export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
   return {
+    key: `user-${user.id}`,
     type: "user",
     user,
     label: user.name ?? "Unknown user",
@@ -95,20 +99,22 @@ export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
 
 export function createSortByLatestActivityFilter(): BasicFilter {
   return {
+    key: "latest-activity",
     label: "Sort by latest activity",
     icon: <IconFilter />,
     orderGetter() {
-      return { messages_aggregate: { max: { created_at: Order_By.Desc } } };
+      return { messages_aggregate: { max: { created_at: "desc" } } };
     },
   };
 }
 
 export function createSortByDueDateFilter(): BasicFilter {
   return {
+    key: "due-date",
     label: "Sort by due date",
     icon: <IconFilter />,
     orderGetter() {
-      return { room: { deadline: Order_By.Desc } };
+      return { room: { deadline: "desc" } };
     },
   };
 }

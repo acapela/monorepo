@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~frontend/gql";
+import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~gql";
 import { RichEditor, EditorContent } from "~richEditor/RichEditor";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";

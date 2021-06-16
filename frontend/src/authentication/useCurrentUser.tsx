@@ -4,7 +4,7 @@ import { assertGet } from "~shared/assert";
 /**
  * We are passing custom data to session JWT token, so we have more data than default next-auth Session type.
  */
-interface UserAuthData {
+export interface UserAuthData {
   email: string;
   iat: number;
   name: string;
@@ -59,7 +59,5 @@ export function useAssertCurrentUser() {
 export function useAssertCurrentTeamId() {
   const user = useAssertCurrentUser();
 
-  assertGet(user.currentTeamId, "No team id");
-
-  return user.currentTeamId;
+  return assertGet(user.currentTeamId, "No team id");
 }

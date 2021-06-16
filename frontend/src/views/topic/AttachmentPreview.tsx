@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useGetAttachmentQuery } from "~frontend/gql/topics";
+import { useAttachmentQuery } from "~frontend/gql/topics";
 import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachment";
 
 interface Props {
@@ -9,13 +9,13 @@ interface Props {
 }
 
 export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
-  const [data] = useGetAttachmentQuery({ id });
+  const [attachment] = useAttachmentQuery({ id });
 
-  if (!data?.attachment) return null;
+  if (!attachment) return null;
 
   return (
     <UIHolder onClick={() => onRemoveRequest(id)}>
-      <MessageAttachment attachment={data.attachment} selectedMediaTime={null} onMediaTimeUpdate={() => null} />
+      <MessageAttachment attachment={attachment} selectedMediaTime={null} onMediaTimeUpdate={() => null} />
     </UIHolder>
   );
 };

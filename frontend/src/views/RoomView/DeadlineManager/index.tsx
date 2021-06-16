@@ -2,13 +2,14 @@ import { format } from "date-fns";
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
-import { RoomDetailedInfoFragment } from "~frontend/gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { DateTimePicker } from "./DateTimePicker";
 import { AnimatePresence } from "framer-motion";
 import { updateRoom } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";
+import { LIGHT_GRAY } from "~ui/colors";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -50,6 +51,6 @@ const UIHolder = styled.button`
   cursor: pointer;
   background: #ffffff;
   border-radius: 6px;
-  border: 1px solid #eae9ea;
+  border: 1px solid ${LIGHT_GRAY};
   text-align: start;
 `;
