@@ -40,7 +40,6 @@ import {
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { assert } from "~shared/assert";
 import { getUUID } from "~shared/uuid";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 
