@@ -14,8 +14,8 @@ export interface Scalars {
   date: Date;
   json: any;
   jsonb: any;
-  timestamp: Date;
-  timestamptz: Date;
+  timestamp: string;
+  timestamptz: string;
   uuid: string;
 }
 
@@ -3874,8 +3874,8 @@ export interface Room {
   room_invites_aggregate: Room_Invites_Aggregate;
   slug: Scalars['String'];
   /** An object relationship */
-  space?: Maybe<Space>;
-  space_id?: Maybe<Scalars['uuid']>;
+  space: Space;
+  space_id: Scalars['uuid'];
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
   topics: Array<Topic>;
@@ -8244,7 +8244,7 @@ export type AcceptInviteMutation = (
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline'>
+  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline' | 'summary' | 'finished_at'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -8380,6 +8380,21 @@ export type DeleteRoomMutation = (
   )> }
 );
 
+export type CloseOpenTopicsMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  closedAt?: Maybe<Scalars['timestamp']>;
+  closedByUserId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CloseOpenTopicsMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_topic?: Maybe<(
+    { __typename?: 'topic_mutation_response' }
+    & Pick<Topic_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
 export type SearchResultFragment = (
   { __typename?: 'full_text_search' }
   & Pick<Full_Text_Search, 'transcript'>
@@ -8387,10 +8402,10 @@ export type SearchResultFragment = (
   & { room?: Maybe<(
     { __typename?: 'room' }
     & Pick<Room, 'id' | 'name'>
-    & { space?: Maybe<(
+    & { space: (
       { __typename?: 'space' }
       & Pick<Space, 'id' | 'name'>
-    )> }
+    ) }
   )> }
 );
 
@@ -8883,43 +8898,13 @@ export type TopicsQuery = (
   )> }
 );
 
-export type ToggleCloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  closedAt?: Maybe<Scalars['timestamp']>;
-  closedByUserId?: Maybe<Scalars['uuid']>;
-  summary?: Maybe<Scalars['String']>;
+  input?: Maybe<Topic_Set_Input>;
 }>;
 
 
-export type ToggleCloseTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & TopicDetailedInfoFragment
-  )> }
-);
-
-export type EditTopicMutationVariables = Exact<{
-  name: Scalars['String'];
-  topicId: Scalars['uuid'];
-}>;
-
-
-export type EditTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & TopicDetailedInfoFragment
-  )> }
-);
-
-export type ReorderTopicMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  index: Scalars['String'];
-}>;
-
-
-export type ReorderTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }

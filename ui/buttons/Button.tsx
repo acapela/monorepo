@@ -50,6 +50,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   opacity: ${(props) => (props.isLoading ? 0.5 : 1)};
   background: #474f5a;
   border-radius: 0.5rem;
+  justify-content: center;
 
   ${(props) =>
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)
@@ -76,6 +77,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
 const UIContentHolder = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const UIIconHolder = styled.div`

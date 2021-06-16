@@ -3,16 +3,12 @@ import { withServerSideAuthRedirect } from "~frontend/authentication/withServerS
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { routes } from "~frontend/routes";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { RoomView } from "~frontend/views/RoomView";
+import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
 
 const SpaceRoomPage = () => {
   const { roomId } = routes.spaceRoom.useParams();
 
-  return (
-    <>
-      <RoomView roomId={roomId} topicId={null} />
-    </>
-  );
+  return <RoomTopicView roomId={roomId} topicId={null} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();

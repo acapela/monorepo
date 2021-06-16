@@ -21,12 +21,13 @@ interface Props {
   };
   hasCloseButton?: boolean;
   children: ReactNode;
+  className?: string;
   onCloseRequest: () => void;
   // Modal can be attached to some element instead of center of the screen.
   anchor?: ModalAnchor;
 }
 
-export function Modal({ head, hasCloseButton = true, children, onCloseRequest, anchor }: Props) {
+export function Modal({ head, hasCloseButton = true, children, onCloseRequest, anchor, className }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useShortcut("Escape", onCloseRequest);
@@ -34,6 +35,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   const modalBodyNode = (
     <UIModal
       ref={modalRef}
+      className={className}
       presenceStyles={POP_PRESENCE_STYLES}
       // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
       onClick={(event) => event.stopPropagation()}
