@@ -12,7 +12,7 @@ interface Props {
   roomId: string;
 }
 
-const DEBOUNCE_DELAY_MS = 400;
+const AUTO_SAVE_DEBOUNCE_DELAY_MS = 400;
 
 export function RoomSummaryView({ roomId }: Props) {
   const [room] = useSingleRoomQuery({ id: roomId });
@@ -31,7 +31,7 @@ export function RoomSummaryView({ roomId }: Props) {
           },
         });
     },
-    DEBOUNCE_DELAY_MS,
+    AUTO_SAVE_DEBOUNCE_DELAY_MS,
     [roomSummary]
   );
 

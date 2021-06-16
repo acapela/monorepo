@@ -34,7 +34,7 @@ export const TopicSummary = ({ topic }: Props) => {
         disabled={loading}
         value={summary}
         placeholder={"Type here to write topic outcome..."}
-        onChangeText={(value) => setSummary(value)}
+        onChangeText={setSummary}
         onBlur={submitUpdatedSummary}
       />
     </UITopicSummary>

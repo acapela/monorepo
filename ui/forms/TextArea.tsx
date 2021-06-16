@@ -1,5 +1,6 @@
-import React, { forwardRef, InputHTMLAttributes, useRef, useState, MutableRefObject, useEffect } from "react";
+import React, { forwardRef, InputHTMLAttributes, useState, useEffect } from "react";
 import styled from "styled-components";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { baseInputStyles } from "./utils";
 
 export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {
@@ -11,13 +12,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
   { onChangeText, isResizable, ...regularProps },
   forwardedRef
 ) {
-  const internalRef = useRef<HTMLTextAreaElement>(null);
+  const ref = useSharedRef<HTMLTextAreaElement | null>(null, [forwardedRef]);
   const [textAreaHeight, setTextAreaHeight] = useState<string>("auto");
 
   useEffect(() => {
     if (isResizable) {
       // Make it run after all DOM painting and updates done
-      queueMicrotask(() => setTextAreaHeight(`${internalRef.current?.scrollHeight}px`));
+      queueMicrotask(() => setTextAreaHeight(`${ref.current?.scrollHeight}px`));
     }
   }, [regularProps.value]);
 
@@ -26,22 +27,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
     onChangeText?.(event.target.value);
   };
 
-  return (
-    <UITextArea
-      ref={(node: HTMLTextAreaElement) => {
-        (internalRef as MutableRefObject<HTMLTextAreaElement>).current = node;
-
-        if (typeof forwardedRef === "function") {
-          forwardedRef(node);
-        } else if (forwardedRef) {
-          (forwardedRef as MutableRefObject<HTMLTextAreaElement>).current = node;
-        }
-      }}
-      {...regularProps}
-      height={textAreaHeight}
-      onChange={handleChange}
-    />
-  );
+  return <UITextArea ref={ref} {...regularProps} height={textAreaHeight} onChange={handleChange} />;
 });
 
 const UITextArea = styled.textarea<{ height: string }>`

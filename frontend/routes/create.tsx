@@ -48,8 +48,8 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     return isActive(router.route);
   }
 
-  function isActive(route: string) {
-    return route === path;
+  function isActive(routeToCheck: string) {
+    return routeToCheck === path;
   }
 
   function push(params: Params) {

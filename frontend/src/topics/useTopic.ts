@@ -1,5 +1,5 @@
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicDetailedInfoFragment } from "~gql";
+import { TopicDetailedInfoFragment, Topic_Set_Input } from "~gql";
 import { useDeleteTopicMutation, useUpdateTopicMutation } from "~frontend/gql/topics";
 
 function nowAsTimestamp(): string {
@@ -16,13 +16,17 @@ function getTopicCloseInfo(value?: TopicDetailedInfoFragment | null) {
     : null;
 }
 
+const isTruthy = (value: boolean) => value;
+
 export function useTopic(value?: TopicDetailedInfoFragment | null) {
   const { id: currentUserId } = useAssertCurrentUser();
   const [deleteTopic, { loading: loadingDelete }] = useDeleteTopicMutation();
   const [updateTopic, { loading: isUpdating }] = useUpdateTopicMutation();
 
   const topicId = value?.id;
-  const loading = [loadingDelete, isUpdating].some((l) => l);
+  const loading = [loadingDelete, isUpdating].some(isTruthy);
+
+  const update = (input: Topic_Set_Input) => topicId && updateTopic({ topicId, input });
 
   return {
     hasTopic: !!value,
@@ -36,40 +40,28 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
     isParentRoomOpen: !value?.room.finished_at,
 
     edit: (name: string) =>
-      updateTopic({
-        topicId,
-        input: {
-          name,
-        },
+      update({
+        name,
       }),
 
     close: (closing_summary: string) =>
-      updateTopic({
-        topicId,
-        input: {
-          closed_at: nowAsTimestamp(),
-          closed_by_user_id: currentUserId,
-          closing_summary,
-        },
+      update({
+        closed_at: nowAsTimestamp(),
+        closed_by_user_id: currentUserId,
+        closing_summary,
       }),
 
     open: () =>
-      updateTopic({
-        topicId,
-        input: {
-          closed_at: null,
-          closed_by_user_id: null,
-        },
+      update({
+        closed_at: null,
+        closed_by_user_id: null,
       }),
-
-    deleteTopic: () => deleteTopic({ topicId }),
 
     updateSummary: (closing_summary: string) =>
-      updateTopic({
-        topicId,
-        input: {
-          closing_summary,
-        },
+      update({
+        closing_summary,
       }),
+
+    deleteTopic: () => topicId && deleteTopic({ topicId }),
   } as const;
 }
