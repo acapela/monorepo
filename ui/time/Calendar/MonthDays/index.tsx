@@ -25,7 +25,7 @@ export function MonthDays({ date, selectedDayDate, onDaySelected }: Props) {
   return (
     <UIMonth>
       <WeekDaysNames />
-      {weeks.map((firstDayWeek, index) => (
+      {weeks.map((firstDayWeek) => (
         <Week
           key={firstDayWeek.getTime()}
           weekDate={firstDayWeek}
