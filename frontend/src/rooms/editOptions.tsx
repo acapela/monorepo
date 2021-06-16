@@ -1,11 +1,12 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { RoomBasicInfoFragment } from "~gql";
-import { deleteRoom, updateRoom } from "~frontend/gql/rooms";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { deleteRoom, getSingleRoomQueryManager, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash, IconUndo } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
+import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -40,12 +41,48 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   await deleteRoom({ roomId: room.id });
 }
 
+type isRoomOpen = boolean;
+
+async function closeRoom(roomId: string, topics: TopicDetailedInfoFragment[]): Promise<isRoomOpen> {
+  const openTopics = topics.filter((topic) => !topic.closed_at);
+
+  if (openTopics.length > 0) {
+    const canCloseRoom = await closeOpenTopicsPrompt({ roomId, openTopics });
+
+    if (!canCloseRoom) {
+      return true;
+    }
+  }
+
+  await updateRoom({ roomId, input: { finished_at: new Date().toISOString() } });
+  return false;
+}
+
+export async function handleToggleCloseRoom(basicRoom: RoomBasicInfoFragment): Promise<isRoomOpen> {
+  const roomId = basicRoom.id;
+  const detailedRoom = await getSingleRoomQueryManager.fetch({ id: roomId });
+
+  const isOpenRoom = !basicRoom.finished_at;
+  if (isOpenRoom) {
+    const isRoomStillOpen = await closeRoom(roomId, detailedRoom?.room?.topics ?? []);
+    return isRoomStillOpen;
+  } else {
+    await updateRoom({ roomId, input: { finished_at: null } });
+    return true;
+  }
+}
+
 export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): PopoverMenuOption[] {
   return [
     {
       label: "Edit room name...",
       onSelect: () => handleEditRoomName(room),
       icon: <IconEdit />,
+    },
+    {
+      label: room.finished_at ? "Reopen room..." : "Close room...",
+      onSelect: () => handleToggleCloseRoom(room),
+      icon: room.finished_at ? <IconUndo /> : <IconCheck />,
     },
     {
       label: "Delete room...",

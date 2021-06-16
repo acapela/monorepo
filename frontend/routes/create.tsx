@@ -44,7 +44,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   function useIsActive() {
     const router = useRouter();
 
-    return router.route === path;
+    return isMatchingRoute(router.route);
   }
 
   function isActive(defaultRouter?: NextRouter) {

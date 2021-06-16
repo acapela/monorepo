@@ -14,6 +14,8 @@ import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
 import { useTopic } from "~frontend/topics/useTopic";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { disabledCss } from "~ui/disabled";
 
 interface Props {
   id: string;
@@ -39,9 +41,11 @@ export const TopicView = ({ id }: Props) => {
     topicId: id,
   });
 
+  const isMember = isCurrentUserRoomMember(topic?.room);
+
   useMarkTopicAsRead(id, messages);
 
-  const { hasTopic, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
+  const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
   return (
     <>
@@ -69,11 +73,10 @@ export const TopicView = ({ id }: Props) => {
             </UIAnimatedMessagesWrapper>
           </ScrollableMessages>
 
-          {isTopicClosed ? (
-            <TopicClosureNote />
-          ) : (
+          {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+          {!isTopicClosed && (
             <ClientSideOnly>
-              <UIMessageComposer>
+              <UIMessageComposer isDisabled={!isMember}>
                 <MessageComposer topicId={id} />
               </UIMessageComposer>
             </ClientSideOnly>
@@ -101,10 +104,12 @@ const TopicRoot = styled(DropFileContext)`
   }
 `;
 
-const UIMessageComposer = styled.div`
+const UIMessageComposer = styled.div<{ isDisabled: boolean }>`
   flex: 1 0 auto;
   width: 100%;
   margin-top: 1rem;
+
+  ${(props) => props.isDisabled && disabledCss}
 `;
 
 const UIAnimatedMessagesWrapper = styled(motion.div)`

@@ -13,6 +13,7 @@ interface Props {
   onAddMemberRequest: (userId: string) => Promise<void> | void;
   onLeaveRequest: (userId: string) => Promise<void> | void;
   className?: string;
+  isReadonly?: boolean;
 }
 
 export const MembersManager = styled(function MembersManager({
@@ -20,6 +21,7 @@ export const MembersManager = styled(function MembersManager({
   onLeaveRequest,
   onAddMemberRequest,
   className,
+  isReadonly,
 }: Props) {
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
   const user = useCurrentUser();
@@ -41,7 +43,9 @@ export const MembersManager = styled(function MembersManager({
       <UIHolder className={className}>
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}
-          <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
+          {!isReadonly && (
+            <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
+          )}
         </UIMembers>
 
         <UIActions>

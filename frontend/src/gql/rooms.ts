@@ -17,6 +17,8 @@ import {
   DeleteRoomMutationVariables,
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
+  CloseOpenTopicsMutation,
+  CloseOpenTopicsMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
@@ -26,7 +28,9 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
-import { removeUndefinedFromObject } from "~frontend/../../shared/object";
+import { removeUndefinedFromObject } from "~shared/object";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
   () => gql`
@@ -36,6 +40,8 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       name
       space_id
       deadline
+      summary
+      finished_at
       members {
         user {
           ...UserBasicInfo
@@ -95,6 +101,12 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
     }
   `
 );
+
+export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
+  const user = useAssertCurrentUser();
+
+  return room?.members.some((member) => member.user.id === user.id) ?? false;
+}
 
 export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, CreateRoomMutationVariables>(
   () => gql`
@@ -253,4 +265,17 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
       });
     },
   }
+);
+
+export const [useCloseOpenTopicsMutation] = createMutation<CloseOpenTopicsMutation, CloseOpenTopicsMutationVariables>(
+  () => gql`
+    mutation CloseOpenTopics($roomId: uuid!, $closedAt: timestamp, $closedByUserId: uuid) {
+      update_topic(
+        where: { room_id: { _eq: $roomId } }
+        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId }
+      ) {
+        affected_rows
+      }
+    }
+  `
 );

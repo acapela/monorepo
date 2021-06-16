@@ -10,12 +10,14 @@ import { AnimatePresence } from "framer-motion";
 import { updateRoom } from "~frontend/gql/rooms";
 import { SecondaryText } from "~ui/typo";
 import { BACKGROUND_ACCENT } from "~ui/colors";
+import { disabledPointerEventsCss } from "~ui/disabled";
 
 interface Props {
   room: RoomDetailedInfoFragment;
+  isReadonly?: boolean;
 }
 
-export const DeadlineManager = ({ room }: Props) => {
+export const DeadlineManager = ({ room, isReadonly = false }: Props) => {
   const { deadline } = room;
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -38,15 +40,16 @@ export const DeadlineManager = ({ room }: Props) => {
           </Popover>
         )}
       </AnimatePresence>
-      <UIHolder onClick={toggleOpenPicker} ref={ref}>
+      <UIHolder isReadonly={isReadonly} onClick={toggleOpenPicker} ref={ref}>
         <SecondaryText>{format(date, "dd.MM.yyyy, p")}</SecondaryText>
       </UIHolder>
     </>
   );
 };
 
-const UIHolder = styled.button`
-  ${hoverActionCss}
+const UIHolder = styled.button<{ isReadonly: boolean }>`
+  ${(props) => !props.isReadonly && hoverActionCss}
+  ${(props) => props.isReadonly && disabledPointerEventsCss}
   padding: 8px 16px;
   cursor: pointer;
   background: #ffffff;

@@ -66,5 +66,5 @@ export function removeUndefinedFromObject<T>(input: T): WithoutUndefined<T> {
     }
   });
 
-  return clone;
+  return clone as WithoutUndefined<T>;
 }

@@ -1,4 +1,4 @@
-import { useReorderTopicMutation } from "~frontend/gql/topics";
+import { useUpdateTopicMutation } from "~frontend/gql/topics";
 import { getInitialIndexes } from "./order";
 
 /*
@@ -11,7 +11,16 @@ import { getInitialIndexes } from "./order";
 */
 
 export function useBulkTopicIndexing() {
-  const [reorder] = useReorderTopicMutation();
+  const [updateTopic] = useUpdateTopicMutation();
+
+  function reorder({ topicId, index }: Record<string, string>) {
+    updateTopic({
+      topicId,
+      input: {
+        index,
+      },
+    });
+  }
 
   let loading = false;
   function run(topicIds: string[]) {
