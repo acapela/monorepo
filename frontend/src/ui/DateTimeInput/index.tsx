@@ -35,7 +35,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) =>
           </Popover>
         )}
       </AnimatePresence>
-      <UIHolder isReadonly={isReadonly} onClick={toggleOpenPicker} ref={ref}>
+      <UIHolder type="button" isReadonly={isReadonly} onClick={toggleOpenPicker} ref={ref}>
         <SecondaryText>{format(value, "dd.MM.yyyy, p")}</SecondaryText>
       </UIHolder>
     </>
