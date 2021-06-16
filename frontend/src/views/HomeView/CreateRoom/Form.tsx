@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { add, roundToNearestMinutes } from "date-fns";
 import { validate } from "./validate";
@@ -30,7 +30,7 @@ export const Form = ({ onCancel }: Props) => {
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 
   const [roomName, setRoomName] = useState<string>("");
-  const spaceId = useRef<string | null>(null);
+  const [spaceId, setSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
   const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
 
@@ -40,7 +40,7 @@ export const Form = ({ onCancel }: Props) => {
   const validationError = validate({
     roomName,
     spaceName,
-    spaceId: spaceId.current,
+    spaceId: spaceId,
   });
 
   const isSubmitDisabled = Boolean(validationError);
@@ -51,24 +51,25 @@ export const Form = ({ onCancel }: Props) => {
       return;
     }
 
-    if (!spaceId.current) {
+    let finalSpaceId = spaceId;
+    if (!finalSpaceId) {
       const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
       if (space) {
-        spaceId.current = space.id;
+        finalSpaceId = space.id;
       }
     }
 
-    if (!spaceId.current) {
+    if (!finalSpaceId) {
       return;
     }
 
-    const [room] = await createRoom({ name: roomName, spaceId: spaceId.current, slug: slugify(roomName) });
+    const [room] = await createRoom({ name: roomName, spaceId: finalSpaceId, slug: slugify(roomName) });
 
     if (!room) {
       return;
     }
 
-    routes.spaceRoom.push({ spaceId: spaceId.current, roomId: room.id });
+    routes.spaceRoom.push({ spaceId: finalSpaceId, roomId: room.id });
   };
 
   return (
@@ -80,12 +81,7 @@ export const Form = ({ onCancel }: Props) => {
         placeholder="Room name"
       />
       {spacesList.length > 0 ? (
-        <SpacesCombobox
-          items={spacesList}
-          onChange={(id) => {
-            spaceId.current = id;
-          }}
-        />
+        <SpacesCombobox items={spacesList} onChange={setSpaceId} />
       ) : (
         <SpaceNameInput value={spaceName} onChange={setSpaceName} />
       )}

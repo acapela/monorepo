@@ -8,6 +8,7 @@ import { FieldLabel, SecondaryText } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 import { IconCheckCircle, IconChevronDown } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
+import { useKey } from "react-use";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
@@ -47,18 +48,10 @@ export const SpacesCombobox = ({ items, onChange }: Props) => {
     <UIFormField {...getComboboxProps()}>
       <FieldLabel {...getLabelProps()}>Select space</FieldLabel>
       <UICombobox ref={comboboxRef}>
-        <UIMenuOpener
-          placeholder="Select space"
-          {...getInputProps()}
-          onFocus={() => {
-            if (!isOpen) {
-              openMenu();
-            }
-          }}
-        />
-        <UIMenuOpenerIconWr>
+        <UIMenuOpener {...getInputProps()} onClick={openMenu}>
+          <SecondaryText>{selectedItem ? selectedItem.name : "Select a space"}</SecondaryText>
           <IconChevronDown />
-        </UIMenuOpenerIconWr>
+        </UIMenuOpener>
         <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={isOpen}>
           {isOpen &&
             items.map((item, index) => (
@@ -75,16 +68,10 @@ export const SpacesCombobox = ({ items, onChange }: Props) => {
 
 const UICombobox = styled.div`
   position: relative;
-  display: flex;
-  align-items: center;
 `;
 
-const UIMenuOpenerIconWr = styled.div`
-  position: absolute;
-  right: 16px;
-`;
-
-const UIMenuOpener = styled.input`
+const UIMenuOpener = styled.button`
+  outline: none;
   height: 100%;
   width: 100%;
   display: flex;
