@@ -25,10 +25,7 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
     highlightedIndex,
     getItemProps,
     openMenu,
-    reset,
-    inputValue,
     getLabelProps,
-    getToggleButtonProps,
   } = useCombobox({
     items,
     defaultHighlightedIndex: 0,
@@ -41,8 +38,6 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
     },
   });
 
-  const inputText = selectedItem?.name || "Select space";
-
   const comboboxRef = useRef<HTMLDivElement | null>(null);
   let menuMaxHeight;
   if (comboboxRef.current) {
@@ -51,13 +46,22 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
   }
 
   return (
-    <UIFormField>
-      <FieldLabel>Select space</FieldLabel>
+    <UIFormField {...getComboboxProps()}>
+      <FieldLabel {...getLabelProps()}>Select space</FieldLabel>
       <UICombobox ref={comboboxRef}>
-        <UIMenuOpener {...getInputProps()} {...getToggleButtonProps()}>
-          <SecondaryText>{inputText}</SecondaryText>
+        <UIMenuOpener
+          placeholder="Select space"
+          {...getInputProps()}
+          onFocus={() => {
+            if (!isOpen) {
+              openMenu();
+            }
+          }}
+          value={selectedItem?.name}
+        />
+        <UIMenuOpenerIconWr>
           <IconChevronDown />
-        </UIMenuOpener>
+        </UIMenuOpenerIconWr>
         <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={isOpen}>
           {isOpen &&
             items.map((item, index) => (
@@ -74,11 +78,18 @@ export const SpacesCombobox = ({ items, selectedItemId, onChange }: Props) => {
 
 const UICombobox = styled.div`
   position: relative;
+  display: flex;
+  align-items: center;
 `;
 
-const UIMenuOpener = styled.div`
-  outline: none;
+const UIMenuOpenerIconWr = styled.div`
+  position: absolute;
+  right: 16px;
+`;
+
+const UIMenuOpener = styled.input`
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
