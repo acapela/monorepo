@@ -6,7 +6,7 @@ import { RoomAddedNotification } from "~backend/src/roomInvitation/RoomAddedNoti
 import { sendNotification } from "~backend/src/notifications/sendNotification";
 import logger from "~shared/logger";
 
-export async function handleRoomParticipantAdded(invite: RoomParticipants, userId: string | null) {
+export async function handleRoomParticipantCreated(invite: RoomParticipants, userId: string | null) {
   const { room_id: roomId, user_id: addedUserId } = invite;
 
   if (userId === addedUserId) {
