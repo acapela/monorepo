@@ -116,10 +116,10 @@ export const CreateRoomForm = ({ onCancel }: Props) => {
       <UIBottomArea>
         {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
         <UIButtons>
-          <Button kind="ghost" isRounded type="reset" onClick={onCancel}>
+          <Button kind="ghost" type="reset" onClick={onCancel}>
             Cancel
           </Button>
-          <Button isLoading={isSubmitLoading} isRounded onClick={() => null}>
+          <Button isLoading={isSubmitLoading} onClick={() => null}>
             Create
           </Button>
         </UIButtons>

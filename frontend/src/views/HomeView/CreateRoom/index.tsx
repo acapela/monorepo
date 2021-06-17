@@ -10,7 +10,7 @@ export const CreateRoomButton = () => {
 
   return (
     <>
-      <Button iconPosition="start" icon={<IconPlus />} isRounded onClick={toggleModalVisibility}>
+      <Button iconPosition="start" icon={<IconPlus />} onClick={toggleModalVisibility}>
         Create a new Room
       </Button>
       {isModalVisible && (

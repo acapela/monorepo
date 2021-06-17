@@ -19,24 +19,12 @@ interface Props extends HTMLMotionProps<"button"> {
   isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
   tooltip?: string;
-  isRounded?: boolean;
   kind?: "regular" | "ghost";
 }
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    {
-      isLoading,
-      isDisabled,
-      isWide,
-      isRounded,
-      icon,
-      tooltip,
-      iconPosition = "end",
-      kind = "regular",
-      children,
-      ...htmlProps
-    },
+    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", kind = "regular", children, ...htmlProps },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -63,7 +51,6 @@ export const Button = styled(
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}
         {...finalProps}
-        isRounded={isRounded}
         kind={kind}
         {...htmlProps}
       >
@@ -113,7 +100,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
 
   ${(props) => (props.kind === "regular" ? regularKindCSS : ghostKindCSS)};
 
-  border-radius: ${(props) => (props.isRounded ? "10000px" : "0.5rem")};
+  border-radius: 0.5rem;
 
   ${(props) =>
     // Enable pointer cursor only if button is clickable (has onClick)
