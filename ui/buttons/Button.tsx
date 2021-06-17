@@ -3,7 +3,7 @@ import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { fontSize } from "~ui/baseStyles";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import { hoverActionCssWithCustomColor } from "../transitions";
 
 export type ButtonIconPosition = "start" | "end";
@@ -25,7 +25,18 @@ interface Props extends HTMLMotionProps<"button"> {
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    { isLoading, isDisabled, isWide, isRounded, icon, tooltip, iconPosition = "end", kind = "regular", children, ...htmlProps },
+    {
+      isLoading,
+      isDisabled,
+      isWide,
+      isRounded,
+      icon,
+      tooltip,
+      iconPosition = "end",
+      kind = "regular",
+      children,
+      ...htmlProps
+    },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -79,12 +90,12 @@ const regularKindCSS = css<Props & { isClickable: boolean }>`
 const ghostKindCSS = css<Props & { isClickable: boolean }>`
   color: #474f5a;
   background: transparent;
-  border: 1px solid ${LIGHT_GRAY};
+  border: 1px solid ${BACKGROUND_ACCENT};
   ${(props) =>
     // Enable hover effect only if button is clickable (has onClick)
     props.isClickable &&
     css`
-      ${hoverActionCssWithCustomColor(LIGHT_GRAY)};
+      ${hoverActionCssWithCustomColor(BACKGROUND_ACCENT)};
     `}
 `;
 

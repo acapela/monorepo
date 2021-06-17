@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import { hoverActionCss } from "~ui/transitions";
 import { SpaceBasicInfoFragment } from "~gql";
 import { FieldLabel, SecondaryText } from "~ui/typo";
@@ -102,14 +102,14 @@ const UIMenuOpener = styled.button`
   cursor: pointer;
   background: #ffffff;
   border-radius: 6px;
-  border: 1px solid ${LIGHT_GRAY};
+  border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
 `;
 
 const UIMenu = styled.div<{ isVisible: boolean }>`
   position: absolute;
   overflow-y: auto;
-  border: 1px solid ${LIGHT_GRAY};
+  border: 1px solid ${BACKGROUND_ACCENT};
   left: 0;
   top: 0;
   width: 100%;
@@ -123,7 +123,6 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   padding: 0 16px;
   height: 42px;
-  border-bottom: 1px solid ${LIGHT_GRAY};
   display: flex;
   align-items: center;
   justify-content: space-between;
