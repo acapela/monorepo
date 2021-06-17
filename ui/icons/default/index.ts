@@ -576,4 +576,5 @@ export { default as IconYinYang } from "./YinYang";
 export { default as IconZoomIn } from "./ZoomIn";
 export { default as IconZoomOut } from "./ZoomOut";
 export { default as IconVerticalThreeDots } from "./VerticalThreeDots";
+export { default as IconDragAndDrop } from "./DragAndDrop";
 export * from "./index";
