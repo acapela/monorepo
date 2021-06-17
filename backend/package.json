@@ -37,7 +37,7 @@
     "localtunnel": "^2.0.1",
     "pino-pretty": "^5.0.2",
     "supertest": "^6.1.3",
-    "ts-jest": "^26.5.4",
+    "ts-jest": "^27.0.3",
     "ts-node-dev": "^1.1.6",
     "tsc-watch": "^4.2.9"
   }
