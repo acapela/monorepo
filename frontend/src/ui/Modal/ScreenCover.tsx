@@ -24,7 +24,7 @@ export function ScreenCover({ children, onCloseRequest, enableBlur = false }: Pr
   );
 }
 
-const BLUR = "10px";
+const BLUR_LENGTH = "10px";
 
 const UIBodyCover = styled.div<{ enableBlur: boolean }>`
   position: fixed;
@@ -39,9 +39,9 @@ const UIBodyCover = styled.div<{ enableBlur: boolean }>`
     props.enableBlur &&
     css`
       background: rgba(240, 240, 240, 0.38);
-      @supports (backdrop-filter: blur(${BLUR})) or (--webkit-backdrop-filter: blur(${BLUR})) {
-        backdrop-filter: blur(${BLUR});
-        --webkit-backdrop-filter: blur(${BLUR});
+      @supports (backdrop-filter: blur(${BLUR_LENGTH})) or (--webkit-backdrop-filter: blur(${BLUR_LENGTH})) {
+        backdrop-filter: blur(${BLUR_LENGTH});
+        --webkit-backdrop-filter: blur(${BLUR_LENGTH});
       }
     `}
 `;
