@@ -7,7 +7,6 @@ import { useSpacesQuery } from "~frontend/gql/spaces";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { SpacesCombobox } from "./SpacesCombobox";
 import { SpaceNameInput } from "./SpaceNameInput";
-import { DateTimeInput } from "~frontend/ui/DateTimeInput";
 import { FieldLabel } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
@@ -16,6 +15,7 @@ import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
 import { InputError } from "~ui/forms/InputError";
 import { getDefaultDeadline } from "~frontend/utils/room";
+import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 interface Props {
   onCancel: () => void;

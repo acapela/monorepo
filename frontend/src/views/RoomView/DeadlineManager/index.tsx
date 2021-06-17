@@ -1,7 +1,7 @@
 import React from "react";
 import { RoomDetailedInfoFragment } from "~gql";
 import { updateRoom } from "~frontend/gql/rooms";
-import { DateTimeInput } from "~frontend/ui/DateTimeInput";
+import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -17,5 +17,5 @@ export const DeadlineManager = ({ room, isReadonly }: Props) => {
     await updateRoom({ roomId: room.id, input: { deadline } });
   };
 
-  return <DateTimeInput value={date} onChange={handleSubmit} />;
+  return <DateTimeInput isReadonly={isReadonly} value={date} onChange={handleSubmit} />;
 };

@@ -47,11 +47,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
       </UIPickers>
-<<<<<<< HEAD:ui/time/DateTimePicker/index.tsx
-      <Button isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
-=======
-      <Button onClick={() => null} isDisabled={didUserChangeInitialValue}>
->>>>>>> reusable DateTime input:frontend/src/ui/DateTimeInput/DateTimePicker/index.tsx
+      <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
         Save
       </Button>
     </UIDateTimePickerForm>

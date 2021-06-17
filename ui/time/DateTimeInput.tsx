@@ -5,10 +5,10 @@ import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
-import { DateTimePicker } from "./DateTimePicker";
 import { SecondaryText } from "~ui/typo";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { disabledPointerEventsCss } from "~ui/disabled";
+import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   value: Date;
@@ -19,7 +19,7 @@ interface Props {
 export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) => {
   const ref = useRef<HTMLButtonElement>(null);
 
-  const [isPickerOpen, { toggle: toggleOpenPicker }] = useBoolean(false);
+  const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
     toggleOpenPicker();
@@ -35,17 +35,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) =>
           </Popover>
         )}
       </AnimatePresence>
-      <UIHolder
-        isReadonly={isReadonly}
-        onFocus={() => {
-          if (!isPickerOpen) {
-            toggleOpenPicker();
-          }
-        }}
-        type="button"
-        onClick={toggleOpenPicker}
-        ref={ref}
-      >
+      <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker} ref={ref}>
         <SecondaryText>{format(value, "dd.MM.yyyy, p")}</SecondaryText>
       </UIHolder>
     </>
