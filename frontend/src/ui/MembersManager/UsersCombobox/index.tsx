@@ -6,7 +6,7 @@ import { baseInputStyles } from "~ui/forms/utils";
 import { Button } from "~ui/buttons/Button";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -124,9 +124,9 @@ const UIInput = styled.input<{ areResultsVisible: boolean }>`
 const UIMenu = styled.div<{ isVisible: boolean }>`
   position: absolute;
   overflow-y: auto;
-  border-left: 1px solid ${LIGHT_GRAY};
-  border-right: 1px solid ${LIGHT_GRAY};
-  border-bottom: 1px solid ${LIGHT_GRAY};
+  border-left: 1px solid ${BACKGROUND_ACCENT};
+  border-right: 1px solid ${BACKGROUND_ACCENT};
+  border-bottom: 1px solid ${BACKGROUND_ACCENT};
   left: 0;
   width: 100%;
   visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
@@ -136,7 +136,7 @@ const UIMenu = styled.div<{ isVisible: boolean }>`
 
 const UIOption = styled.div<{ isHighlighted: boolean }>`
   padding: 16px;
-  border-bottom: 1px solid ${LIGHT_GRAY};
+  border-bottom: 1px solid ${BACKGROUND_ACCENT};
   display: flex;
   align-items: center;
   justify-content: space-between;

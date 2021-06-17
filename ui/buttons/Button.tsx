@@ -2,8 +2,8 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { fontSize } from "../baseStyles";
-import { hoverActionCssWithCustomColor } from "../transitions";
+import { fontSize } from "~ui/baseStyles";
+import { getButtonColorStyles } from "~ui/transitions";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -69,6 +69,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   color: #fff;
 
   background: #474f5a;
+  ${getButtonColorStyles("#474f5a")}
   border-radius: 0.5rem;
   justify-content: center;
 
@@ -78,7 +79,6 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)
     props.isClickable &&
     css`
-      ${hoverActionCssWithCustomColor("#26313E")};
       cursor: ${props.isLoading ? "wait" : "pointer"};
     `}
 

@@ -8,7 +8,7 @@ import { StaticTopicsList } from "./StaticTopicsList";
 import { LazyTopicsList } from "./LazyTopicsList";
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
-import { RoomDetailedInfoFragment } from "~frontend/../../gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {

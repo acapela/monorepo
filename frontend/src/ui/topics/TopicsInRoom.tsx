@@ -12,6 +12,7 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { Badge } from "~ui/Badge";
 import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -21,7 +22,7 @@ interface Props {
 
 const RoomLink = routes.spaceRoom.Link;
 
-export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics, className }: Props) {
+export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, className }: Props) {
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   async function handleCreateTopic() {
@@ -44,11 +45,13 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
         <UIHead>
           <UIHeadPrimary>
             <Badge>Room</Badge>
-            <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
-              <a>
-                <ItemTitle>{room.name}</ItemTitle>
-              </a>
-            </RoomLink>
+            {room && (
+              <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
+                <a>
+                  <ItemTitle>{room.name}</ItemTitle>
+                </a>
+              </RoomLink>
+            )}
           </UIHeadPrimary>
 
           <AvatarList users={room.members.map((membership) => membership.user)} />
@@ -56,6 +59,7 @@ export const RoomRecentTopics = styled(function RoomRecentTopics({ room, topics,
         {isOpen && (
           <>
             <UITopics>
+              {topics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
               {topics.map((topic) => {
                 return <TopicCard key={topic.id} topic={topic} />;
               })}
@@ -89,7 +93,9 @@ const UICollapseHolder = styled.div<{ isOpened: boolean }>`
     }
   }
 `;
-const UIIndentBody = styled.div``;
+const UIIndentBody = styled.div`
+  flex: 1;
+`;
 const UIHead = styled.div`
   display: flex;
   align-items: center;
@@ -112,6 +118,8 @@ const UITopics = styled.div`
       margin-bottom: 16px;
     }
   }
+
+  flex: 1;
 
   margin-bottom: 24px;
 `;

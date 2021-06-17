@@ -39,7 +39,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
         <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
       )}
       <UIInfo>
-        <TextTitle>Topic: {topic.name}</TextTitle>
+        <TextTitle>{topic.name}</TextTitle>
         <UIMembers>
           <MembersManager
             users={topic.members.map((m) => m.user)}

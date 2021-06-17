@@ -48,7 +48,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
         roomId: room.id,
         spaceId: room.space_id,
       });
-    } else if (routes.spaceRoomSummary.isActive(router.route)) {
+    } else if (routes.spaceRoomSummary.isActive()) {
       routes.spaceRoom.replace({
         roomId: room.id,
         spaceId: room.space_id,

@@ -16,7 +16,6 @@ function createRefWithCallback<T>(initial: T, callback: (value: T) => void) {
 
   return ref;
 }
-
 /**
  * Works like normal useRef, but accepts second argument which is array
  * of additional refs of the same type. Ref value will be shared with

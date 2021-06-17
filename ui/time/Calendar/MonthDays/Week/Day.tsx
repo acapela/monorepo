@@ -1,0 +1,104 @@
+import { format, isSameDay, isSameMonth } from "date-fns";
+import React from "react";
+import styled, { css } from "styled-components";
+import { ACTIVE_COLOR } from "~ui/colors";
+import { getButtonColorStyles } from "~ui/transitions";
+import { TransparentButton } from "~ui/buttons/TransparentButton";
+
+interface Props {
+  dayDate: Date;
+  onSelect: (date: Date) => void;
+  currentMonthDate: Date;
+  isSelected: boolean;
+}
+
+export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) {
+  const isTodayDay = isSameDay(dayDate, new Date());
+  const isThisDayInCurrentMonth = isSameMonth(currentMonthDate, dayDate);
+
+  function handleDayClick() {
+    onSelect?.(dayDate);
+  }
+
+  return (
+    <UIDay>
+      <UISquareWrapper>
+        <UISquareContent>
+          <UIDayButton
+            data-tooltip={isTodayDay && "Today"}
+            isToday={isTodayDay}
+            isSelected={isSelected}
+            onClick={handleDayClick}
+            isDisabled={!isThisDayInCurrentMonth}
+          >
+            {format(dayDate, "d")}
+          </UIDayButton>
+        </UISquareContent>
+      </UISquareWrapper>
+    </UIDay>
+  );
+}
+
+const UIDay = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+`;
+
+const UISquareWrapper = styled.div`
+  padding-bottom: 100%;
+  width: 100%;
+  position: relative;
+`;
+
+const absoluteStretchCss = css`
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+`;
+
+const UISquareContent = styled.div`
+  ${absoluteStretchCss};
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  ${TransparentButton} {
+    padding: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
+const UIDayButton = styled(TransparentButton)<{ isToday: boolean; isSelected: boolean }>`
+  padding: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  && {
+    ${(props) => {
+      if (props.isDisabled) {
+        return css`
+          opacity: 0.2;
+        `;
+      }
+
+      if (props.isSelected) {
+        return getButtonColorStyles(ACTIVE_COLOR);
+      }
+
+      if (props.isToday) {
+        return css`
+          color: ${ACTIVE_COLOR};
+        `;
+      }
+    }}
+  }
+`;

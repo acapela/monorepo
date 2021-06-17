@@ -3,9 +3,9 @@ import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
-import { QueriedTopicsList } from "./RecentTopics/RecentTopics";
-import { useTopicFilterVariables } from "./RecentTopics/Filters/filter";
-import { TopicFilters } from "./RecentTopics/Filters/TopicFilters";
+import { QueriedTopicsList } from "~frontend/ui/topics/QueriedTopicsList";
+import { useTopicFilterVariables } from "~frontend/ui/topics/filters/filter";
+import { TopicFilters } from "~frontend/ui/topics/filters/TopicFilters";
 
 export function HomeView() {
   const user = useAssertCurrentUser();

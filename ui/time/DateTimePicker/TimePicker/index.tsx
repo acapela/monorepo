@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
 import { RadioOption } from "~ui/forms/RadioOption";
+import { useRendersCount } from "react-use";
 import { SecondaryText } from "~ui/typo";
+import styled from "styled-components";
 
 interface Props {
   value: number;
@@ -21,6 +23,7 @@ const getMinutesRangeFromStartOfTheDay = (): number[] => {
 
 export const TimePicker = ({ value, onChange }: Props) => {
   const dayStart = useMemo(() => startOfDay(new Date()), []);
+  const isFirstRender = useRendersCount() === 1;
 
   const selectedElement = useRef<HTMLDivElement>(null);
 
@@ -28,13 +31,14 @@ export const TimePicker = ({ value, onChange }: Props) => {
 
   useEffect(() => {
     selectedElement.current?.scrollIntoView({
-      behavior: "smooth",
+      // We don't want to animate time scroll on initial render
+      behavior: isFirstRender ? "auto" : "smooth",
       block: "center",
     });
   }, [value]);
 
   return (
-    <div>
+    <UIHolder>
       {options.map((minutes) => {
         const isSelected = minutes === value;
         return (
@@ -45,6 +49,12 @@ export const TimePicker = ({ value, onChange }: Props) => {
           </div>
         );
       })}
-    </div>
+    </UIHolder>
   );
 };
+
+const UIHolder = styled.div`
+  ${SecondaryText} {
+    font-weight: bold;
+  }
+`;
