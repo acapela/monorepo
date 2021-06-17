@@ -16,6 +16,6 @@ function jsonRetriever(key: string, originalValue: unknown) {
   return tryParseStringDate(originalValue);
 }
 
-export function parseJsonWithDates<T = any>(input: string): T {
+export function parseJsonWithDates<T>(input: string): T {
   return JSON.parse(input, jsonRetriever) as T;
 }
