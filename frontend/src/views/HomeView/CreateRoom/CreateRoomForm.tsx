@@ -14,7 +14,7 @@ import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
 import { InputError } from "~ui/forms/InputError";
-import { getDefaultDeadline } from "~frontend/utils/room";
+import { getRoomDefaultDeadline } from "~frontend/utils/room";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 interface Props {
@@ -28,7 +28,7 @@ export const CreateRoomForm = ({ onCancel }: Props) => {
   const [roomName, setRoomName] = useState<string>("");
   const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
-  const [deadline, setDeadline] = useState<Date>(getDefaultDeadline);
+  const [deadline, setDeadline] = useState<Date>(getRoomDefaultDeadline);
 
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
