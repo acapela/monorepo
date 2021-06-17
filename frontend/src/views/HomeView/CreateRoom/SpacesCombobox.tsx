@@ -8,6 +8,7 @@ import { FieldLabel, SecondaryText } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 import { IconCheckCircle, IconChevronDown } from "~ui/icons";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
@@ -101,7 +102,7 @@ const UIMenuOpener = styled.button`
   padding: 8px 16px;
   cursor: pointer;
   background: #ffffff;
-  border-radius: 6px;
+  border-radius: ${borderRadius.medium};
   border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
 `;
@@ -114,7 +115,7 @@ const UIMenu = styled.div<{ isVisible: boolean }>`
   top: 0;
   width: 100%;
   visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
-  border-radius: 6px;
+  border-radius: ${borderRadius.medium};
   background: #ffffff;
 `;
 

@@ -9,6 +9,7 @@ import { SecondaryText } from "~ui/typo";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { disabledPointerEventsCss } from "~ui/disabled";
 import { DateTimePicker } from "./DateTimePicker";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   value: Date;
@@ -48,7 +49,7 @@ const UIHolder = styled.button<{ isReadonly: boolean }>`
   padding: 8px 16px;
   cursor: pointer;
   background: #ffffff;
-  border-radius: 6px;
+  border-radius: ${borderRadius.medium};
   border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
 `;
