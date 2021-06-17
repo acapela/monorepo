@@ -11,7 +11,7 @@ import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 
 interface Props {
   items: SpaceBasicInfoFragment[];
-  itemId?: string;
+  itemId: string | null;
   onChange: (itemId: string) => void;
 }
 

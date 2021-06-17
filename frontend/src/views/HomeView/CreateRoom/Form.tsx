@@ -26,11 +26,11 @@ export const Form = ({ onCancel }: Props) => {
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 
   const [roomName, setRoomName] = useState<string>("");
-  const [selectedSpaceId, setSelectedSpaceId] = useState<string>();
+  const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
   const [deadline, setDeadline] = useState<Date>(getDefaultDeadline);
 
-  const [formErrorMessage, setFormErrorMessage] = useState<string>();
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
   const teamId = useAssertCurrentTeamId();
   const [spacesList = []] = useSpacesQuery({ teamId });
@@ -44,7 +44,7 @@ export const Form = ({ onCancel }: Props) => {
 
   // clear the error on changes in the form values
   useEffect(() => {
-    setFormErrorMessage(undefined);
+    setFormErrorMessage(null);
   }, [roomName, selectedSpaceId, spaceName]);
 
   const validationErrorMessage = validate({
