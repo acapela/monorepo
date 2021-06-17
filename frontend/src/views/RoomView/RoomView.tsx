@@ -105,7 +105,9 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
               isWide={true}
               onClick={onCloseRoomToggleClicked}
               isLoading={isChangingRoomState}
-              isDisabled={!amIMember}
+              isDisabled={
+                !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
+              }
             >
               {!isRoomOpen && "Reopen room"}
               {isRoomOpen && "Close room"}
