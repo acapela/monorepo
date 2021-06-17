@@ -40,18 +40,20 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   };
 
   return (
-    <UIDateTimePickerForm>
+    <UIDateTimePickerForm
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleSubmit();
+      }}
+    >
       <UIPickers>
         <Calendar date={dirtyDate} onDateChange={handleDayChange} />
         <UITimePickerWrapper>
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
       </UIPickers>
-<<<<<<< HEAD:ui/time/DateTimePicker/index.tsx
-      <Button isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
-=======
       <Button onClick={() => null} isDisabled={didUserChangeInitialValue}>
->>>>>>> reusable DateTime input:frontend/src/ui/DateTimeInput/DateTimePicker/index.tsx
         Save
       </Button>
     </UIDateTimePickerForm>
