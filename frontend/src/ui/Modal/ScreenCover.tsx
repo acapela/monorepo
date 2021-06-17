@@ -1,5 +1,5 @@
 import { ReactNode, RefObject } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { handleWithStopPropagation } from "~shared/events";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PopoverPlacement } from "~ui/popovers/Popover";
@@ -11,19 +11,22 @@ export interface ModalAnchor {
 interface Props {
   children: ReactNode;
   onCloseRequest?: () => void;
+  enableBlur?: boolean;
 }
 
-export function ScreenCover({ children, onCloseRequest }: Props) {
+export function ScreenCover({ children, onCloseRequest, enableBlur = false }: Props) {
   return (
     <BodyPortal>
-      <UIBodyCover onClick={handleWithStopPropagation(onCloseRequest)}>{children}</UIBodyCover>
+      <UIBodyCover onClick={handleWithStopPropagation(onCloseRequest)} enableBlur={enableBlur}>
+        {children}
+      </UIBodyCover>
     </BodyPortal>
   );
 }
 
 const BLUR = "10px";
 
-const UIBodyCover = styled.div`
+const UIBodyCover = styled.div<{ enableBlur: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -32,9 +35,13 @@ const UIBodyCover = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(240, 240, 240, 0.38);
-  @supports (backdrop-filter: blur(${BLUR})) or (--webkit-backdrop-filter: blur(${BLUR})) {
-    backdrop-filter: blur(${BLUR});
-    --webkit-backdrop-filter: blur(${BLUR});
-  }
+  ${(props) =>
+    props.enableBlur &&
+    css`
+      background: rgba(240, 240, 240, 0.38);
+      @supports (backdrop-filter: blur(${BLUR})) or (--webkit-backdrop-filter: blur(${BLUR})) {
+        backdrop-filter: blur(${BLUR});
+        --webkit-backdrop-filter: blur(${BLUR});
+      }
+    `}
 `;
