@@ -11,11 +11,11 @@ import { format } from "date-fns";
 // type VisualDateFormat = [label: string, tooltip: string];
 
 export function niceFormatDate(date: Date): string {
-  return "ok";
-  return format(date, "MMM do at pp");
+  if (typeof date === "string") date = new Date(date);
+  return format(date, "MMM do");
 }
 
 export function niceFormatTime(date: Date): string {
-  return "ok";
+  if (typeof date === "string") date = new Date(date);
   return format(date, "p");
 }

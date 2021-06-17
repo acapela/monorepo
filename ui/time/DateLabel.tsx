@@ -3,14 +3,19 @@ import { niceFormatDate, niceFormatTime } from "~shared/dates/format";
 
 interface Props {
   date: Date;
+  className?: string;
 }
 
 export function DateLabel({ date }: Props) {
   return <UIHolder></UIHolder>;
 }
 
-export function TimeLabelWithDateTooltip({ date }: Props) {
-  return <UIHolder data-tooltip={niceFormatDate(date)}>{niceFormatTime(date)}</UIHolder>;
-}
+export const TimeLabelWithDateTooltip = styled(function TimeLabelWithDateTooltip({ date, className }: Props) {
+  return (
+    <UIHolder className={className} data-tooltip={niceFormatDate(date)}>
+      {niceFormatTime(date)}
+    </UIHolder>
+  );
+})``;
 
 const UIHolder = styled.span``;

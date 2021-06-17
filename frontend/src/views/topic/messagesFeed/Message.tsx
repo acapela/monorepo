@@ -15,9 +15,10 @@ import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
+  className?: string;
 }
 
-export const Message = ({ message }: Props) => {
+export const Message = styled(({ message, className }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [updateMessage] = useUpdateTextMessageMutation();
@@ -41,19 +42,13 @@ export const Message = ({ message }: Props) => {
     await updateMessage({ id: message.id, content: newContent, isDraft: false });
   }
 
-  function getShouldShowTools() {
-    if (!isOwnMessage) return false;
-    if (isInEditMode) return false;
-
-    return isActive;
-  }
-
-  const shouldShowTools = useDebouncedValue(getShouldShowTools(), { onDelay: 0, offDelay: 200 });
+  const shouldShowTools = useDebouncedValue(isOwnMessage && !isInEditMode, { onDelay: 0, offDelay: 200 });
 
   console.log("willlll", { t: message.createdAt });
 
   return (
     <MessageLikeContent
+      className={className}
       tools={
         shouldShowTools && (
           <MessageActions
@@ -78,6 +73,6 @@ export const Message = ({ message }: Props) => {
       </UIMessageBody>
     </MessageLikeContent>
   );
-};
+})``;
 
 const UIMessageBody = styled.div``;

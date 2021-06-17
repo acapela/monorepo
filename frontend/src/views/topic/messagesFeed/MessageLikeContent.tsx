@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import { useHoverDirty } from "react-use";
 import styled from "styled-components";
+import { niceFormatDate } from "~frontend/../../shared/dates/format";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { TopicMessageDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
@@ -12,29 +13,31 @@ interface Props {
   date: Date;
   children: ReactNode;
   tools?: ReactNode;
+  className?: string;
+  hideMessageHead?: boolean;
 }
 
-export const MessageLikeContent = ({ user, date, children, tools }: Props) => {
+export const MessageLikeContent = styled(({ user, date, children, tools, hideMessageHead, className }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
-  const isHovered = useHoverDirty(holderRef);
   const currentUser = useCurrentUser();
 
-  console.log({ date });
-
   const isOwnMessage = currentUser?.id === user.id;
+
   return (
-    <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage}>
-      {tools && <UITools>{tools}</UITools>}
+    <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
       <MessageAvatar user={user} />
-      <UIBody>
-        <UIHead>
-          User <TimeLabelWithDateTooltip date={date} />
-        </UIHead>
+      <UIBody data-tooltip={niceFormatDate(date)}>
+        {!hideMessageHead && (
+          <UIHead>
+            {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
+          </UIHead>
+        )}
         {children}
       </UIBody>
+      {tools && <UITools>{tools}</UITools>}
     </UIAnimatedMessageWrapper>
   );
-};
+})``;
 
 const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   width: auto;
@@ -42,19 +45,22 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   align-items: flex-start;
   align-self: ${({ isOwnMessage }) => (isOwnMessage ? "flex-end" : "flex-start")};
   flex-direction: ${({ isOwnMessage }) => (isOwnMessage ? "row-reverse" : "row")};
-
-  margin-top: 0.5rem;
-  margin-right: ${({ isOwnMessage }) => (isOwnMessage ? "0" : "0.5")}rem;
-  margin-left: ${({ isOwnMessage }) => (isOwnMessage ? "0.5" : "0")}rem;
-
+  gap: 16px;
   border-radius: 0.5rem;
-
-  & > *:not(:last-child) {
-    ${({ isOwnMessage }) => (isOwnMessage ? "margin-left: 1rem;" : "margin-right: 1rem;")}
-  }
 
   ${() => MessageAvatar} {
     border-color: rgba(243, 244, 246, 1);
+  }
+
+  ${() => UITools} {
+    opacity: 0;
+    transition: 0.1s all;
+  }
+
+  &:hover {
+    ${() => UITools} {
+      opacity: 1;
+    }
   }
 `;
 
@@ -71,10 +77,16 @@ const UITools = styled(motion.div)`
 
 const UIHead = styled.div`
   font-weight: bold;
+  margin-bottom: 4px;
+
+  ${TimeLabelWithDateTooltip} {
+    opacity: 0.4;
+    user-select: none;
+  }
 `;
 
-function getUserOrGuestName(message: TopicMessageDetailedInfoFragment): string {
-  return message.user.name || "Guest";
+function getUserOrGuestName(user: UserBasicInfoFragment): string {
+  return user?.name || "Guest";
 }
 
 const UIBody = styled.div`

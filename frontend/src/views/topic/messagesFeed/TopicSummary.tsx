@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import { UserBasicInfoFragment } from "~gql";
 import { MessageLikeContent } from "./MessageLikeContent";
 
@@ -6,6 +7,7 @@ interface Props {
   summary: string;
   closedAt: Date;
   closedBy: UserBasicInfoFragment;
+  className?: string;
 }
 
 function enrichSummary(summary: string) {
@@ -15,11 +17,16 @@ function enrichSummary(summary: string) {
   return [{ insert: "🎉", attributes: { bold: true } }];
 }
 
-export const TopicSummaryMessage = ({ summary, closedAt, closedBy }: Props) => {
-  console.log({ closedAt });
+export const TopicSummaryMessage = styled(({ summary, closedAt, closedBy, className }: Props) => {
   return (
-    <MessageLikeContent user={closedBy} date={closedAt} messageTypeLabel="closed this topic">
+    <MessageLikeContent
+      hideMessageHead
+      user={closedBy}
+      date={closedAt}
+      messageTypeLabel="closed this topic"
+      className={className}
+    >
       <strong> Outcome of the topic: {summary}</strong>
     </MessageLikeContent>
   );
-};
+})``;
