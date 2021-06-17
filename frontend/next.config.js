@@ -130,9 +130,7 @@ module.exports = withPlugins(
       // !! WARN !!
       ignoreBuildErrors: true,
     },
-    future: {
-      webpack5: true,
-    },
+    webpack5: true,
     async rewrites() {
       return [
         {
