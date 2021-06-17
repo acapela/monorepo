@@ -24,10 +24,14 @@ export async function handleRoomParticipantCreated(invite: RoomParticipants, use
     findRoomById(roomId),
   ]);
 
-  if (!addedUser || !inviter || !room) {
-    throw new UnprocessableEntityError(
-      `Added user ${addedUserId} or inviter ${userId} or room ${roomId} does not exist`
-    );
+  if (!addedUser) {
+    throw new UnprocessableEntityError(`added user ${addedUserId} does not exist`);
+  }
+  if (!inviter) {
+    throw new UnprocessableEntityError(`inviter ${userId} does not exist`);
+  }
+  if (!room) {
+    throw new UnprocessableEntityError(`room ${roomId} does not exist`);
   }
   if (!addedUser.email) {
     throw new UnprocessableEntityError(`invalid user entry: ${addedUserId}`);
