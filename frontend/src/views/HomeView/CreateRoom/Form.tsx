@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { validate } from "./validate";
+import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 import { Button } from "~ui/buttons/Button";
 import { handleWithPreventDefault } from "~shared/events";
 import { useSpacesQuery } from "~frontend/gql/spaces";
@@ -47,7 +47,7 @@ export const Form = ({ onCancel }: Props) => {
     setFormErrorMessage(null);
   }, [roomName, selectedSpaceId, spaceName]);
 
-  const validationErrorMessage = validate({
+  const validationErrorMessage = validateRoomCreationInfo({
     roomName,
     spaceName,
     spaceId: selectedSpaceId,

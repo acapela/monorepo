@@ -6,7 +6,7 @@ interface ValidateParams {
   spaceName: string;
 }
 
-export const validate = ({ roomName, spaceId, spaceName }: ValidateParams) => {
+export const validateRoomCreationInfo = ({ roomName, spaceId, spaceName }: ValidateParams) => {
   const validateRoomNameLength = createLengthValidator("Room name", 3);
   const roomNameLengthError = validateRoomNameLength(roomName);
   if (roomNameLengthError !== true) {
