@@ -29,7 +29,6 @@ import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
-
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(

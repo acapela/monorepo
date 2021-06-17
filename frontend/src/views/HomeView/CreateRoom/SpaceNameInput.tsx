@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { fontSize } from "~frontend/../../ui/baseStyles";
-import { TextInput } from "~frontend/../../ui/forms/TextInput";
+import { fontSize } from "~ui/baseStyles";
+import { TextInput } from "~ui/forms/TextInput";
 import { FieldLabel } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
 

@@ -15,7 +15,7 @@ import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
-import { InputError } from "~frontend/../../ui/forms/InputError";
+import { InputError } from "~ui/forms/InputError";
 
 interface Props {
   onCancel: () => void;
