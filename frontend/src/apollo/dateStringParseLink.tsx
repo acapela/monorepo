@@ -4,6 +4,7 @@ import { DocumentNode } from "graphql";
 import { isArray, isObject, mapValues } from "lodash";
 import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapObjectValues<T>(object: T, callback: (value: unknown) => unknown): any {
   if (isArray(object)) {
     return object.map((value) => mapObjectValues(value, callback));
@@ -19,7 +20,6 @@ export function mapObjectValues<T>(object: T, callback: (value: unknown) => unkn
 if (typeof window !== "undefined") {
   Reflect.set(window, "par", tryParseStringDate);
 }
-console.log("parser", tryParseStringDate);
 
 export function parseStringDatesInObject<T>(object: T): void {
   return mapObjectValues(object, tryParseStringDate);
@@ -33,18 +33,11 @@ export function isSubscription(query: DocumentNode) {
 
 function parseResponse(response: FetchResult) {
   if (response.data) {
-    console.log("yoyoyo", response);
     try {
-      const foo = parseStringDatesInObject(response.data);
-
-      if (foo) {
-        console.log("HERE WE GO", { foo, response });
-        response.data = foo;
-      }
-
-      console.log(foo);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const dataWithDates = parseStringDatesInObject(response.data);
     } catch (err) {
-      console.log("err", err);
+      console.error("err", err);
     }
 
     // return foo;

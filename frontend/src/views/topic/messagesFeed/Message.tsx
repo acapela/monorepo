@@ -44,8 +44,6 @@ export const Message = styled(({ message, className }: Props) => {
 
   const shouldShowTools = useDebouncedValue(isOwnMessage && !isInEditMode, { onDelay: 0, offDelay: 200 });
 
-  console.log("willlll", { t: message.createdAt });
-
   return (
     <MessageLikeContent
       className={className}

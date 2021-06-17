@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function DateLabel({ date }: Props) {
-  return <UIHolder></UIHolder>;
+  return <UIHolder>{niceFormatDate(date)}</UIHolder>;
 }
 
 export const TimeLabelWithDateTooltip = styled(function TimeLabelWithDateTooltip({ date, className }: Props) {

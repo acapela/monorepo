@@ -108,6 +108,7 @@ function formatGraphqlErrorMessage(error: GraphQLError) {
 }
 
 // Log any GraphQL errors or network error that occurred
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorLink = onError(({ graphQLErrors = [], networkError }) => {
   for (const graphqlError of graphQLErrors) {
     const message = formatGraphqlErrorMessage(graphqlError);

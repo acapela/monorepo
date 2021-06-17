@@ -11,13 +11,6 @@ interface Props {
   className?: string;
 }
 
-function enrichSummary(summary: string) {
-  if (summary && summary.trim().length > 0) {
-    return [{ insert: "Outcome of the topic: ", attributes: { bold: true } }, { insert: summary }];
-  }
-  return [{ insert: "🎉", attributes: { bold: true } }];
-}
-
 export const TopicSummaryMessage = styled(({ className, topic }: Props) => {
   const closeInfo = getTopicCloseInfo(topic);
 

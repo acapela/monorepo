@@ -56,8 +56,6 @@ export const getApolloInitialState = () => {
 
   if (!queriesDataElement) return null;
 
-  console.log("test", parseJsonWithDates(queriesDataElement.innerHTML));
-
   return parseJsonWithDates(queriesDataElement.innerHTML);
 };
 
