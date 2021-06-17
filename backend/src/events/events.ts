@@ -9,7 +9,7 @@ import { handleMessageCreated } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
 import { handleTopicCreated } from "../topics/events";
 import { handleUserCreated } from "../users/events";
-import { handleRoomParticipantAdded } from "~backend/src/roomInvitation/events";
+import { handleRoomParticipantCreated } from "~backend/src/roomInvitation/events";
 
 export const router = Router();
 
@@ -20,7 +20,7 @@ hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitatio
 hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
-hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantAdded);
+hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantCreated);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
