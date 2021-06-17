@@ -17,13 +17,13 @@ export function HomeView() {
       <UISearchWrapper>
         <SearchBar />
       </UISearchWrapper>
-      <UIRow>
+      <UIMainSection>
         <UIGreeting>
           <PageTitle>Hello, {user.name}!</PageTitle>
           <div>Here are rooms & topics with recent activity.</div>
         </UIGreeting>
         <CreateRoomButton />
-      </UIRow>
+      </UIMainSection>
       <TopicFilters onFiltersChange={setFilters} />
       <QueriedTopicsList query={topicQuery} />
     </UIHolder>
@@ -45,7 +45,7 @@ const UISearchWrapper = styled.div`
   margin-bottom: 3rem;
 `;
 
-const UIRow = styled.div`
+const UIMainSection = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 40px;
