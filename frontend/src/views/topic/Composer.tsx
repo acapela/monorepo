@@ -47,7 +47,6 @@ export const MessageComposer = ({ topicId }: Props) => {
 
   return (
     <>
-      kljjlk
       <UIEditorContainer>
         <Recorder
           onRecordingReady={async (recording) => {
@@ -83,6 +82,7 @@ export const MessageComposer = ({ topicId }: Props) => {
             setValue([]);
           }}
           placeholder="Type here to start contributing..."
+          autoFocusKey={topicId}
           additionalContent={
             attachments.length > 0 && (
               <UIAttachmentsPreviews>
