@@ -1,12 +1,12 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 
-interface ValidateParams {
+interface RoomCreateInput {
   roomName: string;
   spaceId: string | null;
   spaceName: string;
 }
 
-export const validateRoomCreationInfo = ({ roomName, spaceId, spaceName }: ValidateParams) => {
+export const validateRoomCreationInfo = ({ roomName, spaceId, spaceName }: RoomCreateInput) => {
   const validateRoomNameLength = createLengthValidator("Room name", 3);
   const roomNameLengthError = validateRoomNameLength(roomName);
   if (roomNameLengthError !== true) {
