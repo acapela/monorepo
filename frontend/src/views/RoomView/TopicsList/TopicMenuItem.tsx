@@ -43,9 +43,9 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
           </UIHolder>
         </TopicLink>
         {!isEditingDisabled && (
-          <UIManageTopicWr>
+          <UIManageTopicWrapper>
             <ManageTopic topic={topic} />
-          </UIManageTopicWr>
+          </UIManageTopicWrapper>
         )}
       </UIFlyingTooltipWrapper>
       {isShowingDragIcon && !isEditingDisabled && (
@@ -87,7 +87,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }}
 `;
 
-const UIManageTopicWr = styled.div`
+const UIManageTopicWrapper = styled.div`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
@@ -104,7 +104,7 @@ const UIFlyingTooltipWrapper = styled.div`
   align-items: center;
 
   @media (hover) {
-    &:hover ${UIManageTopicWr} {
+    &:hover ${UIManageTopicWrapper} {
       opacity: 1;
     }
   }
