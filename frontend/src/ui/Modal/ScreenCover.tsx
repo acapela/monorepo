@@ -21,7 +21,7 @@ export function ScreenCover({ children, onCloseRequest }: Props) {
   );
 }
 
-const BLUR = "4px";
+const BLUR = "10px";
 
 const UIBodyCover = styled.div`
   position: fixed;
@@ -33,7 +33,6 @@ const UIBodyCover = styled.div`
   align-items: center;
   justify-content: center;
   background: rgba(240, 240, 240, 0.38);
-  --blur: 10px;
   @supports (backdrop-filter: blur(${BLUR})) or (--webkit-backdrop-filter: blur(${BLUR})) {
     backdrop-filter: blur(${BLUR});
     --webkit-backdrop-filter: blur(${BLUR});
