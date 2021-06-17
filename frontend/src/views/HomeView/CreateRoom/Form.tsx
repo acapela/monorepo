@@ -156,6 +156,7 @@ const UIBottomArea = styled.div`
   display: grid;
   grid-template-rows: 20px auto;
   gap: 10px;
+  justify-items: center;
 `;
 
 const UIButtons = styled.div`
