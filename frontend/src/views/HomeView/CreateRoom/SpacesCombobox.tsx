@@ -59,7 +59,16 @@ export const SpacesCombobox = ({ items, onChange, itemId }: Props) => {
     <UIFormField {...getComboboxProps()}>
       <FieldLabel {...getLabelProps()}>Select space</FieldLabel>
       <UICombobox ref={comboboxRef}>
-        <UIMenuOpener type="button" {...getInputProps()} onClick={openMenu}>
+        <UIMenuOpener
+          onFocus={() => {
+            if (!isOpen) {
+              openMenu();
+            }
+          }}
+          type="button"
+          {...getInputProps()}
+          onClick={openMenu}
+        >
           <SecondaryText>{selectedItem ? selectedItem.name : "Select a space"}</SecondaryText>
           <IconChevronDown />
         </UIMenuOpener>
