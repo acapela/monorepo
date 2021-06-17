@@ -1,7 +1,7 @@
 import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from "next/document";
 
 import { ServerStyleSheet } from "styled-components";
-import { getApolloClient, readTokenFromRequest } from "~frontend/apollo";
+import { getApolloClient, readTokenFromRequest } from "~frontend/apollo/client";
 import { ApolloInitialState, prefetchRecordedQueries, startRecordingUsedQueries } from "~frontend/gql/utils/hydration";
 
 type Props = DocumentInitialProps & {

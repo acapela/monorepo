@@ -1,5 +1,5 @@
 import { ApolloCache } from "@apollo/client";
-import { getRenderedApolloClient } from "~frontend/apollo";
+import { getRenderedApolloClient } from "~frontend/apollo/client";
 
 let currentApolloProxy: ApolloCache<unknown> | null = null;
 

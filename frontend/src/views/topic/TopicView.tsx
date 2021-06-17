@@ -8,12 +8,12 @@ import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { MessageComposer } from "./Composer";
-import { Message } from "./Message";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
-import { TopicSummaryMessage } from "./Message/TopicSummaryMessage";
 import { useTopic } from "~frontend/topics/useTopic";
+import { TopicSummaryMessage } from "./messagesFeed/TopicSummary";
+import { MessagesFeed } from "./messagesFeed/MessagesFeed";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { disabledCss } from "~ui/disabled";
 
@@ -56,16 +56,9 @@ export const TopicView = ({ id }: Props) => {
           <ScrollableMessages>
             <UIAnimatedMessagesWrapper>
               <AnimateSharedLayout>
-                {messages.map((message) => (
-                  <Message key={message.id} message={message} />
-                ))}
-                {topicCloseInfo && (
-                  <TopicSummaryMessage
-                    summary={topicCloseInfo.summary}
-                    closedAt={topicCloseInfo.closedAt}
-                    closedBy={topicCloseInfo.closedByUsedId}
-                  />
-                )}
+                <MessagesFeed messages={messages} />
+
+                {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>
               {!messages.length && !topicCloseInfo && (
                 <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>

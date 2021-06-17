@@ -6,7 +6,7 @@ import {
   useMutation as useRawMutation,
 } from "@apollo/client";
 import { memoize } from "lodash";
-import { getRenderedApolloClient } from "~frontend/apollo";
+import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
 

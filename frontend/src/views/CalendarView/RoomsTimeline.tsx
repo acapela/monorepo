@@ -16,7 +16,7 @@ export function RoomsTimeline({ startDate }: Props) {
 
   return (
     <UIHolder>
-      {nextDays.map((nextDay, index) => {
+      {nextDays.map((nextDay) => {
         return (
           <RoomsTimelineSingleDay
             // Show day even if it's empty for the first day (day selected in the calendar)

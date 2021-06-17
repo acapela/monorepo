@@ -15,7 +15,7 @@ import { assertGet } from "~shared/assert";
 import { reportQueryUsage } from "./hydration";
 import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
-import { getRenderedApolloClient } from "~frontend/apollo";
+import { getRenderedApolloClient } from "~frontend/apollo/client";
 
 export function createQuery<Data, Variables>(query: () => DocumentNode) {
   type VoidableVariables = VoidableIfEmpty<Variables>;
