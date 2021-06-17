@@ -1,12 +1,16 @@
 import React from "react";
 import styled from "styled-components";
-import { useIsAnyRouteActive } from "~frontend/routes";
+import { routes, useIsAnyRouteActive } from "~frontend/routes";
 import { IconHome, IconSpaces, IconCalendar } from "~ui/icons";
 import { ContentBreadcrumbs } from "./Breadcrumbs";
 import { NavItem } from "./NavItem";
 
 export const TopBarMenu = () => {
-  const shouldShowCollaborationBreadcrumbs = useIsAnyRouteActive(["space", "spaceRoom", "spaceRoomTopic"]);
+  const shouldShowCollaborationBreadcrumbs = useIsAnyRouteActive([
+    routes.space.path,
+    routes.spaceRoom.path,
+    routes.spaceRoomTopic.path,
+  ]);
 
   if (!shouldShowCollaborationBreadcrumbs) {
     return (

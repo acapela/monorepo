@@ -1,6 +1,7 @@
-import { addDays, eachDayOfInterval } from "date-fns";
+import { addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import styled from "styled-components";
 import { RoomsTimelineSingleDay } from "./RoomsTimelineSingleDay";
+
 interface Props {
   startDate: Date;
 }
@@ -16,7 +17,14 @@ export function RoomsTimeline({ startDate }: Props) {
   return (
     <UIHolder>
       {nextDays.map((nextDay, index) => {
-        return <RoomsTimelineSingleDay displayEmpty={index === 0} key={nextDay.getTime()} startDate={nextDay} />;
+        return (
+          <RoomsTimelineSingleDay
+            // Show day even if it's empty for the first day (day selected in the calendar)
+            displayEmpty={isSameDay(nextDay, startDate)}
+            key={nextDay.getTime()}
+            startDate={nextDay}
+          />
+        );
       })}
     </UIHolder>
   );

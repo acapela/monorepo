@@ -8,7 +8,7 @@ interface Props {
   topics: TopicDetailedInfoFragment[];
 }
 
-export const TopicsGrouppedByRooms = styled(function RecentTopics({ className, topics }: Props) {
+export const TopicsGroupedByRooms = styled(function TopicsGroupedByRooms({ className, topics }: Props) {
   const roomGroups = groupBy(
     topics,
     (topic) => topic.room,

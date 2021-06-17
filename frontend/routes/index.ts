@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { createRoute } from "./create";
+import { AnyRoute, createRoute } from "./create";
 
 export const routes = {
   home: createRoute("/", {}),
@@ -18,10 +18,10 @@ export const routes = {
   invitePage: createRoute("/invite/[inviteCode]", { inviteCode: "string" }),
 };
 
-export function useIsAnyRouteActive(routeNames: Array<keyof typeof routes>) {
+export function useIsAnyRouteActive(paths: Array<string>) {
   // We use router only to re-render this hook each time router path changes.
   const router = useRouter();
-  return routeNames.some((routeName) => {
-    return routes[routeName].isActive(router);
+  return paths.some((path) => {
+    return router.pathname === path;
   });
 }

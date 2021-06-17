@@ -4,7 +4,7 @@ import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { CalendarView } from "~frontend/views/CalendarView";
 import { Container } from "~ui/layout/Container";
 
-export default function SpacesPage(): JSX.Element {
+export default function CalendarPage(): JSX.Element {
   return (
     <Container>
       <CalendarView />
@@ -14,4 +14,4 @@ export default function SpacesPage(): JSX.Element {
 
 export const getServerSideProps = withServerSideAuthRedirect();
 
-assignPageLayout(SpacesPage, AppLayout);
+assignPageLayout(CalendarPage, AppLayout);

@@ -57,7 +57,6 @@ const UIHolder = styled.div`
   ${hoverActionCss}
   cursor: pointer;
   position: relative;
-  /* width: 100%; */
 `;
 
 const UIInfo = styled.div`

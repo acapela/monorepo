@@ -22,7 +22,7 @@ interface Props {
 
 const RoomLink = routes.spaceRoom.Link;
 
-export const TopicsInRoom = styled(function RoomRecentTopics({ room, topics, className }: Props) {
+export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, className }: Props) {
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   async function handleCreateTopic() {

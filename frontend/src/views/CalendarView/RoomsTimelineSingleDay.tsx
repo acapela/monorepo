@@ -3,7 +3,7 @@ import { ItemTitle } from "~ui/typo";
 import { getDayBoundaries } from "~shared/dates/utils";
 import { niceFormatDate } from "~shared/dates/format";
 import { useTopicsQuery } from "~frontend/gql/topics";
-import { TopicsGrouppedByRooms } from "~frontend/ui/topics/TopicsGrouppedByRooms";
+import { TopicsGroupedByRooms } from "~frontend/ui/topics/TopicsGrouppedByRooms";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCalendar } from "~ui/icons";
 import { motion } from "framer-motion";
@@ -25,13 +25,14 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
     where: {
       room: {
         deadline: {
-          _gte: dayStart,
-          _lte: dayEnd,
+          _gte: dayStart.toISOString(),
+          _lte: dayEnd.toISOString(),
         },
       },
     },
   });
 
+  // If there are no topics in given day render empty component unless forced to render empty.
   if (!topics?.length && !displayEmpty) {
     return null;
   }
@@ -43,7 +44,7 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
       transition={getSpringTransitionWithDuration(0.6)}
     >
       <UITitle>{niceFormatDate(startDate)}</UITitle>
-      <TopicsGrouppedByRooms topics={topics ?? []} />
+      <TopicsGroupedByRooms topics={topics ?? []} />
       {topics?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
     </UIHolder>
   );

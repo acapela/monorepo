@@ -89,6 +89,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   }
 
   return {
+    path,
     useParams,
     push,
     replace,
@@ -99,6 +100,8 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     getUrlWithParams,
   };
 }
+
+export type AnyRoute = ReturnType<typeof createRoute>;
 
 function fillParamsInUrl<Params extends Record<string, unknown>>(href: string, params: Params) {
   let hrefWithParams = href;
