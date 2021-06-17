@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { AttachmentDetailedInfoFragment, TopicMessageDetailedInfoFragment } from "~frontend/../../gql";
+import { TopicMessageDetailedInfoFragment } from "~gql";
 import { MessageAttachment } from "./attachment/MessageAttachment";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./attachment/MessageAttachmentDisplayer";
 import { AttachmentWithTranscription } from "./AttachmentWithTranscription";

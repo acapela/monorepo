@@ -1,4 +1,4 @@
-import { AttachmentDetailedInfoFragment } from "~frontend/../../gql";
+import { AttachmentDetailedInfoFragment } from "~gql";
 
 interface Props {
   attachment: AttachmentDetailedInfoFragment;

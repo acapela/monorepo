@@ -1,8 +1,8 @@
 import { isSameDay } from "date-fns";
 import { Fragment } from "react";
 import styled from "styled-components";
-import { niceFormatDate } from "~frontend/../../shared/dates/format";
-import { fontSize } from "~frontend/../../ui/baseStyles";
+import { niceFormatDate } from "~shared/dates/format";
+import { fontSize } from "~ui/baseStyles";
 import { TopicMessageDetailedInfoFragment } from "~gql";
 import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";

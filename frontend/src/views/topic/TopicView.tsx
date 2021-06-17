@@ -58,13 +58,7 @@ export const TopicView = ({ id }: Props) => {
               <AnimateSharedLayout>
                 <MessagesFeed messages={messages} />
 
-                {topicCloseInfo && (
-                  <TopicSummaryMessage
-                    summary={topicCloseInfo.summary}
-                    closedAt={topicCloseInfo.closedAt}
-                    closedBy={topicCloseInfo.closedByUsedId}
-                  />
-                )}
+                {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>
               {!messages.length && !topicCloseInfo && (
                 <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
