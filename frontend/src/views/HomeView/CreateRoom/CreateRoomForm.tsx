@@ -21,7 +21,7 @@ interface Props {
   onCancel: () => void;
 }
 
-export const Form = ({ onCancel }: Props) => {
+export const CreateRoomForm = ({ onCancel }: Props) => {
   const [createSpace, { loading: createSpaceLoading }] = useCreateSpaceMutation();
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 

@@ -2,7 +2,7 @@ import React from "react";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { Modal } from "~frontend/ui/Modal";
-import { Form } from "./Form";
+import { CreateRoomForm } from "./CreateRoomForm";
 import { IconPlus } from "~ui/icons/default";
 
 export const CreateRoom = () => {
@@ -15,7 +15,7 @@ export const CreateRoom = () => {
       </Button>
       {isModalVisible && (
         <Modal onCloseRequest={toggleModalVisibility}>
-          <Form onCancel={toggleModalVisibility} />
+          <CreateRoomForm onCancel={toggleModalVisibility} />
         </Modal>
       )}
     </>
