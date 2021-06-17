@@ -1,20 +1,15 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { routes } from "~frontend/routes";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
-import { namedLazy } from "~shared/namedLazy";
 import { StaticTopicsList } from "./StaticTopicsList";
+import { LazyTopicsList } from "./LazyTopicsList";
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~frontend/../../gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-
-const LazySortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
-
-LazySortableTopicsList.preload();
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -93,18 +88,17 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
           </routes.spaceRoomSummary.Link>
         )}
       </UIHeader>
-      <ClientSideOnly>
-        <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
-          <LazySortableTopicsList
-            topics={topics}
-            activeTopicId={activeTopicId}
-            isDisabled={isExecutingBulkReorder || isReordering}
-            onMoveBetween={moveBetween}
-            onMoveToStart={moveToStart}
-            onMoveToEnd={moveToEnd}
-          />
-        </Suspense>
-      </ClientSideOnly>
+      {amIMember && (
+        <LazyTopicsList
+          topics={topics}
+          activeTopicId={activeTopicId}
+          isDisabled={isExecutingBulkReorder || isReordering}
+          onMoveBetween={moveBetween}
+          onMoveToStart={moveToStart}
+          onMoveToEnd={moveToEnd}
+        />
+      )}
+      {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
       {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
     </UIHolder>
   );

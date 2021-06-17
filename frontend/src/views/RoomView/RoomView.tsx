@@ -101,7 +101,14 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
           <UILine />
           {room && <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />}
           <UIFlyingCloseRoomToggle>
-            <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
+            <Button
+              isWide={true}
+              onClick={onCloseRoomToggleClicked}
+              isLoading={isChangingRoomState}
+              isDisabled={
+                !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
+              }
+            >
               {!isRoomOpen && "Reopen room"}
               {isRoomOpen && "Close room"}
             </Button>
