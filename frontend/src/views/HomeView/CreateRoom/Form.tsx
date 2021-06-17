@@ -26,7 +26,7 @@ export const Form = ({ onCancel }: Props) => {
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 
   const [roomName, setRoomName] = useState<string>("");
-  const [spaceId, setSpaceId] = useState<string>();
+  const [selectedSpaceId, setSelectedSpaceId] = useState<string>();
   const [spaceName, setSpaceName] = useState<string>("");
   const [deadline, setDeadline] = useState<Date>(getDefaultDeadline);
 
@@ -37,20 +37,20 @@ export const Form = ({ onCancel }: Props) => {
 
   // if only one space - make it selected by default
   useEffect(() => {
-    if (!spaceId && spacesList.length === 1) {
-      setSpaceId(spacesList[0].id);
+    if (!selectedSpaceId && spacesList.length === 1) {
+      setSelectedSpaceId(spacesList[0].id);
     }
-  }, [spacesList, spaceId]);
+  }, [spacesList, selectedSpaceId]);
 
   // clear the error on changes in the form values
   useEffect(() => {
     setFormErrorMessage(undefined);
-  }, [roomName, spaceId, spaceName]);
+  }, [roomName, selectedSpaceId, spaceName]);
 
   const validationErrorMessage = validate({
     roomName,
     spaceName,
-    spaceId,
+    spaceId: selectedSpaceId,
   });
 
   const isSubmitLoading = createSpaceLoading || createRoomLoading;
@@ -63,25 +63,25 @@ export const Form = ({ onCancel }: Props) => {
     }
 
     try {
-      let finalSpaceId = spaceId;
-      if (!finalSpaceId) {
+      let spaceId = selectedSpaceId;
+      if (spacesList.length === 0) {
         const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
         if (space) {
-          finalSpaceId = space.id;
+          spaceId = space.id;
         }
       }
 
-      if (!finalSpaceId) {
+      if (!spaceId) {
         return;
       }
 
       try {
-        const [room] = await createRoom({ name: roomName, deadline, spaceId: finalSpaceId, slug: slugify(roomName) });
+        const [room] = await createRoom({ name: roomName, deadline, spaceId, slug: slugify(roomName) });
         if (!room) {
           return;
         }
 
-        routes.spaceRoom.push({ spaceId: finalSpaceId, roomId: room.id });
+        routes.spaceRoom.push({ spaceId, roomId: room.id });
       } catch (err) {
         if (err.message.includes("Uniqueness violation")) {
           setFormErrorMessage("Room with this name already exists");
@@ -104,7 +104,7 @@ export const Form = ({ onCancel }: Props) => {
           placeholder="Room name"
         />
         {spacesList.length > 0 ? (
-          <SpacesCombobox itemId={spaceId} items={spacesList} onChange={setSpaceId} />
+          <SpacesCombobox itemId={selectedSpaceId} items={spacesList} onChange={setSelectedSpaceId} />
         ) : (
           <SpaceNameInput value={spaceName} onChange={setSpaceName} />
         )}
