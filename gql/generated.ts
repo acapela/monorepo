@@ -8301,6 +8301,7 @@ export type CreateRoomMutationVariables = Exact<{
   name: Scalars['String'];
   spaceId: Scalars['uuid'];
   slug: Scalars['String'];
+  deadline: Scalars['timestamptz'];
 }>;
 
 

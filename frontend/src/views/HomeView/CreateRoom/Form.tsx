@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { add, roundToNearestMinutes } from "date-fns";
 import { validate } from "./validate";
 import { Button } from "~ui/buttons/Button";
 import { handleWithPreventDefault } from "~shared/events";
@@ -16,15 +15,11 @@ import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { routes } from "~frontend/routes";
 import { InputError } from "~ui/forms/InputError";
+import { getDefaultDeadline } from "~frontend/utils/room";
 
 interface Props {
   onCancel: () => void;
 }
-
-const getDefaultDueDate = () => {
-  const date = add(new Date(), { days: 1 });
-  return roundToNearestMinutes(date, { nearestTo: 15 });
-};
 
 export const Form = ({ onCancel }: Props) => {
   const [createSpace, { loading: createSpaceLoading }] = useCreateSpaceMutation();
@@ -33,7 +28,7 @@ export const Form = ({ onCancel }: Props) => {
   const [roomName, setRoomName] = useState<string>("");
   const [spaceId, setSpaceId] = useState<string>();
   const [spaceName, setSpaceName] = useState<string>("");
-  const [dueDate, setDueDate] = useState<Date>(getDefaultDueDate);
+  const [deadline, setDeadline] = useState<Date>(getDefaultDeadline);
 
   const [formErrorMessage, setFormErrorMessage] = useState<string>();
 
@@ -81,7 +76,7 @@ export const Form = ({ onCancel }: Props) => {
       }
 
       try {
-        const [room] = await createRoom({ name: roomName, spaceId: finalSpaceId, slug: slugify(roomName) });
+        const [room] = await createRoom({ name: roomName, deadline, spaceId: finalSpaceId, slug: slugify(roomName) });
         if (!room) {
           return;
         }
@@ -115,7 +110,7 @@ export const Form = ({ onCancel }: Props) => {
         )}
         <UIFormField>
           <FieldLabel>Due date</FieldLabel>
-          <DateTimeInput value={dueDate} onChange={setDueDate} />
+          <DateTimeInput value={deadline} onChange={setDeadline} />
         </UIFormField>
       </UIFormFields>
       <UIBottomArea>

@@ -11,6 +11,7 @@ import { PageTitle } from "~ui/typo";
 import { SpaceRooms } from "./SpaceRooms";
 import { useRef } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { getDefaultDeadline } from "~frontend/utils/room";
 
 interface Props {
   spaceId: string;
@@ -43,7 +44,7 @@ export function SpaceView({ spaceId }: Props) {
 
     const slug = slugify(roomName);
 
-    const [room] = await createRoom({ name: roomName, spaceId, slug });
+    const [room] = await createRoom({ name: roomName, spaceId, deadline: getDefaultDeadline(), slug });
 
     const roomId = room?.id;
 
