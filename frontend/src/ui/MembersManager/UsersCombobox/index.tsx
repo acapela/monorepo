@@ -142,8 +142,8 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   justify-content: space-between;
   cursor: pointer;
   border-radius: 0;
-  ${(p) =>
-    p.isHighlighted &&
+  ${(props) =>
+    props.isHighlighted &&
     css`
       background-color: ${ACTION_ACTIVE_COLOR};
     `}
