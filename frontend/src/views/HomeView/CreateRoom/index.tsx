@@ -5,7 +5,7 @@ import { Modal } from "~frontend/ui/Modal";
 import { CreateRoomForm } from "./CreateRoomForm";
 import { IconPlus } from "~ui/icons/default";
 
-export const CreateRoom = () => {
+export const CreateRoomButton = () => {
   const [isModalVisible, { toggle: toggleModalVisibility }] = useBoolean(false);
 
   return (

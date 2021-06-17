@@ -6,7 +6,7 @@ import { Container } from "~ui/layout/Container";
 import { QueriedTopicsList } from "~frontend/ui/topics/QueriedTopicsList";
 import { useTopicFilterVariables } from "~frontend/ui/topics/filters/filter";
 import { TopicFilters } from "~frontend/ui/topics/filters/TopicFilters";
-import { CreateRoom } from "./CreateRoom";
+import { CreateRoomButton } from "./CreateRoom";
 
 export function HomeView() {
   const user = useAssertCurrentUser();
@@ -22,7 +22,7 @@ export function HomeView() {
           <PageTitle>Hello, {user.name}!</PageTitle>
           <div>Here are rooms & topics with recent activity.</div>
         </UIGreeting>
-        <CreateRoom />
+        <CreateRoomButton />
       </UIRow>
       <TopicFilters onFiltersChange={setFilters} />
       <QueriedTopicsList query={topicQuery} />
