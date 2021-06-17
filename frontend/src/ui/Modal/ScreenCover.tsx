@@ -32,7 +32,8 @@ const UIBodyCover = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  --blur: 4px;
+  background: rgba(240, 240, 240, 0.38);
+  --blur: 10px;
   @supports (backdrop-filter: blur(${BLUR})) or (--webkit-backdrop-filter: blur(${BLUR})) {
     backdrop-filter: blur(${BLUR});
     --webkit-backdrop-filter: blur(${BLUR});
