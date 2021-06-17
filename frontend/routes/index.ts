@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { AnyRoute, createRoute } from "./create";
+import { createRoute } from "./create";
 
 export const routes = {
   home: createRoute("/", {}),

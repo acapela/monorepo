@@ -3,8 +3,7 @@ import { IconChevronDown, IconSignOut, IconUsers } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { hoverActionCss, hoverActionNegativeSpacingCss } from "~frontend/../../ui/transitions";
+import { hoverActionCss } from "~ui/transitions";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 export function UserMenu() {
