@@ -8,7 +8,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { SecondaryText } from "~ui/typo";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { disabledPointerEventsCss } from "~ui/disabled";
-import { DateTimePicker } from "~ui/time/DateTimePicker";
+import { DateTimePicker } from "./DateTimePicker";
 
 interface Props {
   value: Date;
