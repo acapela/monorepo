@@ -5,6 +5,10 @@ import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { Popover } from "~ui/popovers/Popover";
+import { useRef } from "react";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { IconDragAndDrop } from "~ui/icons";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -18,20 +22,38 @@ const TopicLink = routes.spaceRoomTopic.Link;
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
+
+  const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
+  const anchorRef = useRef<HTMLAnchorElement | null>(null);
+
   return (
-    <UIFlyingTooltipWrapper>
-      <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
-        <UIHolder className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-          {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-          {topic.name}
-        </UIHolder>
-      </TopicLink>
-      {!isEditingDisabled && (
-        <UIManageTopicWr>
-          <ManageTopic topic={topic} />
-        </UIManageTopicWr>
+    <>
+      <UIFlyingTooltipWrapper>
+        <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
+          <UIHolder
+            ref={anchorRef}
+            className={className}
+            isActive={isActive}
+            isClosed={!!topic.closed_at}
+            onMouseEnter={showDragIcon}
+            onMouseLeave={hideDragIcon}
+          >
+            {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+            {topic.name}
+          </UIHolder>
+        </TopicLink>
+        {!isEditingDisabled && (
+          <UIManageTopicWrapper>
+            <ManageTopic topic={topic} />
+          </UIManageTopicWrapper>
+        )}
+      </UIFlyingTooltipWrapper>
+      {isShowingDragIcon && !isEditingDisabled && (
+        <Popover anchorRef={anchorRef} placement={"left"}>
+          <IconDragAndDrop />
+        </Popover>
       )}
-    </UIFlyingTooltipWrapper>
+    </>
   );
 })``;
 
@@ -65,7 +87,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }}
 `;
 
-const UIManageTopicWr = styled.div`
+const UIManageTopicWrapper = styled.div`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
@@ -82,7 +104,7 @@ const UIFlyingTooltipWrapper = styled.div`
   align-items: center;
 
   @media (hover) {
-    &:hover ${UIManageTopicWr} {
+    &:hover ${UIManageTopicWrapper} {
       opacity: 1;
     }
   }
