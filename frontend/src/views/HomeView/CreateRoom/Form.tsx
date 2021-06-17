@@ -40,12 +40,14 @@ export const Form = ({ onCancel }: Props) => {
   const teamId = useAssertCurrentTeamId();
   const [spacesList = []] = useSpacesQuery({ teamId });
 
+  // if only one space - make it selected by default
   useEffect(() => {
     if (!spaceId && spacesList.length === 1) {
       setSpaceId(spacesList[0].id);
     }
   }, [spacesList, spaceId]);
 
+  // clear the error on changes in the form values
   useEffect(() => {
     setFormErrorMessage(undefined);
   }, [roomName, spaceId, spaceName]);
