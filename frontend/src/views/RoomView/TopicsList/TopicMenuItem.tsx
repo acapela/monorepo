@@ -10,11 +10,12 @@ interface Props {
   topic: TopicDetailedInfoFragment;
   isActive: boolean;
   className?: string;
+  isEditingDisabled?: boolean;
 }
 
 const TopicLink = routes.spaceRoomTopic.Link;
 
-export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className }: Props) {
+export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
   return (
@@ -25,9 +26,11 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
           {topic.name}
         </UIHolder>
       </TopicLink>
-      <UIManageTopicWr>
-        <ManageTopic topic={topic} />
-      </UIManageTopicWr>
+      {!isEditingDisabled && (
+        <UIManageTopicWr>
+          <ManageTopic topic={topic} />
+        </UIManageTopicWr>
+      )}
     </UIFlyingTooltipWrapper>
   );
 })``;
