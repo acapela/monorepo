@@ -1,4 +1,6 @@
 import { css } from "styled-components";
+import { changeColorLightness, isColorDark } from "~shared/colors";
+import { BLACK, WHITE } from "./colors";
 
 export function hoverTransition(propName = "all") {
   return css`
@@ -41,3 +43,50 @@ export const hoverActionCssWithCustomColor = (color: string) => css`
     background-color: ${color};
   }
 `;
+
+const HOVER_COLOR_CHANGE = 5;
+
+export function getColorHoverVariant(color: string): string {
+  if (isColorDark(color)) {
+    return changeColorLightness(color, -HOVER_COLOR_CHANGE);
+  }
+
+  return changeColorLightness(color, HOVER_COLOR_CHANGE);
+}
+
+export function getColorActiveVariant(color: string): string {
+  if (isColorDark(color)) {
+    return changeColorLightness(color, -HOVER_COLOR_CHANGE * 1.5);
+  }
+
+  return changeColorLightness(color, HOVER_COLOR_CHANGE * 1.5);
+}
+
+export function getTextColorForBackgroundColor(color: string): string {
+  if (isColorDark(color)) {
+    return WHITE;
+  }
+
+  return BLACK;
+}
+
+export function getButtonColorStyles(baseBgColor: string) {
+  const hoverColor = getColorHoverVariant(baseBgColor);
+  const activeColor = getColorActiveVariant(baseBgColor);
+  const textColor = getTextColorForBackgroundColor(baseBgColor);
+  return css`
+    ${hoverTransition()}
+    background-color: ${baseBgColor};
+    color: ${textColor};
+
+    &:hover {
+      background-color: ${hoverColor};
+      color: ${textColor};
+    }
+
+    &:active {
+      background-color: ${activeColor};
+      color: ${textColor};
+    }
+  `;
+}

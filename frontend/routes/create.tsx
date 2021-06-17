@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
-import router from "next/router";
 import NextLink from "next/link";
+import router, { NextRouter, useRouter } from "next/router";
 import { ReactNode } from "react";
 
 type RouteParamValueType = "string" | "number";
@@ -45,11 +44,21 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   function useIsActive() {
     const router = useRouter();
 
-    return isActive(router.route);
+    return isMatchingRoute(router.route);
   }
 
-  function isActive(routeToCheck: string) {
-    return routeToCheck === path;
+  function isActive(defaultRouter?: NextRouter) {
+    if (!defaultRouter && typeof document === "undefined") {
+      throw new Error(
+        `On server side render calling route.isActive requires providing router from useRouter as an argument`
+      );
+    }
+
+    return (defaultRouter ?? router).pathname === path;
+  }
+
+  function isMatchingRoute(routeToCheck: string) {
+    return path === routeToCheck;
   }
 
   function push(params: Params) {
@@ -80,15 +89,19 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
   }
 
   return {
+    path,
     useParams,
     push,
     replace,
     useIsActive,
     isActive,
+    isMatchingRoute,
     Link,
     getUrlWithParams,
   };
 }
+
+export type AnyRoute = ReturnType<typeof createRoute>;
 
 function fillParamsInUrl<Params extends Record<string, unknown>>(href: string, params: Params) {
   let hrefWithParams = href;

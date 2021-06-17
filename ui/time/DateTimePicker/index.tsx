@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { getMinutes, getHours, minutesInHour, addMinutes, startOfDay } from "date-fns";
 import styled from "styled-components";
-import DayPicker from "react-day-picker";
-import "react-day-picker/lib/style.css";
+import { Calendar } from "~ui/time/Calendar";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
 import { shadow } from "~ui/baseStyles";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
+import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {
   initialValue: Date;
@@ -14,50 +14,47 @@ interface Props {
 }
 
 export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
-  const [value, setValue] = useState<Date>(initialValue);
-  const didUserChangeInitialValue = value === initialValue;
+  const [dirtyDate, setDirtyDate] = useState<Date>(initialValue);
+  const didUserChangeInitialValue = dirtyDate === initialValue;
 
   const handleSubmit = () => {
     if (!didUserChangeInitialValue) {
-      onSubmit(value);
+      onSubmit(dirtyDate);
     }
   };
 
   const pickedMinutesValue = useMemo(() => {
-    const hours = getHours(value);
-    const minutes = getMinutes(value);
+    const hours = getHours(dirtyDate);
+    const minutes = getMinutes(dirtyDate);
     return hours * minutesInHour + minutes;
-  }, [value]);
+  }, [dirtyDate]);
 
   const handleTimeChange = (minutes: number) => {
-    const newDate = addMinutes(startOfDay(value), minutes);
-    setValue(newDate);
+    const newDate = addMinutes(startOfDay(dirtyDate), minutes);
+    setDirtyDate(newDate);
   };
 
   const handleDayChange = (date: Date) => {
     const newDate = addMinutes(startOfDay(date), pickedMinutesValue);
-    setValue(newDate);
+    setDirtyDate(newDate);
   };
 
   return (
-    <UIDateTimePickerForm
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
+    <UIDateTimePickerForm>
       <UIPickers>
-        <DayPicker selectedDays={value} onDayClick={handleDayChange} />
-        <UITimePickerWr>
+        <Calendar date={dirtyDate} onDateChange={handleDayChange} />
+        <UITimePickerWrapper>
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
-        </UITimePickerWr>
+        </UITimePickerWrapper>
       </UIPickers>
-      <Button isDisabled={didUserChangeInitialValue}>Save</Button>
+      <Button isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
+        Save
+      </Button>
     </UIDateTimePickerForm>
   );
 };
 
-const UIDateTimePickerForm = styled.form`
+const UIDateTimePickerForm = styled(PopPresenceAnimator)`
   background: #ffffff;
   ${shadow.medium};
   border-radius: 12px;
@@ -69,13 +66,13 @@ const UIDateTimePickerForm = styled.form`
 
 const UIPickers = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(320px, 1fr) auto;
   gap: 10px;
 `;
 
-const UITimePickerWr = styled.div`
+const UITimePickerWrapper = styled.div`
   padding: 16px;
-  border-left: 1px solid ${LIGHT_GRAY};
+  border-left: 1px solid ${BACKGROUND_ACCENT};
   overflow: auto;
   max-height: 300px;
 `;

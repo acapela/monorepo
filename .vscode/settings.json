@@ -67,6 +67,8 @@
     "sendgrid",
     "pino",
     "gmail",
-    "nextauth"
+    "nextauth",
+    "autoLinks",
+    "displayer"
   ]
 }

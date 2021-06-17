@@ -48,7 +48,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
         roomId: room.id,
         spaceId: room.space_id,
       });
-    } else if (routes.spaceRoomSummary.isActive(router.route)) {
+    } else if (routes.spaceRoomSummary.isActive()) {
       routes.spaceRoom.replace({
         roomId: room.id,
         spaceId: room.space_id,
@@ -101,7 +101,14 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
           <UILine />
           {room && <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />}
           <UIFlyingCloseRoomToggle>
-            <Button isWide={true} onClick={onCloseRoomToggleClicked} isLoading={isChangingRoomState}>
+            <Button
+              isWide={true}
+              onClick={onCloseRoomToggleClicked}
+              isLoading={isChangingRoomState}
+              isDisabled={
+                !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
+              }
+            >
               {!isRoomOpen && "Reopen room"}
               {isRoomOpen && "Close room"}
             </Button>

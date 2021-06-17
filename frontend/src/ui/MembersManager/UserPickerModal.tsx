@@ -6,7 +6,7 @@ import { Modal } from "~frontend/ui/Modal";
 import { UserBasicInfo } from "../users/UserBasicInfo";
 import { IconCross } from "~ui/icons";
 import { UsersCombobox } from "./UsersCombobox";
-import { LIGHT_GRAY } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -60,7 +60,7 @@ const UIHolder = styled.div`
 
 const UIMembers = styled.div`
   width: 640px;
-  border: 1px solid ${LIGHT_GRAY};
+  border: 1px solid ${BACKGROUND_ACCENT};
   border-radius: 20px;
   @media (max-width: 800px) {
     width: 100%;
@@ -72,7 +72,7 @@ const UIMember = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid ${LIGHT_GRAY};
+  border-bottom: 1px solid ${BACKGROUND_ACCENT};
   :last-child {
     border-bottom: none;
   }
@@ -80,7 +80,7 @@ const UIMember = styled.div`
 
 const UIRemoveMemberButton = styled.button`
   padding: 6px;
-  background: ${LIGHT_GRAY};
+  background: ${BACKGROUND_ACCENT};
   cursor: pointer;
   border-radius: 100000px;
 `;

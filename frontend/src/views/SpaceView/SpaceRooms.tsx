@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { RoomDetailedInfoFragment } from "~gql";
-import { RoomCard } from "~frontend/ui/rooms/RoomCard";
+import { TopicsInRoom } from "~frontend/ui/topics/TopicsInRoom";
 
 interface Props {
   rooms: RoomDetailedInfoFragment[];
@@ -10,7 +10,7 @@ export function SpaceRooms({ rooms }: Props) {
   return (
     <UIHolder>
       {rooms.map((room) => {
-        return <RoomCard key={room.id} room={room} />;
+        return <TopicsInRoom key={room.id} room={room} topics={room.topics} />;
       })}
     </UIHolder>
   );
@@ -18,7 +18,6 @@ export function SpaceRooms({ rooms }: Props) {
 
 const UIHolder = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-row-gap: 3rem;
-  grid-column-gap: 1rem;
+  grid-template-columns: 1fr;
+  grid-row-gap: 2rem;
 `;
