@@ -8,11 +8,8 @@ import {
   useEditSpaceMutation,
   useRemoveSpaceMemberMutation,
 } from "~frontend/gql/spaces";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
@@ -29,7 +26,6 @@ export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
   const router = useRouter();
   const amIMember = isCurrentUserSpaceMember(space);
-  const unreadCount = useSpaceUnreadMessagesCount(space.id);
 
   const [addSpaceMember] = useAddSpaceMemberMutation();
   const [removeSpaceMember] = useRemoveSpaceMemberMutation();
@@ -82,9 +78,6 @@ export function SpaceCard({ space }: Props) {
   return (
     <>
       <UIHolder>
-        {unreadCount > 0 && (
-          <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
-        )}
         <UIBanner>
           {amIMember && (
             <CornerOptionsMenu
