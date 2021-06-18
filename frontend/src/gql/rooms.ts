@@ -111,8 +111,8 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    mutation CreateRoom($name: String!, $spaceId: uuid!, $slug: String!, $deadline: timestamptz!) {
-      room: insert_room_one(object: { name: $name, space_id: $spaceId, slug: $slug, deadline: $deadline }) {
+    mutation CreateRoom($input: room_insert_input!) {
+      room: insert_room_one(object: $input) {
         ...RoomDetailedInfo
       }
     }

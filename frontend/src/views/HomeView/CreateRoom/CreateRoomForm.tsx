@@ -77,7 +77,9 @@ export const CreateRoomForm = ({ onCancel }: Props) => {
       }
 
       try {
-        const [room] = await createRoom({ name: roomName, deadline, spaceId, slug: slugify(roomName) });
+        const [room] = await createRoom({
+          input: { name: roomName, deadline: deadline.toISOString(), space_id: spaceId, slug: slugify(roomName) },
+        });
         if (!room) {
           return;
         }

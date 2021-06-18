@@ -14,7 +14,7 @@ export const DeadlineManager = ({ room, isReadonly }: Props) => {
   const date = new Date(deadline);
 
   const handleSubmit = async (deadline: Date) => {
-    await updateRoom({ roomId: room.id, input: { deadline } });
+    await updateRoom({ roomId: room.id, input: { deadline: deadline.toISOString() } });
   };
 
   return <DateTimeInput isReadonly={isReadonly} value={date} onChange={handleSubmit} />;
