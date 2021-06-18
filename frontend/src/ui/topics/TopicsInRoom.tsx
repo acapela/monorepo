@@ -33,7 +33,7 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const unreadNotifications = useRoomUnreadMessagesCount(room.id);
+  const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
 
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
@@ -48,8 +48,8 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
 
   return (
     <UIHolder className={className}>
-      {unreadNotifications > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadNotifications, 99)}</ElementNotificationBadge>
+      {unreadNotificationsCount > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadNotificationsCount, 99)}</ElementNotificationBadge>
       )}
       <UICollapseHolder isOpened={isOpen}>
         <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
