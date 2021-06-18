@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, TopicMessageBasicInfoFragment } from "~gql";
@@ -47,11 +47,13 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
     routes.spaceRoomTopic.push({ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id });
   }
 
+  const isClosed = !!(topic.closed_at && topic.closed_at.length > 0);
+
   return (
     <UIHolder onClick={handleOpen} className={className}>
       <UIInfo>
         {unreadCount > 0 && <UIUnreadMessagesNotification />}
-        <TextTitle>{topic.name}</TextTitle>
+        <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
         {lastMessage && (
           <UILastMessage>
             <UILastMessageSender
@@ -80,6 +82,17 @@ const UIHolder = styled.div`
 
 const UIInfo = styled.div`
   display: grid;
+`;
+
+const UITopicTitle = styled(TextTitle)<{ isClosed: boolean }>`
+  ${(props) => {
+    if (props.isClosed) {
+      return css`
+        text-decoration: line-through;
+        color: hsla(211, 12%, 62%, 1);
+      `;
+    }
+  }}
 `;
 
 const UIUnreadMessagesNotification = styled.div`
