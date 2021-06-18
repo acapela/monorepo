@@ -87,5 +87,5 @@ const UIBodyCover = styled(PresenceAnimator)<{ enableBlur: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* will-change: backdrop-filter, filter, transform, background-color; */
+  will-change: backdrop-filter, filter, transform, background-color;
 `;
