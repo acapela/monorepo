@@ -1,6 +1,6 @@
 import { createContext, RefObject, useContext, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import { assertGet } from "~shared/assert";
+import { assert } from "~shared/assert";
 
 interface RichEditorContextData {
   reactQuillRef: RefObject<ReactQuill>;
@@ -13,7 +13,7 @@ export const RichEditorContext = RichEditorReactContext.Provider;
 export function useRichEditorContext() {
   const richEditorContext = useContext(RichEditorReactContext);
 
-  assertGet(richEditorContext, "useRichEditorContext can only be called inside RichEditorContext");
+  assert(richEditorContext, "useRichEditorContext can only be called inside RichEditorContext");
 
   return richEditorContext;
 }

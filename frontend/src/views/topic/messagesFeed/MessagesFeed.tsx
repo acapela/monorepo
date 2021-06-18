@@ -1,9 +1,9 @@
 import { isSameDay } from "date-fns";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import styled from "styled-components";
+import { TopicMessageDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
-import { TopicMessageDetailedInfoFragment } from "~gql";
 import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";
 
@@ -12,6 +12,8 @@ interface Props {
 }
 
 export function MessagesFeed({ messages }: Props) {
+  const holderRef = useRef<HTMLDivElement>(null);
+
   function renderMessageHeader(
     message: TopicMessageDetailedInfoFragment,
     previousMessage: TopicMessageDetailedInfoFragment | null
@@ -31,7 +33,7 @@ export function MessagesFeed({ messages }: Props) {
   }
 
   return (
-    <UIHolder>
+    <UIHolder ref={holderRef}>
       {messages.map((message, index) => {
         const previousMessage = messages[index - 1] ?? null;
 

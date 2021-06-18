@@ -5,7 +5,7 @@ import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-au
 import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
 import { Account, db, User, VerificationRequest } from "~db";
-import { assertGet } from "~shared/assert";
+import { assert } from "~shared/assert";
 import { sendEmail } from "~shared/email";
 
 /**
@@ -17,7 +17,7 @@ import { sendEmail } from "~shared/email";
 // Fail quickly in case of missing env variables
 
 function assertEnvVariable(value: unknown, varName: string) {
-  assertGet(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
+  assert(value, `Environment variable ${varName} is not provided. It is required to run auth endpoint.`);
 }
 
 assertEnvVariable(process.env.DB_USER, "DB_USER");
