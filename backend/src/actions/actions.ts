@@ -12,9 +12,6 @@ const actionHandlers = groupHandlersByActionName(handlers);
 router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
-  if (!userId) {
-    throw new AuthenticationError("No user id provided with a hasura action");
-  }
 
   logger.info("Handling action", {
     actionName: hasuraAction.action.name,

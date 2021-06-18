@@ -36,7 +36,7 @@ export async function handleTeamInvitationCreated(invite: TeamInvitation, userId
   });
 }
 
-function getInviterName(inviter: User): string {
+export function getInviterName(inviter: User): string {
   if (inviter.name) {
     return firstName(inviter.name);
   }
