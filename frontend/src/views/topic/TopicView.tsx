@@ -1,21 +1,21 @@
-import { AnimateSharedLayout, motion } from "framer-motion";
+import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
+import { useTopic } from "~frontend/topics/useTopic";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { disabledCss } from "~ui/disabled";
 import { MessageComposer } from "./Composer";
+import { MessagesFeed } from "./messagesFeed/MessagesFeed";
+import { TopicSummaryMessage } from "./messagesFeed/TopicSummary";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
-import { useTopic } from "~frontend/topics/useTopic";
-import { TopicSummaryMessage } from "./messagesFeed/TopicSummary";
-import { MessagesFeed } from "./messagesFeed/MessagesFeed";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { disabledCss } from "~ui/disabled";
 
 interface Props {
   id: string;
@@ -54,16 +54,14 @@ export const TopicView = ({ id }: Props) => {
           {/* We need to render the topic header or else flex bugs out on page reload */}
           <TopicHeader topic={topic} />
           <ScrollableMessages>
-            <UIAnimatedMessagesWrapper>
-              <AnimateSharedLayout>
-                <MessagesFeed messages={messages} />
+            <AnimateSharedLayout>
+              <MessagesFeed messages={messages} />
 
-                {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
-              </AnimateSharedLayout>
-              {!messages.length && !topicCloseInfo && (
-                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
-              )}
-            </UIAnimatedMessagesWrapper>
+              {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
+            </AnimateSharedLayout>
+            {!messages.length && !topicCloseInfo && (
+              <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+            )}
           </ScrollableMessages>
 
           {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
@@ -103,9 +101,4 @@ const UIMessageComposer = styled.div<{ isDisabled: boolean }>`
   margin-top: 1rem;
 
   ${(props) => props.isDisabled && disabledCss}
-`;
-
-const UIAnimatedMessagesWrapper = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
 `;

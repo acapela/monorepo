@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { SearchResults } from "./SearchResults";
@@ -40,7 +41,7 @@ export const SearchBar = styled(PureSearchBar)`
   position: relative;
 
   ${SearchInput} > input {
-    border-radius: 5rem;
+    ${borderRadius.input}
   }
 
   ${SearchResults} {

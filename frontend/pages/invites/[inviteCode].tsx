@@ -5,13 +5,13 @@ import { useTeamInvitationByTokenQuery } from "~frontend/gql/teams";
 import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
-import { assertGet } from "~shared/assert";
+import { assert } from "~shared/assert";
 
 export default function InvitePage() {
   const user = useCurrentUser();
   const { inviteCode } = routes.invitePage.useParams();
 
-  assertGet(inviteCode, "Invite code required");
+  assert(inviteCode, "Invite code required");
 
   useInvitationAcceptedCallback(inviteCode, () => {
     // We use nav with full reload as changing the team updated 'currentTeamId' which is part of json web token data.

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Maybe } from "~gql";
 import { getInitials } from "~frontend/utils";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   name?: Maybe<string>;
@@ -44,7 +45,7 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
 
   background-color: #ffaa70;
 
-  border-radius: 50%;
+  ${borderRadius.circle}
 
   overflow: hidden;
 

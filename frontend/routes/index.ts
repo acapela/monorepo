@@ -6,6 +6,7 @@ export const routes = {
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
   spaces: createRoute("/spaces", {}),
+  calendar: createRoute("/calendar", {}),
   space: createRoute("/space/[spaceId]", { spaceId: "string" }),
 
   spaceRoom: createRoute("/space/[spaceId]/[roomId]", { spaceId: "string", roomId: "string" }),
@@ -24,4 +25,10 @@ export function useIsAnyRouteActive(paths: Array<string>) {
   return paths.some((path) => {
     return router.pathname === path;
   });
+}
+
+export function useIsRoutePathActive(path: string) {
+  const router = useRouter();
+
+  return router.pathname === path;
 }

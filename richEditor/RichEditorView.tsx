@@ -19,6 +19,7 @@ import { registerAutolinksModule, AUTOLINK_MODULE_NAME } from "./autoLinks/modul
 import { RichEditorContext } from "./context";
 import { useChannel } from "~shared/channel";
 import { EmojiSearchModal } from "./emoji/SearchModal";
+import { borderRadius } from "~ui/baseStyles";
 
 interface KeyboardBinding {
   key: number;
@@ -64,6 +65,20 @@ export const RichEditor = ({
 
   const emojiSearchKeywordChannel = useChannel<string | null>();
 
+  function getIsEmpty() {
+    const text = quillRef.current?.getEditor().getText() ?? "";
+
+    return text.trim().length === 0;
+  }
+
+  function handleSubmitIfNotEmpty() {
+    if (getIsEmpty()) {
+      return;
+    }
+
+    onSubmit?.();
+  }
+
   function handleChange() {
     const content = quillRef.current?.editor?.getContents().ops;
 
@@ -102,12 +117,12 @@ export const RichEditor = ({
       key: ENTER_KEYCODE,
       metaKey: false,
       handler: () => {
-        onSubmit?.();
+        handleSubmitIfNotEmpty?.();
       },
     };
 
     return addQuillBindingWithPriority(editor.keyboard, ENTER_KEYCODE, cmdEnterSubmit);
-  }, [toolbarRef.current, onSubmit]);
+  }, [toolbarRef.current, handleSubmitIfNotEmpty]);
 
   const emojiModuleOptions = useMemo<EmojiModuleOptions>(() => {
     return {
@@ -162,7 +177,7 @@ export const RichEditor = ({
           <Toolbar
             ref={toolbarRef}
             quillRef={quillRef}
-            onSubmit={onSubmit}
+            onSubmit={handleSubmitIfNotEmpty}
             onFilesSelected={onFilesSelected}
             onEmojiSelected={insertEmoji}
           />
@@ -201,7 +216,7 @@ const UIHolder = styled.div`
   width: 100%;
   min-width: 570px;
   border: 1px solid #ccc;
-  border-radius: 1rem;
+  ${borderRadius.card}
 `;
 
 const UIAdditionalContent = styled.div`

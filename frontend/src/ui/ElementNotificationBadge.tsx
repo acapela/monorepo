@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { fontSize } from "~ui/baseStyles";
+import { fontSize, borderRadius } from "~ui/baseStyles";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 
 interface UnreadTopicIndicatorProps {
@@ -19,7 +19,7 @@ const UIHolder = styled.div`
   padding: 4px 8px;
   background: ${NOTIFICATION_COLOR};
   color: #fff;
-  border-radius: 0.5rem;
+  ${borderRadius.label}
   font-size: ${fontSize.label};
   font-weight: bold;
 `;

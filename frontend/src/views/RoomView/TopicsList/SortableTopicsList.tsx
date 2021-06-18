@@ -5,6 +5,7 @@ import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { TopicDetailedInfoFragment } from "~gql";
 import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   topics: TopicDetailedInfoFragment[];
@@ -90,7 +91,7 @@ const UIDraggableTopic = styled(UITopic)<{ isDragging: boolean }>`
     isDragging
       ? css`
           background: ${ACTION_ACTIVE_COLOR};
-          border-radius: 8px;
+          ${borderRadius.item}
         `
       : ""}
 `;

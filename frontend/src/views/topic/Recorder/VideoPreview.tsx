@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 
 interface VideoPreviewParams {
   stream?: MediaStream | null;
@@ -26,7 +27,7 @@ const PureVideoPreview = ({ stream, className }: VideoPreviewParams) => {
 export const VideoPreview = styled(PureVideoPreview)`
   width: 11.25rem;
   height: 11.25rem;
-  border-radius: 50%;
+  ${borderRadius.circle}
   object-fit: cover;
   border: 1px solid #969696;
 

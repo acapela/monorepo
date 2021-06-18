@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   tooltipLabel?: string;
@@ -18,7 +19,7 @@ export const UIButton = styled.button`
   font-size: 1.5rem;
   background: #f8f8f8;
   color: #707f8c;
-  border-radius: 50%;
+  ${borderRadius.circle}
   padding: 0;
   cursor: pointer;
 

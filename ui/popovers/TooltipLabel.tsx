@@ -25,6 +25,6 @@ const UITooltip = styled(PresenceAnimator)`
   background-color: ${colors.tooltip.background};
   color: ${colors.tooltip.color};
   padding: 0.5rem 0.75rem;
-  border-radius: ${borderRadius.medium};
+  ${borderRadius.item};
   pointer-events: none;
 `;

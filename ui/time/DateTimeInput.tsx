@@ -49,7 +49,7 @@ const UIHolder = styled.button<{ isReadonly: boolean }>`
   padding: 8px 16px;
   cursor: pointer;
   background: #ffffff;
-  border-radius: ${borderRadius.medium};
+  border-radius: ${borderRadius.input};
   border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
 `;

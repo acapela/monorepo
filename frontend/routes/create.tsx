@@ -1,5 +1,6 @@
 import NextLink from "next/link";
 import router, { NextRouter, useRouter } from "next/router";
+import { ComponentType } from "react";
 import { ReactNode } from "react";
 
 type RouteParamValueType = "string" | "number";
@@ -24,7 +25,26 @@ type InferParamsFromDefinition<D extends RouteParamsDefinition> = {
   [key in keyof D]: InferRouteParamType<D[key]>;
 };
 
-export function createRoute<D extends RouteParamsDefinition>(path: string, definition: D) {
+interface LinkProps<Params> {
+  params: Params;
+  children: ReactNode;
+}
+export interface Route<Params> {
+  path: string;
+  useParams(): Params;
+  push(params: Params): void;
+  replace(params: Params): void;
+  useIsActive(): boolean;
+  getIsActive(): boolean;
+  isMatchingRoute(routeToCheck: string): boolean;
+  Link: ComponentType<LinkProps<Params>>;
+  getUrlWithParams(params: Params): string;
+}
+
+export function createRoute<D extends RouteParamsDefinition>(
+  path: string,
+  definition: D
+): Route<InferParamsFromDefinition<D>> {
   type Params = InferParamsFromDefinition<D>;
 
   function useParams(): Params {
@@ -47,7 +67,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     return isMatchingRoute(router.route);
   }
 
-  function isActive(defaultRouter?: NextRouter) {
+  function getIsActive(defaultRouter?: NextRouter) {
     if (!defaultRouter && typeof document === "undefined") {
       throw new Error(
         `On server side render calling route.isActive requires providing router from useRouter as an argument`
@@ -94,7 +114,7 @@ export function createRoute<D extends RouteParamsDefinition>(path: string, defin
     push,
     replace,
     useIsActive,
-    isActive,
+    getIsActive,
     isMatchingRoute,
     Link,
     getUrlWithParams,
@@ -105,6 +125,10 @@ export type AnyRoute = ReturnType<typeof createRoute>;
 
 function fillParamsInUrl<Params extends Record<string, unknown>>(href: string, params: Params) {
   let hrefWithParams = href;
+
+  if (!params) {
+    return hrefWithParams;
+  }
 
   Object.keys(params).forEach((paramName) => {
     const paramValue = params[paramName];

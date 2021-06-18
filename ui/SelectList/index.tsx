@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useStateList } from "react-use";
 import { hoverActionCss, hoverActionActiveCss } from "~ui/transitions";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 
 interface Props<T> {
   items: T[];
@@ -52,7 +52,7 @@ const UIHolder = styled.div`
   border: 1px solid #f8f8f8;
   box-sizing: border-box;
   ${shadow.modal};
-  border-radius: 1rem;
+  ${borderRadius.menu}
 `;
 
 const UIItem = styled.div<{ isActive: boolean }>`

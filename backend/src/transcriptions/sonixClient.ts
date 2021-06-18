@@ -1,6 +1,6 @@
 import axios, { Method } from "axios";
 import querystring from "querystring";
-import { assertGet } from "~shared/assert";
+import { assert, assertGet } from "~shared/assert";
 import { getTunnelPublicUrl } from "../localtunnel";
 import { isDev } from "../utils";
 
@@ -56,7 +56,7 @@ class Sonix {
     const domain = isDev() ? await getTunnelPublicUrl() : process.env.BACKEND_HOST;
     const endpoint = "/api/v1/transcriptions";
 
-    assertGet(domain, "Failed to build callback URL");
+    assert(domain, "Failed to build callback URL");
 
     return `${domain}${endpoint}?secret=${encodeURIComponent(sonixCallbackSecret)}`;
   }

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   className?: string;
@@ -30,7 +31,7 @@ const UIBanner = styled.div`
   padding: 16px;
   max-width: 600px;
 
-  border-radius: 8px;
+  ${borderRadius.card};
   background-color: transparent;
   border: 1px solid hsla(300, 2%, 92%, 1);
 `;

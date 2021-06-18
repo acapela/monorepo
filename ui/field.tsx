@@ -8,7 +8,7 @@ export const Field = styled.input`
   font-weight: 500;
   padding: 0.75rem 1rem;
   background-color: #fbfbfb;
-  border-radius: ${borderRadius.medium};
+  border-radius: ${borderRadius.menu};
   outline: none;
 `;
 

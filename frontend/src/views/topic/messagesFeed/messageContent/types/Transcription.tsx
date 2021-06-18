@@ -2,6 +2,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { HIGHLIGHT_COLOR } from "~ui/colors";
 import { Transcription } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 
 export interface Word {
   text: string;
@@ -55,7 +56,7 @@ const UIWord = styled.span<{ isActive: boolean }>`
   cursor: default;
   padding: 0.1rem 0.3rem;
   border: 1px solid transparent;
-  border-radius: 0.4rem;
+  ${borderRadius.label}
 
   &:hover {
     border-color: #e94057;
