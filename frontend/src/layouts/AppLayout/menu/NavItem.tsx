@@ -45,7 +45,7 @@ export const NavItem = styled(({ item, className }: Props) => {
           onMouseLeave={unsetHovered}
           isDisabled={item.disableNavigation}
         >
-          {item.icon}
+          <UIIcon>{item.icon}</UIIcon>
           <UILabel>{item.title}</UILabel>
           {!!childItems?.length && <UIDropdownIcon />}
         </UIHolder>
@@ -79,25 +79,15 @@ const UIHolder = styled.a<{ isActive: boolean; isDisabled?: boolean }>`
     `}
 
   ${(props) => props.isActive && hoverActionActiveCss};
-
-  svg {
-    font-size: 1.5em;
-    margin-right: 0.25em;
-  }
 `;
 
 const UILabel = styled.span`
   margin-left: 0.25em;
 `;
 
-const UIChildItems = styled.div`
-  padding: 9.5px;
-
-  background: #ffffff;
-  border: 1px solid #e0e3e7;
-  box-sizing: border-box;
-  ${shadow.modal};
-  ${borderRadius.label}
+const UIIcon = styled.div`
+  font-size: 1.5em;
+  margin-right: 0.25em;
 `;
 
 const UIDropdownIcon = styled(IconChevronDown)`
