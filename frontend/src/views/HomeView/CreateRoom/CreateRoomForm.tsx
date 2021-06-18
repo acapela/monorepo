@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 import { Button } from "~ui/buttons/Button";
+import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 import { handleWithPreventDefault } from "~shared/events";
 import { useSpacesQuery } from "~frontend/gql/spaces";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
@@ -116,9 +117,9 @@ export const CreateRoomForm = ({ onCancel }: Props) => {
       <UIBottomArea>
         {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
         <UIButtons>
-          <Button kind="ghost" type="reset" onClick={onCancel}>
+          <OutlinedButton type="reset" onClick={onCancel}>
             Cancel
-          </Button>
+          </OutlinedButton>
           <Button isLoading={isSubmitLoading} onClick={() => null}>
             Create
           </Button>
