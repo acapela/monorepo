@@ -24,17 +24,15 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
   }
 
   return (
-    <>
-      <PopoverMenuTrigger
-        onOpen={() => onActiveChange(true)}
-        onClose={() => onActiveChange(false)}
-        options={[
-          { label: "Edit message", onSelect: () => onEditRequest(), icon: <IconEdit /> },
-          { label: "Delete message", onSelect: handleRemoveWithConfirm, isDestructive: true, icon: <IconTrash /> },
-        ]}
-      >
-        <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-      </PopoverMenuTrigger>
-    </>
+    <PopoverMenuTrigger
+      onOpen={() => onActiveChange(true)}
+      onClose={() => onActiveChange(false)}
+      options={[
+        { label: "Edit message", onSelect: () => onEditRequest(), icon: <IconEdit /> },
+        { label: "Delete message", onSelect: handleRemoveWithConfirm, isDestructive: true, icon: <IconTrash /> },
+      ]}
+    >
+      <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+    </PopoverMenuTrigger>
   );
 };

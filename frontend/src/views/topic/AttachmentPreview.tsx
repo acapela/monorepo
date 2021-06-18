@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useAttachmentQuery } from "~frontend/gql/topics";
-import { MessageAttachment } from "~frontend/views/topic/Message/MessageAttachment";
+import { MessageAttachment } from "./messagesFeed/messageContent/attachment/MessageAttachment";
 
 interface Props {
   id: string;

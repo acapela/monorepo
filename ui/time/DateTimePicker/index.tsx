@@ -47,7 +47,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
       </UIPickers>
-      <Button isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
+      <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
         Save
       </Button>
     </UIDateTimePickerForm>

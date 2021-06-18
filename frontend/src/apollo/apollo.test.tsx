@@ -4,10 +4,10 @@ import { graphql, rest } from "msw";
 import { setupServer } from "msw/node";
 import { Provider } from "next-auth/client";
 import { PropsWithChildren } from "react";
-import { ApolloClientProvider as ApolloProvider } from "./apollo";
-import { GoogleLoginButton } from "./authentication/GoogleLoginButton";
-import { useCurrentUser } from "./authentication/useCurrentUser";
-import { useSpaceRoomsQuery } from "./gql/rooms";
+import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useSpaceRoomsQuery } from "~frontend/gql/rooms";
+import { ApolloClientProvider as ApolloProvider } from "./client";
 
 jest.mock(
   "next-auth/client",

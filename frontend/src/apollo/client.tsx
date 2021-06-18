@@ -7,21 +7,22 @@ import {
   InMemoryCache,
   split as splitLinks,
 } from "@apollo/client";
-import { WebSocketLink } from "@apollo/client/link/ws";
-import { GraphQLError } from "graphql";
 import { onError } from "@apollo/client/link/error";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { GraphQLError } from "graphql";
 import { IncomingMessage } from "http";
-import { TypedTypePolicies } from "~gql";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
-import { getApolloInitialState } from "./gql/utils/hydration";
+import { readCurrentToken, TOKEN_COOKIE_NAME } from "~frontend/authentication/cookie";
+import { getApolloInitialState } from "~frontend/gql/utils/hydration";
+import { readAppInitialPropByName } from "~frontend/utils/next";
+import { TypedTypePolicies } from "~gql";
+import { assertGet } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
-import { readAppInitialPropByName } from "./utils/next";
-import { assertGet } from "~shared/assert";
-import { TOKEN_COOKIE_NAME, readCurrentToken } from "./authentication/cookie";
+import { createDateParseLink } from "./dateStringParseLink";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
@@ -107,6 +108,7 @@ function formatGraphqlErrorMessage(error: GraphQLError) {
 }
 
 // Log any GraphQL errors or network error that occurred
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorLink = onError(({ graphQLErrors = [], networkError }) => {
   for (const graphqlError of graphQLErrors) {
     const message = formatGraphqlErrorMessage(graphqlError);
@@ -119,7 +121,10 @@ const errorLink = onError(({ graphQLErrors = [], networkError }) => {
   }
 });
 
-const httpLink = new HttpLink({ uri: getGraphqlUrl() }).concat(errorLink);
+const httpRawLink = new HttpLink({ uri: getGraphqlUrl() });
+const parseDatesLink = createDateParseLink();
+
+const httpLink = parseDatesLink.concat(httpRawLink);
 
 interface ApolloClientOptions {
   forcedAuthToken?: string;

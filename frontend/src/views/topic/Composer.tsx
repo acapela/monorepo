@@ -5,9 +5,9 @@ import { useCreateMessageMutation } from "~frontend/gql/topics";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { EditorContent, RichEditor } from "~richEditor/RichEditor";
 import { AttachmentPreview } from "./AttachmentPreview";
-import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./Message/MessageAttachmentDisplayer";
 import { Recorder } from "./Recorder";
 import { uploadFile } from "./uploadFile";
+import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./messagesFeed/messageContent/attachment/MessageAttachmentDisplayer";
 
 interface ComposerAttachment {
   uuid: string;
