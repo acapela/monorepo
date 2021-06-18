@@ -18,17 +18,6 @@ interface Props {
   topicId: string;
 }
 
-function isEmptyString(value: EditorContent) {
-  if (value.length === 1) {
-    const onlyEntry = value[0];
-    const hasOnlyInsertKey = Object.keys(onlyEntry).every((key) => key === "insert");
-    if (hasOnlyInsertKey && onlyEntry.insert.trim().length === 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export const MessageComposer = ({ topicId }: Props) => {
   const [createMessage] = useCreateMessageMutation();
 
@@ -80,8 +69,6 @@ export const MessageComposer = ({ topicId }: Props) => {
           onChange={setValue}
           onFilesSelected={handleNewFiles}
           onSubmit={async () => {
-            if (isEmptyString(value)) return;
-
             await createMessage({
               topicId: topicId,
               type: "TEXT",
