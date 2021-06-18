@@ -58,5 +58,6 @@ type DownloadUrlResponse {
 
 type LookupTeamNameResponse {
   team_name : String!
+  inviter_name : String!
 }
 

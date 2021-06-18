@@ -1,7 +1,7 @@
 import { validate as validateUuid } from "uuid";
 import { TeamInvitation, db, Team } from "~db";
 import { ActionHandler } from "../actions/actionHandlers";
-import { NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
+import { AuthenticationError, NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
 import { getHasTeamMember } from "../teams/helpers";
 import { findInviteByCode, invalidateInvite } from "./invites";
 
@@ -64,6 +64,10 @@ export const acceptInvite: ActionHandler<
   actionName: "accept_invite",
 
   async handle(userId, { token }) {
+    if (!userId) {
+      throw new AuthenticationError("No user id provided with a hasura action");
+    }
+
     if (!validateUuid(token)) {
       throw new UnprocessableEntityError("Malformed invite code");
     }
