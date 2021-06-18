@@ -22,9 +22,30 @@ export const shadow = {
 };
 
 export const borderRadius = {
-  small: "0.25rem",
-  medium: "0.5rem",
-  large: "1rem",
+  menu: css`
+    border-radius: 16px;
+  `,
+  card: css`
+    border-radius: 16px;
+  `,
+  modal: css`
+    border-radius: 16px;
+  `,
+  label: css`
+    border-radius: 6px;
+  `,
+  input: css`
+    border-radius: 12px;
+  `,
+  item: css`
+    border-radius: 12px;
+  `,
+  circle: css`
+    border-radius: 1000px;
+  `,
+  button: css`
+    border-radius: 12px;
+  `,
 };
 
 export const fontSize = {

@@ -19,6 +19,7 @@ import { registerAutolinksModule, AUTOLINK_MODULE_NAME } from "./autoLinks/modul
 import { RichEditorContext } from "./context";
 import { useChannel } from "~shared/channel";
 import { EmojiSearchModal } from "./emoji/SearchModal";
+import { borderRadius } from "~ui/baseStyles";
 
 interface KeyboardBinding {
   key: number;
@@ -201,7 +202,7 @@ const UIHolder = styled.div`
   width: 100%;
   min-width: 570px;
   border: 1px solid #ccc;
-  border-radius: 1rem;
+  ${borderRadius.card}
 `;
 
 const UIAdditionalContent = styled.div`

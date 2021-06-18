@@ -16,6 +16,7 @@ import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { routes } from "~frontend/routes";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   room?: RoomDetailedInfoFragment | null;
@@ -114,11 +115,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             </Button>
           </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
-        <AnimatePresence exitBeforeEnter>
-          <UIContentHolder key={selectedTopicId} presenceStyles={{ opacity: [0, 1] }}>
-            {children}
-          </UIContentHolder>
-        </AnimatePresence>
+        <UIContentHolder>{children}</UIContentHolder>
       </UIHolder>
     </>
   );
@@ -161,13 +158,13 @@ const UILine = styled.div`
   background: #ebebec;
 `;
 
-const UIContentHolder = styled(PresenceAnimator)`
+const UIContentHolder = styled.div`
   flex-grow: 1;
   background: #ffffff;
   border: 1px solid #f8f8f8;
   box-sizing: border-box;
   box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  border-radius: 1rem;
+  ${borderRadius.card};
   padding: 2rem;
   min-height: 0;
 `;

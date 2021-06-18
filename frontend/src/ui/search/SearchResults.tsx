@@ -2,6 +2,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import { HIGHLIGHT_COLOR } from "~ui/colors";
 import { SearchResultFragment } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   className?: string;
@@ -65,7 +66,7 @@ export const SearchResults = styled(PureSearchResults)`
   padding: 1rem 0.6rem;
   background-color: #fff;
   border: 1px solid rgba(190, 190, 190, 0.25);
-  border-radius: 1rem;
+  ${borderRadius.modal}
 `;
 
 const UINoResults = styled.span``;
@@ -82,7 +83,7 @@ const UISearchResultLink = styled.a`
   justify-content: space-between;
   line-height: 1.5;
   padding: 0.4rem 0.8rem;
-  border-radius: 0.4rem;
+  ${borderRadius.item}
 
   :hover {
     background-color: #ffeddd;

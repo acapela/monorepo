@@ -141,7 +141,6 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  border-radius: 0;
   ${(p) =>
     p.isHighlighted &&
     css`

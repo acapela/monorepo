@@ -1,5 +1,6 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
+import { borderRadius } from "./baseStyles";
 import { BLACK, WHITE } from "./colors";
 
 export function hoverTransition(propName = "all") {
@@ -25,17 +26,17 @@ export const hoverActionNegativeSpacingCss = css`
 `;
 
 export const hoverActionCss = css`
-  border-radius: 0.5rem;
+  ${borderRadius.button}
 
   ${hoverTransition()}
 
   &:hover {
-    background-color: ${ACTION_ACTIVE_COLOR};
+    ${hoverActionActiveCss};
   }
 `;
 
 export const hoverActionCssWithCustomColor = (color: string) => css`
-  border-radius: 0.5rem;
+  ${borderRadius.button}
 
   ${hoverTransition()}
 

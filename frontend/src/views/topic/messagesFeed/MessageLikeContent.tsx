@@ -40,11 +40,6 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   display: inline-flex;
   align-items: flex-start;
   gap: 16px;
-  border-radius: 0.5rem;
-
-  ${() => MessageAvatar} {
-    border-color: rgba(243, 244, 246, 1);
-  }
 
   ${() => UITools} {
     opacity: 0;

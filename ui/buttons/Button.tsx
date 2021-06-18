@@ -2,7 +2,7 @@ import { HTMLMotionProps, motion } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { fontSize } from "~ui/baseStyles";
+import { borderRadius, fontSize } from "~ui/baseStyles";
 import { getButtonColorStyles } from "~ui/transitions";
 
 export type ButtonIconPosition = "start" | "end";
@@ -70,7 +70,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
 
   background: #474f5a;
   ${getButtonColorStyles("#474f5a")}
-  border-radius: 0.5rem;
+  ${borderRadius.button}
   justify-content: center;
 
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};

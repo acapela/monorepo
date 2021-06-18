@@ -1,4 +1,5 @@
 import { css } from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 
 export const baseInputStyles = css`
   display: flex;
@@ -10,7 +11,7 @@ export const baseInputStyles = css`
 
   border: 1px solid hsla(0, 0%, 75%, 0.25);
   box-sizing: border-box;
-  border-radius: 0.5rem;
+  ${borderRadius.input}
 
   outline: none;
 `;
