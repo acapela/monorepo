@@ -6013,8 +6013,8 @@ type room {
   """
   An object relationship
   """
-  space: space!
-  space_id: uuid!
+  space: space
+  space_id: uuid
   summary: String
 
   """

@@ -67,21 +67,17 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   font-size: ${fontSize.copy};
   font-weight: 600;
   color: #fff;
-
   background: #474f5a;
   ${getButtonColorStyles("#474f5a")}
   ${borderRadius.button}
   justify-content: center;
-
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
-
   ${(props) =>
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)
     props.isClickable &&
     css`
       cursor: ${props.isLoading ? "wait" : "pointer"};
     `}
-
   ${(props) =>
     props.isWide &&
     css`
@@ -100,11 +96,9 @@ const UIIconHolder = styled.div`
   font-size: 1.5em;
   margin-top: -0.5em;
   margin-bottom: -0.5em;
-
   &:first-child {
     margin-right: 0.25em;
   }
-
   &:last-child {
     margin-left: 0.25em;
   }

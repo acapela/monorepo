@@ -1,0 +1,136 @@
+import React, { useEffect, useRef } from "react";
+import styled, { css } from "styled-components";
+import { useCombobox } from "downshift";
+import { BACKGROUND_ACCENT } from "~ui/colors";
+import { hoverActionCss } from "~ui/transitions";
+import { SpaceBasicInfoFragment } from "~gql";
+import { FieldLabel, SecondaryText } from "~ui/typo";
+import { UIFormField } from "./UIFormField";
+import { IconCheckCircle, IconChevronDown } from "~ui/icons";
+import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
+import { borderRadius } from "~ui/baseStyles";
+
+interface Props {
+  items: SpaceBasicInfoFragment[];
+  itemId: string | null;
+  onChange: (itemId: string) => void;
+}
+
+export const SpacesCombobox = ({ items, onChange, itemId }: Props) => {
+  const {
+    isOpen,
+    selectedItem,
+    getMenuProps,
+    getInputProps,
+    getComboboxProps,
+    highlightedIndex,
+    getItemProps,
+    openMenu,
+    getLabelProps,
+    selectItem,
+    reset,
+  } = useCombobox({
+    items,
+    defaultHighlightedIndex: 0,
+    itemToString: (item) => item?.name || "",
+    onSelectedItemChange: ({ selectedItem }) => {
+      if (selectedItem) {
+        onChange(selectedItem.id);
+      }
+    },
+  });
+
+  useEffect(() => {
+    const item = items.find(({ id }) => id === itemId);
+    if (item) {
+      selectItem(item);
+    } else {
+      reset();
+    }
+  }, [itemId]);
+
+  const comboboxRef = useRef<HTMLDivElement | null>(null);
+  let menuMaxHeight;
+  if (comboboxRef.current) {
+    const { bottom, height } = comboboxRef.current.getBoundingClientRect();
+    menuMaxHeight = bottom - height - 20;
+  }
+
+  return (
+    <UIFormField {...getComboboxProps()}>
+      <FieldLabel {...getLabelProps()}>Select space</FieldLabel>
+      <UICombobox ref={comboboxRef}>
+        <UIMenuOpener
+          onFocus={() => {
+            if (!isOpen) {
+              openMenu();
+            }
+          }}
+          type="button"
+          {...getInputProps()}
+          onClick={openMenu}
+        >
+          <SecondaryText>{selectedItem ? selectedItem.name : "Select a space"}</SecondaryText>
+          <IconChevronDown />
+        </UIMenuOpener>
+        <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={isOpen}>
+          {isOpen &&
+            items.map((item, index) => (
+              <UIOption key={item.id} isHighlighted={highlightedIndex === index} {...getItemProps({ item, index })}>
+                <SecondaryText>{item.name}</SecondaryText>
+                {item.id === selectedItem?.id && <IconCheckCircle />}
+              </UIOption>
+            ))}
+        </UIMenu>
+      </UICombobox>
+    </UIFormField>
+  );
+};
+
+const UICombobox = styled.div`
+  position: relative;
+`;
+
+const UIMenuOpener = styled.button`
+  outline: none;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  ${hoverActionCss}
+  padding: 8px 16px;
+  cursor: pointer;
+  background: #ffffff;
+  border-radius: ${borderRadius.medium};
+  border: 1px solid ${BACKGROUND_ACCENT};
+  text-align: start;
+`;
+
+const UIMenu = styled.div<{ isVisible: boolean }>`
+  position: absolute;
+  overflow-y: auto;
+  border: 1px solid ${BACKGROUND_ACCENT};
+  left: 0;
+  top: 0;
+  width: 100%;
+  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
+  border-radius: ${borderRadius.medium};
+  background: #ffffff;
+`;
+
+const UIOption = styled.div<{ isHighlighted: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  ${(props) =>
+    props.isHighlighted &&
+    css`
+      background-color: ${ACTION_ACTIVE_COLOR};
+    `}
+`;
