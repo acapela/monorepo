@@ -4,7 +4,7 @@ import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, TopicMessageBasicInfoFragment } from "~gql";
 import { TextTitle } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR, SECONDARY_FONT_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
