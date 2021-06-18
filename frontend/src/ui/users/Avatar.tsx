@@ -11,7 +11,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export type AvatarSize = "regular" | "small";
+export type AvatarSize = "regular" | "small" | "font-size";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
@@ -36,9 +36,9 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   justify-content: center;
   align-items: center;
 
-  width: ${(props) => getAvatarPxSize(props.size)}px;
-  min-width: ${(props) => getAvatarPxSize(props.size)}px;
-  height: ${(props) => getAvatarPxSize(props.size)}px;
+  width: ${(props) => getAvatarSize(props.size)};
+  min-width: ${(props) => getAvatarSize(props.size)};
+  height: ${(props) => getAvatarSize(props.size)};
 
   font-weight: 600;
 
@@ -54,12 +54,14 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   }
 `;
 
-function getAvatarPxSize(size: AvatarSize) {
+function getAvatarSize(size: AvatarSize) {
   switch (size) {
     case "regular":
-      return 40;
+      return "40px";
     case "small":
-      return 32;
+      return "32px";
+    case "font-size":
+      return "1rem";
   }
 
   throw new Error("Incorrect avatar size");

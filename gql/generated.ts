@@ -8727,6 +8727,9 @@ export type RoomTopicsQuery = (
 
 export type TopicMessagesQueryVariables = Exact<{
   topicId: Scalars['uuid'];
+  limit?: Maybe<Scalars['Int']>;
+  order?: Maybe<Order_By>;
+  typeExpression?: Maybe<Message_Type_Enum_Comparison_Exp>;
 }>;
 
 
