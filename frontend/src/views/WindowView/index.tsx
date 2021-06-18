@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { Logo } from "~frontend/ui/Logo";
 
 interface Props {
@@ -27,7 +27,7 @@ const UIHolder = styled.div`
 const UIWindow = styled.div`
   background: #ffffff;
   ${shadow.modal};
-  border-radius: 1rem;
+  ${borderRadius.modal}
   padding: 2rem;
 `;
 

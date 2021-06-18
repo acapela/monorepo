@@ -1,7 +1,7 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
@@ -79,7 +79,7 @@ const UIModal = styled(PresenceAnimator)`
   border: 1px solid #f8f8f8;
 
   ${shadow.modal};
-  border-radius: 16px;
+  ${borderRadius.modal};
 `;
 
 const UIHead = styled.div`

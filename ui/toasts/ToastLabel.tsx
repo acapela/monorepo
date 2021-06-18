@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { IconButton } from "~ui/buttons/IconButton";
 import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
@@ -44,7 +44,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
 const UIHolder = styled(PresenceAnimator)<{ type: ToastType }>`
   width: 100%;
   padding: 16px 24px;
-  border-radius: 16px;
+  ${borderRadius.item}
   background: ${(props) => getToastColor(props.type)};
   color: #fff;
   font-weight: bold;

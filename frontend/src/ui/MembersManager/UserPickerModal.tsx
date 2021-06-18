@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
-import { UserBasicInfo } from "../users/UserBasicInfo";
-import { IconCross } from "~ui/icons";
-import { UsersCombobox } from "./UsersCombobox";
+import { UserBasicInfoFragment } from "~gql";
 import { BACKGROUND_ACCENT } from "~ui/colors";
+import { IconCross } from "~ui/icons";
+import { UserBasicInfo } from "../users/UserBasicInfo";
+import { UsersCombobox } from "./UsersCombobox";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -61,7 +62,7 @@ const UIHolder = styled.div`
 const UIMembers = styled.div`
   width: 640px;
   border: 1px solid ${BACKGROUND_ACCENT};
-  border-radius: 20px;
+  ${borderRadius.modal};
   @media (max-width: 800px) {
     width: 100%;
   }
@@ -82,5 +83,5 @@ const UIRemoveMemberButton = styled.button`
   padding: 6px;
   background: ${BACKGROUND_ACCENT};
   cursor: pointer;
-  border-radius: 100000px;
+  ${borderRadius.circle}
 `;

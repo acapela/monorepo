@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { SpaceBasicInfoFragment } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 import {
   deleteSpace,
-  useAddSpaceMemberMutation,
   isCurrentUserSpaceMember,
+  useAddSpaceMemberMutation,
   useEditSpaceMutation,
   useRemoveSpaceMemberMutation,
 } from "~frontend/gql/spaces";
@@ -12,6 +12,7 @@ import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge"
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useSpaceUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { SpaceBasicInfoFragment } from "~gql";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
@@ -19,7 +20,7 @@ import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
-import { getSpaceColors } from "./spaceGradient";
+import { SpaceGradient } from "./spaceGradient";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -139,10 +140,9 @@ const UIBanner = styled.div`
   position: relative;
 `;
 
-const UIImage = styled.div<{ spaceId: string }>`
+const UIImage = styled(SpaceGradient)`
   padding-bottom: 58%;
-  background-image: linear-gradient(to right bottom, ${(props) => getSpaceColors(props.spaceId).join(",")});
-  border-radius: 16px;
+  ${borderRadius.card};
   margin-bottom: 16px;
 `;
 

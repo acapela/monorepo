@@ -3,6 +3,7 @@ import { AttachmentDetailedInfoFragment } from "~gql";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { motion } from "framer-motion";
+import { borderRadius } from "~ui/baseStyles";
 
 export const ATTACHMENT_PREVIEW_HEIGHT_PX = 120;
 
@@ -87,7 +88,7 @@ const UIHolder = styled(motion.div)`
 const ImageWrapper = styled.img`
   max-height: 100%;
   user-select: none;
-  border-radius: 0.5rem;
+  ${borderRadius.item}
 `;
 
 const PlayableMediaWrapper = styled.div`

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { hoverActionCss } from "../transitions";
 import { ReactNode } from "react";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   icon: ReactNode;
@@ -26,7 +27,7 @@ const UIHolder = styled.button`
   width: 1.5em;
   height: 1.5em;
 
-  border-radius: 0.25em;
+  ${borderRadius.button}
   background-color: transparent;
   border: none;
   cursor: pointer;

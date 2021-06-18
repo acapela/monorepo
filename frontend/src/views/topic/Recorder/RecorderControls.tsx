@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { BodyPortal } from "~ui/BodyPortal";
 import { Popover } from "~ui/popovers/Popover";
 import { VideoPreview } from "./VideoPreview";
@@ -82,7 +82,7 @@ const UIHolder = styled.div`
 const UIControls = styled(HStack)`
   background: #f8f8f8;
   padding: 0.5rem;
-  border-radius: 0.625rem;
+  ${borderRadius.modal}
   user-select: none;
   ${shadow.modal}
 `;

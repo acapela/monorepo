@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Calendar } from "~ui/time/Calendar";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
-import { shadow } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { PopPresenceAnimator } from "~ui/animations";
 
@@ -57,7 +57,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
 const UIDateTimePickerForm = styled(PopPresenceAnimator)`
   background: #ffffff;
   ${shadow.medium};
-  border-radius: 12px;
+  ${borderRadius.modal}
   display: grid;
   grid-gap: 24px;
   grid-template-columns: 1fr;

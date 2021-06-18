@@ -9,6 +9,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { useRef } from "react";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconDragAndDrop } from "~ui/icons";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -116,7 +117,7 @@ const UIUnreadMessagesNotification = styled.div`
 
   height: 8px;
   width: 8px;
-  border-radius: 8px;
+  ${borderRadius.item}
 
   background-color: ${NOTIFICATION_COLOR};
 `;

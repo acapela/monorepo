@@ -5,6 +5,7 @@ import { Badge } from "~ui/Badge";
 import { getTopicCloseInfo } from "~frontend/topics/useTopic";
 import { TopicDetailedInfoFragment } from "~gql";
 import { MessageLikeContent } from "./MessageLikeContent";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -41,7 +42,7 @@ const UIHolder = styled.div`
 
   background: #f0faf5;
   border: 1px solid #d7f4e4;
-  border-radius: 8px;
+  ${borderRadius.card}
 `;
 
 const UIHead = styled.div`

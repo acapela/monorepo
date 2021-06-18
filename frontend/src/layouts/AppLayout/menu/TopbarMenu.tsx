@@ -15,9 +15,9 @@ export const TopBarMenu = () => {
   if (!shouldShowCollaborationBreadcrumbs) {
     return (
       <UINav>
-        <NavItem icon={<IconHome />} label="Home" href="/" />
-        <NavItem icon={<IconSpaces />} label="Spaces" href="/spaces" />
-        <NavItem icon={<IconCalendar />} label="Calendar" href="/calendar" />
+        <NavItem item={{ icon: <IconHome />, title: "Home", href: "/" }} />
+        <NavItem item={{ icon: <IconSpaces />, title: "Spaces", href: "/spaces" }} />
+        <NavItem item={{ icon: <IconCalendar />, title: "Calendar", href: "/calendar" }} />
       </UINav>
     );
   }

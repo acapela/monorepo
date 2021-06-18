@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT_WEAK } from "~ui/colors";
 import { IconSelection } from "~ui/icons";
 import { TextTitle, ItemTitle } from "~ui/typo";
@@ -32,7 +33,7 @@ const UIHolder = styled.div`
   text-align: center;
   align-items: center;
   background-color: ${BACKGROUND_ACCENT_WEAK};
-  border-radius: 16px;
+  ${borderRadius.card}
   padding: 16px;
 
   & {
