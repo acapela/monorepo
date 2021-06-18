@@ -15,7 +15,7 @@ export const ElementNotificationBadge = styled(({ className, children }: UnreadT
 const UIHolder = styled.div`
   position: absolute;
   top: -8px;
-  right: -8px;
+  left: -8px;
   padding: 4px 8px;
   background: ${NOTIFICATION_COLOR};
   color: #fff;
