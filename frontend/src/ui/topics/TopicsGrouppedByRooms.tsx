@@ -31,5 +31,5 @@ export const TopicsGroupedByRooms = styled(function TopicsGroupedByRooms({ class
 const UIHolder = styled.div``;
 
 const UISingleRoomRecentTopics = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 `;

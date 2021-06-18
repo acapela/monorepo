@@ -89,7 +89,7 @@ const UITopicTitle = styled(TextTitle)<{ isClosed: boolean }>`
     if (props.isClosed) {
       return css`
         text-decoration: line-through;
-        color: hsla(211, 12%, 62%, 1);
+        color: ${SECONDARY_FONT_COLOR};
       `;
     }
   }}

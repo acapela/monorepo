@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
@@ -15,6 +15,9 @@ import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { BACKGROUND_ACCENT, SECONDARY_FONT_COLOR, PRIMARY_FONT_COLOR } from "~ui/colors";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { ElementNotificationBadge } from "../ElementNotificationBadge";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -30,6 +33,8 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const unreadNotifications = useRoomUnreadMessagesCount(room.id);
+
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
       roomId: room.id,
@@ -43,6 +48,9 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
 
   return (
     <UIHolder className={className}>
+      {unreadNotifications > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadNotifications, 99)}</ElementNotificationBadge>
+      )}
       <UICollapseHolder isOpened={isOpen}>
         <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
       </UICollapseHolder>
@@ -91,6 +99,7 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
 
 const UIHolder = styled(CardBase)`
   display: flex;
+  position: relative;
 `;
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
