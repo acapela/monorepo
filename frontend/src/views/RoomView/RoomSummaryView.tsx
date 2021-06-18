@@ -79,5 +79,6 @@ const UITopicSummaries = styled.div`
 const UIAdditionalNotes = styled(TextArea)`
   padding: 0;
   border: 0;
+  border-radius: 0px;
   width: 100%;
 `;

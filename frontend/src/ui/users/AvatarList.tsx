@@ -11,8 +11,8 @@ interface Props {
 export const AvatarList = styled(function AvatarList({ users, className }: Props) {
   return (
     <UIHolder className={className}>
-      {users.map((users, index) => (
-        <Avatar size="small" key={index} url={users.avatar_url} name={users.name ?? ""} />
+      {users.map((user, index) => (
+        <Avatar size="small" key={index} url={user.avatar_url} name={user.name ?? ""} />
       ))}
     </UIHolder>
   );

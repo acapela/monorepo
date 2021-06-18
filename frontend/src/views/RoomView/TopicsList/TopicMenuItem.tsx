@@ -82,7 +82,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
     if (props.isClosed) {
       return css`
         text-decoration: line-through;
-        color: hsla(211, 12%, 62%, 1);
+        opacity: 0.5;
       `;
     }
   }}

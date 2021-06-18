@@ -17,7 +17,7 @@ export function niceFormatDate(date: Date): string {
 
 export function niceFormatDateTime(date: Date): string {
   if (typeof date === "string") date = new Date(date);
-  return format(date, "MMM do") + " at " + format(date, "pp");
+  return format(date, "MMM do") + " at " + niceFormatTime(date);
 }
 
 export function niceFormatTime(date: Date): string {
