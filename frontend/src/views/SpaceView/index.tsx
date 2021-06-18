@@ -43,7 +43,7 @@ export function SpaceView({ spaceId }: Props) {
 
     const slug = slugify(roomName);
 
-    const [room] = await createRoom({ name: roomName, spaceId, slug });
+    const [room] = await createRoom({ input: { name: roomName, space_id: spaceId, slug } });
 
     const roomId = room?.id;
 

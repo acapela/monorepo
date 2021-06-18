@@ -6,6 +6,7 @@ import { Container } from "~ui/layout/Container";
 import { QueriedTopicsList } from "~frontend/ui/topics/QueriedTopicsList";
 import { useTopicFilterVariables } from "~frontend/ui/topics/filters/filter";
 import { TopicFilters } from "~frontend/ui/topics/filters/TopicFilters";
+import { CreateRoomButton } from "./CreateRoom";
 
 export function HomeView() {
   const user = useAssertCurrentUser();
@@ -16,10 +17,13 @@ export function HomeView() {
       <UISearchWrapper>
         <SearchBar />
       </UISearchWrapper>
-      <UIGreeting>
-        <PageTitle>Hello, {user.name}!</PageTitle>
-        <div>Here are rooms & topics with recent activity.</div>
-      </UIGreeting>
+      <UIMainSection>
+        <UIGreeting>
+          <PageTitle>Hello, {user.name}!</PageTitle>
+          <div>Here are rooms & topics with recent activity.</div>
+        </UIGreeting>
+        <CreateRoomButton />
+      </UIMainSection>
       <TopicFilters onFiltersChange={setFilters} />
       <QueriedTopicsList query={topicQuery} />
     </UIHolder>
@@ -39,6 +43,13 @@ const UIHolder = styled(Container)`
 const UISearchWrapper = styled.div`
   margin: 0 auto;
   margin-bottom: 3rem;
+`;
+
+const UIMainSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: start;
 `;
 
 const UIGreeting = styled.div`

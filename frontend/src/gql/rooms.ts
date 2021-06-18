@@ -29,7 +29,6 @@ import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
-
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
@@ -112,8 +111,8 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    mutation CreateRoom($name: String!, $spaceId: uuid!, $slug: String!) {
-      room: insert_room_one(object: { name: $name, space_id: $spaceId, slug: $slug }) {
+    mutation CreateRoom($input: room_insert_input!) {
+      room: insert_room_one(object: $input) {
         ...RoomDetailedInfo
       }
     }
@@ -131,7 +130,7 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
         __typename: "mutation_root",
         room: {
           __typename: "room",
-          deadline: new Date(),
+          deadline: variables.deadline,
           id: getUUID(),
           members: [],
           topics: [],
