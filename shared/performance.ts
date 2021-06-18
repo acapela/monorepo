@@ -9,7 +9,9 @@ function getNow() {
   return performance.now();
 }
 
-export function startMeasuringFps() {
+export type EndFpsMeasurement = () => number;
+
+export function startMeasuringFps(): EndFpsMeasurement {
   const frameTimes: number[] = [];
 
   let previousFrameTime = getNow();
