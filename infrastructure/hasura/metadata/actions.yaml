@@ -26,6 +26,16 @@ actions:
           value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
     permissions:
       - role: user
+  - name: lookup_team_name
+    definition:
+      kind: ""
+      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    permissions:
+      - role: public
+      - role: user
   - name: upgrade_current_user
     definition:
       kind: synchronous
@@ -67,4 +77,5 @@ custom_types:
             user_id: id
     - name: UploadUrlResponse
     - name: DownloadUrlResponse
+    - name: LookupTeamNameResponse
   scalars: []
