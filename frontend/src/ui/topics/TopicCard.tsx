@@ -9,6 +9,7 @@ import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
 import { Avatar } from "../users/Avatar";
+import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -22,7 +23,7 @@ function renderMessageContent(message: TopicMessageBasicInfoFragment) {
     const htmlContent = converter.convert();
     const strippedHtml = htmlContent.replace(/<[^>]+>/g, " ");
 
-    return <span id="UITextMessage" dangerouslySetInnerHTML={{ __html: strippedHtml }}></span>;
+    return <span id="UILastMessageContent__message" dangerouslySetInnerHTML={{ __html: strippedHtml }}></span>;
   } catch (error) {
     return <div>😢 Failed to display message content</div>;
   }
@@ -31,6 +32,8 @@ function renderMessageContent(message: TopicMessageBasicInfoFragment) {
 export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
+
+  const { isClosed } = useTopic(topic);
 
   const [lastMessageWrapped = []] = useTopicMessagesQuery({
     topicId,
@@ -46,8 +49,6 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
   function handleOpen() {
     routes.spaceRoomTopic.push({ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id });
   }
-
-  const isClosed = !!(topic.closed_at && topic.closed_at.length > 0);
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
@@ -89,7 +90,7 @@ const UITopicTitle = styled(TextTitle)<{ isClosed: boolean }>`
     if (props.isClosed) {
       return css`
         text-decoration: line-through;
-        color: ${SECONDARY_FONT_COLOR};
+        opacity: 0.5;
       `;
     }
   }}
@@ -113,8 +114,6 @@ const UILastMessage = styled.div`
   gap: 8px;
 
   padding-top: 8px;
-
-  color: ${SECONDARY_FONT_COLOR};
 `;
 
 const UILastMessageSender = styled(Avatar)``;
@@ -122,7 +121,8 @@ const UILastMessageSender = styled(Avatar)``;
 const UILastMessageContent = styled.div`
   display: grid;
 
-  #UITextMessage {
+  #UILastMessageContent__message {
+    opacity: 0.5;
     line-height: 1.5rem;
     overflow: hidden;
     white-space: nowrap;

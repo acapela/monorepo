@@ -14,7 +14,7 @@ import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
-import { BACKGROUND_ACCENT, SECONDARY_FONT_COLOR, PRIMARY_FONT_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
 import { ElementNotificationBadge } from "../ElementNotificationBadge";
@@ -64,15 +64,16 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
             </RoomLink>
             <UIRoomMetaData>
               <UIRoomInfo>
-                <strong>Due date:</strong> {niceFormatDateTime(new Date(room.deadline))}
+                <UIRoomInfoKey>Due date:</UIRoomInfoKey>{" "}
+                <UIRoomInfoValue>{niceFormatDateTime(new Date(room.deadline))}</UIRoomInfoValue>
               </UIRoomInfo>
               <UIRoomInfoSeparator />
               <UIRoomInfo>
-                <strong>Space:</strong> {space?.name}
+                <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
               </UIRoomInfo>
               <UIRoomInfoSeparator />
               <UIRoomInfo>
-                <strong>Topics:</strong> {topics.length}
+                <UIRoomInfoKey>Topics:</UIRoomInfoKey> <UIRoomInfoValue>{topics.length}</UIRoomInfoValue>
               </UIRoomInfo>
             </UIRoomMetaData>
           </UIHeadPrimary>
@@ -141,12 +142,17 @@ const UIRoomMetaData = styled.div`
 `;
 
 const UIRoomInfo = styled.div`
-  color: ${SECONDARY_FONT_COLOR};
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+`;
 
-  & strong {
-    font-weight: 600;
-    color: ${PRIMARY_FONT_COLOR};
-  }
+const UIRoomInfoKey = styled.div`
+  font-weight: 600;
+`;
+
+const UIRoomInfoValue = styled.div`
+  opacity: 0.5;
 `;
 
 const UIRoomInfoSeparator = styled.div`
