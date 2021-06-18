@@ -14,10 +14,9 @@ export function niceFormatDate(date: Date): string {
 }
 
 export function niceFormatDateTime(date: Date): string {
-  return format(date, "MMM do") + " at " + format(date, "pp");
+  return format(date, "MMM do") + " at " + niceFormatTime(date, "p");
 }
 
 export function niceFormatTime(date: Date): string {
-  return "ok";
   return format(date, "p");
 }

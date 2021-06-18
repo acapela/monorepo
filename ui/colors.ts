@@ -7,6 +7,7 @@ export const ACTIVE_COLOR = `hsl(250, 100%, 68%)`;
 export const SUCCESS_COLOR = `hsla(149, 99%, 33%, 1)`;
 export const HIGHLIGHT_COLOR = `hsl(47, 85%, 64%)`;
 export const NOTIFICATION_COLOR = `hsl(352, 92%, 71%)`;
+export const PRIMARY_FONT_COLOR = `hsl(213, 20%, 17%)`;
 export const SECONDARY_FONT_COLOR = `hsla(0, 0%, 71%, 1)`;
 
 /**

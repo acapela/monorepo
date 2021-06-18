@@ -14,7 +14,7 @@ import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT, SECONDARY_FONT_COLOR, PRIMARY_FONT_COLOR } from "~ui/colors";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -127,13 +127,16 @@ const UIHeadPrimary = styled.div`
 const UIRoomMetaData = styled.div`
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 16px;
   padding-top: 16px;
 `;
 
 const UIRoomInfo = styled.div`
+  color: ${SECONDARY_FONT_COLOR};
+
   & strong {
     font-weight: 600;
+    color: ${PRIMARY_FONT_COLOR};
   }
 `;
 
