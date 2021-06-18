@@ -1,8 +1,6 @@
-import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { useRouter } from "next/router";
 import styled, { css } from "styled-components";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";

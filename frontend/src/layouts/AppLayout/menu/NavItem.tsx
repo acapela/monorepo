@@ -4,7 +4,6 @@ import { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { IconChevronDown } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { UIPopoverMenuModal } from "~ui/popovers/PopoverMenu";
