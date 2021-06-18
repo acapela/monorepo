@@ -1336,6 +1336,10 @@ enum last_seen_message_update_column {
   user_id
 }
 
+input lookup_team_name_by_token_args {
+  invite_token: String
+}
+
 """
 columns and relationships of "membership_status"
 """
@@ -4472,6 +4476,76 @@ type query_root {
   last_seen_message_by_pk(topic_id: uuid!, user_id: uuid!): last_seen_message
 
   """
+  execute function "lookup_team_name_by_token" which returns "team_invite_token_name"
+  """
+  lookup_team_name_by_token(
+    """
+    input parameters for function "lookup_team_name_by_token"
+    """
+    args: lookup_team_name_by_token_args!
+
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): [team_invite_token_name!]!
+
+  """
+  execute function "lookup_team_name_by_token" and query aggregates on result of table type "team_invite_token_name"
+  """
+  lookup_team_name_by_token_aggregate(
+    """
+    input parameters for function "lookup_team_name_by_token"
+    """
+    args: lookup_team_name_by_token_args!
+
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): team_invite_token_name_aggregate!
+
+  """
   fetch data from the table: "membership_status"
   """
   membership_status(
@@ -5385,6 +5459,66 @@ type query_root {
   fetch data from the table: "team_invitation" using primary key columns
   """
   team_invitation_by_pk(id: uuid!): team_invitation
+
+  """
+  fetch data from the table: "team_invite_token_name"
+  """
+  team_invite_token_name(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): [team_invite_token_name!]!
+
+  """
+  fetch aggregated fields from the table: "team_invite_token_name"
+  """
+  team_invite_token_name_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): team_invite_token_name_aggregate!
 
   """
   fetch data from the table: "team_member"
@@ -7922,6 +8056,76 @@ type subscription_root {
   last_seen_message_by_pk(topic_id: uuid!, user_id: uuid!): last_seen_message
 
   """
+  execute function "lookup_team_name_by_token" which returns "team_invite_token_name"
+  """
+  lookup_team_name_by_token(
+    """
+    input parameters for function "lookup_team_name_by_token"
+    """
+    args: lookup_team_name_by_token_args!
+
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): [team_invite_token_name!]!
+
+  """
+  execute function "lookup_team_name_by_token" and query aggregates on result of table type "team_invite_token_name"
+  """
+  lookup_team_name_by_token_aggregate(
+    """
+    input parameters for function "lookup_team_name_by_token"
+    """
+    args: lookup_team_name_by_token_args!
+
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): team_invite_token_name_aggregate!
+
+  """
   fetch data from the table: "membership_status"
   """
   membership_status(
@@ -8835,6 +9039,66 @@ type subscription_root {
   fetch data from the table: "team_invitation" using primary key columns
   """
   team_invitation_by_pk(id: uuid!): team_invitation
+
+  """
+  fetch data from the table: "team_invite_token_name"
+  """
+  team_invite_token_name(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): [team_invite_token_name!]!
+
+  """
+  fetch aggregated fields from the table: "team_invite_token_name"
+  """
+  team_invite_token_name_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_invite_token_name_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_invite_token_name_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_invite_token_name_bool_exp
+  ): team_invite_token_name_aggregate!
 
   """
   fetch data from the table: "team_member"
@@ -10021,6 +10285,106 @@ enum team_invitation_update_column {
   column name
   """
   used_by_user_id
+}
+
+"""
+columns and relationships of "team_invite_token_name"
+"""
+type team_invite_token_name {
+  name: String
+  token: uuid
+}
+
+"""
+aggregated selection of "team_invite_token_name"
+"""
+type team_invite_token_name_aggregate {
+  aggregate: team_invite_token_name_aggregate_fields
+  nodes: [team_invite_token_name!]!
+}
+
+"""
+aggregate fields of "team_invite_token_name"
+"""
+type team_invite_token_name_aggregate_fields {
+  count(columns: [team_invite_token_name_select_column!], distinct: Boolean): Int
+  max: team_invite_token_name_max_fields
+  min: team_invite_token_name_min_fields
+}
+
+"""
+order by aggregate values of table "team_invite_token_name"
+"""
+input team_invite_token_name_aggregate_order_by {
+  count: order_by
+  max: team_invite_token_name_max_order_by
+  min: team_invite_token_name_min_order_by
+}
+
+"""
+Boolean expression to filter rows from the table "team_invite_token_name". All fields are combined with a logical 'AND'.
+"""
+input team_invite_token_name_bool_exp {
+  _and: [team_invite_token_name_bool_exp]
+  _not: team_invite_token_name_bool_exp
+  _or: [team_invite_token_name_bool_exp]
+  name: String_comparison_exp
+  token: uuid_comparison_exp
+}
+
+"""
+aggregate max on columns
+"""
+type team_invite_token_name_max_fields {
+  name: String
+  token: uuid
+}
+
+"""
+order by max() on columns of table "team_invite_token_name"
+"""
+input team_invite_token_name_max_order_by {
+  name: order_by
+  token: order_by
+}
+
+"""
+aggregate min on columns
+"""
+type team_invite_token_name_min_fields {
+  name: String
+  token: uuid
+}
+
+"""
+order by min() on columns of table "team_invite_token_name"
+"""
+input team_invite_token_name_min_order_by {
+  name: order_by
+  token: order_by
+}
+
+"""
+ordering options when selecting data from "team_invite_token_name"
+"""
+input team_invite_token_name_order_by {
+  name: order_by
+  token: order_by
+}
+
+"""
+select columns of table "team_invite_token_name"
+"""
+enum team_invite_token_name_select_column {
+  """
+  column name
+  """
+  name
+
+  """
+  column name
+  """
+  token
 }
 
 """

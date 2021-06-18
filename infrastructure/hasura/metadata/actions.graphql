@@ -20,6 +20,13 @@ type Query {
 }
 
 
+type Query {
+  lookup_team_name (
+    token: String!
+  ): LookupTeamNameResponse
+}
+
+
 type Mutation {
   upgrade_current_user : UpgradeUserResponse
 }
@@ -47,5 +54,9 @@ type UploadUrlResponse {
 
 type DownloadUrlResponse {
   downloadUrl : String!
+}
+
+type LookupTeamNameResponse {
+  team_name : String!
 }
 
