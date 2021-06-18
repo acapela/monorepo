@@ -68,9 +68,11 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
                 <UIRoomInfoValue>{niceFormatDateTime(new Date(room.deadline))}</UIRoomInfoValue>
               </UIRoomInfo>
               <UIRoomInfoSeparator />
-              <UIRoomInfo>
-                <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
-              </UIRoomInfo>
+              {space && (
+                <UIRoomInfo>
+                  <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
+                </UIRoomInfo>
+              )}
               <UIRoomInfoSeparator />
               <UIRoomInfo>
                 <UIRoomInfoKey>Topics:</UIRoomInfoKey> <UIRoomInfoValue>{topics.length}</UIRoomInfoValue>
