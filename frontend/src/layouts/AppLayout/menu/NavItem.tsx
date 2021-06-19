@@ -11,6 +11,7 @@ import { useIsRoutePathActive } from "~frontend/../routes";
 import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 export interface NavItemInfo {
+  key: string;
   title: string;
   href: string;
   icon?: ReactNode;
@@ -44,17 +45,17 @@ export const NavItem = styled(({ item, className }: Props) => {
           onMouseLeave={unsetHovered}
           isDisabled={item.disableNavigation}
         >
-          <UIIcon>{item.icon}</UIIcon>
+          {item.icon && <UIIcon>{item.icon}</UIIcon>}
           <UILabel>{item.title}</UILabel>
           {!!childItems?.length && <UIDropdownIcon />}
         </UIHolder>
       </Link>
       <AnimatePresence>
-        {childItems && shouldShowChildItems && (
-          <Popover anchorRef={holderRef}>
+        {childItems && childItems.length > 0 && shouldShowChildItems && (
+          <Popover anchorRef={holderRef} placement="bottom-start">
             <UIPopoverMenuModal onMouseEnter={setHovered} onMouseLeave={unsetHovered}>
               {childItems.map((item) => {
-                return <NavItem item={item} />;
+                return <NavItem key={item.key} item={item} />;
               })}
             </UIPopoverMenuModal>
           </Popover>

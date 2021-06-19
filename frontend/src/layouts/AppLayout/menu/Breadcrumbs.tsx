@@ -1,6 +1,6 @@
 import { IconCalendar, IconGrid05, IconHome, IconSpaces } from "~ui/icons";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useSingleSpaceQuery, useSpacesQuery } from "~frontend/gql/spaces";
 import { usePathParameter } from "~frontend/utils";
 
 import { NavItemsBreadcrumbs } from "./NavItemsBreadcrumbs";
@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { SpaceGradient } from "~frontend/ui/spaces/spaceGradient";
 import { NavItemInfo } from "./NavItem";
 import { borderRadius } from "~ui/baseStyles";
+import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 const homeSegment: NavItemInfo = {
   title: "Home",
@@ -26,13 +27,18 @@ export function ContentBreadcrumbs() {
   const spaceId = usePathParameter("spaceId");
   const roomId = usePathParameter("roomId");
 
+  const teamId = useAssertCurrentTeamId();
+
   const [room] = useSingleRoomQuery({ id: roomId ?? "" }, { skip: !roomId });
   const [space] = useSingleSpaceQuery({ id: spaceId ?? "" }, { skip: !spaceId });
+
+  const [spaces = []] = useSpacesQuery({ teamId });
 
   function getSegments(): NavItemInfo[] {
     const segments: NavItemInfo[] = [];
 
     segments.push({
+      key: "spaces",
       title: "Spaces",
       href: routes.spaces.getUrlWithParams({}),
       icon: <IconSpaces />,
@@ -40,21 +46,33 @@ export function ContentBreadcrumbs() {
     });
 
     if (space) {
+      const otherSpaces = spaces.filter((otherSpace) => otherSpace.id !== space.id);
       segments.push({
         title: space.name ?? "",
         href: routes.space.getUrlWithParams({ spaceId: space.id }),
+        key: space.id,
         icon: <BreadcrumbSpaceIcon spaceId={space.id} />,
+        childItems: otherSpaces.map((otherSpace) => {
+          return {
+            key: otherSpace.id,
+            title: otherSpace.name ?? "",
+            href: routes.space.getUrlWithParams({ spaceId: otherSpace.id }),
+            icon: <BreadcrumbSpaceIcon spaceId={otherSpace.id} />,
+          };
+        }),
       });
     }
 
     if (room) {
       segments.push({
+        key: room.id,
         title: room.name ?? "",
         href: routes.spaceRoom.getUrlWithParams({
-          spaceId: room.space_id,
+          // TODO: space_id should not be nullable in hasura
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          spaceId: room.space_id!,
           roomId: room.id,
         }),
-        icon: <IconGrid05 />,
       });
     }
 
