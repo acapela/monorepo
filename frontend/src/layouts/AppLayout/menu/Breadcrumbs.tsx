@@ -1,4 +1,4 @@
-import { IconCalendar, IconGrid05, IconHome, IconSpaces } from "~ui/icons";
+import { IconCalendar, IconHome, IconSpaces } from "~ui/icons";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery, useSpacesQuery } from "~frontend/gql/spaces";
 import { usePathParameter } from "~frontend/utils";
@@ -12,12 +12,14 @@ import { borderRadius } from "~ui/baseStyles";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 const homeSegment: NavItemInfo = {
+  key: "home",
   title: "Home",
   href: routes.home.path,
   icon: <IconHome />,
 };
 
 const calendarSegment: NavItemInfo = {
+  key: "calendar",
   title: "Calendar",
   href: routes.calendar.path,
   icon: <IconCalendar />,
