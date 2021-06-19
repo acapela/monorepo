@@ -10,14 +10,15 @@ export const TopBarMenu = () => {
     routes.space.path,
     routes.spaceRoom.path,
     routes.spaceRoomTopic.path,
+    routes.spaceRoomSummary.path,
   ]);
 
   if (!shouldShowCollaborationBreadcrumbs) {
     return (
       <UINav>
-        <NavItem item={{ icon: <IconHome />, title: "Home", href: "/" }} />
-        <NavItem item={{ icon: <IconSpaces />, title: "Spaces", href: "/spaces" }} />
-        <NavItem item={{ icon: <IconCalendar />, title: "Calendar", href: "/calendar" }} />
+        <NavItem item={{ key: "home", icon: <IconHome />, title: "Home", href: "/" }} />
+        <NavItem item={{ key: "spaces", icon: <IconSpaces />, title: "Spaces", href: "/spaces" }} />
+        <NavItem item={{ key: "calendar", icon: <IconCalendar />, title: "Calendar", href: "/calendar" }} />
       </UINav>
     );
   }
