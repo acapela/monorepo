@@ -3,9 +3,9 @@ import { ReactNode, useState } from "react";
 import { IconFilter } from "~ui/icons";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
-  TopicsQueryVariables,
-  Topic_Bool_Exp as TopicWhere,
-  Topic_Order_By as TopicOrder,
+  RoomsQueryVariables,
+  Room_Bool_Exp as RoomWhere,
+  Room_Order_By as RoomOrder,
   UserBasicInfoFragment,
 } from "~gql";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
@@ -14,8 +14,8 @@ export interface BasicFilter {
   key: string;
   label: string;
   icon?: ReactNode;
-  whereApplier?: (draft: TopicWhere) => void;
-  orderGetter?: () => TopicOrder;
+  whereApplier?: (draft: RoomWhere) => void;
+  orderGetter?: () => RoomOrder;
 }
 
 interface UserFilter extends BasicFilter {
@@ -27,21 +27,19 @@ export function getIsUserFilter(filter: BasicFilter): filter is UserFilter {
   return Reflect.get(filter, "type") === "user";
 }
 
-export type TopicFilter = UserFilter | BasicFilter;
+export type RoomFilter = UserFilter | BasicFilter;
 
-const DEFAULT_RECENT_TOPICS_COUNT = 100;
+const DEFAULT_RECENT_ROOMS_LIMIT = 100;
 
-export function getTopicVariablesFromFilters(
+export function getRoomVariablesFromFilters(
   userId: string,
   teamId: string,
-  filters: TopicFilter[]
-): TopicsQueryVariables {
-  const orders: TopicOrder[] = [];
-  let where: TopicWhere = {
-    room: {
-      space: {
-        team_id: { _eq: teamId },
-      },
+  filters: RoomFilter[]
+): RoomsQueryVariables {
+  const orders: RoomOrder[] = [];
+  let where: RoomWhere = {
+    space: {
+      team_id: { _eq: teamId },
     },
   };
 
@@ -62,22 +60,26 @@ export function getTopicVariablesFromFilters(
 
   // If there is no other orders, by default let's order by the latest messages.
   if (!orders.length) {
-    orders.push({ messages_aggregate: { max: { created_at: "desc" } } });
+    orders.push({
+      last_posted_message: {
+        last_posted_message_time: "desc",
+      },
+    });
   }
 
   return {
     where,
     orderBy: orders,
-    limit: DEFAULT_RECENT_TOPICS_COUNT,
+    limit: DEFAULT_RECENT_ROOMS_LIMIT,
   };
 }
 
-export function useTopicFilterVariables() {
-  const [filters, setFilters] = useState<TopicFilter[]>([]);
+export function useRoomFilterVariables() {
+  const [filters, setFilters] = useState<RoomFilter[]>([]);
   const teamId = useAssertCurrentTeamId();
   const user = useAssertCurrentUser();
 
-  const variables = getTopicVariablesFromFilters(user.id, teamId, filters);
+  const variables = getRoomVariablesFromFilters(user.id, teamId, filters);
 
   return [variables, setFilters] as const;
 }
@@ -103,7 +105,11 @@ export function createSortByLatestActivityFilter(): BasicFilter {
     label: "Sort by latest activity",
     icon: <IconFilter />,
     orderGetter() {
-      return { messages_aggregate: { max: { created_at: "desc" } } };
+      return {
+        last_posted_message: {
+          last_posted_message_time: "desc",
+        },
+      };
     },
   };
 }
@@ -114,7 +120,7 @@ export function createSortByDueDateFilter(): BasicFilter {
     label: "Sort by due date",
     icon: <IconFilter />,
     orderGetter() {
-      return { room: { deadline: "desc" } };
+      return { deadline: "asc" };
     },
   };
 }

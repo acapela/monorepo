@@ -11,7 +11,7 @@ import {
   createSortByLatestActivityFilter,
   createUserFilter,
   getIsUserFilter,
-  TopicFilter,
+  RoomFilter,
 } from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
@@ -19,11 +19,11 @@ import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
-  onFiltersChange: (filters: TopicFilter[]) => void;
+  onFiltersChange: (filters: RoomFilter[]) => void;
   className?: string;
 }
 
-function getSelectedUsersFromTopicFilters(filters: TopicFilter[]) {
+function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
   const selectedMembers: UserBasicInfoFragment[] = [];
 
   for (const filter of filters) {
@@ -38,13 +38,13 @@ function getSelectedUsersFromTopicFilters(filters: TopicFilter[]) {
 }
 
 export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<TopicFilter>();
+  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>();
 
-  function removeFilter(filterToRemove: TopicFilter) {
+  function removeFilter(filterToRemove: RoomFilter) {
     applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
   }
 
-  function handleAddFilter(filterToAdd: TopicFilter) {
+  function handleAddFilter(filterToAdd: RoomFilter) {
     if (hasFilter(filterToAdd)) {
       return;
     }
@@ -52,7 +52,7 @@ export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange
     addFilter(filterToAdd);
   }
 
-  function hasFilter(filterToCheck: TopicFilter) {
+  function hasFilter(filterToCheck: RoomFilter) {
     return filters.some((existingFilter) => existingFilter.key === filterToCheck.key);
   }
 

@@ -1,29 +1,22 @@
 import styled from "styled-components";
-import { TopicsQueryVariables } from "~gql";
-import { useTopicsQuery } from "~frontend/gql/topics";
-import { groupBy } from "~shared/groupBy";
+import { RoomsQueryVariables } from "~gql";
 import { TopicsInRoom } from "./TopicsInRoom";
+import { useRoomsQuery } from "~frontend/gql/rooms";
 
 interface Props {
   className?: string;
-  query: TopicsQueryVariables;
+  query: RoomsQueryVariables;
 }
 
 export const QueriedTopicsList = styled(function RecentTopics({ className, query }: Props) {
-  const [topics = []] = useTopicsQuery(query);
-
-  const roomGroups = groupBy(
-    topics,
-    (topic) => topic.room,
-    (room) => room.id
-  );
+  const [rooms = []] = useRoomsQuery(query);
 
   return (
     <UIHolder className={className}>
-      {roomGroups.map((roomGroup) => {
+      {rooms.map((room) => {
         return (
-          <UISingleRoomRecentTopics key={roomGroup.groupItem.id}>
-            <TopicsInRoom room={roomGroup.groupItem} topics={roomGroup.items} />
+          <UISingleRoomRecentTopics key={room.id}>
+            <TopicsInRoom room={room} topics={room.topics} />
           </UISingleRoomRecentTopics>
         );
       })}
@@ -34,5 +27,5 @@ export const QueriedTopicsList = styled(function RecentTopics({ className, query
 const UIHolder = styled.div``;
 
 const UISingleRoomRecentTopics = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 `;

@@ -3,11 +3,11 @@ import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 import { getObjectKey } from "~shared/object";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
-import { TopicFilter } from "./filter";
+import { RoomFilter } from "./filter";
 
 interface Props {
-  filters: TopicFilter[];
-  onFilterRemoveRequest: (filter: TopicFilter) => void;
+  filters: RoomFilter[];
+  onFilterRemoveRequest: (filter: RoomFilter) => void;
 }
 
 export function FiltersList({ filters, onFilterRemoveRequest }: Props) {
