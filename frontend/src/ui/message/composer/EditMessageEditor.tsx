@@ -8,15 +8,9 @@ import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 import { addMessageAttachment, removeMessageAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
-import { EditorAttachmentInfo } from "./attachments";
+import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
-import { uploadFile } from "./uploadFile";
 import { makePromiseVoidable } from "~shared/promises";
-
-interface ComposerAttachment {
-  uuid: string;
-  mimeType: string;
-}
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
@@ -34,21 +28,6 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     })
   );
   const [content, setContent] = useState<EditorContent>(message.content);
-
-  async function uploadFiles(files: File[]): Promise<ComposerAttachment[]> {
-    const uploadedAttachments = await Promise.all(
-      files.map(async (file): Promise<ComposerAttachment> => {
-        const uuid = await uploadFile(file);
-
-        return {
-          uuid,
-          mimeType: file.type,
-        };
-      })
-    );
-
-    return uploadedAttachments;
-  }
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {

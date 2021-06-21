@@ -7,7 +7,7 @@ import { EditorContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
-import { uploadFile } from "./uploadFile";
+import { uploadFiles } from "./attachments";
 
 interface Props {
   topicId: string;
@@ -16,21 +16,6 @@ interface Props {
 export const NewMessageBar = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<EditorContent>([]);
-
-  async function uploadFiles(files: File[]): Promise<EditorAttachmentInfo[]> {
-    const uploadedAttachments = await Promise.all(
-      files.map(async (file): Promise<EditorAttachmentInfo> => {
-        const uuid = await uploadFile(file);
-
-        return {
-          uuid,
-          mimeType: file.type,
-        };
-      })
-    );
-
-    return uploadedAttachments;
-  }
 
   async function handleNewFiles(files: File[]) {
     const uploadedAttachments = await uploadFiles(files);

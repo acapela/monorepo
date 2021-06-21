@@ -8,18 +8,14 @@ export function useIsElementOrChildHovered(ref: RefObject<HTMLElement>) {
   useEffect(() => {
     const element = ref.current;
 
-    console.log({ element });
-
     if (!element) return;
 
     const cleanEnter = createElementEvent(element, "mouseenter", () => {
       setHovered();
-      console.log("okidoki");
     });
 
     const cleanLeave = createElementEvent(element, "mouseleave", () => {
       unsetHovered();
-      console.log("okidoki999");
     });
 
     return () => {

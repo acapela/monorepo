@@ -9,7 +9,7 @@ import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
-import { borderRadius } from "~frontend/../../ui/baseStyles";
+import { borderRadius } from "~ui/baseStyles";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface AttachmentProps {

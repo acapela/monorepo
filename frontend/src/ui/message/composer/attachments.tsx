@@ -5,7 +5,7 @@ interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;
 }
 
-export async function uploadFile(file: File, config: UploadFileConfig = {}) {
+export async function uploadFile(file: File, config: UploadFileConfig = {}): Promise<EditorAttachmentInfo> {
   const { name: fileName, type: mimeType } = file;
   const { uploadUrlInfo } = await uploadUrlQueryManager.fetch({ fileName, mimeType });
 
@@ -27,7 +27,10 @@ export async function uploadFile(file: File, config: UploadFileConfig = {}) {
     },
   });
 
-  return uploadUrlInfo.uuid;
+  return {
+    uuid: uploadUrlInfo.uuid,
+    mimeType: mimeType,
+  };
 }
 
 export interface EditorAttachmentInfo {
@@ -35,15 +38,10 @@ export interface EditorAttachmentInfo {
   mimeType: string;
 }
 
-async function uploadFiles(files: File[]): Promise<EditorAttachmentInfo[]> {
+export async function uploadFiles(files: File[]): Promise<EditorAttachmentInfo[]> {
   const uploadedAttachments = await Promise.all(
     files.map(async (file): Promise<EditorAttachmentInfo> => {
-      const uuid = await uploadFile(file);
-
-      return {
-        uuid,
-        mimeType: file.type,
-      };
+      return await uploadFile(file);
     })
   );
 

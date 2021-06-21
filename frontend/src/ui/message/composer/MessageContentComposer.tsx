@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
@@ -38,7 +38,7 @@ export const MessageContentEditor = ({
       additionalContent={
         attachments.length > 0 && (
           <UIAttachmentsPreviews>
-            {attachments.map((attachment, index) => {
+            {attachments.map((attachment) => {
               return (
                 <AttachmentPreview
                   id={attachment.uuid}

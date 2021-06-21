@@ -1,9 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { POP_PRESENCE_STYLES } from "~frontend/../../ui/animations";
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
-import { ITEM_COVER_COLOR } from "~frontend/../../ui/colors";
-import { IconTrash } from "~frontend/../../ui/icons";
+import { IconButton } from "~ui/buttons/IconButton";
+import { ITEM_COVER_COLOR } from "~ui/colors";
+import { IconTrash } from "~ui/icons";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 

@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~gql";
-import { EditorContent } from "~richEditor/RichEditor";
 import { richEditorContentCss } from "~richEditor/Theme";
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
-  isInEditMode: boolean;
-  onEditRequest(newContent: EditorContent): void;
-  onExitEditModeRequest(): void;
 }
 
 function renderMessageContent(message: TopicMessageBasicInfoFragment) {
@@ -24,7 +19,7 @@ function renderMessageContent(message: TopicMessageBasicInfoFragment) {
   }
 }
 
-export function MessageText({ message, isInEditMode, onExitEditModeRequest }: Props) {
+export function MessageText({ message }: Props) {
   return <UIHolder>{renderMessageContent(message)}</UIHolder>;
 }
 

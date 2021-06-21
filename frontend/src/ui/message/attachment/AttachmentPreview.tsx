@@ -1,11 +1,8 @@
-import { AnimatePresence } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
-import { IconTrash } from "~frontend/../../ui/icons";
 import { useAttachmentQuery, useDownloadUrlQuery } from "~frontend/gql/attachments";
-import { MessageAttachment } from "./MessageAttachment";
-import { MessageAttachmentActions } from "./MessageAttachmentActions";
+import { IconButton } from "~ui/buttons/IconButton";
+import { IconTrash } from "~ui/icons";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface Props {

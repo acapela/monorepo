@@ -3,9 +3,8 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/messages";
+import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
 import { TopicMessageDetailedInfoFragment } from "~gql";
-import { EditorContent } from "~richEditor/RichEditor";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { MessageActions } from "~frontend/ui/message/display/MessageActions";
@@ -22,7 +21,6 @@ interface Props extends MotionProps {
 export const Message = styled(({ message, className }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
-  const [updateMessage] = useUpdateTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
 
   const [isActive, setIsActive] = useState(false);
@@ -36,11 +34,6 @@ export const Message = styled(({ message, className }: Props) => {
 
   async function handleRemove() {
     await deleteMessage({ id: message.id });
-  }
-
-  async function handleEditContentRequest(newContent: EditorContent) {
-    disableEditMode();
-    await updateMessage({ id: message.id, content: newContent, isDraft: false });
   }
 
   const shouldShowTools = useDebouncedValue(isOwnMessage && !isInEditMode, { onDelay: 0, offDelay: 200 });
@@ -67,12 +60,7 @@ export const Message = styled(({ message, className }: Props) => {
         )}
         {!isInEditMode && (
           <>
-            <MessageText
-              message={message}
-              isInEditMode={isInEditMode}
-              onEditRequest={handleEditContentRequest}
-              onExitEditModeRequest={disableEditMode}
-            />
+            <MessageText message={message} />
             <MessageMedia message={message} />
           </>
         )}
