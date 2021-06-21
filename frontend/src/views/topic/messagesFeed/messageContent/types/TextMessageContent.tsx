@@ -8,6 +8,7 @@ import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 import { richEditorContentCss } from "~richEditor/Theme";
 import { useEqualEffect } from "~shared/hooks/useEqualEffect";
+import { useShortcut } from "~frontend/../../ui/keyboard/useShortcut";
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
@@ -41,6 +42,12 @@ export function MessageText({ message, isInEditMode, onEditRequest, onEditCancel
 
     setDirtyContent(message.content);
   }, [message.content]);
+
+  useShortcut("Escape", () => {
+    if (isInEditMode) {
+      onEditCancelRequest();
+    }
+  });
 
   if (!isInEditMode) {
     return <UIHolder>{renderMessageContent(message)}</UIHolder>;
