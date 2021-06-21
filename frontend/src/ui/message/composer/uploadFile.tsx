@@ -1,5 +1,5 @@
 import axios from "axios";
-import { uploadUrlQueryManager } from "~frontend/gql/topics";
+import { uploadUrlQueryManager } from "~frontend/gql/attachments";
 
 interface UploadFileConfig {
   onUploadProgress?: (percentage: number) => void;
@@ -28,4 +28,24 @@ export async function uploadFile(file: File, config: UploadFileConfig = {}) {
   });
 
   return uploadUrlInfo.uuid;
+}
+
+export interface UploadedFileInfo {
+  uuid: string;
+  mimeType: string;
+}
+
+async function uploadFiles(files: File[]): Promise<UploadedFileInfo[]> {
+  const uploadedAttachments = await Promise.all(
+    files.map(async (file): Promise<UploadedFileInfo> => {
+      const uuid = await uploadFile(file);
+
+      return {
+        uuid,
+        mimeType: file.type,
+      };
+    })
+  );
+
+  return uploadedAttachments;
 }

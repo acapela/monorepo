@@ -3,15 +3,16 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
+import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/messages";
 import { TopicMessageDetailedInfoFragment } from "~gql";
 import { EditorContent } from "~richEditor/RichEditor";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { MessageActions } from "./messageContent/MessageActions";
-import { MessageMedia } from "./messageContent/MessageMedia";
-import { MessageText } from "./messageContent/types/TextMessageContent";
+import { MessageActions } from "~frontend/ui/message/display/MessageActions";
+import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
+import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
+import { EditMessageEditor } from "../composer/EditMessageEditor";
 
 interface Props extends MotionProps {
   message: TopicMessageDetailedInfoFragment;
@@ -58,16 +59,23 @@ export const Message = styled(({ message, className }: Props) => {
         )
       }
       user={message.user}
-      date={message.createdAt}
+      date={new Date(message.createdAt)}
     >
       <UIMessageBody>
-        <MessageText
-          message={message}
-          isInEditMode={isInEditMode}
-          onEditRequest={handleEditContentRequest}
-          onEditCancelRequest={disableEditMode}
-        />
-        <MessageMedia message={message} />
+        {isInEditMode && (
+          <EditMessageEditor message={message} onCancelRequest={disableEditMode} onSaved={disableEditMode} />
+        )}
+        {!isInEditMode && (
+          <>
+            <MessageText
+              message={message}
+              isInEditMode={isInEditMode}
+              onEditRequest={handleEditContentRequest}
+              onExitEditModeRequest={disableEditMode}
+            />
+            <MessageMedia message={message} />
+          </>
+        )}
       </UIMessageBody>
     </MessageLikeContent>
   );

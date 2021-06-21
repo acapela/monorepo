@@ -8238,6 +8238,114 @@ export type RoomsTestQueryQuery = (
   )> }
 );
 
+export type TopicDetailedInfoFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
+  & { closed_by_user?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, room: (
+    { __typename?: 'room' }
+    & RoomBasicInfoFragment
+  ), members: Array<(
+    { __typename?: 'topic_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & UserBasicInfoFragment
+    ) }
+  )>, lastMessage: (
+    { __typename?: 'message_aggregate' }
+    & { aggregate?: Maybe<(
+      { __typename?: 'message_aggregate_fields' }
+      & { max?: Maybe<(
+        { __typename?: 'message_max_fields' }
+        & Pick<Message_Max_Fields, 'created_at'>
+      )> }
+    )> }
+  ) }
+);
+
+export type AttachmentDetailedInfoFragment = (
+  { __typename?: 'attachment' }
+  & Pick<Attachment, 'id'>
+  & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
+  & { message_attachments: Array<(
+    { __typename?: 'message_attachment' }
+    & { message: (
+      { __typename?: 'message' }
+      & Pick<Message, 'user_id'>
+    ) }
+  )> }
+);
+
+export type AddMessageAttachmentMutationVariables = Exact<{
+  attachmentId: Scalars['uuid'];
+  messageId: Scalars['uuid'];
+}>;
+
+
+export type AddMessageAttachmentMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_message_attachment_one?: Maybe<(
+    { __typename?: 'message_attachment' }
+    & Pick<Message_Attachment, 'attachment_id' | 'message_id'>
+  )> }
+);
+
+export type RemoveMessageAttachmentMutationVariables = Exact<{
+  attachmentId: Scalars['uuid'];
+  messageId: Scalars['uuid'];
+}>;
+
+
+export type RemoveMessageAttachmentMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_message_attachment_by_pk?: Maybe<(
+    { __typename?: 'message_attachment' }
+    & Pick<Message_Attachment, 'attachment_id' | 'message_id'>
+  )> }
+);
+
+export type UploadUrlQueryVariables = Exact<{
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
+}>;
+
+
+export type UploadUrlQuery = (
+  { __typename?: 'query_root' }
+  & { uploadUrlInfo?: Maybe<(
+    { __typename?: 'UploadUrlResponse' }
+    & Pick<UploadUrlResponse, 'uploadUrl' | 'uuid'>
+  )> }
+);
+
+export type DownloadUrlQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DownloadUrlQuery = (
+  { __typename?: 'query_root' }
+  & { get_download_url?: Maybe<(
+    { __typename?: 'DownloadUrlResponse' }
+    & Pick<DownloadUrlResponse, 'downloadUrl'>
+  )> }
+);
+
+export type AttachmentQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type AttachmentQuery = (
+  { __typename?: 'query_root' }
+  & { attachment?: Maybe<(
+    { __typename?: 'attachment' }
+    & AttachmentDetailedInfoFragment
+  )> }
+);
+
 export type CreateInviteMutationVariables = Exact<{
   email: Scalars['String'];
   roomId?: Maybe<Scalars['uuid']>;
@@ -8265,6 +8373,85 @@ export type AcceptInviteMutation = (
     & { team?: Maybe<(
       { __typename?: 'team' }
       & Pick<Team, 'id'>
+    )> }
+  )> }
+);
+
+export type TopicMessageBasicInfoFragment = (
+  { __typename?: 'message' }
+  & Pick<Message, 'id' | 'content'>
+  & { createdAt: Message['created_at'] }
+  & { user: (
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  ) }
+);
+
+export type TopicMessageDetailedInfoFragment = (
+  { __typename?: 'message' }
+  & Pick<Message, 'id' | 'content' | 'type'>
+  & { createdAt: Message['created_at'] }
+  & { transcription?: Maybe<(
+    { __typename?: 'transcription' }
+    & Pick<Transcription, 'status' | 'transcript'>
+  )>, user: (
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  ), message_attachments: Array<(
+    { __typename?: 'message_attachment' }
+    & { attachment: (
+      { __typename?: 'attachment' }
+      & AttachmentDetailedInfoFragment
+    ) }
+  )> }
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  attachments: Array<Message_Attachment_Insert_Input> | Message_Attachment_Insert_Input;
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & TopicMessageDetailedInfoFragment
+  )> }
+);
+
+export type UpdateTextMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  isDraft: Scalars['Boolean'];
+}>;
+
+
+export type UpdateTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_message?: Maybe<(
+    { __typename?: 'message_mutation_response' }
+    & { message: Array<(
+      { __typename?: 'message' }
+      & TopicMessageBasicInfoFragment
+    )> }
+  )> }
+);
+
+export type DeleteTextMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DeleteTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_message?: Maybe<(
+    { __typename?: 'message_mutation_response' }
+    & { message: Array<(
+      { __typename?: 'message' }
+      & Pick<Message, 'id'>
     )> }
   )> }
 );
@@ -8688,68 +8875,6 @@ export type TeamInvitationQuery = (
   )> }
 );
 
-export type TopicDetailedInfoFragment = (
-  { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
-  & { closed_by_user?: Maybe<(
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  )>, room: (
-    { __typename?: 'room' }
-    & RoomBasicInfoFragment
-  ), members: Array<(
-    { __typename?: 'topic_member' }
-    & { user: (
-      { __typename?: 'user' }
-      & UserBasicInfoFragment
-    ) }
-  )>, lastMessage: (
-    { __typename?: 'message_aggregate' }
-    & { aggregate?: Maybe<(
-      { __typename?: 'message_aggregate_fields' }
-      & { max?: Maybe<(
-        { __typename?: 'message_max_fields' }
-        & Pick<Message_Max_Fields, 'created_at'>
-      )> }
-    )> }
-  ) }
-);
-
-export type TopicMessageBasicInfoFragment = (
-  { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content'>
-  & { createdAt: Message['created_at'] }
-  & { user: (
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  ) }
-);
-
-export type AttachmentDetailedInfoFragment = (
-  { __typename?: 'attachment' }
-  & Pick<Attachment, 'id'>
-  & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
-);
-
-export type TopicMessageDetailedInfoFragment = (
-  { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content' | 'type'>
-  & { createdAt: Message['created_at'] }
-  & { transcription?: Maybe<(
-    { __typename?: 'transcription' }
-    & Pick<Transcription, 'status' | 'transcript'>
-  )>, user: (
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  ), message_attachments: Array<(
-    { __typename?: 'message_attachment' }
-    & { attachment: (
-      { __typename?: 'attachment' }
-      & AttachmentDetailedInfoFragment
-    ) }
-  )> }
-);
-
 export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -8792,96 +8917,6 @@ export type TopicMessagesQuery = (
   & { messages: Array<(
     { __typename?: 'message' }
     & TopicMessageDetailedInfoFragment
-  )> }
-);
-
-export type CreateMessageMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  type: Message_Type_Enum;
-  attachments: Array<Message_Attachment_Insert_Input> | Message_Attachment_Insert_Input;
-}>;
-
-
-export type CreateMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & TopicMessageDetailedInfoFragment
-  )> }
-);
-
-export type UpdateTextMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  isDraft: Scalars['Boolean'];
-}>;
-
-
-export type UpdateTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { update_message?: Maybe<(
-    { __typename?: 'message_mutation_response' }
-    & { message: Array<(
-      { __typename?: 'message' }
-      & TopicMessageBasicInfoFragment
-    )> }
-  )> }
-);
-
-export type DeleteTextMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DeleteTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { delete_message?: Maybe<(
-    { __typename?: 'message_mutation_response' }
-    & { message: Array<(
-      { __typename?: 'message' }
-      & Pick<Message, 'id'>
-    )> }
-  )> }
-);
-
-export type UploadUrlQueryVariables = Exact<{
-  fileName: Scalars['String'];
-  mimeType: Scalars['String'];
-}>;
-
-
-export type UploadUrlQuery = (
-  { __typename?: 'query_root' }
-  & { uploadUrlInfo?: Maybe<(
-    { __typename?: 'UploadUrlResponse' }
-    & Pick<UploadUrlResponse, 'uploadUrl' | 'uuid'>
-  )> }
-);
-
-export type DownloadUrlQueryVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DownloadUrlQuery = (
-  { __typename?: 'query_root' }
-  & { get_download_url?: Maybe<(
-    { __typename?: 'DownloadUrlResponse' }
-    & Pick<DownloadUrlResponse, 'downloadUrl'>
-  )> }
-);
-
-export type AttachmentQueryVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type AttachmentQuery = (
-  { __typename?: 'query_root' }
-  & { attachment?: Maybe<(
-    { __typename?: 'attachment' }
-    & AttachmentDetailedInfoFragment
   )> }
 );
 

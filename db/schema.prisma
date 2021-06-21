@@ -81,10 +81,10 @@ model room {
   notification_job_id String?
   summary             String?
   finished_at         DateTime?      @db.Timestamptz(6)
-  space_id            String?        @db.Uuid
+  space_id            String         @db.Uuid
   slug                String
   user                user           @relation(fields: [creator_id], references: [id])
-  space               space?         @relation(fields: [space_id], references: [id])
+  space               space          @relation(fields: [space_id], references: [id])
   room_invites        room_invites[]
   room_member         room_member[]
   topic               topic[]

@@ -1,47 +1,32 @@
 import { gql } from "@apollo/client";
-import { addToast } from "~ui/toasts/data";
 import {
-  CreateMessageMutation,
-  CreateMessageMutationVariables,
-  CreateTopicMutation,
-  CreateTopicMutationVariables,
-  DeleteTextMessageMutation,
-  DeleteTextMessageMutationVariables,
-  AttachmentQuery,
-  AttachmentQueryVariables,
-  DownloadUrlQuery,
-  DownloadUrlQueryVariables,
-  UploadUrlQuery,
-  UploadUrlQueryVariables,
-  RoomTopicsQuery,
-  RoomTopicsQueryVariables,
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables,
-  UpdateLastSeenMessageMutationVariables,
-  UpdateTextMessageMutation,
-  UpdateTextMessageMutationVariables,
   AddTopicMemberMutation,
   AddTopicMemberMutationVariables,
-  RemoveTopicMemberMutation,
-  RemoveTopicMemberMutationVariables,
-  SingleTopicQuery,
-  SingleTopicQueryVariables,
-  TopicsQuery,
-  TopicsQueryVariables,
+  CreateTopicMutation,
+  CreateTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
+  RemoveTopicMemberMutation,
+  RemoveTopicMemberMutationVariables,
+  RoomTopicsQuery,
+  RoomTopicsQueryVariables,
+  SingleTopicQuery,
+  SingleTopicQueryVariables,
+  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
+  TopicMessagesQuery,
+  TopicMessagesQueryVariables,
+  TopicsQuery,
+  TopicsQueryVariables,
+  UpdateLastSeenMessageMutationVariables,
   UpdateTopicMutation,
   UpdateTopicMutationVariables,
-  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
-  TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
-  AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
-  TopicMessageDetailedInfoFragment as TopicMessageDetailedInfoFragmentType,
 } from "~gql";
+import { getUUID } from "~shared/uuid";
+import { addToast } from "~ui/toasts/data";
+import { TopicMessageDetailedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { getUUID } from "~shared/uuid";
-import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 
 export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
   () => gql`
@@ -71,57 +56,6 @@ export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmen
           max {
             created_at
           }
-        }
-      }
-    }
-  `
-);
-
-const TopicMessageBasicInfoFragment = createFragment<TopicMessageBasicInfoFragmentType>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-    fragment TopicMessageBasicInfo on message {
-      id
-      createdAt: created_at
-      content
-      user {
-        ...UserBasicInfo
-      }
-    }
-  `
-);
-
-const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedInfoFragmentType>(
-  () => gql`
-    fragment AttachmentDetailedInfo on attachment {
-      id
-      originalName: original_name
-      mimeType: mime_type
-    }
-  `
-);
-
-const TopicMessageDetailedInfoFragment = createFragment<TopicMessageDetailedInfoFragmentType>(
-  () => gql`
-    ${AttachmentDetailedInfoFragment()}
-    ${UserBasicInfoFragment()}
-
-    fragment TopicMessageDetailedInfo on message {
-      id
-      content
-      createdAt: created_at
-      content
-      type
-      transcription {
-        status
-        transcript
-      }
-      user {
-        ...UserBasicInfo
-      }
-      message_attachments {
-        attachment {
-          ...AttachmentDetailedInfo
         }
       }
     }
@@ -198,127 +132,6 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
         limit: $limit
       ) {
         ...TopicMessageDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useCreateMessageMutation] = createMutation<CreateMessageMutation, CreateMessageMutationVariables>(
-  () => gql`
-    ${TopicMessageDetailedInfoFragment()}
-
-    mutation CreateMessage(
-      $topicId: uuid!
-      $content: jsonb!
-      $type: message_type_enum!
-      $attachments: [message_attachment_insert_input!]!
-    ) {
-      message: insert_message_one(
-        object: {
-          content: $content
-          topic_id: $topicId
-          type: $type
-          message_attachments: { data: $attachments }
-          is_draft: false
-        }
-      ) {
-        ...TopicMessageDetailedInfo
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      const userData = assertReadUserDataFromCookie();
-
-      return {
-        __typename: "mutation_root",
-        message: {
-          __typename: "message",
-          createdAt: new Date(),
-          message_attachments: [],
-          type: vars.type,
-          user: {
-            id: userData.id,
-            __typename: "user",
-            avatar_url: userData.picture,
-            email: userData.email,
-            name: userData.name,
-          },
-          id: getUUID(),
-          content: vars.content,
-        },
-      };
-    },
-    onResult: (message, variables) => {
-      topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
-        if (!message) {
-          return;
-        }
-        current.messages.push(message);
-      });
-    },
-  }
-);
-
-export const [useUpdateTextMessageMutation] = createMutation<
-  UpdateTextMessageMutation,
-  UpdateTextMessageMutationVariables
->(
-  () => gql`
-    ${TopicMessageBasicInfoFragment()}
-
-    mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean!) {
-      update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
-        message: returning {
-          ...TopicMessageBasicInfo
-        }
-      }
-    }
-  `
-);
-
-export const [useDeleteTextMessageMutation] = createMutation<
-  DeleteTextMessageMutation,
-  DeleteTextMessageMutationVariables
->(
-  () => gql`
-    mutation DeleteTextMessage($id: uuid!) {
-      delete_message(where: { id: { _eq: $id } }) {
-        message: returning {
-          id
-        }
-      }
-    }
-  `
-);
-
-export const [useUploadUrlQuery, uploadUrlQueryManager] = createQuery<UploadUrlQuery, UploadUrlQueryVariables>(
-  () => gql`
-    query UploadUrl($fileName: String!, $mimeType: String!) {
-      uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
-        uploadUrl
-        uuid
-      }
-    }
-  `
-);
-
-export const [useDownloadUrlQuery] = createQuery<DownloadUrlQuery, DownloadUrlQueryVariables>(
-  () => gql`
-    query DownloadUrl($id: uuid!) {
-      get_download_url(uuid: $id) {
-        downloadUrl
-      }
-    }
-  `
-);
-
-export const [useAttachmentQuery] = createQuery<AttachmentQuery, AttachmentQueryVariables>(
-  () => gql`
-    ${AttachmentDetailedInfoFragment()}
-    query Attachment($id: uuid!) {
-      attachment: attachment_by_pk(id: $id) {
-        ...AttachmentDetailedInfo
       }
     }
   `

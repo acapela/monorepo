@@ -16,7 +16,7 @@ export const MessageAttachmentActions = ({ onRemoveRequest }: AttachmentProps) =
     <CornerOptionsMenu
       options={[
         {
-          label: "Delete space",
+          label: "Delete attachment",
           onSelect: onRemoveRequest,
           icon: <IconTrash />,
           isDestructive: true,
