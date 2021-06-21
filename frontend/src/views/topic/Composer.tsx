@@ -9,6 +9,7 @@ import { Recorder } from "./Recorder";
 import { uploadFile } from "./uploadFile";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./messagesFeed/messageContent/attachment/MessageAttachmentDisplayer";
 import { useTopicStore } from "./TopicStore";
+import { ReplyingToMessage } from "./ReplyingToMessage";
 
 interface ComposerAttachment {
   uuid: string;
@@ -49,64 +50,62 @@ export const MessageComposer = ({ topicId }: Props) => {
   }
 
   return (
-    <>
-      {currentlyReplyingToMessageId}
-      <UIEditorContainer>
-        <Recorder
-          onRecordingReady={async (recording) => {
-            const uploadedAttachments = await uploadFiles([recording]);
+    <UIEditorContainer>
+      <Recorder
+        onRecordingReady={async (recording) => {
+          const uploadedAttachments = await uploadFiles([recording]);
 
-            const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
+          const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-            await createMessage({
-              topicId: topicId,
-              type: messageType,
-              content: [],
-              attachments: uploadedAttachments.map((attachment) => ({
-                attachment_id: attachment.uuid,
-              })),
-            });
-          }}
-        />
-        <RichEditor
-          value={value}
-          onChange={setValue}
-          onFilesSelected={handleNewFiles}
-          onSubmit={async () => {
-            await createMessage({
-              topicId: topicId,
-              type: "TEXT",
-              content: value,
-              attachments: attachments.map((attachment) => ({
-                attachment_id: attachment.uuid,
-              })),
-            });
+          await createMessage({
+            topicId: topicId,
+            type: messageType,
+            content: [],
+            attachments: uploadedAttachments.map((attachment) => ({
+              attachment_id: attachment.uuid,
+            })),
+          });
+        }}
+      />
+      <RichEditor
+        value={value}
+        onChange={setValue}
+        onFilesSelected={handleNewFiles}
+        onSubmit={async () => {
+          await createMessage({
+            topicId: topicId,
+            type: "TEXT",
+            content: value,
+            attachments: attachments.map((attachment) => ({
+              attachment_id: attachment.uuid,
+            })),
+          });
 
-            attachmentsList.clear();
-            setValue([]);
-          }}
-          placeholder="Type here to start contributing..."
-          autoFocusKey={topicId}
-          additionalContent={
-            <>
-              {attachments.length > 0 && (
-                <UIAttachmentsPreviews>
-                  {attachments.map((attachment, index) => {
-                    return (
-                      <AttachmentPreview
-                        id={attachment.uuid}
-                        key={attachment.uuid}
-                        onRemoveRequest={() => attachmentsList.removeAt(index)}
-                      />
-                    );
-                  })}
-                </UIAttachmentsPreviews>
-              )}
-            </>
-          }
-        />
-      </UIEditorContainer>
-    </>
+          attachmentsList.clear();
+          setValue([]);
+        }}
+        placeholder="Type here to start contributing..."
+        autoFocusKey={topicId}
+        additionalContent={
+          <>
+            {currentlyReplyingToMessageId && <ReplyingToMessage id={currentlyReplyingToMessageId} />}
+            {attachments.length > 0 && (
+              <UIAttachmentsPreviews>
+                {attachments.map((attachment, index) => {
+                  return (
+                    <AttachmentPreview
+                      id={attachment.uuid}
+                      key={attachment.uuid}
+                      onRemoveRequest={() => attachmentsList.removeAt(index)}
+                    />
+                  );
+                })}
+              </UIAttachmentsPreviews>
+            )}
+          </>
+        }
+      />
+    </UIEditorContainer>
   );
 };
 

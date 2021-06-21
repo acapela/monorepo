@@ -15,7 +15,7 @@ interface Props {
   onEditCancelRequest(): void;
 }
 
-function renderMessageContent(message: TopicMessageBasicInfoFragment) {
+export function renderMessageContent(message: TopicMessageBasicInfoFragment) {
   try {
     const converter = new QuillDeltaToHtmlConverter(message.content, {});
 
