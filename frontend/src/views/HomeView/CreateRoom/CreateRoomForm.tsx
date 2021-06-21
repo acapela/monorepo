@@ -4,7 +4,7 @@ import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 import { Button } from "~ui/buttons/Button";
 import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 import { handleWithPreventDefault } from "~shared/events";
-import { useSpacesQuery } from "~frontend/gql/spaces";
+import { useTeamSpacesQuery } from "~frontend/gql/spaces";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { SpacesCombobox } from "./SpacesCombobox";
 import { SpaceNameInput } from "./SpaceNameInput";
@@ -34,7 +34,7 @@ export const CreateRoomForm = ({ onCancel }: Props) => {
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
   const teamId = useAssertCurrentTeamId();
-  const [spacesList = []] = useSpacesQuery({ teamId });
+  const [spacesList = []] = useTeamSpacesQuery({ teamId });
 
   // if only one space - make it selected by default
   useEffect(() => {

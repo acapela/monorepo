@@ -1,8 +1,7 @@
 import { IconCalendar, IconHome, IconSpaces } from "~ui/icons";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery, useSpacesQuery } from "~frontend/gql/spaces";
+import { usePreferredSpaces, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { usePathParameter } from "~frontend/utils";
-
 import { NavItemsBreadcrumbs } from "./NavItemsBreadcrumbs";
 import { routes } from "~frontend/routes";
 import styled from "styled-components";
@@ -34,7 +33,7 @@ export function ContentBreadcrumbs() {
   const [room] = useSingleRoomQuery({ id: roomId ?? "" }, { skip: !roomId });
   const [space] = useSingleSpaceQuery({ id: spaceId ?? "" }, { skip: !spaceId });
 
-  const [spaces = []] = useSpacesQuery({ teamId });
+  const spaces = usePreferredSpaces(11);
 
   function getSegments(): NavItemInfo[] {
     const segments: NavItemInfo[] = [];
@@ -49,6 +48,7 @@ export function ContentBreadcrumbs() {
 
     if (space) {
       const otherSpaces = spaces.filter((otherSpace) => otherSpace.id !== space.id);
+
       segments.push({
         title: space.name ?? "",
         href: routes.space.getUrlWithParams({ spaceId: space.id }),

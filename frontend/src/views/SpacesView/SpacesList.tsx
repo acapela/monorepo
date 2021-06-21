@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { PageTitle } from "~ui/typo";
-import { useSpacesQuery } from "~frontend/gql/spaces";
+import { useTeamSpacesQuery } from "~frontend/gql/spaces";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -8,7 +8,7 @@ import { groupByFilter } from "~shared/groupByFilter";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();
-  const [spacesList = [], { loading }] = useSpacesQuery({ teamId });
+  const [spacesList = [], { loading }] = useTeamSpacesQuery({ teamId });
   const user = useAssertCurrentUser();
 
   const hasNoSpaces = !loading && spacesList.length === 0;

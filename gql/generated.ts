@@ -3874,8 +3874,8 @@ export interface Room {
   room_invites_aggregate: Room_Invites_Aggregate;
   slug: Scalars['String'];
   /** An object relationship */
-  space?: Maybe<Space>;
-  space_id?: Maybe<Scalars['uuid']>;
+  space: Space;
+  space_id: Scalars['uuid'];
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
   topics: Array<Topic>;
@@ -8400,10 +8400,10 @@ export type SearchResultFragment = (
   & { room?: Maybe<(
     { __typename?: 'room' }
     & Pick<Room, 'id' | 'name'>
-    & { space?: Maybe<(
+    & { space: (
       { __typename?: 'space' }
       & Pick<Space, 'id' | 'name'>
-    )> }
+    ) }
   )> }
 );
 
@@ -8443,8 +8443,22 @@ export type SpaceDetailedInfoFragment = (
   & SpaceBasicInfoFragment
 );
 
-export type SpacesQueryVariables = Exact<{
+export type TeamSpacesQueryVariables = Exact<{
   teamId: Scalars['uuid'];
+}>;
+
+
+export type TeamSpacesQuery = (
+  { __typename?: 'query_root' }
+  & { space: Array<(
+    { __typename?: 'space' }
+    & SpaceDetailedInfoFragment
+  )> }
+);
+
+export type SpacesQueryVariables = Exact<{
+  where: Space_Bool_Exp;
+  limit?: Maybe<Scalars['Int']>;
 }>;
 
 
