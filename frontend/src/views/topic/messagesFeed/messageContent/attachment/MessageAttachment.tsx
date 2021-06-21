@@ -8,6 +8,10 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { useHoverDirty } from "react-use";
+import { MessageAttachmentActions } from "./MessageAttachmentActions";
+import { borderRadius } from "~frontend/../../ui/baseStyles";
+import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -58,6 +62,7 @@ const PureMessageAttachment = ({ attachment, selectedMediaTime, onMediaTimeUpdat
       <UIInlineAttachmentHolder>
         {!isFullscreenOpened && renderAttachment()}
         {isFullscreenOpened && <UIAttachmentPlaceholder>{renderAttachment(true)}</UIAttachmentPlaceholder>}
+        <AnimatePresence>{<MessageAttachmentActions onRemoveRequest={console.log} />}</AnimatePresence>
       </UIInlineAttachmentHolder>
       <BodyPortal>
         <AnimatePresence>
@@ -103,6 +108,9 @@ const UIAttachmentPlaceholder = styled.div`
 
 const UIInlineAttachmentHolder = styled.div`
   display: flex;
+  position: relative;
+  ${borderRadius.item}
+  overflow: hidden;
 `;
 
 export const MessageAttachment = styled(PureMessageAttachment)``;

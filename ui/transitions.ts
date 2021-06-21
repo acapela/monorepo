@@ -35,16 +35,6 @@ export const hoverActionCss = css`
   }
 `;
 
-export const hoverActionCssWithCustomColor = (color: string) => css`
-  ${borderRadius.button}
-
-  ${hoverTransition()}
-
-  &:hover {
-    background-color: ${color};
-  }
-`;
-
 const HOVER_COLOR_CHANGE = 5;
 
 export function getColorHoverVariant(color: string): string {

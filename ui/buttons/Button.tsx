@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { getButtonColorStyles } from "~ui/transitions";
+import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -68,7 +69,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
   font-weight: 600;
   color: #fff;
   background: #474f5a;
-  ${getButtonColorStyles("#474f5a")}
+  ${getButtonColorStyles(BUTTON_BACKGROUND_COLOR)}
   ${borderRadius.button}
   justify-content: center;
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
