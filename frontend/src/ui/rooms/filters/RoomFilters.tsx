@@ -19,6 +19,7 @@ import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
+  initialFilters?: RoomFilter[];
   onFiltersChange: (filters: RoomFilter[]) => void;
   className?: string;
 }
@@ -37,7 +38,11 @@ function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
   return selectedMembers;
 }
 
-export const RoomFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
+export const RoomFilters = styled(function RecentTopicFilters({
+  onFiltersChange,
+  className,
+  initialFilters = [],
+}: Props) {
   const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>();
 
   function removeFilter(filterToRemove: RoomFilter) {
@@ -59,6 +64,10 @@ export const RoomFilters = styled(function RecentTopicFilters({ onFiltersChange,
   useEffect(() => {
     onFiltersChange(filters);
   }, [filters]);
+
+  useEffect(() => {
+    initialFilters.forEach(handleAddFilter);
+  }, []);
 
   const [stage, setStage] = useState<FilterPickingStage>("off");
   const buttonRef = useRef<HTMLButtonElement>(null);
