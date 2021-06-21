@@ -1,11 +1,13 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 import { handleWithStopPropagation } from "~shared/events";
-import { createLocalStorageValue } from "~shared/localStorage";
+import { createLocalStorageValueManager } from "~shared/localStorage";
 import { BodyPortal } from "~ui/BodyPortal";
 import { PopoverPlacement } from "~ui/popovers/Popover";
 import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
 import { startMeasuringFps, EndFpsMeasurement } from "~shared/performance";
+import { setColorOpacity } from "~shared/colors";
+import { MODAL_BACKGROUND_COLOR } from "~ui/colors";
 
 export interface ModalAnchor {
   ref: RefObject<HTMLElement>;
@@ -24,7 +26,9 @@ interface Props {
  */
 const BLUR_ANIMATION_FPS_TO_ENABLE_BLUR_THRESHOLD = 25;
 
-const shouldUseBlurPreference = createLocalStorageValue<boolean>("use-blur-screen-cover", true);
+const BACKGROUND_BLUR_SIZE_PX = 8;
+
+const shouldUseBlurPreference = createLocalStorageValueManager<boolean>("use-blur-screen-cover", true);
 
 export function ScreenCover({ children, onCloseRequest, isTransparent = true }: Props) {
   const shouldUseBlurAnimation = shouldUseBlurPreference.useValue();
@@ -36,7 +40,9 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
       return {};
     }
 
-    const onlyBackgroundColorAnimation: PresenceStyles = { backgroundColor: ["#432A4500", "#432A4588"] };
+    const onlyBackgroundColorAnimation: PresenceStyles = {
+      backgroundColor: [setColorOpacity(MODAL_BACKGROUND_COLOR, 0), setColorOpacity(MODAL_BACKGROUND_COLOR, 0.7)],
+    };
 
     if (!shouldUseBlurAnimation) {
       return onlyBackgroundColorAnimation;
@@ -44,7 +50,7 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
 
     return {
       ...onlyBackgroundColorAnimation,
-      backdropFilter: ["blur(0px)", "blur(8px)"],
+      backdropFilter: ["blur(0px)", `blur(${BACKGROUND_BLUR_SIZE_PX}px)`],
     };
   }
 

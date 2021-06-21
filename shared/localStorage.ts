@@ -4,7 +4,7 @@ import { parseJsonWithDates } from "./dates/parseJSONWithDates";
 
 type ValueWrapper<T> = { value: T };
 
-export function createLocalStorageValue<T>(name: string, defaultValue: T) {
+export function createLocalStorageValueManager<T>(name: string, defaultValue: T) {
   const valueChannel = createChannel<ValueWrapper<T> | null>();
 
   const storageKey = `__value_${name}`;
