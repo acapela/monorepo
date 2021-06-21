@@ -1,18 +1,23 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronDown } from "~ui/icons";
+import { IconChevronRight } from "~ui/icons";
 import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { TopicCard } from "~frontend/ui/topics/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { Badge } from "~ui/Badge";
+import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { niceFormatDateTime } from "~shared/dates/format";
+import { BACKGROUND_ACCENT } from "~ui/colors";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { ElementNotificationBadge } from "../ElementNotificationBadge";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -23,8 +28,13 @@ interface Props {
 const RoomLink = routes.spaceRoom.Link;
 
 export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, className }: Props) {
+  const [space] = useSingleSpaceQuery({ id: room.space_id });
+
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
+
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
       roomId: room.id,
@@ -38,26 +48,42 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
 
   return (
     <UIHolder className={className}>
+      {unreadNotificationsCount > 0 && (
+        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadNotificationsCount, 99)}</ElementNotificationBadge>
+      )}
       <UICollapseHolder isOpened={isOpen}>
-        <IconButton icon={<IconChevronDown />} onClick={toggleIsOpen} />
+        <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
       </UICollapseHolder>
       <UIIndentBody>
         <UIHead>
           <UIHeadPrimary>
-            <Badge>Room</Badge>
-            {room && (
-              <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
-                <a>
-                  <ItemTitle>{room.name}</ItemTitle>
-                </a>
-              </RoomLink>
-            )}
+            <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
+              <a>
+                <ItemTitle>{room.name}</ItemTitle>
+              </a>
+            </RoomLink>
+            <UIRoomMetaData>
+              <UIRoomInfo>
+                <UIRoomInfoKey>Due date:</UIRoomInfoKey>{" "}
+                <UIRoomInfoValue>{niceFormatDateTime(new Date(room.deadline))}</UIRoomInfoValue>
+              </UIRoomInfo>
+              <UIRoomInfoSeparator />
+              {space && (
+                <UIRoomInfo>
+                  <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
+                </UIRoomInfo>
+              )}
+              <UIRoomInfoSeparator />
+              <UIRoomInfo>
+                <UIRoomInfoKey>Topics:</UIRoomInfoKey> <UIRoomInfoValue>{topics.length}</UIRoomInfoValue>
+              </UIRoomInfo>
+            </UIRoomMetaData>
           </UIHeadPrimary>
 
           <AvatarList users={room.members.map((membership) => membership.user)} />
         </UIHead>
         {isOpen && (
-          <>
+          <UICollapsedItems>
             <UITopics>
               {topics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
               {topics.map((topic) => {
@@ -67,7 +93,7 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
             <Button ref={buttonRef} onClick={handleCreateTopic}>
               Add topic
             </Button>
-          </>
+          </UICollapsedItems>
         )}
       </UIIndentBody>
     </UIHolder>
@@ -76,6 +102,7 @@ export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, classNa
 
 const UIHolder = styled(CardBase)`
   display: flex;
+  position: relative;
 `;
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
@@ -86,7 +113,7 @@ const UICollapseHolder = styled.div<{ isOpened: boolean }>`
     svg {
       transform: rotateZ(
         ${(props) => {
-          return props.isOpened ? "-180deg" : "0deg";
+          return props.isOpened ? "90deg" : "0deg";
         }}
       );
       transition: 0.15s all;
@@ -96,20 +123,49 @@ const UICollapseHolder = styled.div<{ isOpened: boolean }>`
 const UIIndentBody = styled.div`
   flex: 1;
 `;
+
 const UIHead = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
-
-  ${Badge} {
-    margin-right: 8px;
-  }
 `;
 
 const UIHeadPrimary = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   flex: 1;
+`;
+
+const UIRoomMetaData = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+`;
+
+const UIRoomInfo = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+`;
+
+const UIRoomInfoKey = styled.div`
+  font-weight: 600;
+`;
+
+const UIRoomInfoValue = styled.div`
+  opacity: 0.5;
+`;
+
+const UIRoomInfoSeparator = styled.div`
+  height: 6px;
+  width: 6px;
+  border-radius: 6px;
+  background-color: ${BACKGROUND_ACCENT};
+`;
+
+const UICollapsedItems = styled.div`
+  margin-top: 32px;
 `;
 
 const UITopics = styled.div`

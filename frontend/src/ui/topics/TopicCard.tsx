@@ -1,33 +1,50 @@
-import styled from "styled-components";
-import { hoverActionCss, hoverActionNegativeSpacingCss } from "~ui/transitions";
+import styled, { css } from "styled-components";
+import { hoverActionCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
-import { TopicDetailedInfoFragment } from "~gql";
-import { useAddTopicMemberMutation, useRemoveTopicMemberMutation } from "~frontend/gql/topics";
+import { TopicDetailedInfoFragment, TopicMessageBasicInfoFragment } from "~gql";
 import { TextTitle } from "~ui/typo";
-import { MembersManager } from "../MembersManager";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
+import { useTopicMessagesQuery } from "~frontend/gql/topics";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
+import React from "react";
+import { Avatar } from "../users/Avatar";
+import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
   className?: string;
 }
 
+function renderMessageContent(message: TopicMessageBasicInfoFragment) {
+  try {
+    const converter = new QuillDeltaToHtmlConverter(message.content, {});
+
+    const htmlContent = converter.convert();
+    const strippedHtml = htmlContent.replace(/<[^>]+>/g, " ");
+
+    return <span id="UILastMessageContent__message" dangerouslySetInnerHTML={{ __html: strippedHtml }}></span>;
+  } catch (error) {
+    return <div>😢 Failed to display message content</div>;
+  }
+}
+
 export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
-  const [addTopicMember] = useAddTopicMemberMutation();
-  const [removeTopicMember] = useRemoveTopicMemberMutation();
+  const { isClosed } = useTopic(topic);
 
-  async function handleJoin(userId: string) {
-    await addTopicMember({ userId, topicId });
-  }
+  const [lastMessageWrapped = []] = useTopicMessagesQuery({
+    topicId,
+    order: "desc",
+    limit: 1,
+    typeExpression: {
+      _eq: "TEXT",
+    },
+  });
 
-  async function handleLeave(userId: string) {
-    await removeTopicMember({ userId, topicId });
-  }
+  const lastMessage = lastMessageWrapped.length > 0 ? lastMessageWrapped[0] : null;
 
   function handleOpen() {
     routes.spaceRoomTopic.push({ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id });
@@ -35,34 +52,80 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   return (
     <UIHolder onClick={handleOpen} className={className}>
-      {unreadCount > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
-      )}
       <UIInfo>
-        <TextTitle>{topic.name}</TextTitle>
-        <UIMembers>
-          <MembersManager
-            users={topic.members.map((m) => m.user)}
-            onAddMemberRequest={handleJoin}
-            onLeaveRequest={handleLeave}
-          />
-        </UIMembers>
+        {unreadCount > 0 && <UIUnreadMessagesNotification />}
+        <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
+        {lastMessage && (
+          <UILastMessage>
+            <UILastMessageSender
+              size="font-size"
+              url={lastMessage.user.avatar_url}
+              name={lastMessage.user.name ?? ""}
+            />
+            <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
+          </UILastMessage>
+        )}
       </UIInfo>
     </UIHolder>
   );
 })``;
 
 const UIHolder = styled.div`
-  ${hoverActionNegativeSpacingCss}
+  padding: 16px 16px 16px 32px;
+
+  position: relative;
+
   ${hoverActionCss}
   cursor: pointer;
-  position: relative;
+
+  border: 1px solid ${BACKGROUND_ACCENT_WEAK};
 `;
 
 const UIInfo = styled.div`
-  ${TextTitle} {
-    margin-bottom: 0.5rem;
-  }
+  display: grid;
 `;
 
-const UIMembers = styled.div``;
+const UITopicTitle = styled(TextTitle)<{ isClosed: boolean }>`
+  ${(props) => {
+    if (props.isClosed) {
+      return css`
+        text-decoration: line-through;
+        opacity: 0.5;
+      `;
+    }
+  }}
+`;
+
+const UIUnreadMessagesNotification = styled.div`
+  position: absolute;
+  left: 16px;
+  top: calc(50% - 8px);
+
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+
+  background-color: ${NOTIFICATION_COLOR};
+`;
+
+const UILastMessage = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding-top: 8px;
+`;
+
+const UILastMessageSender = styled(Avatar)``;
+
+const UILastMessageContent = styled.div`
+  display: grid;
+
+  #UILastMessageContent__message {
+    opacity: 0.5;
+    line-height: 1.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+`;

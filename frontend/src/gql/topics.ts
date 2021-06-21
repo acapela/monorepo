@@ -186,10 +186,16 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
   () => gql`
     ${TopicMessageDetailedInfoFragment()}
 
-    query TopicMessages($topicId: uuid!) {
+    query TopicMessages(
+      $topicId: uuid!
+      $limit: Int
+      $order: order_by = asc
+      $typeExpression: message_type_enum_comparison_exp = { _is_null: false }
+    ) {
       messages: message(
-        where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false } }
-        order_by: [{ created_at: asc }]
+        where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: $typeExpression }
+        order_by: [{ created_at: $order }]
+        limit: $limit
       ) {
         ...TopicMessageDetailedInfo
       }

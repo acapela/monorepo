@@ -58,7 +58,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   );
 
   return (
-    <ScreenCover enableBlur onCloseRequest={onCloseRequest}>
+    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
       {/* Modal is attached to some element instead of center of the screen. */}
       {anchor && (
         <Popover anchorRef={anchor.ref} placement={anchor.placement}>
