@@ -210,8 +210,8 @@ export const [useMessageQuery, messageQueryManager] = createQuery<MessageQuery, 
     ${TopicMessageDetailedInfoFragment()}
 
     query Message($id: uuid!) {
-      message: message_by_id(id: $id) {
-        ...TopicMessageDetailedInfoFragment
+      message: message_by_pk(id: $id) {
+        ...TopicMessageDetailedInfo
       }
     }
   `

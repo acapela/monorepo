@@ -3874,8 +3874,8 @@ export interface Room {
   room_invites_aggregate: Room_Invites_Aggregate;
   slug: Scalars['String'];
   /** An object relationship */
-  space?: Maybe<Space>;
-  space_id?: Maybe<Scalars['uuid']>;
+  space: Space;
+  space_id: Scalars['uuid'];
   summary?: Maybe<Scalars['String']>;
   /** An array relationship */
   topics: Array<Topic>;
@@ -8400,10 +8400,10 @@ export type SearchResultFragment = (
   & { room?: Maybe<(
     { __typename?: 'room' }
     & Pick<Room, 'id' | 'name'>
-    & { space?: Maybe<(
+    & { space: (
       { __typename?: 'space' }
       & Pick<Space, 'id' | 'name'>
-    )> }
+    ) }
   )> }
 );
 
@@ -8734,6 +8734,19 @@ export type TopicMessagesQueryVariables = Exact<{
 export type TopicMessagesQuery = (
   { __typename?: 'query_root' }
   & { messages: Array<(
+    { __typename?: 'message' }
+    & TopicMessageDetailedInfoFragment
+  )> }
+);
+
+export type MessageQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type MessageQuery = (
+  { __typename?: 'query_root' }
+  & { message?: Maybe<(
     { __typename?: 'message' }
     & TopicMessageDetailedInfoFragment
   )> }
