@@ -37,7 +37,7 @@ function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
   return selectedMembers;
 }
 
-export const TopicFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
+export const RoomFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
   const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>();
 
   function removeFilter(filterToRemove: RoomFilter) {

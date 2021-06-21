@@ -2,12 +2,12 @@ import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
 import { getDayBoundaries } from "~shared/dates/utils";
 import { niceFormatDate } from "~shared/dates/format";
-import { useTopicsQuery } from "~frontend/gql/topics";
-import { TopicsGroupedByRooms } from "~frontend/ui/rooms/TopicsGrouppedByRooms";
+import { RoomsList } from "~frontend/ui/rooms/RoomsList";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCalendar } from "~ui/icons";
 import { motion } from "framer-motion";
 import { getSpringTransitionWithDuration } from "~ui/animations";
+import { useRoomsQuery } from "~frontend/gql/rooms";
 
 interface Props {
   startDate: Date;
@@ -21,19 +21,17 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
   displayEmpty,
 }: Props) {
   const [dayStart, dayEnd] = getDayBoundaries(startDate);
-  const [topics = []] = useTopicsQuery({
+  const [rooms = []] = useRoomsQuery({
     where: {
-      room: {
-        deadline: {
-          _gte: dayStart.toISOString(),
-          _lte: dayEnd.toISOString(),
-        },
+      deadline: {
+        _gte: dayStart.toISOString(),
+        _lte: dayEnd.toISOString(),
       },
     },
   });
 
   // If there are no topics in given day render empty component unless forced to render empty.
-  if (!topics?.length && !displayEmpty) {
+  if (!rooms?.length && !displayEmpty) {
     return null;
   }
 
@@ -44,8 +42,8 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
       transition={getSpringTransitionWithDuration(0.6)}
     >
       <UITitle>{niceFormatDate(startDate)}</UITitle>
-      <TopicsGroupedByRooms topics={topics ?? []} />
-      {topics?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
+      <RoomsList rooms={rooms} />
+      {rooms?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
     </UIHolder>
   );
 })``;

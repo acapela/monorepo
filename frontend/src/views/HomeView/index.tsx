@@ -3,9 +3,9 @@ import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
-import { QueriedRoomsList } from "~frontend/ui/rooms/RoomsList/QueriedRoomsList";
+import { QueriedRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { TopicFilters } from "~frontend/ui/rooms/filters/RoomFilters";
+import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { CreateRoomButton } from "./CreateRoom";
 
 export function HomeView() {
@@ -24,14 +24,14 @@ export function HomeView() {
         </UIGreeting>
         <CreateRoomButton />
       </UIMainSection>
-      <TopicFilters onFiltersChange={setFilters} />
+      <RoomFilters onFiltersChange={setFilters} />
       <QueriedRoomsList query={roomQuery} />
     </UIHolder>
   );
 }
 
 const UIHolder = styled(Container)`
-  ${TopicFilters} {
+  ${RoomFilters} {
     margin-bottom: 32px;
   }
 
