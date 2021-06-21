@@ -3,7 +3,7 @@ import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
-import { QueriedRoomsList } from "~frontend/ui/rooms/RoomsList";
+import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { CreateRoomButton } from "./CreateRoom";
@@ -25,7 +25,7 @@ export function HomeView() {
         <CreateRoomButton />
       </UIMainSection>
       <RoomFilters onFiltersChange={setFilters} />
-      <QueriedRoomsList query={roomQuery} />
+      <FilteredRoomsList query={roomQuery} />
     </UIHolder>
   );
 }
@@ -35,7 +35,7 @@ const UIHolder = styled(Container)`
     margin-bottom: 32px;
   }
 
-  ${QueriedRoomsList} {
+  ${FilteredRoomsList} {
     margin-bottom: 32px;
   }
 `;

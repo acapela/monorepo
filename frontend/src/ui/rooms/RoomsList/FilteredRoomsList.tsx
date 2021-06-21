@@ -8,7 +8,7 @@ interface Props {
   query: RoomsQueryVariables;
 }
 
-export const QueriedRoomsList = styled(function QueriedRoomsList({ className, query }: Props) {
+export const FilteredRoomsList = styled(function FilteredRoomsList({ className, query }: Props) {
   const [rooms = []] = useRoomsQuery(query);
 
   return <RoomsList className={className} rooms={rooms} />;

@@ -3,8 +3,6 @@ import { addToast } from "~ui/toasts/data";
 import {
   CreateRoomMutation,
   CreateRoomMutationVariables,
-  SpaceRoomsQuery,
-  SpaceRoomsQueryVariables,
   RoomsQuery,
   RoomsQueryVariables,
   SingleRoomQuery,
@@ -24,6 +22,8 @@ import {
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
+  RoomsInSpaceQuery,
+  RoomsInSpaceQueryVariables,
 } from "~gql";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
@@ -42,9 +42,7 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       space_id
       deadline
       summary
-
       finished_at
-
       members {
         user {
           ...UserBasicInfo
@@ -81,11 +79,11 @@ const RoomParticipantBasicInfoFragment = createFragment<RoomParticipantBasicInfo
   `
 );
 
-export const [useSpaceRoomsQuery] = createQuery<SpaceRoomsQuery, SpaceRoomsQueryVariables>(
+export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQueryVariables>(
   () => gql`
     ${RoomBasicInfoFragment()}
 
-    query SpaceRooms($spaceId: uuid!) {
+    query RoomsInSpace($spaceId: uuid!) {
       room(where: { space_id: { _eq: $spaceId } }) {
         ...RoomBasicInfo
       }

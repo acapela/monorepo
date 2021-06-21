@@ -8411,12 +8411,12 @@ export type RoomParticipantBasicInfoFragment = (
   ) }
 );
 
-export type SpaceRoomsQueryVariables = Exact<{
+export type RoomsInSpaceQueryVariables = Exact<{
   spaceId: Scalars['uuid'];
 }>;
 
 
-export type SpaceRoomsQuery = (
+export type RoomsInSpaceQuery = (
   { __typename?: 'query_root' }
   & { room: Array<(
     { __typename?: 'room' }

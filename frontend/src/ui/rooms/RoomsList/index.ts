@@ -1,2 +1,2 @@
 export { RoomsList } from "./RoomsList";
-export { QueriedRoomsList } from "./QueriedRoomsList";
+export { FilteredRoomsList } from "./FilteredRoomsList";
