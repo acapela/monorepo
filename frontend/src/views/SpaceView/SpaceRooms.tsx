@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { RoomDetailedInfoFragment } from "~gql";
-import { TopicsInRoom } from "~frontend/ui/topics/TopicsInRoom";
+import { CollapsibleRoomInfo } from "~frontend/ui/rooms/RoomsList/CollapsibleRoomInfo";
 
 interface Props {
   rooms: RoomDetailedInfoFragment[];
@@ -10,7 +10,7 @@ export function SpaceRooms({ rooms }: Props) {
   return (
     <UIHolder>
       {rooms.map((room) => {
-        return <TopicsInRoom key={room.id} room={room} topics={room.topics} />;
+        return <CollapsibleRoomInfo key={room.id} room={room} topics={room.topics} />;
       })}
     </UIHolder>
   );

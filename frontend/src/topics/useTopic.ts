@@ -33,7 +33,7 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
   return {
     hasTopic: !!value,
 
-    isClosed: value?.closed_at && value?.closed_by_user,
+    isClosed: !!(value?.closed_at && value?.closed_by_user),
 
     loading,
 

@@ -3,7 +3,7 @@ import { ItemTitle } from "~ui/typo";
 import { getDayBoundaries } from "~shared/dates/utils";
 import { niceFormatDate } from "~shared/dates/format";
 import { useTopicsQuery } from "~frontend/gql/topics";
-import { TopicsGroupedByRooms } from "~frontend/ui/topics/TopicsGrouppedByRooms";
+import { TopicsGroupedByRooms } from "~frontend/ui/rooms/TopicsGrouppedByRooms";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCalendar } from "~ui/icons";
 import { motion } from "framer-motion";

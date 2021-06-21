@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { RoomsQueryVariables } from "~gql";
-import { TopicsInRoom } from "./TopicsInRoom";
+import { CollapsibleRoomInfo } from "./CollapsibleRoomInfo";
 import { useRoomsQuery } from "~frontend/gql/rooms";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   query: RoomsQueryVariables;
 }
 
-export const QueriedTopicsList = styled(function RecentTopics({ className, query }: Props) {
+export const QueriedRoomsList = styled(function QueriedRoomsList({ className, query }: Props) {
   const [rooms = []] = useRoomsQuery(query);
 
   return (
@@ -16,7 +16,7 @@ export const QueriedTopicsList = styled(function RecentTopics({ className, query
       {rooms.map((room) => {
         return (
           <UISingleRoomRecentTopics key={room.id}>
-            <TopicsInRoom room={room} topics={room.topics} />
+            <CollapsibleRoomInfo room={room} topics={room.topics} />
           </UISingleRoomRecentTopics>
         );
       })}

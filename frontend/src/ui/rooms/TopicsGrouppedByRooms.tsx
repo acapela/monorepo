@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { TopicDetailedInfoFragment } from "~gql";
 import { groupBy } from "~shared/groupBy";
-import { TopicsInRoom } from "./TopicsInRoom";
+import { CollapsibleRoomInfo } from "./RoomsList/CollapsibleRoomInfo";
 
 interface Props {
   className?: string;
@@ -20,7 +20,7 @@ export const TopicsGroupedByRooms = styled(function TopicsGroupedByRooms({ class
       {roomGroups.map((roomGroup) => {
         return (
           <UISingleRoomRecentTopics key={roomGroup.groupItem.id}>
-            <TopicsInRoom room={roomGroup.groupItem} topics={roomGroup.items} />
+            <CollapsibleRoomInfo room={roomGroup.groupItem} topics={roomGroup.items} />
           </UISingleRoomRecentTopics>
         );
       })}

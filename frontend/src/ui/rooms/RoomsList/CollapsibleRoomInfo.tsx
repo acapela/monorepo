@@ -7,7 +7,7 @@ import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
-import { TopicCard } from "~frontend/ui/topics/TopicCard";
+import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { CardBase } from "~ui/card/Base";
@@ -17,7 +17,7 @@ import { niceFormatDateTime } from "~shared/dates/format";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
-import { ElementNotificationBadge } from "../ElementNotificationBadge";
+import { ElementNotificationBadge } from "../../ElementNotificationBadge";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -27,7 +27,7 @@ interface Props {
 
 const RoomLink = routes.spaceRoom.Link;
 
-export const TopicsInRoom = styled(function TopicsInRoom({ room, topics, className }: Props) {
+export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
