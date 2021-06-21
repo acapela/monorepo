@@ -5,6 +5,8 @@ import {
   CreateSpaceMutationVariables,
   SpacesQuery,
   SpacesQueryVariables,
+  TeamSpacesQuery,
+  TeamSpacesQueryVariables,
   SingleSpaceQuery,
   SingleSpaceQueryVariables,
   AddSpaceMemberMutation,
@@ -21,7 +23,7 @@ import {
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUUID } from "~shared/uuid";
 import { TeamDetailedInfoFragment } from "./teams";
@@ -62,17 +64,46 @@ export const SpaceDetailedInfoFragment = createFragment<SpaceDetailedInfoFragmen
   `
 );
 
-export const [useSpacesQuery, spacesQueryManager] = createQuery<SpacesQuery, SpacesQueryVariables>(
+export const [useTeamSpacesQuery] = createQuery<TeamSpacesQuery, TeamSpacesQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
-    query Spaces($teamId: uuid!) {
+    query TeamSpaces($teamId: uuid!) {
       space(where: { team_id: { _eq: $teamId } }) {
         ...SpaceDetailedInfo
       }
     }
   `
 );
+
+export const [useSpacesQuery] = createQuery<SpacesQuery, SpacesQueryVariables>(
+  () => gql`
+    ${SpaceDetailedInfoFragment()}
+
+    query Spaces($where: space_bool_exp!, $limit: Int) {
+      space(where: $where, limit: $limit) {
+        ...SpaceDetailedInfo
+      }
+    }
+  `
+);
+
+export function usePreferredSpaces(limit = 10) {
+  const user = useAssertCurrentUser();
+  const currentTeamId = useAssertCurrentTeamId();
+
+  const [mySpaces = []] = useSpacesQuery({
+    where: { members: { user_id: { _eq: user.id } }, team_id: { _eq: currentTeamId } },
+    limit,
+  });
+
+  const [otherSpaces = []] = useSpacesQuery({
+    where: { members: { user_id: { _neq: user.id } }, team_id: { _eq: currentTeamId } },
+    limit,
+  });
+
+  return [...mySpaces, ...otherSpaces].slice(0, limit);
+}
 
 export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
