@@ -1,6 +1,6 @@
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconEdit, IconReply, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 interface Props {
@@ -8,9 +8,10 @@ interface Props {
   onActiveChange(isActive: boolean): void;
   onRemoveRequest: () => void;
   onEditRequest: () => void;
+  onReplyRequest: () => void;
 }
 
-export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemoveRequest }: Props) => {
+export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemoveRequest, onReplyRequest }: Props) => {
   async function handleRemoveWithConfirm() {
     const didConfirm = await openConfirmPrompt({
       title: "Are you sure?",
@@ -29,6 +30,7 @@ export const MessageActions = ({ isActive, onActiveChange, onEditRequest, onRemo
       onClose={() => onActiveChange(false)}
       options={[
         { label: "Edit message", onSelect: () => onEditRequest(), icon: <IconEdit /> },
+        { label: "Reply", onSelect: () => onReplyRequest(), icon: <IconReply /> },
         { label: "Delete message", onSelect: handleRemoveWithConfirm, isDestructive: true, icon: <IconTrash /> },
       ]}
     >

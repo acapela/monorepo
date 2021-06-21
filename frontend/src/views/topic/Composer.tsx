@@ -8,6 +8,7 @@ import { AttachmentPreview } from "./AttachmentPreview";
 import { Recorder } from "./Recorder";
 import { uploadFile } from "./uploadFile";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "./messagesFeed/messageContent/attachment/MessageAttachmentDisplayer";
+import { useTopicStore } from "./TopicStore";
 
 interface ComposerAttachment {
   uuid: string;
@@ -20,6 +21,8 @@ interface Props {
 
 export const MessageComposer = ({ topicId }: Props) => {
   const [createMessage] = useCreateMessageMutation();
+
+  const [{ currentlyReplyingToMessageId }] = useTopicStore();
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
   const [value, setValue] = useState<EditorContent>([]);
@@ -47,6 +50,7 @@ export const MessageComposer = ({ topicId }: Props) => {
 
   return (
     <>
+      {currentlyReplyingToMessageId}
       <UIEditorContainer>
         <Recorder
           onRecordingReady={async (recording) => {
