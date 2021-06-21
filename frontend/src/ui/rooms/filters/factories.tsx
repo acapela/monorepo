@@ -12,9 +12,8 @@ export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
     label: user.name ?? "Unknown user",
     icon: <UserAvatar user={user} size="small" />,
     whereApplier(where) {
-      if (!where.members) where.members = {};
-      if (!where.members._or) where.members._or = [];
-      where.members._or.push({ user_id: { _eq: user.id } });
+      if (!where._and) where._and = [];
+      where._and.push({ members: { user_id: { _eq: user.id } } });
     },
   };
 }
