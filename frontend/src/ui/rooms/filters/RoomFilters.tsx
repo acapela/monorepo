@@ -6,13 +6,9 @@ import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import {
-  createSortByDueDateFilter,
-  createSortByLatestActivityFilter,
-  createUserFilter,
-  getIsUserFilter,
-  RoomFilter,
-} from "./filter";
+import { getIsUserFilter, RoomFilter } from "./filter";
+
+import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
@@ -125,4 +121,9 @@ export const RoomFilters = styled(function RecentTopicFilters({
 const UIHolder = styled.div`
   display: flex;
   column-gap: 8px;
+
+  ${Button} {
+    /* Enforces all of filter buttons to be same size regardless of Icon sizes within */
+    height: 52px;
+  }
 `;
