@@ -22,6 +22,8 @@ import {
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
+  RoomsInSpaceQuery,
+  RoomsInSpaceQueryVariables,
 } from "~gql";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
@@ -77,13 +79,25 @@ const RoomParticipantBasicInfoFragment = createFragment<RoomParticipantBasicInfo
   `
 );
 
-export const [useSpaceRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
+export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQueryVariables>(
   () => gql`
     ${RoomBasicInfoFragment()}
 
-    query Rooms($spaceId: uuid!) {
+    query RoomsInSpace($spaceId: uuid!) {
       room(where: { space_id: { _eq: $spaceId } }) {
         ...RoomBasicInfo
+      }
+    }
+  `
+);
+
+export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
+  () => gql`
+    ${RoomDetailedInfoFragment()}
+
+    query Rooms($limit: Int = 10, $orderBy: [room_order_by!], $where: room_bool_exp) {
+      rooms: room(where: $where, limit: $limit, order_by: $orderBy) {
+        ...RoomDetailedInfo
       }
     }
   `

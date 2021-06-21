@@ -8,7 +8,7 @@ import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
-import { Avatar } from "../users/Avatar";
+import { Avatar } from "../../users/Avatar";
 import { useTopic } from "~frontend/topics/useTopic";
 
 interface Props {

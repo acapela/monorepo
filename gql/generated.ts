@@ -3073,6 +3073,10 @@ export interface Query_Root {
   room_invites_aggregate: Room_Invites_Aggregate;
   /** fetch data from the table: "room_invites" using primary key columns */
   room_invites_by_pk?: Maybe<Room_Invites>;
+  /** fetch data from the table: "room_last_posted_message" */
+  room_last_posted_message: Array<Room_Last_Posted_Message>;
+  /** fetch aggregated fields from the table: "room_last_posted_message" */
+  room_last_posted_message_aggregate: Room_Last_Posted_Message_Aggregate;
   /** fetch data from the table: "room_member" */
   room_member: Array<Room_Member>;
   /** fetch aggregated fields from the table: "room_member" */
@@ -3450,6 +3454,26 @@ export interface Query_RootRoom_Invites_AggregateArgs {
 /** query root */
 export interface Query_RootRoom_Invites_By_PkArgs {
   id: Scalars['uuid'];
+}
+
+
+/** query root */
+export interface Query_RootRoom_Last_Posted_MessageArgs {
+  distinct_on?: Maybe<Array<Room_Last_Posted_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Last_Posted_Message_Order_By>>;
+  where?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
+}
+
+
+/** query root */
+export interface Query_RootRoom_Last_Posted_Message_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Last_Posted_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Last_Posted_Message_Order_By>>;
+  where?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
 }
 
 
@@ -3862,6 +3886,8 @@ export interface Room {
   deadline: Scalars['timestamptz'];
   finished_at?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
+  /** An object relationship */
+  last_posted_message?: Maybe<Room_Last_Posted_Message>;
   /** An array relationship */
   members: Array<Room_Member>;
   /** An aggregated array relationship */
@@ -3989,6 +4015,7 @@ export interface Room_Bool_Exp {
   deadline?: Maybe<Timestamptz_Comparison_Exp>;
   finished_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  last_posted_message?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
   members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   notification_job_id?: Maybe<String_Comparison_Exp>;
@@ -4246,6 +4273,94 @@ export type Room_Invites_Update_Column =
   /** column name */
   | 'used_at';
 
+/** columns and relationships of "room_last_posted_message" */
+export interface Room_Last_Posted_Message {
+  __typename?: 'room_last_posted_message';
+  last_posted_message_time?: Maybe<Scalars['timestamptz']>;
+  /** An object relationship */
+  room?: Maybe<Room>;
+  room_id?: Maybe<Scalars['uuid']>;
+}
+
+/** aggregated selection of "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Aggregate {
+  __typename?: 'room_last_posted_message_aggregate';
+  aggregate?: Maybe<Room_Last_Posted_Message_Aggregate_Fields>;
+  nodes: Array<Room_Last_Posted_Message>;
+}
+
+/** aggregate fields of "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Aggregate_Fields {
+  __typename?: 'room_last_posted_message_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Room_Last_Posted_Message_Max_Fields>;
+  min?: Maybe<Room_Last_Posted_Message_Min_Fields>;
+}
+
+
+/** aggregate fields of "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Aggregate_FieldsCountArgs {
+  columns?: Maybe<Array<Room_Last_Posted_Message_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+}
+
+/** order by aggregate values of table "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Aggregate_Order_By {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Room_Last_Posted_Message_Max_Order_By>;
+  min?: Maybe<Room_Last_Posted_Message_Min_Order_By>;
+}
+
+/** Boolean expression to filter rows from the table "room_last_posted_message". All fields are combined with a logical 'AND'. */
+export interface Room_Last_Posted_Message_Bool_Exp {
+  _and?: Maybe<Array<Maybe<Room_Last_Posted_Message_Bool_Exp>>>;
+  _not?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Room_Last_Posted_Message_Bool_Exp>>>;
+  last_posted_message_time?: Maybe<Timestamptz_Comparison_Exp>;
+  room?: Maybe<Room_Bool_Exp>;
+  room_id?: Maybe<Uuid_Comparison_Exp>;
+}
+
+/** aggregate max on columns */
+export interface Room_Last_Posted_Message_Max_Fields {
+  __typename?: 'room_last_posted_message_max_fields';
+  last_posted_message_time?: Maybe<Scalars['timestamptz']>;
+  room_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by max() on columns of table "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Max_Order_By {
+  last_posted_message_time?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+}
+
+/** aggregate min on columns */
+export interface Room_Last_Posted_Message_Min_Fields {
+  __typename?: 'room_last_posted_message_min_fields';
+  last_posted_message_time?: Maybe<Scalars['timestamptz']>;
+  room_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by min() on columns of table "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Min_Order_By {
+  last_posted_message_time?: Maybe<Order_By>;
+  room_id?: Maybe<Order_By>;
+}
+
+/** ordering options when selecting data from "room_last_posted_message" */
+export interface Room_Last_Posted_Message_Order_By {
+  last_posted_message_time?: Maybe<Order_By>;
+  room?: Maybe<Room_Order_By>;
+  room_id?: Maybe<Order_By>;
+}
+
+/** select columns of table "room_last_posted_message" */
+export type Room_Last_Posted_Message_Select_Column =
+  /** column name */
+  | 'last_posted_message_time'
+  /** column name */
+  | 'room_id';
+
 /** aggregate max on columns */
 export interface Room_Max_Fields {
   __typename?: 'room_max_fields';
@@ -4488,6 +4603,7 @@ export interface Room_Order_By {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  last_posted_message?: Maybe<Room_Last_Posted_Message_Order_By>;
   members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
@@ -5039,6 +5155,10 @@ export interface Subscription_Root {
   room_invites_aggregate: Room_Invites_Aggregate;
   /** fetch data from the table: "room_invites" using primary key columns */
   room_invites_by_pk?: Maybe<Room_Invites>;
+  /** fetch data from the table: "room_last_posted_message" */
+  room_last_posted_message: Array<Room_Last_Posted_Message>;
+  /** fetch aggregated fields from the table: "room_last_posted_message" */
+  room_last_posted_message_aggregate: Room_Last_Posted_Message_Aggregate;
   /** fetch data from the table: "room_member" */
   room_member: Array<Room_Member>;
   /** fetch aggregated fields from the table: "room_member" */
@@ -5416,6 +5536,26 @@ export interface Subscription_RootRoom_Invites_AggregateArgs {
 /** subscription root */
 export interface Subscription_RootRoom_Invites_By_PkArgs {
   id: Scalars['uuid'];
+}
+
+
+/** subscription root */
+export interface Subscription_RootRoom_Last_Posted_MessageArgs {
+  distinct_on?: Maybe<Array<Room_Last_Posted_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Last_Posted_Message_Order_By>>;
+  where?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
+}
+
+
+/** subscription root */
+export interface Subscription_RootRoom_Last_Posted_Message_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Last_Posted_Message_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Last_Posted_Message_Order_By>>;
+  where?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
 }
 
 
@@ -8271,16 +8411,31 @@ export type RoomParticipantBasicInfoFragment = (
   ) }
 );
 
-export type RoomsQueryVariables = Exact<{
+export type RoomsInSpaceQueryVariables = Exact<{
   spaceId: Scalars['uuid'];
+}>;
+
+
+export type RoomsInSpaceQuery = (
+  { __typename?: 'query_root' }
+  & { room: Array<(
+    { __typename?: 'room' }
+    & RoomBasicInfoFragment
+  )> }
+);
+
+export type RoomsQueryVariables = Exact<{
+  limit?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Room_Order_By> | Room_Order_By>;
+  where?: Maybe<Room_Bool_Exp>;
 }>;
 
 
 export type RoomsQuery = (
   { __typename?: 'query_root' }
-  & { room: Array<(
+  & { rooms: Array<(
     { __typename?: 'room' }
-    & RoomBasicInfoFragment
+    & RoomDetailedInfoFragment
   )> }
 );
 
@@ -9520,7 +9675,7 @@ export type mutation_rootFieldPolicy = {
 	update_whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9555,6 +9710,8 @@ export type query_rootFieldPolicy = {
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_last_posted_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9600,7 +9757,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9608,6 +9765,7 @@ export type roomFieldPolicy = {
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	members?: FieldPolicy<any> | FieldReadFunction<any>,
 	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9679,6 +9837,33 @@ export type room_invites_mutation_responseKeySpecifier = ('affected_rows' | 'ret
 export type room_invites_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_last_posted_messageKeySpecifier = ('last_posted_message_time' | 'room' | 'room_id' | room_last_posted_messageKeySpecifier)[];
+export type room_last_posted_messageFieldPolicy = {
+	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_last_posted_message_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_last_posted_message_aggregateKeySpecifier)[];
+export type room_last_posted_message_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_last_posted_message_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_last_posted_message_aggregate_fieldsKeySpecifier)[];
+export type room_last_posted_message_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_last_posted_message_max_fieldsKeySpecifier = ('last_posted_message_time' | 'room_id' | room_last_posted_message_max_fieldsKeySpecifier)[];
+export type room_last_posted_message_max_fieldsFieldPolicy = {
+	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_last_posted_message_min_fieldsKeySpecifier = ('last_posted_message_time' | 'room_id' | room_last_posted_message_min_fieldsKeySpecifier)[];
+export type room_last_posted_message_min_fieldsFieldPolicy = {
+	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'slug' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
@@ -9823,7 +10008,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_attachment' | 'message_attachment_aggregate' | 'message_attachment_by_pk' | 'message_by_pk' | 'message_full_text' | 'message_full_text_aggregate' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9858,6 +10043,8 @@ export type subscription_rootFieldPolicy = {
 	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_last_posted_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10654,6 +10841,26 @@ export type TypedTypePolicies = TypePolicies & {
 	room_invites_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_invites_mutation_responseKeySpecifier | (() => undefined | room_invites_mutation_responseKeySpecifier),
 		fields?: room_invites_mutation_responseFieldPolicy,
+	},
+	room_last_posted_message?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_last_posted_messageKeySpecifier | (() => undefined | room_last_posted_messageKeySpecifier),
+		fields?: room_last_posted_messageFieldPolicy,
+	},
+	room_last_posted_message_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_last_posted_message_aggregateKeySpecifier | (() => undefined | room_last_posted_message_aggregateKeySpecifier),
+		fields?: room_last_posted_message_aggregateFieldPolicy,
+	},
+	room_last_posted_message_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_last_posted_message_aggregate_fieldsKeySpecifier | (() => undefined | room_last_posted_message_aggregate_fieldsKeySpecifier),
+		fields?: room_last_posted_message_aggregate_fieldsFieldPolicy,
+	},
+	room_last_posted_message_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_last_posted_message_max_fieldsKeySpecifier | (() => undefined | room_last_posted_message_max_fieldsKeySpecifier),
+		fields?: room_last_posted_message_max_fieldsFieldPolicy,
+	},
+	room_last_posted_message_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_last_posted_message_min_fieldsKeySpecifier | (() => undefined | room_last_posted_message_min_fieldsKeySpecifier),
+		fields?: room_last_posted_message_min_fieldsFieldPolicy,
 	},
 	room_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_max_fieldsKeySpecifier | (() => undefined | room_max_fieldsKeySpecifier),
