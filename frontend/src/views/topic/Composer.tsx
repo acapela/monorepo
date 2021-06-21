@@ -88,19 +88,21 @@ export const MessageComposer = ({ topicId }: Props) => {
           placeholder="Type here to start contributing..."
           autoFocusKey={topicId}
           additionalContent={
-            attachments.length > 0 && (
-              <UIAttachmentsPreviews>
-                {attachments.map((attachment, index) => {
-                  return (
-                    <AttachmentPreview
-                      id={attachment.uuid}
-                      key={attachment.uuid}
-                      onRemoveRequest={() => attachmentsList.removeAt(index)}
-                    />
-                  );
-                })}
-              </UIAttachmentsPreviews>
-            )
+            <>
+              {attachments.length > 0 && (
+                <UIAttachmentsPreviews>
+                  {attachments.map((attachment, index) => {
+                    return (
+                      <AttachmentPreview
+                        id={attachment.uuid}
+                        key={attachment.uuid}
+                        onRemoveRequest={() => attachmentsList.removeAt(index)}
+                      />
+                    );
+                  })}
+                </UIAttachmentsPreviews>
+              )}
+            </>
           }
         />
       </UIEditorContainer>

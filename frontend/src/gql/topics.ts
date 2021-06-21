@@ -36,6 +36,8 @@ import {
   TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
   AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
   TopicMessageDetailedInfoFragment as TopicMessageDetailedInfoFragmentType,
+  MessageQuery,
+  MessageQueryVariables,
 } from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
@@ -198,6 +200,18 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
         limit: $limit
       ) {
         ...TopicMessageDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useMessageQuery, messageQueryManager] = createQuery<MessageQuery, MessageQueryVariables>(
+  () => gql`
+    ${TopicMessageDetailedInfoFragment()}
+
+    query Message($id: uuid!) {
+      message: message_by_id(id: $id) {
+        ...TopicMessageDetailedInfoFragment
       }
     }
   `
