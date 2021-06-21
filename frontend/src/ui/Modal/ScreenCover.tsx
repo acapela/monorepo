@@ -28,7 +28,7 @@ const BLUR_ANIMATION_FPS_TO_ENABLE_BLUR_THRESHOLD = 25;
 
 const BACKGROUND_BLUR_SIZE_PX = 8;
 
-const shouldUseBlurPreference = createLocalStorageValueManager<boolean>("use-blur-screen-cover", true);
+const shouldUseBlurPreference = createLocalStorageValueManager<boolean | null>("use-blur-screen-cover", null);
 
 export function ScreenCover({ children, onCloseRequest, isTransparent = true }: Props) {
   const shouldUseBlurAnimation = shouldUseBlurPreference.useValue();
@@ -44,7 +44,7 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
       backgroundColor: [setColorOpacity(MODAL_BACKGROUND_COLOR, 0), setColorOpacity(MODAL_BACKGROUND_COLOR, 0.7)],
     };
 
-    if (!shouldUseBlurAnimation) {
+    if (shouldUseBlurAnimation === false) {
       return onlyBackgroundColorAnimation;
     }
 
@@ -55,6 +55,7 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
   }
 
   function handleStartMeasuringAnimation() {
+    if (shouldUseBlurAnimation !== null) return;
     currentFpsMeasurementRef.current = startMeasuringFps();
   }
 
@@ -66,6 +67,8 @@ export function ScreenCover({ children, onCloseRequest, isTransparent = true }: 
     if (fpsDuringTransition < BLUR_ANIMATION_FPS_TO_ENABLE_BLUR_THRESHOLD) {
       // If animation was laggy, never again animate with blur.
       shouldUseBlurPreference.set(false);
+    } else {
+      shouldUseBlurPreference.set(true);
     }
   }
 
