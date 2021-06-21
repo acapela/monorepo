@@ -8,7 +8,6 @@ import styled from "styled-components";
 import { SpaceGradient } from "~frontend/ui/spaces/spaceGradient";
 import { NavItemInfo } from "./NavItem";
 import { borderRadius } from "~ui/baseStyles";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 
 const homeSegment: NavItemInfo = {
   key: "home",
@@ -27,8 +26,6 @@ const calendarSegment: NavItemInfo = {
 export function ContentBreadcrumbs() {
   const spaceId = usePathParameter("spaceId");
   const roomId = usePathParameter("roomId");
-
-  const teamId = useAssertCurrentTeamId();
 
   const [room] = useSingleRoomQuery({ id: roomId ?? "" }, { skip: !roomId });
   const [space] = useSingleSpaceQuery({ id: spaceId ?? "" }, { skip: !spaceId });
