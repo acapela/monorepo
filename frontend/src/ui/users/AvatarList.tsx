@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { UserAvatar } from "./UserAvatar";
 import { CircleLabel } from "~ui/icons/CircleLabel";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
+import { formatNumberWithMaxValue } from "~shared/numbers";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -33,7 +33,7 @@ export const AvatarList = styled(function AvatarList({ users, className, maxVisi
             };
           })}
         >
-          <CircleLabel label={formatNumberWithMaxCallback(avatarsInPopover.length, 9, true)} />
+          <CircleLabel label={formatNumberWithMaxValue(avatarsInPopover.length, 9, true)} />
         </PopoverMenuTrigger>
       )}
     </UIHolder>
