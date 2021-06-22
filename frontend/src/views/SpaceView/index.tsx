@@ -9,36 +9,38 @@ import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
 import { SecondaryText } from "~ui/typo";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { useMemo, useRef } from "react";
+import { useMemo, useState } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
-import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
+import { createOpenRoomFilter, createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
+import { IconPlusSquare } from "~ui/icons";
 import { Toggle } from "~ui/toggle";
+import { zIndex } from "~ui/zIndex";
 
 interface Props {
   spaceId: string;
 }
 
+const openRoomsFilter = createOpenRoomFilter(true);
+const closedRoomsFilter = createOpenRoomFilter(false);
+
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });
-  const spaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
+  const roomsInCurrentSpaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
   const amIMember = isCurrentUserSpaceMember(space ?? undefined);
 
-  const [roomQuery, setFilters] = useRoomFilterVariables([spaceFilter]);
+  const [roomOpenStatusFilter, setRoomOpenStatusFilter] = useState(openRoomsFilter);
+
+  const [roomQuery, setFilters] = useRoomFilterVariables([roomsInCurrentSpaceFilter, roomOpenStatusFilter]);
 
   const [createRoom] = useCreateRoomMutation();
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   async function onCreate() {
     const roomName = await openUIPrompt({
       title: "Room name",
       placeholder: "Daily standup...",
       submitLabel: "Create room",
-      anchor: {
-        ref: buttonRef,
-        placement: "bottom-end",
-      },
       validateInput: createLengthValidator("Room name", 3),
     });
 
@@ -61,39 +63,46 @@ export function SpaceView({ spaceId }: Props) {
 
   return (
     <>
-      <Container>
+      <UIContainer>
         <UIHolder>
           <UISpace>{space && <SpaceCard space={space} />}</UISpace>
           <UIContent>
-            <UITitle>
-              <Button
-                ref={buttonRef}
-                onClick={onCreate}
-                isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
-              >
-                Create room
-              </Button>
-            </UITitle>
-
-            <RoomFilters onFiltersChange={setFilters} />
+            <UIFilters onFiltersChange={setFilters} />
             <UIRooms>
               <UIRoomsHeader>
                 <SecondaryText>Rooms</SecondaryText>
                 <UIClosedRoomsFilter>
                   <SecondaryText>Closed</SecondaryText>
-                  <Toggle size="small" onSet={() => console.log("set")} onUnset={() => console.log("unset")} />
+                  <Toggle
+                    size="small"
+                    onSet={() => setRoomOpenStatusFilter(closedRoomsFilter)}
+                    onUnset={() => setRoomOpenStatusFilter(openRoomsFilter)}
+                  />
                 </UIClosedRoomsFilter>
               </UIRoomsHeader>
               <FilteredRoomsList query={roomQuery} />
             </UIRooms>
           </UIContent>
         </UIHolder>
-      </Container>
+        <UIFlyingCreateRoomButton
+          onClick={onCreate}
+          iconPosition="start"
+          icon={<IconPlusSquare />}
+          isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
+        >
+          Create room
+        </UIFlyingCreateRoomButton>
+      </UIContainer>
     </>
   );
 }
 
+const UIContainer = styled(Container)`
+  position: relative;
+`;
+
 const UIHolder = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns: 320px 1fr;
   grid-gap: 4rem;
@@ -103,13 +112,14 @@ const UISpace = styled.div``;
 
 const UIContent = styled.div``;
 
-const UITitle = styled.div`
+const UIFilters = styled(RoomFilters)`
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 2rem;
+  justify-content: flex-end;
 `;
 
 const UIRooms = styled.div`
+  margin-top: 16px;
+
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -122,7 +132,12 @@ const UIRoomsHeader = styled.div`
   justify-content: space-between;
 `;
 
-const UIFilters = styled.div``;
+const UIFlyingCreateRoomButton = styled(Button)`
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: ${zIndex.FlyingButton};
+`;
 
 const UIClosedRoomsFilter = styled.div`
   display: flex;
