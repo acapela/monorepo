@@ -7,10 +7,14 @@ import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
-import { PageTitle } from "~ui/typo";
-import { SpaceRooms } from "./SpaceRooms";
-import { useRef } from "react";
+import { SecondaryText } from "~ui/typo";
+import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
+import { useMemo, useRef } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
+import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
+import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
+import { Toggle } from "~ui/toggle";
 
 interface Props {
   spaceId: string;
@@ -18,9 +22,10 @@ interface Props {
 
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });
+  const spaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
   const amIMember = isCurrentUserSpaceMember(space ?? undefined);
 
-  const rooms = space?.rooms ?? [];
+  const [roomQuery, setFilters] = useRoomFilterVariables([spaceFilter]);
 
   const [createRoom] = useCreateRoomMutation();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -61,8 +66,6 @@ export function SpaceView({ spaceId }: Props) {
           <UISpace>{space && <SpaceCard space={space} />}</UISpace>
           <UIContent>
             <UITitle>
-              <PageTitle>Rooms</PageTitle>
-
               <Button
                 ref={buttonRef}
                 onClick={onCreate}
@@ -72,9 +75,17 @@ export function SpaceView({ spaceId }: Props) {
               </Button>
             </UITitle>
 
-            <UIRoom>
-              <SpaceRooms rooms={rooms} />
-            </UIRoom>
+            <RoomFilters onFiltersChange={setFilters} />
+            <UIRooms>
+              <UIRoomsHeader>
+                <SecondaryText>Rooms</SecondaryText>
+                <UIClosedRoomsFilter>
+                  <SecondaryText>Closed</SecondaryText>
+                  <Toggle size="small" onSet={() => console.log("set")} onUnset={() => console.log("unset")} />
+                </UIClosedRoomsFilter>
+              </UIRoomsHeader>
+              <FilteredRoomsList query={roomQuery} />
+            </UIRooms>
           </UIContent>
         </UIHolder>
       </Container>
@@ -98,4 +109,24 @@ const UITitle = styled.div`
   margin-bottom: 2rem;
 `;
 
-const UIRoom = styled.div``;
+const UIRooms = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const UIRoomsHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const UIFilters = styled.div``;
+
+const UIClosedRoomsFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
