@@ -26,7 +26,7 @@ export const Message = styled(({ message, className }: Props) => {
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
 
   const [, updateTopicState] = useTopicStore();
-  async function handleReply() {
+  async function handleMarkAsBeingRepliedTo() {
     updateTopicState((draft) => (draft.currentlyReplyingToMessageId = message.id));
   }
 
@@ -55,7 +55,7 @@ export const Message = styled(({ message, className }: Props) => {
             onActiveChange={setIsActive}
             onEditRequest={enableEditMode}
             onRemoveRequest={handleRemove}
-            onReplyRequest={handleReply}
+            onReplyRequest={handleMarkAsBeingRepliedTo}
           />
         )
       }
