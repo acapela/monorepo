@@ -15,7 +15,7 @@ import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { NewMessageBar } from "~frontend/ui/message/composer/NewMessageBar";
+import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 
 interface Props {
   topicId: string;
@@ -68,7 +68,7 @@ export const TopicView = ({ topicId }: Props) => {
           {!isTopicClosed && (
             <ClientSideOnly>
               <UIMessageComposer isDisabled={!isMember}>
-                <NewMessageBar topicId={topicId} />
+                <CreateNewMessageEditor topicId={topicId} />
               </UIMessageComposer>
             </ClientSideOnly>
           )}

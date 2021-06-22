@@ -13,7 +13,7 @@ interface Props {
   topicId: string;
 }
 
-export const NewMessageBar = ({ topicId }: Props) => {
+export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<EditorContent>([]);
 
