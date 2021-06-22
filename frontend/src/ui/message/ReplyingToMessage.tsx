@@ -5,7 +5,7 @@ import { MessageLikeContent } from "./messagesFeed/MessageLikeContent";
 import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
 import { MessageText } from "./display/types/TextMessageContent";
-import { IconButton } from "~frontend/../../ui/buttons/IconButton";
+import { IconButton } from "~ui/buttons/IconButton";
 
 interface Props {
   id: string;

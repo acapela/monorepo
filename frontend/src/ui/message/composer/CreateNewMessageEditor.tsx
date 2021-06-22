@@ -9,8 +9,8 @@ import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
 import { useTopicStore } from "~frontend/topics/TopicStore";
-import { ReplyingToMessage } from "../ReplyingToMessage";
-import { Message_Type_Enum } from "~frontend/../../gql";
+import { ReplyingToMessage } from "~frontend/ui/message/ReplyingToMessage";
+import { Message_Type_Enum } from "~gql";
 
 interface Props {
   topicId: string;

@@ -16,7 +16,7 @@ import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
-import { TopicStoreContext } from "../../topics/TopicStore";
+import { TopicStoreContext } from "~frontend/topics/TopicStore";
 
 interface Props {
   topicId: string;
