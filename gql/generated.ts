@@ -1147,6 +1147,8 @@ export interface Message {
   message_attachments_aggregate: Message_Attachment_Aggregate;
   /** An object relationship */
   message_type: Message_Type;
+  /** An object relationship */
+  replied_to_message?: Maybe<Message>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   topic: Topic;
@@ -1389,6 +1391,7 @@ export interface Message_Bool_Exp {
   is_draft?: Maybe<Boolean_Comparison_Exp>;
   message_attachments?: Maybe<Message_Attachment_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
+  replied_to_message?: Maybe<Message_Bool_Exp>;
   replied_to_message_id?: Maybe<Uuid_Comparison_Exp>;
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
@@ -1558,6 +1561,7 @@ export interface Message_Insert_Input {
   is_draft?: Maybe<Scalars['Boolean']>;
   message_attachments?: Maybe<Message_Attachment_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
+  replied_to_message?: Maybe<Message_Obj_Rel_Insert_Input>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
@@ -1640,6 +1644,7 @@ export interface Message_Order_By {
   is_draft?: Maybe<Order_By>;
   message_attachments_aggregate?: Maybe<Message_Attachment_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
+  replied_to_message?: Maybe<Message_Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
@@ -8375,9 +8380,13 @@ export type MessageBasicInfoFragment = (
 
 export type MessageDetailedInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content' | 'type' | 'replied_to_message_id'>
+  & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
-  & { transcription?: Maybe<(
+  & { replied_to_message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'content'>
+    & { createdAt: Message['created_at'] }
+  )>, transcription?: Maybe<(
     { __typename?: 'transcription' }
     & Pick<Transcription, 'status' | 'transcript'>
   )>, user: (
@@ -9340,7 +9349,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'replied_to_message_id' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9349,6 +9358,7 @@ export type messageFieldPolicy = {
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	replied_to_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,

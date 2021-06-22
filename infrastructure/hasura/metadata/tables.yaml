@@ -121,6 +121,9 @@
     - name: message_type
       using:
         foreign_key_constraint_on: type
+    - name: replied_to_message
+      using:
+        foreign_key_constraint_on: replied_to_message_id
     - name: topic
       using:
         foreign_key_constraint_on: topic_id

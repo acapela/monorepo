@@ -68,9 +68,9 @@ export const Message = styled(({ message, className }: Props) => {
         )}
         {!isInEditMode && (
           <>
-            {message.replied_to_message_id && (
+            {message.replied_to_message && (
               <UIReplyingToMessageWrapper>
-                <ReplyingToMessage id={message.replied_to_message_id} />
+                <ReplyingToMessage id={message.replied_to_message.id} />
               </UIReplyingToMessageWrapper>
             )}
             <MessageText message={message} />

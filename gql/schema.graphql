@@ -1583,6 +1583,11 @@ type message {
   An object relationship
   """
   message_type: message_type!
+
+  """
+  An object relationship
+  """
+  replied_to_message: message
   replied_to_message_id: uuid
 
   """
@@ -1863,6 +1868,7 @@ input message_bool_exp {
   is_draft: Boolean_comparison_exp
   message_attachments: message_attachment_bool_exp
   message_type: message_type_bool_exp
+  replied_to_message: message_bool_exp
   replied_to_message_id: uuid_comparison_exp
   topic: topic_bool_exp
   topic_id: uuid_comparison_exp
@@ -2079,6 +2085,7 @@ input message_insert_input {
   is_draft: Boolean
   message_attachments: message_attachment_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
+  replied_to_message: message_obj_rel_insert_input
   replied_to_message_id: uuid
   topic: topic_obj_rel_insert_input
   topic_id: uuid
@@ -2179,6 +2186,7 @@ input message_order_by {
   is_draft: order_by
   message_attachments_aggregate: message_attachment_aggregate_order_by
   message_type: message_type_order_by
+  replied_to_message: message_order_by
   replied_to_message_id: order_by
   topic: topic_order_by
   topic_id: order_by
