@@ -6,19 +6,16 @@ import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import {
-  createSortByDueDateFilter,
-  createSortByLatestActivityFilter,
-  createUserFilter,
-  getIsUserFilter,
-  RoomFilter,
-} from "./filter";
+import { getIsUserFilter, RoomFilter } from "./filter";
+
+import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
+  initialFilters?: RoomFilter[];
   onFiltersChange: (filters: RoomFilter[]) => void;
   className?: string;
 }
@@ -37,8 +34,12 @@ function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
   return selectedMembers;
 }
 
-export const RoomFilters = styled(function RecentTopicFilters({ onFiltersChange, className }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>();
+export const RoomFilters = styled(function RecentTopicFilters({
+  onFiltersChange,
+  className,
+  initialFilters = [],
+}: Props) {
+  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>(initialFilters);
 
   function removeFilter(filterToRemove: RoomFilter) {
     applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
@@ -116,4 +117,6 @@ export const RoomFilters = styled(function RecentTopicFilters({ onFiltersChange,
 const UIHolder = styled.div`
   display: flex;
   column-gap: 8px;
+  height: 52px;
+  align-items: stretch;
 `;

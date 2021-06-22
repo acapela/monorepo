@@ -11,6 +11,7 @@ import { updateTextMessage } from "~frontend/gql/messages";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { makePromiseVoidable } from "~shared/promises";
+import { useShortcut } from "~frontend/../../ui/keyboard/useShortcut";
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
@@ -27,7 +28,10 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       };
     })
   );
+
   const [content, setContent] = useState<EditorContent>(message.content);
+
+  useShortcut("Escape", onCancelRequest);
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {

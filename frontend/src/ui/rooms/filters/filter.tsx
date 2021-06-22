@@ -1,24 +1,22 @@
 import produce from "immer";
 import { ReactNode, useState } from "react";
-import { IconFilter } from "~ui/icons";
-import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import {
   RoomsQueryVariables,
   Room_Bool_Exp as RoomWhere,
   Room_Order_By as RoomOrder,
   UserBasicInfoFragment,
 } from "~gql";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 export interface BasicFilter {
   key: string;
-  label: string;
+  label?: string;
   icon?: ReactNode;
   whereApplier?: (draft: RoomWhere) => void;
   orderGetter?: () => RoomOrder;
 }
 
-interface UserFilter extends BasicFilter {
+export interface UserFilter extends BasicFilter {
   type: "user";
   user: UserBasicInfoFragment;
 }
@@ -31,11 +29,7 @@ export type RoomFilter = UserFilter | BasicFilter;
 
 const DEFAULT_RECENT_ROOMS_LIMIT = 100;
 
-export function getRoomVariablesFromFilters(
-  userId: string,
-  teamId: string,
-  filters: RoomFilter[]
-): RoomsQueryVariables {
+export function getRoomVariablesFromFilters(teamId: string, filters: RoomFilter[]): RoomsQueryVariables {
   const orders: RoomOrder[] = [];
   let where: RoomWhere = {
     space: {
@@ -74,53 +68,11 @@ export function getRoomVariablesFromFilters(
   };
 }
 
-export function useRoomFilterVariables() {
+export function useRoomFilterVariables(forcedFilters?: RoomFilter[]) {
   const [filters, setFilters] = useState<RoomFilter[]>([]);
   const teamId = useAssertCurrentTeamId();
-  const user = useAssertCurrentUser();
 
-  const variables = getRoomVariablesFromFilters(user.id, teamId, filters);
+  const variables = getRoomVariablesFromFilters(teamId, [...filters, ...(forcedFilters ?? [])]);
 
   return [variables, setFilters] as const;
-}
-
-export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
-  return {
-    key: `user-${user.id}`,
-    type: "user",
-    user,
-    label: user.name ?? "Unknown user",
-    icon: <UserAvatar user={user} size="small" />,
-    whereApplier(where) {
-      if (!where.members) where.members = {};
-      if (!where.members._or) where.members._or = [];
-      where.members._or.push({ user_id: { _eq: user.id } });
-    },
-  };
-}
-
-export function createSortByLatestActivityFilter(): BasicFilter {
-  return {
-    key: "latest-activity",
-    label: "Sort by latest activity",
-    icon: <IconFilter />,
-    orderGetter() {
-      return {
-        last_posted_message: {
-          last_posted_message_time: "desc",
-        },
-      };
-    },
-  };
-}
-
-export function createSortByDueDateFilter(): BasicFilter {
-  return {
-    key: "due-date",
-    label: "Sort by due date",
-    icon: <IconFilter />,
-    orderGetter() {
-      return { deadline: "asc" };
-    },
-  };
 }

@@ -1,16 +1,23 @@
 import styled from "styled-components";
+import { useMemo } from "react";
 import { PageTitle } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
 import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
+import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { CreateRoomButton } from "./CreateRoom";
 
+const openRoomFilter = createOpenRoomFilter(true);
+
 export function HomeView() {
   const user = useAssertCurrentUser();
-  const [roomQuery, setFilters] = useRoomFilterVariables();
+
+  const currentUserFilter = useMemo(() => createUserFilter(user), [user]);
+
+  const [roomQuery, setFilters] = useRoomFilterVariables([openRoomFilter]);
 
   return (
     <UIHolder>
@@ -24,7 +31,7 @@ export function HomeView() {
         </UIGreeting>
         <CreateRoomButton />
       </UIMainSection>
-      <RoomFilters onFiltersChange={setFilters} />
+      <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
       <FilteredRoomsList query={roomQuery} />
     </UIHolder>
   );
