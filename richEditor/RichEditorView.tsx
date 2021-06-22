@@ -50,6 +50,18 @@ const ENTER_KEYCODE = 13;
 registerEmojiModule();
 registerAutolinksModule();
 
+/**
+ * Let's only enable 'safe' formats - https://quilljs.com/docs/formats
+ *
+ * It ships bunch of formats we don't want eg. font size, background color, text color.
+ *
+ * We have to disable it even if we don't show toolbar tools for things like background, because it is possible
+ * user will paste formatted text with eg. custom color.
+ *
+ * With this, such custom styles will be automatically removed.
+ */
+const ENABLED_FORMATS = ["bold", "code", "italic", "link", "strike", "blockquote", "list", "code-block"];
+
 export const RichEditor = ({
   value,
   onChange,
@@ -166,6 +178,7 @@ export const RichEditor = ({
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               value={valueDelta as any}
               onChange={handleChange}
+              formats={ENABLED_FORMATS}
               modules={{
                 [EMOJI_MODULE_NAME]: emojiModuleOptions,
                 [AUTOLINK_MODULE_NAME]: {},
