@@ -28,6 +28,7 @@ interface Props {
 const RoomLink = routes.spaceRoom.Link;
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
+  // TODO: optimize !!
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
@@ -45,6 +46,8 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       navigateAfterCreation: true,
     });
   }
+
+  const isRoomOpen = !room.finished_at;
 
   return (
     <UIHolder className={className}>
@@ -70,7 +73,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               <UIRoomInfoSeparator />
               {space && (
                 <UIRoomInfo>
-                  <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
+                  <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space.name}</UIRoomInfoValue>
                 </UIRoomInfo>
               )}
               <UIRoomInfoSeparator />
@@ -90,9 +93,11 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 return <TopicCard key={topic.id} topic={topic} />;
               })}
             </UITopics>
-            <Button ref={buttonRef} onClick={handleCreateTopic}>
-              Add topic
-            </Button>
+            {isRoomOpen && (
+              <Button ref={buttonRef} onClick={handleCreateTopic}>
+                Add topic
+              </Button>
+            )}
           </UICollapsedItems>
         )}
       </UIIndentBody>
