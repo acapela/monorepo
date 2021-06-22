@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Maybe } from "~gql";
 import { getInitials } from "~frontend/utils";
 import { borderRadius } from "~ui/baseStyles";
+import { NamedSize, getNamedSizeValue } from "~ui/namedSize";
 
 interface Props {
   name?: Maybe<string>;
@@ -12,7 +13,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export type AvatarSize = "regular" | "small" | "font-size";
+export type AvatarSize = NamedSize | "font-size";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
@@ -56,14 +57,9 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
 `;
 
 function getAvatarSize(size: AvatarSize) {
-  switch (size) {
-    case "regular":
-      return "40px";
-    case "small":
-      return "32px";
-    case "font-size":
-      return "1rem";
-  }
+  if (size === "font-size") return "1rem";
 
-  throw new Error("Incorrect avatar size");
+  const sizeInPx = getNamedSizeValue(size);
+
+  return `${sizeInPx}px`;
 }

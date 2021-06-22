@@ -6,8 +6,16 @@ export function pluralize(count: number, singular: string, plural: string) {
   return `${count} ${plural}`;
 }
 
-export function formatNumberWithMaxCallback(inputNumber: number, max: number) {
-  return inputNumber < max ? inputNumber : `${max}+`;
+export function formatNumberWithMaxCallback(inputNumber: number, max: number, alwaysShowMoreIndicator = true) {
+  if (inputNumber < max) {
+    if (alwaysShowMoreIndicator) {
+      return `${inputNumber}+`;
+    }
+
+    return `${inputNumber}`;
+  }
+
+  return `${max}+`;
 }
 
 export function getNumbersAverage(input: number[]) {

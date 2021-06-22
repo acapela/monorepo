@@ -17,7 +17,7 @@ import { niceFormatDateTime } from "~shared/dates/format";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxCallback } from "~shared/numbers";
-import { ElementNotificationBadge } from "../../ElementNotificationBadge";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 
 interface Props {
   room: RoomBasicInfoFragment;

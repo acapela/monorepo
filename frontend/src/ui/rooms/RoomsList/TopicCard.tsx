@@ -8,8 +8,8 @@ import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
-import { Avatar } from "../../users/Avatar";
 import { useTopic } from "~frontend/topics/useTopic";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -57,11 +57,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
         <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
         {lastMessage && (
           <UILastMessage>
-            <UILastMessageSender
-              size="font-size"
-              url={lastMessage.user.avatar_url}
-              name={lastMessage.user.name ?? ""}
-            />
+            <UILastMessageSender size="font-size" user={lastMessage.user} />
             <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
           </UILastMessage>
         )}
@@ -116,7 +112,7 @@ const UILastMessage = styled.div`
   padding-top: 8px;
 `;
 
-const UILastMessageSender = styled(Avatar)``;
+const UILastMessageSender = styled(UserAvatar)``;
 
 const UILastMessageContent = styled.div`
   display: grid;
