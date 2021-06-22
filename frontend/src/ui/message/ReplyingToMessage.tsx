@@ -3,10 +3,9 @@ import styled from "styled-components";
 import { useMessageQuery } from "~frontend/gql/messages";
 import { MessageLikeContent } from "./messagesFeed/MessageLikeContent";
 import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
-import { borderRadius } from "~ui/baseStyles";
 import { IconCross } from "~ui/icons";
-import { hoverTransition, hoverActionActiveCss } from "~ui/transitions";
 import { MessageText } from "./display/types/TextMessageContent";
+import { IconButton } from "~frontend/../../ui/buttons/IconButton";
 
 interface Props {
   id: string;
@@ -22,14 +21,12 @@ export const ReplyingToMessage = ({ id, onRemove }: Props) => {
 
   return (
     <UIHolder>
-      <MessageLikeContent user={message.user} date={message.createdAt}>
+      <MessageLikeContent user={message.user} date={new Date(message.createdAt)}>
         <MessageText message={message} />
       </MessageLikeContent>
       {onRemove && (
         <UIRemoveButtonWrapper>
-          <UIRemoveButton onClick={onRemove}>
-            <IconCross />
-          </UIRemoveButton>
+          <IconButton icon={<IconCross />} onClick={onRemove} />
         </UIRemoveButtonWrapper>
       )}
     </UIHolder>
@@ -40,17 +37,6 @@ const UIRemoveButtonWrapper = styled.div`
   position: absolute;
   top: 8px;
   right: 8px;
-`;
-
-const UIRemoveButton = styled.div`
-  padding: 6px;
-  background: #ffffff;
-  cursor: pointer;
-  ${borderRadius.circle}
-  ${hoverTransition()}
-  &:hover {
-    ${hoverActionActiveCss};
-  }
 `;
 
 const UIHolder = styled.div`
