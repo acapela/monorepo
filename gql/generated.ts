@@ -8397,6 +8397,7 @@ export type CreateMessageMutationVariables = Exact<{
   content: Scalars['jsonb'];
   type: Message_Type_Enum;
   attachments: Array<Message_Attachment_Insert_Input> | Message_Attachment_Insert_Input;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
 }>;
 
 

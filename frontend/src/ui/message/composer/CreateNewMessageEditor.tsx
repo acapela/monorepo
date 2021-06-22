@@ -45,6 +45,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
             attachments: uploadedAttachments.map((attachment) => ({
               attachment_id: attachment.uuid,
             })),
+            replied_to_message_id: currentlyReplyingToMessageId,
           });
         }}
       />
@@ -59,6 +60,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
             attachments: attachments.map((attachment) => ({
               attachment_id: attachment.uuid,
             })),
+            replied_to_message_id: currentlyReplyingToMessageId,
           });
 
           attachmentsList.clear();

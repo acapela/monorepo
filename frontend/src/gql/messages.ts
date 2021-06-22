@@ -71,6 +71,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
       $content: jsonb!
       $type: message_type_enum!
       $attachments: [message_attachment_insert_input!]!
+      $replied_to_message_id: uuid
     ) {
       message: insert_message_one(
         object: {
@@ -78,6 +79,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           topic_id: $topicId
           type: $type
           message_attachments: { data: $attachments }
+          replied_to_message_id: $replied_to_message_id
           is_draft: false
         }
       ) {
@@ -105,6 +107,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           },
           id: getUUID(),
           content: vars.content,
+          replied_to_message_id: vars.replied_to_message_id,
         },
       };
     },
