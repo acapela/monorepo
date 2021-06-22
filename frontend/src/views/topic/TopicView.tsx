@@ -16,6 +16,7 @@ import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
+import { TopicStoreContext } from "../../topics/TopicStore";
 
 interface Props {
   topicId: string;
@@ -48,7 +49,7 @@ export const TopicView = ({ topicId }: Props) => {
   const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
   return (
-    <>
+    <TopicStoreContext topicId={topicId}>
       {hasTopic && (
         <TopicRoot>
           {/* We need to render the topic header or else flex bugs out on page reload */}
@@ -74,7 +75,7 @@ export const TopicView = ({ topicId }: Props) => {
           )}
         </TopicRoot>
       )}
-    </>
+    </TopicStoreContext>
   );
 };
 

@@ -9,12 +9,14 @@ import {
   MessageDetailedInfoFragment as MessageDetailedInfoFragmentType,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
+  MessageQuery,
+  MessageQueryVariables,
 } from "~gql";
 import { getUUID } from "~shared/uuid";
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { topicMessagesQueryManager } from "./topics";
 import { UserBasicInfoFragment } from "./user";
-import { createFragment, createMutation } from "./utils";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(
   () => gql`
@@ -144,6 +146,17 @@ export const [useDeleteTextMessageMutation] = createMutation<
         message: returning {
           id
         }
+      }
+    }
+  `
+);
+
+export const [useMessageQuery, messageQueryManager] = createQuery<MessageQuery, MessageQueryVariables>(
+  () => gql`
+    ${MessageDetailedInfoFragment()}
+    query Message($id: uuid!) {
+      message: message_by_pk(id: $id) {
+        ...MessageDetailedInfo
       }
     }
   `

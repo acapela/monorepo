@@ -1147,6 +1147,7 @@ export interface Message {
   message_attachments_aggregate: Message_Attachment_Aggregate;
   /** An object relationship */
   message_type: Message_Type;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
   /** An object relationship */
   topic: Topic;
   topic_id: Scalars['uuid'];
@@ -1388,6 +1389,7 @@ export interface Message_Bool_Exp {
   is_draft?: Maybe<Boolean_Comparison_Exp>;
   message_attachments?: Maybe<Message_Attachment_Bool_Exp>;
   message_type?: Maybe<Message_Type_Bool_Exp>;
+  replied_to_message_id?: Maybe<Uuid_Comparison_Exp>;
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   transcription?: Maybe<Transcription_Bool_Exp>;
@@ -1556,6 +1558,7 @@ export interface Message_Insert_Input {
   is_draft?: Maybe<Scalars['Boolean']>;
   message_attachments?: Maybe<Message_Attachment_Arr_Rel_Insert_Input>;
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription?: Maybe<Transcription_Obj_Rel_Insert_Input>;
@@ -1570,6 +1573,7 @@ export interface Message_Max_Fields {
   __typename?: 'message_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -1579,6 +1583,7 @@ export interface Message_Max_Fields {
 export interface Message_Max_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -1589,6 +1594,7 @@ export interface Message_Min_Fields {
   __typename?: 'message_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
@@ -1598,6 +1604,7 @@ export interface Message_Min_Fields {
 export interface Message_Min_Order_By {
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
@@ -1633,6 +1640,7 @@ export interface Message_Order_By {
   is_draft?: Maybe<Order_By>;
   message_attachments_aggregate?: Maybe<Message_Attachment_Aggregate_Order_By>;
   message_type?: Maybe<Message_Type_Order_By>;
+  replied_to_message_id?: Maybe<Order_By>;
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   transcription?: Maybe<Transcription_Order_By>;
@@ -1663,6 +1671,8 @@ export type Message_Select_Column =
   /** column name */
   | 'is_draft'
   /** column name */
+  | 'replied_to_message_id'
+  /** column name */
   | 'topic_id'
   /** column name */
   | 'transcription_id'
@@ -1677,6 +1687,7 @@ export interface Message_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_draft?: Maybe<Scalars['Boolean']>;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   transcription_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
@@ -1841,6 +1852,8 @@ export type Message_Update_Column =
   | 'id'
   /** column name */
   | 'is_draft'
+  /** column name */
+  | 'replied_to_message_id'
   /** column name */
   | 'topic_id'
   /** column name */
@@ -8429,6 +8442,19 @@ export type DeleteTextMessageMutation = (
   )> }
 );
 
+export type MessageQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type MessageQuery = (
+  { __typename?: 'query_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & MessageDetailedInfoFragment
+  )> }
+);
+
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline' | 'summary' | 'finished_at'>
@@ -9313,7 +9339,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_type' | 'replied_to_message_id' | 'topic' | 'topic_id' | 'transcription' | 'transcription_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9322,6 +9348,7 @@ export type messageFieldPolicy = {
 	message_attachments?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_attachments_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
+	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9415,18 +9442,20 @@ export type message_full_text_min_fieldsFieldPolicy = {
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'topic_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'transcription_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'topic_id' | 'transcription_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'transcription_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>

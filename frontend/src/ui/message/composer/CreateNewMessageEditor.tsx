@@ -8,6 +8,8 @@ import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
+import { useTopicStore } from "~frontend/topics/TopicStore";
+import { ReplyingToMessage } from "../ReplyingToMessage";
 
 interface Props {
   topicId: string;
@@ -16,6 +18,11 @@ interface Props {
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<EditorContent>([]);
+
+  const [{ currentlyReplyingToMessageId }, updateTopicState] = useTopicStore();
+  const handlStopReplyingToMessage = () => {
+    updateTopicState((draft) => (draft.currentlyReplyingToMessageId = null));
+  };
 
   async function handleNewFiles(files: File[]) {
     const uploadedAttachments = await uploadFiles(files);
@@ -65,6 +72,11 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
             return existingAttachment.uuid !== attachmentId;
           });
         }}
+        replyingToMessage={
+          currentlyReplyingToMessageId ? (
+            <ReplyingToMessage onRemove={handlStopReplyingToMessage} id={currentlyReplyingToMessageId} />
+          ) : null
+        }
       />
     </UIEditorContainer>
   );

@@ -14,6 +14,7 @@ interface Props {
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
   hideEditorSubmitButton?: boolean;
+  replyingToMessage?: React.ReactNode;
 }
 
 export const MessageContentEditor = ({
@@ -25,6 +26,7 @@ export const MessageContentEditor = ({
   onFilesSelected,
   onAttachmentRemoveRequest,
   hideEditorSubmitButton,
+  replyingToMessage = null,
 }: Props) => {
   return (
     <RichEditor
@@ -36,19 +38,22 @@ export const MessageContentEditor = ({
       autofocusKey={autofocusKey}
       hideSubmitButton={hideEditorSubmitButton}
       additionalContent={
-        attachments.length > 0 && (
-          <UIAttachmentsPreviews>
-            {attachments.map((attachment) => {
-              return (
-                <AttachmentPreview
-                  id={attachment.uuid}
-                  key={attachment.uuid}
-                  onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
-                />
-              );
-            })}
-          </UIAttachmentsPreviews>
-        )
+        <>
+          {replyingToMessage}
+          {attachments.length > 0 && (
+            <UIAttachmentsPreviews>
+              {attachments.map((attachment) => {
+                return (
+                  <AttachmentPreview
+                    id={attachment.uuid}
+                    key={attachment.uuid}
+                    onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
+                  />
+                );
+              })}
+            </UIAttachmentsPreviews>
+          )}
+        </>
       }
     />
   );

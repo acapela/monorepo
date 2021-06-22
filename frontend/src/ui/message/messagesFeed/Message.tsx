@@ -12,6 +12,7 @@ import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
+import { useTopicStore } from "~frontend/topics/TopicStore";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -22,6 +23,11 @@ export const Message = styled(({ message, className }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
+
+  const [, updateTopicState] = useTopicStore();
+  async function handleReply() {
+    updateTopicState((draft) => (draft.currentlyReplyingToMessageId = message.id));
+  }
 
   const [isActive, setIsActive] = useState(false);
   const holderRef = useRef<HTMLDivElement>(null);
@@ -48,6 +54,7 @@ export const Message = styled(({ message, className }: Props) => {
             onActiveChange={setIsActive}
             onEditRequest={enableEditMode}
             onRemoveRequest={handleRemove}
+            onReplyRequest={handleReply}
           />
         )
       }
