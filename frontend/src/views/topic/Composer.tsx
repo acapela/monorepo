@@ -23,7 +23,10 @@ interface Props {
 export const MessageComposer = ({ topicId }: Props) => {
   const [createMessage] = useCreateMessageMutation();
 
-  const [{ currentlyReplyingToMessageId }] = useTopicStore();
+  const [{ currentlyReplyingToMessageId }, updateTopicState] = useTopicStore();
+  const handlStopReplyingToMessage = () => {
+    updateTopicState((draft) => (draft.currentlyReplyingToMessageId = null));
+  };
 
   const [attachments, attachmentsList] = useList<ComposerAttachment>([]);
   const [value, setValue] = useState<EditorContent>([]);
@@ -88,7 +91,9 @@ export const MessageComposer = ({ topicId }: Props) => {
         autoFocusKey={topicId}
         additionalContent={
           <>
-            {currentlyReplyingToMessageId && <ReplyingToMessage id={currentlyReplyingToMessageId} />}
+            {currentlyReplyingToMessageId && (
+              <ReplyingToMessage onRemove={handlStopReplyingToMessage} id={currentlyReplyingToMessageId} />
+            )}
             {attachments.length > 0 && (
               <UIAttachmentsPreviews>
                 {attachments.map((attachment, index) => {
