@@ -117,9 +117,6 @@ export const RoomFilters = styled(function RecentTopicFilters({
 const UIHolder = styled.div`
   display: flex;
   column-gap: 8px;
-
-  ${Button} {
-    /* Enforces all of filter buttons to be same size regardless of Icon sizes within */
-    height: 52px;
-  }
+  height: 52px;
+  align-items: stretch;
 `;
