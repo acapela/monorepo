@@ -110,6 +110,9 @@
     schema: public
     name: message
   object_relationships:
+    - name: message
+      using:
+        foreign_key_constraint_on: replied_to_message_id
     - name: message_type
       using:
         foreign_key_constraint_on: type
