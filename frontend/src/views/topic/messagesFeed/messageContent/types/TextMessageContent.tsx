@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~gql";
@@ -7,6 +7,8 @@ import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 import { richEditorContentCss } from "~richEditor/Theme";
+import { useEqualEffect } from "~shared/hooks/useEqualEffect";
+import { useShortcut } from "~frontend/../../ui/keyboard/useShortcut";
 
 interface Props {
   message: TopicMessageDetailedInfoFragment;
@@ -32,9 +34,20 @@ export function MessageText({ message, isInEditMode, onEditRequest, onEditCancel
   // version of content as a local state.
   const [dirtyContent, setDirtyContent] = useState<EditorContent>(message.content);
 
-  useEffect(() => {
+  useEqualEffect(() => {
+    // If in edit mode - never change the content even if it changed. It would erase current user edits.
+    if (isInEditMode) {
+      return;
+    }
+
     setDirtyContent(message.content);
-  }, [message.content, isInEditMode]);
+  }, [message.content]);
+
+  useShortcut("Escape", () => {
+    if (isInEditMode) {
+      onEditCancelRequest();
+    }
+  });
 
   if (!isInEditMode) {
     return <UIHolder>{renderMessageContent(message)}</UIHolder>;
