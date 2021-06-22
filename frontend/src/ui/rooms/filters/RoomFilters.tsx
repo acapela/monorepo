@@ -39,7 +39,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
   className,
   initialFilters = [],
 }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>();
+  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>(initialFilters);
 
   function removeFilter(filterToRemove: RoomFilter) {
     applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
@@ -60,10 +60,6 @@ export const RoomFilters = styled(function RecentTopicFilters({
   useEffect(() => {
     onFiltersChange(filters);
   }, [filters]);
-
-  useEffect(() => {
-    initialFilters.forEach(handleAddFilter);
-  }, []);
 
   const [stage, setStage] = useState<FilterPickingStage>("off");
   const buttonRef = useRef<HTMLButtonElement>(null);

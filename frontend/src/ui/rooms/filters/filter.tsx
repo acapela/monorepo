@@ -68,11 +68,11 @@ export function getRoomVariablesFromFilters(teamId: string, filters: RoomFilter[
   };
 }
 
-export function useRoomFilterVariables(baseFilters?: RoomFilter[]) {
+export function useRoomFilterVariables(forcedFilters?: RoomFilter[]) {
   const [filters, setFilters] = useState<RoomFilter[]>([]);
   const teamId = useAssertCurrentTeamId();
 
-  const variables = getRoomVariablesFromFilters(teamId, [...filters, ...(baseFilters ?? [])]);
+  const variables = getRoomVariablesFromFilters(teamId, [...filters, ...(forcedFilters ?? [])]);
 
   return [variables, setFilters] as const;
 }
