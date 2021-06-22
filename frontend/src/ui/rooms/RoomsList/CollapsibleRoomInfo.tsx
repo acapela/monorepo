@@ -16,8 +16,8 @@ import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { formatNumberWithMaxCallback } from "~shared/numbers";
-import { ElementNotificationBadge } from "../../ElementNotificationBadge";
+import { formatNumberWithMaxValue } from "~shared/numbers";
+import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -49,7 +49,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   return (
     <UIHolder className={className}>
       {unreadNotificationsCount > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadNotificationsCount, 99)}</ElementNotificationBadge>
+        <ElementNotificationBadge>{formatNumberWithMaxValue(unreadNotificationsCount, 99)}</ElementNotificationBadge>
       )}
       <UICollapseHolder isOpened={isOpen}>
         <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />

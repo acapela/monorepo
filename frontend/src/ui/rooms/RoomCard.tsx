@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { RoomDetailedInfoFragment } from "~gql";
 import { routes } from "~frontend/routes";
-import { formatNumberWithMaxCallback, pluralize } from "~shared/numbers";
+import { formatNumberWithMaxValue, pluralize } from "~shared/numbers";
 import { ItemTitle, SecondaryText } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -33,7 +33,7 @@ export const RoomCard = styled(function RoomCard({ room, className }: Props) {
     <UIHolder onClick={handleOpen} className={className}>
       {amIMember && <CornerOptionsMenu options={getRoomManagePopoverOptions(room)} tooltip="Show options..." />}
       {amIMember && unreadCount > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxCallback(unreadCount, 99)}</ElementNotificationBadge>
+        <ElementNotificationBadge>{formatNumberWithMaxValue(unreadCount, 99)}</ElementNotificationBadge>
       )}
       <ItemTitle>{room.name}</ItemTitle>
       <SecondaryText>{pluralize(topicsCount, "topic", "topics")}</SecondaryText>

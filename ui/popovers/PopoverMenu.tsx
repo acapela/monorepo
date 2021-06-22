@@ -23,7 +23,7 @@ export interface PopoverMenuOption {
   icon?: ReactNode;
   isDisabled?: boolean;
   isDestructive?: boolean;
-  onSelect: () => void;
+  onSelect?: () => void;
 }
 
 export const PopoverMenu = styled(
@@ -39,11 +39,12 @@ export const PopoverMenu = styled(
                 <UIMenuItem
                   isDestructive={option.isDestructive ?? false}
                   isDisabled={option.isDisabled ?? false}
+                  isClickable={!!option.onSelect}
                   key={option.key ?? option.label}
                   onClick={() => {
                     onItemSelected?.(option);
                     onCloseRequest?.();
-                    option.onSelect();
+                    option.onSelect?.();
                   }}
                 >
                   {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}
@@ -69,17 +70,21 @@ export const UIPopoverMenuModal = styled(PopPresenceAnimator)`
   min-width: 200px;
 `;
 
-const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean }>`
+const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isClickable: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 4px 8px;
-  cursor: pointer;
 
   font-size: 1rem;
   line-height: 2em;
 
-  ${hoverActionCss}
+  ${(props) =>
+    props.isClickable &&
+    css`
+      ${hoverActionCss};
+      cursor: pointer;
+    `}
 
   ${(props) =>
     props.isDisabled &&
