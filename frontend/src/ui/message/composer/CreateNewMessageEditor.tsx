@@ -10,9 +10,16 @@ import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
 import { useTopicStore } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "../ReplyingToMessage";
+import { Message_Type_Enum } from "~frontend/../../gql";
 
 interface Props {
   topicId: string;
+}
+
+interface SubmitMessageParams {
+  type: Message_Type_Enum;
+  content: EditorContent;
+  attachments: EditorAttachmentInfo[];
 }
 
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
@@ -30,6 +37,20 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
     attachmentsList.push(...uploadedAttachments);
   }
 
+  const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
+    await createMessage({
+      topicId,
+      type,
+      content,
+      attachments: attachments.map((attachment) => ({
+        attachment_id: attachment.uuid,
+      })),
+      replied_to_message_id: currentlyReplyingToMessageId,
+    });
+
+    handlStopReplyingToMessage();
+  };
+
   return (
     <UIEditorContainer>
       <Recorder
@@ -38,14 +59,10 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
 
           const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-          await createMessage({
-            topicId: topicId,
+          await submitMessage({
             type: messageType,
             content: [],
-            attachments: uploadedAttachments.map((attachment) => ({
-              attachment_id: attachment.uuid,
-            })),
-            replied_to_message_id: currentlyReplyingToMessageId,
+            attachments: uploadedAttachments,
           });
         }}
       />
@@ -53,14 +70,10 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
-          await createMessage({
-            topicId: topicId,
+          await submitMessage({
             type: "TEXT",
             content: value,
-            attachments: attachments.map((attachment) => ({
-              attachment_id: attachment.uuid,
-            })),
-            replied_to_message_id: currentlyReplyingToMessageId,
+            attachments,
           });
 
           attachmentsList.clear();
