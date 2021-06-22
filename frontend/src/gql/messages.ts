@@ -5,8 +5,8 @@ import {
   CreateMessageMutationVariables,
   DeleteTextMessageMutation,
   DeleteTextMessageMutationVariables,
-  TopicMessageBasicInfoFragment as TopicMessageBasicInfoFragmentType,
-  TopicMessageDetailedInfoFragment as TopicMessageDetailedInfoFragmentType,
+  MessageBasicInfoFragment as MessageBasicInfoFragmentType,
+  MessageDetailedInfoFragment as MessageDetailedInfoFragmentType,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
 } from "~gql";
@@ -16,10 +16,10 @@ import { topicMessagesQueryManager } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
-export const TopicMessageBasicInfoFragment = createFragment<TopicMessageBasicInfoFragmentType>(
+export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(
   () => gql`
     ${UserBasicInfoFragment()}
-    fragment TopicMessageBasicInfo on message {
+    fragment MessageBasicInfo on message {
       id
       createdAt: created_at
       content
@@ -30,12 +30,12 @@ export const TopicMessageBasicInfoFragment = createFragment<TopicMessageBasicInf
   `
 );
 
-export const TopicMessageDetailedInfoFragment = createFragment<TopicMessageDetailedInfoFragmentType>(
+export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFragmentType>(
   () => gql`
     ${AttachmentDetailedInfoFragment()}
     ${UserBasicInfoFragment()}
 
-    fragment TopicMessageDetailedInfo on message {
+    fragment MessageDetailedInfo on message {
       id
       content
       createdAt: created_at
@@ -62,7 +62,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
   CreateMessageMutationVariables
 >(
   () => gql`
-    ${TopicMessageDetailedInfoFragment()}
+    ${MessageDetailedInfoFragment()}
 
     mutation CreateMessage(
       $topicId: uuid!
@@ -79,7 +79,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           is_draft: false
         }
       ) {
-        ...TopicMessageDetailedInfo
+        ...MessageDetailedInfo
       }
     }
   `,
@@ -122,12 +122,12 @@ export const [useUpdateTextMessageMutation, { mutate: updateTextMessage }] = cre
   UpdateTextMessageMutationVariables
 >(
   () => gql`
-    ${TopicMessageBasicInfoFragment()}
+    ${MessageBasicInfoFragment()}
 
     mutation UpdateTextMessage($id: uuid!, $content: jsonb!, $isDraft: Boolean!) {
       update_message(where: { id: { _eq: $id } }, _set: { content: $content, is_draft: $isDraft }) {
         message: returning {
-          ...TopicMessageBasicInfo
+          ...MessageBasicInfo
         }
       }
     }

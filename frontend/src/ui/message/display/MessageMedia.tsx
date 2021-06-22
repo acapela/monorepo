@@ -1,12 +1,12 @@
 import styled from "styled-components";
-import { TopicMessageDetailedInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
 import { removeMessageAttachment } from "~frontend/gql/attachments";
 // import { AttachmentWithTranscription } from "./AttachmentWithTranscription";
 
 interface Props {
-  message: TopicMessageDetailedInfoFragment;
+  message: MessageDetailedInfoFragment;
 }
 
 export function MessageMedia({ message }: Props) {

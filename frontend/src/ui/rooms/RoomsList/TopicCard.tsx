@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
-import { TopicDetailedInfoFragment, TopicMessageBasicInfoFragment } from "~gql";
+import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
 import { TextTitle } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
@@ -16,7 +16,7 @@ interface Props {
   className?: string;
 }
 
-function renderMessageContent(message: TopicMessageBasicInfoFragment) {
+function renderMessageContent(message: MessageBasicInfoFragment) {
   try {
     const converter = new QuillDeltaToHtmlConverter(message.content, {});
 

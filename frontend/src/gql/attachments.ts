@@ -9,48 +9,11 @@ import {
   RemoveMessageAttachmentMutationVariables,
   AddMessageAttachmentMutation,
   AddMessageAttachmentMutationVariables,
-  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
   UploadUrlQuery,
   UploadUrlQueryVariables,
 } from "~gql";
-import { TopicMessageDetailedInfoFragment } from "./messages";
-import { RoomBasicInfoFragment } from "./rooms";
-import { UserBasicInfoFragment } from "./user";
+import { MessageDetailedInfoFragment } from "./messages";
 import { createFragment, createMutation, createQuery } from "./utils";
-
-export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-    ${RoomBasicInfoFragment()}
-
-    fragment TopicDetailedInfo on topic {
-      id
-      name
-      index
-      slug
-      closed_at
-      closing_summary
-      closed_by_user {
-        ...UserBasicInfo
-      }
-      room {
-        ...RoomBasicInfo
-      }
-      members {
-        user {
-          ...UserBasicInfo
-        }
-      }
-      lastMessage: messages_aggregate {
-        aggregate {
-          max {
-            created_at
-          }
-        }
-      }
-    }
-  `
-);
 
 export const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedInfoFragmentType>(
   () => gql`
@@ -105,7 +68,7 @@ export const [useRemoveMessageAttachment, { mutate: removeMessageAttachment }] =
       };
     },
     onResult(message, variables) {
-      TopicMessageDetailedInfoFragment.update(variables.messageId, (message) => {
+      MessageDetailedInfoFragment.update(variables.messageId, (message) => {
         message.message_attachments = message.message_attachments.filter((messageAttachment) => {
           return messageAttachment.attachment.id !== variables.attachmentId;
         });

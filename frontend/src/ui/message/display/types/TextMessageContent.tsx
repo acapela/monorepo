@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { TopicMessageBasicInfoFragment, TopicMessageDetailedInfoFragment } from "~gql";
+import { MessageBasicInfoFragment, MessageDetailedInfoFragment } from "~gql";
 import { richEditorContentCss } from "~richEditor/Theme";
 
 interface Props {
-  message: TopicMessageDetailedInfoFragment;
+  message: MessageDetailedInfoFragment;
 }
 
-function renderMessageContent(message: TopicMessageBasicInfoFragment) {
+function renderMessageContent(message: MessageBasicInfoFragment) {
   try {
     const converter = new QuillDeltaToHtmlConverter(message.content, {});
 

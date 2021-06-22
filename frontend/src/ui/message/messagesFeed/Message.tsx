@@ -4,7 +4,7 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
-import { TopicMessageDetailedInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { MessageActions } from "~frontend/ui/message/display/MessageActions";
@@ -14,7 +14,7 @@ import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
 
 interface Props extends MotionProps {
-  message: TopicMessageDetailedInfoFragment;
+  message: MessageDetailedInfoFragment;
   className?: string;
 }
 

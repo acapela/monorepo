@@ -8238,33 +8238,6 @@ export type RoomsTestQueryQuery = (
   )> }
 );
 
-export type TopicDetailedInfoFragment = (
-  { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
-  & { closed_by_user?: Maybe<(
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  )>, room: (
-    { __typename?: 'room' }
-    & RoomBasicInfoFragment
-  ), members: Array<(
-    { __typename?: 'topic_member' }
-    & { user: (
-      { __typename?: 'user' }
-      & UserBasicInfoFragment
-    ) }
-  )>, lastMessage: (
-    { __typename?: 'message_aggregate' }
-    & { aggregate?: Maybe<(
-      { __typename?: 'message_aggregate_fields' }
-      & { max?: Maybe<(
-        { __typename?: 'message_max_fields' }
-        & Pick<Message_Max_Fields, 'created_at'>
-      )> }
-    )> }
-  ) }
-);
-
 export type AttachmentDetailedInfoFragment = (
   { __typename?: 'attachment' }
   & Pick<Attachment, 'id'>
@@ -8377,7 +8350,7 @@ export type AcceptInviteMutation = (
   )> }
 );
 
-export type TopicMessageBasicInfoFragment = (
+export type MessageBasicInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content'>
   & { createdAt: Message['created_at'] }
@@ -8387,7 +8360,7 @@ export type TopicMessageBasicInfoFragment = (
   ) }
 );
 
-export type TopicMessageDetailedInfoFragment = (
+export type MessageDetailedInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
@@ -8418,7 +8391,7 @@ export type CreateMessageMutation = (
   { __typename?: 'mutation_root' }
   & { message?: Maybe<(
     { __typename?: 'message' }
-    & TopicMessageDetailedInfoFragment
+    & MessageDetailedInfoFragment
   )> }
 );
 
@@ -8435,7 +8408,7 @@ export type UpdateTextMessageMutation = (
     { __typename?: 'message_mutation_response' }
     & { message: Array<(
       { __typename?: 'message' }
-      & TopicMessageBasicInfoFragment
+      & MessageBasicInfoFragment
     )> }
   )> }
 );
@@ -8875,6 +8848,33 @@ export type TeamInvitationQuery = (
   )> }
 );
 
+export type TopicDetailedInfoFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
+  & { closed_by_user?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, room: (
+    { __typename?: 'room' }
+    & RoomBasicInfoFragment
+  ), members: Array<(
+    { __typename?: 'topic_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & UserBasicInfoFragment
+    ) }
+  )>, lastMessage: (
+    { __typename?: 'message_aggregate' }
+    & { aggregate?: Maybe<(
+      { __typename?: 'message_aggregate_fields' }
+      & { max?: Maybe<(
+        { __typename?: 'message_max_fields' }
+        & Pick<Message_Max_Fields, 'created_at'>
+      )> }
+    )> }
+  ) }
+);
+
 export type CreateTopicMutationVariables = Exact<{
   name: Scalars['String'];
   roomId: Scalars['uuid'];
@@ -8916,7 +8916,7 @@ export type TopicMessagesQuery = (
   { __typename?: 'query_root' }
   & { messages: Array<(
     { __typename?: 'message' }
-    & TopicMessageDetailedInfoFragment
+    & MessageDetailedInfoFragment
   )> }
 );
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { TopicMessageDetailedInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { EditorContent } from "~richEditor/RichEditor";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
@@ -14,7 +14,7 @@ import { makePromiseVoidable } from "~shared/promises";
 import { useShortcut } from "~frontend/../../ui/keyboard/useShortcut";
 
 interface Props {
-  message: TopicMessageDetailedInfoFragment;
+  message: MessageDetailedInfoFragment;
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
