@@ -43,6 +43,7 @@ export interface RichEditorProps {
   additionalContent?: ReactNode;
   placeholder?: string;
   autofocusKey?: string;
+  hideSubmitButton?: boolean;
 }
 
 const ENTER_KEYCODE = 13;
@@ -70,6 +71,7 @@ export const RichEditor = ({
   additionalContent,
   placeholder,
   autofocusKey,
+  hideSubmitButton,
 }: RichEditorProps) => {
   const quillRef = useRef<ReactQuill>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -193,6 +195,7 @@ export const RichEditor = ({
             onSubmit={handleSubmitIfNotEmpty}
             onFilesSelected={onFilesSelected}
             onEmojiSelected={insertEmoji}
+            hideSubmitButton={hideSubmitButton}
           />
         </UIEditorHolder>
       </RichEditorContext>

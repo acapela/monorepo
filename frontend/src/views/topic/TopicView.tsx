@@ -10,15 +10,15 @@ import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
-import { MessageComposer } from "./Composer";
-import { MessagesFeed } from "./messagesFeed/MessagesFeed";
-import { TopicSummaryMessage } from "./messagesFeed/TopicSummary";
+import { TopicSummaryMessage } from "./TopicSummary";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
+import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
+import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 
 interface Props {
-  id: string;
+  topicId: string;
 }
 
 function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]) {
@@ -35,15 +35,15 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
   }, [messages]);
 }
 
-export const TopicView = ({ id }: Props) => {
-  const [topic] = useSingleTopicQuery({ id });
+export const TopicView = ({ topicId }: Props) => {
+  const [topic] = useSingleTopicQuery({ id: topicId });
   const [messages = []] = useTopicMessagesQuery({
-    topicId: id,
+    topicId: topicId,
   });
 
   const isMember = isCurrentUserRoomMember(topic?.room);
 
-  useMarkTopicAsRead(id, messages);
+  useMarkTopicAsRead(topicId, messages);
 
   const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
@@ -68,7 +68,7 @@ export const TopicView = ({ id }: Props) => {
           {!isTopicClosed && (
             <ClientSideOnly>
               <UIMessageComposer isDisabled={!isMember}>
-                <MessageComposer topicId={id} />
+                <CreateNewMessageEditor topicId={topicId} />
               </UIMessageComposer>
             </ClientSideOnly>
           )}

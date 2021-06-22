@@ -8,7 +8,7 @@ import { borderRadius } from "~ui/baseStyles";
 export const ATTACHMENT_PREVIEW_HEIGHT_PX = 120;
 
 interface AttachmentProps {
-  mediaRef: Ref<HTMLVideoElement>;
+  mediaRef?: Ref<HTMLVideoElement>;
   attachment: AttachmentDetailedInfoFragment;
   attachmentUrl: string;
   className?: string;

@@ -4,7 +4,7 @@ module.exports = {
     excludes: ["./gql/generated.ts"],
     service: {
       name: "hasura-graphql",
-      localSchemaFile: "./tooling/schema.graphql",
+      localSchemaFile: "./gql/schema.graphql",
     },
   },
 };

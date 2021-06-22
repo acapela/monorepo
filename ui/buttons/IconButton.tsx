@@ -1,24 +1,26 @@
 import styled from "styled-components";
-import { hoverActionCss } from "../transitions";
+import { getButtonColorStyles, hoverActionCss } from "../transitions";
 import { ReactNode } from "react";
 import { borderRadius } from "~ui/baseStyles";
+import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
 interface Props {
   icon: ReactNode;
   onClick?: () => void;
   className?: string;
   tooltip?: string;
+  isPrimary?: boolean;
 }
 
-export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip }: Props) {
+export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip, isPrimary = false }: Props) {
   return (
-    <UIHolder data-tooltip={tooltip} onClick={onClick} className={className}>
+    <UIHolder data-tooltip={tooltip} onClick={onClick} className={className} isPrimary={isPrimary}>
       <UIIconHolder>{icon}</UIIconHolder>
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled.button`
+const UIHolder = styled.button<{ isPrimary: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -36,7 +38,13 @@ const UIHolder = styled.button`
 
   font-size: 1.5rem;
 
-  ${hoverActionCss};
+  ${(props) => {
+    if (!props.isPrimary) {
+      return hoverActionCss;
+    }
+
+    return getButtonColorStyles(BUTTON_BACKGROUND_COLOR);
+  }}
 
   svg {
     font-size: 1em;

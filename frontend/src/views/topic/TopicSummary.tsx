@@ -4,8 +4,8 @@ import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
 import { getTopicCloseInfo } from "~frontend/topics/useTopic";
 import { TopicDetailedInfoFragment } from "~gql";
-import { MessageLikeContent } from "./MessageLikeContent";
 import { borderRadius } from "~ui/baseStyles";
+import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

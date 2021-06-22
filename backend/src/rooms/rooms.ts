@@ -6,17 +6,6 @@ export async function findRoomById(roomId: string): Promise<Room | null> {
   });
 }
 
-// Used in tests
-export async function createRoom({ creatorId, name }: { creatorId: string; name: string }): Promise<Room> {
-  return await db.room.create({
-    data: {
-      creator_id: creatorId,
-      name,
-      slug: name,
-    },
-  });
-}
-
 export async function addRoomParticipant(roomId: string, participantId: string): Promise<RoomParticipants> {
   return await db.room_member.create({
     data: {

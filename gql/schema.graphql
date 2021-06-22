@@ -422,6 +422,66 @@ columns and relationships of "attachment"
 type attachment {
   created_at: timestamptz!
   id: uuid!
+
+  """
+  An array relationship
+  """
+  message_attachments(
+    """
+    distinct select on columns
+    """
+    distinct_on: [message_attachment_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [message_attachment_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: message_attachment_bool_exp
+  ): [message_attachment!]!
+
+  """
+  An aggregated array relationship
+  """
+  message_attachments_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [message_attachment_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [message_attachment_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: message_attachment_bool_exp
+  ): message_attachment_aggregate!
   mime_type: String!
   original_name: String!
 }
@@ -469,6 +529,7 @@ input attachment_bool_exp {
   _or: [attachment_bool_exp]
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
+  message_attachments: message_attachment_bool_exp
   mime_type: String_comparison_exp
   original_name: String_comparison_exp
 }
@@ -494,6 +555,7 @@ input type for inserting data into table "attachment"
 input attachment_insert_input {
   created_at: timestamptz
   id: uuid
+  message_attachments: message_attachment_arr_rel_insert_input
   mime_type: String
   original_name: String
 }
@@ -576,6 +638,7 @@ ordering options when selecting data from "attachment"
 input attachment_order_by {
   created_at: order_by
   id: order_by
+  message_attachments_aggregate: message_attachment_aggregate_order_by
   mime_type: order_by
   original_name: order_by
 }
@@ -4832,66 +4895,6 @@ type query_root {
   room_invites_by_pk(id: uuid!): room_invites
 
   """
-  fetch data from the table: "room_last_posted_message"
-  """
-  room_last_posted_message(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_last_posted_message_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_last_posted_message_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_last_posted_message_bool_exp
-  ): [room_last_posted_message!]!
-
-  """
-  fetch aggregated fields from the table: "room_last_posted_message"
-  """
-  room_last_posted_message_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_last_posted_message_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_last_posted_message_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_last_posted_message_bool_exp
-  ): room_last_posted_message_aggregate!
-
-  """
   fetch data from the table: "room_member"
   """
   room_member(
@@ -5948,11 +5951,6 @@ type room {
   id: uuid!
 
   """
-  An object relationship
-  """
-  last_posted_message: room_last_posted_message
-
-  """
   An array relationship
   """
   members(
@@ -6190,7 +6188,6 @@ input room_bool_exp {
   deadline: timestamptz_comparison_exp
   finished_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
-  last_posted_message: room_last_posted_message_bool_exp
   members: room_member_bool_exp
   name: String_comparison_exp
   notification_job_id: String_comparison_exp
@@ -6548,113 +6545,6 @@ enum room_invites_update_column {
 }
 
 """
-columns and relationships of "room_last_posted_message"
-"""
-type room_last_posted_message {
-  last_posted_message_time: timestamptz
-
-  """
-  An object relationship
-  """
-  room: room
-  room_id: uuid
-}
-
-"""
-aggregated selection of "room_last_posted_message"
-"""
-type room_last_posted_message_aggregate {
-  aggregate: room_last_posted_message_aggregate_fields
-  nodes: [room_last_posted_message!]!
-}
-
-"""
-aggregate fields of "room_last_posted_message"
-"""
-type room_last_posted_message_aggregate_fields {
-  count(columns: [room_last_posted_message_select_column!], distinct: Boolean): Int
-  max: room_last_posted_message_max_fields
-  min: room_last_posted_message_min_fields
-}
-
-"""
-order by aggregate values of table "room_last_posted_message"
-"""
-input room_last_posted_message_aggregate_order_by {
-  count: order_by
-  max: room_last_posted_message_max_order_by
-  min: room_last_posted_message_min_order_by
-}
-
-"""
-Boolean expression to filter rows from the table "room_last_posted_message". All fields are combined with a logical 'AND'.
-"""
-input room_last_posted_message_bool_exp {
-  _and: [room_last_posted_message_bool_exp]
-  _not: room_last_posted_message_bool_exp
-  _or: [room_last_posted_message_bool_exp]
-  last_posted_message_time: timestamptz_comparison_exp
-  room: room_bool_exp
-  room_id: uuid_comparison_exp
-}
-
-"""
-aggregate max on columns
-"""
-type room_last_posted_message_max_fields {
-  last_posted_message_time: timestamptz
-  room_id: uuid
-}
-
-"""
-order by max() on columns of table "room_last_posted_message"
-"""
-input room_last_posted_message_max_order_by {
-  last_posted_message_time: order_by
-  room_id: order_by
-}
-
-"""
-aggregate min on columns
-"""
-type room_last_posted_message_min_fields {
-  last_posted_message_time: timestamptz
-  room_id: uuid
-}
-
-"""
-order by min() on columns of table "room_last_posted_message"
-"""
-input room_last_posted_message_min_order_by {
-  last_posted_message_time: order_by
-  room_id: order_by
-}
-
-"""
-ordering options when selecting data from "room_last_posted_message"
-"""
-input room_last_posted_message_order_by {
-  last_posted_message_time: order_by
-  room: room_order_by
-  room_id: order_by
-}
-
-"""
-select columns of table "room_last_posted_message"
-"""
-enum room_last_posted_message_select_column {
-  """
-  column name
-  """
-  last_posted_message_time
-
-  """
-  column name
-  """
-  room_id
-}
-
-"""
 aggregate max on columns
 """
 type room_max_fields {
@@ -6969,7 +6859,6 @@ input room_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
-  last_posted_message: room_last_posted_message_order_by
   members_aggregate: room_member_aggregate_order_by
   name: order_by
   notification_job_id: order_by
@@ -8435,66 +8324,6 @@ type subscription_root {
   fetch data from the table: "room_invites" using primary key columns
   """
   room_invites_by_pk(id: uuid!): room_invites
-
-  """
-  fetch data from the table: "room_last_posted_message"
-  """
-  room_last_posted_message(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_last_posted_message_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_last_posted_message_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_last_posted_message_bool_exp
-  ): [room_last_posted_message!]!
-
-  """
-  fetch aggregated fields from the table: "room_last_posted_message"
-  """
-  room_last_posted_message_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_last_posted_message_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_last_posted_message_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_last_posted_message_bool_exp
-  ): room_last_posted_message_aggregate!
 
   """
   fetch data from the table: "room_member"

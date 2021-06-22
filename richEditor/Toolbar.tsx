@@ -25,10 +25,11 @@ interface Props {
   onSubmit?: () => void;
   quillRef: RefObject<ReactQuill>;
   onEmojiSelected: (emoji: string) => void;
+  hideSubmitButton?: boolean;
 }
 
 export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
-  { onFilesSelected, onSubmit, onEmojiSelected },
+  { onFilesSelected, onSubmit, onEmojiSelected, hideSubmitButton },
   ref
 ) {
   const isEmpty = useRichEditorIsEmpty();
@@ -65,7 +66,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         </FileInput>
 
         {/* Only show submit button if onSubmit callback is provided */}
-        {onSubmit && (
+        {!hideSubmitButton && !!onSubmit && (
           <ToolbarButton
             isDisabled={isEmpty}
             isHighlighted={!isEmpty}
