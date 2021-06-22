@@ -87,7 +87,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
             return existingAttachment.uuid !== attachmentId;
           });
         }}
-        replyingToMessage={
+        additionalContent={
           currentlyReplyingToMessageId ? (
             <ReplyingToMessage onRemove={handlStopReplyingToMessage} id={currentlyReplyingToMessageId} />
           ) : null
