@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronRight } from "~ui/icons";
+import { IconChevronDown, IconChevronRight } from "~ui/icons";
 import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -18,6 +18,7 @@ import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxValue } from "~shared/numbers";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { UICardListItem } from "./shared";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -27,12 +28,17 @@ interface Props {
 
 const RoomLink = routes.spaceRoom.Link;
 
+const INITIAL_TOPICS_SHOWN_LIMIT = 5;
+const TOPICS_SHOWN_NO_LIMIT = Number.POSITIVE_INFINITY;
+
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   // TODO: optimize !!
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const [shownTopicsLimit, setShownTopicsLimit] = useState(INITIAL_TOPICS_SHOWN_LIMIT);
 
   const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
 
@@ -48,6 +54,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   }
 
   const isRoomOpen = !room.finished_at;
+  const topicsNotShownCount = topics.length - shownTopicsLimit;
 
   return (
     <UIHolder className={className}>
@@ -89,14 +96,20 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
           <UICollapsedItems>
             <UITopics>
               {topics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
-              {topics.map((topic) => {
+              {topics.slice(0, shownTopicsLimit).map((topic) => {
                 return <TopicCard key={topic.id} topic={topic} />;
               })}
             </UITopics>
+            {topicsNotShownCount > 0 && (
+              <UIShowRemainingTopics onClick={() => setShownTopicsLimit(TOPICS_SHOWN_NO_LIMIT)}>
+                <IconChevronDown /> Show remaining {topicsNotShownCount > 1 ? `${topicsNotShownCount} topics` : "topic"}
+                ...
+              </UIShowRemainingTopics>
+            )}
             {isRoomOpen && (
-              <Button ref={buttonRef} onClick={handleCreateTopic}>
+              <UIAddTopicButton ref={buttonRef} onClick={handleCreateTopic}>
                 Add topic
-              </Button>
+              </UIAddTopicButton>
             )}
           </UICollapsedItems>
         )}
@@ -181,6 +194,20 @@ const UITopics = styled.div`
   }
 
   flex: 1;
+`;
 
-  margin-bottom: 24px;
+const UIShowRemainingTopics = styled(UICardListItem)`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  margin-top: 16px;
+
+  & > svg {
+    font-size: 1.5rem;
+  }
+`;
+
+const UIAddTopicButton = styled(Button)`
+  margin-top: 24px;
 `;
