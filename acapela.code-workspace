@@ -1,0 +1,114 @@
+{
+  "folders": [
+    {
+      "path": "./frontend"
+    },
+    {
+      "path": "./backend"
+    },
+    {
+      "path": "./config"
+    },
+    {
+      "path": "./db"
+    },
+    {
+      "path": "./docs"
+    },
+    {
+      "path": "./gql"
+    },
+    {
+      "path": "./infrastructure"
+    },
+    {
+      "path": "./richEditor"
+    },
+    {
+      "path": "./scripts"
+    },
+    {
+      "path": "./shared"
+    },
+    {
+      "path": "./tooling"
+    },
+    {
+      "path": "./ui"
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      ".env.local": "env",
+      ".env.production": "env",
+      ".env.sample": "env"
+    },
+    "editor.rulers": [
+      // Matching prettier breakline length config
+      120
+    ],
+    "files.insertFinalNewline": true,
+    "search.exclude": {
+      "**/node_modules": true,
+      ".next/**/*": true,
+      "**/.next/**/*": true,
+      // DB client is auto generated, huge file that could pollute search easily
+      "db/client/**/*": true,
+      ".yarn/**/*": true
+    },
+    "prettier.requireConfig": true,
+    // Will use auto-imports ~package instead of ../../package if import is from different package
+    "typescript.preferences.importModuleSpecifier": "shortest",
+    "typescript.suggest.autoImports": true,
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "spellright.documentTypes": ["markdown", "plaintext", "typescript"],
+    "colorInfo.languages": [
+      {
+        "selector": "css",
+        "colors": "css"
+      },
+      {
+        "selector": "sass",
+        "colors": "css"
+      },
+      {
+        "selector": "scss",
+        "colors": "css"
+      },
+      {
+        "selector": "less",
+        "colors": "css"
+      },
+      {
+        "selector": "typescript",
+        "colors": "css"
+      },
+      {
+        "selector": "typescriptreact",
+        "colors": "css"
+      }
+    ],
+    "cSpell.words": [
+      "Hasura",
+      "Scrollable",
+      "Unprocessable",
+      "immer",
+      "timestamptz",
+      "Userback",
+      "godaddy",
+      "healthz",
+      "sonix",
+      "Sonix",
+      "acapela",
+      "sendgrid",
+      "pino",
+      "gmail",
+      "nextauth",
+      "autoLinks",
+      "displayer"
+    ]
+  }
+}

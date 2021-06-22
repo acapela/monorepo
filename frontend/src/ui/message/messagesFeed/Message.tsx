@@ -3,25 +3,24 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDeleteTextMessageMutation, useUpdateTextMessageMutation } from "~frontend/gql/topics";
-import { TopicMessageDetailedInfoFragment } from "~gql";
-import { EditorContent } from "~richEditor/RichEditor";
+import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
+import { MessageDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { MessageActions } from "./messageContent/MessageActions";
-import { MessageMedia } from "./messageContent/MessageMedia";
-import { MessageText } from "./messageContent/types/TextMessageContent";
+import { MessageActions } from "~frontend/ui/message/display/MessageActions";
+import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
+import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
+import { EditMessageEditor } from "../composer/EditMessageEditor";
 
 interface Props extends MotionProps {
-  message: TopicMessageDetailedInfoFragment;
+  message: MessageDetailedInfoFragment;
   className?: string;
 }
 
 export const Message = styled(({ message, className }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
-  const [updateMessage] = useUpdateTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
 
   const [isActive, setIsActive] = useState(false);
@@ -35,11 +34,6 @@ export const Message = styled(({ message, className }: Props) => {
 
   async function handleRemove() {
     await deleteMessage({ id: message.id });
-  }
-
-  async function handleEditContentRequest(newContent: EditorContent) {
-    disableEditMode();
-    await updateMessage({ id: message.id, content: newContent, isDraft: false });
   }
 
   const shouldShowTools = useDebouncedValue(isOwnMessage && !isInEditMode, { onDelay: 0, offDelay: 200 });
@@ -58,16 +52,18 @@ export const Message = styled(({ message, className }: Props) => {
         )
       }
       user={message.user}
-      date={message.createdAt}
+      date={new Date(message.createdAt)}
     >
       <UIMessageBody>
-        <MessageText
-          message={message}
-          isInEditMode={isInEditMode}
-          onEditRequest={handleEditContentRequest}
-          onEditCancelRequest={disableEditMode}
-        />
-        <MessageMedia message={message} />
+        {isInEditMode && (
+          <EditMessageEditor message={message} onCancelRequest={disableEditMode} onSaved={disableEditMode} />
+        )}
+        {!isInEditMode && (
+          <>
+            <MessageText message={message} />
+            <MessageMedia message={message} />
+          </>
+        )}
       </UIMessageBody>
     </MessageLikeContent>
   );

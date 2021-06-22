@@ -1,3 +1,5 @@
+import { setColorOpacity } from "~shared/colors";
+
 export const BLACK = "#000";
 export const WHITE = "#fff";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
@@ -9,6 +11,8 @@ export const HIGHLIGHT_COLOR = `hsl(47, 85%, 64%)`;
 export const NOTIFICATION_COLOR = `hsl(352, 92%, 71%)`;
 export const PRIMARY_COLOR = `hsl(296, 24%, 22%)`;
 export const MODAL_BACKGROUND_COLOR = PRIMARY_COLOR;
+export const ITEM_COVER_COLOR = setColorOpacity(PRIMARY_COLOR, 0.5);
+export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
 
 /**
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.
