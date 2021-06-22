@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
-import { ACTIVE_COLOR, BACKGROUND_ACCENT } from "../colors";
+import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR } from "../colors";
 
 const sizes: Record<ToggleSize, Dimensions> = {
   large: {
@@ -98,7 +98,7 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
   }
 
   input:checked + label {
-    background: ${ACTIVE_COLOR};
+    background: ${BUTTON_BACKGROUND_COLOR};
   }
 
   input:checked + label:after {
