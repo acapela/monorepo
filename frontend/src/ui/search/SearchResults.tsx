@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { HIGHLIGHT_COLOR } from "~ui/colors";
 import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
+import { zIndex } from "~ui/zIndex";
 
 interface Props {
   className?: string;
@@ -66,6 +67,7 @@ export const SearchResults = styled(PureSearchResults)`
   padding: 1rem 0.6rem;
   background-color: #fff;
   border: 1px solid rgba(190, 190, 190, 0.25);
+  z-index: ${zIndex.Popover};
   ${borderRadius.modal}
 `;
 
