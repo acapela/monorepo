@@ -8375,7 +8375,7 @@ export type MessageBasicInfoFragment = (
 
 export type MessageDetailedInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content' | 'type'>
+  & Pick<Message, 'id' | 'content' | 'type' | 'replied_to_message_id'>
   & { createdAt: Message['created_at'] }
   & { transcription?: Maybe<(
     { __typename?: 'transcription' }

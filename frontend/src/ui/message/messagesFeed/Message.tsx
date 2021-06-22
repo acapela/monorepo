@@ -13,6 +13,7 @@ import { MessageText } from "~frontend/ui/message/display/types/TextMessageConte
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
 import { useTopicStore } from "~frontend/topics/TopicStore";
+import { ReplyingToMessage } from "../ReplyingToMessage";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -67,6 +68,11 @@ export const Message = styled(({ message, className }: Props) => {
         )}
         {!isInEditMode && (
           <>
+            {message.replied_to_message_id && (
+              <UIReplyingToMessageWrapper>
+                <ReplyingToMessage id={message.replied_to_message_id} />
+              </UIReplyingToMessageWrapper>
+            )}
             <MessageText message={message} />
             <MessageMedia message={message} />
           </>
@@ -77,3 +83,7 @@ export const Message = styled(({ message, className }: Props) => {
 })``;
 
 const UIMessageBody = styled.div``;
+
+const UIReplyingToMessageWrapper = styled.div`
+  margin-bottom: 8px;
+`;
