@@ -40,7 +40,8 @@ export interface RichEditorProps {
   onChange: (value: DeltaOperation[]) => void;
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
-  additionalContent?: ReactNode;
+  additionalTopContent?: ReactNode;
+  additionalBottomContent?: ReactNode;
   placeholder?: string;
   autofocusKey?: string;
   hideSubmitButton?: boolean;
@@ -68,7 +69,8 @@ export const RichEditor = ({
   onChange,
   onSubmit,
   onFilesSelected,
-  additionalContent,
+  additionalTopContent,
+  additionalBottomContent,
   placeholder,
   autofocusKey,
   hideSubmitButton,
@@ -171,6 +173,7 @@ export const RichEditor = ({
       <RichEditorContext value={{ reactQuillRef: quillRef }}>
         <QuillTheme />
         <EmojiSearchModal keywordChannel={emojiSearchKeywordChannel} onEmojiSelected={insertEmoji} />
+        {additionalTopContent && <UIAdditionalContent>{additionalTopContent}</UIAdditionalContent>}
         <UIEditorHolder>
           {toolbarRef.current && (
             <ReactQuill
@@ -188,7 +191,7 @@ export const RichEditor = ({
               }}
             />
           )}
-          {additionalContent && <UIAdditionalContent>{additionalContent}</UIAdditionalContent>}
+          {additionalBottomContent && <UIAdditionalContent>{additionalBottomContent}</UIAdditionalContent>}
           <Toolbar
             ref={toolbarRef}
             quillRef={quillRef}

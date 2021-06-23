@@ -37,23 +37,21 @@ export const MessageContentEditor = ({
       placeholder="Type here to start contributing..."
       autofocusKey={autofocusKey}
       hideSubmitButton={hideEditorSubmitButton}
-      additionalContent={
-        <>
-          {additionalContent}
-          {attachments.length > 0 && (
-            <UIAttachmentsPreviews>
-              {attachments.map((attachment) => {
-                return (
-                  <AttachmentPreview
-                    id={attachment.uuid}
-                    key={attachment.uuid}
-                    onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
-                  />
-                );
-              })}
-            </UIAttachmentsPreviews>
-          )}
-        </>
+      additionalTopContent={additionalContent}
+      additionalBottomContent={
+        attachments.length > 0 && (
+          <UIAttachmentsPreviews>
+            {attachments.map((attachment) => {
+              return (
+                <AttachmentPreview
+                  id={attachment.uuid}
+                  key={attachment.uuid}
+                  onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
+                />
+              );
+            })}
+          </UIAttachmentsPreviews>
+        )
       }
     />
   );
