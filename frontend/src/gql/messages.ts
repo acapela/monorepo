@@ -106,7 +106,6 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         message: {
           __typename: "message",
           createdAt: new Date().toISOString(),
-          onOptimisticAndActualResultssage_attachments: [],
           message_attachments: [],
           type: vars.type,
           user: {
