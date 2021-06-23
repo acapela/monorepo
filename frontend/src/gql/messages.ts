@@ -44,9 +44,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
       content
       type
       replied_to_message {
-        id
-        createdAt: created_at
-        content
+        ...MessageBasicInfo
       }
       transcription {
         status
