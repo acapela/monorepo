@@ -94,6 +94,13 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
     optimisticResponse(vars) {
       const userData = assertReadUserDataFromCookie();
 
+      function getRepliedMessageFragmentData() {
+        if (!vars.replied_to_message_id) {
+          return null;
+        }
+        return MessageBasicInfoFragment.read(vars.replied_to_message_id);
+      }
+
       return {
         __typename: "mutation_root",
         message: {
@@ -110,7 +117,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           },
           id: getUUID(),
           content: vars.content,
-          replied_to_message_id: vars.replied_to_message_id,
+          replied_to_message: getRepliedMessageFragmentData(),
         },
       };
     },
