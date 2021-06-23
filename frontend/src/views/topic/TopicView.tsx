@@ -49,7 +49,7 @@ export const TopicView = ({ topicId }: Props) => {
   const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
   return (
-    <TopicStoreContext topicId={topicId}>
+    <TopicStoreContext>
       {hasTopic && (
         <TopicRoot>
           {/* We need to render the topic header or else flex bugs out on page reload */}
