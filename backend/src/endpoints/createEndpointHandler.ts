@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { parseDatesInObject, parseJsonWithDates } from "~shared/dates/parseJSONWithDates";
+import { parseDatesInObject } from "~shared/dates/parseJSONWithDates";
 import logger from "~shared/logger";
 import { UserTokenData } from "~shared/types/jwtAuth";
 import { extractAndAssertBearerToken } from "../authentication";
