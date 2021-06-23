@@ -132,10 +132,10 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
     }
   `,
   {
-    onResult(room, variables) {
-      if (!room) return;
+    onOptimisticAndActualResponse(room, variables) {
+      if (!room || !variables.input.space_id) return;
 
-      SpaceDetailedInfoFragment.update(variables.spaceId, (space) => {
+      SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
         space.rooms.push(room);
       });
     },
@@ -144,12 +144,14 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
         __typename: "mutation_root",
         room: {
           __typename: "room",
-          deadline: variables.deadline,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          deadline: variables.input.deadline!,
           id: getUUID(),
           members: [],
           topics: [],
-          name: variables.name,
-          space_id: variables.spaceId,
+          name: variables.input.name,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          space_id: variables.input.space_id!,
         },
       };
     },
@@ -184,11 +186,11 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
         insert_room_member_one: { __typename: "room_member", user_id: vars.userId, room_id: vars.roomId },
       };
     },
-    onResult(data, vars) {
+    onOptimisticAndActualResponse(data, vars, phase) {
       RoomDetailedInfoFragment.update(vars.roomId, (room) => {
         room.members.push({ __typename: "room_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
       });
-      addToast({ type: "info", content: `Room member was added` });
+      phase === "actual" && addToast({ type: "info", content: `Room member was added` });
     },
   }
 );
@@ -211,11 +213,11 @@ export const [useRemoveRoomMemberMutation] = createMutation<
         delete_room_member: { __typename: "room_member_mutation_response", affected_rows: 1 },
       };
     },
-    onResult(data, vars) {
+    onOptimisticAndActualResponse(data, vars, phase) {
       RoomDetailedInfoFragment.update(vars.roomId, (room) => {
         room.members = room.members.filter((member) => member.user.id !== vars.userId);
       });
-      addToast({ type: "info", content: `Room member was added` });
+      phase === "actual" && addToast({ type: "info", content: `Room member was added` });
     },
   }
 );
@@ -271,7 +273,7 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
         room: RoomDetailedInfoFragment.assertRead(vars.roomId),
       };
     },
-    onResult(removedRoom) {
+    onOptimisticAndActualResponse(removedRoom) {
       if (!removedRoom.space_id) return;
       SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
         space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);

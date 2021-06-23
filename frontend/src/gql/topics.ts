@@ -93,7 +93,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
         },
       };
     },
-    onResult(topic, variables) {
+    onOptimisticAndActualResponse(topic, variables) {
       RoomDetailedInfoFragment.update(variables.roomId, (data) => {
         data.topics.push(topic);
       });
@@ -157,7 +157,7 @@ export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation
         },
       };
     },
-    onResult(data, vars) {
+    onOptimisticAndActualResponse(data, vars) {
       TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
         topic.members.push({ __typename: "topic_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
       });
@@ -186,7 +186,7 @@ export const [useRemoveTopicMemberMutation] = createMutation<
         },
       };
     },
-    onResult(data, vars) {
+    onOptimisticAndActualResponse(data, vars) {
       TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
         topic.members = topic.members.filter((member) => member.user.id !== vars.userId);
       });
@@ -261,11 +261,11 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
 
       return { __typename: "mutation_root", topic };
     },
-    onResult(removedTopic) {
+    onOptimisticAndActualResponse(removedTopic, _, phase) {
       RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {
         room.topics = room.topics.filter((topic) => topic.id !== removedTopic.id);
       });
-      addToast({ type: "info", content: `Topic was removed` });
+      phase === "actual" && addToast({ type: "info", content: `Topic was removed` });
     },
   }
 );

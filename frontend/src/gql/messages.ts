@@ -106,6 +106,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         message: {
           __typename: "message",
           createdAt: new Date().toISOString(),
+          onOptimisticAndActualResultssage_attachments: [],
           message_attachments: [],
           type: vars.type,
           user: {
@@ -121,7 +122,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         },
       };
     },
-    onResult: (message, variables) => {
+    onOptimisticAndActualResponse: (message, variables) => {
       topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
         if (!message) {
           return;

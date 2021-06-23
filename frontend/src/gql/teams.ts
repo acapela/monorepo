@@ -118,8 +118,8 @@ export const [useCreateTeamInvitationMutation] = createMutation<
     }
   `,
   {
-    onResult() {
-      addToast({ type: "info", content: `Team invitation was sent` });
+    onOptimisticAndActualResponse(_, __, phase) {
+      phase === "actual" && addToast({ type: "info", content: `Team invitation was sent` });
     },
   }
 );

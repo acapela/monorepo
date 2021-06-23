@@ -11,9 +11,16 @@ import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
 
 interface MutationDefinitionOptions<Data, Variables> {
-  onResult?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
+  // This callback is called optionally twice for both optimistic and actual response
+  onOptimisticAndActualResponse?: (
+    data: NonNullable<UnwrapQueryData<Data>>,
+    variables: Variables,
+    phase: MutationResultPhase
+  ) => void;
   optimisticResponse?: (vars: Variables) => Data;
 }
+
+type MutationResultPhase = "actual" | "optimistic";
 
 /**
  * This function allows creating type-safe mutation wrapper around mutation gql document.
@@ -30,21 +37,41 @@ export function createMutation<Data, Variables>(
 ) {
   const getMutation = memoize(mutation);
 
+  function getNextPhase(currentPhase: MutationResultPhase | null, hasOptimisticResponse: boolean): MutationResultPhase {
+    if (currentPhase === null) {
+      if (hasOptimisticResponse) {
+        return "optimistic";
+      }
+      return "actual";
+    }
+
+    return "actual";
+  }
+
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
     const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
+      const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
+      let currentPhase: MutationResultPhase | null = null;
+
       const rawResult = await runMutationRaw({
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
         ...options,
         variables,
         update(cache, rawResult) {
+          const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
+          currentPhase = phase;
+
+          const isOptimisticUpdate = getRenderedApolloClient().cache !== cache;
+
+          console.log({ isOptimisticUpdate, cache, phase });
           runWithApolloProxy(cache, () => {
             const resultData = unwrapQueryData(rawResult.data);
 
             if (resultData) {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              mutationDefinitionOptions?.onResult?.(resultData!, variables);
+              mutationDefinitionOptions?.onOptimisticAndActualResponse?.(resultData!, variables, phase);
             }
           });
         },
@@ -59,18 +86,23 @@ export function createMutation<Data, Variables>(
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
+    const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
+    let currentPhase: MutationResultPhase | null = null;
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
       ...options,
       mutation: getMutation(),
       variables,
       update(cache, rawResult) {
+        const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
+        currentPhase = phase;
+
         runWithApolloProxy(cache, () => {
           const resultData = unwrapQueryData(rawResult.data);
 
           if (resultData) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            mutationDefinitionOptions?.onResult?.(resultData!, variables);
+            mutationDefinitionOptions?.onOptimisticAndActualResponse?.(resultData!, variables, phase);
           }
         });
       },
