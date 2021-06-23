@@ -35,6 +35,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
   () => gql`
     ${AttachmentDetailedInfoFragment()}
     ${UserBasicInfoFragment()}
+    ${MessageBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
       id
