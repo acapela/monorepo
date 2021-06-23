@@ -27,7 +27,7 @@ export const Message = styled(({ message, className }: Props) => {
 
   const [, updateTopicState] = useTopicStore();
   async function handleMarkAsBeingRepliedTo() {
-    updateTopicState((draft) => (draft.currentlyReplyingToMessageId = message.id));
+    updateTopicState((draft) => (draft.currentlyReplyingToMessage = message));
   }
 
   const [isActive, setIsActive] = useState(false);
@@ -70,7 +70,7 @@ export const Message = styled(({ message, className }: Props) => {
           <>
             {message.replied_to_message && (
               <UIReplyingToMessageWrapper>
-                <ReplyingToMessage id={message.replied_to_message.id} />
+                <ReplyingToMessage message={message.replied_to_message} />
               </UIReplyingToMessageWrapper>
             )}
             <MessageText message={message} />

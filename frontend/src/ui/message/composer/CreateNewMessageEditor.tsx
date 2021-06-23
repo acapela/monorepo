@@ -26,9 +26,9 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<EditorContent>([]);
 
-  const [{ currentlyReplyingToMessageId }, updateTopicState] = useTopicStore();
+  const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
   const handlStopReplyingToMessage = () => {
-    updateTopicState((draft) => (draft.currentlyReplyingToMessageId = null));
+    updateTopicState((draft) => (draft.currentlyReplyingToMessage = null));
   };
 
   async function handleNewFiles(files: File[]) {
@@ -45,7 +45,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
       attachments: attachments.map((attachment) => ({
         attachment_id: attachment.uuid,
       })),
-      replied_to_message_id: currentlyReplyingToMessageId,
+      replied_to_message_id: currentlyReplyingToMessage?.id,
     });
 
     handlStopReplyingToMessage();
@@ -88,8 +88,8 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
           });
         }}
         additionalContent={
-          currentlyReplyingToMessageId ? (
-            <ReplyingToMessage onRemove={handlStopReplyingToMessage} id={currentlyReplyingToMessageId} />
+          currentlyReplyingToMessage ? (
+            <ReplyingToMessage onRemove={handlStopReplyingToMessage} message={currentlyReplyingToMessage} />
           ) : null
         }
       />

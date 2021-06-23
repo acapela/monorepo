@@ -1,9 +1,10 @@
+import { MessageBasicInfoFragment } from "~frontend/../../gql";
 import { createSharedStateContext } from "~shared/sharedState";
 
 interface State {
-  currentlyReplyingToMessageId: string | null;
+  currentlyReplyingToMessage: MessageBasicInfoFragment | null;
 }
 
 export const [TopicStoreContext, useTopicStore] = createSharedStateContext<State>(() => ({
-  currentlyReplyingToMessageId: null,
+  currentlyReplyingToMessage: null,
 }));
