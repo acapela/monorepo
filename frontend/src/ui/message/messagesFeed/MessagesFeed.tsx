@@ -9,10 +9,10 @@ import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
   messages: MessageDetailedInfoFragment[];
-  isDisabled?: boolean;
+  isReadonly?: boolean;
 }
 
-export function MessagesFeed({ messages, isDisabled }: Props) {
+export function MessagesFeed({ messages, isReadonly }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
   function renderMessageHeader(
@@ -41,7 +41,7 @@ export function MessagesFeed({ messages, isDisabled }: Props) {
         return (
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
-            <Message isDisabled={isDisabled} message={message} key={message.id} />
+            <Message isReadonly={isReadonly} message={message} key={message.id} />
           </Fragment>
         );
       })}

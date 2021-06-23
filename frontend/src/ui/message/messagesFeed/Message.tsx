@@ -20,11 +20,11 @@ import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
-  isDisabled?: boolean;
+  isReadonly?: boolean;
   className?: string;
 }
 
-export const Message = styled(({ message, className, isDisabled }: Props) => {
+export const Message = styled(({ message, className, isReadonly }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
@@ -55,7 +55,7 @@ export const Message = styled(({ message, className, isDisabled }: Props) => {
     }
   }
 
-  const shouldShowTools = useDebouncedValue(!isInEditMode && !isDisabled, { onDelay: 0, offDelay: 200 });
+  const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
 
   const getMessageActionsOptions = () => {
     const options = [];
