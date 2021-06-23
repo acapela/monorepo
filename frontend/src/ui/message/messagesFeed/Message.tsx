@@ -17,6 +17,7 @@ import { IconEdit, IconReply, IconTrash } from "~ui/icons";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
+import { MessagePreviews } from "~frontend/ui/message/display/MessagePreviews";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -108,6 +109,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
             )}
             <MessageText message={message} />
             <MessageMedia message={message} />
+            <MessagePreviews message={message} />
           </>
         )}
       </UIMessageBody>
