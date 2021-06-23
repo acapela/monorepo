@@ -67,8 +67,6 @@ function getAuthorizedGoogleCalendarApi(userAccount: Account) {
 
   oauth.setCredentials({
     access_token: userAccount.access_token,
-    // refresh_token:
-    //   "1//0cOx8bcQ7AajACgYIARAAGAwSNwF-L9IrigqRpCd8j6SwGQsw9Ggg3-2p3N-6r3wQJYGMJpvBdq3HjbuFdk7i7rU9fhCq6U79FGY",
     refresh_token: userAccount.refresh_token,
   });
 
