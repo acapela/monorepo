@@ -8,7 +8,7 @@ import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { CreateRoomButton } from "./CreateRoom";
+import { CreateRoomButton } from "./CreateRoomButton";
 
 const openRoomFilter = createOpenRoomFilter(true);
 

@@ -1,19 +1,15 @@
-import { endOfDay, startOfDay } from "date-fns";
-import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
 import styled from "styled-components";
-import { setColorOpacity } from "~frontend/../../shared/colors";
-import { niceFormatDateTime } from "~frontend/../../shared/dates/format";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { GoogleCalendarEvent } from "~frontend/../../shared/types/googleCalendar";
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
-import { borderRadius } from "~frontend/../../ui/baseStyles";
-import { Button } from "~frontend/../../ui/buttons/Button";
-import { PRIMARY_COLOR } from "~frontend/../../ui/colors";
-import { ItemTitle, SecondaryText, TextTitle } from "~frontend/../../ui/typo";
-import { googleCalendarEventsApi } from "~frontend/requests/googleCalendar";
-import { Modal } from "~frontend/ui/Modal";
-import { CreateRoomForm } from "../HomeView/CreateRoom/CreateRoomForm";
+import { setColorOpacity } from "~shared/colors";
+import { niceFormatDateTime } from "~shared/dates/format";
+import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
+import { PopPresenceAnimator } from "~ui/animations";
+import { borderRadius } from "~ui/baseStyles";
+import { Button } from "~ui/buttons/Button";
+import { PRIMARY_COLOR } from "~ui/colors";
+import { SecondaryText } from "~ui/typo";
+import { routes } from "~frontend/../routes";
+import { createRoom } from "~frontend/gql/rooms";
+import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 
 interface Props {
   event: GoogleCalendarEvent;
@@ -21,7 +17,25 @@ interface Props {
 }
 
 export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard({ event, className }: Props) {
-  const [isCreatingRoom, { set: openCreatingRoomModal, unset: closeCreatingRoomModal }] = useBoolean(false);
+  async function handleCreateRoom() {
+    const createRoomInput = await openRoomInputPrompt({ name: event.title, deadline: event.startTime });
+
+    if (createRoomInput === null) {
+      return;
+    }
+
+    const [room] = await createRoom({
+      input: {
+        name: createRoomInput.name,
+        deadline: createRoomInput.deadline?.toISOString(),
+        space_id: createRoomInput.spaceId,
+        source_google_calendar_event_id: event.id,
+        slug: createRoomInput.slug,
+      },
+    });
+
+    if (!room) return;
+  }
 
   return (
     <>
@@ -31,20 +45,9 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
           {event.startTime && <UIDate>{niceFormatDateTime(event.startTime)}</UIDate>}
         </UIInfo>
         <UIActions>
-          <Button onClick={openCreatingRoomModal}>Create Room</Button>
+          <Button onClick={handleCreateRoom}>Create Room</Button>
         </UIActions>
       </UIHolder>
-      <AnimatePresence>
-        {isCreatingRoom && (
-          <Modal onCloseRequest={closeCreatingRoomModal}>
-            <CreateRoomForm
-              onCancel={closeCreatingRoomModal}
-              initialRoomName={event.title}
-              initialDeadline={event.startTime}
-            />
-          </Modal>
-        )}
-      </AnimatePresence>
     </>
   );
 })``;

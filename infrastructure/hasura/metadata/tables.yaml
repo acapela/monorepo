@@ -121,6 +121,9 @@
     - name: message_type
       using:
         foreign_key_constraint_on: type
+    - name: replied_to_message
+      using:
+        foreign_key_constraint_on: replied_to_message_id
     - name: topic
       using:
         foreign_key_constraint_on: topic_id
@@ -153,9 +156,10 @@
         set:
           user_id: x-hasura-User-Id
         columns:
-          - is_draft
           - content
           - is_draft
+          - is_draft
+          - replied_to_message_id
           - topic_id
           - type
         backend_only: false
@@ -167,6 +171,7 @@
           - created_at
           - id
           - is_draft
+          - replied_to_message_id
           - topic_id
           - type
           - user_id
@@ -319,6 +324,7 @@
           - deadline
           - name
           - slug
+          - source_google_calendar_event_id
           - space_id
           - summary
         backend_only: false
@@ -333,6 +339,7 @@
           - id
           - name
           - slug
+          - source_google_calendar_event_id
           - space_id
           - summary
         filter:

@@ -37,9 +37,19 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
     eventsEndDate: endOfDay(startDate),
   });
 
+  const googleCalendarEventsToShow = googleCalendarEvents.filter((googleCalendarEvent) => {
+    const hasRoomAlready = rooms.some((room) => {
+      return room.source_google_calendar_event_id === googleCalendarEvent.id;
+    });
+
+    return !hasRoomAlready;
+  });
+
+  const hasAnyContentToShow = googleCalendarEventsToShow.length > 0 || rooms.length > 0;
+
   // If there are no topics in given day render empty component unless forced to render empty.
-  if (!rooms?.length && !displayEmpty) {
-    // return null;
+  if (!hasAnyContentToShow && !displayEmpty) {
+    return null;
   }
 
   return (
@@ -50,7 +60,7 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
       transition={getSpringTransitionWithDuration(0.6)}
     >
       <UITitle>{niceFormatDate(startDate)}</UITitle>
-      {googleCalendarEvents.length > 0 && <GoogleCalendarEventsInDay events={googleCalendarEvents} />}
+      {googleCalendarEventsToShow.length > 0 && <GoogleCalendarEventsInDay events={googleCalendarEventsToShow} />}
       <RoomsList rooms={rooms} />
       {rooms?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
     </UIHolder>

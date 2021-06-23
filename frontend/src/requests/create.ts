@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { parseDatesInObject } from "~frontend/../../shared/dates/parseJSONWithDates";
+import { parseDatesInObject } from "~shared/dates/parseJSONWithDates";
 import { readCurrentToken } from "~frontend/authentication/cookie";
 import { useEqualEffect } from "~shared/hooks/useEqualEffect";
 

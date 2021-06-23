@@ -1,7 +1,7 @@
 import { endOfDay, startOfDay } from "date-fns";
 import styled from "styled-components";
-import { GoogleCalendarEvent } from "~frontend/../../shared/types/googleCalendar";
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
+import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
+import { PopPresenceAnimator } from "~ui/animations";
 import { googleCalendarEventsApi } from "~frontend/requests/googleCalendar";
 import { GoogleCalendarEventsCard } from "./GoogleCalendarEventsCard";
 

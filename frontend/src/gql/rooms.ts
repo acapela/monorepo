@@ -43,6 +43,7 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       deadline
       summary
       finished_at
+      source_google_calendar_event_id
       members {
         user {
           ...UserBasicInfo
@@ -121,7 +122,10 @@ export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
   return room?.members.some((member) => member.user.id === user.id) ?? false;
 }
 
-export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, CreateRoomMutationVariables>(
+export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
+  CreateRoomMutation,
+  CreateRoomMutationVariables
+>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 
@@ -133,9 +137,9 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
   `,
   {
     onResult(room, variables) {
-      if (!room) return;
+      if (!room || !variables.input.space_id) return;
 
-      SpaceDetailedInfoFragment.update(variables.spaceId, (space) => {
+      SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
         space.rooms.push(room);
       });
     },
@@ -144,12 +148,14 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
         __typename: "mutation_root",
         room: {
           __typename: "room",
-          deadline: variables.deadline,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          deadline: variables.input.deadline!,
           id: getUUID(),
           members: [],
           topics: [],
-          name: variables.name,
-          space_id: variables.spaceId,
+          name: variables.input.name,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          space_id: variables.input.space_id!,
         },
       };
     },

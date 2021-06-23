@@ -1587,6 +1587,12 @@ type message {
   """
   An object relationship
   """
+  replied_to_message: message
+  replied_to_message_id: uuid
+
+  """
+  An object relationship
+  """
   topic: topic!
   topic_id: uuid!
 
@@ -1862,6 +1868,8 @@ input message_bool_exp {
   is_draft: Boolean_comparison_exp
   message_attachments: message_attachment_bool_exp
   message_type: message_type_bool_exp
+  replied_to_message: message_bool_exp
+  replied_to_message_id: uuid_comparison_exp
   topic: topic_bool_exp
   topic_id: uuid_comparison_exp
   transcription: transcription_bool_exp
@@ -2077,6 +2085,8 @@ input message_insert_input {
   is_draft: Boolean
   message_attachments: message_attachment_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
+  replied_to_message: message_obj_rel_insert_input
+  replied_to_message_id: uuid
   topic: topic_obj_rel_insert_input
   topic_id: uuid
   transcription: transcription_obj_rel_insert_input
@@ -2092,6 +2102,7 @@ aggregate max on columns
 type message_max_fields {
   created_at: timestamptz
   id: uuid
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   user_id: uuid
@@ -2103,6 +2114,7 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
+  replied_to_message_id: order_by
   topic_id: order_by
   transcription_id: order_by
   user_id: order_by
@@ -2114,6 +2126,7 @@ aggregate min on columns
 type message_min_fields {
   created_at: timestamptz
   id: uuid
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   user_id: uuid
@@ -2125,6 +2138,7 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
+  replied_to_message_id: order_by
   topic_id: order_by
   transcription_id: order_by
   user_id: order_by
@@ -2172,6 +2186,8 @@ input message_order_by {
   is_draft: order_by
   message_attachments_aggregate: message_attachment_aggregate_order_by
   message_type: message_type_order_by
+  replied_to_message: message_order_by
+  replied_to_message_id: order_by
   topic: topic_order_by
   topic_id: order_by
   transcription: transcription_order_by
@@ -2222,6 +2238,11 @@ enum message_select_column {
   """
   column name
   """
+  replied_to_message_id
+
+  """
+  column name
+  """
   topic_id
 
   """
@@ -2248,6 +2269,7 @@ input message_set_input {
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   type: message_type_enum
@@ -2467,6 +2489,11 @@ enum message_update_column {
   column name
   """
   is_draft
+
+  """
+  column name
+  """
+  replied_to_message_id
 
   """
   column name
@@ -6072,6 +6099,7 @@ type room {
     where: room_invites_bool_exp
   ): room_invites_aggregate!
   slug: String!
+  source_google_calendar_event_id: String
 
   """
   An object relationship
@@ -6193,6 +6221,7 @@ input room_bool_exp {
   notification_job_id: String_comparison_exp
   room_invites: room_invites_bool_exp
   slug: String_comparison_exp
+  source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
   space_id: uuid_comparison_exp
   summary: String_comparison_exp
@@ -6229,6 +6258,7 @@ input room_insert_input {
   notification_job_id: String
   room_invites: room_invites_arr_rel_insert_input
   slug: String
+  source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
   space_id: uuid
   summary: String
@@ -6556,6 +6586,7 @@ type room_max_fields {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -6572,6 +6603,7 @@ input room_max_order_by {
   name: order_by
   notification_job_id: order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
 }
@@ -6797,6 +6829,7 @@ type room_min_fields {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -6813,6 +6846,7 @@ input room_min_order_by {
   name: order_by
   notification_job_id: order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
 }
@@ -6864,6 +6898,7 @@ input room_order_by {
   notification_job_id: order_by
   room_invites_aggregate: room_invites_aggregate_order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space: space_order_by
   space_id: order_by
   summary: order_by
@@ -6924,6 +6959,11 @@ enum room_select_column {
   """
   column name
   """
+  source_google_calendar_event_id
+
+  """
+  column name
+  """
   space_id
 
   """
@@ -6944,6 +6984,7 @@ input room_set_input {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -6991,6 +7032,11 @@ enum room_update_column {
   column name
   """
   slug
+
+  """
+  column name
+  """
+  source_google_calendar_event_id
 
   """
   column name
