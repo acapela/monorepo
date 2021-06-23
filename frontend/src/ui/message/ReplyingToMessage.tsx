@@ -1,24 +1,18 @@
 import React from "react";
 import styled from "styled-components";
-import { useMessageQuery } from "~frontend/gql/messages";
 import { MessageLikeContent } from "./messagesFeed/MessageLikeContent";
 import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
 import { MessageText } from "./display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
+import { MessageBasicInfoFragment } from "~frontend/../../gql";
 
 interface Props {
-  id: string;
+  message: MessageBasicInfoFragment;
   onRemove?: () => void;
 }
 
-export const ReplyingToMessage = ({ id, onRemove }: Props) => {
-  const [message] = useMessageQuery({ id });
-
-  if (!message) {
-    return null;
-  }
-
+export const ReplyingToMessage = ({ message, onRemove }: Props) => {
   return (
     <UIHolder>
       <MessageLikeContent user={message.user} date={new Date(message.createdAt)}>

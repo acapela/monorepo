@@ -8370,7 +8370,7 @@ export type AcceptInviteMutation = (
 
 export type MessageBasicInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content'>
+  & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
@@ -8448,19 +8448,6 @@ export type DeleteTextMessageMutation = (
       { __typename?: 'message' }
       & Pick<Message, 'id'>
     )> }
-  )> }
-);
-
-export type MessageQueryVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type MessageQuery = (
-  { __typename?: 'query_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & MessageDetailedInfoFragment
   )> }
 );
 
