@@ -25,8 +25,6 @@ interface Props {
   className?: string;
 }
 
-const RoomLink = routes.spaceRoom.Link;
-
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
