@@ -20,16 +20,22 @@ import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 interface Props {
   onCancel: () => void;
+  initialRoomName?: string;
+  initialDeadline?: Date;
 }
 
-export const CreateRoomForm = ({ onCancel }: Props) => {
+export const CreateRoomForm = ({
+  onCancel,
+  initialRoomName = "",
+  initialDeadline = getRoomDefaultDeadline(),
+}: Props) => {
   const [createSpace, { loading: createSpaceLoading }] = useCreateSpaceMutation();
   const [createRoom, { loading: createRoomLoading }] = useCreateRoomMutation();
 
-  const [roomName, setRoomName] = useState<string>("");
+  const [roomName, setRoomName] = useState<string>(initialRoomName);
   const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
   const [spaceName, setSpaceName] = useState<string>("");
-  const [deadline, setDeadline] = useState<Date>(getRoomDefaultDeadline);
+  const [deadline, setDeadline] = useState<Date>(initialDeadline);
 
   const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 

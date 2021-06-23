@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
 import { fontSize } from "./baseStyles";
 
@@ -7,7 +8,7 @@ export const PageTitle = styled.h1`
   font-weight: 600;
 `;
 
-export const ItemTitle = styled.h3`
+export const ItemTitle = styled(motion.h3)`
   font-size: ${fontSize.itemTitle};
   font-weight: 600;
 `;

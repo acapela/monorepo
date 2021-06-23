@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
 import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
 import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
@@ -44,7 +44,7 @@ interface Session {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 
 // To make sure TypeScript guards us when defining auth <> db adapter, lets use types provided by next-auth
-type AuthAdapter = AdapterInstance<User, Profile, Session, VerificationRequest>;
+type AuthAdapter = AdapterInstance<User, Profile, Session>;
 
 async function checkWhitelist(profile: Profile) {
   const email = profile.email.toLocaleLowerCase();
@@ -67,9 +67,15 @@ async function checkWhitelist(profile: Profile) {
   }
 }
 
-const authAdapterProvider: Adapter = {
+function getIsNewUser(user: User | ProviderUser): user is ProviderUser {
+  if (user.created_at) return false;
+
+  return true;
+}
+
+const authAdapterProvider = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAdapter(appOptions): Promise<AuthAdapter> {
+  async getAdapter(): Promise<AuthAdapter> {
     await initializeSecrets();
 
     return {
@@ -124,15 +130,7 @@ const authAdapterProvider: Adapter = {
         return await db.user.findFirst({ where: { email } });
       },
 
-      async linkAccount(
-        userId,
-        providerId,
-        providerType,
-        providerAccountId,
-        refreshToken,
-        accessToken,
-        accessTokenExpires
-      ) {
+      async linkAccount(userId, providerId, providerType, providerAccountId, refreshToken, accessToken) {
         await db.account.create({
           data: {
             user_id: userId,
@@ -141,7 +139,6 @@ const authAdapterProvider: Adapter = {
             provider_account_id: providerAccountId,
             refresh_token: refreshToken,
             access_token: accessToken,
-            access_token_expires: new Date(accessTokenExpires),
           },
         });
       },
@@ -211,6 +208,14 @@ async function sendVerificationRequest({ identifier: email, url }: VerificationR
   });
 }
 
+const GOOGLE_AUTH_SCOPES = [
+  "userinfo.profile",
+  "userinfo.email",
+  "calendar.readonly",
+  "calendar.events",
+  "directory.readonly",
+];
+
 async function getAuthInitOptions() {
   await initializeSecrets();
   const authInitOptions: NextAuthOptions = {
@@ -249,6 +254,12 @@ async function getAuthInitOptions() {
           return token;
         }
 
+        /**
+         * THIS IS TO BE REMOVED SOON!
+         */
+
+        console.log("JWT HERE", { user, account });
+
         return {
           ...token,
           // Add some useful information we might use in the frontend.
@@ -262,6 +273,36 @@ async function getAuthInitOptions() {
             "x-hasura-user-id": user.id,
           },
         };
+      },
+
+      async signIn(user: User | ProviderUser, accountInfo) {
+        if (getIsNewUser(user)) {
+          return true;
+        }
+
+        try {
+          console.log("sign in attempt", { user, accountInfo });
+          const existingAccount = await db.account.findFirst({
+            where: { user_id: user.id, provider_id: accountInfo.provider },
+          });
+
+          console.log("AFTER SIGN IN");
+
+          // If our current account has no refresh token, try to update it if we have it now.
+          if (existingAccount) {
+            if (!existingAccount.refresh_token && accountInfo.refreshToken) {
+              await db.account.update({
+                where: { id: existingAccount.id },
+                data: { refresh_token: accountInfo.refreshToken },
+              });
+            }
+          }
+
+          return true;
+        } catch (error) {
+          console.log("SIGN IN CALLBACK ERROR", error);
+          return false;
+        }
       },
       // As we're not using sessions (but JWT), let's make session simply return token data.
       // Note: Next-auth will return token data only if token is validated and valid.
@@ -335,10 +376,22 @@ async function getAuthInitOptions() {
         // Added `prompt=select_account` to default url to always ask which gmail user do you want to authorize.
         // It is useful if you'd like to login with multiple google accounts on the same machine. Without this param,
         // it would automatically pick previous user each time.
-        authorizationUrl: `https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=select_account`,
+        // authorizationUrl: `https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=select_account`,
+        authorizationUrl: `https://accounts.google.com/o/oauth2/auth?${getSearchParams({
+          response_type: "code",
+          prompt: "select_account",
+          /**
+           * !!!
+           *
+           * This will make sure we get refresh token each time user gives content for our access scopes
+           */
+          access_type: "offline",
+        })}`,
+
         // Beside default scope, we need calendar access.
-        scope:
-          "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
+        scope: GOOGLE_AUTH_SCOPES.map((scopeName) => `https://www.googleapis.com/auth/${scopeName}`).join(" "),
+        // scope:
+        //   "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
       }),
       Providers.Email({
         sendVerificationRequest,
@@ -349,6 +402,10 @@ async function getAuthInitOptions() {
   };
 
   return authInitOptions;
+}
+
+function getSearchParams(params: Record<string, string>) {
+  return new URLSearchParams(params).toString();
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {

@@ -1,18 +1,6 @@
 import { useSession } from "next-auth/client";
 import { assertGet } from "~shared/assert";
-
-/**
- * We are passing custom data to session JWT token, so we have more data than default next-auth Session type.
- */
-export interface UserAuthData {
-  email: string;
-  iat: number;
-  name: string;
-  picture: string | null;
-  sub: string;
-  id: string;
-  currentTeamId: string | null;
-}
+import { UserTokenData } from "~shared/types/jwtAuth";
 
 /**
  * This hook works exactly like default next-auth useSession, but has proper typing for user data and also does some
@@ -26,7 +14,7 @@ function useAdjustedSession() {
   const id = get<string | null>(session, "sub", null);
   const picture = get<string | null>(session, "picture", null);
 
-  return { ...session, id, picture } as unknown as UserAuthData;
+  return { ...session, id, picture } as unknown as UserTokenData;
 }
 
 function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T) {
@@ -39,6 +27,8 @@ function get<T>(target: Record<string, unknown> | null | void, key: string, defa
 
 export function useCurrentUser() {
   const user = useAdjustedSession();
+
+  console.log({ user });
 
   return user;
 }

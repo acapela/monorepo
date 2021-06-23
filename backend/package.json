@@ -23,6 +23,7 @@
     "express-async-errors": "^3.1.1",
     "googleapis": "^76.0.0",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1",
     "uuid": "^8.3.2",
     "~config": "0.1.0"

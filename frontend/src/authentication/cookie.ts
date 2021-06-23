@@ -1,7 +1,7 @@
 import Cookie from "js-cookie";
 import { assertGet } from "~shared/assert";
-import { parseJWTWithoutValidation } from "./jwt";
-import { UserAuthData } from "./useCurrentUser";
+import { parseJWTWithoutValidation } from "~shared/jwt";
+import { UserTokenData } from "~shared/types/jwtAuth";
 
 export const TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -14,7 +14,7 @@ export function readUserDataFromCookie() {
 
   if (!token) return null;
 
-  return parseJWTWithoutValidation<UserAuthData>(token);
+  return parseJWTWithoutValidation<UserTokenData>(token);
 }
 
 export function assertReadUserDataFromCookie() {

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { ItemTitle } from "~ui/typo";
+import { endOfDay, startOfDay } from "date-fns";
 import { getDayBoundaries } from "~shared/dates/utils";
 import { niceFormatDate } from "~shared/dates/format";
 import { RoomsList } from "~frontend/ui/rooms/RoomsList";
@@ -8,6 +9,8 @@ import { IconCalendar } from "~ui/icons";
 import { motion } from "framer-motion";
 import { getSpringTransitionWithDuration } from "~ui/animations";
 import { useRoomsQuery } from "~frontend/gql/rooms";
+import { GoogleCalendarEventsInDay } from "./GoogleCalendarEventsInDay";
+import { googleCalendarEventsApi } from "~frontend/requests/googleCalendar";
 
 interface Props {
   startDate: Date;
@@ -29,26 +32,36 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
       },
     },
   });
+  const [googleCalendarEvents = []] = googleCalendarEventsApi.use({
+    eventsStartDate: startOfDay(startDate),
+    eventsEndDate: endOfDay(startDate),
+  });
 
   // If there are no topics in given day render empty component unless forced to render empty.
   if (!rooms?.length && !displayEmpty) {
-    return null;
+    // return null;
   }
 
   return (
     <UIHolder
+      layout="position"
       className={className}
       layoutId={`roomtimeline-${startDate.getTime()}`}
       transition={getSpringTransitionWithDuration(0.6)}
     >
       <UITitle>{niceFormatDate(startDate)}</UITitle>
+      {googleCalendarEvents.length > 0 && <GoogleCalendarEventsInDay events={googleCalendarEvents} />}
       <RoomsList rooms={rooms} />
       {rooms?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled(motion.div)``;
+const UIHolder = styled(motion.div)`
+  ${GoogleCalendarEventsInDay} {
+    margin-bottom: 16px;
+  }
+`;
 
 const UITitle = styled(ItemTitle)`
   margin-bottom: 16px;

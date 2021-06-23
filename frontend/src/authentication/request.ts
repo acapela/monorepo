@@ -1,5 +1,5 @@
 import { NextApiRequest } from "next";
-import { parseJWTWithoutValidation } from "./jwt";
+import { parseJWTWithoutValidation } from "~shared/jwt";
 import { Session } from "next-auth";
 import { IncomingMessage } from "http";
 
