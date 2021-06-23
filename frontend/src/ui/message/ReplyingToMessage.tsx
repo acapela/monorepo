@@ -5,7 +5,8 @@ import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
 import { MessageText } from "./display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
-import { MessageBasicInfoFragment } from "~frontend/../../gql";
+import { MessageBasicInfoFragment } from "~gql";
+import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 
 interface Props {
   message: MessageBasicInfoFragment;
@@ -19,19 +20,13 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
         <MessageText message={message} />
       </MessageLikeContent>
       {onRemove && (
-        <UIRemoveButtonWrapper>
+        <CornerButtonWrapper>
           <IconButton icon={<IconCross />} onClick={onRemove} />
-        </UIRemoveButtonWrapper>
+        </CornerButtonWrapper>
       )}
     </UIHolder>
   );
 };
-
-const UIRemoveButtonWrapper = styled.div`
-  position: absolute;
-  top: 8px;
-  right: 8px;
-`;
 
 const UIHolder = styled.div`
   position: relative;
