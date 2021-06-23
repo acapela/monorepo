@@ -1587,6 +1587,12 @@ type message {
   """
   An object relationship
   """
+  replied_to_message: message
+  replied_to_message_id: uuid
+
+  """
+  An object relationship
+  """
   topic: topic!
   topic_id: uuid!
 
@@ -1862,6 +1868,8 @@ input message_bool_exp {
   is_draft: Boolean_comparison_exp
   message_attachments: message_attachment_bool_exp
   message_type: message_type_bool_exp
+  replied_to_message: message_bool_exp
+  replied_to_message_id: uuid_comparison_exp
   topic: topic_bool_exp
   topic_id: uuid_comparison_exp
   transcription: transcription_bool_exp
@@ -2077,6 +2085,8 @@ input message_insert_input {
   is_draft: Boolean
   message_attachments: message_attachment_arr_rel_insert_input
   message_type: message_type_obj_rel_insert_input
+  replied_to_message: message_obj_rel_insert_input
+  replied_to_message_id: uuid
   topic: topic_obj_rel_insert_input
   topic_id: uuid
   transcription: transcription_obj_rel_insert_input
@@ -2092,6 +2102,7 @@ aggregate max on columns
 type message_max_fields {
   created_at: timestamptz
   id: uuid
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   user_id: uuid
@@ -2103,6 +2114,7 @@ order by max() on columns of table "message"
 input message_max_order_by {
   created_at: order_by
   id: order_by
+  replied_to_message_id: order_by
   topic_id: order_by
   transcription_id: order_by
   user_id: order_by
@@ -2114,6 +2126,7 @@ aggregate min on columns
 type message_min_fields {
   created_at: timestamptz
   id: uuid
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   user_id: uuid
@@ -2125,6 +2138,7 @@ order by min() on columns of table "message"
 input message_min_order_by {
   created_at: order_by
   id: order_by
+  replied_to_message_id: order_by
   topic_id: order_by
   transcription_id: order_by
   user_id: order_by
@@ -2172,6 +2186,8 @@ input message_order_by {
   is_draft: order_by
   message_attachments_aggregate: message_attachment_aggregate_order_by
   message_type: message_type_order_by
+  replied_to_message: message_order_by
+  replied_to_message_id: order_by
   topic: topic_order_by
   topic_id: order_by
   transcription: transcription_order_by
@@ -2222,6 +2238,11 @@ enum message_select_column {
   """
   column name
   """
+  replied_to_message_id
+
+  """
+  column name
+  """
   topic_id
 
   """
@@ -2248,6 +2269,7 @@ input message_set_input {
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
+  replied_to_message_id: uuid
   topic_id: uuid
   transcription_id: uuid
   type: message_type_enum
@@ -2467,6 +2489,11 @@ enum message_update_column {
   column name
   """
   is_draft
+
+  """
+  column name
+  """
+  replied_to_message_id
 
   """
   column name

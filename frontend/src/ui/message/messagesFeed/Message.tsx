@@ -12,6 +12,8 @@ import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
+import { useTopicStore } from "~frontend/topics/TopicStore";
+import { ReplyingToMessage } from "../ReplyingToMessage";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -22,6 +24,11 @@ export const Message = styled(({ message, className }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
+
+  const [, updateTopicState] = useTopicStore();
+  async function handleMarkAsBeingRepliedTo() {
+    updateTopicState((draft) => (draft.currentlyReplyingToMessage = message));
+  }
 
   const [isActive, setIsActive] = useState(false);
   const holderRef = useRef<HTMLDivElement>(null);
@@ -48,6 +55,7 @@ export const Message = styled(({ message, className }: Props) => {
             onActiveChange={setIsActive}
             onEditRequest={enableEditMode}
             onRemoveRequest={handleRemove}
+            onReplyRequest={handleMarkAsBeingRepliedTo}
           />
         )
       }
@@ -60,6 +68,11 @@ export const Message = styled(({ message, className }: Props) => {
         )}
         {!isInEditMode && (
           <>
+            {message.replied_to_message && (
+              <UIReplyingToMessageWrapper>
+                <ReplyingToMessage message={message.replied_to_message} />
+              </UIReplyingToMessageWrapper>
+            )}
             <MessageText message={message} />
             <MessageMedia message={message} />
           </>
@@ -70,3 +83,7 @@ export const Message = styled(({ message, className }: Props) => {
 })``;
 
 const UIMessageBody = styled.div``;
+
+const UIReplyingToMessageWrapper = styled.div`
+  margin-bottom: 8px;
+`;
