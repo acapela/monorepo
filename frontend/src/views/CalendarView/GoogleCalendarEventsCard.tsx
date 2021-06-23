@@ -7,7 +7,6 @@ import { borderRadius } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
 import { PRIMARY_COLOR } from "~ui/colors";
 import { SecondaryText } from "~ui/typo";
-import { routes } from "~frontend/../routes";
 import { createRoom } from "~frontend/gql/rooms";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 

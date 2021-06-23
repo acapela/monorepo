@@ -1,5 +1,5 @@
 import React from "react";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { createRoom } from "~frontend/gql/rooms";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 import { Button } from "~ui/buttons/Button";

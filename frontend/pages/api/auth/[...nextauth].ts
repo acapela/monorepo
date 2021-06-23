@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
-import { Adapter, AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
+import { AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
 import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
-import { Account, db, User, VerificationRequest } from "~db";
+import { Account, db, User } from "~db";
 import { assert } from "~shared/assert";
 import { sendEmail } from "~shared/email";
 
@@ -254,12 +254,6 @@ async function getAuthInitOptions() {
           return token;
         }
 
-        /**
-         * THIS IS TO BE REMOVED SOON!
-         */
-
-        console.log("JWT HERE", { user, account });
-
         return {
           ...token,
           // Add some useful information we might use in the frontend.
@@ -281,12 +275,9 @@ async function getAuthInitOptions() {
         }
 
         try {
-          console.log("sign in attempt", { user, accountInfo });
           const existingAccount = await db.account.findFirst({
             where: { user_id: user.id, provider_id: accountInfo.provider },
           });
-
-          console.log("AFTER SIGN IN");
 
           // If our current account has no refresh token, try to update it if we have it now.
           if (existingAccount) {
@@ -300,7 +291,6 @@ async function getAuthInitOptions() {
 
           return true;
         } catch (error) {
-          console.log("SIGN IN CALLBACK ERROR", error);
           return false;
         }
       },

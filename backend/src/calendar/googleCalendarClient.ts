@@ -104,7 +104,6 @@ export async function fetchCalendarEventsInRangeInCalendar(
 
     return events;
   } catch (e) {
-    console.log("here error", e);
     logger.info("Google Calendar API request failed");
     throw new InternalServerError("Google Calendar API request failed");
   }
@@ -114,8 +113,6 @@ export async function fetchCalendarEventsInRange(userAccount: Account, eventsSta
   const calendarApi = getAuthorizedGoogleCalendarApi(userAccount);
 
   const allCalendars = await calendarApi.calendarList.list();
-
-  console.log("allCalendars", allCalendars.data.items);
 
   if (!allCalendars.data.items) {
     return [];
@@ -133,7 +130,6 @@ export async function fetchCalendarEventsInRange(userAccount: Account, eventsSta
 
     return flatListOfAllCalendarEvents;
   } catch (e) {
-    console.log("here error", e);
     logger.info("Google Calendar API request failed");
     throw new InternalServerError("Google Calendar API request failed");
   }

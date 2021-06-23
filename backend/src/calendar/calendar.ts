@@ -21,19 +21,13 @@ router.post(
     async ({ user, eventsEndDate = new Date(), eventsStartDate = subDays(eventsEndDate, TWO_WEEKS_IN_DAYS) }) => {
       const userGoogleAccount = await db.account.findFirst({ where: { user_id: user.id, provider_id: "google" } });
 
-      console.log("a", { user, userGoogleAccount });
-
       assert(userGoogleAccount, "User has no google account. It is not possible to fetch Google Calendar events");
-      console.log("b", userGoogleAccount);
 
-      console.log("c", { eventsStartDate, eventsEndDate });
       try {
         const calendarEvents = await fetchCalendarEventsInRange(userGoogleAccount, eventsStartDate, eventsEndDate);
 
-        console.log({ calendarEvents });
         return calendarEvents;
       } catch (e) {
-        console.log("SUPER ERROR", e);
         throw new InternalServerError("Calendar API request failed");
       }
     }

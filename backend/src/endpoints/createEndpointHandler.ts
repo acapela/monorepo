@@ -29,13 +29,9 @@ export function createAuthorizedEndpointHandler<Input, Output>(
   handler: (input: Input & AuthorizedRequestAdditionalData, request: Request) => Promise<Output>
 ) {
   return createEndpointHandler<Input & AuthorizedRequestAdditionalData, Output>(async (input, request) => {
-    console.log("1");
     const token = extractAndAssertBearerToken(request.get("Authorization") || "");
 
-    console.log("2");
     const user = verifyAndParseUserJWT(token);
-
-    console.log("3");
 
     const inputWithAuthData: Input & AuthorizedRequestAdditionalData = {
       ...input,

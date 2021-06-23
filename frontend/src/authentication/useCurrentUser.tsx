@@ -28,8 +28,6 @@ function get<T>(target: Record<string, unknown> | null | void, key: string, defa
 export function useCurrentUser() {
   const user = useAdjustedSession();
 
-  console.log({ user });
-
   return user;
 }
 
