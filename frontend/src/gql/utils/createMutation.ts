@@ -63,9 +63,6 @@ export function createMutation<Data, Variables>(
           const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
           currentPhase = phase;
 
-          const isOptimisticUpdate = getRenderedApolloClient().cache !== cache;
-
-          console.log({ isOptimisticUpdate, cache, phase });
           runWithApolloProxy(cache, () => {
             const resultData = unwrapQueryData(rawResult.data);
 
@@ -88,6 +85,7 @@ export function createMutation<Data, Variables>(
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
     const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
     let currentPhase: MutationResultPhase | null = null;
+
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
       ...options,
