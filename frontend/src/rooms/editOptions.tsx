@@ -7,6 +7,7 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconCheck, IconEdit, IconTrash, IconUndo } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
+import { routes } from "~frontend/routes";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -37,6 +38,8 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   });
 
   if (!didConfirm) return;
+
+  routes.space.push({ spaceId: room.space_id });
 
   await deleteRoom({ roomId: room.id });
 }
