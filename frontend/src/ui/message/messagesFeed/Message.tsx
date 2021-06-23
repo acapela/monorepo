@@ -7,20 +7,24 @@ import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
 import { MessageDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { MessageActions } from "~frontend/ui/message/display/MessageActions";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
 import { useTopicStore } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "../ReplyingToMessage";
+import { IconEdit, IconReply, IconTrash } from "~ui/icons";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
+  isDisabled?: boolean;
   className?: string;
 }
 
-export const Message = styled(({ message, className }: Props) => {
+export const Message = styled(({ message, className, isDisabled }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
   const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
@@ -39,24 +43,53 @@ export const Message = styled(({ message, className }: Props) => {
     setIsActive(false);
   });
 
-  async function handleRemove() {
-    await deleteMessage({ id: message.id });
+  async function handleRemoveWithConfirm() {
+    const didConfirm = await openConfirmPrompt({
+      title: "Are you sure?",
+      description: "This action cannot be undone.",
+      confirmLabel: "Remove message",
+    });
+
+    if (didConfirm) {
+      await deleteMessage({ id: message.id });
+    }
   }
 
-  const shouldShowTools = useDebouncedValue(isOwnMessage && !isInEditMode, { onDelay: 0, offDelay: 200 });
+  const shouldShowTools = useDebouncedValue(!isInEditMode && !isDisabled, { onDelay: 0, offDelay: 200 });
+
+  const getMessageActionsOptions = () => {
+    const options = [];
+
+    if (isOwnMessage) {
+      options.push({ label: "Edit message", onSelect: enableEditMode, icon: <IconEdit /> });
+    }
+
+    options.push({ label: "Reply", onSelect: handleMarkAsBeingRepliedTo, icon: <IconReply /> });
+
+    if (isOwnMessage) {
+      options.push({
+        label: "Delete message",
+        onSelect: handleRemoveWithConfirm,
+        isDestructive: true,
+        icon: <IconTrash />,
+      });
+    }
+
+    return options;
+  };
 
   return (
     <MessageLikeContent
       className={className}
       tools={
         shouldShowTools && (
-          <MessageActions
-            isActive={isActive}
-            onActiveChange={setIsActive}
-            onEditRequest={enableEditMode}
-            onRemoveRequest={handleRemove}
-            onReplyRequest={handleMarkAsBeingRepliedTo}
-          />
+          <PopoverMenuTrigger
+            onOpen={() => setIsActive(true)}
+            onClose={() => setIsActive(false)}
+            options={getMessageActionsOptions()}
+          >
+            <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+          </PopoverMenuTrigger>
         )
       }
       user={message.user}

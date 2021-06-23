@@ -56,7 +56,7 @@ export const TopicView = ({ topicId }: Props) => {
           <TopicHeader topic={topic} />
           <ScrollableMessages>
             <AnimateSharedLayout>
-              <MessagesFeed messages={messages} />
+              <MessagesFeed isDisabled={!isMember} messages={messages} />
 
               {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
             </AnimateSharedLayout>
