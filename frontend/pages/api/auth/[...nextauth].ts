@@ -282,7 +282,7 @@ async function getAuthInitOptions() {
 
           // If our current account has no refresh token, try to update it if we have it now.
           if (existingAccount) {
-            if (!existingAccount.refresh_token && accountInfo.refreshToken) {
+            if (accountInfo.refreshToken) {
               await db.account.update({
                 where: { id: existingAccount.id },
                 data: { refresh_token: accountInfo.refreshToken },
