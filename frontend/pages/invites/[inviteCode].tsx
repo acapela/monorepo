@@ -6,12 +6,15 @@ import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
+import { lookupTeamName } from "~frontend/gql/invitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();
   const { inviteCode } = routes.invitePage.useParams();
 
   assert(inviteCode, "Invite code required");
+
+  const [inviteInfo] = lookupTeamName({ token: inviteCode });
 
   useInvitationAcceptedCallback(inviteCode, () => {
     // We use nav with full reload as changing the team updated 'currentTeamId' which is part of json web token data.
@@ -22,11 +25,12 @@ export default function InvitePage() {
 
   return (
     <WindowView>
+      {!inviteInfo && "Invalid invite code!"}
       {/* If there is no user - ask to log in */}
-      {!user && (
+      {!user && inviteInfo && (
         <UIHolder>
           <>
-            You have been invited to join the team.
+            You have been invited by {inviteInfo.inviter_name} to join the "{inviteInfo.team_name}" team.
             <div>
               <LoginOptionsView />
             </div>
