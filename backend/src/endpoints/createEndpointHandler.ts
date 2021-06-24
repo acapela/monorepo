@@ -14,8 +14,8 @@ export function createEndpointHandler<Input, Output>(handler: (input: Input, req
       const requestResultData = await handler(requestInput, request);
       response.status(HttpStatus.OK).json(requestResultData);
     } catch (error) {
-      logger.info("Internal server error", error);
-      response.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      logger.info("endpointHandler failed with error", error);
+      throw error;
     }
   };
 }
