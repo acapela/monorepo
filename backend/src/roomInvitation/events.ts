@@ -1,5 +1,5 @@
 import { RoomParticipants, User } from "~db";
-import { UnprocessableEntityError } from "~backend/src/errors";
+import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById } from "~backend/src/users/users";
 import { RoomAddedNotification } from "~backend/src/roomInvitation/RoomAddedNotification";

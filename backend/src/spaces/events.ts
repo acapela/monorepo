@@ -1,6 +1,6 @@
 import { Space } from "~db";
 import logger from "~shared/logger";
-import { UnprocessableEntityError } from "../errors";
+import { UnprocessableEntityError } from "../errors/errorTypes";
 import { addSpaceMember, getSpaceHasMember } from "./helpers";
 
 export async function handleSpaceUpdates(space: Space, userId: string | null) {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { extractAndAssertBearerToken } from "./authentication";
-import { AuthenticationError } from "./errors";
+import { AuthenticationError } from "./errors/errorTypes";
 
 export function middlewareRequireBearerToken(secretValue: string, errorMessage: string) {
   return function (req: Request, _: Response, next: () => unknown): void {

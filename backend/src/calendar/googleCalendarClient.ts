@@ -1,9 +1,8 @@
 import { google, calendar_v3 } from "googleapis";
-import { assert, assertGet } from "~shared/assert";
-import logger from "~shared/logger";
-import { InternalServerError } from "../errors";
+import { assert, assertGet, assertGetAsync } from "~shared/assert";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Account } from "~db";
+import { PublicInternalServerError } from "../errors/errorTypes";
 
 const clientId = assertGet(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID is required");
 const clientSecret = assertGet(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET is required");
@@ -83,8 +82,8 @@ export async function fetchCalendarEventsInRangeInCalendar(
 ) {
   const calendarApi = getAuthorizedGoogleCalendarApi(userAccount);
 
-  try {
-    const calendarEvents = await calendarApi.events.list({
+  const calendarEvents = await assertGetAsync(
+    calendarApi.events.list({
       calendarId,
       timeMin: eventsStartDate.toISOString(),
       timeMax: eventsEndDate.toISOString(),
@@ -92,43 +91,36 @@ export async function fetchCalendarEventsInRangeInCalendar(
 
       singleEvents: true, // fetches individual recurring events, ignores parent event
       orderBy: "startTime",
-    });
+    }),
+    new PublicInternalServerError("Failed to fetch google events")
+  );
 
-    if (calendarEvents.data.items === undefined) {
-      throw new InternalServerError("Failed to fetch events");
-    }
+  assert(calendarEvents.data.items, new PublicInternalServerError("Failed to fetch google events"));
 
-    const events = calendarEvents.data.items.map(extractInfoFromGoogleCalendarEvent);
+  const events = calendarEvents.data.items.map(extractInfoFromGoogleCalendarEvent);
 
-    return events;
-  } catch (e) {
-    logger.info("Google Calendar API request failed");
-    throw new InternalServerError("Google Calendar API request failed");
-  }
+  return events;
 }
 
 export async function fetchCalendarEventsInRange(userAccount: Account, eventsStartDate: Date, eventsEndDate: Date) {
   const calendarApi = getAuthorizedGoogleCalendarApi(userAccount);
 
-  const allCalendars = await calendarApi.calendarList.list();
+  const allCalendars = await assertGetAsync(
+    calendarApi.calendarList.list(),
+    new PublicInternalServerError("Failed to fetch google calendars list")
+  );
 
-  if (!allCalendars.data.items) {
-    return [];
-  }
+  assert(allCalendars.data.items, new PublicInternalServerError("Failed to fetch google calendars list"));
 
-  try {
-    const eventsFromCalendars = await Promise.all(
-      allCalendars.data.items.map(async (singleCalendar) => {
-        if (!singleCalendar.id) return [];
-        return fetchCalendarEventsInRangeInCalendar(userAccount, singleCalendar.id, eventsStartDate, eventsEndDate);
-      })
-    );
+  // fetchCalendarEventsInRangeInCalendar has it's own error handling so we don't have to handle it here.
+  const eventsFromCalendars = await Promise.all(
+    allCalendars.data.items.map(async (singleCalendar) => {
+      if (!singleCalendar.id) return [];
+      return fetchCalendarEventsInRangeInCalendar(userAccount, singleCalendar.id, eventsStartDate, eventsEndDate);
+    })
+  );
 
-    const flatListOfAllCalendarEvents = eventsFromCalendars.flat();
+  const flatListOfAllCalendarEvents = eventsFromCalendars.flat();
 
-    return flatListOfAllCalendarEvents;
-  } catch (e) {
-    logger.info("Google Calendar API request failed");
-    throw new InternalServerError("Google Calendar API request failed");
-  }
+  return flatListOfAllCalendarEvents;
 }

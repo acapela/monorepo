@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError } from "../errors";
+import { AuthenticationError } from "../errors/errorTypes";
 import { handleTeamInvitationCreated } from "../teamInvitation/events";
 import { handleRoomUpdates } from "../rooms/events";
 import { handleTeamUpdates } from "../teams/events";

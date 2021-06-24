@@ -1,13 +1,11 @@
-import { subDays } from "date-fns";
+import { addDays } from "date-fns";
 import { Router } from "express";
 import { db } from "~db";
 import { assert } from "~shared/assert";
 import { GoogleCalendarEvent, GoogleCalendarEventsAPIRequestBody } from "~shared/types/googleCalendar";
 import { createAuthorizedEndpointHandler } from "../endpoints/createEndpointHandler";
-import { InternalServerError } from "../errors";
-import { fetchCalendarEventsInRange } from "./googleCalendarClient";
-
-assert(process.env.BACKEND_AUTH_TOKEN, "BACKEND_AUTH_TOKEN is required");
+import { AuthenticationError } from "../errors/errorTypes";
+import { fetchCalendarEventsInRangeInCalendar } from "./googleCalendarClient";
 
 const TWO_WEEKS_IN_DAYS = 14;
 
@@ -18,18 +16,24 @@ export const router = Router();
 router.post(
   "/v1/google-calendar/events",
   createAuthorizedEndpointHandler<GoogleCalendarEventsAPIRequestBody, GoogleCalendarEvent[]>(
-    async ({ user, eventsEndDate = new Date(), eventsStartDate = subDays(eventsEndDate, TWO_WEEKS_IN_DAYS) }) => {
+    async ({ user, eventsStartDate = new Date(), eventsEndDate = addDays(eventsStartDate, TWO_WEEKS_IN_DAYS) }) => {
       const userGoogleAccount = await db.account.findFirst({ where: { user_id: user.id, provider_id: "google" } });
 
-      assert(userGoogleAccount, "User has no google account. It is not possible to fetch Google Calendar events");
+      assert(
+        userGoogleAccount,
+        new AuthenticationError(
+          "User has no google account connected. It is not possible to fetch Google Calendar events"
+        )
+      );
 
-      try {
-        const calendarEvents = await fetchCalendarEventsInRange(userGoogleAccount, eventsStartDate, eventsEndDate);
+      const calendarEvents = await fetchCalendarEventsInRangeInCalendar(
+        userGoogleAccount,
+        "primary",
+        eventsStartDate,
+        eventsEndDate
+      );
 
-        return calendarEvents;
-      } catch (e) {
-        throw new InternalServerError("Calendar API request failed");
-      }
+      return calendarEvents;
     }
   )
 );
