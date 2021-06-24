@@ -29,7 +29,7 @@ interface Props {
 const RoomLink = routes.spaceRoom.Link;
 
 const INITIAL_TOPICS_SHOWN_LIMIT = 5;
-const TOPICS_SHOWN_NO_LIMIT = Number.POSITIVE_INFINITY;
+const TOPICS_SHOWN_WITHOUT_LIMIT = Number.POSITIVE_INFINITY;
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   // TODO: optimize !!
@@ -101,7 +101,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               })}
             </UITopics>
             {topicsNotShownCount > 0 && (
-              <UIShowRemainingTopics onClick={() => setShownTopicsLimit(TOPICS_SHOWN_NO_LIMIT)}>
+              <UIShowRemainingTopics onClick={() => setShownTopicsLimit(TOPICS_SHOWN_WITHOUT_LIMIT)}>
                 <IconChevronDown /> Show remaining {topicsNotShownCount > 1 ? `${topicsNotShownCount} topics` : "topic"}
                 ...
               </UIShowRemainingTopics>
