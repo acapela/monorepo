@@ -1,7 +1,7 @@
 import { validate as validateUuid } from "uuid";
 import { db } from "~db";
 import { ActionHandler } from "../actions/actionHandlers";
-import { NotFoundError, UnprocessableEntityError } from "../errors";
+import { NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
 import { getInviterName } from "./events";
 
 export interface LookupTeamNameActionInputs {

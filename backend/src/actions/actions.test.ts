@@ -77,12 +77,12 @@ describe("Hasura action handling", () => {
       .expect(HttpStatus.UNPROCESSABLE_ENTITY);
   });
 
-  it("returns unauthorized when no user id provided", async () => {
+  it("returns no error when no user id provided", async () => {
     await request(app)
       .post("/api/v1/actions/")
       .send(hasuraAction("some-action", { userId: null }))
       .set("Authorization", "Bearer dev-action-secret")
-      .expect(HttpStatus.UNAUTHORIZED);
+      .expect(HttpStatus.OK);
   });
 
   it("returns unauthorized when the token is missing", async () => {
