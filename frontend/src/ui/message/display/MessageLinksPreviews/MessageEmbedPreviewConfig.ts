@@ -6,5 +6,5 @@ interface EmbedPreviewComponentProps {
 
 export interface MessageEmbedPreviewConfig {
   isUrlSupported: (url: string) => boolean;
-  PreviewComponent: React.FC<EmbedPreviewComponentProps>;
+  PreviewComponent: React.VFC<EmbedPreviewComponentProps>;
 }
