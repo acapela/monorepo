@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { PreviewProvider } from "./PreviewProvider";
 
-const getLoomIFrameUrl = (shareUrl: string) => {
+const getLoomEmbedUrl = (shareUrl: string) => {
   try {
     const { pathname } = new URL(shareUrl);
 
@@ -21,21 +21,15 @@ const getLoomIFrameUrl = (shareUrl: string) => {
 };
 
 export const LoomPreviewProvider: PreviewProvider = {
-  isUrlSupported: (url) => {
-    if (url.includes("loom")) {
-      return true;
-    }
-
-    return false;
-  },
+  isUrlSupported: (url) => url.includes("loom.com/share"),
   PreviewComponent: ({ url }) => {
-    const iFrameUrl = getLoomIFrameUrl(url);
+    const embedUrl = getLoomEmbedUrl(url);
 
-    if (!iFrameUrl) {
+    if (!embedUrl) {
       return null;
     }
 
-    return <UIPreview src={iFrameUrl} allow="fullscreen" />;
+    return <UIPreview src={embedUrl} allow="fullscreen" />;
   },
 };
 
