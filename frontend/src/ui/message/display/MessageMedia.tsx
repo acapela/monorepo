@@ -12,17 +12,6 @@ interface Props {
 export function MessageMedia({ message }: Props) {
   const attachments = message.message_attachments ?? [];
 
-  if (message.transcription) {
-    // TODO: Status pending
-    return <div>todo AttachmentWithTranscription</div>;
-    // return (
-    //   <AttachmentWithTranscription
-    //     attachment={attachments[0].attachment}
-    //     transcript={message.transcription.transcript}
-    //   />
-    // );
-  }
-
   if (attachments.length < 1) {
     return null;
   }
