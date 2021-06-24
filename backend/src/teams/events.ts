@@ -1,6 +1,6 @@
 import { Team } from "~db";
 import logger from "~shared/logger";
-import { UnprocessableEntityError } from "../errors";
+import { UnprocessableEntityError } from "../errors/errorTypes";
 import { addTeamMember, getHasTeamMember } from "./helpers";
 
 export async function handleTeamUpdates(team: Team, userId: string | null) {

@@ -11,7 +11,7 @@ import { updateTextMessage } from "~frontend/gql/messages";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { makePromiseVoidable } from "~shared/promises";
-import { useShortcut } from "~frontend/../../ui/keyboard/useShortcut";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
   message: MessageDetailedInfoFragment;

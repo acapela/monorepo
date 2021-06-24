@@ -1,7 +1,7 @@
 import { validate as validateUuid } from "uuid";
 import { TeamInvitation, db, Team } from "~db";
 import { ActionHandler } from "../actions/actionHandlers";
-import { NotFoundError, UnprocessableEntityError } from "../errors";
+import { NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
 import { getHasTeamMember } from "../teams/helpers";
 import { findInviteByCode, invalidateInvite } from "./invites";
 

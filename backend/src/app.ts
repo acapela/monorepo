@@ -11,14 +11,14 @@ import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
 import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
 import { router as calendarRoutes } from "./calendar/calendar";
-import { errorHandling, notFoundRouteHandling } from "./errors";
+import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
   const app = express();
   setupMiddleware(app);
   setupRoutes(app);
-  setupErrorHandling(app);
+  addErrorHandlersToApp(app);
 
   const server = createServer(app);
   setupGracefulShutdown(server);
@@ -40,9 +40,9 @@ function setupRoutes(app: Application): void {
   app.use("/api", calendarRoutes);
 }
 
-function setupErrorHandling(app: Application): void {
-  app.use(notFoundRouteHandling);
-  app.use(errorHandling);
+function addErrorHandlersToApp(app: Application): void {
+  app.use(notFoundRouteMiddleware);
+  app.use(errorHandlerMiddleware);
 }
 
 function setupGracefulShutdown(server: Server) {

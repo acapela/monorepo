@@ -19,3 +19,7 @@ function jsonRetriever(key: string, originalValue: unknown) {
 export function parseJsonWithDates<T>(input: string): T {
   return JSON.parse(input, jsonRetriever) as T;
 }
+
+export function parseDatesInObject<T>(input: T): T {
+  return parseJsonWithDates(JSON.stringify(input));
+}

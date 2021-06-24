@@ -76,6 +76,11 @@ export const [useTeamSpacesQuery] = createQuery<TeamSpacesQuery, TeamSpacesQuery
   `
 );
 
+export function useCurrentTeamSpaces() {
+  const teamId = useAssertCurrentTeamId();
+  return useTeamSpacesQuery({ teamId });
+}
+
 export const [useSpacesQuery] = createQuery<SpacesQuery, SpacesQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}

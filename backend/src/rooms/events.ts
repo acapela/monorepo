@@ -1,6 +1,6 @@
 import { Room } from "~db";
 import logger from "~shared/logger";
-import { UnprocessableEntityError } from "../errors";
+import { UnprocessableEntityError } from "../errors/errorTypes";
 import { addRoomParticipant, getIfParticipantExists } from "./rooms";
 
 export async function handleRoomUpdates(room: Room, userId: string | null) {

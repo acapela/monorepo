@@ -7,7 +7,7 @@ import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { IconChevronDown } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { UIPopoverMenuModal } from "~ui/popovers/PopoverMenu";
-import { useIsRoutePathActive } from "~frontend/../routes";
+import { useIsRoutePathActive } from "~frontend/routes";
 import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 export interface NavItemInfo {

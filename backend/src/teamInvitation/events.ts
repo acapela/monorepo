@@ -1,6 +1,6 @@
 import { TeamInvitation, User } from "~db";
 import logger from "~shared/logger";
-import { UnprocessableEntityError } from "../errors";
+import { UnprocessableEntityError } from "../errors/errorTypes";
 import { sendNotification } from "../notifications/sendNotification";
 import { findTeamById } from "../teams/helpers";
 import { findUserById } from "../users/users";

@@ -332,6 +332,7 @@
           - deadline
           - name
           - slug
+          - source_google_calendar_event_id
           - space_id
           - summary
         backend_only: false
@@ -346,6 +347,7 @@
           - id
           - name
           - slug
+          - source_google_calendar_event_id
           - space_id
           - summary
         filter:

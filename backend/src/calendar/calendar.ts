@@ -1,52 +1,39 @@
-import { Request, Response, Router } from "express";
-import { assertGet } from "~shared/assert";
-import logger from "~shared/logger";
-import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError, BadRequestError } from "../errors";
-import { HttpStatus } from "../http";
-import { isValidOptionalDateArgument } from "../utils";
-import { CalendarAPIRequestBody, fetchCalendarEventsInRange } from "./googleCalendarClient";
+import { addDays } from "date-fns";
+import { Router } from "express";
+import { db } from "~db";
+import { assert } from "~shared/assert";
+import { GoogleCalendarEvent, GoogleCalendarEventsAPIRequestBody } from "~shared/types/googleCalendar";
+import { createAuthorizedEndpointHandler } from "../endpoints/createEndpointHandler";
+import { AuthenticationError } from "../errors/errorTypes";
+import { fetchSingleCalendarEventsInRange } from "./googleCalendarClient";
 
-const backendAuthToken = assertGet(process.env.BACKEND_AUTH_TOKEN, "BACKEND_AUTH_TOKEN is required");
+const TWO_WEEKS_IN_DAYS = 14;
 
 export const router = Router();
-
 /**
  * This endpoint handles handles requests from the client and fetches events from Google Calendar
  */
-router.post("/v1/calendar", async (req: Request, res: Response) => {
-  const token = extractAndAssertBearerToken(req.get("Authorization") || "");
+router.post(
+  "/v1/google-calendar/events",
+  createAuthorizedEndpointHandler<GoogleCalendarEventsAPIRequestBody, GoogleCalendarEvent[]>(
+    async ({ user, eventsStartDate = new Date(), eventsEndDate = addDays(eventsStartDate, TWO_WEEKS_IN_DAYS) }) => {
+      const userGoogleAccount = await db.account.findFirst({ where: { user_id: user.id, provider_id: "google" } });
 
-  if (token !== backendAuthToken) {
-    logger.info("Incorrect token provided for the calendar API request");
-    throw new AuthenticationError("Calendar events API request made with invalid token");
-  }
+      assert(
+        userGoogleAccount,
+        new AuthenticationError(
+          "User has no google account connected. It is not possible to fetch Google Calendar events"
+        )
+      );
 
-  const requestBody = req.body as CalendarAPIRequestBody;
+      const calendarEvents = await fetchSingleCalendarEventsInRange(
+        userGoogleAccount,
+        "primary",
+        eventsStartDate,
+        eventsEndDate
+      );
 
-  if (!requestBody) {
-    throw new BadRequestError("Calendar API request body is missing");
-  }
-
-  const { oAuthToken, eventsEndDate, eventsStartDate } = requestBody;
-
-  if (!oAuthToken || !isValidOptionalDateArgument(eventsEndDate) || !isValidOptionalDateArgument(eventsStartDate)) {
-    throw new BadRequestError("Calendar events API request made with invalid body");
-  }
-
-  const rangeStartDate = eventsStartDate ? new Date(eventsStartDate) : new Date();
-  let rangeEndDate = new Date();
-  if (!eventsEndDate) {
-    const TWO_WEEKS_IN_DAYS = 14;
-    rangeEndDate.setDate(rangeStartDate.getDate() + TWO_WEEKS_IN_DAYS);
-  } else {
-    rangeEndDate = new Date(eventsEndDate);
-  }
-  try {
-    const calendarEvents = await fetchCalendarEventsInRange(oAuthToken, rangeStartDate, rangeEndDate);
-    res.status(HttpStatus.OK).json(calendarEvents);
-  } catch (e) {
-    logger.info("Calendar API request failed");
-    res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-});
+      return calendarEvents;
+    }
+  )
+);

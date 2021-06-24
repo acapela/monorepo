@@ -43,6 +43,7 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       deadline
       summary
       finished_at
+      source_google_calendar_event_id
       members {
         user {
           ...UserBasicInfo
@@ -121,7 +122,10 @@ export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
   return room?.members.some((member) => member.user.id === user.id) ?? false;
 }
 
-export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, CreateRoomMutationVariables>(
+export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
+  CreateRoomMutation,
+  CreateRoomMutationVariables
+>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 

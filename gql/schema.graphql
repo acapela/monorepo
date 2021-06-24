@@ -6099,6 +6099,7 @@ type room {
     where: room_invites_bool_exp
   ): room_invites_aggregate!
   slug: String!
+  source_google_calendar_event_id: String
 
   """
   An object relationship
@@ -6220,6 +6221,7 @@ input room_bool_exp {
   notification_job_id: String_comparison_exp
   room_invites: room_invites_bool_exp
   slug: String_comparison_exp
+  source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
   space_id: uuid_comparison_exp
   summary: String_comparison_exp
@@ -6256,6 +6258,7 @@ input room_insert_input {
   notification_job_id: String
   room_invites: room_invites_arr_rel_insert_input
   slug: String
+  source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
   space_id: uuid
   summary: String
@@ -6583,6 +6586,7 @@ type room_max_fields {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -6599,6 +6603,7 @@ input room_max_order_by {
   name: order_by
   notification_job_id: order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
 }
@@ -6824,6 +6829,7 @@ type room_min_fields {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -6840,6 +6846,7 @@ input room_min_order_by {
   name: order_by
   notification_job_id: order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
 }
@@ -6891,6 +6898,7 @@ input room_order_by {
   notification_job_id: order_by
   room_invites_aggregate: room_invites_aggregate_order_by
   slug: order_by
+  source_google_calendar_event_id: order_by
   space: space_order_by
   space_id: order_by
   summary: order_by
@@ -6951,6 +6959,11 @@ enum room_select_column {
   """
   column name
   """
+  source_google_calendar_event_id
+
+  """
+  column name
+  """
   space_id
 
   """
@@ -6971,6 +6984,7 @@ input room_set_input {
   name: String
   notification_job_id: String
   slug: String
+  source_google_calendar_event_id: String
   space_id: uuid
   summary: String
 }
@@ -7018,6 +7032,11 @@ enum room_update_column {
   column name
   """
   slug
+
+  """
+  column name
+  """
+  source_google_calendar_event_id
 
   """
   column name

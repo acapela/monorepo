@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import logger from "~shared/logger";
-import { BadRequestError } from "../errors";
+import { BadRequestError } from "../errors/errorTypes";
 import { MediaResponse } from "./sonixClient";
 import { updateMessageTranscription } from "./transcriptionService";
 
