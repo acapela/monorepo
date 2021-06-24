@@ -256,6 +256,7 @@ async function getAuthInitOptions() {
 
         return {
           ...token,
+          id: token.sub,
           // Add some useful information we might use in the frontend.
           picture: user.avatar_url,
           name: profile.name,
