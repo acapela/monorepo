@@ -101,24 +101,22 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
           <EditMessageEditor message={message} onCancelRequest={disableEditMode} onSaved={disableEditMode} />
         )}
         {!isInEditMode && (
-          <>
-            {message.replied_to_message && (
-              <UIReplyingToMessageWrapper>
-                <ReplyingToMessage message={message.replied_to_message} />
-              </UIReplyingToMessageWrapper>
-            )}
+          <UIMessageContent>
+            {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
             <MessageText message={message} />
             <MessageMedia message={message} />
             <MessagePreviews message={message} />
-          </>
+          </UIMessageContent>
         )}
       </UIMessageBody>
     </MessageLikeContent>
   );
 })``;
 
-const UIMessageBody = styled.div``;
-
-const UIReplyingToMessageWrapper = styled.div`
-  margin-bottom: 8px;
+const UIMessageContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 `;
+
+const UIMessageBody = styled.div``;
