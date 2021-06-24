@@ -3,7 +3,6 @@ import { MessageDetailedInfoFragment } from "~gql";
 import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
 import { removeMessageAttachment } from "~frontend/gql/attachments";
-// import { AttachmentWithTranscription } from "./AttachmentWithTranscription";
 
 interface Props {
   message: MessageDetailedInfoFragment;
