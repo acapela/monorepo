@@ -1,9 +1,9 @@
 import { MessageBasicInfoFragment } from "~gql";
 import { extractLinksFromMessageContent } from "./extractLinksFromMessageContent";
-import { LoomPreviewProvider } from "./LoomPreviewProvider";
+import { loomPreviewProvider } from "./loomPreviewProvider";
 import { ReactElement } from "react";
 
-const supportedPreviewProviders = [LoomPreviewProvider];
+const supportedPreviewProviders = [loomPreviewProvider];
 
 interface Props {
   message: MessageBasicInfoFragment;

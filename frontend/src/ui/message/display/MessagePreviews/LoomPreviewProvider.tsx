@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { PreviewProvider } from "./PreviewProvider";
+import { MessageEmbedPreviewConfig } from "./MessageEmbedPreviewConfig";
 
 const getLoomEmbedUrl = (shareUrl: string) => {
   try {
@@ -20,7 +20,7 @@ const getLoomEmbedUrl = (shareUrl: string) => {
   }
 };
 
-export const LoomPreviewProvider: PreviewProvider = {
+export const loomPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => url.includes("loom.com/share"),
   PreviewComponent: ({ url }) => {
     const embedUrl = getLoomEmbedUrl(url);
