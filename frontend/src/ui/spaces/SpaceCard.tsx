@@ -18,6 +18,7 @@ import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { SpaceGradient } from "./spaceGradient";
+import { routes } from "~frontend/../routes";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -73,6 +74,8 @@ export function SpaceCard({ space }: Props) {
 
     if (!didConfirm) return;
 
+    routes.spaces.push({});
+
     await deleteSpace({ spaceId: space.id });
   }
 
@@ -84,12 +87,12 @@ export function SpaceCard({ space }: Props) {
             <CornerOptionsMenu
               options={[
                 {
-                  label: "Edit space name",
+                  label: "Edit space name...",
                   onSelect: handleEditSpace,
                   icon: <IconEdit />,
                 },
                 {
-                  label: "Delete space",
+                  label: "Delete space...",
                   onSelect: handleDeleteSpace,
                   icon: <IconTrash />,
                   isDestructive: true,

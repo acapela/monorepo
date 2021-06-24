@@ -55,3 +55,15 @@ export function createOpenRoomFilter(isOpen: boolean): BasicFilter {
     },
   };
 }
+
+export function createSpaceFilter(spaceId: string): BasicFilter {
+  return {
+    key: "space-filter",
+    whereApplier(where) {
+      if (!where.space_id) where.space_id = {};
+      where.space_id = {
+        _eq: spaceId,
+      };
+    },
+  };
+}

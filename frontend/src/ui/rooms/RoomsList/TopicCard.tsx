@@ -1,15 +1,15 @@
 import styled, { css } from "styled-components";
-import { hoverActionCss } from "~ui/transitions";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
 import { TextTitle } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
+import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
 import { useTopic } from "~frontend/topics/useTopic";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { UICardListItem } from "./shared";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -66,16 +66,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
   );
 })``;
 
-const UIHolder = styled.div`
-  padding: 16px 16px 16px 32px;
-
-  position: relative;
-
-  ${hoverActionCss}
-  cursor: pointer;
-
-  border: 1px solid ${BACKGROUND_ACCENT_WEAK};
-`;
+const UIHolder = styled(UICardListItem)``;
 
 const UIInfo = styled.div`
   display: grid;
