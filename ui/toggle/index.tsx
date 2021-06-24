@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
-import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR } from "../colors";
+import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../colors";
 
 const sizes: Record<ToggleSize, Dimensions> = {
   large: {
@@ -92,7 +92,7 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
     width: ${(props) => props.dimensions.innerCircleDiameter}px;
     height: ${(props) => props.dimensions.innerCircleDiameter}px;
 
-    background: #fff;
+    background: ${WHITE};
     border-radius: ${(props) => props.dimensions.innerCircleDiameter}px;
     transition: 0.2s;
   }
