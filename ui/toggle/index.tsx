@@ -37,9 +37,9 @@ export const Toggle = ({ size = "large", onSet, onUnset }: Props) => {
     e.stopPropagation();
 
     if (e.target.checked) {
-      onSet && onSet();
+      onSet?.();
     } else {
-      onUnset && onUnset();
+      onUnset?.();
     }
   }
 
