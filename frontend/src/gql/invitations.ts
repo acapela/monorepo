@@ -4,6 +4,8 @@ import {
   AcceptInviteMutationVariables,
   CreateInviteMutation,
   CreateInviteMutationVariables,
+  LookupTeamNameQuery,
+  LookupTeamNameQueryVariables,
 } from "~gql";
 
 import { createMutation, createQuery } from "./utils";
@@ -32,7 +34,7 @@ export const [useAcceptInviteMutation] = createMutation<AcceptInviteMutation, Ac
   `
 );
 
-export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameVariables>(
+export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQueryVariables>(
   () => gql`
     query LookupTeamName($token: String!) {
       invite: lookup_team_name(token: $token) {
