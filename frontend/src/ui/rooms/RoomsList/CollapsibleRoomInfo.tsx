@@ -26,8 +26,6 @@ interface Props {
   className?: string;
 }
 
-const RoomLink = routes.spaceRoom.Link;
-
 const INITIAL_TOPICS_SHOWN_LIMIT = 5;
 const TOPICS_SHOWN_WITHOUT_LIMIT = Number.POSITIVE_INFINITY;
 
@@ -61,17 +59,19 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       {unreadNotificationsCount > 0 && (
         <ElementNotificationBadge>{formatNumberWithMaxValue(unreadNotificationsCount, 99)}</ElementNotificationBadge>
       )}
-      <UICollapseHolder isOpened={isOpen}>
-        <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
-      </UICollapseHolder>
+
       <UIIndentBody>
         <UIHead>
-          <UIHeadPrimary>
-            <RoomLink params={{ roomId: room.id, spaceId: room.space_id }}>
-              <a>
-                <ItemTitle>{room.name}</ItemTitle>
-              </a>
-            </RoomLink>
+          <UICollapseHolder isOpened={isOpen}>
+            <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
+          </UICollapseHolder>
+          <UIHeadPrimary
+            onClick={() => {
+              routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
+            }}
+          >
+            <ItemTitle>{room.name}</ItemTitle>
+
             <UIRoomMetaData>
               <UIRoomInfo>
                 <UIRoomInfoKey>Due date:</UIRoomInfoKey>{" "}
@@ -83,6 +83,11 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                   <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space.name}</UIRoomInfoValue>
                 </UIRoomInfo>
               )}
+              <UIRoomInfoSeparator />
+              <UIRoomInfo>
+                <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
+              </UIRoomInfo>
+
               <UIRoomInfoSeparator />
               <UIRoomInfo>
                 <UIRoomInfoKey>Topics:</UIRoomInfoKey> <UIRoomInfoValue>{topics.length}</UIRoomInfoValue>
@@ -119,7 +124,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 })``;
 
 const UIHolder = styled(CardBase)`
-  display: flex;
   position: relative;
 `;
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
@@ -152,6 +156,7 @@ const UIHeadPrimary = styled.div`
   flex-direction: column;
   align-items: flex-start;
   flex: 1;
+  cursor: pointer;
 `;
 
 const UIRoomMetaData = styled.div`
