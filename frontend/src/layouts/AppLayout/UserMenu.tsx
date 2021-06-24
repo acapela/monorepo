@@ -5,10 +5,9 @@ import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { hoverActionCss } from "~ui/transitions";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { convertUserAuthToBasicFragment } from "~frontend/utils/user";
 
 export function UserMenu() {
-  const userAuthData = useAssertCurrentUser();
+  const user = useAssertCurrentUser();
 
   return (
     <UIHolder>
@@ -33,7 +32,7 @@ export function UserMenu() {
       >
         <UIAvatarWithArrow>
           <IconChevronDown />
-          <UserAvatar user={convertUserAuthToBasicFragment(userAuthData)} size="small" disableNameTooltip />
+          <UserAvatar user={user} size="small" disableNameTooltip />
         </UIAvatarWithArrow>
       </PopoverMenuTrigger>
     </UIHolder>
