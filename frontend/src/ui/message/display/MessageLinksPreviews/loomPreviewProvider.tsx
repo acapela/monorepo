@@ -16,6 +16,7 @@ const getLoomEmbedUrl = (shareUrl: string) => {
 
     return `https://www.loom.com/embed/${videoId}`;
   } catch (err) {
+    console.error(`Failed to parse Loom URL: ${shareUrl}`);
     return null;
   }
 };
