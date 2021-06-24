@@ -132,7 +132,7 @@ export const [useCreateRoomMutation] = createMutation<CreateRoomMutation, Create
     }
   `,
   {
-    onOptimisticAndActualResponse(room, variables) {
+    onOptimisticOrActualResponse(room, variables) {
       if (!room || !variables.input.space_id) return;
 
       SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
@@ -186,11 +186,13 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
         insert_room_member_one: { __typename: "room_member", user_id: vars.userId, room_id: vars.roomId },
       };
     },
-    onOptimisticAndActualResponse(data, vars, phase) {
+    onOptimisticOrActualResponse(data, vars) {
       RoomDetailedInfoFragment.update(vars.roomId, (room) => {
         room.members.push({ __typename: "room_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
       });
-      phase === "actual" && addToast({ type: "info", content: `Room member was added` });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Room member was added` });
     },
   }
 );
@@ -213,11 +215,13 @@ export const [useRemoveRoomMemberMutation] = createMutation<
         delete_room_member: { __typename: "room_member_mutation_response", affected_rows: 1 },
       };
     },
-    onOptimisticAndActualResponse(data, vars, phase) {
+    onOptimisticOrActualResponse(data, vars) {
       RoomDetailedInfoFragment.update(vars.roomId, (room) => {
         room.members = room.members.filter((member) => member.user.id !== vars.userId);
       });
-      phase === "actual" && addToast({ type: "info", content: `Room member was added` });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Room member was added` });
     },
   }
 );
@@ -273,7 +277,7 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
         room: RoomDetailedInfoFragment.assertRead(vars.roomId),
       };
     },
-    onOptimisticAndActualResponse(removedRoom) {
+    onOptimisticOrActualResponse(removedRoom) {
       if (!removedRoom.space_id) return;
       SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
         space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);

@@ -12,11 +12,13 @@ import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
 
 interface MutationDefinitionOptions<Data, Variables> {
   // This callback is called optionally twice for both optimistic and actual response
-  onOptimisticAndActualResponse?: (
+  onOptimisticOrActualResponse?: (
     data: NonNullable<UnwrapQueryData<Data>>,
     variables: Variables,
     phase: MutationResultPhase
   ) => void;
+  onOptimisticResponse?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
+  onActualResponse?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
   optimisticResponse?: (vars: Variables) => Data;
 }
 
@@ -38,40 +40,49 @@ export function createMutation<Data, Variables>(
   const getMutation = memoize(mutation);
 
   function getNextPhase(currentPhase: MutationResultPhase | null, hasOptimisticResponse: boolean): MutationResultPhase {
-    if (currentPhase === null) {
-      if (hasOptimisticResponse) {
-        return "optimistic";
-      }
-      return "actual";
+    if (currentPhase === null && hasOptimisticResponse) {
+      return "optimistic";
     }
-
     return "actual";
+  }
+
+  function createMutationUpdateCallback(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
+    const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
+    let currentPhase: MutationResultPhase | null = null;
+    const mutationUpdateCallback: MutationFunctionOptions<Data, Variables>["update"] = (cache, rawResult) => {
+      const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
+      currentPhase = phase;
+
+      runWithApolloProxy(cache, () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const resultData = unwrapQueryData(rawResult.data)!;
+
+        if (resultData) {
+          mutationDefinitionOptions?.onOptimisticOrActualResponse?.(resultData, variables, phase);
+
+          if (phase === "actual") {
+            mutationDefinitionOptions?.onActualResponse?.(resultData, variables);
+          }
+
+          if (phase === "optimistic") {
+            mutationDefinitionOptions?.onOptimisticResponse?.(resultData, variables);
+          }
+        }
+      });
+    };
+
+    return mutationUpdateCallback;
   }
 
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
     const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
-      const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
-      let currentPhase: MutationResultPhase | null = null;
-
       const rawResult = await runMutationRaw({
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
         ...options,
         variables,
-        update(cache, rawResult) {
-          const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
-          currentPhase = phase;
-
-          runWithApolloProxy(cache, () => {
-            const resultData = unwrapQueryData(rawResult.data);
-
-            if (resultData) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              mutationDefinitionOptions?.onOptimisticAndActualResponse?.(resultData!, variables, phase);
-            }
-          });
-        },
+        update: createMutationUpdateCallback(variables, options),
       });
 
       const resultData = unwrapQueryData(rawResult.data);
@@ -83,27 +94,12 @@ export function createMutation<Data, Variables>(
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    const hasOptimisticUpdate = !!mutationDefinitionOptions?.optimisticResponse || !!options?.optimisticResponse;
-    let currentPhase: MutationResultPhase | null = null;
-
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
       ...options,
       mutation: getMutation(),
       variables,
-      update(cache, rawResult) {
-        const phase = getNextPhase(currentPhase, hasOptimisticUpdate);
-        currentPhase = phase;
-
-        runWithApolloProxy(cache, () => {
-          const resultData = unwrapQueryData(rawResult.data);
-
-          if (resultData) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            mutationDefinitionOptions?.onOptimisticAndActualResponse?.(resultData!, variables, phase);
-          }
-        });
-      },
+      update: createMutationUpdateCallback(variables, options),
     });
 
     const resultData = unwrapQueryData(rawResult.data);

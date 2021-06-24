@@ -121,7 +121,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         },
       };
     },
-    onOptimisticAndActualResponse: (message, variables) => {
+    onOptimisticOrActualResponse: (message, variables) => {
       topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
         if (!message) {
           return;

@@ -140,7 +140,7 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
         space: { id: getUUID(), name: variables.name, __typename: "space", members: [] },
       };
     },
-    onOptimisticAndActualResponse(space, { teamId }) {
+    onOptimisticOrActualResponse(space, { teamId }) {
       TeamDetailedInfoFragment.update(teamId, (team) => {
         team.spaces.push(space);
       });
@@ -196,7 +196,7 @@ export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
         deletedSpace: space,
       };
     },
-    onOptimisticAndActualResponse(deletedSpace) {
+    onOptimisticOrActualResponse(deletedSpace) {
       TeamDetailedInfoFragment.update(deletedSpace.team_id, (team) => {
         team.spaces = team.spaces.filter((space) => space.id !== deletedSpace.id);
       });
@@ -223,7 +223,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
         },
       };
     },
-    onOptimisticAndActualResponse(data, variables, phase) {
+    onOptimisticOrActualResponse(data, variables) {
       SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members.push({
           __typename: "space_member",
@@ -232,7 +232,9 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
           space_id: variables.spaceId,
         });
       });
-      phase === "actual" && addToast({ type: "info", content: `Space member was added` });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Space member was added` });
     },
   }
 );
@@ -258,11 +260,13 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
         },
       };
     },
-    onOptimisticAndActualResponse(data, variables, phase) {
+    onOptimisticOrActualResponse(data, variables) {
       SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members = space.members.filter((member) => member.user.id !== variables.userId);
       });
-      phase === "actual" && addToast({ type: "info", content: `Space member was removed` });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Space member was removed` });
     },
   }
 );
