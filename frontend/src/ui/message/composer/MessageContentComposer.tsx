@@ -14,6 +14,7 @@ interface Props {
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
   hideEditorSubmitButton?: boolean;
+  additionalContent?: React.ReactNode;
 }
 
 export const MessageContentEditor = ({
@@ -25,6 +26,7 @@ export const MessageContentEditor = ({
   onFilesSelected,
   onAttachmentRemoveRequest,
   hideEditorSubmitButton,
+  additionalContent = null,
 }: Props) => {
   return (
     <RichEditor
@@ -35,7 +37,8 @@ export const MessageContentEditor = ({
       placeholder="Type here to start contributing..."
       autofocusKey={autofocusKey}
       hideSubmitButton={hideEditorSubmitButton}
-      additionalContent={
+      additionalTopContent={additionalContent}
+      additionalBottomContent={
         attachments.length > 0 && (
           <UIAttachmentsPreviews>
             {attachments.map((attachment) => {

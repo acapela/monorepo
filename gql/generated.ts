@@ -8383,7 +8383,7 @@ export type AcceptInviteMutation = (
 
 export type MessageBasicInfoFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'content'>
+  & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
   & { user: (
     { __typename?: 'user' }
@@ -8395,7 +8395,10 @@ export type MessageDetailedInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content' | 'type'>
   & { createdAt: Message['created_at'] }
-  & { transcription?: Maybe<(
+  & { replied_to_message?: Maybe<(
+    { __typename?: 'message' }
+    & MessageBasicInfoFragment
+  )>, transcription?: Maybe<(
     { __typename?: 'transcription' }
     & Pick<Transcription, 'status' | 'transcript'>
   )>, user: (
@@ -8415,6 +8418,7 @@ export type CreateMessageMutationVariables = Exact<{
   content: Scalars['jsonb'];
   type: Message_Type_Enum;
   attachments: Array<Message_Attachment_Insert_Input> | Message_Attachment_Insert_Input;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
 }>;
 
 

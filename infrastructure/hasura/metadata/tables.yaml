@@ -283,6 +283,14 @@
     - name: creator
       using:
         foreign_key_constraint_on: creator_id
+    - name: last_posted_message
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: room_last_posted_message
+          column_mapping:
+            id: room_id
     - name: space
       using:
         foreign_key_constraint_on: space_id
@@ -436,6 +444,30 @@
           room:
             creator_id:
               _eq: X-Hasura-User-Id
+- table:
+    schema: public
+    name: room_last_posted_message
+  object_relationships:
+    - name: room
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: room
+          column_mapping:
+            room_id: id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - last_posted_message_time
+        filter:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: room_member

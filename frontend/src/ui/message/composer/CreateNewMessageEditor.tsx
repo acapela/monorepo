@@ -8,20 +8,48 @@ import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
+import { useTopicStore } from "~frontend/topics/TopicStore";
+import { ReplyingToMessage } from "~frontend/ui/message/ReplyingToMessage";
+import { Message_Type_Enum } from "~gql";
 
 interface Props {
   topicId: string;
+}
+
+interface SubmitMessageParams {
+  type: Message_Type_Enum;
+  content: EditorContent;
+  attachments: EditorAttachmentInfo[];
 }
 
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<EditorContent>([]);
 
+  const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
+  const handlStopReplyingToMessage = () => {
+    updateTopicState((draft) => (draft.currentlyReplyingToMessage = null));
+  };
+
   async function handleNewFiles(files: File[]) {
     const uploadedAttachments = await uploadFiles(files);
 
     attachmentsList.push(...uploadedAttachments);
   }
+
+  const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
+    await createMessage({
+      topicId,
+      type,
+      content,
+      attachments: attachments.map((attachment) => ({
+        attachment_id: attachment.uuid,
+      })),
+      replied_to_message_id: currentlyReplyingToMessage?.id,
+    });
+
+    handlStopReplyingToMessage();
+  };
 
   return (
     <UIEditorContainer>
@@ -31,13 +59,10 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
 
           const messageType = chooseMessageTypeFromMimeType(uploadedAttachments[0].mimeType);
 
-          await createMessage({
-            topicId: topicId,
+          await submitMessage({
             type: messageType,
             content: [],
-            attachments: uploadedAttachments.map((attachment) => ({
-              attachment_id: attachment.uuid,
-            })),
+            attachments: uploadedAttachments,
           });
         }}
       />
@@ -45,13 +70,10 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
-          await createMessage({
-            topicId: topicId,
+          await submitMessage({
             type: "TEXT",
             content: value,
-            attachments: attachments.map((attachment) => ({
-              attachment_id: attachment.uuid,
-            })),
+            attachments,
           });
 
           attachmentsList.clear();
@@ -65,6 +87,11 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
             return existingAttachment.uuid !== attachmentId;
           });
         }}
+        additionalContent={
+          currentlyReplyingToMessage ? (
+            <ReplyingToMessage onRemove={handlStopReplyingToMessage} message={currentlyReplyingToMessage} />
+          ) : null
+        }
       />
     </UIEditorContainer>
   );

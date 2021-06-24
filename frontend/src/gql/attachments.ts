@@ -67,7 +67,7 @@ export const [useRemoveMessageAttachment, { mutate: removeMessageAttachment }] =
         },
       };
     },
-    onResult(message, variables) {
+    onOptimisticOrActualResponse(message, variables) {
       MessageDetailedInfoFragment.update(variables.messageId, (message) => {
         message.message_attachments = message.message_attachments.filter((messageAttachment) => {
           return messageAttachment.attachment.id !== variables.attachmentId;

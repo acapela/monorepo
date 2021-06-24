@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/client";
+import { convertUserAuthToBasicFragment } from "~frontend/utils/user";
 import { assertGet } from "~shared/assert";
 import { UserTokenData } from "~shared/types/jwtAuth";
 
@@ -36,7 +37,7 @@ export function useCurrentUser() {
  *
  * Therefore in components that renders only on logged in use-cases, we can assert current user
  */
-export function useAssertCurrentUser() {
+export function useAssetCurrentUserAuth() {
   const user = useCurrentUser();
 
   const validatedUser = assertGet(user, `Using useAssertCurrentUser with null user`);
@@ -44,8 +45,14 @@ export function useAssertCurrentUser() {
   return validatedUser;
 }
 
+export function useAssertCurrentUser() {
+  const validatedUser = useAssetCurrentUserAuth();
+
+  return convertUserAuthToBasicFragment(validatedUser);
+}
+
 export function useAssertCurrentTeamId() {
-  const user = useAssertCurrentUser();
+  const user = useAssetCurrentUserAuth();
 
   return assertGet(user.currentTeamId, "No team id");
 }

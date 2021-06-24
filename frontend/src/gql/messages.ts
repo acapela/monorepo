@@ -23,6 +23,7 @@ export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentT
       id
       createdAt: created_at
       content
+      type
       user {
         ...UserBasicInfo
       }
@@ -34,6 +35,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
   () => gql`
     ${AttachmentDetailedInfoFragment()}
     ${UserBasicInfoFragment()}
+    ${MessageBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
       id
@@ -41,6 +43,9 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
       createdAt: created_at
       content
       type
+      replied_to_message {
+        ...MessageBasicInfo
+      }
       transcription {
         status
         transcript
@@ -69,6 +74,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
       $content: jsonb!
       $type: message_type_enum!
       $attachments: [message_attachment_insert_input!]!
+      $replied_to_message_id: uuid
     ) {
       message: insert_message_one(
         object: {
@@ -76,6 +82,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           topic_id: $topicId
           type: $type
           message_attachments: { data: $attachments }
+          replied_to_message_id: $replied_to_message_id
           is_draft: false
         }
       ) {
@@ -86,6 +93,13 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
   {
     optimisticResponse(vars) {
       const userData = assertReadUserDataFromCookie();
+
+      function getRepliedMessageFragmentData() {
+        if (!vars.replied_to_message_id) {
+          return null;
+        }
+        return MessageBasicInfoFragment.read(vars.replied_to_message_id);
+      }
 
       return {
         __typename: "mutation_root",
@@ -103,10 +117,11 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           },
           id: getUUID(),
           content: vars.content,
+          replied_to_message: getRepliedMessageFragmentData(),
         },
       };
     },
-    onResult: (message, variables) => {
+    onOptimisticOrActualResponse: (message, variables) => {
       topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
         if (!message) {
           return;

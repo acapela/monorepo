@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { MessageBasicInfoFragment, MessageDetailedInfoFragment } from "~gql";
+import { MessageBasicInfoFragment } from "~gql";
 import { richEditorContentCss } from "~richEditor/Theme";
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  message: MessageBasicInfoFragment;
 }
 
 function renderMessageContent(message: MessageBasicInfoFragment) {

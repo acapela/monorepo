@@ -1,7 +1,7 @@
 import { setColorOpacity } from "~shared/colors";
 
-export const BLACK = "#000";
-export const WHITE = "#fff";
+export const BLACK = "hsl(0, 0%, 0%)";
+export const WHITE = "hsl(0, 0%, 100%)";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
 export const BACKGROUND_ACCENT_WEAK = "hsl(300, 2%, 97%)";
 export const DANGER_COLOR = `hsl(0, 100%, 68%)`;
