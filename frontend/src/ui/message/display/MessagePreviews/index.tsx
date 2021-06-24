@@ -1,8 +1,7 @@
 import { MessageBasicInfoFragment } from "~gql";
 import { extractLinksFromMessageContent } from "./extractLinksFromMessageContent";
-import { getPreviewProviders } from "./PreviewProviders";
 import { LoomPreviewProvider } from "./LoomPreviewProvider";
-import { PreviewProvider } from "./PreviewProvider";
+import { ReactElement } from "react";
 
 const supportedPreviewProviders = [LoomPreviewProvider];
 
@@ -12,11 +11,10 @@ interface Props {
 
 export const MessagePreviews = ({ message }: Props) => {
   const links = extractLinksFromMessageContent(message.content);
-  const previewProviders = getPreviewProviders(links);
 
   return (
     <>
-      {links.reduce((acc: PreviewProvider[], url) => {
+      {links.reduce((acc: ReactElement[], url) => {
         const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(url));
 
         if (previewProvider) {
