@@ -49,7 +49,6 @@
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "hasura:update": "yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta",
     "frontend:gql-types": "tooling gql frontend --watch",
-    "postinstall": "yarn workspace ~db generate",
     "lint": "eslint . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
