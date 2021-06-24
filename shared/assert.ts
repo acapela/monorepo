@@ -5,6 +5,7 @@ export class AssertError extends Error {
 }
 
 type Empty = null | undefined;
+type NotEmpty<T> = T extends Empty ? never : T;
 
 type MessageOrError = string | Error;
 
@@ -36,9 +37,11 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   throw error;
 }
 
-export async function assertGetAsync<T>(promise: Promise<T>, messageOrError: MessageOrError): T {
+export async function assertGetAsync<T>(promise: Promise<T | Empty>, messageOrError: MessageOrError): Promise<T> {
   try {
     const result = await promise;
+
+    assert(result, messageOrError);
     return result;
   } catch (_) {
     const error = getErrorFromMessageOrError(messageOrError);

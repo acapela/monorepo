@@ -5,7 +5,7 @@ import { assert } from "~shared/assert";
 import { GoogleCalendarEvent, GoogleCalendarEventsAPIRequestBody } from "~shared/types/googleCalendar";
 import { createAuthorizedEndpointHandler } from "../endpoints/createEndpointHandler";
 import { AuthenticationError } from "../errors/errorTypes";
-import { fetchCalendarEventsInRangeInCalendar } from "./googleCalendarClient";
+import { fetchSingleCalendarEventsInRange } from "./googleCalendarClient";
 
 const TWO_WEEKS_IN_DAYS = 14;
 
@@ -26,7 +26,7 @@ router.post(
         )
       );
 
-      const calendarEvents = await fetchCalendarEventsInRangeInCalendar(
+      const calendarEvents = await fetchSingleCalendarEventsInRange(
         userGoogleAccount,
         "primary",
         eventsStartDate,

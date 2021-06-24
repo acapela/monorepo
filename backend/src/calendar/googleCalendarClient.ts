@@ -74,7 +74,7 @@ function getAuthorizedGoogleCalendarApi(userAccount: Account) {
   return calendarApi;
 }
 
-export async function fetchCalendarEventsInRangeInCalendar(
+export async function fetchSingleCalendarEventsInRange(
   userAccount: Account,
   calendarId: string,
   eventsStartDate: Date,
@@ -116,7 +116,7 @@ export async function fetchCalendarEventsInRange(userAccount: Account, eventsSta
   const eventsFromCalendars = await Promise.all(
     allCalendars.data.items.map(async (singleCalendar) => {
       if (!singleCalendar.id) return [];
-      return fetchCalendarEventsInRangeInCalendar(userAccount, singleCalendar.id, eventsStartDate, eventsEndDate);
+      return fetchSingleCalendarEventsInRange(userAccount, singleCalendar.id, eventsStartDate, eventsEndDate);
     })
   );
 
