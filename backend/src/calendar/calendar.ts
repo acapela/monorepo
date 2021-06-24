@@ -17,7 +17,6 @@ router.post(
   "/v1/google-calendar/events",
   createAuthorizedEndpointHandler<GoogleCalendarEventsAPIRequestBody, GoogleCalendarEvent[]>(
     async ({ user, eventsStartDate = new Date(), eventsEndDate = addDays(eventsStartDate, TWO_WEEKS_IN_DAYS) }) => {
-      console.log(user, "yyup");
       const userGoogleAccount = await db.account.findFirst({ where: { user_id: user.id, provider_id: "google" } });
 
       assert(
