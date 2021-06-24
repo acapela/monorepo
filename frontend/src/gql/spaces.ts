@@ -140,7 +140,7 @@ export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, Crea
         space: { id: getUUID(), name: variables.name, __typename: "space", members: [] },
       };
     },
-    onResult(space, { teamId }) {
+    onOptimisticOrActualResponse(space, { teamId }) {
       TeamDetailedInfoFragment.update(teamId, (team) => {
         team.spaces.push(space);
       });
@@ -196,7 +196,7 @@ export const [useDeleteSpaceMutation, { mutate: deleteSpace }] = createMutation<
         deletedSpace: space,
       };
     },
-    onResult(deletedSpace) {
+    onOptimisticOrActualResponse(deletedSpace) {
       TeamDetailedInfoFragment.update(deletedSpace.team_id, (team) => {
         team.spaces = team.spaces.filter((space) => space.id !== deletedSpace.id);
       });
@@ -223,7 +223,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
         },
       };
     },
-    onResult(data, variables) {
+    onOptimisticOrActualResponse(data, variables) {
       SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members.push({
           __typename: "space_member",
@@ -232,6 +232,8 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
           space_id: variables.spaceId,
         });
       });
+    },
+    onActualResponse() {
       addToast({ type: "info", content: `Space member was added` });
     },
   }
@@ -258,10 +260,12 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
         },
       };
     },
-    onResult(data, variables) {
+    onOptimisticOrActualResponse(data, variables) {
       SpaceBasicInfoFragment.update(variables.spaceId, (space) => {
         space.members = space.members.filter((member) => member.user.id !== variables.userId);
       });
+    },
+    onActualResponse() {
       addToast({ type: "info", content: `Space member was removed` });
     },
   }
