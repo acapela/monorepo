@@ -380,8 +380,6 @@ async function getAuthInitOptions() {
 
         // Beside default scope, we need calendar access.
         scope: GOOGLE_AUTH_SCOPES.map((scopeName) => `https://www.googleapis.com/auth/${scopeName}`).join(" "),
-        // scope:
-        //   "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar.readonly",
       }),
       Providers.Email({
         sendVerificationRequest,

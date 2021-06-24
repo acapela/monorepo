@@ -1,7 +1,5 @@
 import { HttpStatus } from "~backend/src/http";
 
-export abstract class RequestError extends Error {}
-
 export class HttpError extends Error {
   public readonly status: HttpStatus;
   public readonly isPublicError: boolean = false;
