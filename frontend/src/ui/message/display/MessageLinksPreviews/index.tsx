@@ -9,7 +9,7 @@ interface Props {
   message: MessageBasicInfoFragment;
 }
 
-export const MessagePreviews = ({ message }: Props) => {
+export const MessageLinksPreviews = ({ message }: Props) => {
   const links = extractLinksFromMessageContent(message.content);
 
   return (
