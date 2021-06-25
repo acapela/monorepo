@@ -10,6 +10,8 @@ import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
+  const { query } = useRouter();
+  const enableEmailLogin = query.enableEmailLogin === "true";
 
   return (
     <div>
@@ -17,7 +19,7 @@ export default function LoginPage(): JSX.Element {
         <UILogoWrapper>
           <Logo />
         </UILogoWrapper>
-        {!isAuthenticated && <LoginOptionsView />}
+        {!isAuthenticated && <LoginOptionsView enableEmailLogin={enableEmailLogin} />}
         {isRedirecting && <div>Redirecting...</div>}
       </UIContentWrapper>
     </div>
