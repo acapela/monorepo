@@ -244,6 +244,9 @@ async function getAuthInitOptions() {
       // Use JSON Web Tokens for session instead of database sessions.
       jwt: true,
     },
+    pages: {
+      error: "/auth/error", // Error code passed in query string as ?error=
+    },
     useSecureCookies: false,
     debug: process.env.NODE_ENV === "development",
     callbacks: {
