@@ -6,7 +6,7 @@ import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
 import { Account, db, User } from "~db";
 import { assert } from "~shared/assert";
-import { sendEmail } from "~shared/email";
+import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -201,7 +201,7 @@ interface VerificationRequestParams {
 
 async function sendVerificationRequest({ identifier: email, url }: VerificationRequestParams) {
   await sendEmail({
-    from: "acapela@meetnomore.com",
+    from: DEFAULT_NOTIFICATION_EMAIL,
     subject: "Login to acapela",
     to: email,
     text: `Hello, click this link to log in - ${url}`,
