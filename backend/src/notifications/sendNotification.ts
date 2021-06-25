@@ -3,7 +3,7 @@ import { Notification } from "./Notification";
 
 export function sendNotification(notification: Notification): Promise<void> {
   return sendEmail({
-    from: "acapela@meetnomore.com",
+    from: "hello@acape.la",
     subject: notification.getSubject(),
     to: notification.getRecipientEmail(),
     html: notification.getContent(),
