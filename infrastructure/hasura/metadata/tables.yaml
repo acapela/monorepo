@@ -268,6 +268,39 @@
     name: message_full_text
 - table:
     schema: public
+    name: message_reaction
+  insert_permissions:
+    - role: user
+      permission:
+        check: {}
+        columns:
+          - emoji
+          - message_id
+          - user_id
+        backend_only: false
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - emoji
+          - message_id
+          - user_id
+        filter: {}
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - emoji
+          - message_id
+          - user_id
+        filter: {}
+        check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter: {}
+- table:
+    schema: public
     name: message_type
   is_enum: true
   select_permissions:
