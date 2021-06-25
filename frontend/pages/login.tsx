@@ -3,25 +3,20 @@ import { ParsedUrlQuery } from "querystring";
 import React, { useEffect, useState } from "react";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { DEFAULT_REDIRECT_URL } from "~frontend/config";
-import { Logo } from "~frontend/ui/Logo";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { UILogoWrapper } from "~frontend/ui/UILogoWrapper";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { WindowView } from "~frontend/views/WindowView";
 
 export default function LoginPage(): JSX.Element {
   const { isRedirecting, isAuthenticated } = useRedirectWhenAuthenticated();
   const { query } = useRouter();
-  const enableEmailLogin = query.enableEmailLogin === "true";
+  const isEmailLoginEnabled = query.isEmailLoginEnabled === "true";
 
   return (
     <div>
-      <UIContentWrapper marginTop>
-        <UILogoWrapper>
-          <Logo />
-        </UILogoWrapper>
-        {!isAuthenticated && <LoginOptionsView enableEmailLogin={enableEmailLogin} />}
+      <WindowView>
+        {!isAuthenticated && <LoginOptionsView isEmailLoginEnabled={isEmailLoginEnabled} />}
         {isRedirecting && <div>Redirecting...</div>}
-      </UIContentWrapper>
+      </WindowView>
     </div>
   );
 }

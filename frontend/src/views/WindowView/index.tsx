@@ -29,6 +29,10 @@ const UIWindow = styled.div`
   ${shadow.modal};
   ${borderRadius.modal}
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
 `;
 
 const UILogo = styled(Logo)`
