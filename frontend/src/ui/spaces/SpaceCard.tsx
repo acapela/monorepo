@@ -22,9 +22,10 @@ import { routes } from "~frontend/../routes";
 
 interface Props {
   space: SpaceBasicInfoFragment;
+  isClickable?: boolean;
 }
 
-export function SpaceCard({ space }: Props) {
+export function SpaceCard({ space, isClickable = true }: Props) {
   const spaceId = space.id;
   const router = useRouter();
   const amIMember = isCurrentUserSpaceMember(space);
@@ -42,7 +43,9 @@ export function SpaceCard({ space }: Props) {
   }
 
   function handleOpen() {
-    router.push(`space/${space.id}`);
+    if (isClickable) {
+      router.push(`space/${space.id}`);
+    }
   }
 
   async function handleEditSpace() {
@@ -81,7 +84,7 @@ export function SpaceCard({ space }: Props) {
 
   return (
     <>
-      <UIHolder>
+      <UIHolder isClickable={isClickable}>
         <UIBanner>
           {amIMember && (
             <CornerOptionsMenu
@@ -121,15 +124,15 @@ export function SpaceCard({ space }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{ isClickable?: boolean }>`
   padding: 1rem;
   margin: -1rem;
-  cursor: pointer;
+  cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
   position: relative;
   /* Don't over-stretch inside grid/flex if has wide content */
   min-width: 0;
 
-  ${hoverActionCss}
+  ${(props) => (props.isClickable ? hoverActionCss : null)}
 `;
 
 const UIBanner = styled.div`
