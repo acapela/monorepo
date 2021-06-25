@@ -15,3 +15,5 @@ export async function sendEmail(email: MailDataRequired, isMultiple?: boolean): 
     throw new Error("Sending email failed");
   }
 }
+
+export const DEFAULT_NOTIFICATION_EMAIL = "hello@acape.la";
