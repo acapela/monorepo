@@ -5,7 +5,6 @@ export class AssertError extends Error {
 }
 
 type Empty = null | undefined;
-type NotEmpty<T> = T extends Empty ? never : T;
 
 type MessageOrError = string | Error;
 
