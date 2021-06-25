@@ -2,15 +2,15 @@ import { GoogleLoginButton } from "~frontend/authentication/GoogleLoginButton";
 import { EmailLoginButton } from "~frontend/authentication/EmailLoginButton";
 
 type LoginOptionsViewProps = {
-  enableEmailLogin?: boolean;
+  isEmailLoginEnabled?: boolean;
 };
 
-export function LoginOptionsView({ enableEmailLogin }: LoginOptionsViewProps) {
+export function LoginOptionsView({ isEmailLoginEnabled }: LoginOptionsViewProps) {
   return (
     <>
       <GoogleLoginButton />
       &nbsp;
-      {enableEmailLogin && <EmailLoginButton />}
+      {isEmailLoginEnabled && <EmailLoginButton />}
     </>
   );
 }
