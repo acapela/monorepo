@@ -65,7 +65,7 @@ export function SpaceView({ spaceId }: Props) {
     <>
       <UIContainer>
         <UIHolder>
-          <UISpace>{space && <SpaceCard space={space} />}</UISpace>
+          <UISpace>{space && <SpaceCard space={space} isClickable={false} />}</UISpace>
           <UIContent>
             <UIFilters onFiltersChange={setFilters} />
             <UIRooms>
