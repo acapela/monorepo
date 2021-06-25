@@ -1,4 +1,5 @@
-import { parseJsonWithDates } from "./parseJSONWithDates";
+import { parseJsonWithDatesOnlyForValidKeys, parseJsonWithDates } from "./parseJSONWithDates";
+import { parseISO } from "date-fns";
 
 describe("parseJsonWithDates", () => {
   it("properly parses dates in object", () => {
@@ -33,5 +34,17 @@ describe("parseJsonWithDates", () => {
     const isoString = "2019-12-30T23:00:00.000Z";
 
     expect(parseJsonWithDates<Date>(JSON.stringify(isoString))).toEqual(testDate);
+  });
+
+  it("should parse only specific date fields", () => {
+    const input = {
+      title: "2019-12-30T23:00:00.000Z",
+      created_at: "2019-12-30T23:00:00.000Z",
+    };
+
+    expect(parseJsonWithDatesOnlyForValidKeys(JSON.stringify(input))).toEqual({
+      title: input.title,
+      created_at: parseISO(input.created_at),
+    });
   });
 });
