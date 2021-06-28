@@ -15,6 +15,7 @@ function markInputRuleKeepTrailingChar(regexp: RegExp, markType: MarkType, getAt
   // version of markInputRule that adds the missing trailing char
   const standardMarkInputRule = markInputRule(regexp, markType, getAttributes);
   return new InputRule(regexp, (state, match, start, end) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tr = (standardMarkInputRule as any).handler(state, match, start, end);
     if (tr) {
       // If the mark has been applied add the trailing char at the end of the edit
