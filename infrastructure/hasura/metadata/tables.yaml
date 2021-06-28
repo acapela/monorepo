@@ -142,6 +142,13 @@
             name: message_attachment
           column_mapping:
             id: message_id
+    - name: message_reactions
+      using:
+        foreign_key_constraint_on:
+          column: message_id
+          table:
+            schema: public
+            name: message_reaction
   insert_permissions:
     - role: user
       permission:
@@ -269,6 +276,13 @@
 - table:
     schema: public
     name: message_reaction
+  object_relationships:
+    - name: message
+      using:
+        foreign_key_constraint_on: message_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
   insert_permissions:
     - role: user
       permission:

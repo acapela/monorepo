@@ -12,6 +12,7 @@ import {
 } from "~gql";
 import { getUUID } from "~shared/uuid";
 import { AttachmentDetailedInfoFragment } from "./attachments";
+import { ReactionBasicInfoFragment } from "./reactions";
 import { topicMessagesQueryManager } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
@@ -34,6 +35,7 @@ export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentT
 export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFragmentType>(
   () => gql`
     ${AttachmentDetailedInfoFragment()}
+    ${ReactionBasicInfoFragment()}
     ${UserBasicInfoFragment()}
     ${MessageBasicInfoFragment()}
 
@@ -57,6 +59,9 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
         attachment {
           ...AttachmentDetailedInfo
         }
+      }
+      message_reactions {
+        ...ReactionBasicInfo
       }
     }
   `
