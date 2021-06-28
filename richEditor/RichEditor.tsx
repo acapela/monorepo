@@ -21,7 +21,7 @@ export function getEmptyRichContent(): JSONContent {
 
 export interface RichEditorProps {
   value: RichEditorContent;
-  onChange: (value: RichEditorContent) => void;
+  onChange?: (value: RichEditorContent) => void;
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
   additionalTopContent?: ReactNode;
