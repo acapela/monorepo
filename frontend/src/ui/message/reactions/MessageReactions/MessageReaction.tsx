@@ -1,5 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { getEmojiDataFromNative } from "emoji-mart";
+import data from "emoji-mart/data/all.json";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE } from "~ui/colors";
@@ -10,6 +12,8 @@ interface Props {
   emoji: string;
   reactions: ReactionBasicInfoFragment[];
 }
+
+const MAX_VISIBLE_REACTED_PEOPLE = 6;
 
 export const MessageReaction = ({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
@@ -34,8 +38,25 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
     }
   };
 
+  const getTextThatShowsWhoReacted = () => {
+    const names = reactions
+      .slice(0, MAX_VISIBLE_REACTED_PEOPLE)
+      .map((reaction) => (reaction.user.id === user.id ? "you" : user.name))
+      .join(", ");
+
+    if (reactions.length > MAX_VISIBLE_REACTED_PEOPLE) {
+      return `${names}...`;
+    }
+
+    return names;
+  };
+
+  const tooltipText = `${getTextThatShowsWhoReacted()} reacted with: ${
+    getEmojiDataFromNative(emoji, "apple", data).name
+  }`;
+
   return (
-    <UIReactionButton onClick={handleClick} isSelected={isSelected}>
+    <UIReactionButton data-tooltip={tooltipText} onClick={handleClick} isSelected={isSelected}>
       <p>{emoji}</p>
       <p>{reactions.length}</p>
     </UIReactionButton>
