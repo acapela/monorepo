@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { MessageDetailedInfoFragment } from "~gql";
+import { groupReactionsByEmoji } from "./groupReactionsByEmoji";
 import { MessageReaction } from "./MessageReaction";
 
 interface Props {
@@ -8,10 +9,12 @@ interface Props {
 }
 
 export const MessageReactions = ({ message }: Props) => {
+  const reactionsByEmoji = useMemo(() => groupReactionsByEmoji(message.message_reactions), [message.message_reactions]);
+
   return (
     <UIReactions>
-      {message.message_reactions.map((reaction) => (
-        <MessageReaction reaction={reaction} message={message} key={`${reaction.user.id}-${reaction.emoji}`} />
+      {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
+        <MessageReaction emoji={emoji} reactions={reactions} message={message} key={emoji} />
       ))}
     </UIReactions>
   );
@@ -19,5 +22,5 @@ export const MessageReactions = ({ message }: Props) => {
 
 const UIReactions = styled.div`
   display: flex;
-  gap: 4px;
+  gap: 8px;
 `;
