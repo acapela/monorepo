@@ -41,7 +41,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
       <UIHolder layout="position" className={className}>
         <UIInfo>
           <UIName>{event.title}</UIName>
-          {event.startTime && <UIDate>{niceFormatDateTime(event.startTime)}</UIDate>}
+          {!!event.startTime && <UIDate>{niceFormatDateTime(event.startTime)}</UIDate>}
         </UIInfo>
         <UIActions>
           <Button onClick={handleCreateRoom}>Create Room</Button>
