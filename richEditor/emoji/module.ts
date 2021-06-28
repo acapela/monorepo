@@ -1,3 +1,5 @@
+// TODO: This is quill plugin which is not used. Let's convert it to tiptap plugin.
+// Note: it should be done with reusability layer for all kind of 'autocomplete' eg. @mention #topic :emoji
 import Quill from "quill";
 
 const Module = Quill.import("core/module");

@@ -1,7 +1,6 @@
 import { MessageBasicInfoFragment } from "~gql";
-import { extractLinksFromMessageContent } from "./extractLinksFromMessageContent";
 import { loomPreviewProvider } from "./loomPreviewProvider";
-import { ReactElement } from "react";
+import { extractLinksFromRichContent } from "~richEditor/links/extract";
 
 const supportedPreviewProviders = [loomPreviewProvider];
 
@@ -10,20 +9,19 @@ interface Props {
 }
 
 export const MessageLinksPreviews = ({ message }: Props) => {
-  const links = extractLinksFromMessageContent(message.content);
+  const links = extractLinksFromRichContent(message.content);
 
   return (
     <>
-      {links.reduce((acc: ReactElement[], url) => {
-        const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(url));
+      {links.map((linkUrl) => {
+        const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(linkUrl));
 
-        if (previewProvider) {
-          const { PreviewComponent } = previewProvider;
-          acc.push(<PreviewComponent url={url} />);
-        }
+        if (!previewProvider) return null;
 
-        return acc;
-      }, [])}
+        const { PreviewComponent } = previewProvider;
+
+        return <PreviewComponent key={linkUrl} url={linkUrl} />;
+      })}
     </>
   );
 };

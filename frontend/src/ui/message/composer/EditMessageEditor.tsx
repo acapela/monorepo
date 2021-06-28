@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 import { MessageDetailedInfoFragment } from "~gql";
-import { EditorContent } from "~richEditor/RichEditor";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
@@ -12,6 +11,7 @@ import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { makePromiseVoidable } from "~shared/promises";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { RichEditorContent } from "~richEditor/content/types";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -29,7 +29,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     })
   );
 
-  const [content, setContent] = useState<EditorContent>(message.content);
+  const [content, setContent] = useState<RichEditorContent>(message.content);
 
   useShortcut("Escape", onCancelRequest);
 

@@ -31,39 +31,36 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function Toolb
 });
 
 const UIHolder = styled.button<{ isActive: boolean; isDisabled: boolean }>`
-  /* Make sure our styles overwrite Quill theme */
-  &&& {
-    all: unset;
-    font-size: 1.5rem;
-    height: 1.5em;
-    width: 1.5em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  all: unset;
+  font-size: 1.5rem;
+  height: 1.5em;
+  width: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    ${hoverActionCss}
+  ${hoverActionCss}
 
-    ${(props) => props.isDisabled && disabledCss}
+  ${(props) => props.isDisabled && disabledCss}
 
     ${(props) => {
-      if (props.isActive) {
-        return css`
-          ${hoverActionActiveCss};
+    if (props.isActive) {
+      return css`
+        ${hoverActionActiveCss};
+        color: #fff;
+        background-color: ${ACTIVE_COLOR};
+
+        &:hover {
           color: #fff;
           background-color: ${ACTIVE_COLOR};
-
-          &:hover {
-            color: #fff;
-            background-color: ${ACTIVE_COLOR};
-          }
-        `;
-      }
-
-      return css`
-        &:hover {
-          color: #222;
         }
       `;
-    }}
-  }
+    }
+
+    return css`
+      &:hover {
+        color: #222;
+      }
+    `;
+  }}
 `;

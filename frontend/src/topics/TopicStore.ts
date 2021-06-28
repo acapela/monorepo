@@ -1,4 +1,4 @@
-import { MessageBasicInfoFragment } from "~frontend/../../gql";
+import { MessageBasicInfoFragment } from "~gql";
 import { createSharedStateContext } from "~shared/sharedState";
 
 interface State {

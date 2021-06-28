@@ -43,19 +43,23 @@ model membership_status {
 }
 
 model message {
-  topic_id           String               @db.Uuid
-  user_id            String               @db.Uuid
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  type               String
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  is_draft           Boolean              @default(false)
-  content            Json                 @default(dbgenerated("jsonb_build_array()"))
-  transcription_id   String?              @db.Uuid
-  topic              topic                @relation(fields: [topic_id], references: [id])
-  transcription      transcription?       @relation(fields: [transcription_id], references: [id])
-  message_type       message_type         @relation(fields: [type], references: [value])
-  user               user                 @relation(fields: [user_id], references: [id])
-  message_attachment message_attachment[]
+  topic_id              String               @db.Uuid
+  user_id               String               @db.Uuid
+  created_at            DateTime             @default(now()) @db.Timestamptz(6)
+  type                  String
+  id                    String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  is_draft              Boolean              @default(false)
+  content               Json                 @default(dbgenerated("jsonb_build_object()"))
+  transcription_id      String?              @db.Uuid
+  replied_to_message_id String?              @db.Uuid
+  content_text          String?
+  message               message?             @relation("messageTomessage_replied_to_message_id", fields: [replied_to_message_id], references: [id])
+  topic                 topic                @relation(fields: [topic_id], references: [id])
+  transcription         transcription?       @relation(fields: [transcription_id], references: [id])
+  message_type          message_type         @relation(fields: [type], references: [value])
+  user                  user                 @relation(fields: [user_id], references: [id])
+  other_message         message[]            @relation("messageTomessage_replied_to_message_id")
+  message_attachment    message_attachment[]
 }
 
 model message_attachment {
@@ -73,21 +77,22 @@ model message_type {
 }
 
 model room {
-  id                  String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  creator_id          String         @db.Uuid
-  name                String?
-  created_at          DateTime       @default(now()) @db.Timestamptz(6)
-  deadline            DateTime       @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
-  notification_job_id String?
-  summary             String?
-  finished_at         DateTime?      @db.Timestamptz(6)
-  space_id            String         @db.Uuid
-  slug                String
-  user                user           @relation(fields: [creator_id], references: [id])
-  space               space          @relation(fields: [space_id], references: [id])
-  room_invites        room_invites[]
-  room_member         room_member[]
-  topic               topic[]
+  id                              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  creator_id                      String         @db.Uuid
+  name                            String?
+  created_at                      DateTime       @default(now()) @db.Timestamptz(6)
+  deadline                        DateTime       @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
+  notification_job_id             String?
+  summary                         String?
+  finished_at                     DateTime?      @db.Timestamptz(6)
+  space_id                        String         @db.Uuid
+  slug                            String
+  source_google_calendar_event_id String?
+  user                            user           @relation(fields: [creator_id], references: [id])
+  space                           space          @relation(fields: [space_id], references: [id])
+  room_invites                    room_invites[]
+  room_member                     room_member[]
+  topic                           topic[]
 
   @@unique([slug, space_id], name: "room_slug_space_id_key")
 }
