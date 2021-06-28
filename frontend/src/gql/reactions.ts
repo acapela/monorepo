@@ -5,13 +5,16 @@ import {
   AddMessageReactionMutationVariables,
 } from "~gql";
 import { createFragment, createMutation } from "./utils";
+import { UserBasicInfoFragment } from "./user";
 
 export const ReactionBasicInfoFragment = createFragment<ReactionBasicInfoFragmentType>(
   () => gql`
+    ${UserBasicInfoFragment()}
+
     fragment ReactionBasicInfo on message_reaction {
       emoji
       user {
-        name
+        ...UserBasicInfo
       }
     }
   `
@@ -24,8 +27,8 @@ export const [useAddMessageReaction, { mutate: addMessageReaction }] = createMut
   () => gql`
     ${ReactionBasicInfoFragment()}
 
-    mutation AddMessageReaction($object: message_reaction_insert_input!) {
-      insert_message_reaction_one(object: $object) {
+    mutation AddMessageReaction($input: message_reaction_insert_input!) {
+      insert_message_reaction_one(object: $input) {
         ...ReactionBasicInfo
       }
     }

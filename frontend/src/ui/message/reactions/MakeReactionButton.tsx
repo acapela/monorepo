@@ -6,9 +6,19 @@ import { Popover } from "~ui/popovers/Popover";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
+import { MessageDetailedInfoFragment } from "~gql";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { addMessageReaction } from "~frontend/gql/reactions";
 
-export const MakeReactionButton = () => {
+interface Props {
+  message: MessageDetailedInfoFragment;
+}
+
+export const MakeReactionButton = ({ message }: Props) => {
+  const user = useAssertCurrentUser();
+
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   const [isPicking, { set: open, unset: close }] = useBoolean(false);
 
   return (
@@ -25,8 +35,22 @@ export const MakeReactionButton = () => {
                   return;
                 }
 
-                console.log(emoji.native);
                 close();
+
+                const userAlreadyReacted = message.message_reactions.some(
+                  (reaction) => reaction.emoji === emoji.native && reaction.user.id === user.id
+                );
+                if (userAlreadyReacted) {
+                  // delete reaction
+                } else {
+                  addMessageReaction({
+                    input: {
+                      emoji: emoji.native,
+                      message_id: message.id,
+                      user_id: user.id,
+                    },
+                  });
+                }
               }}
             />
           </Popover>

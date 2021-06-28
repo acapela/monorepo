@@ -8962,12 +8962,12 @@ export type ReactionBasicInfoFragment = (
   & Pick<Message_Reaction, 'emoji'>
   & { user: (
     { __typename?: 'user' }
-    & Pick<User, 'name'>
+    & UserBasicInfoFragment
   ) }
 );
 
 export type AddMessageReactionMutationVariables = Exact<{
-  object: Message_Reaction_Insert_Input;
+  input: Message_Reaction_Insert_Input;
 }>;
 
 

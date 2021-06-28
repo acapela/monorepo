@@ -86,7 +86,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
       tools={
         shouldShowTools && (
           <UITools>
-            <MakeReactionButton />
+            <MakeReactionButton message={message} />
             <PopoverMenuTrigger
               onOpen={() => setIsActive(true)}
               onClose={() => setIsActive(false)}
