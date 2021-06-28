@@ -18,6 +18,7 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
+import { MakeReactionButton } from "../reactions/MakeReactionButton";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -84,13 +85,16 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
       className={className}
       tools={
         shouldShowTools && (
-          <PopoverMenuTrigger
-            onOpen={() => setIsActive(true)}
-            onClose={() => setIsActive(false)}
-            options={getMessageActionsOptions()}
-          >
-            <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-          </PopoverMenuTrigger>
+          <UITools>
+            <MakeReactionButton />
+            <PopoverMenuTrigger
+              onOpen={() => setIsActive(true)}
+              onClose={() => setIsActive(false)}
+              options={getMessageActionsOptions()}
+            >
+              <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+            </PopoverMenuTrigger>
+          </UITools>
         )
       }
       user={message.user}
@@ -112,6 +116,11 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
     </MessageLikeContent>
   );
 })``;
+
+const UITools = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 
 const UIMessageContent = styled.div`
   display: grid;
