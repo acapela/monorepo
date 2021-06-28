@@ -1,34 +1,39 @@
 import { useState } from "react";
 import { createChannel } from "./channel";
-import { parseJsonWithDates } from "./dates/parseJSONWithDates";
+import { getJSONValue, typeSafeParseJSON } from "./dates/parseJSONWithDates";
+import { JsonValue } from "./types";
 
 type ValueWrapper<T> = { value: T };
 
 export function createLocalStorageValueManager<T>(name: string, defaultValue: T) {
-  const valueChannel = createChannel<ValueWrapper<T> | null>();
+  // As we store values as JSON, Dates might be lost. Reflect it in type of the results by replacing dates with strings.
+  type JSONType = JsonValue<T>;
+  const valueChannel = createChannel<ValueWrapper<JSONType> | null>();
 
   const storageKey = `__value_${name}`;
 
-  function get() {
-    if (typeof document === "undefined") return defaultValue;
+  const defaultValueJSON = getJSONValue(defaultValue);
+
+  function get(): JSONType {
+    if (typeof document === "undefined") return defaultValueJSON;
     const rawValue = localStorage.getItem(storageKey);
 
-    if (rawValue === null) return defaultValue;
+    if (rawValue === null) return defaultValueJSON;
 
-    return parseJsonWithDates<T>(rawValue);
+    return typeSafeParseJSON<T>(rawValue);
   }
 
   function set(value: T) {
     localStorage.setItem(storageKey, JSON.stringify(value));
 
-    valueChannel.publish({ value });
+    valueChannel.publish({ value: getJSONValue(value) });
   }
 
   function useValue() {
     const [value, setValue] = useState(get);
     valueChannel.useSubscribe((newValue) => {
       if (newValue === null) {
-        setValue(defaultValue);
+        setValue(defaultValueJSON);
         return;
       }
 
