@@ -8979,6 +8979,21 @@ export type AddMessageReactionMutation = (
   )> }
 );
 
+export type RemoveMessageReactionMutationVariables = Exact<{
+  emoji: Scalars['String'];
+  messageId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveMessageReactionMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_message_reaction_by_pk?: Maybe<(
+    { __typename?: 'message_reaction' }
+    & Pick<Message_Reaction, 'message_id'>
+  )> }
+);
+
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id'>

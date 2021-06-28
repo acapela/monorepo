@@ -8,7 +8,7 @@ import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { MessageDetailedInfoFragment } from "~gql";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { addMessageReaction } from "~frontend/gql/reactions";
+import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -41,7 +41,11 @@ export const MakeReactionButton = ({ message }: Props) => {
                   (reaction) => reaction.emoji === emoji.native && reaction.user.id === user.id
                 );
                 if (userAlreadyReacted) {
-                  // delete reaction
+                  removeMessageReaction({
+                    emoji: emoji.native,
+                    messageId: message.id,
+                    userId: user.id,
+                  });
                 } else {
                   addMessageReaction({
                     input: {
