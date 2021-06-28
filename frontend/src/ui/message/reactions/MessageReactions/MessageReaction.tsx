@@ -2,7 +2,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK } from "~ui/colors";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE } from "~ui/colors";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
 
 interface Props {
@@ -57,6 +57,7 @@ const UIReactionButton = styled.button<{ isSelected: boolean }>`
           background: ${BACKGROUND_ACCENT_WEAK};
         `
       : css`
-          border-radius: 1px solid ${BACKGROUND_ACCENT};
+          background: ${WHITE};
+          border: 1px solid ${BACKGROUND_ACCENT};
         `}
 `;

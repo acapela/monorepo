@@ -86,7 +86,7 @@ export const [useRemoveMessageReaction, { mutate: removeMessageReaction }] = cre
     onOptimisticOrActualResponse(messageReaction, variables) {
       MessageDetailedInfoFragment.update(variables.messageId, (message) => {
         message.message_reactions = message.message_reactions.filter(
-          (reaction) => reaction.emoji !== variables.emoji && reaction.user.id !== variables.userId
+          (reaction) => !(reaction.emoji === variables.emoji && reaction.user.id === variables.userId)
         );
       });
     },
