@@ -18,7 +18,8 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
-import { MakeReactionButton } from "../reactions/MakeReactionButton";
+import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
+import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -108,6 +109,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
           <UIMessageContent>
             {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
             <MessageText message={message} />
+            <MessageReactions message={message} />
             <MessageMedia message={message} />
             <MessageLinksPreviews message={message} />
           </UIMessageContent>
