@@ -31,15 +31,8 @@ export interface RichEditorProps {
   hideSubmitButton?: boolean;
 }
 
-export function getEmptyContent(): RichEditorContent {
-  return {
-    type: "doc",
-    content: [],
-  };
-}
-
 export const RichEditor = ({
-  value = getEmptyContent(),
+  value = getEmptyRichContent(),
   onChange,
   onSubmit,
   onFilesSelected,
