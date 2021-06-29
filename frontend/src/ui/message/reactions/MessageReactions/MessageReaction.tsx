@@ -3,12 +3,13 @@ import styled, { css } from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE } from "~ui/colors";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/colors";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
 import { Popover } from "~ui/popovers/Popover";
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { fontSize } from "~ui/baseStyles";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -41,7 +42,7 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
-  const shouldShowTooltip = useDebouncedValue(isHovered, { onDelay: 0, offDelay: 150 });
+  const shouldShowTooltip = useDebouncedValue(isHovered, { onDelay: 150, offDelay: 0 });
 
   return (
     <>
@@ -67,15 +68,15 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
 };
 
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
-  border-radius: 1000px;
-  height: 28px;
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 28px;
+  border-radius: 1000px;
   padding: 0 8px;
   cursor: pointer;
-  font-size: 14px;
-  color: #797979;
+  font-size: ${fontSize.label};
+  color: ${SECONDARY_TEXT_COLOR};
 
   ${(p) =>
     p.isSelected
