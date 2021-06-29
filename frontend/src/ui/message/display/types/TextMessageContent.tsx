@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
+
 import { MessageBasicInfoFragment } from "~gql";
 import { richEditorContentCss } from "~richEditor/Theme";
+import { convertRichEditorContentToHtml } from "~richEditor/content/html";
 
 interface Props {
   message: MessageBasicInfoFragment;
@@ -9,9 +10,7 @@ interface Props {
 
 function renderMessageContent(message: MessageBasicInfoFragment) {
   try {
-    const converter = new QuillDeltaToHtmlConverter(message.content, {});
-
-    const htmlContent = converter.convert();
+    const htmlContent = convertRichEditorContentToHtml(message.content);
 
     return <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>;
   } catch (error) {

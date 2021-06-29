@@ -1,10 +1,10 @@
-import { Children, forwardRef, RefObject } from "react";
-import ReactQuill from "react-quill";
+import { ChainedCommands } from "@tiptap/react";
+import { Children, forwardRef } from "react";
 import styled from "styled-components";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import {
   IconAt,
   IconBrackets,
-  IconLink1,
   IconListOrdered2,
   IconListUnordered3,
   IconPaperclip,
@@ -14,16 +14,14 @@ import {
   IconTextItalic,
   IconTextStrikethrough,
 } from "~ui/icons";
-import { useRichEditorIsEmpty } from "./context";
+import { useRichEditorContext, useRichEditorIsEmpty } from "./context";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
-import { ToggleEditorFormatButton } from "./ToggleEditorFormatButton";
 import { ToolbarButton } from "./ToolbarButton";
 
 interface Props {
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
-  quillRef: RefObject<ReactQuill>;
   onEmojiSelected: (emoji: string) => void;
   hideSubmitButton?: boolean;
 }
@@ -33,29 +31,71 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   ref
 ) {
   const isEmpty = useRichEditorIsEmpty();
+  const editor = useRichEditorContext();
+
+  function getIsFormatActive(formatName: string, formatOptions?: Record<string, unknown>) {
+    return editor.isActive(formatName, formatOptions);
+  }
+
+  function createFormatHandler<N extends keyof ChainedCommands>(name: N, ...args: Parameters<ChainedCommands[N]>) {
+    return function run() {
+      let command = editor.chain().focus();
+
+      command = Reflect.apply(command[name], null, args);
+
+      command.run();
+    };
+  }
 
   return (
     <UIHolder ref={ref}>
       <UISection>
-        <ToggleEditorFormatButton tooltipLabel="Bold" formatName="bold" icon={<IconTextBold />} />
-        <ToggleEditorFormatButton tooltipLabel="Italic" formatName="italic" icon={<IconTextItalic />} />
-        <ToggleEditorFormatButton tooltipLabel="Strikethrough" formatName="strike" icon={<IconTextStrikethrough />} />
-
-        <ToggleEditorFormatButton tooltipLabel="Code Block" formatName="code-block" icon={<IconBrackets />} />
-        <ToggleEditorFormatButton tooltipLabel="Create link..." formatName="link" icon={<IconLink1 />} />
-        <ToggleEditorFormatButton
+        <ToolbarButton
+          onClick={createFormatHandler("toggleBold")}
+          tooltipLabel="Bold"
+          isHighlighted={getIsFormatActive("bold")}
+          icon={<IconTextBold />}
+        />
+        <ToolbarButton
+          tooltipLabel="Italic"
+          onClick={() => {
+            editor.chain().focus().toggleItalic().run();
+          }}
+          isHighlighted={getIsFormatActive("italic")}
+          icon={<IconTextItalic />}
+        />
+        <ToolbarButton
+          tooltipLabel="Strikethrough"
+          isHighlighted={getIsFormatActive("strike")}
+          onClick={createFormatHandler("toggleStrike")}
+          icon={<IconTextStrikethrough />}
+        />
+        <ToolbarButton
+          onClick={createFormatHandler("toggleCodeBlock")}
+          tooltipLabel="Code Block"
+          isHighlighted={getIsFormatActive("code-block")}
+          icon={<IconBrackets />}
+        />
+        {/* TODO now we 'only' have autolinks. Integrate nice UI to create links with modal */}
+        {/* <ToolbarButton tooltipLabel="Create link..." isHighlighted={getIsFormatActive("link")} icon={<IconLink1 />} /> */}
+        <ToolbarButton
           tooltipLabel="Ordered list"
-          formatName="list"
-          value="ordered"
+          isHighlighted={getIsFormatActive("orderedList")}
+          onClick={createFormatHandler("toggleOrderedList")}
           icon={<IconListOrdered2 />}
         />
-        <ToggleEditorFormatButton
+        <ToolbarButton
           tooltipLabel="Bullet list"
-          formatName="list"
-          value="bullet"
+          isHighlighted={getIsFormatActive("bulletList")}
+          onClick={createFormatHandler("toggleBulletList")}
           icon={<IconListUnordered3 />}
         />
-        <ToggleEditorFormatButton tooltipLabel="Quote" formatName="blockquote" icon={<IconQuotes />} />
+        <ToolbarButton
+          onClick={createFormatHandler("toggleBlockquote")}
+          tooltipLabel="Quote"
+          isHighlighted={getIsFormatActive("blockquote")}
+          icon={<IconQuotes />}
+        />
       </UISection>
 
       <UISection>
@@ -81,33 +121,24 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
 });
 
 const UIHolder = styled.div`
-  &.ql-toolbar {
-    color: #788693;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid #ccc;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid ${BACKGROUND_ACCENT};
 
-    &&&:after {
-      display: none;
-    }
+  ${() => UISection} {
+    ${() => UIToolButton} {
+      all: unset;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
 
-    ${() => UISection} {
-      ${() => UIToolButton} {
-        all: unset;
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: inline-block;
-
-        font-size: 20px;
-        height: 1em;
-        padding: 0.25em;
-        width: 1em;
-      }
-
-      ${() => UICustomButton} {
-      }
+      font-size: 1.25rem;
+      height: 1em;
+      padding: 0.25em;
+      width: 1em;
     }
   }
 `;
@@ -119,20 +150,4 @@ const UISection = styled.div`
   min-width: 0;
 `;
 
-const UIToolButton = styled.button`
-  & {
-    svg {
-      .ql-fill {
-        fill: currentColor;
-      }
-
-      .ql-stroke {
-        stroke: currentColor;
-      }
-    }
-  }
-`;
-
-const UICustomButton = styled.div`
-  cursor: pointer;
-`;
+const UIToolButton = styled.button``;

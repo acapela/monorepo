@@ -13,6 +13,7 @@ export const PRIMARY_COLOR = `hsl(296, 24%, 22%)`;
 export const MODAL_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const ITEM_COVER_COLOR = setColorOpacity(PRIMARY_COLOR, 0.5);
 export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
+export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
 
 /**
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.

@@ -9,40 +9,52 @@ type ShortcutDefinition = Key | Key[];
 
 type ShortcutKeys = Key[];
 
+interface ShortcutHookOptions {
+  isEnabled?: boolean;
+}
+
+type ShortcutCallback = (event: KeyboardEvent) => void;
+
 function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys {
   return convertMaybeArrayToArray(shortcut);
 }
 
-function createShortcutListener(keys: ShortcutKeys, callback: () => void) {
+function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) {
   return createElementEvent(
     document.body,
     "keydown",
     (event) => {
-      if (!isHotkey(keys, event)) {
+      if (!isHotkey(keys.join("+"), event)) {
         return;
       }
 
       event.stopPropagation();
       event.preventDefault();
 
-      callback?.();
+      callback?.(event);
     },
     { capture: true }
   );
 }
 
-export function useShortcut(shortcut: ShortcutDefinition, callback?: () => void) {
-  const shortcuts = resolveShortcutsDefinition(shortcut);
+export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutHookOptions) {
+  const keys = resolveShortcutsDefinition(shortcut);
 
   useEffect(() => {
+    if (options?.isEnabled === false) return;
     if (!callback) return;
-    return createShortcutListener(shortcuts, callback);
-  }, [shortcuts, callback]);
+    return createShortcutListener(keys, callback);
+  }, [keys, callback, options?.isEnabled]);
 }
 
-export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: () => void) {
+export function useShortcuts(
+  shortcuts: ShortcutDefinition[],
+  callback?: ShortcutCallback,
+  options?: ShortcutHookOptions
+) {
   useEffect(() => {
     if (!callback) return;
+    if (options?.isEnabled === false) return;
 
     const cleanup = createCleanupObject();
 
@@ -53,5 +65,5 @@ export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: () => v
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback]);
+  }, [shortcuts, callback, options?.isEnabled]);
 }

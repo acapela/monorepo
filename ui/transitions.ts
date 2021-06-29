@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
 import { borderRadius } from "./baseStyles";
-import { BLACK, WHITE } from "./colors";
+import { BUTTON_ACCENT_COLOR, WHITE } from "./colors";
 
 export function hoverTransition(propName = "all") {
   return css`
@@ -39,18 +39,18 @@ const HOVER_COLOR_CHANGE = 5;
 
 export function getColorHoverVariant(color: string): string {
   if (isColorDark(color)) {
-    return changeColorLightness(color, -HOVER_COLOR_CHANGE);
+    return changeColorLightness(color, HOVER_COLOR_CHANGE);
   }
 
-  return changeColorLightness(color, HOVER_COLOR_CHANGE);
+  return changeColorLightness(color, -HOVER_COLOR_CHANGE);
 }
 
 export function getColorActiveVariant(color: string): string {
   if (isColorDark(color)) {
-    return changeColorLightness(color, -HOVER_COLOR_CHANGE * 1.5);
+    return changeColorLightness(color, HOVER_COLOR_CHANGE * 1.5);
   }
 
-  return changeColorLightness(color, HOVER_COLOR_CHANGE * 1.5);
+  return changeColorLightness(color, -HOVER_COLOR_CHANGE * 1.5);
 }
 
 export function getTextColorForBackgroundColor(color: string): string {
@@ -58,13 +58,14 @@ export function getTextColorForBackgroundColor(color: string): string {
     return WHITE;
   }
 
-  return BLACK;
+  return BUTTON_ACCENT_COLOR;
 }
 
 export function getButtonColorStyles(baseBgColor: string) {
   const hoverColor = getColorHoverVariant(baseBgColor);
   const activeColor = getColorActiveVariant(baseBgColor);
   const textColor = getTextColorForBackgroundColor(baseBgColor);
+
   return css`
     ${hoverTransition()}
     background-color: ${baseBgColor};
