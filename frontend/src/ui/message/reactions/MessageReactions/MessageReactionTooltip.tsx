@@ -35,7 +35,6 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
 
   return (
     <UIHolder>
-      <UIPointer />
       <UIContent>
         <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with :{emojiShortName}:
       </UIContent>
@@ -44,7 +43,6 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
 };
 
 const UIHolder = styled.div`
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,17 +52,6 @@ const UIHolder = styled.div`
   ${borderRadius.label};
   pointer-events: none;
   line-height: 1.2rem;
-`;
-
-const POINTER_WIDTH = 12;
-const UIPointer = styled.div`
-  position: absolute;
-  top: -${POINTER_WIDTH / 2}px;
-  border-radius: 2px;
-  width: ${POINTER_WIDTH}px;
-  height: ${POINTER_WIDTH}px;
-  background-color: ${colors.tooltip.background};
-  transform: rotate(45deg);
 `;
 
 const UIContent = styled.p`
