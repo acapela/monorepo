@@ -1,7 +1,9 @@
 import React from "react";
-import styled from "styled-components";
 import { MessageEmbedPreviewConfig } from "../MessageEmbedPreviewConfig";
+import { MessageLinkPreviewIFrame } from "../MessageLinkPreviewIFrame";
 import { getLoomEmbedUrl } from "./getLoomEmbedUrl";
+
+const PREVIEW_RATIO = 640 / 392;
 
 export const loomPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => url.includes("loom.com/share"),
@@ -12,11 +14,6 @@ export const loomPreviewProvider: MessageEmbedPreviewConfig = {
       return null;
     }
 
-    return <UIPreview src={embedUrl} allow="fullscreen" />;
+    return <MessageLinkPreviewIFrame ratio={PREVIEW_RATIO} url={embedUrl} />;
   },
 };
-
-const UIPreview = styled.iframe`
-  width: 640px;
-  height: 392px;
-`;
