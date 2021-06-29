@@ -34,9 +34,6 @@ export const borderRadius = {
   label: css`
     border-radius: 6px;
   `,
-  tooltip: css`
-    border-radius: 4px;
-  `,
   input: css`
     border-radius: 12px;
   `,
@@ -56,6 +53,7 @@ export const fontSize = {
   pageTitle: "2rem",
   itemTitle: "1.25rem",
   label: "0.875rem",
+  tooltip: "12px",
 };
 
 export const colors = {
