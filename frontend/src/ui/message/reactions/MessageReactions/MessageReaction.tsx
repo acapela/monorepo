@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { getEmojiDataFromNative, Data as EmojiData } from "emoji-mart";
-import data from "emoji-mart/data/all.json";
+import { AnimatePresence } from "framer-motion";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE } from "~ui/colors";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
+import { Popover } from "~ui/popovers/Popover";
+import { MessageReactionTooltip } from "./MessageReactionTooltip";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 
 interface Props {
   message: MessageDetailedInfoFragment;
   emoji: string;
   reactions: ReactionBasicInfoFragment[];
 }
-
-const MAX_VISIBLE_REACTED_PEOPLE = 6;
 
 export const MessageReaction = ({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
@@ -38,27 +39,30 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
     }
   };
 
-  const getTextThatShowsWhoReacted = () => {
-    const names = reactions
-      .slice(0, MAX_VISIBLE_REACTED_PEOPLE)
-      .map((reaction) => (reaction.user.id === user.id ? "You" : user.name))
-      .join(", ");
-
-    if (reactions.length > MAX_VISIBLE_REACTED_PEOPLE) {
-      return `${names}...`;
-    }
-
-    return names;
-  };
-
-  const emojiShortName = getEmojiDataFromNative(emoji, "apple", data as never as EmojiData).id;
-  const tooltipText = `${getTextThatShowsWhoReacted()} reacted with: ${emojiShortName}`;
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
+  const shouldShowTooltip = useDebouncedValue(isHovered, { onDelay: 0, offDelay: 150 });
 
   return (
-    <UIReactionButton data-tooltip={tooltipText} onClick={handleClick} isSelected={isSelected}>
-      <p>{emoji}</p>
-      <p>{reactions.length}</p>
-    </UIReactionButton>
+    <>
+      <UIReactionButton
+        onMouseEnter={setHovered}
+        onMouseLeave={unsetHovered}
+        ref={buttonRef}
+        onClick={handleClick}
+        isSelected={isSelected}
+      >
+        <p>{emoji}</p>
+        <p>{reactions.length}</p>
+      </UIReactionButton>
+      <AnimatePresence>
+        {shouldShowTooltip && (
+          <Popover anchorRef={buttonRef} placement="bottom">
+            <MessageReactionTooltip reactions={reactions} emoji={emoji} />
+          </Popover>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
