@@ -40,7 +40,7 @@ export function EmojiButton({ onEmojiSelected }: Props) {
   );
 }
 
-function isBaseEmoji(emoji: EmojiData): emoji is BaseEmoji {
+export function isBaseEmoji(emoji: EmojiData): emoji is BaseEmoji {
   // Let's make sure it is not Custom Emoji (which has imageUrl instead of native emoji)
   return !!(emoji as BaseEmoji).native;
 }
