@@ -1,8 +1,9 @@
 import { MessageBasicInfoFragment } from "~gql";
 import { loomPreviewProvider } from "./loomPreviewProvider";
+import { figmaPreviewProvider } from "./figmaPreviewProvider";
 import { extractLinksFromRichContent } from "~richEditor/links/extract";
 
-const supportedPreviewProviders = [loomPreviewProvider];
+const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider];
 
 interface Props {
   message: MessageBasicInfoFragment;
