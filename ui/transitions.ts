@@ -39,18 +39,18 @@ const HOVER_COLOR_CHANGE = 5;
 
 export function getColorHoverVariant(color: string): string {
   if (isColorDark(color)) {
-    return changeColorLightness(color, -HOVER_COLOR_CHANGE);
+    return changeColorLightness(color, HOVER_COLOR_CHANGE);
   }
 
-  return changeColorLightness(color, HOVER_COLOR_CHANGE);
+  return changeColorLightness(color, -HOVER_COLOR_CHANGE);
 }
 
 export function getColorActiveVariant(color: string): string {
   if (isColorDark(color)) {
-    return changeColorLightness(color, -HOVER_COLOR_CHANGE * 1.5);
+    return changeColorLightness(color, HOVER_COLOR_CHANGE * 1.5);
   }
 
-  return changeColorLightness(color, HOVER_COLOR_CHANGE * 1.5);
+  return changeColorLightness(color, -HOVER_COLOR_CHANGE * 1.5);
 }
 
 export function getTextColorForBackgroundColor(color: string): string {
@@ -63,8 +63,10 @@ export function getTextColorForBackgroundColor(color: string): string {
 
 export function getButtonColorStyles(baseBgColor: string) {
   const hoverColor = getColorHoverVariant(baseBgColor);
+  console.log({ hoverColor });
   const activeColor = getColorActiveVariant(baseBgColor);
   const textColor = getTextColorForBackgroundColor(baseBgColor);
+
   return css`
     ${hoverTransition()}
     background-color: ${baseBgColor};
