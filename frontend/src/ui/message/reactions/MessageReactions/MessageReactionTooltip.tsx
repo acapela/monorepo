@@ -4,7 +4,7 @@ import { getEmojiDataFromNative, Data as EmojiDataset } from "emoji-mart";
 import data from "emoji-mart/data/all.json";
 import { ReactionBasicInfoFragment } from "~gql";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { borderRadius, colors, fontSize } from "~ui/baseStyles";
+import { borderRadius, colors } from "~ui/baseStyles";
 import { WHITE } from "~ui/colors";
 
 interface Props {
@@ -55,7 +55,7 @@ const UIHolder = styled.div`
 `;
 
 const UIContent = styled.p`
-  font-size: ${fontSize.tooltip};
+  font-size: 12px;
   color: hsla(0, 0%, 100%, 60%);
   text-align: center;
 `;
