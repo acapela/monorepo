@@ -57,7 +57,7 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
       </UIReactionButton>
       <AnimatePresence>
         {shouldShowTooltip && (
-          <Popover anchorRef={buttonRef} placement="bottom">
+          <Popover distance={10} anchorRef={buttonRef} placement="bottom">
             <MessageReactionTooltip reactions={reactions} emoji={emoji} />
           </Popover>
         )}

@@ -34,6 +34,9 @@ export const borderRadius = {
   label: css`
     border-radius: 6px;
   `,
+  tooltip: css`
+    border-radius: 4px;
+  `,
   input: css`
     border-radius: 12px;
   `,
