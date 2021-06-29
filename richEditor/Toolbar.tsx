@@ -1,3 +1,4 @@
+import { ChainedCommands } from "@tiptap/react";
 import { Children, forwardRef } from "react";
 import styled from "styled-components";
 import {
@@ -35,14 +36,21 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
     return editor.isActive(formatName, formatOptions);
   }
 
+  function createFormatHandler<N extends keyof ChainedCommands>(name: N, ...args: Parameters<ChainedCommands[N]>) {
+    return function run() {
+      let command = editor.chain().focus();
+
+      command = Reflect.apply(command[name], null, args);
+
+      command.run();
+    };
+  }
+
   return (
     <UIHolder ref={ref}>
       <UISection>
         <ToolbarButton
-          onClick={() => {
-            editor.chain().focus().toggleBold().run();
-            // alert("oki");
-          }}
+          onClick={createFormatHandler("toggleBold")}
           tooltipLabel="Bold"
           isHighlighted={getIsFormatActive("bold")}
           icon={<IconTextBold />}
@@ -58,14 +66,11 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         <ToolbarButton
           tooltipLabel="Strikethrough"
           isHighlighted={getIsFormatActive("strike")}
-          onClick={() => {
-            editor.chain().focus().toggleStrike().run();
-          }}
+          onClick={createFormatHandler("toggleStrike")}
           icon={<IconTextStrikethrough />}
         />
-
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          onClick={createFormatHandler("toggleCodeBlock")}
           tooltipLabel="Code Block"
           isHighlighted={getIsFormatActive("code-block")}
           icon={<IconBrackets />}
@@ -75,17 +80,17 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         <ToolbarButton
           tooltipLabel="Ordered list"
           isHighlighted={getIsFormatActive("orderedList")}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          onClick={createFormatHandler("toggleOrderedList")}
           icon={<IconListOrdered2 />}
         />
         <ToolbarButton
           tooltipLabel="Bullet list"
           isHighlighted={getIsFormatActive("bulletList")}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          onClick={createFormatHandler("toggleBulletList")}
           icon={<IconListUnordered3 />}
         />
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          onClick={createFormatHandler("toggleBlockquote")}
           tooltipLabel="Quote"
           isHighlighted={getIsFormatActive("blockquote")}
           icon={<IconQuotes />}

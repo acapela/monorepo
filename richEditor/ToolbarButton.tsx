@@ -18,13 +18,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function Toolb
   ref
 ) {
   return (
-    <UIHolder
-      data-tooltip={tooltipLabel}
-      isActive={isHighlighted}
-      isDisabled={isDisabled}
-      onClickCapture={onClick}
-      ref={ref}
-    >
+    <UIHolder data-tooltip={tooltipLabel} isActive={isHighlighted} isDisabled={isDisabled} onClick={onClick} ref={ref}>
       {icon}
     </UIHolder>
   );

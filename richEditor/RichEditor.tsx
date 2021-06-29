@@ -1,4 +1,5 @@
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import { isEqual } from "lodash";
 import React, { ReactNode, useEffect } from "react";
 import styled from "styled-components";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
@@ -74,6 +75,12 @@ export const RichEditor = ({
 
   // Update the content if needed.
   useEqualDependencyChangeEffect(() => {
+    const currentContent = editor?.state.toJSON().doc;
+
+    const didChange = !isEqual(value, currentContent);
+
+    if (!didChange) return;
+
     editor?.chain().setContent(value).run();
   }, [value]);
 
