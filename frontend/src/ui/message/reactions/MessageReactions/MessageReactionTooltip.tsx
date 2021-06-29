@@ -12,23 +12,23 @@ interface Props {
   reactions: ReactionBasicInfoFragment[];
 }
 
-const MAX_VISIBLE_REACTED_PEOPLE = 6;
+const MAX_VISIBLE_REACTED_USERS = 6;
 
 export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
   const user = useAssertCurrentUser();
 
   const getTextThatShowsWhoReacted = () => {
     const joiner = reactions.length === 2 ? " and " : ", ";
-    const names = reactions
-      .slice(0, MAX_VISIBLE_REACTED_PEOPLE)
+    const namesOfUsersReacting = reactions
+      .slice(0, MAX_VISIBLE_REACTED_USERS)
       .map((reaction) => (reaction.user.id === user.id ? "You" : reaction.user.name))
       .join(joiner);
 
-    if (reactions.length > MAX_VISIBLE_REACTED_PEOPLE) {
-      return `${names}...`;
+    if (reactions.length > MAX_VISIBLE_REACTED_USERS) {
+      return `${namesOfUsersReacting}...`;
     }
 
-    return names;
+    return namesOfUsersReacting;
   };
 
   const emojiShortName = getEmojiDataFromNative(emoji, "apple", data as never as EmojiDataset).id;
