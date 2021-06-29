@@ -20,10 +20,10 @@ interface Props {
 export const MessageReaction = ({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
 
-  const isSelected = reactions.some((reaction) => reaction.user.id === user.id);
+  const isSelectedByCurrentUser = reactions.some((reaction) => reaction.user.id === user.id);
 
   const handleClick = () => {
-    if (isSelected) {
+    if (isSelectedByCurrentUser) {
       removeMessageReaction({
         emoji,
         messageId: message.id,
@@ -51,7 +51,7 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
         onMouseLeave={unsetHovered}
         ref={buttonRef}
         onClick={handleClick}
-        isSelected={isSelected}
+        isSelected={isSelectedByCurrentUser}
       >
         <p>{emoji}</p>
         <p>{reactions.length}</p>
