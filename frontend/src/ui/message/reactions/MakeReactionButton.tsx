@@ -34,15 +34,15 @@ export const MakeReactionButton = ({ message }: Props) => {
       (reaction) => reaction.emoji === emoji.native && reaction.user.id === user.id
     );
 
-    if (!userAlreadyReacted) {
-      addMessageReaction({
-        input: {
-          emoji: emoji.native,
-          message_id: message.id,
-          user_id: user.id,
-        },
-      });
-    }
+    if (userAlreadyReacted) return;
+
+    addMessageReaction({
+      input: {
+        emoji: emoji.native,
+        message_id: message.id,
+        user_id: user.id,
+      },
+    });
   };
 
   return (
