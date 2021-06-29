@@ -3,9 +3,11 @@ import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageL
 import { MessageLinkPreviewIFrame } from "~frontend/ui/message/display/MessageLinksPreviews/MessageLinkPreviewIFrame";
 import { getFigmaEmbedUrl } from "./getFigmaEmbedUrl";
 
-const PREVIEW_RATIO = 800 / 450;
+const PREVIEW_DIMENTIONS_RATIO = 800 / 450;
 
 export const figmaPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => url.includes("figma.com/file"),
-  PreviewComponent: ({ url }) => <MessageLinkPreviewIFrame ratio={PREVIEW_RATIO} url={getFigmaEmbedUrl(url)} />,
+  PreviewComponent: ({ url }) => (
+    <MessageLinkPreviewIFrame ratio={PREVIEW_DIMENTIONS_RATIO} url={getFigmaEmbedUrl(url)} />
+  ),
 };
