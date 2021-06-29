@@ -18,7 +18,7 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
   const user = useAssertCurrentUser();
 
   const getTextThatShowsWhoReacted = () => {
-    const joiner = reactions.length === 2 ? "and" : ", ";
+    const joiner = reactions.length === 2 ? " and " : ", ";
     const names = reactions
       .slice(0, MAX_VISIBLE_REACTED_PEOPLE)
       .map((reaction) => (reaction.user.id === user.id ? "You" : reaction.user.name))

@@ -68,12 +68,14 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
 
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   border-radius: 1000px;
-  height: 40px;
+  height: 28px;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 0 8px;
   cursor: pointer;
+  font-size: 14px;
+  color: #797979;
 
   ${(p) =>
     p.isSelected

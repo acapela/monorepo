@@ -23,4 +23,5 @@ export const MessageReactions = ({ message }: Props) => {
 const UIReactions = styled.div`
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 `;
