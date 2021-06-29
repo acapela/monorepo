@@ -1,6 +1,7 @@
 import { ChainedCommands } from "@tiptap/react";
 import { Children, forwardRef } from "react";
 import styled from "styled-components";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import {
   IconAt,
   IconBrackets,
@@ -120,12 +121,11 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
 });
 
 const UIHolder = styled.div`
-  color: #788693;
   padding: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid ${BACKGROUND_ACCENT};
 
   ${() => UISection} {
     ${() => UIToolButton} {
@@ -135,13 +135,10 @@ const UIHolder = styled.div`
       cursor: pointer;
       display: inline-block;
 
-      font-size: 20px;
+      font-size: 1.25rem;
       height: 1em;
       padding: 0.25em;
       width: 1em;
-    }
-
-    ${() => UICustomButton} {
     }
   }
 `;
@@ -154,7 +151,3 @@ const UISection = styled.div`
 `;
 
 const UIToolButton = styled.button``;
-
-const UICustomButton = styled.div`
-  cursor: pointer;
-`;

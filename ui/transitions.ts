@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
 import { borderRadius } from "./baseStyles";
-import { BLACK, WHITE } from "./colors";
+import { BLACK, BUTTON_ACCENT_COLOR, WHITE } from "./colors";
 
 export function hoverTransition(propName = "all") {
   return css`
@@ -58,7 +58,7 @@ export function getTextColorForBackgroundColor(color: string): string {
     return WHITE;
   }
 
-  return BLACK;
+  return BUTTON_ACCENT_COLOR;
 }
 
 export function getButtonColorStyles(baseBgColor: string) {
