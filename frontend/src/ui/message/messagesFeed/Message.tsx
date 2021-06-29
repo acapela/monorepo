@@ -109,9 +109,9 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
           <UIMessageContent>
             {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
             <MessageText message={message} />
-            <MessageReactions message={message} />
             <MessageMedia message={message} />
             <MessageLinksPreviews message={message} />
+            <MessageReactions message={message} />
           </UIMessageContent>
         )}
       </UIMessageBody>
