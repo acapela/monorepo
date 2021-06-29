@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { getEmojiDataFromNative } from "emoji-mart";
+import { getEmojiDataFromNative, Data as EmojiData } from "emoji-mart";
 import data from "emoji-mart/data/all.json";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
@@ -41,7 +41,7 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
   const getTextThatShowsWhoReacted = () => {
     const names = reactions
       .slice(0, MAX_VISIBLE_REACTED_PEOPLE)
-      .map((reaction) => (reaction.user.id === user.id ? "you" : user.name))
+      .map((reaction) => (reaction.user.id === user.id ? "You" : user.name))
       .join(", ");
 
     if (reactions.length > MAX_VISIBLE_REACTED_PEOPLE) {
@@ -51,9 +51,8 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
     return names;
   };
 
-  const tooltipText = `${getTextThatShowsWhoReacted()} reacted with: ${
-    getEmojiDataFromNative(emoji, "apple", data).name
-  }`;
+  const emojiShortName = getEmojiDataFromNative(emoji, "apple", data as never as EmojiData).id;
+  const tooltipText = `${getTextThatShowsWhoReacted()} reacted with: ${emojiShortName}`;
 
   return (
     <UIReactionButton data-tooltip={tooltipText} onClick={handleClick} isSelected={isSelected}>
