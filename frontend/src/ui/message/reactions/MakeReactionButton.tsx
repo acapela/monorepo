@@ -30,11 +30,11 @@ export const MakeReactionButton = ({ message }: Props) => {
 
     close();
 
-    const userAlreadyReacted = message.message_reactions.some(
+    const hasUserAlreadyReacted = message.message_reactions.some(
       (reaction) => reaction.emoji === emoji.native && reaction.user.id === user.id
     );
 
-    if (userAlreadyReacted) return;
+    if (hasUserAlreadyReacted) return;
 
     addMessageReaction({
       input: {
