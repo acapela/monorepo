@@ -1,9 +1,10 @@
 import { MessageBasicInfoFragment } from "~gql";
 import { loomPreviewProvider } from "./loomPreviewProvider";
 import { figmaPreviewProvider } from "./figmaPreviewProvider";
+import { notionPreviewProvider } from "./notionPreviewProvider";
 import { extractLinksFromRichContent } from "~richEditor/links/extract";
 
-const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider];
+const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider, notionPreviewProvider];
 
 interface Props {
   message: MessageBasicInfoFragment;
