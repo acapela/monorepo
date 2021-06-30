@@ -14,7 +14,7 @@ import {
   IconTextItalic,
   IconTextStrikethrough,
 } from "~ui/icons";
-import { useRichEditorContext, useRichEditorIsEmpty } from "./context";
+import { useRichEditorContext } from "./context";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
 import { ToolbarButton } from "./ToolbarButton";
