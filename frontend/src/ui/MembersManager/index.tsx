@@ -11,17 +11,19 @@ import { UserPickerModal } from "./UserPickerModal";
 interface Props {
   users: UserBasicInfoFragment[];
   onAddMemberRequest: (userId: string) => Promise<void> | void;
-  onLeaveRequest: (userId: string) => Promise<void> | void;
+  onRemoveMemberRequest: (userId: string) => Promise<void> | void;
   className?: string;
   isReadonly?: boolean;
+  hideSelfActions?: boolean;
 }
 
 export const MembersManager = styled(function MembersManager({
   users,
-  onLeaveRequest,
+  onRemoveMemberRequest,
   onAddMemberRequest,
   className,
   isReadonly,
+  hideSelfActions,
 }: Props) {
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
   const user = useCurrentUser();
@@ -36,7 +38,7 @@ export const MembersManager = styled(function MembersManager({
             currentUsers={users}
             onCloseRequest={closeUserPicker}
             onAddUser={onAddMemberRequest}
-            onRemoveUser={onLeaveRequest}
+            onRemoveUser={onRemoveMemberRequest}
           />
         )}
       </AnimatePresence>
@@ -48,18 +50,20 @@ export const MembersManager = styled(function MembersManager({
           )}
         </UIMembers>
 
-        <UIActions>
-          {user && isMember && (
-            <TransparentButton onClick={handleWithStopPropagation(() => onLeaveRequest(user.id))}>
-              Leave
-            </TransparentButton>
-          )}
-          {user && !isMember && (
-            <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
-              Join
-            </TransparentButton>
-          )}
-        </UIActions>
+        {!hideSelfActions && (
+          <UIActions>
+            {user && isMember && (
+              <TransparentButton onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
+                Leave
+              </TransparentButton>
+            )}
+            {user && !isMember && (
+              <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
+                Join
+              </TransparentButton>
+            )}
+          </UIActions>
+        )}
       </UIHolder>
     </>
   );

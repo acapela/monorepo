@@ -34,7 +34,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
       isReadonly={!amIMember}
       users={members}
       onAddMemberRequest={handleJoin}
-      onLeaveRequest={handleLeave}
+      onRemoveMemberRequest={handleLeave}
     />
   );
 };

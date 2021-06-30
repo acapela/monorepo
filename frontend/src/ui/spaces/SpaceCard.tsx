@@ -114,7 +114,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
             <MembersManager
               users={space.members.map((m) => m.user)}
               onAddMemberRequest={handleJoin}
-              onLeaveRequest={handleLeave}
+              onRemoveMemberRequest={handleLeave}
               isReadonly={!amIMember}
             />
           </UIMembers>
