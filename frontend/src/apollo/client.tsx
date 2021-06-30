@@ -53,6 +53,8 @@ export function readTokenFromRequest(req?: IncomingMessage): string | null {
 
 const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
   new ApolloLink((operation, forward) => {
+    const { headers = {} } = operation.getContext();
+
     const authToken = forcedAuthToken ?? readCurrentToken();
 
     if (!authToken) {
@@ -62,6 +64,7 @@ const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
     operation.setContext({
       headers: {
         Authorization: `Bearer ${authToken}`,
+        ...headers,
       },
     });
 

@@ -9,8 +9,9 @@ import { memoize } from "lodash";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
+import { addRoleToContext, RequestWithRole } from "./withRole";
 
-interface MutationDefinitionOptions<Data, Variables> {
+interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
   // This callback is called optionally twice for both optimistic and actual response
   onOptimisticOrActualResponse?: (
     data: NonNullable<UnwrapQueryData<Data>>,
@@ -80,7 +81,7 @@ export function createMutation<Data, Variables>(
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
       const rawResult = await runMutationRaw({
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-        ...options,
+        ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
         variables,
         update: createMutationUpdateCallback(variables, options),
       });
@@ -96,7 +97,7 @@ export function createMutation<Data, Variables>(
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-      ...options,
+      ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
       mutation: getMutation(),
       variables,
       update: createMutationUpdateCallback(variables, options),
