@@ -1,12 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { IconChevronDown, IconPlus } from "~ui/icons";
-import { ACTION_ACTIVE_COLOR, hoverActionCss } from "~ui/transitions";
+import { hoverActionCss } from "~ui/transitions";
 import { SecondaryText } from "~ui/typo";
 import { Popover } from "../../popovers/Popover";
 import { FieldWithName } from "../FieldWithName";
@@ -48,7 +48,7 @@ export function MultipleOptionsDropdown<I>({
   selectedItemsPreviewRenderer,
 }: Props<I>) {
   const openerRef = useRef<HTMLButtonElement>(null);
-  const [isOpened, { set: open, unset: close, toggle }] = useBoolean(false);
+  const [isOpened, { unset: close, toggle }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
 
   function handleItemPicked(pickedItem: I) {
@@ -59,8 +59,6 @@ export function MultipleOptionsDropdown<I>({
     const pickedItemKey = keyGetter(pickedItem);
 
     const wasSelected = selectedKeys.includes(pickedItemKey);
-
-    console.log({ wasSelected });
 
     if (wasSelected) {
       const newSelectedItems = selectedItems.filter((selectedItem) => {
@@ -76,10 +74,6 @@ export function MultipleOptionsDropdown<I>({
 
     onItemSelected?.(pickedItem);
     onChange?.(newSelectedItems);
-  }
-
-  async function handleCreateNewRequest() {
-    close();
   }
 
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
@@ -153,31 +147,3 @@ const UIMenuOpener = styled.button`
 `;
 
 const UIDropdownHolder = styled.div``;
-
-const UIMenu = styled.div<{ isVisible: boolean }>`
-  position: absolute;
-  overflow-y: auto;
-  border: 1px solid ${BACKGROUND_ACCENT};
-  left: 0;
-  top: 0;
-  width: 100%;
-  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
-  border-radius: ${borderRadius.menu};
-  background: #ffffff;
-`;
-
-const UIOption = styled.div<{ isHighlighted: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  ${(props) =>
-    props.isHighlighted &&
-    css`
-      background-color: ${ACTION_ACTIVE_COLOR};
-    `}
-`;

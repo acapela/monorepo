@@ -1,5 +1,5 @@
 import { Transition, HTMLMotionProps } from "framer-motion";
-import { forwardRef, RefObject } from "react";
+import { forwardRef } from "react";
 import { PresenceStyles, PresenceAnimator } from "./PresenceAnimator";
 
 export const POP_ANIMATION_CONFIG: Transition = { type: "spring", bounce: 0, duration: 0.2 };

@@ -10,7 +10,7 @@ import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt"
 import { niceFormatDateTime } from "~shared/dates/format";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
-import { ItemTitle, SecondaryText } from "~ui/typo";
+import { ItemTitle } from "~ui/typo";
 
 interface Props {
   event: JsonValue<GoogleCalendarEvent>;
@@ -102,7 +102,5 @@ const UIName = styled(ItemTitle)`
 const UIMeta = styled.div`
   padding-top: 16px;
 `;
-
-const UIDate = styled(SecondaryText)``;
 
 const UIActions = styled.div``;
