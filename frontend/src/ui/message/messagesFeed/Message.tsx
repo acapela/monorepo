@@ -5,13 +5,12 @@ import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
 import { MessageDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
-import { useTopicStore } from "~frontend/topics/TopicStore";
+import { useTopicStoreSelector } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "../ReplyingToMessage";
 import { IconEdit, IconReply, IconTrash } from "~ui/icons";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -30,11 +29,25 @@ interface Props extends MotionProps {
 export const Message = styled(({ message, className, isReadonly }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
-  const [isInEditMode, { set: enableEditMode, unset: disableEditMode }] = useBoolean(false);
 
-  const [, updateTopicState] = useTopicStore();
+  const [isInEditMode, updateTopicStore] = useTopicStoreSelector(
+    (topicStore) => topicStore.editedMessageId === message.id
+  );
+
   async function handleMarkAsBeingRepliedTo() {
-    updateTopicState((draft) => (draft.currentlyReplyingToMessage = message));
+    updateTopicStore((draft) => (draft.currentlyReplyingToMessage = message));
+  }
+
+  function handleStartEditing() {
+    updateTopicStore((draft) => (draft.editedMessageId = message.id));
+  }
+
+  function handleStopEditing() {
+    updateTopicStore((draft) => {
+      if (draft.editedMessageId !== message.id) return;
+
+      draft.editedMessageId = null;
+    });
   }
 
   const [isActive, setIsActive] = useState(false);
@@ -64,7 +77,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
     const options = [];
 
     if (isOwnMessage) {
-      options.push({ label: "Edit message", onSelect: enableEditMode, icon: <IconEdit /> });
+      options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
     }
 
     options.push({ label: "Reply", onSelect: handleMarkAsBeingRepliedTo, icon: <IconReply /> });
@@ -103,7 +116,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
     >
       <UIMessageBody>
         {isInEditMode && (
-          <EditMessageEditor message={message} onCancelRequest={disableEditMode} onSaved={disableEditMode} />
+          <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
         )}
         {!isInEditMode && (
           <UIMessageContent>
