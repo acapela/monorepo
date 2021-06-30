@@ -12,6 +12,7 @@ import { MessageContentEditor } from "./MessageContentComposer";
 import { makePromiseVoidable } from "~shared/promises";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { RichEditorContent } from "~richEditor/content/types";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -66,6 +67,12 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     onSaved?.();
   }
 
+  function getCanSubmit() {
+    if (attachments.length > 0) return true;
+
+    return !isRichEditorContentEmpty(content);
+  }
+
   return (
     <UIHolder>
       <MessageContentEditor
@@ -86,7 +93,9 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       />
       <UIButtons gap={8} justifyContent="end">
         <TransparentButton onClick={onCancelRequest}>Cancel</TransparentButton>
-        <Button onClick={handleSubmit}>Save</Button>
+        <Button isDisabled={!getCanSubmit()} onClick={handleSubmit}>
+          Save
+        </Button>
       </UIButtons>
     </UIHolder>
   );

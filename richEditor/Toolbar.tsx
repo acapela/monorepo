@@ -23,14 +23,15 @@ interface Props {
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
   onEmojiSelected: (emoji: string) => void;
-  hideSubmitButton?: boolean;
+  submitMode?: RichEditorSubmitMode;
 }
 
+export type RichEditorSubmitMode = "hide" | "disable" | "enable";
+
 export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
-  { onFilesSelected, onSubmit, onEmojiSelected, hideSubmitButton },
+  { onFilesSelected, onSubmit, onEmojiSelected, submitMode },
   ref
 ) {
-  const isEmpty = useRichEditorIsEmpty();
   const editor = useRichEditorContext();
 
   function getIsFormatActive(formatName: string, formatOptions?: Record<string, unknown>) {
@@ -106,10 +107,10 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         </FileInput>
 
         {/* Only show submit button if onSubmit callback is provided */}
-        {!hideSubmitButton && !!onSubmit && (
+        {submitMode !== "hide" && !!onSubmit && (
           <ToolbarButton
-            isDisabled={isEmpty}
-            isHighlighted={!isEmpty}
+            isDisabled={submitMode === "disable"}
+            isHighlighted={submitMode === "enable"}
             tooltipLabel="Submit"
             onClick={onSubmit}
             icon={<IconSend />}

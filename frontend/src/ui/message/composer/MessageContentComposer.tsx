@@ -1,15 +1,17 @@
 import React from "react";
 import styled from "styled-components";
+import { RichEditorContent } from "~richEditor/content/types";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
-import { EditorContent, RichEditor } from "~richEditor/RichEditor";
+import { RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 
 interface Props {
   autofocusKey?: string;
   onSubmit?: () => void;
-  content: EditorContent;
-  onContentChange: (content: EditorContent) => void;
+  content: RichEditorContent;
+  onContentChange: (content: RichEditorContent) => void;
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
@@ -28,6 +30,16 @@ export const MessageContentEditor = ({
   hideEditorSubmitButton,
   additionalContent = null,
 }: Props) => {
+  function getSubmitButtonMode(): RichEditorSubmitMode {
+    if (hideEditorSubmitButton) return "hide";
+
+    const canSubmit = attachments.length > 0 || !isRichEditorContentEmpty(content);
+
+    if (canSubmit) return "enable";
+
+    return "disable";
+  }
+
   return (
     <RichEditor
       value={content}
@@ -36,7 +48,7 @@ export const MessageContentEditor = ({
       onSubmit={onSubmit}
       placeholder="Type here to start contributing..."
       autofocusKey={autofocusKey}
-      hideSubmitButton={hideEditorSubmitButton}
+      submitMode={getSubmitButtonMode()}
       additionalTopContent={additionalContent}
       additionalBottomContent={
         attachments.length > 0 && (
