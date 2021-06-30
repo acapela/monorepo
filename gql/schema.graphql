@@ -6046,6 +6046,7 @@ type room {
   deadline: timestamptz!
   finished_at: timestamptz
   id: uuid!
+  is_private: Boolean!
 
   """
   An object relationship
@@ -6291,6 +6292,7 @@ input room_bool_exp {
   deadline: timestamptz_comparison_exp
   finished_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
+  is_private: Boolean_comparison_exp
   last_posted_message: room_last_posted_message_bool_exp
   members: room_member_bool_exp
   name: String_comparison_exp
@@ -6329,6 +6331,7 @@ input room_insert_input {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  is_private: Boolean
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
@@ -7076,6 +7079,7 @@ input room_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  is_private: order_by
   last_posted_message: room_last_posted_message_order_by
   members_aggregate: room_member_aggregate_order_by
   name: order_by
@@ -7128,6 +7132,11 @@ enum room_select_column {
   """
   column name
   """
+  is_private
+
+  """
+  column name
+  """
   name
 
   """
@@ -7165,6 +7174,7 @@ input room_set_input {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  is_private: Boolean
   name: String
   notification_job_id: String
   slug: String
@@ -7201,6 +7211,11 @@ enum room_update_column {
   column name
   """
   id
+
+  """
+  column name
+  """
+  is_private
 
   """
   column name
