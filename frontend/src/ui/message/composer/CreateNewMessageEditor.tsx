@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { createMessage } from "~frontend/gql/messages";
+import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
@@ -26,7 +26,7 @@ interface SubmitMessageParams {
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
-  const [isSending, setIsSending] = useState(false);
+  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
   const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
   const handleStopReplyingToMessage = () => {
@@ -72,22 +72,16 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
-          if (isSending) return;
+          if (isCreatingMessage) return;
 
-          setIsSending(true);
+          await submitMessage({
+            type: "TEXT",
+            content: value,
+            attachments,
+          });
 
-          try {
-            await submitMessage({
-              type: "TEXT",
-              content: value,
-              attachments,
-            });
-
-            attachmentsList.clear();
-            setValue(getEmptyRichContent());
-          } finally {
-            setIsSending(false);
-          }
+          attachmentsList.clear();
+          setValue(getEmptyRichContent());
         }}
         onFilesSelected={handleNewFiles}
         autofocusKey={topicId}
