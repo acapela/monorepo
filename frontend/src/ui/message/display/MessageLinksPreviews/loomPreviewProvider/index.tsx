@@ -3,8 +3,6 @@ import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageL
 import { MessageLinkPreviewIFrame } from "~frontend/ui/message/display/MessageLinksPreviews/MessageLinkPreviewIFrame";
 import { getLoomEmbedUrl } from "./getLoomEmbedUrl";
 
-const PREVIEW_DIMENTIONS_RATIO = 640 / 392;
-
 export const loomPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => url.includes("loom.com/share"),
   PreviewComponent: ({ url }) => {
@@ -14,6 +12,6 @@ export const loomPreviewProvider: MessageEmbedPreviewConfig = {
       return null;
     }
 
-    return <MessageLinkPreviewIFrame ratio={PREVIEW_DIMENTIONS_RATIO} url={embedUrl} />;
+    return <MessageLinkPreviewIFrame ratio={"640 / 392"} url={embedUrl} />;
   },
 };

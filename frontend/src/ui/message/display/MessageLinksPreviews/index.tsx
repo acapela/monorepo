@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import { MessageBasicInfoFragment } from "~gql";
 import { loomPreviewProvider } from "./loomPreviewProvider";
 import { figmaPreviewProvider } from "./figmaPreviewProvider";
@@ -14,7 +15,7 @@ export const MessageLinksPreviews = ({ message }: Props) => {
   const links = extractLinksFromRichContent(message.content);
 
   return (
-    <>
+    <UIHolder>
       {links.map((linkUrl) => {
         const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(linkUrl));
 
@@ -24,6 +25,22 @@ export const MessageLinksPreviews = ({ message }: Props) => {
 
         return <PreviewComponent key={linkUrl} url={linkUrl} />;
       })}
-    </>
+    </UIHolder>
   );
 };
+
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  width: 600px;
+
+  @media (max-width: 1280px) {
+    width: 400px;
+  }
+
+  @media (max-width: 800px) {
+    width: 300px;
+  }
+`;
