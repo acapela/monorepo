@@ -47,6 +47,17 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
     };
   }
 
+  function handleCreateCodeSnippet() {
+    const isSelectionEmpty = editor.state.selection.empty;
+
+    if (isSelectionEmpty) {
+      editor.chain().focus().toggleCodeBlock().run();
+      return;
+    }
+
+    editor.chain().focus().toggleCode().run();
+  }
+
   return (
     <UIHolder ref={ref}>
       <UISection>
@@ -71,9 +82,9 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
           icon={<IconTextStrikethrough />}
         />
         <ToolbarButton
-          onClick={createFormatHandler("toggleCodeBlock")}
+          onClick={handleCreateCodeSnippet}
           tooltipLabel="Code Block"
-          isHighlighted={getIsFormatActive("code-block")}
+          isHighlighted={getIsFormatActive("code-block") || getIsFormatActive("code")}
           icon={<IconBrackets />}
         />
         {/* TODO now we 'only' have autolinks. Integrate nice UI to create links with modal */}
