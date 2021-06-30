@@ -225,7 +225,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was added` });
+      addToast({ type: "info", content: `Room member was removed` });
     },
   }
 );
