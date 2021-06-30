@@ -26,6 +26,7 @@ interface SubmitMessageParams {
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
+  const [isSending, setIsSending] = useState(false);
 
   const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
   const handleStopReplyingToMessage = () => {
@@ -71,14 +72,22 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
-          await submitMessage({
-            type: "TEXT",
-            content: value,
-            attachments,
-          });
+          if (isSending) return;
 
-          attachmentsList.clear();
-          setValue(getEmptyRichContent());
+          setIsSending(true);
+
+          try {
+            await submitMessage({
+              type: "TEXT",
+              content: value,
+              attachments,
+            });
+
+            attachmentsList.clear();
+            setValue(getEmptyRichContent());
+          } finally {
+            setIsSending(false);
+          }
         }}
         onFilesSelected={handleNewFiles}
         autofocusKey={topicId}
