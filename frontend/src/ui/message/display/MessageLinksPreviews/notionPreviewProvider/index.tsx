@@ -1,6 +1,11 @@
 import React from "react";
+import styled from "styled-components";
+import { IconNotionLogo } from "~ui/icons";
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
+import { TextTitle } from "~ui/typo";
 import { getNotionPreviewText } from "./getNotionPreviewText";
+import { BACKGROUND_ACCENT_WEAK, BACKGROUND_ACCENT } from "~ui/colors";
+import { hoverTransition } from "~ui/transitions";
 
 export const notionPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => {
@@ -21,6 +26,27 @@ export const notionPreviewProvider: MessageEmbedPreviewConfig = {
       return null;
     }
 
-    return <p>{previewText}</p>;
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        <UICard>
+          <IconNotionLogo />
+          <TextTitle>{previewText}</TextTitle>
+        </UICard>
+      </a>
+    );
   },
 };
+
+const UICard = styled.div`
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  background: ${BACKGROUND_ACCENT_WEAK};
+  ${hoverTransition()};
+
+  :hover {
+    background: ${BACKGROUND_ACCENT};
+  }
+`;
