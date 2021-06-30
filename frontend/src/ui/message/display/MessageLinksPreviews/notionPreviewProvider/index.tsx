@@ -46,6 +46,10 @@ const UICard = styled.div`
   background: ${BACKGROUND_ACCENT_WEAK};
   ${hoverTransition()};
 
+  svg {
+    font-size: 2em;
+  }
+
   :hover {
     background: ${BACKGROUND_ACCENT};
   }
