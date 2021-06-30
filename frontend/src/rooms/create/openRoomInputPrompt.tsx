@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
+import { FieldWithName } from "~ui/forms/FieldWithName";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { Modal } from "~frontend/ui/Modal";
+import { getRoomDefaultDeadline } from "~frontend/utils/room";
+import { handleWithPreventDefault } from "~shared/events";
+import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { OutlinedButton } from "~ui/buttons/OutlinedButton";
-import { handleWithPreventDefault } from "~shared/events";
-import { useCurrentTeamSpaces } from "~frontend/gql/spaces";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import { SpacesCombobox } from "./SpacesCombobox";
-import { SpaceNameInput } from "./SpaceNameInput";
-import { FieldLabel } from "~ui/typo";
-import { UIFormField } from "./UIFormField";
-import { useCreateSpaceMutation } from "~frontend/gql/spaces";
-import { slugify } from "~shared/slugify";
-import { InputError } from "~ui/forms/InputError";
-import { getRoomDefaultDeadline } from "~frontend/utils/room";
-import { DateTimeInput } from "~ui/time/DateTimeInput";
 import { createPromiseUI } from "~ui/createPromiseUI";
-import { Modal } from "~frontend/ui/Modal";
+import { InputError } from "~ui/forms/InputError";
+import { DateTimeInput } from "~ui/time/DateTimeInput";
+import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
+import { TeamMembersPicker } from "./TeamMembersPicker";
+import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 
 interface RoomInputInitialData {
   name?: string;
   deadline?: Date;
   spaceId?: string;
+  participantsIds?: string[];
 }
 
 interface RoomInputOutputData {
@@ -29,65 +27,67 @@ interface RoomInputOutputData {
   deadline: Date;
   spaceId: string;
   slug: string;
+  participantsIds: string[];
 }
 
 export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInputOutputData | null>(
   (
-    { name: initialRoomName = "", deadline: initialDeadline = getRoomDefaultDeadline(), spaceId: initialSpaceId },
+    {
+      name: initialRoomName = "",
+      deadline: initialDeadline = getRoomDefaultDeadline(),
+      spaceId: initialSpaceId,
+      participantsIds: initialParticipantsIds = [],
+    },
     resolve
   ) => {
-    const [createSpace, { loading: createSpaceLoading }] = useCreateSpaceMutation();
-
+    const currentUser = useAssertCurrentUser();
     const [roomName, setRoomName] = useState<string>(initialRoomName);
     const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(initialSpaceId ?? null);
-    const [spaceName, setSpaceName] = useState<string>("");
     const [deadline, setDeadline] = useState<Date>(initialDeadline);
+    const [participantIds, setParticipantIds] = useState<string[]>(
+      ensureCurrentUserInParticipants(initialParticipantsIds)
+    );
+
+    const participantIdsWithCurrentUser = ensureCurrentUserInParticipants(participantIds);
 
     const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
-    const teamId = useAssertCurrentTeamId();
-    const [spacesList = []] = useCurrentTeamSpaces();
+    function ensureCurrentUserInParticipants(userIds: string[]) {
+      if (userIds.includes(currentUser.id)) return userIds;
 
-    // if only one space - make it selected by default
-    useEffect(() => {
-      if (!selectedSpaceId && spacesList.length === 1) {
-        setSelectedSpaceId(spacesList[0].id);
-      }
-    }, [spacesList, selectedSpaceId]);
+      return [currentUser.id, ...userIds];
+    }
 
     // clear the error on changes in the form values
     useEffect(() => {
       setFormErrorMessage(null);
-    }, [roomName, selectedSpaceId, spaceName]);
+    }, [roomName, selectedSpaceId]);
 
     const validationErrorMessage = validateRoomCreationInfo({
       roomName,
-      spaceName,
       spaceId: selectedSpaceId,
     });
 
     const handleSubmit = async () => {
       const errorMessage = formErrorMessage || validationErrorMessage;
-      if (errorMessage) {
+      if (typeof errorMessage === "string") {
         setFormErrorMessage(errorMessage);
         return;
       }
 
+      if (!selectedSpaceId) {
+        return;
+      }
+
       try {
-        let spaceId = selectedSpaceId;
-        if (spacesList.length === 0) {
-          const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
-          if (space) {
-            spaceId = space.id;
-          }
-        }
-
-        if (!spaceId) {
-          return;
-        }
-
         try {
-          resolve({ deadline, name: roomName, spaceId, slug: slugify(roomName) });
+          resolve({
+            deadline,
+            name: roomName,
+            spaceId: selectedSpaceId,
+            slug: slugify(roomName),
+            participantsIds: participantIdsWithCurrentUser,
+          });
         } catch (err) {
           if (err.message.includes("Uniqueness violation")) {
             setFormErrorMessage("Room with this name already exists");
@@ -110,15 +110,14 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
               autoFocus
               placeholder="Room name"
             />
-            {spacesList.length > 0 ? (
-              <SpacesCombobox itemId={selectedSpaceId} items={spacesList} onChange={setSelectedSpaceId} />
-            ) : (
-              <SpaceNameInput value={spaceName} onChange={setSpaceName} />
-            )}
-            <UIFormField>
-              <FieldLabel>Due date</FieldLabel>
+            <SpacePicker selectedSpaceId={selectedSpaceId} onChange={setSelectedSpaceId} />
+            <FieldWithName label="Participants">
+              <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
+            </FieldWithName>
+
+            <FieldWithName label="Due date">
               <DateTimeInput value={deadline} onChange={setDeadline} />
-            </UIFormField>
+            </FieldWithName>
           </UIFormFields>
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
@@ -126,9 +125,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
               <OutlinedButton type="reset" onClick={() => resolve(null)}>
                 Cancel
               </OutlinedButton>
-              <Button isLoading={createSpaceLoading} onClick={() => null}>
-                Create
-              </Button>
+              <Button onClick={() => null}>Create</Button>
             </UIButtons>
           </UIBottomArea>
         </UIForm>

@@ -128,7 +128,10 @@ export function isCurrentUserSpaceMember(space?: SpaceBasicInfoFragmentType) {
   return space?.members.some((member) => member.user.id === user.id) ?? false;
 }
 
-export const [useCreateSpaceMutation] = createMutation<CreateSpaceMutation, CreateSpaceMutationVariables>(
+export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
+  CreateSpaceMutation,
+  CreateSpaceMutationVariables
+>(
   () => gql`
     ${SpaceBasicInfoFragment()}
 
