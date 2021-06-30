@@ -34,13 +34,13 @@ const UIHolder = styled.div`
   flex-direction: column;
   gap: 16px;
 
-  width: 600px;
+  max-width: 600px;
 
   @media (max-width: 1280px) {
-    width: 400px;
+    max-width: 400px;
   }
 
   @media (max-width: 800px) {
-    width: 300px;
+    max-width: 300px;
   }
 `;
