@@ -1,10 +1,14 @@
 import { RichEditorContent } from "./types";
+import { JSONContent } from "@tiptap/react";
 
-import { convertMessageContentToPlainText } from "./plainText";
+function hasContentNodeAnyTextContent(node: JSONContent): boolean {
+  if (node.text && node.text.length > 0) return true;
 
-export function isRichEditorContentEmpty(content: RichEditorContent) {
-  // TODO: There is probably a cheaper method of checking if content editor is empty than converting entire JSON content to text.
-  const text = convertMessageContentToPlainText(content);
+  if (!node.content) return false;
 
-  return text.trim().length === 0;
+  return node.content.some(hasContentNodeAnyTextContent);
+}
+
+export function isRichEditorContentEmpty(content: RichEditorContent): boolean {
+  return !hasContentNodeAnyTextContent(content);
 }
