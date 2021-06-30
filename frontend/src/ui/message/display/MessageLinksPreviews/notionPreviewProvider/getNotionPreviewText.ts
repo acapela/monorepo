@@ -1,7 +1,12 @@
 export const getNotionPreviewText = (url: string) => {
-  const [pageNameWithId] = url.split("/").reverse();
+  try {
+    const [pageNameWithId] = url.split("/").reverse();
 
-  const previewText = pageNameWithId.split("-").slice(0, -1).join(" ");
+    const previewText = pageNameWithId.split("-").slice(0, -1).join(" ");
 
-  return previewText;
+    return previewText;
+  } catch (err) {
+    console.error(`Failed to parse Notion URL: ${url}`);
+    return null;
+  }
 };

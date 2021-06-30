@@ -3,7 +3,17 @@ import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageL
 import { getNotionPreviewText } from "./getNotionPreviewText";
 
 export const notionPreviewProvider: MessageEmbedPreviewConfig = {
-  isUrlSupported: (url) => url.includes("notion.so"),
+  isUrlSupported: (url) => {
+    const domainName = "notion.so";
+
+    if (!url.includes(domainName)) {
+      return false;
+    }
+
+    const [partOfUrlAfterDomainName] = url.split(domainName).reverse();
+
+    return partOfUrlAfterDomainName.length > 1;
+  },
   PreviewComponent: ({ url }) => {
     const previewText = getNotionPreviewText(url);
 
