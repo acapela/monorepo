@@ -7,6 +7,7 @@ import { initializeSecrets } from "~config";
 import { Account, db, User } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
+import { DEFAULT_ROLE, ALLOWED_ROLES } from "~shared/roles";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -266,8 +267,8 @@ async function getAuthInitOptions() {
           currentTeamId: user.current_team_id ?? null,
           // Make JWT token compatible with hasura
           "https://hasura.io/jwt/claims": {
-            "x-hasura-allowed-roles": ["user"],
-            "x-hasura-default-role": "user",
+            "x-hasura-allowed-roles": ALLOWED_ROLES,
+            "x-hasura-default-role": DEFAULT_ROLE,
             "x-hasura-user-id": user.id,
           },
         };
