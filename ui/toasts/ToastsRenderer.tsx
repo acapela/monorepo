@@ -4,6 +4,7 @@ import { useToasts, removeToast } from "./data";
 import { ToastLabel } from "./ToastLabel";
 import { AnimatePresence } from "framer-motion";
 import { getObjectKey } from "~shared/object";
+import { zIndex } from "~ui/zIndex";
 
 export function ToastsRenderer() {
   const toasts = useToasts();
@@ -32,6 +33,7 @@ const UIFlyer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: ${zIndex.Toast};
 `;
 
 const UIToastsHolder = styled.div`
