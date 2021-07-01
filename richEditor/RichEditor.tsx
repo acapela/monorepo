@@ -1,6 +1,7 @@
-import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect } from "react";
+import { useMemo } from "react";
 import styled from "styled-components";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { borderRadius } from "~ui/baseStyles";
@@ -31,6 +32,7 @@ export interface RichEditorProps {
   autofocusKey?: string;
   hideSubmitButton?: boolean;
   disableFileDrop?: boolean;
+  extensions?: Extensions;
 }
 
 export const RichEditor = ({
@@ -44,9 +46,11 @@ export const RichEditor = ({
   autofocusKey,
   hideSubmitButton,
   disableFileDrop,
+  extensions = [],
 }: RichEditorProps) => {
+  const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
   const editor = useEditor({
-    extensions: richEditorExtensions,
+    extensions: finalExtensions,
     content: value,
     enableInputRules: true,
   });
