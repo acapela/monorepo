@@ -121,3 +121,5 @@ dist
 .DS_Store
 
 credentials.json
+kustomize
+.envrc
