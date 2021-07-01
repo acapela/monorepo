@@ -20,7 +20,7 @@ interface Props {
 export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) => {
   const ref = useRef<HTMLButtonElement>(null);
 
-  const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker }] = useBoolean(false);
+  const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
     toggleOpenPicker();
@@ -31,7 +31,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) =>
     <>
       <AnimatePresence>
         {isPickerOpen && (
-          <Popover onClickOutside={toggleOpenPicker} placement={"bottom-start"} anchorRef={ref}>
+          <Popover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
             <DateTimePicker onSubmit={handleSubmit} initialValue={value} />
           </Popover>
         )}

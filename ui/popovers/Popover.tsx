@@ -53,9 +53,7 @@ export const Popover = styled(
     const poperRef = useValueRef(popperElement);
 
     useClickAway(poperRef, () => {
-      if (onClickOutside) {
-        onClickOutside();
-      }
+      onClickOutside?.();
     });
 
     useResizeCallback(poperRef, () => {

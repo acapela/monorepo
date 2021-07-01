@@ -13,6 +13,7 @@ import {
   TeamBasicInfoFragment as TeamBasicInfoFragmentType,
   TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
   TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
+  UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -103,6 +104,12 @@ export function useCurrentTeamDetails() {
   const teamId = useAssertCurrentTeamId();
 
   return useTeamDetailsQuery({ teamId });
+}
+
+export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
+  const [teamDetails] = useCurrentTeamDetails();
+
+  return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
 export const [useCreateTeamInvitationMutation] = createMutation<

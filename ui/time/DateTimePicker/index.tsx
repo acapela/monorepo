@@ -42,7 +42,10 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
   return (
     <UIDateTimePickerForm>
       <UIPickers>
-        <Calendar date={dirtyDate} onDateChange={handleDayChange} />
+        <UICalendarHolder>
+          <Calendar date={dirtyDate} onDateChange={handleDayChange} />
+        </UICalendarHolder>
+
         <UITimePickerWrapper>
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
@@ -75,4 +78,8 @@ const UITimePickerWrapper = styled.div`
   border-left: 1px solid ${BACKGROUND_ACCENT};
   overflow: auto;
   max-height: 300px;
+`;
+
+const UICalendarHolder = styled.div`
+  padding: 16px;
 `;

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { JsonValue } from "~frontend/../../shared/types";
+import { JsonValue } from "~shared/types";
 import { readCurrentToken } from "~frontend/authentication/cookie";
 import { useEqualEffect } from "~shared/hooks/useEqualEffect";
 

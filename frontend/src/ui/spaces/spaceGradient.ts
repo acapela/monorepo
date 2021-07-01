@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { borderRadius } from "~ui/baseStyles";
 import { pickNArrayItemsWithSeed } from "~shared/array";
 import { COLORS_PALETTE } from "~ui/colors";
 
@@ -16,4 +17,10 @@ export function getSpaceBackgroundGradientStyle(spaceId: string) {
 
 export const SpaceGradient = styled.div<{ spaceId: string }>`
   ${(props) => getSpaceBackgroundGradientStyle(props.spaceId)}
+`;
+
+export const SpaceGradientIcon = styled(SpaceGradient)`
+  height: 1em;
+  width: 1em;
+  ${borderRadius.label}
 `;
