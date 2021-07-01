@@ -19,12 +19,7 @@ spec:
       containers:
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
-          command:
-            [
-              "/cloud_sql_proxy",
-              "-ip_address_types=PRIVATE",
-              "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432",
-            ]
+          command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
           envFrom:
             - configMapRef:
                 name: frontend-default
