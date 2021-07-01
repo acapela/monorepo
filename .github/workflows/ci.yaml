@@ -136,9 +136,21 @@ jobs:
           project_id: meetnomoreapp
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
         if: steps.semrel.outputs.version != ''
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+        if: steps.semrel.outputs.version != ''
+      - name: Set up kubectl
+        uses: google-github-actions/get-gke-credentials@main
+        with:
+          cluster_name: cluster-1
+          location: europe-west1
+          credentials: ${{ secrets.GCLOUD_AUTH }}
+        if: steps.semrel.outputs.version != ''
       - run: gcloud auth configure-docker eu.gcr.io -q
         if: steps.semrel.outputs.version != ''
       - run: ./scripts/build-deploy.sh ${{ steps.semrel.outputs.version }}
         if: steps.semrel.outputs.version != ''
         env:
+          KUSTOMIZE_BIN: ./kustomize
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
