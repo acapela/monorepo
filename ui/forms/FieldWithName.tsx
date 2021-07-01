@@ -12,14 +12,16 @@ interface Props {
 export const FieldWithName = styled(({ label, children, onLabelClick, className }: Props) => {
   return (
     <UIFormField className={className}>
-      <FieldLabel onClick={onLabelClick}>{label}</FieldLabel>
+      {!!label && <FieldLabel onClick={onLabelClick}>{label}</FieldLabel>}
       {children}
     </UIFormField>
   );
 })``;
 
 const UIFormField = styled.div`
-  display: grid;
-  grid-template-rows: auto 42px;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  & > ${FieldLabel} {
+    margin-bottom: 8px;
+  }
 `;

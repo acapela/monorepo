@@ -14,7 +14,6 @@ interface Props {
   onRemoveMemberRequest: (userId: string) => Promise<void> | void;
   className?: string;
   isReadonly?: boolean;
-  hideSelfActions?: boolean;
 }
 
 export const MembersManager = styled(function MembersManager({
@@ -23,7 +22,6 @@ export const MembersManager = styled(function MembersManager({
   onAddMemberRequest,
   className,
   isReadonly,
-  hideSelfActions,
 }: Props) {
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
   const user = useCurrentUser();
@@ -49,21 +47,18 @@ export const MembersManager = styled(function MembersManager({
             <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
           )}
         </UIMembers>
-
-        {!hideSelfActions && (
-          <UIActions>
-            {user && isMember && (
-              <TransparentButton onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
-                Leave
-              </TransparentButton>
-            )}
-            {user && !isMember && (
-              <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
-                Join
-              </TransparentButton>
-            )}
-          </UIActions>
-        )}
+        <UIActions>
+          {user && isMember && (
+            <TransparentButton onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
+              Leave
+            </TransparentButton>
+          )}
+          {user && !isMember && (
+            <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
+              Join
+            </TransparentButton>
+          )}
+        </UIActions>
       </UIHolder>
     </>
   );

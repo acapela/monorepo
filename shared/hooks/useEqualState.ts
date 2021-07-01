@@ -14,15 +14,18 @@ type InitialState<S> = S | (() => S);
  *
  * Example:
  *
- * const [state, setState] = useE
+ * const [state, setState] = useEqualState({x: 10, y: 10});
+ *
+ * setState({x: 10, y: 10}); // <-- it will do nothing as new state is equal to previous one, even tho it's technically
+ * a different object
  */
 export function useEqualState<T>(initial: InitialState<T>) {
   const [value, setValue] = useState(initial);
 
-  const setEqualValue = useCallback((action: SetStateAction<T>) => {
+  const setEqualValue = useCallback((actionOrValue: SetStateAction<T>) => {
     setValue((oldValue) => {
-      if (isStateSetter(action)) {
-        const newValue = action(oldValue);
+      if (isStateSetter(actionOrValue)) {
+        const newValue = actionOrValue(oldValue);
 
         if (isEqual(oldValue, newValue)) {
           return oldValue;
@@ -31,10 +34,11 @@ export function useEqualState<T>(initial: InitialState<T>) {
         return newValue;
       }
 
-      if (isEqual(oldValue, action)) {
+      if (isEqual(oldValue, actionOrValue)) {
         return oldValue;
       }
-      return action;
+
+      return actionOrValue;
     });
   }, []);
 

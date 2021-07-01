@@ -52,7 +52,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
 
     const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
-    function ensureCurrentUserInParticipants(userIds: string[]) {
+    function ensureCurrentUserInParticipants(userIds: string[]): string[] {
       if (userIds.includes(currentUser.id)) return userIds;
 
       return [currentUser.id, ...userIds];

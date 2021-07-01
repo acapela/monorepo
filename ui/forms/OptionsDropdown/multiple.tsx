@@ -8,10 +8,11 @@ import { BACKGROUND_ACCENT } from "~ui/colors";
 import { IconChevronDown, IconPlus } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
 import { SecondaryText } from "~ui/typo";
-import { Popover } from "../../popovers/Popover";
+import { Popover } from "~ui/popovers/Popover";
 import { FieldWithName } from "../FieldWithName";
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
+import { SelectedOptionPreview } from "./SelectedOptionPreview";
 
 interface Props<I> {
   name?: string;
@@ -47,7 +48,7 @@ export function MultipleOptionsDropdown<I>({
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
 }: Props<I>) {
-  const openerRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLDivElement>(null);
   const [isOpened, { unset: close, toggle }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
 
@@ -81,11 +82,20 @@ export function MultipleOptionsDropdown<I>({
   return (
     <FieldWithName label={name} onLabelClick={toggle}>
       <UIHolder>
-        <UIMenuOpener ref={openerRef} type="button" onClick={toggle}>
-          <SecondaryText>
-            {selectedItems.length > 0 && selectedItemsPreviewRenderer?.(selectedItems)}
-            {selectedItems.length === 0 && placeholder}
-          </SecondaryText>
+        <UIMenuOpener ref={openerRef} onClick={toggle}>
+          {selectedItems.length > 0 && (
+            <UISelectedItemsPreview>
+              {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
+              {!selectedItemsPreviewRenderer &&
+                selectedItems.map((selectedItem) => {
+                  const key = keyGetter(selectedItem);
+                  const label = labelGetter(selectedItem);
+                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
+                })}
+            </UISelectedItemsPreview>
+          )}
+          {selectedItems.length === 0 && placeholder}
+
           <IconChevronDown />
         </UIMenuOpener>
         <AnimatePresence>
@@ -124,11 +134,11 @@ export function MultipleOptionsDropdown<I>({
 
 const UIHolder = styled.div`
   position: relative;
+  min-width: 0;
 `;
 
-const UIMenuOpener = styled.button`
+const UIMenuOpener = styled.div`
   outline: none;
-  height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -140,6 +150,7 @@ const UIMenuOpener = styled.button`
   border-radius: ${borderRadius.input};
   border: 1px solid ${BACKGROUND_ACCENT};
   text-align: start;
+  min-width: 0;
 
   svg {
     font-size: 24px;
@@ -147,3 +158,9 @@ const UIMenuOpener = styled.button`
 `;
 
 const UIDropdownHolder = styled.div``;
+
+const UISelectedItemsPreview = styled.div`
+  display: grid;
+
+  grid-gap: 8px;
+`;

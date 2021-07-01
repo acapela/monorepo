@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT } from "~ui/colors";
-import { PopPresenceAnimator } from "../../animations";
-import { useShortcut } from "../../keyboard/useShortcut";
+import { PopPresenceAnimator } from "~ui/animations";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 import { DropdownItem } from "./DropdownItem";
 
 interface Props<I> {

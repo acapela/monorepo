@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { SecondaryText } from "../../typo";
+import { SecondaryText } from "~ui/typo";
 import { MultipleOptionsDropdown } from "./multiple";
 import { OptionLabel } from "./OptionLabel";
 
