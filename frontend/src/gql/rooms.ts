@@ -120,7 +120,7 @@ export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
   `
 );
 
-export const [usePrivateRoomQuery, getPrivateRoomQueryManager] = createQuery<
+export const [usePrivateRoomQuery, { fetch: fetchPrivateRoom }] = createQuery<
   SinglePrivateRoomQuery,
   SinglePrivateRoomQueryVariables
 >(
@@ -128,7 +128,7 @@ export const [usePrivateRoomQuery, getPrivateRoomQueryManager] = createQuery<
     ${PrivateRoomInfoFragment()}
 
     query SinglePrivateRoom($id: uuid!) {
-      room: room_by_pk(id: $id) {
+      privateRoom: room_by_pk(id: $id) {
         ...PrivateRoomInfo
       }
     }

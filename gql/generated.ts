@@ -3945,6 +3945,7 @@ export interface Room {
   deadline: Scalars['timestamptz'];
   finished_at?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
+  is_private: Scalars['Boolean'];
   /** An object relationship */
   last_posted_message?: Maybe<Room_Last_Posted_Message>;
   /** An array relationship */
@@ -4075,6 +4076,7 @@ export interface Room_Bool_Exp {
   deadline?: Maybe<Timestamptz_Comparison_Exp>;
   finished_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  is_private?: Maybe<Boolean_Comparison_Exp>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
   members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
@@ -4103,6 +4105,7 @@ export interface Room_Insert_Input {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  is_private?: Maybe<Scalars['Boolean']>;
   members?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
@@ -4669,6 +4672,7 @@ export interface Room_Order_By {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  is_private?: Maybe<Order_By>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Order_By>;
   members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
@@ -4700,6 +4704,8 @@ export type Room_Select_Column =
   /** column name */
   | 'id'
   /** column name */
+  | 'is_private'
+  /** column name */
   | 'name'
   /** column name */
   | 'notification_job_id'
@@ -4719,6 +4725,7 @@ export interface Room_Set_Input {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  is_private?: Maybe<Scalars['Boolean']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
@@ -4739,6 +4746,8 @@ export type Room_Update_Column =
   | 'finished_at'
   /** column name */
   | 'id'
+  /** column name */
+  | 'is_private'
   /** column name */
   | 'name'
   /** column name */
@@ -8639,9 +8648,14 @@ export type DeleteTextMessageMutation = (
   )> }
 );
 
+export type PrivateRoomInfoFragment = (
+  { __typename?: 'room' }
+  & Pick<Room, 'id' | 'name' | 'is_private'>
+);
+
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'name' | 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id'>
+  & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -8649,6 +8663,7 @@ export type RoomBasicInfoFragment = (
       & UserBasicInfoFragment
     ) }
   )> }
+  & PrivateRoomInfoFragment
 );
 
 export type RoomDetailedInfoFragment = (
@@ -8693,6 +8708,19 @@ export type RoomsQuery = (
   & { rooms: Array<(
     { __typename?: 'room' }
     & RoomDetailedInfoFragment
+  )> }
+);
+
+export type SinglePrivateRoomQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type SinglePrivateRoomQuery = (
+  { __typename?: 'query_root' }
+  & { privateRoom?: Maybe<(
+    { __typename?: 'room' }
+    & PrivateRoomInfoFragment
   )> }
 );
 
@@ -9901,7 +9929,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'is_private' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9909,6 +9937,7 @@ export type roomFieldPolicy = {
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	is_private?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	members?: FieldPolicy<any> | FieldReadFunction<any>,
 	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,

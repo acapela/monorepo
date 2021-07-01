@@ -1,8 +1,8 @@
 import {
-  ApolloClient,
   DocumentNode,
   gql,
   QueryHookOptions,
+  QueryOptions,
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
@@ -20,6 +20,8 @@ import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
 
 type QueryDefinitionOptions = RequestWithRole;
+
+type QueryExecutionOptions = Omit<QueryOptions, "query" | "variables">;
 
 export function createQuery<Data, Variables>(
   query: () => DocumentNode,
@@ -80,10 +82,10 @@ export function createQuery<Data, Variables>(
     return getCurrentApolloClientHandler().readQuery<Data, Variables>({ query: getQuery(), variables });
   }
 
-  async function fetch(variables: Variables, client?: ApolloClient<unknown>) {
-    const response = await (client ?? getRenderedApolloClient()).query<Data, Variables>({
+  async function fetch(variables: Variables, options?: QueryExecutionOptions) {
+    const response = await getRenderedApolloClient().query<Data, Variables>({
       query: getQuery(),
-      context: addRoleToContext({}, queryDefinitionOptions?.requestWithRole),
+      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
       variables,
     });
 

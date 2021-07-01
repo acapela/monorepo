@@ -5,10 +5,18 @@ import { AppLayout } from "~frontend/layouts/AppLayout";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
 
-const Page = () => {
-  const { roomId, topicId } = routes.spaceRoomTopic.useParams();
+import { useRoomAccessCheck } from "~frontend/rooms/useRoomAccessCheck";
 
-  return <RoomTopicView roomId={roomId} topicId={topicId} />;
+const Page = () => {
+  const { spaceId, roomId, topicId } = routes.spaceRoomTopic.useParams();
+
+  const { room } = useRoomAccessCheck({ spaceId, roomId });
+
+  if (!room) {
+    return <></>;
+  }
+
+  return <RoomTopicView room={room} topicId={topicId} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();
