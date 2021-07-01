@@ -5,3 +5,4 @@ gql/generated.ts
 tooling/schema.graphql
 .yarn/**/*.*
 infrastructure/hasura/metadata/actions.graphql
+infrastructure/kubernetes
