@@ -7,7 +7,6 @@ import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { IconChevronDown, IconPlus } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
-import { SecondaryText } from "~ui/typo";
 import { Popover } from "~ui/popovers/Popover";
 import { FieldWithName } from "../FieldWithName";
 import { DropdownItem } from "./DropdownItem";

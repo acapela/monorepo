@@ -22,7 +22,7 @@ export const TeamMembersPicker = ({ selectedMemberIds, onChange }: Props) => {
         onChange(members.map((member) => member.id));
       }}
       keyGetter={(user) => user.id}
-      labelGetter={(user) => user.name ?? user.email!}
+      labelGetter={(user) => user.name ?? user.email ?? "Unknown user"}
       placeholder="Select participants"
       iconGetter={(user) => <UserAvatar size="font-size" user={user} />}
     />
