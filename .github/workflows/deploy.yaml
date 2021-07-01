@@ -13,6 +13,7 @@ on:
       version:
         description: "the version that should be deployed"
         required: true
+        default: "latest"
 
 jobs:
   deploy:
@@ -31,3 +32,4 @@ jobs:
           ./scripts/deploy.sh -s ${{ github.event.inputs.stage }} -a ${{ github.event.inputs.app }} -v ${{ github.event.inputs.version }}
         env:
           KUSTOMIZE_BIN: ./kustomize
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
