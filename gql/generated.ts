@@ -8499,8 +8499,6 @@ export type DeleteTextMessageMutation = { __typename?: "mutation_root" } & {
   >;
 };
 
-export type PrivateRoomInfoFragment = { __typename?: "room" } & Pick<Room, "id" | "name" | "is_private">;
-
 export type ReactionBasicInfoFragment = { __typename?: "message_reaction" } & Pick<Message_Reaction, "emoji"> & {
     user: { __typename?: "user" } & UserBasicInfoFragment;
   };
@@ -8522,6 +8520,8 @@ export type RemoveMessageReactionMutationVariables = Exact<{
 export type RemoveMessageReactionMutation = { __typename?: "mutation_root" } & {
   delete_message_reaction_by_pk?: Maybe<{ __typename?: "message_reaction" } & Pick<Message_Reaction, "message_id">>;
 };
+
+export type PrivateRoomInfoFragment = { __typename?: "room" } & Pick<Room, "id" | "name" | "is_private">;
 
 export type RoomBasicInfoFragment = { __typename?: "room" } & Pick<
   Room,
