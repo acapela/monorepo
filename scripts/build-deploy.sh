@@ -15,6 +15,6 @@ for app in backend frontend; do
   echo "[$app]: trigger deploy"
   for stage in staging production; do
     echo "[$app]: deploying to $version to $stage"
-    ./scripts/trigger-deploy.sh $stage $app $version
+    ./scripts/deploy.sh -s $stage -a $app -v $version
   done
 done

@@ -1,0 +1,2 @@
+alias kkstaging='kubectl --namespace staging'
+alias kkprod='kubectl --namespace production'
