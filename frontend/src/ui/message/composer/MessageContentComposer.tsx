@@ -2,19 +2,21 @@ import React from "react";
 import styled from "styled-components";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
-import { EditorContent, RichEditor } from "~richEditor/RichEditor";
+import { RichEditor } from "~richEditor/RichEditor";
+import { RichEditorContent } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
 
 interface Props {
   autofocusKey?: string;
   onSubmit?: () => void;
-  content: EditorContent;
-  onContentChange: (content: EditorContent) => void;
+  content: RichEditorContent;
+  onContentChange: (content: RichEditorContent) => void;
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
   hideEditorSubmitButton?: boolean;
   additionalContent?: React.ReactNode;
+  disableFileDrop?: boolean;
 }
 
 export const MessageContentEditor = ({
@@ -27,6 +29,7 @@ export const MessageContentEditor = ({
   onAttachmentRemoveRequest,
   hideEditorSubmitButton,
   additionalContent = null,
+  disableFileDrop,
 }: Props) => {
   return (
     <RichEditor
@@ -37,6 +40,7 @@ export const MessageContentEditor = ({
       placeholder="Type here to start contributing..."
       autofocusKey={autofocusKey}
       hideSubmitButton={hideEditorSubmitButton}
+      disableFileDrop={disableFileDrop}
       additionalTopContent={additionalContent}
       additionalBottomContent={
         attachments.length > 0 && (

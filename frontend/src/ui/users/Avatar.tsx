@@ -57,7 +57,7 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
 `;
 
 function getAvatarSize(size: AvatarSize) {
-  if (size === "font-size") return "1rem";
+  if (size === "font-size") return "1em";
 
   const sizeInPx = getNamedSizeValue(size);
 

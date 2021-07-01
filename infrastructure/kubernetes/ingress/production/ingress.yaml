@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: default
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.global-static-ip-name: "ingress-production"
+spec:
+  rules:
+    - host: backend.acape.la
+      http:
+        paths:
+          - backend:
+              serviceName: hasura
+              servicePort: 80
+    - host: api.acape.la
+      http:
+        paths:
+          - backend:
+              serviceName: api
+              servicePort: 80
+    - host: app.acape.la
+      http:
+        paths:
+          - backend:
+              serviceName: frontend
+              servicePort: 80
+  tls:
+    - secretName: cloudflare

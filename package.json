@@ -38,6 +38,7 @@
     "backend": "yarn workspace ~backend",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
+    "richEditor": "yarn workspace ~richEditor",
     "shared": "yarn workspace ~shared",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",

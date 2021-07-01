@@ -5,7 +5,7 @@ import { handleTeamInvitationCreated } from "../teamInvitation/events";
 import { handleRoomUpdates } from "../rooms/events";
 import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
-import { handleMessageCreated } from "../messages/events";
+import { handleMessageCreated, prepareMessagePlainTextData } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
 import { handleTopicCreated } from "../topics/events";
 import { handleUserCreated } from "../users/events";
@@ -21,6 +21,8 @@ hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantCreated);
+// Create plain text version of each message so it can be used by search views.
+hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], prepareMessagePlainTextData);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);

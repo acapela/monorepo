@@ -11,14 +11,14 @@ import { UserPickerModal } from "./UserPickerModal";
 interface Props {
   users: UserBasicInfoFragment[];
   onAddMemberRequest: (userId: string) => Promise<void> | void;
-  onLeaveRequest: (userId: string) => Promise<void> | void;
+  onRemoveMemberRequest: (userId: string) => Promise<void> | void;
   className?: string;
   isReadonly?: boolean;
 }
 
 export const MembersManager = styled(function MembersManager({
   users,
-  onLeaveRequest,
+  onRemoveMemberRequest,
   onAddMemberRequest,
   className,
   isReadonly,
@@ -36,7 +36,7 @@ export const MembersManager = styled(function MembersManager({
             currentUsers={users}
             onCloseRequest={closeUserPicker}
             onAddUser={onAddMemberRequest}
-            onRemoveUser={onLeaveRequest}
+            onRemoveUser={onRemoveMemberRequest}
           />
         )}
       </AnimatePresence>
@@ -47,10 +47,9 @@ export const MembersManager = styled(function MembersManager({
             <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
           )}
         </UIMembers>
-
         <UIActions>
           {user && isMember && (
-            <TransparentButton onClick={handleWithStopPropagation(() => onLeaveRequest(user.id))}>
+            <TransparentButton onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
               Leave
             </TransparentButton>
           )}

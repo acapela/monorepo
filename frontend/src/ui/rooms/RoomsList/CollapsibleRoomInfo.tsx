@@ -14,11 +14,12 @@ import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
-import { BACKGROUND_ACCENT } from "~ui/colors";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxValue } from "~shared/numbers";
 import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
 import { UICardListItem } from "./shared";
+import { ValueDescriptor, UIValueDescriptorSeparator } from "~ui/meta/ValueDescriptor";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -70,28 +71,19 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <ItemTitle>{room.name}</ItemTitle>
+            <ItemTitle>
+              {room.name}{" "}
+              {room.source_google_calendar_event_id && (
+                <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
+              )}
+            </ItemTitle>
 
             <UIRoomMetaData>
-              <UIRoomInfo>
-                <UIRoomInfoKey>Due date:</UIRoomInfoKey>{" "}
-                <UIRoomInfoValue>{niceFormatDateTime(new Date(room.deadline))}</UIRoomInfoValue>
-              </UIRoomInfo>
-              <UIRoomInfoSeparator />
-              {space && (
-                <UIRoomInfo>
-                  <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space.name}</UIRoomInfoValue>
-                </UIRoomInfo>
-              )}
-              <UIRoomInfoSeparator />
-              <UIRoomInfo>
-                <UIRoomInfoKey>Space:</UIRoomInfoKey> <UIRoomInfoValue>{space?.name}</UIRoomInfoValue>
-              </UIRoomInfo>
-
-              <UIRoomInfoSeparator />
-              <UIRoomInfo>
-                <UIRoomInfoKey>Topics:</UIRoomInfoKey> <UIRoomInfoValue>{topics.length}</UIRoomInfoValue>
-              </UIRoomInfo>
+              <ValueDescriptor title="Due date" value={niceFormatDateTime(new Date(room.deadline))} />
+              <UIValueDescriptorSeparator />
+              {space && <ValueDescriptor title="Space" value={space.name} />}
+              <UIValueDescriptorSeparator />
+              <ValueDescriptor title="Topics" value={topics.length} />
             </UIRoomMetaData>
           </UIHeadPrimary>
 
@@ -157,6 +149,15 @@ const UIHeadPrimary = styled.div`
   align-items: flex-start;
   flex: 1;
   cursor: pointer;
+
+  ${ItemTitle} {
+    display: flex;
+    align-items: center;
+
+    ${GoogleCalendarIcon} {
+      margin-left: 8px;
+    }
+  }
 `;
 
 const UIRoomMetaData = styled.div`
@@ -164,27 +165,6 @@ const UIRoomMetaData = styled.div`
   align-items: center;
   gap: 16px;
   padding-top: 16px;
-`;
-
-const UIRoomInfo = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-`;
-
-const UIRoomInfoKey = styled.div`
-  font-weight: 600;
-`;
-
-const UIRoomInfoValue = styled.div`
-  opacity: 0.5;
-`;
-
-const UIRoomInfoSeparator = styled.div`
-  height: 6px;
-  width: 6px;
-  border-radius: 6px;
-  background-color: ${BACKGROUND_ACCENT};
 `;
 
 const UICollapsedItems = styled.div`

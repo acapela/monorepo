@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: test
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      serviceAccountName: gsm
+      containers:
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
+          command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
+          envFrom:
+            - configMapRef:
+                name: frontend-default
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 2 # non-root user
+        - name: frontend
+          image: eu.gcr.io/meetnomoreapp/monorepo:1.19.0
+          command: ["yarn", "run", "start:frontend"]
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: frontend-default
+          env:
+            - name: FRONTEND_PORT
+              value: "3000"
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /healthz
+            initialDelaySeconds: 5
+            timeoutSeconds: 5

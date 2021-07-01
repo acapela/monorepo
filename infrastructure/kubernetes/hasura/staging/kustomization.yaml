@@ -1,0 +1,13 @@
+namespace: staging
+commonLabels:
+  app: hasura
+  env: staging
+resources:
+  - ../base
+configMapGenerator:
+  - name: hasura-config
+    envs:
+      - hasura-config.env
+  - name: cloudsql-proxy-config
+    envs:
+      - cloudsql-proxy-config.env

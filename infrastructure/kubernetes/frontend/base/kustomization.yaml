@@ -1,0 +1,6 @@
+commonLabels:
+  app: frontend
+resources:
+  - deployment.yaml
+  - service-backend-config.yaml
+  - service.yaml

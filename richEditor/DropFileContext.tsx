@@ -36,11 +36,16 @@ export function useDropFileContext() {
 
 const DROP_INDICATOR_CLASSNAME = "drop-active";
 
-export function useFileDroppedInContext(callback?: (files: File[]) => void) {
+interface FileDropOptions {
+  isDisabled?: boolean;
+}
+
+export function useFileDroppedInContext(callback?: (files: File[]) => void, options?: FileDropOptions) {
   const dropFileContext = useDropFileContext();
 
   useEffect(() => {
     if (!dropFileContext) return;
+    if (options?.isDisabled === false) return;
 
     const dropElement = dropFileContext.holderRef.current;
 
@@ -80,7 +85,7 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void) {
     );
 
     return () => cleanup.clean();
-  }, [dropFileContext, callback]);
+  }, [dropFileContext, callback, options?.isDisabled]);
 }
 
 const UIHolder = styled.div`

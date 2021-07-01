@@ -1,0 +1,3 @@
+resources:
+  - gsm-staging.yaml
+  - gsm-production.yaml

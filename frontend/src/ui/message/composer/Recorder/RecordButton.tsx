@@ -1,5 +1,7 @@
 import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components";
+import { BACKGROUND_ACCENT_WEAK } from "~ui/colors";
+import { getButtonColorStyles } from "~ui/transitions";
 import { borderRadius } from "~ui/baseStyles";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,20 +16,11 @@ export const UIButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
   font-size: 1.5rem;
-  background: #f8f8f8;
-  color: #707f8c;
+  width: 1.75em;
+  height: 1.75em;
+
+  ${getButtonColorStyles(BACKGROUND_ACCENT_WEAK)}
   ${borderRadius.circle}
-  padding: 0;
   cursor: pointer;
-
-  :disabled {
-    cursor: default;
-
-    svg {
-      fill: #a7a3a3;
-    }
-  }
 `;

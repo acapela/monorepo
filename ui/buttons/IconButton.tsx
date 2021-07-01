@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { getButtonColorStyles, hoverActionCss } from "../transitions";
-import { ReactNode } from "react";
+import { ReactNode, forwardRef } from "react";
 import { borderRadius } from "~ui/baseStyles";
 import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
@@ -12,13 +12,18 @@ interface Props {
   isPrimary?: boolean;
 }
 
-export const IconButton = styled(function IconButton({ icon, onClick, className, tooltip, isPrimary = false }: Props) {
-  return (
-    <UIHolder data-tooltip={tooltip} onClick={onClick} className={className} isPrimary={isPrimary}>
-      <UIIconHolder>{icon}</UIIconHolder>
-    </UIHolder>
-  );
-})``;
+export const IconButton = styled(
+  forwardRef<HTMLButtonElement, Props>(function IconButton(
+    { icon, onClick, className, tooltip, isPrimary = false },
+    ref
+  ) {
+    return (
+      <UIHolder ref={ref} data-tooltip={tooltip} onClick={onClick} className={className} isPrimary={isPrimary}>
+        <UIIconHolder>{icon}</UIIconHolder>
+      </UIHolder>
+    );
+  })
+)``;
 
 const UIHolder = styled.button<{ isPrimary: boolean }>`
   position: relative;

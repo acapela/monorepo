@@ -4,6 +4,7 @@ export const BLACK = "hsl(0, 0%, 0%)";
 export const WHITE = "hsl(0, 0%, 100%)";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
 export const BACKGROUND_ACCENT_WEAK = "hsl(300, 2%, 97%)";
+export const SECONDARY_TEXT_COLOR = "hsl(0, 0%, 47%)";
 export const DANGER_COLOR = `hsl(0, 100%, 68%)`;
 export const ACTIVE_COLOR = `hsl(250, 100%, 68%)`;
 export const SUCCESS_COLOR = `hsla(149, 99%, 33%, 1)`;
@@ -13,6 +14,7 @@ export const PRIMARY_COLOR = `hsl(296, 24%, 22%)`;
 export const MODAL_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const ITEM_COVER_COLOR = setColorOpacity(PRIMARY_COLOR, 0.5);
 export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
+export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
 
 /**
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.

@@ -5,11 +5,11 @@ import { TextTitle } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import React from "react";
 import { useTopic } from "~frontend/topics/useTopic";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UICardListItem } from "./shared";
+import { convertRichEditorContentToHtml } from "~richEditor/content/html";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -18,9 +18,8 @@ interface Props {
 
 function renderMessageContent(message: MessageBasicInfoFragment) {
   try {
-    const converter = new QuillDeltaToHtmlConverter(message.content, {});
+    const htmlContent = convertRichEditorContentToHtml(message.content);
 
-    const htmlContent = converter.convert();
     const strippedHtml = htmlContent.replace(/<[^>]+>/g, " ");
 
     return <span id="UILastMessageContent__message" dangerouslySetInnerHTML={{ __html: strippedHtml }}></span>;

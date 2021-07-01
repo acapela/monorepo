@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { createMessage } from "~frontend/gql/messages";
+import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { EditorContent } from "~richEditor/RichEditor";
+import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
-import { useTopicStore } from "~frontend/topics/TopicStore";
+import { useTopicStore, useTopicStoreSelector } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/ReplyingToMessage";
 import { Message_Type_Enum } from "~gql";
+import { RichEditorContent } from "~richEditor/content/types";
 
 interface Props {
   topicId: string;
@@ -18,16 +19,19 @@ interface Props {
 
 interface SubmitMessageParams {
   type: Message_Type_Enum;
-  content: EditorContent;
+  content: RichEditorContent;
   attachments: EditorAttachmentInfo[];
 }
 
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const [value, setValue] = useState<EditorContent>([]);
+  const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
+  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
+
+  const isEditingAnyMessage = useTopicStoreSelector((store) => !!store.editedMessageId);
 
   const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
-  const handlStopReplyingToMessage = () => {
+  const handleStopReplyingToMessage = () => {
     updateTopicState((draft) => (draft.currentlyReplyingToMessage = null));
   };
 
@@ -48,7 +52,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
       replied_to_message_id: currentlyReplyingToMessage?.id,
     });
 
-    handlStopReplyingToMessage();
+    handleStopReplyingToMessage();
   };
 
   return (
@@ -61,15 +65,18 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
 
           await submitMessage({
             type: messageType,
-            content: [],
+            content: getEmptyRichContent(),
             attachments: uploadedAttachments,
           });
         }}
       />
       <MessageContentEditor
+        disableFileDrop={isEditingAnyMessage}
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
+          if (isCreatingMessage) return;
+
           await submitMessage({
             type: "TEXT",
             content: value,
@@ -77,7 +84,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
           });
 
           attachmentsList.clear();
-          setValue([]);
+          setValue(getEmptyRichContent());
         }}
         onFilesSelected={handleNewFiles}
         autofocusKey={topicId}
@@ -88,9 +95,9 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
           });
         }}
         additionalContent={
-          currentlyReplyingToMessage ? (
-            <ReplyingToMessage onRemove={handlStopReplyingToMessage} message={currentlyReplyingToMessage} />
-          ) : null
+          currentlyReplyingToMessage && (
+            <ReplyingToMessage onRemove={handleStopReplyingToMessage} message={currentlyReplyingToMessage} />
+          )
         }
       />
     </UIEditorContainer>

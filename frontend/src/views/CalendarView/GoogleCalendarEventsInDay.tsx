@@ -1,10 +1,11 @@
 import styled from "styled-components";
+import { JsonValue } from "~shared/types";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { PopPresenceAnimator } from "~ui/animations";
 import { GoogleCalendarEventsCard } from "./GoogleCalendarEventsCard";
 
 interface Props {
-  events: GoogleCalendarEvent[];
+  events: JsonValue<GoogleCalendarEvent>[];
   className?: string;
 }
 
@@ -20,6 +21,6 @@ export const GoogleCalendarEventsInDay = styled(function GoogleCalendarEventsInD
 
 const UIHolder = styled(PopPresenceAnimator)`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   grid-gap: 8px;
 `;

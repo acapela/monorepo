@@ -81,10 +81,20 @@ export function createSharedStateContext<T, P = {}>(initialValueInitializator: (
    */
   function useSharedState() {
     const sharedStateContext = useSharedStateContext();
+    const update = useSharedStateUpdate();
 
     const [value, setValue] = useState(sharedStateContext.lastValueRef.current);
 
     sharedStateContext.channel.useSubscribe(setValue);
+
+    return [value, update] as const;
+  }
+
+  /**
+   * This hooks allows updating shared state store without subscribing to it's changes.
+   */
+  function useSharedStateUpdate() {
+    const sharedStateContext = useSharedStateContext();
 
     function update(updaterOrNewState: StateUpdaterOrNewState<T>) {
       const newValueState = updateStateWithStateUpdater(sharedStateContext.lastValueRef.current, updaterOrNewState);
@@ -92,7 +102,42 @@ export function createSharedStateContext<T, P = {}>(initialValueInitializator: (
       sharedStateContext.channel.publish(newValueState);
     }
 
-    return [value, update] as const;
+    return update;
+  }
+
+  /**
+   * It is useful if we want to follow shared state value, but only re-render if some specific change occurs.
+   *
+   * Use case:
+   * Let's say you have 'editedMessageId' in the store and then you have <Message id={messageId} /> component.
+   *
+   * This component has to show edit tools only if its messageId === editedMessageId.
+   *
+   * It means it only has to re-render when value of messageId === editedMessageId changes, not when value of editedMessageId changes.
+   *
+   * Therefore it can be used like
+   *
+   * const amIEditedNow = useSharedStateSelector(state => state.editedMessageId === messageId);
+   *
+   * ---
+   *
+   * amIEditedNow is true / false and component will only re-render if result value changes.
+   */
+  function useSharedStateSelector<S>(selector: (stateValue: T) => S) {
+    const sharedStateContext = useSharedStateContext();
+    const updateStore = useSharedStateUpdate();
+
+    const [selectedValue, setSelectedValue] = useState(() => {
+      return selector(sharedStateContext.lastValueRef.current);
+    });
+
+    sharedStateContext.channel.useSubscribe((newStateValue) => {
+      const newSelectedValue = selector(newStateValue);
+
+      setSelectedValue(newSelectedValue);
+    });
+
+    return [selectedValue, updateStore] as const;
   }
 
   function SharedStateContextProvider(props: PropsWithChildren<P>) {
@@ -116,7 +161,7 @@ export function createSharedStateContext<T, P = {}>(initialValueInitializator: (
     return <context.Provider value={contextValue}>{props.children}</context.Provider>;
   }
 
-  return [SharedStateContextProvider, useSharedState] as const;
+  return [SharedStateContextProvider, { useSharedState, useSharedStateSelector, useSharedStateUpdate }] as const;
 }
 
 type StateUpdater<T> = (draft: Draft<T>) => void;

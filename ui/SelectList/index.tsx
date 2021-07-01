@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { useStateList } from "react-use";
 import { hoverActionCss, hoverActionActiveCss } from "~ui/transitions";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { borderRadius, shadow } from "~ui/baseStyles";
+import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 
 interface Props<T> {
   items: T[];
@@ -14,12 +14,10 @@ interface Props<T> {
 }
 
 export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: Props<T>) {
-  const { state: activeItem = items[0], prev, next } = useStateList(items);
+  const { activeItem } = useListWithNavigation(items, { enableKeyboard: true });
 
   const activeKey = activeItem ? keyGetter(activeItem) : null;
 
-  useShortcut("Down", next);
-  useShortcut("Up", prev);
   useShortcut("Enter", () => {
     if (!activeItem) return;
 
