@@ -1,81 +1,81 @@
 actions:
-  - name: accept_invite
-    definition:
-      kind: synchronous
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: get_download_url
-    definition:
-      kind: ""
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: get_upload_url
-    definition:
-      kind: ""
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
-  - name: lookup_team_name
-    definition:
-      kind: ""
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: public
-      - role: user
-  - name: upgrade_current_user
-    definition:
-      kind: synchronous
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
-      headers:
-        - name: Authorization
-          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-    permissions:
-      - role: user
+- name: accept_invite
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: get_download_url
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: get_upload_url
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
+- name: lookup_team_name
+  definition:
+    kind: ""
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: public
+  - role: user
+- name: upgrade_current_user
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
 custom_types:
   enums: []
   input_objects:
-    - name: InviteAcceptCommand
+  - name: InviteAcceptCommand
   objects:
-    - name: InviteAcceptResponse
-      relationships:
-        - remote_table:
-            schema: public
-            name: room_invites
-          name: invite
-          type: object
-          field_mapping:
-            invite_id: id
-        - remote_table:
-            schema: public
-            name: team
-          name: team
-          type: object
-          field_mapping:
-            team_id: id
-    - name: UpgradeUserResponse
-      relationships:
-        - remote_table:
-            schema: public
-            name: user
-          name: user
-          type: object
-          field_mapping:
-            user_id: id
-    - name: UploadUrlResponse
-    - name: DownloadUrlResponse
-    - name: LookupTeamNameResponse
+  - name: InviteAcceptResponse
+    relationships:
+    - remote_table:
+        schema: public
+        name: room_invites
+      name: invite
+      type: object
+      field_mapping:
+        invite_id: id
+    - remote_table:
+        schema: public
+        name: team
+      name: team
+      type: object
+      field_mapping:
+        team_id: id
+  - name: UpgradeUserResponse
+    relationships:
+    - remote_table:
+        schema: public
+        name: user
+      name: user
+      type: object
+      field_mapping:
+        user_id: id
+  - name: UploadUrlResponse
+  - name: DownloadUrlResponse
+  - name: LookupTeamNameResponse
   scalars: []
