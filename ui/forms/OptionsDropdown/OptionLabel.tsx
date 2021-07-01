@@ -22,6 +22,7 @@ const UIHolder = styled.div`
   flex: 1;
   align-items: center;
   user-select: none;
+  flex-grow: 0;
 
   ${SecondaryText} {
     flex: 1;

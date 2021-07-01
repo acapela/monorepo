@@ -153,6 +153,7 @@ const UIMenuOpener = styled.div`
 
   svg {
     font-size: 24px;
+    min-width: 24px;
   }
 `;
 

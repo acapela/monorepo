@@ -139,6 +139,7 @@ const UIForm = styled.form`
   align-items: center;
   gap: 60px;
   min-width: 520px;
+  max-width: 520px;
 `;
 
 const UIFormFields = styled.div`
