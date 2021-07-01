@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
-import { parseDatesInObject } from "~shared/dates/parseJSONWithDates";
 import logger from "~shared/logger";
+import { JsonValue } from "~shared/types";
 import { UserTokenData } from "~shared/types/jwtAuth";
 import { extractAndAssertBearerToken } from "../authentication";
 import { HttpStatus } from "../http";
 import { verifyAndParseUserJWT } from "../jwt/verifyAndParseJWT";
 
-export function createEndpointHandler<Input, Output>(handler: (input: Input, request: Request) => Promise<Output>) {
+export function createEndpointHandler<Input, Output>(
+  handler: (input: JsonValue<Input>, request: Request) => Promise<Output>
+) {
   return async function endpointHandler(request: Request, response: Response) {
-    const requestInput = parseDatesInObject<Input>(request.body ?? {});
-
     try {
-      const requestResultData = await handler(requestInput, request);
+      const requestResultData = await handler(request.body, request);
       response.status(HttpStatus.OK).json(requestResultData);
     } catch (error) {
       logger.info("endpointHandler failed with error", error);
@@ -26,14 +26,14 @@ interface AuthorizedRequestAdditionalData {
 }
 
 export function createAuthorizedEndpointHandler<Input, Output>(
-  handler: (input: Input & AuthorizedRequestAdditionalData, request: Request) => Promise<Output>
+  handler: (input: JsonValue<Input> & AuthorizedRequestAdditionalData, request: Request) => Promise<Output>
 ) {
   return createEndpointHandler<Input & AuthorizedRequestAdditionalData, Output>(async (input, request) => {
     const token = extractAndAssertBearerToken(request.get("Authorization") || "");
 
     const user = verifyAndParseUserJWT(token);
 
-    const inputWithAuthData: Input & AuthorizedRequestAdditionalData = {
+    const inputWithAuthData: JsonValue<Input> & AuthorizedRequestAdditionalData = {
       ...input,
       token,
       user,

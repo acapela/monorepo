@@ -1,25 +1,26 @@
-export function tryParseStringDate(originalValue: unknown) {
+import { JsonValue } from "~shared/types";
+
+export function tryParseStringDate(originalValue: unknown): Date | null {
   if (typeof originalValue !== "string") {
-    return originalValue;
+    return null;
   }
 
   const parseResult = Date.parse(originalValue);
 
   if (isNaN(parseResult)) {
-    return originalValue;
+    return null;
   }
 
   return new Date(parseResult);
 }
 
-function jsonRetriever(key: string, originalValue: unknown) {
-  return tryParseStringDate(originalValue);
+/**
+ * Will get JSON value of any provided input. It'll also properly modify the type of the input (Dates will become strings)
+ */
+export function getJSONValue<T>(input: T): JsonValue<T> {
+  return typeSafeParseJSON(JSON.stringify(input));
 }
 
-export function parseJsonWithDates<T>(input: string): T {
-  return JSON.parse(input, jsonRetriever) as T;
-}
-
-export function parseDatesInObject<T>(input: T): T {
-  return parseJsonWithDates(JSON.stringify(input));
+export function typeSafeParseJSON<T>(input: string): JsonValue<T> {
+  return JSON.parse(input);
 }
