@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { createMessage } from "~frontend/gql/messages";
+import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
-import { useTopicStore } from "~frontend/topics/TopicStore";
+import { useTopicStore, useTopicStoreSelector } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/ReplyingToMessage";
 import { Message_Type_Enum } from "~gql";
 import { RichEditorContent } from "~richEditor/content/types";
@@ -26,6 +26,9 @@ interface SubmitMessageParams {
 export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
+  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
+
+  const isEditingAnyMessage = useTopicStoreSelector((store) => !!store.editedMessageId);
 
   const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
   const handleStopReplyingToMessage = () => {
@@ -68,9 +71,12 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         }}
       />
       <MessageContentEditor
+        disableFileDrop={isEditingAnyMessage}
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {
+          if (isCreatingMessage) return;
+
           await submitMessage({
             type: "TEXT",
             content: value,

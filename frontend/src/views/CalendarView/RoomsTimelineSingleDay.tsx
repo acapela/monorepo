@@ -30,8 +30,11 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
         _gte: dayStart.toISOString(),
         _lte: dayEnd.toISOString(),
       },
+      // Only show rooms that are created from Google Calendar events
+      source_google_calendar_event_id: { _is_null: false },
     },
   });
+
   const [googleCalendarEvents = []] = googleCalendarEventsApi.use({
     eventsStartDate: startOfDay(startDate),
     eventsEndDate: endOfDay(startDate),

@@ -32,6 +32,7 @@ export interface RichEditorProps {
   placeholder?: string;
   autofocusKey?: string;
   submitMode?: RichEditorSubmitMode;
+  disableFileDrop?: boolean;
 }
 
 export const RichEditor = ({
@@ -44,6 +45,7 @@ export const RichEditor = ({
   placeholder,
   autofocusKey,
   submitMode = "enable",
+  disableFileDrop,
 }: RichEditorProps) => {
   const editor = useEditor({
     extensions: richEditorExtensions,
@@ -109,13 +111,19 @@ export const RichEditor = ({
     onSubmit?.();
   }
 
-  useFileDroppedInContext((files) => {
-    onFilesSelected?.(files);
-  });
+  useFileDroppedInContext(
+    (files) => {
+      onFilesSelected?.(files);
+    },
+    { isDisabled: disableFileDrop }
+  );
 
-  useDocumentFilesPaste((files) => {
-    onFilesSelected?.(files);
-  });
+  useDocumentFilesPaste(
+    (files) => {
+      onFilesSelected?.(files);
+    },
+    { isDisabled: disableFileDrop }
+  );
 
   function insertEmoji(emoji: string) {
     if (!editor) return;

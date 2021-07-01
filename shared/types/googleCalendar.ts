@@ -2,7 +2,7 @@
 export interface GoogleCalendarEvent {
   title?: string;
   description?: string;
-  participantEmails?: string[];
+  participantEmails: string[];
   startTime?: Date;
   endTime?: Date;
   id?: string;

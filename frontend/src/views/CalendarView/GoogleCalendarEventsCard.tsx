@@ -1,23 +1,38 @@
 import styled from "styled-components";
-import { setColorOpacity } from "~shared/colors";
+import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
+import { JsonValue } from "~shared/types";
+import { CardBase } from "~ui/card/Base";
+import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
+import { hoverTransition } from "~ui/transitions";
+import { createRoom } from "~frontend/gql/rooms";
+import { useCurrentTeamMembers } from "~frontend/gql/user";
+import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
-import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
-import { PRIMARY_COLOR } from "~ui/colors";
-import { SecondaryText } from "~ui/typo";
-import { createRoom } from "~frontend/gql/rooms";
-import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
+import { ItemTitle } from "~ui/typo";
 
 interface Props {
-  event: GoogleCalendarEvent;
+  event: JsonValue<GoogleCalendarEvent>;
   className?: string;
 }
 
 export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard({ event, className }: Props) {
+  const currentTeamMembers = useCurrentTeamMembers();
+  const deadline = tryParseStringDate(event.startTime) ?? undefined;
+
+  const participatingTeamMembers = currentTeamMembers.filter((teamMember) => {
+    if (!teamMember.email) return false;
+
+    return event.participantEmails.includes(teamMember.email);
+  });
+
   async function handleCreateRoom() {
-    const createRoomInput = await openRoomInputPrompt({ name: event.title, deadline: event.startTime });
+    const createRoomInput = await openRoomInputPrompt({
+      name: event.title,
+      deadline,
+      participantsIds: participatingTeamMembers.map((member) => member.id),
+    });
 
     if (createRoomInput === null) {
       return;
@@ -30,6 +45,11 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         space_id: createRoomInput.spaceId,
         source_google_calendar_event_id: event.id,
         slug: createRoomInput.slug,
+        members: {
+          data: createRoomInput.participantsIds.map((userId) => {
+            return { user_id: userId };
+          }),
+        },
       },
     });
 
@@ -38,10 +58,14 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
 
   return (
     <>
-      <UIHolder layout="position" className={className}>
+      <UIHolder className={className}>
         <UIInfo>
           <UIName>{event.title}</UIName>
-          {!!event.startTime && <UIDate>{niceFormatDateTime(event.startTime)}</UIDate>}
+          {deadline && (
+            <UIMeta>
+              <ValueDescriptor title="Due date" value={niceFormatDateTime(deadline)} />
+            </UIMeta>
+          )}
         </UIInfo>
         <UIActions>
           <Button onClick={handleCreateRoom}>Create Room</Button>
@@ -51,26 +75,37 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
   );
 })``;
 
-const UIHolder = styled(PopPresenceAnimator)`
+const UIHolder = styled(CardBase)`
   display: flex;
   align-items: center;
   position: relative;
-  padding: 1rem;
-  background-color: ${setColorOpacity(PRIMARY_COLOR, 0.2)};
-  ${borderRadius.card};
+  padding-left: 84px;
+
+  ${() => UIInfo} {
+    opacity: 0.4;
+  }
+
+  &:hover ${() => UIInfo} {
+    opacity: 1;
+  }
 `;
 
 const UIInfo = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  will-change: opacity;
+
+  ${hoverTransition("opacity")};
 `;
 
-const UIName = styled(SecondaryText)`
+const UIName = styled(ItemTitle)`
   margin-bottom: 8px;
   font-weight: bold;
 `;
 
-const UIDate = styled(SecondaryText)``;
+const UIMeta = styled.div`
+  padding-top: 16px;
+`;
 
 const UIActions = styled.div``;

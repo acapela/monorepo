@@ -3,8 +3,14 @@ import { createDocumentEvent } from "~shared/domEvents";
 
 let isAnyWatchingForPaste = false;
 
-export function useDocumentFilesPaste(onFilesPaste?: (files: File[]) => void) {
+interface Options {
+  isDisabled?: boolean;
+}
+
+export function useDocumentFilesPaste(onFilesPaste?: (files: File[]) => void, options?: Options) {
   useEffect(() => {
+    if (options?.isDisabled === false) return;
+
     if (isAnyWatchingForPaste) {
       console.warn(`Multiple useDocumentFilePaste cannot be runnign at once`);
       return;
@@ -38,5 +44,5 @@ export function useDocumentFilesPaste(onFilesPaste?: (files: File[]) => void) {
       isAnyWatchingForPaste = false;
       stopWatching();
     };
-  }, [onFilesPaste]);
+  }, [onFilesPaste, options?.isDisabled]);
 }

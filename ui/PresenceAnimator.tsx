@@ -35,6 +35,8 @@ export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function Prese
 const UIHolder = styled(motion.div)`
   position: relative;
   will-change: transform, opacity;
+  /* Add initial transform before framer motion adds it via styles */
+  transform: translate3d(0, 0, 0);
 `;
 
 function parsePresenceStyles(presenceStyles: PresenceStyles) {
