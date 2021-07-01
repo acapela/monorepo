@@ -136,9 +136,9 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
 
 const UIForm = styled.form`
   display: grid;
-  grid-template-columns: 320px;
   align-items: center;
   gap: 60px;
+  min-width: 520px;
 `;
 
 const UIFormFields = styled.div`

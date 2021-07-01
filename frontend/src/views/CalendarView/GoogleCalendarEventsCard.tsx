@@ -45,6 +45,11 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         space_id: createRoomInput.spaceId,
         source_google_calendar_event_id: event.id,
         slug: createRoomInput.slug,
+        members: {
+          data: createRoomInput.participantsIds.map((userId) => {
+            return { user_id: userId };
+          }),
+        },
       },
     });
 

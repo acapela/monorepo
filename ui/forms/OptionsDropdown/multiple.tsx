@@ -160,7 +160,8 @@ const UIMenuOpener = styled.div`
 const UIDropdownHolder = styled.div``;
 
 const UISelectedItemsPreview = styled.div`
-  display: grid;
-
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   grid-gap: 8px;
 `;

@@ -5,11 +5,12 @@ import { SecondaryText } from "~ui/typo";
 interface Props {
   label: string;
   icon?: ReactNode;
+  className?: string;
 }
 
-export function OptionLabel({ label, icon }: Props) {
+export function OptionLabel({ label, icon, className }: Props) {
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}
       <SecondaryText>{label}</SecondaryText>
     </UIHolder>
@@ -20,9 +21,11 @@ const UIHolder = styled.div`
   display: flex;
   flex: 1;
   align-items: center;
+  user-select: none;
 
   ${SecondaryText} {
     flex: 1;
+    font-weight: bold;
   }
 
   svg {
@@ -32,4 +35,5 @@ const UIHolder = styled.div`
 
 const UIIcon = styled.div`
   margin-right: 8px;
+  font-size: 24px;
 `;
