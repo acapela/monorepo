@@ -1,0 +1,9 @@
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: hasura
+  namespace: test
+spec:
+  healthCheck:
+    type: HTTP
+    requestPath: /healthz

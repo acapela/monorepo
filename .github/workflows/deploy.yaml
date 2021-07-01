@@ -1,0 +1,33 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "the stage for the deployment"
+        required: true
+        default: "staging"
+      app:
+        description: "the application that should be deployed"
+        required: true
+        default: "api"
+      version:
+        description: "the version that should be deployed"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+      - uses: google-github-actions/get-gke-credentials@main
+        with:
+          cluster_name: cluster-1
+          location: europe-west1
+          credentials: ${{ secrets.GCLOUD_AUTH }}
+      - run: |
+          ./scripts/deploy.sh -s ${{ github.event.inputs.stage }} -a ${{ github.event.inputs.app }} -v ${{ github.event.inputs.version }}
+        env:
+          KUSTOMIZE_BIN: ./kustomize
