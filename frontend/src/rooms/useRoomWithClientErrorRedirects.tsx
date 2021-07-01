@@ -24,23 +24,22 @@ async function isRoomPrivate(roomId: string) {
   return privateRoom?.is_private ?? false;
 }
 
-export const useRoomAccessCheck = ({ roomId, spaceId }: Props) => {
+export const useRoomWithClientErrorRedirects = ({ roomId, spaceId }: Props) => {
   const [room] = useSingleRoomQuery({ id: roomId });
 
   useEffect(() => {
-    async function handleRoomRedirect() {
-      if (await isRoomPrivate(roomId)) {
-        // TODO: Pass `locked-room` info as query param
+    async function redirectOnClientError() {
+      const isRoomViewableByUser = !!room;
+      if (!isRoomViewableByUser && (await isRoomPrivate(roomId))) {
+        // TODO: Pass `locked-room` info as query param. Show that access is forbidden
         routes.space.replace({ spaceId });
-      } else {
+      } else if (!isRoomViewableByUser) {
         // TODO: 404 page
         routes.space.replace({ spaceId });
       }
     }
 
-    if (!room) {
-      handleRoomRedirect();
-    }
+    redirectOnClientError();
   }, [room]);
 
   return { room } as const;

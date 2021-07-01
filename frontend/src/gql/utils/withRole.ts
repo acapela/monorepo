@@ -10,6 +10,7 @@ export function addRoleToContext(context?: Context, role?: Role) {
     ? {
         headers: {
           "x-hasura-role": role,
+          ...(context?.headers ?? {}),
         },
         ...context,
       }
