@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { MessageLikeContent } from "./messagesFeed/MessageLikeContent";
+import { MessageLikeContent } from "../messagesFeed/MessageLikeContent";
 import { BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
-import { MessageText } from "./display/types/TextMessageContent";
+import { MessageText } from "../display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
 import { MessageBasicInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";

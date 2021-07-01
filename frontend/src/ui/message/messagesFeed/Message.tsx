@@ -11,14 +11,15 @@ import { MessageText } from "~frontend/ui/message/display/types/TextMessageConte
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "../composer/EditMessageEditor";
 import { useTopicStoreSelector } from "~frontend/topics/TopicStore";
-import { ReplyingToMessage } from "../ReplyingToMessage";
-import { IconEdit, IconReply, IconTrash } from "~ui/icons";
+import { ReplyingToMessage } from "../reply/ReplyingToMessage";
+import { IconEdit, IconTrash } from "~ui/icons";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
 import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
+import { MakeReplyButton } from "~frontend/ui/message/reply/MakeReplyButton";
 
 interface Props extends MotionProps {
   message: MessageDetailedInfoFragment;
@@ -33,10 +34,6 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
   const [isInEditMode, updateTopicStore] = useTopicStoreSelector(
     (topicStore) => topicStore.editedMessageId === message.id
   );
-
-  async function handleMarkAsBeingRepliedTo() {
-    updateTopicStore((draft) => (draft.currentlyReplyingToMessage = message));
-  }
 
   function handleStartEditing() {
     updateTopicStore((draft) => (draft.editedMessageId = message.id));
@@ -80,8 +77,6 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
       options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
     }
 
-    options.push({ label: "Reply", onSelect: handleMarkAsBeingRepliedTo, icon: <IconReply /> });
-
     if (isOwnMessage) {
       options.push({
         label: "Delete message",
@@ -101,6 +96,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
         shouldShowTools && (
           <UITools>
             <MakeReactionButton message={message} />
+            <MakeReplyButton message={message} />
             <PopoverMenuTrigger
               onOpen={() => setIsActive(true)}
               onClose={() => setIsActive(false)}
