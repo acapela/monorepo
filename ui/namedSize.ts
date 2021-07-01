@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 
 const namedSize = {
-  small: 32,
+  small: 24,
   regular: 40,
 };
 

@@ -39,7 +39,8 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   width: auto;
   display: inline-flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 12px;
+  padding: 14px 8px;
 
   ${() => UITools} {
     opacity: 0;
@@ -51,16 +52,9 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
       opacity: 1;
     }
   }
-
-  ${() => UIBody} {
-    margin-top: 8px;
-  }
 `;
 
 const MessageAvatar = styled(UserAvatar)`
-  width: 40px;
-  height: 40px;
-  margin-top: 5px;
   flex-shrink: 0;
 `;
 
@@ -70,6 +64,7 @@ const UITools = styled(motion.div)`
 
 const UIHead = styled.div`
   font-weight: bold;
+  font-size: 14px;
   margin-bottom: 8px;
 
   ${TimeLabelWithDateTooltip} {
