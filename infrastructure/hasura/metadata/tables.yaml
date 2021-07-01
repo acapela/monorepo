@@ -354,9 +354,10 @@
         filter:
           _and:
             - space:
-                members:
-                  user_id:
-                    _eq: X-Hasura-User-Id
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
             - _or:
                 - is_private:
                     _eq: false
