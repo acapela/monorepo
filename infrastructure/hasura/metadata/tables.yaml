@@ -8,19 +8,21 @@
 - table:
     schema: public
     name: attachment
-  array_relationships:
-    - name: message_attachments
+  object_relationships:
+    - name: message
       using:
-        foreign_key_constraint_on:
-          column: attachment_id
-          table:
-            schema: public
-            name: message_attachment
+        foreign_key_constraint_on: message_id
   insert_permissions:
     - role: user
       permission:
-        check: {}
-        columns: []
+        check:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
+        columns:
+          - message_id
+          - mime_type
+          - original_name
         backend_only: false
   select_permissions:
     - role: user
@@ -28,19 +30,42 @@
         columns:
           - created_at
           - id
+          - message_id
           - mime_type
           - original_name
-        filter: {}
+        filter:
+          message:
+            topic:
+              _or:
+                - members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+                - room:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
-        columns: []
-        filter: {}
-        check: null
+        columns:
+          - created_at
+          - mime_type
+          - original_name
+        filter:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
+        check:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
   delete_permissions:
     - role: user
       permission:
-        filter: {}
+        filter:
+          message:
+            user_id:
+              _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: full_text_search
@@ -134,14 +159,6 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
-    - name: message_attachments
-      using:
-        manual_configuration:
-          remote_table:
-            schema: public
-            name: message_attachment
-          column_mapping:
-            id: message_id
     - name: message_reactions
       using:
         foreign_key_constraint_on:
@@ -233,46 +250,6 @@
       headers:
         - name: Authorization
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-- table:
-    schema: public
-    name: message_attachment
-  object_relationships:
-    - name: attachment
-      using:
-        foreign_key_constraint_on: attachment_id
-    - name: message
-      using:
-        foreign_key_constraint_on: message_id
-  insert_permissions:
-    - role: user
-      permission:
-        check: {}
-        columns:
-          - message_id
-          - attachment_id
-        backend_only: false
-  select_permissions:
-    - role: user
-      permission:
-        columns:
-          - attachment_id
-          - message_id
-        filter: {}
-  update_permissions:
-    - role: user
-      permission:
-        columns:
-          - attachment_id
-          - message_id
-        filter: {}
-        check: null
-  delete_permissions:
-    - role: user
-      permission:
-        filter: {}
-- table:
-    schema: public
-    name: message_full_text
 - table:
     schema: public
     name: message_reaction
