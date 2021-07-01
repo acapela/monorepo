@@ -54,6 +54,10 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
     font-size: 24px;
   }
 
+  ${OptionLabel} {
+    flex-grow: 1;
+  }
+
   &:hover {
     background-color: ${ACTION_ACTIVE_COLOR};
   }

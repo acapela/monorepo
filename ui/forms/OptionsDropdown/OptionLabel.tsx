@@ -8,14 +8,14 @@ interface Props {
   className?: string;
 }
 
-export function OptionLabel({ label, icon, className }: Props) {
+export const OptionLabel = styled(function OptionLabel({ label, icon, className }: Props) {
   return (
     <UIHolder className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}
       <SecondaryText>{label}</SecondaryText>
     </UIHolder>
   );
-}
+})``;
 
 const UIHolder = styled.div`
   display: flex;
