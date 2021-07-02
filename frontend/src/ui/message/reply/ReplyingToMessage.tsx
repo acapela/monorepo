@@ -7,6 +7,7 @@ import { IconButton } from "~ui/buttons/IconButton";
 import { MessageBasicInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
+import { borderRadius } from "~ui/baseStyles";
 
 interface Props {
   message: MessageBasicInfoFragment;
@@ -40,7 +41,7 @@ const UIHolder = styled.div`
 
 const UIBorder = styled.div`
   width: 2px;
-  border-radius: 6px;
+  ${borderRadius.circle};
   background-image: linear-gradient(359.7deg, #ee551d -18.05%, #e26e8c 24.03%, #36e3e3 105.82%);
 `;
 
