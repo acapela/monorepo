@@ -26,7 +26,7 @@ export const openNotFoundModal = createPromiseUI<PromptInput, PromptResult>(({ p
       anchor={anchor}
       onCloseRequest={handleClose}
     >
-      <UICloseButton onClick={handleClose}>Got back</UICloseButton>
+      <UICloseButton onClick={handleClose}>Get back</UICloseButton>
     </WarningModal>
   );
 });
