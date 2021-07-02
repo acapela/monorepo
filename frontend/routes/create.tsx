@@ -41,8 +41,8 @@ interface UrlParams<RouteParams> {
 export interface Route<RouteParams> {
   path: string;
   useParams(): UrlParams<RouteParams>;
-  push(params: RouteParams): void;
-  replace(params: RouteParams, queryParams?: Record<string, string>): void;
+  push(params: RouteParams): Promise<boolean>;
+  replace(params: RouteParams, queryParams?: Record<string, string>): Promise<boolean>;
   useIsActive(): boolean;
   getIsActive(): boolean;
   isMatchingRoute(routeToCheck: string): boolean;
@@ -98,12 +98,12 @@ export function createRoute<D extends RouteParamsDefinition>(
     return path === routeToCheck;
   }
 
-  function push(params: RouteParams, additionalParams?: Record<string, string>) {
-    router.push({ pathname: path, query: { ...params, ...additionalParams } });
+  function push(params: RouteParams, additionalParams?: Record<string, string>): Promise<boolean> {
+    return router.push({ pathname: path, query: { ...params, ...additionalParams } });
   }
 
-  function replace(params: RouteParams, additionalParams?: Record<string, string>) {
-    router.replace({ pathname: path, query: { ...params, ...additionalParams } });
+  function replace(params: RouteParams, additionalParams?: Record<string, string>): Promise<boolean> {
+    return router.replace({ pathname: path, query: { ...params, ...additionalParams } });
   }
 
   interface LinkProps {

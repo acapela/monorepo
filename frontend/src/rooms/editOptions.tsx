@@ -39,7 +39,7 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
 
   if (!didConfirm) return;
 
-  routes.space.push({ spaceId: room.space_id });
+  await routes.space.push({ spaceId: room.space_id });
 
   await deleteRoom({ roomId: room.id });
 }
