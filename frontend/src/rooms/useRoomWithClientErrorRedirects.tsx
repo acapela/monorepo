@@ -41,7 +41,7 @@ export const useRoomWithClientErrorRedirects = ({ roomId, spaceId }: Props) => {
       }
     }
     if (!loading) redirectOnClientError();
-  }, [room]);
+  }, [room, loading]);
 
   return { room } as const;
 };
