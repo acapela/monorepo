@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { ModalAnchor } from "~frontend/ui/Modal";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { PageTitle } from "~ui/typo";
-import { SECONDARY_ORANGE_1 } from "~ui/colors";
+import { WarningModal } from "./warningModal";
 
 type Place = "room" | "space";
 
@@ -21,41 +19,16 @@ export const openNotFoundModal = createPromiseUI<PromptInput, PromptResult>(({ p
     resolve();
   }
 
-  useShortcut("Escape", handleClose);
-  useShortcut("Enter", handleClose);
-
   return (
-    <Modal anchor={anchor} onCloseRequest={handleClose} hasCloseButton={false}>
-      <UIContentWrapper>
-        <UIHeader>
-          <UIWarningHeader>Oops!</UIWarningHeader>
-          <UIWarningTitle>The {place} you are looking for was not found</UIWarningTitle>
-        </UIHeader>
-        <UICloseButton onClick={handleClose}>Go back</UICloseButton>
-      </UIContentWrapper>
-    </Modal>
+    <WarningModal
+      warning={"Oops!"}
+      title={`The ${place} you're looking for was not found`}
+      anchor={anchor}
+      onCloseRequest={handleClose}
+    >
+      <UICloseButton onClick={handleClose}>Got back</UICloseButton>
+    </WarningModal>
   );
 });
-
-const UIContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 32px;
-
-  max-width: 480px;
-`;
-
-const UIHeader = styled.div`
-  padding: 0 24px;
-`;
-
-const UIWarningHeader = styled(PageTitle)`
-  padding-bottom: 8px;
-  color: ${SECONDARY_ORANGE_1};
-`;
-
-const UIWarningTitle = styled(PageTitle)``;
 
 const UICloseButton = styled(Button)``;
