@@ -4,7 +4,7 @@ import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { deleteRoom, getSingleRoomQueryManager, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconCheck, IconEdit, IconTrash, IconUndo } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 import { routes } from "~frontend/routes";
@@ -75,6 +75,15 @@ export async function handleToggleCloseRoom(basicRoom: RoomBasicInfoFragment): P
   }
 }
 
+export async function handleToggleRoomPrivate(room: RoomBasicInfoFragment) {
+  const roomId = room.id;
+  if (room.is_private) {
+    await updateRoom({ roomId, input: { is_private: false } });
+  } else {
+    await updateRoom({ roomId, input: { is_private: true } });
+  }
+}
+
 export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): PopoverMenuOption[] {
   return [
     {
@@ -86,6 +95,11 @@ export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): Popove
       label: room.finished_at ? "Reopen room..." : "Close room...",
       onSelect: () => handleToggleCloseRoom(room),
       icon: room.finished_at ? <IconUndo /> : <IconCheck />,
+    },
+    {
+      label: room.is_private ? "Set as public" : "Set as private",
+      onSelect: () => handleToggleRoomPrivate(room),
+      icon: room.is_private ? <IconUnlock /> : <IconLock />,
     },
     {
       label: "Delete room...",
