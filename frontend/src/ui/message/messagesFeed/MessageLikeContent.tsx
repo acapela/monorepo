@@ -6,6 +6,9 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
+import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
+import { borderRadius } from "~ui/baseStyles";
+import { hoverTransition } from "~ui/transitions";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -41,6 +44,8 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   align-items: flex-start;
   gap: 12px;
   padding: 14px 8px;
+  ${borderRadius.item};
+  ${hoverTransition()}
 
   ${() => UITools} {
     opacity: 0;
@@ -48,6 +53,8 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 
   &:hover {
+    background: ${ITEM_BACKGROUND_WEAK};
+
     ${() => UITools} {
       opacity: 1;
     }

@@ -6,6 +6,7 @@ import { MessageText } from "../display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
 import { MessageBasicInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
 
 interface Props {
   message: MessageBasicInfoFragment;
@@ -34,7 +35,7 @@ const UIHolder = styled.div`
   display: flex;
   position: relative;
   border-radius: 0 8px 8px 0px;
-  background: hsl(0, 0%, 96%);
+  background: ${ITEM_BACKGROUND_WEAK};
 `;
 
 const UIBorder = styled.div`
