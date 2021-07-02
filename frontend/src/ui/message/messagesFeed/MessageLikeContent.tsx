@@ -1,14 +1,12 @@
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
-import { niceFormatDate } from "~shared/dates/format";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
-import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { hoverTransition } from "~ui/transitions";
+import { MetaForMessage } from "./MetaForMessage";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -26,13 +24,9 @@ export const MessageLikeContent = styled(({ user, date, children, tools, classNa
 
   return (
     <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
-      <MessageAvatar user={user} size="small" />
-      <UIBody data-tooltip={niceFormatDate(date)}>
-        <UIHead>
-          {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
-        </UIHead>
+      <MetaForMessage user={user} date={date}>
         {children}
-      </UIBody>
+      </MetaForMessage>
       {tools && <UITools>{tools}</UITools>}
     </UIAnimatedMessageWrapper>
   );
@@ -40,9 +34,9 @@ export const MessageLikeContent = styled(({ user, date, children, tools, classNa
 
 const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   width: auto;
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 12px;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
   padding: 14px 8px;
   ${borderRadius.item};
   ${hoverTransition()}
@@ -61,33 +55,6 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 `;
 
-const MessageAvatar = styled(UserAvatar)`
-  flex-shrink: 0;
-`;
-
 const UITools = styled(motion.div)`
   margin-top: 0.25rem;
-`;
-
-const UIHead = styled.div`
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 8px;
-  display: flex;
-  gap: 8px;
-
-  ${TimeLabelWithDateTooltip} {
-    opacity: 0.4;
-    user-select: none;
-    font-weight: 400;
-  }
-`;
-
-function getUserOrGuestName(user: UserBasicInfoFragment): string {
-  return user?.name || "Guest";
-}
-
-const UIBody = styled.div`
-  min-width: 360px;
-  max-width: 700px;
 `;

@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
 import { IconCross } from "~ui/icons";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
@@ -8,6 +7,7 @@ import { MessageBasicInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
+import { MetaForMessage } from "~frontend/ui/message/messagesFeed/MetaForMessage";
 
 interface Props {
   message: MessageBasicInfoFragment;
@@ -19,9 +19,9 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
     <UIHolder>
       <UIBorder />
       <UIContent>
-        <MessageLikeContent user={message.user} date={new Date(message.createdAt)}>
+        <MetaForMessage user={message.user} date={new Date(message.createdAt)}>
           <MessageText message={message} />
-        </MessageLikeContent>
+        </MetaForMessage>
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>
