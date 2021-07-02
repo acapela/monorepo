@@ -46,6 +46,9 @@ export const borderRadius = {
   button: css`
     border-radius: 12px;
   `,
+  tag: css`
+    border-radius: 8px;
+  `,
 };
 
 export const fontSize = {

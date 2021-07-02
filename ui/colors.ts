@@ -35,3 +35,11 @@ export const COLORS_PALETTE = {
   RAISIN_BLACK: "hsl(240, 9%, 13%)",
   MINT_GREEN: "hsl(133, 100%, 75%)",
 };
+
+/*
+ *
+ * Design Language colors
+ *
+ */
+
+export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
