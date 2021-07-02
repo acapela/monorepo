@@ -20,6 +20,7 @@ import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge"
 import { UICardListItem } from "./shared";
 import { ValueDescriptor, UIValueDescriptorSeparator } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
+import { PrivateTag } from "~frontend/../../ui/tags";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -76,6 +77,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
               )}
+              {room.is_private && <PrivateTag />}
             </ItemTitle>
 
             <UIRoomMetaData>
@@ -153,10 +155,7 @@ const UIHeadPrimary = styled.div`
   ${ItemTitle} {
     display: flex;
     align-items: center;
-
-    ${GoogleCalendarIcon} {
-      margin-left: 8px;
-    }
+    gap: 8px;
   }
 `;
 
