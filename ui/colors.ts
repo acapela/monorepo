@@ -43,3 +43,4 @@ export const COLORS_PALETTE = {
  */
 
 export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
+export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
