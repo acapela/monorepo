@@ -90,43 +90,47 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
   };
 
   return (
-    <MessageLikeContent
-      className={className}
-      tools={
-        shouldShowTools && (
-          <UITools>
-            <MakeReactionButton message={message} />
-            <MakeReplyButton message={message} />
-            <PopoverMenuTrigger
-              onOpen={() => setIsActive(true)}
-              onClose={() => setIsActive(false)}
-              options={getMessageActionsOptions()}
-            >
-              <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-            </PopoverMenuTrigger>
-          </UITools>
-        )
-      }
-      user={message.user}
-      date={new Date(message.createdAt)}
-    >
-      <UIMessageBody>
-        {isInEditMode && (
-          <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
-        )}
-        {!isInEditMode && (
-          <UIMessageContent>
-            {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
-            <MessageText message={message} />
-            <MessageMedia message={message} />
-            <MessageLinksPreviews message={message} />
-            <MessageReactions message={message} />
-          </UIMessageContent>
-        )}
-      </UIMessageBody>
-    </MessageLikeContent>
+    <UIHolder id={message.id}>
+      <MessageLikeContent
+        className={className}
+        tools={
+          shouldShowTools && (
+            <UITools>
+              <MakeReactionButton message={message} />
+              <MakeReplyButton message={message} />
+              <PopoverMenuTrigger
+                onOpen={() => setIsActive(true)}
+                onClose={() => setIsActive(false)}
+                options={getMessageActionsOptions()}
+              >
+                <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+              </PopoverMenuTrigger>
+            </UITools>
+          )
+        }
+        user={message.user}
+        date={new Date(message.createdAt)}
+      >
+        <UIMessageBody>
+          {isInEditMode && (
+            <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
+          )}
+          {!isInEditMode && (
+            <UIMessageContent>
+              {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
+              <MessageText message={message} />
+              <MessageMedia message={message} />
+              <MessageLinksPreviews message={message} />
+              <MessageReactions message={message} />
+            </UIMessageContent>
+          )}
+        </UIMessageBody>
+      </MessageLikeContent>
+    </UIHolder>
   );
 })``;
+
+const UIHolder = styled.div``;
 
 const UITools = styled.div`
   display: flex;

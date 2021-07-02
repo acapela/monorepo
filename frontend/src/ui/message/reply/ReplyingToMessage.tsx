@@ -15,8 +15,17 @@ interface Props {
 }
 
 export const ReplyingToMessage = ({ message, onRemove }: Props) => {
+  const handleClick = () => {
+    const messageTextElement = document.getElementById(message.id);
+
+    messageTextElement?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
   return (
-    <UIHolder>
+    <UIHolder onClick={handleClick}>
       <UIBorder />
       <UIContent>
         <MetaForMessage user={message.user} date={new Date(message.createdAt)}>
@@ -39,6 +48,7 @@ const UIHolder = styled.div`
   position: relative;
   border-radius: 0 8px 8px 0px;
   background: ${ITEM_BACKGROUND_WEAK};
+  cursor: pointer;
 `;
 
 const UIBorder = styled.div`
