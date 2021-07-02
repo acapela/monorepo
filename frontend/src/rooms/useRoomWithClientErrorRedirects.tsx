@@ -32,7 +32,7 @@ export const useRoomWithClientErrorRedirects = ({ roomId, spaceId }: Props) => {
       const isRoomViewableByUser = !!room;
       if (!isRoomViewableByUser && (await isRoomPrivate(roomId))) {
         // TODO: Pass `locked-room` info as query param. Show that access is forbidden
-        routes.space.replace({ spaceId });
+        routes.space.replace({ spaceId }, { "locked-room": "true" });
       } else if (!isRoomViewableByUser) {
         // TODO: 404 page
         routes.space.replace({ spaceId });

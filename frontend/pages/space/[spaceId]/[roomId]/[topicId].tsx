@@ -5,7 +5,7 @@ import { withServerSideAuthRedirect } from "~frontend/authentication/withServerS
 import { RoomPage } from "~frontend/rooms/RoomPage";
 
 const Page = () => {
-  const { spaceId, roomId, topicId } = routes.spaceRoomTopic.useParams();
+  const { spaceId, roomId, topicId } = routes.spaceRoomTopic.useParams().route;
 
   return <RoomPage spaceId={spaceId} roomId={roomId} topicId={topicId} />;
 };

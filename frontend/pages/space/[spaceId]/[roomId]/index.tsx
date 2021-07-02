@@ -4,7 +4,7 @@ import { RoomPage } from "~frontend/rooms/RoomPage";
 import { routes } from "~frontend/routes";
 
 const SpaceRoomPage = () => {
-  const { roomId, spaceId } = routes.spaceRoom.useParams();
+  const { roomId, spaceId } = routes.spaceRoom.useParams().route;
 
   return <RoomPage spaceId={spaceId} roomId={roomId} topicId={null} />;
 };
