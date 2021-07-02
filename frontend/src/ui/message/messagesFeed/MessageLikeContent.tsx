@@ -6,7 +6,7 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
-import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
+import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { hoverTransition } from "~ui/transitions";
 
@@ -53,7 +53,7 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 
   &:hover {
-    background: ${ITEM_BACKGROUND_WEAK};
+    background: ${ITEM_BACKGROUND_WEAK_TRANSPARENT};
 
     ${() => UITools} {
       opacity: 1;
