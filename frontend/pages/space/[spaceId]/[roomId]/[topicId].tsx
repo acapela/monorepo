@@ -1,18 +1,15 @@
 import React from "react";
 import { routes } from "~frontend/routes";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { AppLayout } from "~frontend/layouts/AppLayout";
-import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
+
+import { RoomPage } from "~frontend/rooms/RoomPage";
 
 const Page = () => {
-  const { roomId, topicId } = routes.spaceRoomTopic.useParams();
+  const { spaceId, roomId, topicId } = routes.spaceRoomTopic.useParams();
 
-  return <RoomTopicView roomId={roomId} topicId={topicId} />;
+  return <RoomPage spaceId={spaceId} roomId={roomId} topicId={topicId} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();
-
-assignPageLayout(Page, AppLayout);
 
 export default Page;

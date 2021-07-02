@@ -392,11 +392,34 @@
           - deadline
           - finished_at
           - id
+          - is_private
           - name
           - slug
           - source_google_calendar_event_id
           - space_id
           - summary
+        filter:
+          _and:
+            - space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+            - _or:
+                - is_private:
+                    _eq: false
+                - _and:
+                    - is_private:
+                        _eq: true
+                    - members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+    - role: visitor
+      permission:
+        columns:
+          - id
+          - is_private
+          - name
         filter:
           space:
             team:
@@ -421,11 +444,9 @@
     - role: user
       permission:
         filter:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+          members:
+            user_id:
+              _eq: X-Hasura-User-Id
   event_triggers:
     - name: room_updates
       definition:
@@ -1007,10 +1028,15 @@
     - role: user
       permission:
         check:
-          room:
-            space:
-              team:
-                memberships:
+          _and:
+            - room:
+                space:
+                  team:
+                    memberships:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+            - room:
+                members:
                   user_id:
                     _eq: X-Hasura-User-Id
         columns:
@@ -1032,12 +1058,25 @@
           - room_id
           - slug
         filter:
-          room:
-            space:
-              team:
-                memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
+          _and:
+            - room:
+                space:
+                  team:
+                    memberships:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+            - _or:
+                - room:
+                    is_private:
+                      _eq: false
+                - _and:
+                    - room:
+                        is_private:
+                          _eq: true
+                    - room:
+                        members:
+                          user_id:
+                            _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -1049,10 +1088,15 @@
           - index
           - name
         filter:
-          room:
-            space:
-              team:
-                memberships:
+          _and:
+            - room:
+                space:
+                  team:
+                    memberships:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+            - room:
+                members:
                   user_id:
                     _eq: X-Hasura-User-Id
         check: null
@@ -1060,10 +1104,15 @@
     - role: user
       permission:
         filter:
-          room:
-            space:
-              team:
-                memberships:
+          _and:
+            - room:
+                space:
+                  team:
+                    memberships:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+            - room:
+                members:
                   user_id:
                     _eq: X-Hasura-User-Id
   event_triggers:

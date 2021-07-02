@@ -1,7 +1,9 @@
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { getSession } from "next-auth/client";
 
-export function withServerSideAuthRedirect<P>(propsFactory?: (context: GetServerSidePropsContext) => Promise<P>) {
+export function withServerSideAuthRedirect<P>(
+  propsFactory?: (context: GetServerSidePropsContext) => Promise<GetServerSidePropsResult<P>>
+) {
   return async function (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> {
     const session = await getSession(context);
 
@@ -14,12 +16,12 @@ export function withServerSideAuthRedirect<P>(propsFactory?: (context: GetServer
       };
     }
 
-    const props = await propsFactory?.(context);
+    const result = await propsFactory?.(context);
 
-    if (!props) {
+    if (!result) {
       return { props: {} as P };
     }
 
-    return { props };
+    return result;
   };
 }
