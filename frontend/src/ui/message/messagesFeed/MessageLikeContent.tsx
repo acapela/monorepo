@@ -66,10 +66,13 @@ const UIHead = styled.div`
   font-weight: bold;
   font-size: 14px;
   margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
 
   ${TimeLabelWithDateTooltip} {
     opacity: 0.4;
     user-select: none;
+    font-weight: 400;
   }
 `;
 

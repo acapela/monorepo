@@ -6,6 +6,8 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
+  font-size: 14px;
+
   line-height: 1.25;
 
   ol {
