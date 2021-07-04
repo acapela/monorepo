@@ -20,7 +20,7 @@ import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge"
 import { UICardListItem } from "./shared";
 import { ValueDescriptor, UIValueDescriptorSeparator } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
-import { PrivateTag } from "~frontend/../../ui/tags";
+import { PrivateTag } from "~ui/tags";
 
 interface Props {
   room: RoomBasicInfoFragment;
