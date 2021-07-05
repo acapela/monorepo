@@ -59,6 +59,17 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
     editor.chain().focus().toggleCode().run();
   }
 
+  function insertTextAtCursor(text: string) {
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: "text",
+        text,
+      })
+      .run();
+  }
+
   return (
     <UIHolder ref={ref}>
       <UISection>
@@ -111,7 +122,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
       </UISection>
 
       <UISection>
-        <ToolbarButton tooltipLabel="Mention..." onClick={onSubmit} icon={<IconAt />} />
+        <ToolbarButton tooltipLabel="Mention..." onClick={() => insertTextAtCursor("@")} icon={<IconAt />} />
         <EmojiButton onEmojiSelected={onEmojiSelected} />
         <FileInput onFileSelected={(file) => onFilesSelected?.([file])}>
           <ToolbarButton tooltipLabel="Add attachment..." icon={<IconPaperclip />} />

@@ -11,6 +11,7 @@ interface AutocompletePluginOptions<D> {
   nodeComponent: ComponentType<AutocompleteNodeProps<D>>;
   pickerComponent: ComponentType<AutocompletePickerProps<D>>;
   triggerChar: string;
+  allowSpaces?: boolean;
 }
 
 type ProsemirrorSuggestionOptions = Omit<SuggestionOptions, "editor">;
@@ -37,8 +38,9 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
   }
 
   const suggestionOptions: ProsemirrorSuggestionOptions = {
-    allowSpaces: true,
+    allowSpaces: options.allowSpaces ?? false,
     char: options.triggerChar,
+
     command: ({ editor, range, props }) => {
       editor
         .chain()
@@ -84,6 +86,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
 
   function createKeyboardHandlers(editor: Editor): KeyboardHandlersMap {
     return {
+      // When erasing existing autocomplete entry with backspace, replace it with trigger char
       Backspace: () => {
         return editor.commands.command(({ tr, state }) => {
           let isMention = false;
