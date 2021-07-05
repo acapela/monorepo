@@ -10,7 +10,7 @@ import { lookupTeamName } from "~frontend/gql/invitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();
-  const { inviteCode } = routes.invitePage.useParams();
+  const { inviteCode } = routes.invitePage.useParams().route;
 
   assert(inviteCode, "Invite code required");
 

@@ -1520,6 +1520,7 @@ type message {
     """
     path: String
   ): jsonb!
+  content_text: String
   created_at: timestamptz!
   id: uuid!
   is_draft: Boolean!
@@ -1928,6 +1929,7 @@ input message_bool_exp {
   _not: message_bool_exp
   _or: [message_bool_exp]
   content: jsonb_comparison_exp
+  content_text: String_comparison_exp
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
   is_draft: Boolean_comparison_exp
@@ -2146,6 +2148,7 @@ input type for inserting data into table "message"
 """
 input message_insert_input {
   content: jsonb
+  content_text: String
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
@@ -2167,6 +2170,7 @@ input message_insert_input {
 aggregate max on columns
 """
 type message_max_fields {
+  content_text: String
   created_at: timestamptz
   id: uuid
   replied_to_message_id: uuid
@@ -2179,6 +2183,7 @@ type message_max_fields {
 order by max() on columns of table "message"
 """
 input message_max_order_by {
+  content_text: order_by
   created_at: order_by
   id: order_by
   replied_to_message_id: order_by
@@ -2191,6 +2196,7 @@ input message_max_order_by {
 aggregate min on columns
 """
 type message_min_fields {
+  content_text: String
   created_at: timestamptz
   id: uuid
   replied_to_message_id: uuid
@@ -2203,6 +2209,7 @@ type message_min_fields {
 order by min() on columns of table "message"
 """
 input message_min_order_by {
+  content_text: order_by
   created_at: order_by
   id: order_by
   replied_to_message_id: order_by
@@ -2248,6 +2255,7 @@ ordering options when selecting data from "message"
 """
 input message_order_by {
   content: order_by
+  content_text: order_by
   created_at: order_by
   id: order_by
   is_draft: order_by
@@ -2516,6 +2524,11 @@ enum message_select_column {
   """
   column name
   """
+  content_text
+
+  """
+  column name
+  """
   created_at
 
   """
@@ -2559,6 +2572,7 @@ input type for updating data in table "message"
 """
 input message_set_input {
   content: jsonb
+  content_text: String
   created_at: timestamptz
   id: uuid
   is_draft: Boolean
@@ -2767,6 +2781,11 @@ enum message_update_column {
   column name
   """
   content
+
+  """
+  column name
+  """
+  content_text
 
   """
   column name
@@ -6470,6 +6489,7 @@ type room {
   deadline: timestamptz!
   finished_at: timestamptz
   id: uuid!
+  is_private: Boolean!
 
   """
   An object relationship
@@ -6715,6 +6735,7 @@ input room_bool_exp {
   deadline: timestamptz_comparison_exp
   finished_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
+  is_private: Boolean_comparison_exp
   last_posted_message: room_last_posted_message_bool_exp
   members: room_member_bool_exp
   name: String_comparison_exp
@@ -6753,6 +6774,7 @@ input room_insert_input {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  is_private: Boolean
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
@@ -7500,6 +7522,7 @@ input room_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  is_private: order_by
   last_posted_message: room_last_posted_message_order_by
   members_aggregate: room_member_aggregate_order_by
   name: order_by
@@ -7552,6 +7575,11 @@ enum room_select_column {
   """
   column name
   """
+  is_private
+
+  """
+  column name
+  """
   name
 
   """
@@ -7589,6 +7617,7 @@ input room_set_input {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  is_private: Boolean
   name: String
   notification_job_id: String
   slug: String
@@ -7625,6 +7654,11 @@ enum room_update_column {
   column name
   """
   id
+
+  """
+  column name
+  """
+  is_private
 
   """
   column name

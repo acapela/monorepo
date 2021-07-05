@@ -1,18 +1,16 @@
 import { useEffect } from "react";
 import { routes } from "~frontend/routes";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
 
 import { TopicView } from "../topic/TopicView";
 import { RoomView } from "./RoomView";
+import { RoomDetailedInfoFragment } from "~frontend/../../gql";
 
 interface Props {
-  roomId: string;
+  room: RoomDetailedInfoFragment;
   topicId: string | null;
 }
 
-export function RoomTopicView({ roomId, topicId }: Props) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-
+export function RoomTopicView({ room, topicId }: Props) {
   const firstTopic = room?.topics?.[0] ?? null;
 
   function getSelectedTopicId() {

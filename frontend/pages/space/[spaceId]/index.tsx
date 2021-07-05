@@ -5,7 +5,9 @@ import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { SpaceView } from "~frontend/views/SpaceView";
 
 export default function SpacesPage(): JSX.Element {
-  const { spaceId } = routes.space.useParams();
+  const params = routes.space.useParams();
+
+  const { spaceId } = params.route;
 
   return <SpaceView spaceId={spaceId} />;
 }

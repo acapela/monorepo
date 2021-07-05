@@ -1,0 +1,10 @@
+namespace: staging
+commonLabels:
+  app: api
+  env: staging
+resources:
+  - ../base
+configMapGenerator:
+  - name: api-default
+    envs:
+      - default.env

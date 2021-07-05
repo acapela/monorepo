@@ -2,6 +2,7 @@ import {
   DocumentNode,
   gql,
   QueryHookOptions,
+  QueryOptions,
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
@@ -16,8 +17,16 @@ import { reportQueryUsage } from "./hydration";
 import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
+import { addRoleToContext, RequestWithRole } from "./withRole";
 
-export function createQuery<Data, Variables>(query: () => DocumentNode) {
+type QueryDefinitionOptions = RequestWithRole;
+
+type QueryExecutionOptions = Omit<QueryOptions, "query" | "variables">;
+
+export function createQuery<Data, Variables>(
+  query: () => DocumentNode,
+  queryDefinitionOptions?: QueryDefinitionOptions
+) {
   type VoidableVariables = VoidableIfEmpty<Variables>;
 
   const getQuery = memoize(query);
@@ -26,7 +35,10 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
     reportQueryUsage({ query: getQuery(), variables: variables });
 
-    const { data, ...rest } = useRawQuery(getQuery(), { ...options, variables: variables as Variables });
+    const { data, ...rest } = useRawQuery(getQuery(), {
+      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      variables: variables as Variables,
+    });
 
     return [unwrapQueryData(data), rest] as const;
   }
@@ -34,7 +46,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
     const [queryData] = useQuery(variables);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
-      ...options,
+      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
       variables: variables as Variables,
     });
 
@@ -70,8 +82,12 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     return getCurrentApolloClientHandler().readQuery<Data, Variables>({ query: getQuery(), variables });
   }
 
-  async function fetch(variables: Variables) {
-    const response = await getRenderedApolloClient().query<Data, Variables>({ query: getQuery(), variables });
+  async function fetch(variables: Variables, options?: QueryExecutionOptions) {
+    const response = await getRenderedApolloClient().query<Data, Variables>({
+      query: getQuery(),
+      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      variables,
+    });
 
     if (response.error) {
       throw response.error;

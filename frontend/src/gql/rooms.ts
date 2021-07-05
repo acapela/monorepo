@@ -22,8 +22,11 @@ import {
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
+  PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
   RoomsInSpaceQuery,
   RoomsInSpaceQueryVariables,
+  SinglePrivateRoomQuery,
+  SinglePrivateRoomQueryVariables,
 } from "~gql";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
@@ -33,17 +36,30 @@ import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
+export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
+  () => gql`
+    fragment PrivateRoomInfo on room {
+      id
+      name
+      is_private
+    }
+  `
+);
+
 export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
   () => gql`
     ${UserBasicInfoFragment()}
+    ${PrivateRoomInfoFragment()}
+
     fragment RoomBasicInfo on room {
-      id
-      name
+      ...PrivateRoomInfo
+
       space_id
       deadline
       summary
       finished_at
       source_google_calendar_event_id
+
       members {
         user {
           ...UserBasicInfo
@@ -104,6 +120,24 @@ export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
   `
 );
 
+export const [usePrivateRoomQuery, { fetch: fetchPrivateRoom }] = createQuery<
+  SinglePrivateRoomQuery,
+  SinglePrivateRoomQueryVariables
+>(
+  () => gql`
+    ${PrivateRoomInfoFragment()}
+
+    query SinglePrivateRoom($id: uuid!) {
+      privateRoom: room_by_pk(id: $id) {
+        ...PrivateRoomInfo
+      }
+    }
+  `,
+  {
+    requestWithRole: "visitor",
+  }
+);
+
 export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<SingleRoomQuery, SingleRoomQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}
@@ -153,6 +187,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           id: getUUID(),
           members: [],
           topics: [],
+          is_private: variables.input.is_private ?? false,
           name: variables.input.name,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           space_id: variables.input.space_id!,
