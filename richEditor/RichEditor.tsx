@@ -10,8 +10,10 @@ import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
-import { Toolbar } from "./Toolbar";
+import { Toolbar, RichEditorSubmitMode } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
+
+export type { RichEditorSubmitMode } from "./Toolbar";
 
 export function getEmptyRichContent(): JSONContent {
   return {
@@ -29,7 +31,7 @@ export interface RichEditorProps {
   additionalBottomContent?: ReactNode;
   placeholder?: string;
   autofocusKey?: string;
-  hideSubmitButton?: boolean;
+  submitMode?: RichEditorSubmitMode;
   disableFileDrop?: boolean;
 }
 
@@ -42,7 +44,7 @@ export const RichEditor = ({
   additionalBottomContent,
   placeholder,
   autofocusKey,
-  hideSubmitButton,
+  submitMode = "enable",
   disableFileDrop,
 }: RichEditorProps) => {
   const editor = useEditor({
@@ -94,7 +96,7 @@ export const RichEditor = ({
    * enter = submit + stop propagation (handled by useShortcut)
    * shift+enter / mod+enter > default enter behavior
    */
-  useShortcut("Enter", handleSubmitIfNotEmpty, { isEnabled: isFocused });
+  useShortcut("Enter", handleSubmitIfEnabled, { isEnabled: isFocused });
 
   function sendDefaultEnterCommandToEditor() {
     editor?.commands.keyboardShortcut("Enter");
@@ -103,16 +105,8 @@ export const RichEditor = ({
   useShortcut(["Shift", "Enter"], sendDefaultEnterCommandToEditor, { isEnabled: isFocused });
   useShortcut(["Meta", "Enter"], sendDefaultEnterCommandToEditor, { isEnabled: isFocused });
 
-  function getIsEmpty() {
-    const charsCount = editor?.getCharacterCount() ?? 0;
-
-    return charsCount === 0;
-  }
-
-  function handleSubmitIfNotEmpty() {
-    if (getIsEmpty()) {
-      return;
-    }
+  function handleSubmitIfEnabled() {
+    if (submitMode !== "enable") return;
 
     onSubmit?.();
   }
@@ -153,10 +147,10 @@ export const RichEditor = ({
         {additionalBottomContent && <UIAdditionalContent>{additionalBottomContent}</UIAdditionalContent>}
 
         <Toolbar
-          onSubmit={handleSubmitIfNotEmpty}
+          onSubmit={handleSubmitIfEnabled}
           onFilesSelected={onFilesSelected}
           onEmojiSelected={insertEmoji}
-          hideSubmitButton={hideSubmitButton}
+          submitMode={submitMode}
         />
       </RichEditorContext>
     </UIHolder>
