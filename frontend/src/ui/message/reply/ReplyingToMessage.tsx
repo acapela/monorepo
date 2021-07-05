@@ -34,7 +34,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
             <UIMessageTextHolder>
               <MessageText message={message} />
             </UIMessageTextHolder>
-            <MessageMedia message={message} />
+            <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
         </MetaForMessage>
       </UIContent>

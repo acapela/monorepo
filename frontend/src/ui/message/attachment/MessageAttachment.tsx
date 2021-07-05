@@ -7,7 +7,7 @@ import { useDownloadUrlQuery } from "~frontend/gql/attachments";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
-import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
 import { borderRadius } from "~ui/baseStyles";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -107,7 +107,7 @@ const UIFullscreenHolder = styled(PresenceAnimator)`
 `;
 
 const UILoadingPlaceholder = styled.div`
-  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}rem;
+  height: 100%;
 `;
 
 const UIAttachmentPlaceholder = styled.div`
