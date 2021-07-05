@@ -1133,6 +1133,7 @@ export type Membership_Status_Update_Column =
 export interface Message {
   __typename?: "message";
   content: Scalars["jsonb"];
+  content_text?: Maybe<Scalars["String"]>;
   created_at: Scalars["timestamptz"];
   id: Scalars["uuid"];
   is_draft: Scalars["Boolean"];
@@ -1398,6 +1399,7 @@ export interface Message_Bool_Exp {
   _not?: Maybe<Message_Bool_Exp>;
   _or?: Maybe<Array<Maybe<Message_Bool_Exp>>>;
   content?: Maybe<Jsonb_Comparison_Exp>;
+  content_text?: Maybe<String_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   is_draft?: Maybe<Boolean_Comparison_Exp>;
@@ -1568,6 +1570,7 @@ export type Message_Full_Text_Select_Column =
 /** input type for inserting data into table "message" */
 export interface Message_Insert_Input {
   content?: Maybe<Scalars["jsonb"]>;
+  content_text?: Maybe<Scalars["String"]>;
   created_at?: Maybe<Scalars["timestamptz"]>;
   id?: Maybe<Scalars["uuid"]>;
   is_draft?: Maybe<Scalars["Boolean"]>;
@@ -1588,6 +1591,7 @@ export interface Message_Insert_Input {
 /** aggregate max on columns */
 export interface Message_Max_Fields {
   __typename?: "message_max_fields";
+  content_text?: Maybe<Scalars["String"]>;
   created_at?: Maybe<Scalars["timestamptz"]>;
   id?: Maybe<Scalars["uuid"]>;
   replied_to_message_id?: Maybe<Scalars["uuid"]>;
@@ -1598,6 +1602,7 @@ export interface Message_Max_Fields {
 
 /** order by max() on columns of table "message" */
 export interface Message_Max_Order_By {
+  content_text?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
@@ -1609,6 +1614,7 @@ export interface Message_Max_Order_By {
 /** aggregate min on columns */
 export interface Message_Min_Fields {
   __typename?: "message_min_fields";
+  content_text?: Maybe<Scalars["String"]>;
   created_at?: Maybe<Scalars["timestamptz"]>;
   id?: Maybe<Scalars["uuid"]>;
   replied_to_message_id?: Maybe<Scalars["uuid"]>;
@@ -1619,6 +1625,7 @@ export interface Message_Min_Fields {
 
 /** order by min() on columns of table "message" */
 export interface Message_Min_Order_By {
+  content_text?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
@@ -1652,6 +1659,7 @@ export interface Message_On_Conflict {
 /** ordering options when selecting data from "message" */
 export interface Message_Order_By {
   content?: Maybe<Order_By>;
+  content_text?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   is_draft?: Maybe<Order_By>;
@@ -1849,6 +1857,8 @@ export type Message_Select_Column =
   /** column name */
   | "content"
   /** column name */
+  | "content_text"
+  /** column name */
   | "created_at"
   /** column name */
   | "id"
@@ -1868,6 +1878,7 @@ export type Message_Select_Column =
 /** input type for updating data in table "message" */
 export interface Message_Set_Input {
   content?: Maybe<Scalars["jsonb"]>;
+  content_text?: Maybe<Scalars["String"]>;
   created_at?: Maybe<Scalars["timestamptz"]>;
   id?: Maybe<Scalars["uuid"]>;
   is_draft?: Maybe<Scalars["Boolean"]>;
@@ -2025,6 +2036,8 @@ export type Message_Type_Update_Column =
 export type Message_Update_Column =
   /** column name */
   | "content"
+  /** column name */
+  | "content_text"
   /** column name */
   | "created_at"
   /** column name */
@@ -9369,6 +9382,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 };
 export type messageKeySpecifier = (
   | "content"
+  | "content_text"
   | "created_at"
   | "id"
   | "is_draft"
@@ -9390,6 +9404,7 @@ export type messageKeySpecifier = (
 )[];
 export type messageFieldPolicy = {
   content?: FieldPolicy<any> | FieldReadFunction<any>;
+  content_text?: FieldPolicy<any> | FieldReadFunction<any>;
   created_at?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   is_draft?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -9557,6 +9572,7 @@ export type message_full_text_min_fieldsFieldPolicy = {
   user_id?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type message_max_fieldsKeySpecifier = (
+  | "content_text"
   | "created_at"
   | "id"
   | "replied_to_message_id"
@@ -9566,6 +9582,7 @@ export type message_max_fieldsKeySpecifier = (
   | message_max_fieldsKeySpecifier
 )[];
 export type message_max_fieldsFieldPolicy = {
+  content_text?: FieldPolicy<any> | FieldReadFunction<any>;
   created_at?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -9574,6 +9591,7 @@ export type message_max_fieldsFieldPolicy = {
   user_id?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type message_min_fieldsKeySpecifier = (
+  | "content_text"
   | "created_at"
   | "id"
   | "replied_to_message_id"
@@ -9583,6 +9601,7 @@ export type message_min_fieldsKeySpecifier = (
   | message_min_fieldsKeySpecifier
 )[];
 export type message_min_fieldsFieldPolicy = {
+  content_text?: FieldPolicy<any> | FieldReadFunction<any>;
   created_at?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>;

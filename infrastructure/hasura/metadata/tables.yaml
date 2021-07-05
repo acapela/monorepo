@@ -432,6 +432,7 @@
         columns:
           - deadline
           - finished_at
+          - is_private
           - name
           - slug
           - summary

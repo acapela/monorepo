@@ -1,7 +1,10 @@
+import { pick } from "lodash";
 import NextLink from "next/link";
 import router, { NextRouter, useRouter } from "next/router";
+
 import { ComponentType } from "react";
 import { ReactNode } from "react";
+import { groupByFilter } from "~shared/groupByFilter";
 
 type RouteParamValueType = "string" | "number";
 
@@ -25,40 +28,54 @@ type InferParamsFromDefinition<D extends RouteParamsDefinition> = {
   [key in keyof D]: InferRouteParamType<D[key]>;
 };
 
-interface LinkProps<Params> {
-  params: Params;
+interface LinkProps<RouteParams> {
+  params: RouteParams;
   children: ReactNode;
 }
-export interface Route<Params> {
+
+interface UrlParams<RouteParams> {
+  route: RouteParams;
+  query?: Record<string, string>;
+}
+
+export interface Route<RouteParams> {
   path: string;
-  useParams(): Params;
-  push(params: Params): void;
-  replace(params: Params): void;
+  useParams(): UrlParams<RouteParams>;
+  push(params: RouteParams): Promise<boolean>;
+  replace(params: RouteParams, queryParams?: Record<string, string>): Promise<boolean>;
   useIsActive(): boolean;
   getIsActive(): boolean;
   isMatchingRoute(routeToCheck: string): boolean;
-  Link: ComponentType<LinkProps<Params>>;
-  getUrlWithParams(params: Params): string;
+  Link: ComponentType<LinkProps<RouteParams>>;
+  getUrlWithParams(params: RouteParams): string;
 }
 
 export function createRoute<D extends RouteParamsDefinition>(
   path: string,
   definition: D
 ): Route<InferParamsFromDefinition<D>> {
-  type Params = InferParamsFromDefinition<D>;
+  type RouteParams = InferParamsFromDefinition<D>;
 
-  function useParams(): Params {
+  const requiredRouteKeys = Object.keys(definition);
+  const isRouteKey = (paramKey: string) => requiredRouteKeys.includes(paramKey);
+
+  function useParams(): UrlParams<RouteParams> {
     const router = useRouter();
 
-    const query = router.query;
+    const allParams = router.query;
 
-    Object.keys(definition).forEach((requiredPathKey) => {
-      if (!query[requiredPathKey]) {
-        throw new Error(`useParams used for incompatible route - ${requiredPathKey} is missing`);
+    requiredRouteKeys.forEach((requiredRouteKey) => {
+      if (!allParams[requiredRouteKey]) {
+        throw new Error(`useParams used for incompatible route - ${requiredRouteKey} is missing`);
       }
     });
 
-    return query as Params;
+    const [routeKeys, queryKeys] = groupByFilter(Object.keys(allParams), isRouteKey);
+
+    return {
+      route: pick(allParams, routeKeys),
+      query: pick(allParams, queryKeys),
+    } as UrlParams<RouteParams>;
   }
 
   function useIsActive() {
@@ -81,16 +98,16 @@ export function createRoute<D extends RouteParamsDefinition>(
     return path === routeToCheck;
   }
 
-  function push(params: Params) {
-    router.push({ pathname: path, query: params });
+  function push(params: RouteParams, additionalParams?: Record<string, string>): Promise<boolean> {
+    return router.push({ pathname: path, query: { ...params, ...additionalParams } });
   }
 
-  function replace(params: Params) {
-    router.replace({ pathname: path, query: params });
+  function replace(params: RouteParams, additionalParams?: Record<string, string>): Promise<boolean> {
+    return router.replace({ pathname: path, query: { ...params, ...additionalParams } });
   }
 
   interface LinkProps {
-    params: Params;
+    params: RouteParams;
     children: ReactNode;
   }
 
@@ -104,7 +121,7 @@ export function createRoute<D extends RouteParamsDefinition>(
     );
   }
 
-  function getUrlWithParams(params: Params) {
+  function getUrlWithParams(params: RouteParams) {
     return fillParamsInUrl(path, params);
   }
 

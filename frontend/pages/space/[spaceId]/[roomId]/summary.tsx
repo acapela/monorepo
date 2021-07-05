@@ -6,7 +6,7 @@ import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { RoomSummaryView } from "~frontend/views/RoomView/RoomSummaryView";
 
 const Page = () => {
-  const { roomId } = routes.spaceRoomSummary.useParams();
+  const { roomId } = routes.spaceRoomSummary.useParams().route;
 
   return <RoomSummaryView roomId={roomId} />;
 };

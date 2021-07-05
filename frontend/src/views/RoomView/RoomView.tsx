@@ -16,6 +16,8 @@ import { routes } from "~frontend/routes";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { borderRadius } from "~ui/baseStyles";
 
+import { PrivateTag } from "~ui/tags";
+
 interface Props {
   room?: RoomDetailedInfoFragment | null;
   selectedTopicId: string | null;
@@ -64,16 +66,18 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
         <UIRoomInfo>
           {room && (
             <UIRoomHead>
-              <UIRoomTitle
-                ref={titleHolderRef}
-                {...(amIMember
-                  ? {
-                      ["data-tooltip"]: "Edit room name...",
-                      onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
-                    }
-                  : {})}
-              >
-                {room.name}
+              <UIRoomTitle ref={titleHolderRef}>
+                <div
+                  {...(amIMember
+                    ? {
+                        ["data-tooltip"]: "Edit room name...",
+                        onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
+                      }
+                    : {})}
+                >
+                  {room.name}
+                </div>{" "}
+                {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
               </UIRoomTitle>
 
               {amIMember && (
@@ -83,6 +87,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
               )}
             </UIRoomHead>
           )}
+
           <UIManageSections>
             {room && (
               <>
@@ -169,7 +174,7 @@ const UIContentHolder = styled.div`
 
 const UIRoomHead = styled(PageTitle)`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 32px;
 `;

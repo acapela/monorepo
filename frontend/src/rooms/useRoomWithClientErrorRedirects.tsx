@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { routes } from "~frontend/../routes";
 import { useSingleRoomQuery, fetchPrivateRoom } from "~frontend/gql/rooms";
+import { openForbiddenAccessModal } from "~frontend/utils/accessForbidden";
+import { openNotFoundModal } from "~frontend/utils/notFound";
 
 interface Props {
   spaceId: string;
@@ -25,22 +27,21 @@ async function isRoomPrivate(roomId: string) {
 }
 
 export const useRoomWithClientErrorRedirects = ({ roomId, spaceId }: Props) => {
-  const [room] = useSingleRoomQuery({ id: roomId });
+  const [room, { loading }] = useSingleRoomQuery({ id: roomId });
 
   useEffect(() => {
     async function redirectOnClientError() {
       const isRoomViewableByUser = !!room;
       if (!isRoomViewableByUser && (await isRoomPrivate(roomId))) {
-        // TODO: Pass `locked-room` info as query param. Show that access is forbidden
+        await openForbiddenAccessModal({ place: "room" });
         routes.space.replace({ spaceId });
       } else if (!isRoomViewableByUser) {
-        // TODO: 404 page
+        await openNotFoundModal({ place: "room" });
         routes.space.replace({ spaceId });
       }
     }
-
-    redirectOnClientError();
-  }, [room]);
+    if (!loading) redirectOnClientError();
+  }, [room, loading]);
 
   return { room } as const;
 };
