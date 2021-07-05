@@ -5,6 +5,7 @@ import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/Me
 import { RichEditor } from "~richEditor/RichEditor";
 import { RichEditorContent } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
+import { messageComposerExtensions } from "~frontend/message/extensions";
 
 interface Props {
   autofocusKey?: string;
@@ -33,6 +34,7 @@ export const MessageContentEditor = ({
 }: Props) => {
   return (
     <RichEditor
+      extensions={messageComposerExtensions}
       value={content}
       onChange={onContentChange}
       onFilesSelected={onFilesSelected}

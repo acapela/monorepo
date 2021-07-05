@@ -1,20 +1,18 @@
-import { Popover } from "~ui/popovers/Popover";
-import { NodeViewWrapper } from "@tiptap/react";
-import { SuggestionProps } from "@tiptap/suggestion";
-import { ComponentType, ReactNode } from "react";
-import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
-import { useValueRef } from "../../shared/hooks/useValueRef";
+import { JSONContent, NodeViewWrapper } from "@tiptap/react";
+import { ComponentType } from "react";
+import { AutocompleteNodeProps } from "./component";
 
 interface Props<D> {
   type: string;
   data: D;
+  node: JSONContent;
   NodeComponent: ComponentType<AutocompleteNodeProps<D>>;
 }
 
-export function AutocompleteNodeWrapper<D>({ data, NodeComponent, type }: Props<D>) {
+export function AutocompleteNodeWrapper<D>({ data, NodeComponent, type, node }: Props<D>) {
   return (
     <NodeViewWrapper className={`node-${type}`} as="span">
-      <NodeComponent data={data} />
+      <NodeComponent data={data} node={node} />
     </NodeViewWrapper>
   );
 }

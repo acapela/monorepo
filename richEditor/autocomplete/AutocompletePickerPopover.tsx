@@ -1,9 +1,10 @@
 import { Popover } from "~ui/popovers/Popover";
 import { NodeViewWrapper } from "@tiptap/react";
 import { SuggestionProps } from "@tiptap/suggestion";
-import { ComponentType, ReactNode } from "react";
+import { ComponentType } from "react";
 import { AutocompletePickerProps } from "./component";
-import { useValueRef } from "../../shared/hooks/useValueRef";
+import { useValueRef } from "~shared/hooks/useValueRef";
+import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props<D> {
   baseProps: SuggestionProps;
@@ -14,13 +15,15 @@ export function AutocompletePickerPopoverBase<D>({ baseProps, PickerComponent }:
   const anchorRef = useValueRef(baseProps.decorationNode as HTMLElement);
   return (
     <NodeViewWrapper className="picker">
-      <Popover anchorRef={anchorRef}>
-        <PickerComponent
-          keyword={baseProps.query}
-          onSelect={(item) => {
-            baseProps.command(item);
-          }}
-        />
+      <Popover anchorRef={anchorRef} placement="top-start">
+        <PopPresenceAnimator>
+          <PickerComponent
+            keyword={baseProps.query}
+            onSelect={(item) => {
+              baseProps.command(item);
+            }}
+          />
+        </PopPresenceAnimator>
       </Popover>
     </NodeViewWrapper>
   );

@@ -1,17 +1,10 @@
 import { Node, mergeAttributes, Editor } from "@tiptap/core";
-import { Node as ProseMirrorNode } from "prosemirror-model";
 import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import { KeyboardShortcutCommand, ReactNodeViewRenderer, ReactRenderer } from "@tiptap/react";
 import { ComponentType, FunctionComponent } from "react";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
 import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
-
-export type MentionOptions = {
-  HTMLAttributes: Record<string, any>;
-  renderLabel: (props: { options: MentionOptions; node: ProseMirrorNode }) => string;
-  suggestion: Omit<SuggestionOptions, "editor">;
-};
 
 interface AutocompletePluginOptions<D> {
   type: string;
@@ -27,14 +20,20 @@ type KeyboardHandlersMap = {
 };
 
 export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D>) {
-  const tagName = `node-${options.type}`;
-
   function PickerPopoverComponent(props: SuggestionProps) {
     return <AutocompletePickerPopoverBase baseProps={props} PickerComponent={options.pickerComponent} />;
   }
 
   function NodeComponent(props: AutocompleteNodeProps<D>) {
-    return <AutocompleteNodeWrapper type={options.type} data={props.data} NodeComponent={options.nodeComponent} />;
+    const data = props.node.attrs?.data as D;
+    return (
+      <AutocompleteNodeWrapper
+        type={options.type}
+        node={props.node}
+        data={data}
+        NodeComponent={options.nodeComponent}
+      />
+    );
   }
 
   const suggestionOptions: ProsemirrorSuggestionOptions = {
@@ -47,7 +46,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
         .insertContentAt(range, [
           {
             type: options.type,
-            attrs: props,
+            attrs: { data: props },
           },
           // When inserting suggestion, also add a spacebar after it.
           {
@@ -68,7 +67,8 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
           // eslint-disable-next-line @typescript-eslint/ban-types
           reactRenderer = new ReactRenderer(PickerPopoverComponent as FunctionComponent<{}>, {
             props,
-            editor: props.editor,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            editor: props.editor as any,
           });
         },
         onUpdate(props) {
@@ -109,7 +109,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     };
   }
 
-  // const backspaceKeyboardHandler: KeyboardShortcutCommand =
+  const DATA_ATTRIBUTE_NAME = "data-info";
 
   const NodePlugin = Node.create({
     name: options.type,
@@ -120,15 +120,40 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     addNodeView() {
       return ReactNodeViewRenderer(NodeComponent);
     },
+    addAttributes() {
+      return {
+        data: {
+          default: {},
+          parseHTML: (element) => {
+            const rawDataJSON = element.getAttribute(DATA_ATTRIBUTE_NAME);
+
+            const data = rawDataJSON ? JSON.parse(rawDataJSON) : {};
+            return {
+              data,
+            };
+          },
+
+          renderHTML: (attributes) => {
+            if (!attributes.data) {
+              return {};
+            }
+
+            return {
+              [DATA_ATTRIBUTE_NAME]: JSON.stringify(attributes.data),
+            };
+          },
+        },
+      };
+    },
     parseHTML() {
       return [
         {
-          tag: "react-component",
+          tag: `span[data-autocomplete-type="${options.type}"]`,
         },
       ];
     },
     renderHTML({ HTMLAttributes }) {
-      return ["react-component", mergeAttributes(HTMLAttributes)];
+      return ["span", mergeAttributes(HTMLAttributes, { "data-autocomplete-type": options.type })];
     },
     addKeyboardShortcuts() {
       return createKeyboardHandlers(this.editor);
@@ -146,145 +171,3 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
 
   return NodePlugin;
 }
-
-export const MentionTest = Node.create<MentionOptions>({
-  name: "mention",
-
-  defaultOptions: {
-    HTMLAttributes: {},
-    renderLabel({ options, node }) {
-      return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
-    },
-    suggestion: {
-      char: "#",
-      command: ({ editor, range, props }) => {
-        editor
-          .chain()
-          .focus()
-          .insertContentAt(range, [
-            {
-              type: "mention",
-              attrs: props,
-            },
-            {
-              type: "text",
-              text: " ",
-            },
-          ])
-          .run();
-      },
-      allow: ({ editor, range }) => {
-        return editor.can().insertContentAt(range, { type: "mention" });
-      },
-    },
-  },
-
-  group: "inline",
-
-  inline: true,
-
-  selectable: false,
-
-  atom: true,
-
-  addAttributes() {
-    return {
-      id: {
-        default: null,
-        parseHTML: (element) => {
-          return {
-            id: element.getAttribute("data-id"),
-          };
-        },
-        renderHTML: (attributes) => {
-          if (!attributes.id) {
-            return {};
-          }
-
-          return {
-            "data-id": attributes.id,
-          };
-        },
-      },
-
-      label: {
-        default: null,
-        parseHTML: (element) => {
-          return {
-            label: element.getAttribute("data-label"),
-          };
-        },
-        renderHTML: (attributes) => {
-          if (!attributes.label) {
-            return {};
-          }
-
-          return {
-            "data-label": attributes.label,
-          };
-        },
-      },
-    };
-  },
-
-  parseHTML() {
-    return [
-      {
-        tag: "span[data-mention]",
-      },
-    ];
-  },
-
-  renderHTML({ node, HTMLAttributes }) {
-    return [
-      "span",
-      mergeAttributes({ "data-mention": "" }, this.options.HTMLAttributes, HTMLAttributes),
-      this.options.renderLabel({
-        options: this.options,
-        node,
-      }),
-    ];
-  },
-
-  renderText({ node }) {
-    return this.options.renderLabel({
-      options: this.options,
-      node,
-    });
-  },
-
-  addKeyboardShortcuts() {
-    return {
-      Backspace: () =>
-        this.editor.commands.command(({ tr, state }) => {
-          let isMention = false;
-          const { selection } = state;
-          const { empty, anchor } = selection;
-
-          if (!empty) {
-            return false;
-          }
-
-          state.doc.nodesBetween(anchor - 1, anchor, (node, pos) => {
-            if (node.type.name === this.name) {
-              isMention = true;
-              tr.insertText(this.options.suggestion.char || "", pos, pos + node.nodeSize);
-
-              return false;
-            }
-          });
-
-          return isMention;
-        }),
-    };
-  },
-
-  addProseMirrorPlugins() {
-    return [
-      Suggestion({
-        editor: this.editor,
-        ...this.options.suggestion,
-      }),
-    ];
-  },
-});

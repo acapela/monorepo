@@ -94,21 +94,22 @@
     "cSpell.words": [
       "Hasura",
       "Scrollable",
+      "Sonix",
       "Unprocessable",
-      "immer",
-      "timestamptz",
       "Userback",
+      "acapela",
+      "autoLinks",
+      "displayer",
+      "gmail",
       "godaddy",
       "healthz",
-      "sonix",
-      "Sonix",
-      "acapela",
-      "sendgrid",
-      "pino",
-      "gmail",
+      "immer",
       "nextauth",
-      "autoLinks",
-      "displayer"
+      "pino",
+      "prosemirror",
+      "sendgrid",
+      "sonix",
+      "timestamptz"
     ]
   }
 }

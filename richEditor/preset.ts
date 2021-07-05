@@ -1,8 +1,6 @@
 import StarterKit from "@tiptap/starter-kit";
 import { Links } from "./links/autolinks";
 
-import { Foo } from "./autocomplete/foo";
-import { MentionTest } from "./autocomplete/mention";
 import { Extensions } from "@tiptap/react";
 
 /**
@@ -13,6 +11,4 @@ export const richEditorExtensions: Extensions = [
   StarterKit.configure({ horizontalRule: false, gapcursor: false }),
   // Autolinks
   Links,
-  Foo,
-  MentionTest,
 ];
