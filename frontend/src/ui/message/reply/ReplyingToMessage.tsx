@@ -3,14 +3,15 @@ import styled from "styled-components";
 import { IconCross } from "~ui/icons";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { IconButton } from "~ui/buttons/IconButton";
-import { MessageBasicInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { MetaForMessage } from "~frontend/ui/message/messagesFeed/MetaForMessage";
+import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 
 interface Props {
-  message: MessageBasicInfoFragment;
+  message: MessageDetailedInfoFragment;
   onRemove?: () => void;
 }
 
@@ -29,9 +30,12 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
       <UIBorder />
       <UIContent>
         <MetaForMessage user={message.user} date={new Date(message.createdAt)}>
-          <UIMessageTextHolder>
-            <MessageText message={message} />
-          </UIMessageTextHolder>
+          <UIMessageContent>
+            <UIMessageTextHolder>
+              <MessageText message={message} />
+            </UIMessageTextHolder>
+            <MessageMedia message={message} />
+          </UIMessageContent>
         </MetaForMessage>
       </UIContent>
       {onRemove && (
@@ -59,6 +63,12 @@ const UIBorder = styled.div`
 
 const UIContent = styled.div`
   padding: 20px;
+`;
+
+const UIMessageContent = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 `;
 
 const UIMessageTextHolder = styled.div`

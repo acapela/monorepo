@@ -1,8 +1,8 @@
-import { MessageBasicInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { createSharedStateContext } from "~shared/sharedState";
 
 interface State {
-  currentlyReplyingToMessage: MessageBasicInfoFragment | null;
+  currentlyReplyingToMessage: MessageDetailedInfoFragment | null;
   editedMessageId: string | null;
 }
 
