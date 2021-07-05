@@ -1,5 +1,19 @@
 import { setColorOpacity } from "~shared/colors";
 
+/*
+ *
+ * Design Language colors
+ *
+ */
+
+export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
+export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
+
+/*
+ *
+ * Theme Colors
+ *
+ */
 export const BLACK = "hsl(0, 0%, 0%)";
 export const WHITE = "hsl(0, 0%, 100%)";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
@@ -15,6 +29,7 @@ export const MODAL_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const ITEM_COVER_COLOR = setColorOpacity(PRIMARY_COLOR, 0.5);
 export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
+export const WARNING_COLOR = SECONDARY_ORANGE_1;
 
 /**
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.
@@ -35,12 +50,3 @@ export const COLORS_PALETTE = {
   RAISIN_BLACK: "hsl(240, 9%, 13%)",
   MINT_GREEN: "hsl(133, 100%, 75%)",
 };
-
-/*
- *
- * Design Language colors
- *
- */
-
-export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
-export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";

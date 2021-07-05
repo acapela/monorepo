@@ -2,7 +2,7 @@ import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { SECONDARY_ORANGE_1 } from "~ui/colors";
+import { WARNING_COLOR } from "~ui/colors";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { PageTitle } from "~ui/typo";
 
@@ -57,7 +57,7 @@ const UIHeader = styled.div`
 
 const UIWarningHeader = styled(PageTitle)`
   padding-bottom: 8px;
-  color: ${SECONDARY_ORANGE_1};
+  color: ${WARNING_COLOR};
 `;
 
 const UIWarningTitle = styled(PageTitle)``;
