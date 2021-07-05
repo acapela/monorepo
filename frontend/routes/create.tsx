@@ -4,7 +4,7 @@ import router, { NextRouter, useRouter } from "next/router";
 
 import { ComponentType } from "react";
 import { ReactNode } from "react";
-import { groupByFilter } from "../../shared/groupByFilter";
+import { groupByFilter } from "~shared/groupByFilter";
 
 type RouteParamValueType = "string" | "number";
 

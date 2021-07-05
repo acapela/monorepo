@@ -9,7 +9,6 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { createPromiseUI } from "~ui/createPromiseUI";
-import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface PromptInput {
   room: RoomBasicInfoFragment;
@@ -37,8 +36,6 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
 
       resolve();
     }
-
-    useShortcut("Escape", handleCancel);
 
     return (
       <WarningModal
