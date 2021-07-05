@@ -1,10 +1,10 @@
+import { Empty, isNotEmpty } from "./empty";
+
 export class AssertError extends Error {
   constructor(message: string) {
     super(`Assert error - ${message}`);
   }
 }
-
-type Empty = null | undefined;
 
 type MessageOrError = string | Error;
 
@@ -14,10 +14,6 @@ function getErrorFromMessageOrError(messageOrError: MessageOrError): Error {
   }
 
   return messageOrError;
-}
-
-function isNotEmpty<T>(input: T | Empty): input is T {
-  return input !== null && input !== undefined;
 }
 
 export function assertGet<T>(input: T | Empty, messageOrError: MessageOrError): T {

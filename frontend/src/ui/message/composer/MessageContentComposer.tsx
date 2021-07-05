@@ -5,6 +5,7 @@ import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/Me
 import { RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { RichEditorContent } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
+import { messageComposerExtensions } from "~frontend/message/extensions";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 
 interface Props {
@@ -44,6 +45,7 @@ export const MessageContentEditor = ({
 
   return (
     <RichEditor
+      extensions={messageComposerExtensions}
       value={content}
       onChange={onContentChange}
       onFilesSelected={onFilesSelected}

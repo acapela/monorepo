@@ -1,6 +1,7 @@
-import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect } from "react";
+import { useMemo } from "react";
 import styled from "styled-components";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { borderRadius } from "~ui/baseStyles";
@@ -33,6 +34,7 @@ export interface RichEditorProps {
   autofocusKey?: string;
   submitMode?: RichEditorSubmitMode;
   disableFileDrop?: boolean;
+  extensions?: Extensions;
 }
 
 export const RichEditor = ({
@@ -46,9 +48,11 @@ export const RichEditor = ({
   autofocusKey,
   submitMode = "enable",
   disableFileDrop,
+  extensions = [],
 }: RichEditorProps) => {
+  const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
   const editor = useEditor({
-    extensions: richEditorExtensions,
+    extensions: finalExtensions,
     content: value,
     enableInputRules: true,
   });
@@ -96,7 +100,11 @@ export const RichEditor = ({
    * enter = submit + stop propagation (handled by useShortcut)
    * shift+enter / mod+enter > default enter behavior
    */
-  useShortcut("Enter", handleSubmitIfEnabled, { isEnabled: isFocused });
+  useShortcut("Enter", handleSubmitIfEnabled, {
+    isEnabled: isFocused,
+    // Allow children of the editor to stopPropagation of Enter shortcut. Use case might be eg. popovers with enter support
+    phase: "bubble",
+  });
 
   function sendDefaultEnterCommandToEditor() {
     editor?.commands.keyboardShortcut("Enter");

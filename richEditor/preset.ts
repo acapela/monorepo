@@ -1,10 +1,12 @@
 import StarterKit from "@tiptap/starter-kit";
 import { Links } from "./links/autolinks";
 
+import { Extensions } from "@tiptap/react";
+
 /**
  * Let's have definition of extensions shared as it's used both by editor and message html renderer.
  */
-export const richEditorExtensions = [
+export const richEditorExtensions: Extensions = [
   // Starter kit includes all basic extensions for rich editor
   StarterKit.configure({ horizontalRule: false, gapcursor: false }),
   // Autolinks
