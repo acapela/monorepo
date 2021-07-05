@@ -33,10 +33,9 @@ export const MessageLikeContent = styled(({ user, date, children, tools, classNa
 })``;
 
 const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
-  width: auto;
   display: flex;
   align-items: start;
-  justify-content: space-between;
+  gap: 20px;
   padding: 14px 8px;
   ${borderRadius.item};
   ${hoverTransition()}
