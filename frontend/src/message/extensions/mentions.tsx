@@ -59,7 +59,7 @@ const UISelectItem = styled.div`
   display: flex;
   align-items: center;
   ${UserAvatar} {
-    font-size: 24px;
+    font-size: 1.5rem;
     margin-right: 8px;
   }
 `;

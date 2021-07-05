@@ -77,7 +77,6 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
           reactRenderer.updateProps(props);
         },
         onExit() {
-          // popup[0].destroy()
           reactRenderer.destroy();
         },
       };

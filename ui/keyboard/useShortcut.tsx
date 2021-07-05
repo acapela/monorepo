@@ -9,6 +9,17 @@ type ShortcutDefinition = Key | Key[];
 
 type ShortcutKeys = Key[];
 
+/**
+ * Phase of the event we want to be capturing at (https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)
+ *
+ * Capture means we start from the root (html) till we reach the final keyboard event target.
+ *
+ * Bubble means we start from the target and propagate to the root (html).
+ *
+ * Capture phase is run before bubble phase.
+ *
+ * If you want to be sure your handler is executed before anything else and can block other handlers with eg. stopPropagation, use capture phase.
+ */
 type EventPhase = "capture" | "bubble";
 
 interface ShortcutHookOptions {

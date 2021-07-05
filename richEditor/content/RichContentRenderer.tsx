@@ -27,7 +27,7 @@ export interface RichEditorProps {
  *
  * This is, however, recommended way of rendering content in readonly mode (https://www.tiptap.dev/guide/node-views/#render-javascriptvuereact)
  *
- * TODO2: Before thinking about some optimizations here, we can measure performance of this renderer.
+ * TODO: Before thinking about some optimizations here, we can measure performance of this renderer.
  */
 export const RichContentRenderer = ({ content = getEmptyRichContent(), extensions = [] }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
