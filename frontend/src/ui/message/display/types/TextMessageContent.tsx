@@ -4,6 +4,8 @@ import { MessageBasicInfoFragment } from "~gql";
 import { richEditorContentCss } from "~richEditor/Theme";
 import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
 import { messageComposerExtensions } from "~frontend/message/extensions";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
+
 interface Props {
   message: MessageBasicInfoFragment;
 }
@@ -11,7 +13,9 @@ interface Props {
 export function MessageText({ message }: Props) {
   return (
     <UIHolder>
-      <RichContentRenderer extensions={messageComposerExtensions} content={message.content} />
+      <ErrorBoundary errorFallback={<div>Failed to render message content</div>}>
+        <RichContentRenderer extensions={messageComposerExtensions} content={message.content} />
+      </ErrorBoundary>
     </UIHolder>
   );
 }
