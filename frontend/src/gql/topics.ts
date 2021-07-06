@@ -23,7 +23,7 @@ import {
 } from "~gql";
 import { getUUID } from "~shared/uuid";
 import { addToast } from "~ui/toasts/data";
-import { MessageDetailedInfoFragment } from "./messages";
+import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
@@ -118,7 +118,7 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
   TopicMessagesQueryVariables
 >(
   () => gql`
-    ${MessageDetailedInfoFragment()}
+    ${MessageFeedInfoFragment()}
 
     query TopicMessages(
       $topicId: uuid!
@@ -131,7 +131,7 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
         order_by: [{ created_at: $order }]
         limit: $limit
       ) {
-        ...MessageDetailedInfo
+        ...MessageFeedInfo
       }
     }
   `

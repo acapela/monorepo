@@ -7,6 +7,7 @@ import {
   DeleteTextMessageMutationVariables,
   MessageBasicInfoFragment as MessageBasicInfoFragmentType,
   MessageDetailedInfoFragment as MessageDetailedInfoFragmentType,
+  MessageFeedInfoFragment as MessageFeedInfoFragmentType,
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
 } from "~gql";
@@ -34,26 +35,15 @@ export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentT
 
 export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFragmentType>(
   () => gql`
+    ${MessageBasicInfoFragment()}
     ${AttachmentDetailedInfoFragment()}
     ${ReactionBasicInfoFragment()}
-    ${UserBasicInfoFragment()}
-    ${MessageBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
-      id
-      content
-      createdAt: created_at
-      content
-      type
-      replied_to_message {
-        ...MessageBasicInfo
-      }
+      ...MessageBasicInfo
       transcription {
         status
         transcript
-      }
-      user {
-        ...UserBasicInfo
       }
       message_attachments {
         attachment {
@@ -67,12 +57,25 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
   `
 );
 
+export const MessageFeedInfoFragment = createFragment<MessageFeedInfoFragmentType>(
+  () => gql`
+    ${MessageDetailedInfoFragment()}
+
+    fragment MessageFeedInfo on message {
+      ...MessageDetailedInfo
+      replied_to_message {
+        ...MessageDetailedInfo
+      }
+    }
+  `
+);
+
 export const [useCreateMessageMutation, { mutate: createMessage }] = createMutation<
   CreateMessageMutation,
   CreateMessageMutationVariables
 >(
   () => gql`
-    ${MessageDetailedInfoFragment()}
+    ${MessageFeedInfoFragment()}
 
     mutation CreateMessage(
       $topicId: uuid!
@@ -91,7 +94,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           is_draft: false
         }
       ) {
-        ...MessageDetailedInfo
+        ...MessageFeedInfo
       }
     }
   `,
@@ -103,7 +106,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         if (!vars.replied_to_message_id) {
           return null;
         }
-        return MessageBasicInfoFragment.read(vars.replied_to_message_id);
+        return MessageDetailedInfoFragment.read(vars.replied_to_message_id);
       }
 
       return {

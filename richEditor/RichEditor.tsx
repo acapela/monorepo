@@ -147,13 +147,13 @@ export const RichEditor = ({
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
-        {additionalTopContent && <UIAdditionalContent>{additionalTopContent}</UIAdditionalContent>}
-        <UIEditorHolder>
-          <EditorContent placeholder={placeholder} autoFocus editor={editor} spellCheck />
-        </UIEditorHolder>
-
-        {additionalBottomContent && <UIAdditionalContent>{additionalBottomContent}</UIAdditionalContent>}
-
+        <UIEditorContent>
+          {additionalTopContent}
+          <UIEditorHolder>
+            <EditorContent placeholder={placeholder} autoFocus editor={editor} spellCheck />
+          </UIEditorHolder>
+          {additionalBottomContent}
+        </UIEditorContent>
         <Toolbar
           onSubmit={handleSubmitIfEnabled}
           onFilesSelected={onFilesSelected}
@@ -167,8 +167,14 @@ export const RichEditor = ({
 
 const UIEditorHolder = styled.div`
   flex-grow: 1;
-  padding: 16px;
   ${richEditorContentCss};
+`;
+
+const UIEditorContent = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const UIHolder = styled.div`
@@ -176,8 +182,4 @@ const UIHolder = styled.div`
   min-width: 570px;
   border: 1px solid #ccc;
   ${borderRadius.card}
-`;
-
-const UIAdditionalContent = styled.div`
-  padding: 1rem;
 `;

@@ -1,10 +1,13 @@
 import { css } from "styled-components";
+import { fontSize } from "~ui/baseStyles";
 import { ACTIVE_COLOR } from "~ui/colors";
 
 export const richEditorContentCss = css`
   .ProseMirror {
     outline: none;
   }
+
+  font-size: ${fontSize.messageText};
 
   line-height: 1.25;
 
