@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
-import { niceFormatDate } from "~shared/dates/format";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
@@ -24,7 +23,7 @@ export const MessageLikeContent = styled(({ user, date, children, tools, classNa
   return (
     <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
       <MessageAvatar user={user} size="small" />
-      <UIBody data-tooltip={niceFormatDate(date)}>
+      <UIBody>
         <UIHead>
           {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
         </UIHead>
