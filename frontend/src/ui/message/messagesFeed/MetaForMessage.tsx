@@ -4,6 +4,7 @@ import { niceFormatDate } from "~shared/dates/format";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
+import { fontSize } from "~ui/baseStyles";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -33,7 +34,7 @@ const UIHolder = styled.div`
 
 const UIHead = styled.div`
   font-weight: bold;
-  font-size: 14px;
+  font-size: ${fontSize.label};
   display: flex;
   gap: 8px;
 
