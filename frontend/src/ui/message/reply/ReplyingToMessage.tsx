@@ -7,7 +7,7 @@ import { MessageDetailedInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
-import { MetaForMessage } from "~frontend/ui/message/messagesFeed/MetaForMessage";
+import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 
 interface Props {
@@ -29,12 +29,12 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
     <UIHolder onClick={handleClick}>
       <UIBorder />
       <UIContent>
-        <MetaForMessage user={message.user} date={new Date(message.createdAt)}>
+        <MessageMetaData user={message.user} date={new Date(message.createdAt)}>
           <UIMessageContent>
             <UIMessageText message={message} />
             <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
-        </MetaForMessage>
+        </MessageMetaData>
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>

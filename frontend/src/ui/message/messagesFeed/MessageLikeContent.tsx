@@ -6,7 +6,7 @@ import { UserBasicInfoFragment } from "~gql";
 import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { hoverTransition } from "~ui/transitions";
-import { MetaForMessage } from "./MetaForMessage";
+import { MessageMetaData } from "./MessageMetaData";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -24,9 +24,9 @@ export const MessageLikeContent = styled(({ user, date, children, tools, classNa
 
   return (
     <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
-      <MetaForMessage user={user} date={date}>
+      <MessageMetaData user={user} date={date}>
         {children}
-      </MetaForMessage>
+      </MessageMetaData>
       {tools && <UITools>{tools}</UITools>}
     </UIAnimatedMessageWrapper>
   );

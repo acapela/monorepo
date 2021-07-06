@@ -12,7 +12,7 @@ interface Props {
   children: ReactNode;
 }
 
-export const MetaForMessage = ({ user, date, children }: Props) => {
+export const MessageMetaData = ({ user, date, children }: Props) => {
   return (
     <UIHolder data-tooltip={niceFormatDate(date)}>
       <UserAvatar user={user} size="small" />
