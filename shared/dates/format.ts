@@ -1,14 +1,13 @@
-import { format } from "date-fns";
+import { format, formatRelative, startOfWeek, compareAsc } from "date-fns";
+import { upperFirst } from "lodash";
 
-// TODO: Add relative time format '3 days ago'.
-// const SECOND = 1000;
-// const MINUTE = SECOND * 60;
-// const HOUR = MINUTE * 60;
-// const DAY = HOUR * 24;
-
-// const JUST_NOW_OFFSET = MINUTE;
-
-// type VisualDateFormat = [label: string, tooltip: string];
+export function relativeFormatDate(date: Date): string {
+  if (isBeforeThisWeek(date)) {
+    return niceFormatDateTime(date);
+  }
+  // "Today"/"Yesterday" instead of "today"/ "yesterday"
+  return upperFirst(formatRelative(date, new Date()));
+}
 
 export function niceFormatDate(date: Date): string {
   return format(date, "MMM do");
@@ -24,4 +23,12 @@ export function niceFormatTime(date: Date): string {
 
 export function getWeekdayName(date: Date): string {
   return format(date, "EEEE");
+}
+
+function isBeforeThisWeek(date: Date): boolean {
+  const startOfThisWeek = startOfWeek(new Date());
+  // 1 if the first date is after the second
+  // -1 if the first date is before the second
+  // 0 if dates are equal.
+  return compareAsc(date, startOfThisWeek) === -1;
 }
