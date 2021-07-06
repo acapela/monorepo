@@ -11,13 +11,13 @@ interface Props {
 export const MessageReactions = ({ message }: Props) => {
   const reactionsByEmoji = useMemo(() => groupReactionsByEmoji(message.message_reactions), [message.message_reactions]);
 
-  return (
-    <UIReactions>
-      {Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
-        <MessageReaction emoji={emoji} reactions={reactions} message={message} key={emoji} />
-      ))}
-    </UIReactions>
-  );
+  const messageReactions = Object.entries(reactionsByEmoji).map(([emoji, reactions]) => (
+    <MessageReaction emoji={emoji} reactions={reactions} message={message} key={emoji} />
+  ));
+
+  if (messageReactions.length < 1) return null;
+
+  return <UIReactions>{messageReactions}</UIReactions>;
 };
 
 const UIReactions = styled.div`

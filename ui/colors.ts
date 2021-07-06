@@ -6,7 +6,9 @@ import { setColorOpacity } from "~shared/colors";
  *
  */
 
+export const PRIMARY_PINK_1 = "hsl(344, 67%, 66%)";
 export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
+export const PRIMARY_TEAL_1 = "hsl(180, 76%, 55%)";
 export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
 
 /*
@@ -16,6 +18,8 @@ export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
  */
 export const BLACK = "hsl(0, 0%, 0%)";
 export const WHITE = "hsl(0, 0%, 100%)";
+export const ITEM_BACKGROUND_WEAK = "hsl(0, 0%, 96%)";
+export const ITEM_BACKGROUND_WEAK_TRANSPARENT = "hsla(0, 0%, 96%, 0.65)";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
 export const BACKGROUND_ACCENT_WEAK = "hsl(300, 2%, 97%)";
 export const SECONDARY_TEXT_COLOR = "hsl(0, 0%, 47%)";

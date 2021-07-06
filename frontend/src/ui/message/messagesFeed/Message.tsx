@@ -4,24 +4,25 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
-import { MessageDetailedInfoFragment } from "~gql";
+import { MessageFeedInfoFragment } from "~gql";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
-import { EditMessageEditor } from "../composer/EditMessageEditor";
+import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
 import { useTopicStoreSelector } from "~frontend/topics/TopicStore";
-import { ReplyingToMessage } from "../ReplyingToMessage";
-import { IconEdit, IconReply, IconTrash } from "~ui/icons";
+import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
+import { IconEdit, IconTrash } from "~ui/icons";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
 import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
+import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 
 interface Props extends MotionProps {
-  message: MessageDetailedInfoFragment;
+  message: MessageFeedInfoFragment;
   isReadonly?: boolean;
   className?: string;
 }
@@ -33,10 +34,6 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
   const [isInEditMode, updateTopicStore] = useTopicStoreSelector(
     (topicStore) => topicStore.editedMessageId === message.id
   );
-
-  async function handleMarkAsBeingRepliedTo() {
-    updateTopicStore((draft) => (draft.currentlyReplyingToMessage = message));
-  }
 
   function handleStartEditing() {
     updateTopicStore((draft) => (draft.editedMessageId = message.id));
@@ -80,8 +77,6 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
       options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
     }
 
-    options.push({ label: "Reply", onSelect: handleMarkAsBeingRepliedTo, icon: <IconReply /> });
-
     if (isOwnMessage) {
       options.push({
         label: "Delete message",
@@ -95,42 +90,47 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
   };
 
   return (
-    <MessageLikeContent
-      className={className}
-      tools={
-        shouldShowTools && (
-          <UITools>
-            <MakeReactionButton message={message} />
-            <PopoverMenuTrigger
-              onOpen={() => setIsActive(true)}
-              onClose={() => setIsActive(false)}
-              options={getMessageActionsOptions()}
-            >
-              <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-            </PopoverMenuTrigger>
-          </UITools>
-        )
-      }
-      user={message.user}
-      date={new Date(message.createdAt)}
-    >
-      <UIMessageBody>
-        {isInEditMode && (
-          <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
-        )}
-        {!isInEditMode && (
-          <UIMessageContent>
-            {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
-            <MessageText message={message} />
-            <MessageMedia message={message} />
-            <MessageLinksPreviews message={message} />
-            <MessageReactions message={message} />
-          </UIMessageContent>
-        )}
-      </UIMessageBody>
-    </MessageLikeContent>
+    <UIHolder id={message.id}>
+      <MessageLikeContent
+        className={className}
+        tools={
+          shouldShowTools && (
+            <UITools>
+              <MakeReactionButton message={message} />
+              <ReplyButton message={message} />
+              <PopoverMenuTrigger
+                onOpen={() => setIsActive(true)}
+                onClose={() => setIsActive(false)}
+                options={getMessageActionsOptions()}
+              >
+                <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+              </PopoverMenuTrigger>
+            </UITools>
+          )
+        }
+        user={message.user}
+        date={new Date(message.createdAt)}
+      >
+        <UIMessageBody>
+          {isInEditMode && (
+            <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
+          )}
+          {!isInEditMode && (
+            <UIMessageContent>
+              {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
+              <MessageText message={message} />
+              <MessageMedia message={message} />
+              <MessageLinksPreviews message={message} />
+              <MessageReactions message={message} />
+            </UIMessageContent>
+          )}
+        </UIMessageBody>
+      </MessageLikeContent>
+    </UIHolder>
   );
 })``;
+
+const UIHolder = styled.div``;
 
 const UITools = styled.div`
   display: flex;
@@ -139,7 +139,7 @@ const UITools = styled.div`
 
 const UIMessageContent = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-auto-columns: minmax(0, auto);
   gap: 16px;
 `;
 

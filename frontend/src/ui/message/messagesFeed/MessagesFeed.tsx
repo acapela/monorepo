@@ -1,24 +1,21 @@
 import { isSameDay } from "date-fns";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
-import { MessageDetailedInfoFragment } from "~gql";
+import { MessageFeedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
-  messages: MessageDetailedInfoFragment[];
+  messages: MessageFeedInfoFragment[];
   isReadonly?: boolean;
 }
 
 export function MessagesFeed({ messages, isReadonly }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
-  function renderMessageHeader(
-    message: MessageDetailedInfoFragment,
-    previousMessage: MessageDetailedInfoFragment | null
-  ) {
+  function renderMessageHeader(message: MessageFeedInfoFragment, previousMessage: MessageFeedInfoFragment | null) {
     if (!previousMessage) {
       return <DateHeader date={new Date(message.createdAt)} />;
     }
