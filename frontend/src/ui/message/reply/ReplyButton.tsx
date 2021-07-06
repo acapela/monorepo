@@ -8,7 +8,7 @@ interface Props {
   message: MessageDetailedInfoFragment;
 }
 
-export const MakeReplyButton = ({ message }: Props) => {
+export const ReplyButton = ({ message }: Props) => {
   const [, updateTopicStore] = useTopicStore();
 
   async function handleMarkAsBeingRepliedTo() {

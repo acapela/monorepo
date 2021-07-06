@@ -19,7 +19,7 @@ import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
 import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
-import { MakeReplyButton } from "~frontend/ui/message/reply/MakeReplyButton";
+import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 
 interface Props extends MotionProps {
   message: MessageFeedInfoFragment;
@@ -97,7 +97,7 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
           shouldShowTools && (
             <UITools>
               <MakeReactionButton message={message} />
-              <MakeReplyButton message={message} />
+              <ReplyButton message={message} />
               <PopoverMenuTrigger
                 onOpen={() => setIsActive(true)}
                 onClose={() => setIsActive(false)}
