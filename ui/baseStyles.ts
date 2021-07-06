@@ -64,3 +64,18 @@ export const colors = {
     color: "#fff",
   },
 };
+
+export const fontFamily = {
+  inter: css`
+    font-family: "Inter";
+  `,
+  spezia: css`
+    font-family: "Spezia";
+  `,
+  speziaExtended: css`
+    font-family: "Spezia Extended";
+  `,
+  speziaMono: css`
+    font-family: "Spezia Mono";
+  `,
+};
