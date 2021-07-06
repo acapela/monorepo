@@ -13,22 +13,22 @@ interface Props {
 
 export const MetaForMessage = ({ user, date, children }: Props) => {
   return (
-    <UIHolder>
+    <UIHolder data-tooltip={niceFormatDate(date)}>
       <MessageAvatar user={user} size="small" />
-      <UIBody data-tooltip={niceFormatDate(date)}>
-        <UIHead>
-          {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
-        </UIHead>
-        {children}
-      </UIBody>
+      <UIHead>
+        {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
+      </UIHead>
+      <div />
+      {children}
     </UIHolder>
   );
 };
 
 const UIHolder = styled.div`
-  display: flex;
-  align-items: start;
-  gap: 12px;
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto minmax(360px, 700px);
+  gap: 8px 12px;
 `;
 
 const MessageAvatar = styled(UserAvatar)`
@@ -38,7 +38,6 @@ const MessageAvatar = styled(UserAvatar)`
 const UIHead = styled.div`
   font-weight: bold;
   font-size: 14px;
-  margin-bottom: 8px;
   display: flex;
   gap: 8px;
 
@@ -52,8 +51,3 @@ const UIHead = styled.div`
 function getUserOrGuestName(user: UserBasicInfoFragment): string {
   return user?.name || "Guest";
 }
-
-const UIBody = styled.div`
-  min-width: 360px;
-  max-width: 700px;
-`;
