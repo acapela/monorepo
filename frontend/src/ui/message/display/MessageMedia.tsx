@@ -33,13 +33,13 @@ export function MessageMedia({ message, nonInteractive }: Props) {
 
 const UIAttachments = styled.div<{ nonInteractive: boolean }>`
   display: flex;
-  max-height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
+  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
   gap: 8px;
 
   ${(props) =>
     props.nonInteractive &&
     css`
       pointer-events: none;
-      max-height: 60px;
+      height: 60px;
     `}
 `;
