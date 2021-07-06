@@ -15,8 +15,6 @@ interface Props {
   onRemove?: () => void;
 }
 
-const isMessageWithText = (message: MessageDetailedInfoFragment) => message.content.content.length > 0;
-
 export const ReplyingToMessage = ({ message, onRemove }: Props) => {
   const handleClick = () => {
     const messageTextElement = document.getElementById(message.id);
@@ -33,11 +31,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
       <UIContent>
         <MetaForMessage user={message.user} date={new Date(message.createdAt)}>
           <UIMessageContent>
-            {isMessageWithText(message) && (
-              <UIMessageTextHolder>
-                <MessageText message={message} />
-              </UIMessageTextHolder>
-            )}
+            <UIMessageText message={message} />
             <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
         </MetaForMessage>
@@ -75,7 +69,7 @@ const UIMessageContent = styled.div`
   gap: 16px;
 `;
 
-const UIMessageTextHolder = styled.div`
+const UIMessageText = styled(MessageText)`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
