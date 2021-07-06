@@ -65,7 +65,7 @@ const UIContent = styled.div`
 
 const UIMessageContent = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
+  grid-auto-columns: minmax(0, auto);
   gap: 16px;
 `;
 
