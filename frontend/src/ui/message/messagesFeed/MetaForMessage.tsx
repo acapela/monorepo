@@ -14,7 +14,7 @@ interface Props {
 export const MetaForMessage = ({ user, date, children }: Props) => {
   return (
     <UIHolder data-tooltip={niceFormatDate(date)}>
-      <MessageAvatar user={user} size="small" />
+      <UserAvatar user={user} size="small" />
       <UIHead>
         {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
       </UIHead>
@@ -29,10 +29,6 @@ const UIHolder = styled.div`
   align-items: center;
   grid-template-columns: auto minmax(360px, 700px);
   gap: 8px 12px;
-`;
-
-const MessageAvatar = styled(UserAvatar)`
-  flex-shrink: 0;
 `;
 
 const UIHead = styled.div`
