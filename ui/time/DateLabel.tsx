@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { niceFormatDate, niceFormatTime } from "~shared/dates/format";
+import { niceFormatDate, niceFormatTime, relativeFormatDate } from "~shared/dates/format";
 
 interface Props {
   date: Date;
@@ -12,7 +12,7 @@ export function DateLabel({ date }: Props) {
 
 export const TimeLabelWithDateTooltip = styled(function TimeLabelWithDateTooltip({ date, className }: Props) {
   return (
-    <UIHolder className={className} data-tooltip={niceFormatDate(date)}>
+    <UIHolder className={className} data-tooltip={relativeFormatDate(date)}>
       {niceFormatTime(date)}
     </UIHolder>
   );
