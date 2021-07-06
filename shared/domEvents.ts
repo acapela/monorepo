@@ -1,4 +1,5 @@
 import { RefObject, useEffect } from "react";
+import { useBoolean } from "./hooks/useBoolean";
 
 export function createWindowEvent<K extends keyof WindowEventMap>(
   type: K,
@@ -42,6 +43,28 @@ export function useDocumentEvent<K extends keyof DocumentEventMap>(
   useEffect(() => {
     return createDocumentEvent(type, handler, options);
   }, [type, handler, options]);
+}
+
+export function useDebouncedDocumentEvent<K extends keyof DocumentEventMap>(
+  type: K,
+  handler: (event: DocumentEventMap[K]) => void,
+  timeout: number,
+  options?: boolean | AddEventListenerOptions
+) {
+  const [isDebouncing, { set: startDebounceWindow, unset: endDebounceWindow }] = useBoolean(false);
+
+  useDocumentEvent(type, debouncedHandler, options);
+
+  function debouncedHandler(event: DocumentEventMap[K]) {
+    if (isDebouncing) {
+      return;
+    }
+
+    handler(event);
+    startDebounceWindow();
+
+    setTimeout(endDebounceWindow, timeout);
+  }
 }
 
 export function createElementEvent<K extends keyof HTMLElementEventMap>(
