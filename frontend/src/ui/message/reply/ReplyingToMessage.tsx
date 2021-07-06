@@ -5,7 +5,7 @@ import { MessageText } from "~frontend/ui/message/display/types/TextMessageConte
 import { IconButton } from "~ui/buttons/IconButton";
 import { MessageDetailedInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { ITEM_BACKGROUND_WEAK } from "~ui/colors";
+import { ITEM_BACKGROUND_WEAK, SECONDARY_ORANGE_1, PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
@@ -56,7 +56,12 @@ const UIHolder = styled.div`
 const UIBorder = styled.div`
   width: 2px;
   ${borderRadius.circle};
-  background-image: linear-gradient(359.7deg, #ee551d -18.05%, #e26e8c 24.03%, #36e3e3 105.82%);
+  background-image: linear-gradient(
+    359.7deg,
+    ${SECONDARY_ORANGE_1} -18.05%,
+    ${PRIMARY_PINK_1} 24.03%,
+    ${PRIMARY_TEAL_1} 105.82%
+  );
 `;
 
 const UIContent = styled.div`
