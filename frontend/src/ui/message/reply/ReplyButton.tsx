@@ -1,7 +1,7 @@
 import React from "react";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconReply } from "~ui/icons";
-import { useTopicStore } from "~frontend/topics/TopicStore";
+import { useTopicStoreUpdate } from "~frontend/topics/TopicStore";
 import { MessageDetailedInfoFragment } from "~gql";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const ReplyButton = ({ message }: Props) => {
-  const [, updateTopicStore] = useTopicStore();
+  const updateTopicStore = useTopicStoreUpdate();
 
   async function handleMarkAsBeingRepliedTo() {
     updateTopicStore((draft) => (draft.currentlyReplyingToMessage = message));
