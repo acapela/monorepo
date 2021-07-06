@@ -1,4 +1,5 @@
 import { css } from "styled-components";
+import { fontSize } from "~ui/baseStyles";
 import { ACTIVE_COLOR } from "~ui/colors";
 
 export const richEditorContentCss = css`
@@ -6,7 +7,7 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
-  font-size: 14px;
+  font-size: ${fontSize.messageText};
 
   line-height: 1.25;
 
