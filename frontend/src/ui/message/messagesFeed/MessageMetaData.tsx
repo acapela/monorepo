@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { niceFormatDate } from "~shared/dates/format";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
