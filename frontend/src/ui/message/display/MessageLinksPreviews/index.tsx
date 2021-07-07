@@ -14,19 +14,21 @@ interface Props {
 export const MessageLinksPreviews = ({ message }: Props) => {
   const links = extractLinksFromRichContent(message.content);
 
-  return (
-    <UIHolder>
-      {links.map((linkUrl) => {
-        const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(linkUrl));
+  const linksPreviews = links
+    .map((linkUrl) => {
+      const previewProvider = supportedPreviewProviders.find(({ isUrlSupported }) => isUrlSupported(linkUrl));
 
-        if (!previewProvider) return null;
+      if (!previewProvider) return null;
 
-        const { PreviewComponent } = previewProvider;
+      const { PreviewComponent } = previewProvider;
 
-        return <PreviewComponent key={linkUrl} url={linkUrl} />;
-      })}
-    </UIHolder>
-  );
+      return <PreviewComponent key={linkUrl} url={linkUrl} />;
+    })
+    .filter((linkPreview) => linkPreview !== null);
+
+  if (linksPreviews.length < 1) return null;
+
+  return <UIHolder>{linksPreviews}</UIHolder>;
 };
 
 const UIHolder = styled.div`

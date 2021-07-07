@@ -8,17 +8,22 @@ import { ErrorBoundary } from "~ui/ErrorBoundary";
 
 interface Props {
   message: MessageBasicInfoFragment;
+  className?: string;
 }
 
-export function MessageText({ message }: Props) {
+const isMessageWithText = (message: MessageBasicInfoFragment) => message.content?.content?.length > 0;
+
+export const MessageText = styled(({ message, className }: Props) => {
+  if (!isMessageWithText(message)) return null;
+
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       <ErrorBoundary errorFallback={<div>Failed to render message content</div>}>
         <RichContentRenderer extensions={messageComposerExtensions} content={message.content} />
       </ErrorBoundary>
     </UIHolder>
   );
-}
+})``;
 
 const UIHolder = styled.div`
   ${richEditorContentCss};

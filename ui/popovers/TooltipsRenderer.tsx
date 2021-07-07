@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from "react";
-import { useDocumentEvent } from "~shared/domEvents";
+import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
 import { TooltipLabel } from "./TooltipLabel";
 import { AnimatePresence } from "framer-motion";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
@@ -52,6 +52,15 @@ export function TooltipsRenderer() {
   useDocumentEvent("blur", () => {
     setCurrentTooltipAnchor(null);
   });
+
+  useDebouncedDocumentEvent(
+    "scroll",
+    () => {
+      setCurrentTooltipAnchor(null);
+    },
+    1000,
+    { capture: true }
+  );
 
   return (
     <AnimatePresence>

@@ -1,13 +1,19 @@
-import { MessageBasicInfoFragment } from "~gql";
+import { MessageDetailedInfoFragment } from "~gql";
 import { createSharedStateContext } from "~shared/sharedState";
 
 interface State {
-  currentlyReplyingToMessage: MessageBasicInfoFragment | null;
+  currentlyReplyingToMessage: MessageDetailedInfoFragment | null;
   editedMessageId: string | null;
 }
 
-export const [TopicStoreContext, { useSharedState: useTopicStore, useSharedStateSelector: useTopicStoreSelector }] =
-  createSharedStateContext<State>(() => ({
-    currentlyReplyingToMessage: null,
-    editedMessageId: null,
-  }));
+export const [
+  TopicStoreContext,
+  {
+    useSharedState: useTopicStore,
+    useSharedStateSelector: useTopicStoreSelector,
+    useSharedStateUpdate: useTopicStoreUpdate,
+  },
+] = createSharedStateContext<State>(() => ({
+  currentlyReplyingToMessage: null,
+  editedMessageId: null,
+}));
