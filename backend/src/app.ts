@@ -12,6 +12,7 @@ import { router as eventRoutes } from "./events/events";
 import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
 import { router as calendarRoutes } from "./calendar/calendar";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
+import * as Sentry from "@sentry/node";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
@@ -27,6 +28,7 @@ export async function setupServer(): Promise<Server> {
 }
 
 function setupMiddleware(app: Application): void {
+  app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   app.use(securityMiddleware());
   app.use(logger.middleware);
   app.use(json());
@@ -41,6 +43,7 @@ function setupRoutes(app: Application): void {
 }
 
 function addErrorHandlersToApp(app: Application): void {
+  app.use(Sentry.Handlers.errorHandler() as express.ErrorRequestHandler);
   app.use(notFoundRouteMiddleware);
   app.use(errorHandlerMiddleware);
 }
