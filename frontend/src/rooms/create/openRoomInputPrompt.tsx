@@ -148,7 +148,7 @@ const UIForm = styled.form`
 const UIFormFields = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 36px;
+  gap: 16px;
 `;
 
 const UIRoomNameInput = styled.input`

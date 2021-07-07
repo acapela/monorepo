@@ -69,4 +69,5 @@ const TextInputElem = styled(motion.input)`
   box-sizing: border-box;
 
   outline: none;
+  background: transparent;
 `;
