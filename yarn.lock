@@ -1384,6 +1384,25 @@
     strict-event-emitter "^0.2.0"
     xmldom "^0.6.0"
 
+"@ndhoule/each@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@ndhoule/each/-/each-2.0.1.tgz#bbed372a603e0713a3193c706a73ddebc5b426a9"
+  integrity sha1-u+03KmA+BxOjGTxwanPd68W0Jqk=
+  dependencies:
+    "@ndhoule/keys" "^2.0.0"
+
+"@ndhoule/keys@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ndhoule/keys/-/keys-2.0.0.tgz#3d64ae677c65a261747bf3a457c62eb292a4e0ce"
+  integrity sha1-PWSuZ3xlomF0e/OkV8YuspKk4M4=
+
+"@ndhoule/map@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@ndhoule/map/-/map-2.0.1.tgz#f5ca0a47424ea67f46e2a6d499b9e9bc886aefa8"
+  integrity sha1-9coKR0JOpn9G4qbUmbnpvIhq76g=
+  dependencies:
+    "@ndhoule/each" "^2.0.1"
+
 "@next-auth/prisma-legacy-adapter@0.0.1-canary.127":
   version "0.0.1-canary.127"
   resolved "https://registry.yarnpkg.com/@next-auth/prisma-legacy-adapter/-/prisma-legacy-adapter-0.0.1-canary.127.tgz#09223de6d0350e53afc4bd0dda056a2fde27d8d3"
@@ -1556,6 +1575,13 @@
   integrity sha512-c/qwwcHyafOQuVQJj0IlBjf5yYgBI7YPJ77k4fOJYesb41jio65eaJODRUmfYKhTOFBrIZ66kgvGPlNbjuoRdQ==
   dependencies:
     any-observable "^0.3.0"
+
+"@segment/snippet@^4.14.2":
+  version "4.14.2"
+  resolved "https://registry.yarnpkg.com/@segment/snippet/-/snippet-4.14.2.tgz#d2a0a78714966c51b06ffffdb7685aa5d7f75eb9"
+  integrity sha512-14C0hoau8TZgWC87Zynk9fWuuxE8f2BvquRVSg4dF63ySvdy6cubbmBkpDhNfWteI04+BDA2OLL+4irGnL6YGA==
+  dependencies:
+    "@ndhoule/map" "^2.0.1"
 
 "@selderee/plugin-htmlparser2@^0.6.0":
   version "0.6.0"
