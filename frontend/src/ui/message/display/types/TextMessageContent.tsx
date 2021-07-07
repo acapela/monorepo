@@ -11,7 +11,7 @@ interface Props {
   className?: string;
 }
 
-const isMessageWithText = (message: MessageBasicInfoFragment) => message.content.content.length > 0;
+const isMessageWithText = (message: MessageBasicInfoFragment) => message.content?.content?.length > 0;
 
 export const MessageText = styled(({ message, className }: Props) => {
   if (!isMessageWithText(message)) return null;
