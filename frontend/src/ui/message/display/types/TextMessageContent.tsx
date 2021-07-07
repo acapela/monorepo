@@ -5,16 +5,15 @@ import { richEditorContentCss } from "~richEditor/Theme";
 import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
 import { messageComposerExtensions } from "~frontend/message/extensions";
 import { ErrorBoundary } from "~ui/ErrorBoundary";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 
 interface Props {
   message: MessageBasicInfoFragment;
   className?: string;
 }
 
-const isMessageWithText = (message: MessageBasicInfoFragment) => message.content?.content?.length > 0;
-
 export const MessageText = styled(({ message, className }: Props) => {
-  if (!isMessageWithText(message)) return null;
+  if (isRichEditorContentEmpty(message.content)) return null;
 
   return (
     <UIHolder className={className}>
