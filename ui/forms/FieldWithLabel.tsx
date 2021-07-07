@@ -1,5 +1,5 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
-import { ReactNode } from "react";
+import { forwardRef, ReactNode } from "react";
 import styled from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
@@ -17,21 +17,15 @@ export interface Props {
   indicateDropdown?: boolean;
 }
 
-export function FieldWithLabel({
-  pushLabel,
-  hasError,
-  isDisabled,
-  icon,
-  label,
-  children,
-  onClick,
-  indicateDropdown,
-}: Props) {
+export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+  { pushLabel, hasError, isDisabled, icon, label, children, onClick, indicateDropdown },
+  forwardedRef
+) {
   const id = useId();
 
   return (
     <AnimateSharedLayout>
-      <UIHolder onClick={onClick}>
+      <UIHolder onClick={onClick} ref={forwardedRef}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -56,7 +50,7 @@ export function FieldWithLabel({
       </UIHolder>
     </AnimateSharedLayout>
   );
-}
+});
 
 const UIHolder = styled.div`
   position: relative;

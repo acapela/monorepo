@@ -86,8 +86,15 @@ export function MultipleOptionsDropdown<I>({
   const shouldPushLabel = isOpened || hasSelection;
 
   return (
-    <FieldWithLabel label={placeholder} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
-      <UIHolder ref={openerRef}>
+    <FieldWithLabel
+      ref={openerRef}
+      label={placeholder}
+      onClick={toggle}
+      pushLabel={hasSelection}
+      icon={icon}
+      indicateDropdown
+    >
+      <UIHolder>
         <UIMenuOpener>
           {selectedItems.length > 0 && (
             <UISelectedItemsPreview>

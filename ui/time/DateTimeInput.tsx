@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Props) => {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
 
@@ -42,6 +42,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         )}
       </AnimatePresence>
       <FieldWithLabel
+        ref={ref}
         isDisabled={isReadonly}
         onClick={openPicker}
         label={label}
@@ -49,7 +50,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         icon={<IconCalendar />}
         indicateDropdown
       >
-        <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker} ref={ref}>
+        <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker}>
           <ValueText>{format(value, "dd.MM.yyyy, p")}</ValueText>
         </UIHolder>
       </FieldWithLabel>
