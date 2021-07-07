@@ -11,6 +11,7 @@ import { createGlobalStyle } from "styled-components";
 import snippet from "@segment/snippet";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
+import { AnalyticsContext } from "~frontend/src/contexts/analytics";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -66,14 +67,16 @@ export default function App({
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <AnimatePresence>
-              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                {renderWithPageLayout(Component, pageProps)}
-              </PresenceAnimator>
-            </AnimatePresence>
+            <AnalyticsContext value={window.analytics}>
+              <PromiseUIRenderer />
+              <TooltipsRenderer />
+              <ToastsRenderer />
+              <AnimatePresence>
+                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                  {renderWithPageLayout(Component, pageProps)}
+                </PresenceAnimator>
+              </AnimatePresence>
+            </AnalyticsContext>
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
