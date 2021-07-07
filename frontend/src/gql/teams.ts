@@ -126,7 +126,7 @@ export const [useCreateTeamInvitationMutation] = createMutation<
   `,
   {
     onActualResponse() {
-      addToast({ type: "info", content: `Space member was removed` });
+      addToast({ type: "info", content: `New team member was invited` });
     },
   }
 );
