@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import { MessageDetailedInfoFragment } from "~gql";
 import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
-import { removeMessageAttachment } from "~frontend/gql/attachments";
+import { removeAttachment } from "~frontend/gql/attachments";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -18,12 +18,12 @@ export function MessageMedia({ message, nonInteractive }: Props) {
 
   return (
     <UIAttachments nonInteractive={Boolean(nonInteractive)}>
-      {attachments.map(({ attachment }) => (
+      {attachments.map((attachment) => (
         <MessageAttachment
           key={attachment.id}
           attachment={attachment}
           onAttachmentRemoveRequest={() => {
-            removeMessageAttachment({ attachmentId: attachment.id, messageId: message.id });
+            removeAttachment({ id: attachment.id });
           }}
         />
       ))}

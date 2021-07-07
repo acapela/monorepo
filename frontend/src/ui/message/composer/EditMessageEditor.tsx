@@ -44,7 +44,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     });
 
     const addingAttachmentsPromises = attachmentsToAdd.map(async (addedAttachment) => {
-      await updateAttachment({ id: addedAttachment.uuid, messageId: message.id });
+      await updateAttachment({ id: addedAttachment.uuid, input: { message_id: message.id } });
     });
 
     const removingAttachmentsPromises = existingAttachmentsToRemove.map(async (attachmentToRemove) => {

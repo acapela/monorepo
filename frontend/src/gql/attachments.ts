@@ -64,8 +64,10 @@ export const [useRemoveAttachment, { mutate: removeAttachment }] = createMutatio
         },
       };
     },
-    onOptimisticOrActualResponse(attachment, variables) {
-      MessageDetailedInfoFragment.update(attachment.message_id, (message) => {
+    onOptimisticOrActualResponse({ message_id }, variables) {
+      if (!message_id) return;
+
+      MessageDetailedInfoFragment.update(message_id, (message) => {
         message.message_attachments = message.message_attachments.filter((messageAttachment) => {
           return messageAttachment.id !== variables.id;
         });
