@@ -8,18 +8,17 @@ import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
 import { createGlobalStyle } from "styled-components";
-import snippet from "@segment/snippet";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
-import { AnalyticsContext } from "~frontend/src/contexts/analytics";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import segmentSnippet from "~frontend/scripts/segment";
+import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
-import { assertGet } from "~shared/assert";
 
 interface AddedProps {
   session: Session;
@@ -31,15 +30,6 @@ const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
 
-const userbackAccessToken = assertGet(
-  process.env.NEXT_PUBLIC_USERBACK_ACCESS_TOKEN,
-  "NEXT_PUBLIC_USERBACK_ACCESS_TOKEN env variable is required"
-);
-const segmentApiKey = assertGet(
-  process.env.NEXT_PUBLIC_SEGMENT_API_KEY,
-  "NEXT_PUBLIC_SEGMENT_API_KEY env variable is required"
-);
-
 export default function App({
   Component,
   pageProps,
@@ -49,34 +39,25 @@ export default function App({
 }: AppProps & AddedProps): JSX.Element {
   // Load Userback integration after initial app render
   useEffect(() => {
-    window.Userback = window.Userback || {};
-    window.Userback.access_token = userbackAccessToken;
-    (function (d) {
-      const s = d.createElement("script");
-      s.async = true;
-      s.src = "https://static.userback.io/widget/v1.js";
-      (d.head || d.body).appendChild(s);
-    })(document);
+    initializeUserbackPlugin();
   }, []);
 
   return (
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <AnalyticsSnippet />
+      <AnalyticsPlugin />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <AnalyticsContext value={window.analytics}>
-              <PromiseUIRenderer />
-              <TooltipsRenderer />
-              <ToastsRenderer />
-              <AnimatePresence>
-                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                  {renderWithPageLayout(Component, pageProps)}
-                </PresenceAnimator>
-              </AnimatePresence>
-            </AnalyticsContext>
+            <PromiseUIRenderer />
+            <TooltipsRenderer />
+            <ToastsRenderer />
+            <AnimatePresence>
+              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                {renderWithPageLayout(Component, pageProps)}
+              </PresenceAnimator>
+            </AnimatePresence>
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
@@ -95,17 +76,11 @@ const CommonMetadata = () => {
   );
 };
 
-const AnalyticsSnippet = () => {
-  const segmentOptions = {
-    apiKey: segmentApiKey,
-    // note: the page option only covers SSR tracking.
-    // Page.js is used to track other events using `window.analytics.page()`
-    page: true,
-  };
+const AnalyticsPlugin = () => {
   return (
     <Script
       dangerouslySetInnerHTML={{
-        __html: snippet.min(segmentOptions),
+        __html: segmentSnippet(),
       }}
     />
   );
