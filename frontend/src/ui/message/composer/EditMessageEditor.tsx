@@ -5,7 +5,7 @@ import { MessageDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
-import { updateAttachment, removeAttachment } from "~frontend/gql/attachments";
+import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
@@ -43,9 +43,10 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       return !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id);
     });
 
-    const addingAttachmentsPromises = attachmentsToAdd.map(async (addedAttachment) => {
-      await updateAttachment({ id: addedAttachment.uuid, input: { message_id: message.id } });
-    });
+    const addAttachmentsPromises = bindAttachmentsToMessage(
+      message.id,
+      attachmentsToAdd.map(({ uuid }) => uuid)
+    );
 
     const removingAttachmentsPromises = existingAttachmentsToRemove.map(async (attachmentToRemove) => {
       await removeAttachment({ id: attachmentToRemove.id });
@@ -60,7 +61,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       })
     );
 
-    await Promise.all([...addingAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
+    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
 
     onSaved?.();
   }

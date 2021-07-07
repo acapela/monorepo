@@ -43,6 +43,11 @@ export const [useUpdateAttachment, { mutate: updateAttachment }] = createMutatio
   `
 );
 
+export const bindAttachmentsToMessage = (messageId: string, attachmentsIds: string[]) =>
+  attachmentsIds.map(async (id) => {
+    await updateAttachment({ id, input: { message_id: messageId } });
+  });
+
 export const [useRemoveAttachment, { mutate: removeAttachment }] = createMutation<
   RemoveAttachmentMutation,
   RemoveAttachmentMutationVariables
@@ -100,6 +105,7 @@ export const [useDownloadUrlQuery] = createQuery<DownloadUrlQuery, DownloadUrlQu
 export const [useAttachmentQuery] = createQuery<AttachmentQuery, AttachmentQueryVariables>(
   () => gql`
     ${AttachmentDetailedInfoFragment()}
+
     query Attachment($id: uuid!) {
       attachment: attachment_by_pk(id: $id) {
         ...AttachmentDetailedInfo

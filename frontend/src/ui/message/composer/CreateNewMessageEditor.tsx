@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 import { useCreateMessageMutation } from "~frontend/gql/messages";
-import { updateAttachment } from "~frontend/gql/attachments";
+import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
@@ -52,9 +52,10 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
 
     if (message) {
       await Promise.all(
-        attachments.map((attachment) => {
-          updateAttachment({ id: attachment.uuid, input: { message_id: message.id } });
-        })
+        bindAttachmentsToMessage(
+          message.id,
+          attachments.map(({ uuid }) => uuid)
+        )
       );
     }
 
