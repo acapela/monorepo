@@ -1,6 +1,15 @@
 process.env.APP = "backend";
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import { initializeSecrets } from "~config";
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0,
+});
 
 async function start(): Promise<void> {
   // Note: We're lazy loading modules here to avoid requesting config too early.
