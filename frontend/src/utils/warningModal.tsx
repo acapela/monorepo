@@ -2,9 +2,10 @@ import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { WARNING_COLOR } from "~ui/colors";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { PageTitle } from "~ui/typo";
+
+import { warningColor } from "~ui/themes/utils";
 
 interface Props {
   warning?: string;
@@ -57,7 +58,7 @@ const UIHeader = styled.div`
 
 const UIWarningHeader = styled(PageTitle)`
   padding-bottom: 8px;
-  color: ${WARNING_COLOR};
+  color: ${warningColor};
 `;
 
 const UIWarningTitle = styled(PageTitle)``;
