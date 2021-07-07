@@ -1,21 +1,24 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
+import { useEffect } from "react";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
+import Script from "next/script";
 import { createGlobalStyle } from "styled-components";
+import snippet from "@segment/snippet";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
-import { useEffect } from "react";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
+import { assertGet } from "~shared/assert";
 
 interface AddedProps {
   session: Session;
@@ -27,6 +30,15 @@ const BuiltInStyles = createGlobalStyle`
   ${global}
 `;
 
+const userbackAccessToken = assertGet(
+  process.env.NEXT_PUBLIC_USERBACK_ACCESS_TOKEN,
+  "NEXT_PUBLIC_USERBACK_ACCESS_TOKEN env variable is required"
+);
+const segmentApiKey = assertGet(
+  process.env.NEXT_PUBLIC_SEGMENT_API_KEY,
+  "NEXT_PUBLIC_SEGMENT_API_KEY env variable is required"
+);
+
 export default function App({
   Component,
   pageProps,
@@ -37,7 +49,7 @@ export default function App({
   // Load Userback integration after initial app render
   useEffect(() => {
     window.Userback = window.Userback || {};
-    window.Userback.access_token = "29970|44040|bV1489q26af7ZoRzAgnJrfPsV";
+    window.Userback.access_token = userbackAccessToken;
     (function (d) {
       const s = d.createElement("script");
       s.async = true;
@@ -50,6 +62,7 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
+      <AnalyticsSnippet />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
@@ -76,6 +89,22 @@ const CommonMetadata = () => {
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     </Head>
+  );
+};
+
+const AnalyticsSnippet = () => {
+  const segmentOptions = {
+    apiKey: segmentApiKey,
+    // note: the page option only covers SSR tracking.
+    // Page.js is used to track other events using `window.analytics.page()`
+    page: true,
+  };
+  return (
+    <Script
+      dangerouslySetInnerHTML={{
+        __html: snippet.min(segmentOptions),
+      }}
+    />
   );
 };
 
