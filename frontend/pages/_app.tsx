@@ -5,7 +5,7 @@ import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
+import { defaultTheme } from "~ui/themes/defaultTheme";
 
 interface AddedProps {
   session: Session;
@@ -52,16 +53,18 @@ export default function App({
       <CommonMetadata />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <AnimatePresence>
-              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                {renderWithPageLayout(Component, pageProps)}
-              </PresenceAnimator>
-            </AnimatePresence>
-          </ApolloProvider>
+          <ThemeProvider theme={defaultTheme}>
+            <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+              <PromiseUIRenderer />
+              <TooltipsRenderer />
+              <ToastsRenderer />
+              <AnimatePresence>
+                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                  {renderWithPageLayout(Component, pageProps)}
+                </PresenceAnimator>
+              </AnimatePresence>
+            </ApolloProvider>
+          </ThemeProvider>
         </MotionConfig>
       </SessionProvider>
     </>

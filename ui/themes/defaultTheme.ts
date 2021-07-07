@@ -1,7 +1,8 @@
 import { brandColors } from "../brandColors";
 import { setColorOpacity } from "~shared/colors";
+import { Theme } from "./theme";
 
-export const defaultTheme = {
+export const defaultTheme: Theme = {
   colors: {
     layout: {
       background: brandColors.base.grey[7],
