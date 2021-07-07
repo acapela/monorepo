@@ -5,6 +5,9 @@ RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bas
 
 WORKDIR /app
 
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
+
 COPY ./ ./
 
 RUN yarn install
