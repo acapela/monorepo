@@ -49,6 +49,7 @@
       permission:
         columns:
           - created_at
+          - message_id
           - mime_type
           - original_name
         filter:
