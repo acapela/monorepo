@@ -5,7 +5,7 @@ import { MessageDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
-import { addMessageAttachment, removeMessageAttachment } from "~frontend/gql/attachments";
+import { updateAttachment, removeAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
@@ -24,8 +24,8 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
     message.message_attachments.map((messageAttachment) => {
       return {
-        mimeType: messageAttachment.attachment.mimeType,
-        uuid: messageAttachment.attachment.id,
+        mimeType: messageAttachment.mimeType,
+        uuid: messageAttachment.id,
       };
     })
   );
@@ -36,21 +36,19 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {
-      return !message.message_attachments.some(
-        (messageAttachment) => messageAttachment.attachment.id === attachmentNow.uuid
-      );
+      return !message.message_attachments.some((messageAttachment) => messageAttachment.id === attachmentNow.uuid);
     });
 
     const existingAttachmentsToRemove = message.message_attachments.filter((existingMessageAttachment) => {
-      return !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.attachment.id);
+      return !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id);
     });
 
     const addingAttachmentsPromises = attachmentsToAdd.map(async (addedAttachment) => {
-      await addMessageAttachment({ messageId: message.id, attachmentId: addedAttachment.uuid });
+      await updateAttachment({ id: addedAttachment.uuid, messageId: message.id });
     });
 
     const removingAttachmentsPromises = existingAttachmentsToRemove.map(async (attachmentToRemove) => {
-      await removeMessageAttachment({ messageId: message.id, attachmentId: attachmentToRemove.attachment.id });
+      await removeAttachment({ id: attachmentToRemove.id });
     });
 
     // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
