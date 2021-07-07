@@ -11,9 +11,12 @@ import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { InputError } from "~ui/forms/InputError";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
+import { TextInput } from "~ui/forms/TextInput";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
 import { TeamMembersPicker } from "./TeamMembersPicker";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
+import { IconCommentText } from "~frontend/../../ui/icons";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 
 interface RoomInputInitialData {
   name?: string;
@@ -104,20 +107,20 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
       <Modal onCloseRequest={() => resolve(null)}>
         <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
           <UIFormFields>
-            <UIRoomNameInput
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              autoFocus
-              placeholder="Room name"
-            />
+            <AnimateSharedLayout>
+              <TextInput
+                icon={<IconCommentText />}
+                value={roomName}
+                onChangeText={setRoomName}
+                autoFocus
+                placeholder="Room name"
+              />
+            </AnimateSharedLayout>
             <SpacePicker selectedSpaceId={selectedSpaceId} onChange={setSelectedSpaceId} />
-            <FieldWithName label="Participants">
-              <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
-            </FieldWithName>
 
-            <FieldWithName label="Due date">
-              <DateTimeInput value={deadline} onChange={setDeadline} />
-            </FieldWithName>
+            <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
+
+            <DateTimeInput value={deadline} onChange={setDeadline} label="Set a due date" />
           </UIFormFields>
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}

@@ -1,3 +1,5 @@
+import { useConst } from "./hooks/useConst";
+
 const DEFAULT_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 function getRandomCharFromAlphabet(alphabet: string): string {
@@ -14,4 +16,8 @@ export function generateId(idDesiredLength = 5, alphabet = DEFAULT_ALPHABET): st
       return getRandomCharFromAlphabet(alphabet);
     })
     .join("");
+}
+
+export function useId() {
+  return useConst(() => generateId());
 }

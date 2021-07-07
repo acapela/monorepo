@@ -4,11 +4,13 @@ type InputRef<T> = ((instance: T | null) => void) | MutableRefObject<T | null> |
 
 function createRefWithCallback<T>(initial: T, callback: (value: T) => void) {
   let value = initial;
+
   const ref: MutableRefObject<T> = {
     get current() {
       return value;
     },
     set current(newValue: T) {
+      console.log("setting new", newValue);
       value = newValue;
       callback(newValue);
     },

@@ -5,19 +5,22 @@ import styled from "styled-components";
 import { hoverActionCss } from "~ui/transitions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
-import { SecondaryText } from "~ui/typo";
+import { SecondaryText, ValueText } from "~ui/typo";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { disabledPointerEventsCss } from "~ui/disabled";
 import { DateTimePicker } from "./DateTimePicker";
 import { borderRadius } from "~ui/baseStyles";
+import { FieldWithLabel } from "~ui/forms/FieldWithLabel";
+import { IconCalendar } from "~ui/icons";
 
 interface Props {
   value: Date;
   onChange: (value: Date) => void;
   isReadonly?: boolean;
+  label?: string;
 }
 
-export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) => {
+export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Props) => {
   const ref = useRef<HTMLButtonElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
@@ -26,6 +29,8 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) =>
     toggleOpenPicker();
     onChange(date);
   };
+
+  const hasValue = !!value;
 
   return (
     <>
@@ -36,20 +41,24 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false }: Props) =>
           </Popover>
         )}
       </AnimatePresence>
-      <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker} ref={ref}>
-        <SecondaryText>{format(value, "dd.MM.yyyy, p")}</SecondaryText>
-      </UIHolder>
+      <FieldWithLabel
+        isDisabled={isReadonly}
+        onClick={openPicker}
+        label={label}
+        pushLabel={hasValue}
+        icon={<IconCalendar />}
+        indicateDropdown
+      >
+        <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker} ref={ref}>
+          <ValueText>{format(value, "dd.MM.yyyy, p")}</ValueText>
+        </UIHolder>
+      </FieldWithLabel>
     </>
   );
 };
 
-const UIHolder = styled.button<{ isReadonly: boolean }>`
-  ${(props) => !props.isReadonly && hoverActionCss}
-  ${(props) => props.isReadonly && disabledPointerEventsCss}
-  padding: 8px 16px;
-  cursor: pointer;
-  background: #ffffff;
-  border-radius: ${borderRadius.input};
-  border: 1px solid ${BACKGROUND_ACCENT};
-  text-align: start;
+const UIHolder = styled.div<{ isReadonly: boolean }>`
+  display: flex;
+  align-items: center;
+  font-weight: bold;
 `;

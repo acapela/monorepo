@@ -8,6 +8,7 @@ import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
+import { IconSelection } from "~frontend/../../ui/icons";
 
 interface Props {
   selectedSpaceId: string | null;
@@ -39,6 +40,7 @@ export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
 
   return (
     <SingleOptionDropdown<SpaceBasicInfoFragment>
+      icon={<IconSelection />}
       name="Space"
       placeholder="Select a space..."
       items={spacesList}
