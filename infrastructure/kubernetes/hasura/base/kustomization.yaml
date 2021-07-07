@@ -1,6 +1,6 @@
 commonLabels:
   app: hasura
 resources:
-  - deployment.yaml
-  - service-backend-config.yaml
-  - service.yaml
+- deployment.yaml
+- service-backend-config.yaml
+- service.yaml
