@@ -159,6 +159,13 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: message_attachments
+      using:
+        foreign_key_constraint_on:
+          column: message_id
+          table:
+            schema: public
+            name: attachment
     - name: message_reactions
       using:
         foreign_key_constraint_on:
