@@ -3,8 +3,7 @@ import styled, { css } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { PRIMARY_PINK_1 } from "~ui/colors";
-import { IconCheck, IconCheckCircle } from "~ui/icons";
-import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
+import { IconCheck } from "~ui/icons";
 import { OptionLabel } from "./OptionLabel";
 
 interface Props {

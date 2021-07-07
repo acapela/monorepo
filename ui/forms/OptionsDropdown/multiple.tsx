@@ -3,16 +3,12 @@ import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
-import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
-import { IconChevronDown, IconPlus } from "~ui/icons";
-import { hoverActionCss } from "~ui/transitions";
+import { IconPlus } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { FieldWithName } from "../FieldWithName";
+import { FieldWithLabel } from "../FieldWithLabel";
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
 import { SelectedOptionPreview } from "./SelectedOptionPreview";
-import { FieldWithLabel } from "../FieldWithLabel";
 
 interface Props<I> {
   name?: string;
@@ -42,7 +38,6 @@ export function MultipleOptionsDropdown<I>({
   labelGetter,
   iconGetter,
   newItem,
-  placeholder,
   onChange,
   onItemSelected,
   onItemUnselected,
@@ -83,17 +78,8 @@ export function MultipleOptionsDropdown<I>({
 
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
 
-  const shouldPushLabel = isOpened || hasSelection;
-
   return (
-    <FieldWithLabel
-      ref={openerRef}
-      label={placeholder}
-      onClick={toggle}
-      pushLabel={hasSelection}
-      icon={icon}
-      indicateDropdown
-    >
+    <FieldWithLabel ref={openerRef} label={name} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
       <UIHolder>
         <UIMenuOpener>
           {selectedItems.length > 0 && (
@@ -108,22 +94,6 @@ export function MultipleOptionsDropdown<I>({
             </UISelectedItemsPreview>
           )}
         </UIMenuOpener>
-        {/* <UIMenuOpener ref={openerRef} onClick={toggle}>
-          {selectedItems.length > 0 && (
-            <UISelectedItemsPreview>
-              {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
-              {!selectedItemsPreviewRenderer &&
-                selectedItems.map((selectedItem) => {
-                  const key = keyGetter(selectedItem);
-                  const label = labelGetter(selectedItem);
-                  return <SelectedOptionPreview key={key} label={label} icon={iconGetter?.(selectedItem)} />;
-                })}
-            </UISelectedItemsPreview>
-          )}
-          {selectedItems.length === 0 && placeholder}
-
-          <IconChevronDown />
-        </UIMenuOpener> */}
         <AnimatePresence>
           {isOpened && (
             <Popover anchorRef={openerRef} placement="bottom-start">

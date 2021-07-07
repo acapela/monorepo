@@ -49,7 +49,6 @@ export function useBoundingBox(ref: RefObject<HTMLElement>) {
 
     const newBox = getSerializableBoundingBox(ref.current.getBoundingClientRect());
 
-    console.log(newBox, ref.current);
     setBox(newBox);
   }
 

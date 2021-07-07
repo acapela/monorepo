@@ -18,7 +18,7 @@ export interface Props {
 }
 
 export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, hasError, isDisabled, icon, label, children, onClick, indicateDropdown },
+  { pushLabel, icon, label, children, onClick, indicateDropdown },
   forwardedRef
 ) {
   const id = useId();

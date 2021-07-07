@@ -10,7 +10,6 @@ function createRefWithCallback<T>(initial: T, callback: (value: T) => void) {
       return value;
     },
     set current(newValue: T) {
-      console.log("setting new", newValue);
       value = newValue;
       callback(newValue);
     },

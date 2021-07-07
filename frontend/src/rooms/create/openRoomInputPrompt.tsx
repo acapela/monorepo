@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FieldWithName } from "~ui/forms/FieldWithName";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Modal } from "~frontend/ui/Modal";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
@@ -15,8 +14,8 @@ import { TextInput } from "~ui/forms/TextInput";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
 import { TeamMembersPicker } from "./TeamMembersPicker";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
-import { IconCommentText } from "~frontend/../../ui/icons";
-import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import { IconCommentText } from "~ui/icons";
+import { AnimateSharedLayout } from "framer-motion";
 
 interface RoomInputInitialData {
   name?: string;
@@ -149,17 +148,6 @@ const UIFormFields = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-`;
-
-const UIRoomNameInput = styled.input`
-  text-align: center;
-  font-size: 24px;
-
-  outline: none;
-
-  ::placeholder {
-    color: #b4b4b4;
-  }
 `;
 
 const UIBottomArea = styled.div`
