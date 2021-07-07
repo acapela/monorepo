@@ -58,6 +58,7 @@ const UIHolder = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  padding-left: 16px;
 
   width: 100%;
 
@@ -84,12 +85,14 @@ const UIIconHolder = styled.div`
   display: flex;
   align-items: center;
   padding: 16px;
+  padding-left: 0;
   font-size: 20px;
 `;
 
 const UIPlaceholdersHolder = styled.div`
   display: flex;
   opacity: 0.6;
+  max-width: 100%;
 `;
 
 const UIPlaceholder = styled(motion.div)`
@@ -97,14 +100,28 @@ const UIPlaceholder = styled(motion.div)`
   align-items: center;
   align-self: center;
   will-change: transform;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
+  height: 1.5em;
 `;
 const UIFocusedPlaceholder = styled(motion.div)`
   align-self: flex-start;
-  margin-top: calc(-0.5em + 1px);
+
   font-size: 12px;
   background-color: #fff;
   will-change: transform;
   opacity: 0.6;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
+  height: 1.5em;
+  /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
+  margin-top: calc(-0.75em + 1px);
 `;
 
 const UIContentHolder = styled.div`

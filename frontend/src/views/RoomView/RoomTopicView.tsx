@@ -3,7 +3,7 @@ import { routes } from "~frontend/routes";
 
 import { TopicView } from "../topic/TopicView";
 import { RoomView } from "./RoomView";
-import { RoomDetailedInfoFragment } from "~frontend/../../gql";
+import { RoomDetailedInfoFragment } from "~gql";
 
 interface Props {
   room: RoomDetailedInfoFragment;

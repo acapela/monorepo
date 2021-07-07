@@ -10,6 +10,7 @@ import { Container } from "~ui/layout/Container";
 import { SpacesList } from "./SpacesList";
 import { useRef } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { IconSelection } from "~ui/icons";
 
 export function SpacesView() {
   const teamId = useAssertCurrentTeamId();
@@ -20,6 +21,7 @@ export function SpacesView() {
     const spaceName = await openUIPrompt({
       title: "New space name",
       placeholder: "eg. Design team",
+      inputIcon: <IconSelection />,
       submitLabel: "Create space",
       anchor: {
         ref: buttonRef,

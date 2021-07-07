@@ -3,7 +3,7 @@ import { UserBasicInfoFragment } from "~gql";
 import { MultipleOptionsDropdown } from "~ui/forms/OptionsDropdown/multiple";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { IconUsers } from "~frontend/../../ui/icons";
+import { IconUsers } from "~ui/icons";
 
 interface Props {
   selectedMemberIds: string[];

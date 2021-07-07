@@ -8,7 +8,7 @@ import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
-import { IconSelection } from "~frontend/../../ui/icons";
+import { IconSelection } from "~ui/icons";
 
 interface Props {
   selectedSpaceId: string | null;

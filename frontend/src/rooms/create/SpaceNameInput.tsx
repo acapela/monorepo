@@ -1,6 +1,5 @@
 import React from "react";
-import styled from "styled-components";
-import { fontSize } from "~ui/baseStyles";
+import { IconSelection } from "~ui/icons";
 import { TextInput } from "~ui/forms/TextInput";
 import { FieldLabel } from "~ui/typo";
 import { UIFormField } from "./UIFormField";
@@ -14,7 +13,8 @@ export const SpaceNameInput = ({ value, onChange }: Props) => {
   return (
     <UIFormField>
       <FieldLabel htmlFor="space-name">Space name</FieldLabel>
-      <UITextInput
+      <TextInput
+        icon={<IconSelection />}
         id="space-name"
         placeholder="eg. Design team"
         value={value}
@@ -23,8 +23,3 @@ export const SpaceNameInput = ({ value, onChange }: Props) => {
     </UIFormField>
   );
 };
-
-const UITextInput = styled(TextInput)`
-  height: 100%;
-  font-size: ${fontSize.label};
-`;

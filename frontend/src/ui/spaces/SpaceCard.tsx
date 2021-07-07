@@ -12,7 +12,7 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconEdit, IconSelection, IconTrash } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
 import { ItemTitle } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
@@ -52,6 +52,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
     const newSpaceName = await openUIPrompt({
       title: "Change space name",
       placeholder: "e.g. Design team, Marketing department, iOS developers...",
+      inputIcon: <IconSelection />,
       submitLabel: "Change name",
       validateInput: createLengthValidator("Space name", 3),
       initialValue: space.name,
