@@ -3,7 +3,6 @@ import { db } from "~db";
 import { getSignedDownloadUrl, getSignedUploadUrl } from "./googleStorage";
 
 interface UploadUrlParams {
-  messageId: string;
   fileName: string;
   mimeType: string;
 }
@@ -16,10 +15,9 @@ interface UploadUrlResponse {
 export const getUploadUrl: ActionHandler<UploadUrlParams, UploadUrlResponse> = {
   actionName: "get_upload_url",
 
-  async handle(_userId, { messageId, fileName, mimeType }) {
+  async handle(_userId, { fileName, mimeType }) {
     const { id: uuid } = await db.attachment.create({
       data: {
-        message_id: messageId,
         original_name: fileName,
         mime_type: mimeType,
       },
