@@ -4,7 +4,7 @@ import { initializeSecrets } from "~config";
 import * as Sentry from "@sentry/node";
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN || "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
+  dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
