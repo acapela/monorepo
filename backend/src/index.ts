@@ -3,13 +3,16 @@ process.env.APP = "backend";
 import { initializeSecrets } from "~config";
 import * as Sentry from "@sentry/node";
 
-Sentry.init({
-  dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
+if (["staging", "production"].includes(process.env.STAGE)) {
+  Sentry.init({
+    dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
 
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 1.0,
-});
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+    environment: process.env.STAGE,
+  });
+}
 
 async function start(): Promise<void> {
   // Note: We're lazy loading modules here to avoid requesting config too early.
