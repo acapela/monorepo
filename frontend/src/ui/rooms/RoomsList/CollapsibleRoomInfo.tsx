@@ -65,7 +65,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton shape={"circle"} icon={<IconChevronDown />} onClick={toggleIsOpen} />
+            <IconButton shape={"circle"} type={"tertiary"} icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
@@ -124,8 +124,6 @@ const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 
   ${IconButton} {
-    font-size: 2rem;
-
     svg {
       transform: rotateZ(
         ${(props) => {

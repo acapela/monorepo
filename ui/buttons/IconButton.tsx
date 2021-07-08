@@ -1,9 +1,10 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { getButtonColorStyles, hoverActionCss } from "../transitions";
 import { ReactNode, forwardRef } from "react";
 import { borderRadius } from "~ui/baseStyles";
-import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK, BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
+type ActionType = "primary" | "secondary" | "tertiary";
 type Shape = "circle" | "rounded-rectangle";
 const DEFAULT_SHAPE = "rounded-rectangle";
 
@@ -12,13 +13,13 @@ interface Props {
   onClick?: () => void;
   className?: string;
   tooltip?: string;
-  isPrimary?: boolean;
   shape?: Shape;
+  type?: ActionType;
 }
 
 export const IconButton = styled(
   forwardRef<HTMLButtonElement, Props>(function IconButton(
-    { icon, onClick, className, tooltip, isPrimary = false, shape = DEFAULT_SHAPE },
+    { icon, onClick, className, tooltip, shape = DEFAULT_SHAPE, type = "secondary" },
     ref
   ) {
     return (
@@ -27,7 +28,7 @@ export const IconButton = styled(
         data-tooltip={tooltip}
         onClick={onClick}
         className={className}
-        isPrimary={isPrimary}
+        actionType={type}
         shape={shape}
       >
         <UIIconHolder>{icon}</UIIconHolder>
@@ -36,7 +37,7 @@ export const IconButton = styled(
   })
 )``;
 
-const UIHolder = styled.button<{ isPrimary: boolean; shape: Shape }>`
+const UIHolder = styled.button<{ actionType: ActionType; shape: Shape }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -52,7 +53,6 @@ const UIHolder = styled.button<{ isPrimary: boolean; shape: Shape }>`
     return borderRadius.button;
   }}
 
-  background-color: transparent;
   border: none;
   cursor: pointer;
 
@@ -61,11 +61,15 @@ const UIHolder = styled.button<{ isPrimary: boolean; shape: Shape }>`
   font-size: 1.5rem;
 
   ${(props) => {
-    if (!props.isPrimary) {
-      return hoverActionCss;
+    if (props.actionType === "primary") {
+      return getButtonColorStyles(BUTTON_BACKGROUND_COLOR);
+    } else if (props.actionType === "tertiary") {
+      return getButtonColorStyles(BACKGROUND_ACCENT_WEAK);
     }
-
-    return getButtonColorStyles(BUTTON_BACKGROUND_COLOR);
+    return css`
+      background-color: transparent;
+      ${hoverActionCss}
+    `;
   }}
 
   svg {
