@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
+import { SELECTED_ITEM_COLOR } from "~ui/colors";
 import { OptionLabel } from "./OptionLabel";
 
 export const SelectedOptionPreview = styled(OptionLabel)`
-  background-color: #f4f6f8;
+  background-color: ${SELECTED_ITEM_COLOR};
   padding: 4px;
   padding-right: 12px;
   min-height: 32px;

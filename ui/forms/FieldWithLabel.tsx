@@ -1,9 +1,10 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
+import { BACKGROUND_ACCENT } from "~ui/colors";
 import { IconChevronDown } from "~ui/icons";
 
 export interface Props {
@@ -55,14 +56,13 @@ export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWi
 const UIHolder = styled.div`
   position: relative;
   display: flex;
-  display: flex;
   flex-direction: row;
   align-items: stretch;
   padding-left: 16px;
 
   width: 100%;
 
-  border: 1px solid hsla(0, 0%, 75%, 0.25);
+  border: 1px solid ${BACKGROUND_ACCENT};
   box-sizing: border-box;
   ${borderRadius.input}
 
@@ -95,31 +95,27 @@ const UIPlaceholdersHolder = styled.div`
   max-width: 100%;
 `;
 
+const sharedPlaceholderStyles = css`
+  will-change: transform;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis; /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
+  height: 1.5em;
+`;
+
 const UIPlaceholder = styled(motion.div)`
+  ${sharedPlaceholderStyles}
   display: flex;
   align-items: center;
   align-self: center;
-  will-change: transform;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
-  height: 1.5em;
 `;
 const UIFocusedPlaceholder = styled(motion.div)`
   align-self: flex-start;
-
   font-size: 12px;
   background-color: #fff;
-  will-change: transform;
   opacity: 0.6;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
-  height: 1.5em;
+
   /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
   margin-top: calc(-0.75em + 1px);
 `;
