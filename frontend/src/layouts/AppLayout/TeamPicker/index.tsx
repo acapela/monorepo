@@ -31,6 +31,7 @@ export function TeamPickerView() {
     await createTeam({ name, slug });
 
     trackEvent("Account Created");
+    trackEvent("Trial Started");
   }
 
   async function handleChangeTeam(teamId: string) {

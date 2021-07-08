@@ -22,14 +22,10 @@ function createAnalyticsSessionForUser(user: User) {
 
   analytics.identify({ userId: user.id, traits: getAnalyticsProfileFromDbUser(user) });
 
-  if (user.current_team_id) {
-    analytics.group({ userId: user.id, groupId: user.current_team_id });
-  }
-
   return analytics;
 }
 
-export function backendTrackUserEvent<N extends keyof AnalyticsEventsMap>(
+export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
   user: User,
   eventName: N,
   payload?: AnalyticsEventsMap[N]
