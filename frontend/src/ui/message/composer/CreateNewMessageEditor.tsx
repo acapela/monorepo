@@ -42,7 +42,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
     attachmentsList.push(...uploadedAttachments);
   }
 
-  const submitMessage = async ({ type, content }: SubmitMessageParams) => {
+  const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
     const [message] = await createMessage({
       topicId,
       type,
