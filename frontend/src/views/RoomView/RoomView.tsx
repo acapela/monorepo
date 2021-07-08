@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
-import { PageTitle, SecondaryText } from "~ui/typo";
+import { TextH3, TextBody, TextBody12 } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -65,7 +65,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
       <UIHolder>
         <UIRoomInfo>
           {room && (
-            <UIRoomHead>
+            <UIRoomHead spezia semibold>
               <UIRoomTitle ref={titleHolderRef}>
                 <div
                   {...(amIMember
@@ -88,16 +88,21 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             </UIRoomHead>
           )}
 
+          <UIManageSection>
+            <TextBody12 speziaMono secondary>
+              Participants
+            </TextBody12>
+            <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
+          </UIManageSection>
+
           <UIManageSections>
             {room && (
               <>
                 <UIManageSection>
-                  <SecondaryText>Due date</SecondaryText>
+                  <TextBody12 speziaMono secondary>
+                    Due date
+                  </TextBody12>
                   <DeadlineManager room={room} isReadonly={!amIMember} />
-                </UIManageSection>
-                <UIManageSection>
-                  <SecondaryText>Participants</SecondaryText>
-                  <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
                 </UIManageSection>
               </>
             )}
@@ -172,11 +177,10 @@ const UIContentHolder = styled.div`
   min-height: 0;
 `;
 
-const UIRoomHead = styled(PageTitle)`
+const UIRoomHead = styled(TextH3)`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 32px;
 `;
 
 const UIRoomTitle = styled.div`

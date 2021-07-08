@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { SecondaryText } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { MultipleOptionsDropdown } from "./multiple";
 import { OptionLabel } from "./OptionLabel";
 
@@ -48,7 +48,7 @@ export function SingleOptionDropdown<I>({
       closeAfterItemPicked
       selectedItemsPreviewRenderer={([item]) => {
         if (!item) {
-          return <SecondaryText>{placeholder}</SecondaryText>;
+          return <TextBody>{placeholder}</TextBody>;
         }
 
         return <OptionLabel label={labelGetter(item)} icon={iconGetter?.(item)} />;

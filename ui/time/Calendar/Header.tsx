@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { PopPresenceAnimator } from "~ui/animations";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCalendar, IconChevronLeft, IconChevronRight } from "~ui/icons";
-import { ItemTitle } from "~ui/typo";
+import { TextH6 } from "~ui/typo";
 
 interface Props {
   currentMonthDate: Date;
@@ -22,7 +22,9 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
   const startOfNext = startOfMonth(addMonths(currentMonthDate, 1));
   return (
     <UIHeader>
-      <UIDateTitle>{monthLabel}</UIDateTitle>
+      <UIDateTitle spezia medium>
+        {monthLabel}
+      </UIDateTitle>
       <AnimatePresence>
         {canReturnToCurrentMonth && (
           <PopPresenceAnimator key="fo">
@@ -62,7 +64,7 @@ const UIHeader = styled.div`
   flex: 1;
 `;
 
-const UIDateTitle = styled(ItemTitle)`
+const UIDateTitle = styled(TextH6)`
   flex: 17;
   display: inline-block;
 `;

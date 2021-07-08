@@ -6,7 +6,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { FieldWithLabel } from "~ui/forms/FieldWithLabel";
 import { IconCalendar } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { ValueText } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { DateTimePicker } from "./DateTimePicker";
 
 interface Props {
@@ -47,7 +47,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         indicateDropdown
       >
         <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker}>
-          <ValueText>{format(value, "dd.MM.yyyy, p")}</ValueText>
+          <TextBody>{format(value, "dd.MM.yyyy, p")}</TextBody>
         </UIHolder>
       </FieldWithLabel>
     </>

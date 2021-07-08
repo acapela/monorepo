@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT_WEAK } from "~ui/colors";
 import { IconSelection } from "~ui/icons";
-import { TextTitle, ItemTitle } from "~ui/typo";
+import { TextH3, TextBody } from "~ui/typo";
 
 interface Props {
   title?: ReactNode;
@@ -15,8 +15,8 @@ export function EmptyStatePlaceholder({ title, description, icon = <IconSelectio
   return (
     <UIHolder>
       {icon && <UIIcon>{icon}</UIIcon>}
-      {title && <ItemTitle>{title}</ItemTitle>}
-      {description && <TextTitle>{description}</TextTitle>}
+      {title && <TextH3>{title}</TextH3>}
+      {description && <TextBody spezia>{description}</TextBody>}
     </UIHolder>
   );
 }
@@ -37,7 +37,7 @@ const UIHolder = styled.div`
   padding: 16px;
 
   & {
-    ${ItemTitle}, ${TextTitle}, ${UIIcon} {
+    ${TextH3}, ${TextBody}, ${UIIcon} {
       opacity: 0.8;
     }
   }

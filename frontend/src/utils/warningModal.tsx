@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { WARNING_COLOR } from "~ui/colors";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { PageTitle } from "~ui/typo";
+import { TextH2 } from "~ui/typo";
 
 interface Props {
   warning?: string;
@@ -55,12 +55,12 @@ const UIHeader = styled.div`
   padding: 0 48px;
 `;
 
-const UIWarningHeader = styled(PageTitle)`
+const UIWarningHeader = styled(TextH2)`
   padding-bottom: 8px;
   color: ${WARNING_COLOR};
 `;
 
-const UIWarningTitle = styled(PageTitle)``;
+const UIWarningTitle = styled(TextH2)``;
 
 const UIForbiddenAccessDescription = styled.p`
   line-height: 1.5;

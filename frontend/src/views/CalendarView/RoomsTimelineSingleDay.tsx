@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ItemTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 import { endOfDay, startOfDay } from "date-fns";
 import { getDayBoundaries } from "~shared/dates/utils";
 import { niceFormatDate } from "~shared/dates/format";
@@ -62,7 +62,9 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
       layoutId={`roomtimeline-${startDate.getTime()}`}
       transition={getSpringTransitionWithDuration(0.6)}
     >
-      <UITitle>{niceFormatDate(startDate)}</UITitle>
+      <UITitle spezia medium>
+        {niceFormatDate(startDate)}
+      </UITitle>
       {googleCalendarEventsToShow.length > 0 && <GoogleCalendarEventsInDay events={googleCalendarEventsToShow} />}
       <RoomsList rooms={rooms} />
       {rooms?.length === 0 && <EmptyStatePlaceholder description="No topics for this day" icon={<IconCalendar />} />}
@@ -76,6 +78,6 @@ const UIHolder = styled(motion.div)`
   }
 `;
 
-const UITitle = styled(ItemTitle)`
+const UITitle = styled(TextH3)`
   margin-bottom: 16px;
 `;

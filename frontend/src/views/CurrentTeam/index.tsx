@@ -7,7 +7,7 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
-import { ItemTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 
 export function CurrentTeamInfoView() {
   const [team] = useCurrentTeamDetails();
@@ -46,7 +46,7 @@ export function CurrentTeamInfoView() {
 
   return (
     <Container>
-      <ItemTitle>Current team is: {team?.name}</ItemTitle>
+      <TextH3>Current team is: {team?.name}</TextH3>
       <Button ref={buttonRef} onClick={handleInviteMember}>
         Invite team member
       </Button>
