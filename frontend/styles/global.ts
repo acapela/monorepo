@@ -1,8 +1,10 @@
 import { css } from "styled-components";
 import { base } from "./base";
+import { fontFacesStyles } from "./fontFaces";
 
 export const global = css`
   ${base}
+  ${fontFacesStyles}
 
   html {
     -ms-text-size-adjust: 100%;

@@ -1,6 +1,6 @@
 import { createGlobalStyle, css } from "styled-components";
 
-const fontFacesStyles = css`
+export const fontFacesStyles = css`
   @font-face {
     font-family: "Spezia";
     src: url("/fonts/Spezia-SemiBold.woff2") format("woff2"), url("/fonts/Spezia-SemiBold.woff") format("woff");

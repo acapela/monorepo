@@ -5,6 +5,7 @@ import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { groupByFilter } from "~shared/groupByFilter";
+import { TextMeta14Mono } from "~frontend/../../ui/theme";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();
@@ -22,7 +23,7 @@ export function SpacesList() {
       {hasNoSpaces && <NoticeLabel>No spaces yet</NoticeLabel>}
       {mySpaces.length > 0 && (
         <UISpacesGroup key="mine">
-          <PageTitle>Joined spaces</PageTitle>
+          <TextMeta14Mono>Joined spaces</TextMeta14Mono>
           <UISpaces>
             {mySpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;
@@ -32,7 +33,7 @@ export function SpacesList() {
       )}
       {notJoinedSpaces.length > 0 && (
         <UISpacesGroup key="to-join">
-          <PageTitle>Other spaces</PageTitle>
+          <TextMeta14Mono>Other spaces</TextMeta14Mono>
           <UISpaces>
             {notJoinedSpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;

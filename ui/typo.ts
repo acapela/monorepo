@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 import { motion } from "framer-motion";
 
 import { fontFamily, fontSize } from "./baseStyles";
+import { TextH3Extended } from "./theme";
 
 /**
  * Base styles
@@ -68,7 +69,7 @@ export const PageTitle = styled.h1`
   font-weight: 600;
 `;
 
-export const ItemTitle = styled(motion.h3)`
+export const ItemTitle = styled(TextH3Extended)`
   font-size: ${fontSize.itemTitle};
   font-weight: 600;
 `;

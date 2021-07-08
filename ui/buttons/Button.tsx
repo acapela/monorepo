@@ -5,6 +5,7 @@ import { disabledOpacityCss } from "~ui/disabled";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { getButtonColorStyles } from "~ui/transitions";
 import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { TextButtonMedium } from "~ui/theme";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -60,7 +61,7 @@ export const Button = styled(
   })
 )``;
 
-export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
+export const UIButton = styled(TextButtonMedium)<Props & { isClickable: boolean }>`
   display: flex;
   align-items: center;
   padding: 12px 16px;
