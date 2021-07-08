@@ -4,7 +4,7 @@ import { ActionHandler } from "../actions/actionHandlers";
 import { AuthenticationError, NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
 import { getHasTeamMember } from "../teams/helpers";
 import { findInviteByCode, invalidateInvite } from "./invites";
-import { backendTrackUserEvent } from "~shared/backendAnalytics";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
 // Transactional
 export async function acceptTeamInvitation(invite: TeamInvitation, userId: string): Promise<Team> {
@@ -48,7 +48,7 @@ export async function acceptTeamInvitation(invite: TeamInvitation, userId: strin
   // If user is accepting team invite - set it as current team for this user
   await db.user.update({ where: { id: userId }, data: { current_team_id: team.id } });
 
-  backendTrackUserEvent(user, "Account Added User");
+  trackBackendUserEvent(user, "Account Added User");
 
   return team;
 }
