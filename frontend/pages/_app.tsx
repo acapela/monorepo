@@ -35,7 +35,7 @@ if (["staging", "production"].includes(stage)) {
     environment: stage,
   });
 } else {
-  console.log("Sentry is disabled");
+  console.info("Sentry is disabled");
 }
 
 interface AddedProps {
