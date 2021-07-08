@@ -8,6 +8,7 @@
     "next:start": "next start",
     "next:build:analyze": "ANALYZE=true next build",
     "server:start": "node ./next-server.js",
+    "prestart": "berglas exec -- yarn next:build",
     "start": "berglas exec -- node ./next-server.js",
     "test": "jest",
     "test:watch": "jest --watch"
