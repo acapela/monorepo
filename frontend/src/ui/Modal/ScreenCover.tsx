@@ -97,4 +97,8 @@ const UIBodyCover = styled(PresenceAnimator)<{ enableBlur: boolean }>`
   align-items: center;
   justify-content: center;
   will-change: backdrop-filter, filter, transform, background-color;
+  /* Fixes modal blur flickering: https://stackoverflow.com/questions/23619520/chrome-flickering-on-webkit-filter-blur/24062670 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
 `;
