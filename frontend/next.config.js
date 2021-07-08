@@ -1,5 +1,6 @@
 process.env.APP = "frontend";
 process.env.NEXT_PUBLIC_STAGE = process.env.STAGE;
+process.env.NEXT_PUBLIC_SENTRY_RELEASE = process.env.SENTRY_RELEASE;
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
 const bundleAnalyzer = require("@next/bundle-analyzer");

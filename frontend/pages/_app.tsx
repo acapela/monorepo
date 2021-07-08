@@ -33,6 +33,7 @@ if (["staging", "production"].includes(stage)) {
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so
     // that it will also get attached to your source maps
     environment: stage,
+    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
   });
 } else {
   console.info("Sentry is disabled");
