@@ -25,9 +25,7 @@ export const MessageAttachment = styled(
     const mediaRef = useRef<HTMLVideoElement>(null);
     const user = useCurrentUser();
     const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
-    const canEditAttachments = attachment.message_attachments.some(
-      (attachment) => attachment.message.user_id === user?.id
-    );
+    const canEditAttachments = attachment.message?.user_id === user?.id;
     const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
 
     const onTimeUpdate = () => onMediaTimeUpdate?.(mediaRef.current?.currentTime ?? 0);

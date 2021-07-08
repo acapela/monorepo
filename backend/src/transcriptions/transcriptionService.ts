@@ -1,15 +1,11 @@
-import { db } from "~db";
-import { assertGet } from "~shared/assert";
+import { Attachment, db } from "~db";
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { getSonixClient, MediaResponse } from "./sonixClient";
+import { assertGet } from "~shared/assert";
 
-export async function sendForTranscription(messageId: string) {
-  const messageAttachment = await db.message_attachment.findFirst({
-    where: { message_id: messageId },
-    include: { attachment: true },
-  });
+export async function sendForTranscription(attachment: Attachment) {
+  const messageId = assertGet(attachment?.message_id, "Attachment to be transcribed does not have message_id");
 
-  const attachment = assertGet(messageAttachment?.attachment, "Message to be transcribed has no attachment");
   const sonix = getSonixClient();
   const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);
   const language = "en";

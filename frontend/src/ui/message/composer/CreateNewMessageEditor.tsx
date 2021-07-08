@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 import { useCreateMessageMutation } from "~frontend/gql/messages";
+import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { EditorAttachmentInfo } from "./attachments";
@@ -42,15 +43,21 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
   }
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
-    await createMessage({
+    const [message] = await createMessage({
       topicId,
       type,
       content,
-      attachments: attachments.map((attachment) => ({
-        attachment_id: attachment.uuid,
-      })),
       replied_to_message_id: currentlyReplyingToMessage?.id,
     });
+
+    if (message) {
+      await Promise.all(
+        bindAttachmentsToMessage(
+          message.id,
+          attachments.map(({ uuid }) => uuid)
+        )
+      );
+    }
 
     handleStopReplyingToMessage();
   };
