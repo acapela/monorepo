@@ -59,7 +59,7 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
 
 const UIDateTimePickerForm = styled(PopPresenceAnimator)`
   background: #ffffff;
-  ${shadow.medium};
+  ${shadow.popover};
   ${borderRadius.modal}
   display: grid;
   grid-gap: 24px;

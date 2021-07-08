@@ -19,11 +19,14 @@ export const shadow = {
       0px 38.5185px 25.4815px rgba(0, 0, 0, 0.0425185), 0px 20px 13px rgba(0, 0, 0, 0.035),
       0px 8.14815px 6.51852px rgba(0, 0, 0, 0.0274815), 0px 1.85185px 3.14815px rgba(0, 0, 0, 0.0168519);
   `,
+  popover: css`
+    box-shadow: 0px 8px 40px rgba(147, 158, 170, 0.2);
+  `,
 };
 
 export const borderRadius = {
   menu: css`
-    border-radius: 16px;
+    border-radius: 12px;
   `,
   card: css`
     border-radius: 16px;
@@ -38,7 +41,7 @@ export const borderRadius = {
     border-radius: 12px;
   `,
   item: css`
-    border-radius: 12px;
+    border-radius: 5px;
   `,
   circle: css`
     border-radius: 1000px;

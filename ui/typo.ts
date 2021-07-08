@@ -22,6 +22,11 @@ export const SecondaryText = styled.span`
   font-weight: 400;
 `;
 
+export const ValueText = styled.span`
+  font-size: ${fontSize.label};
+  font-weight: 600;
+`;
+
 export const FieldLabel = styled.label`
   color: #b4b4b4;
   font-size: 12px;

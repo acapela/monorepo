@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FieldWithName } from "~ui/forms/FieldWithName";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Modal } from "~frontend/ui/Modal";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
@@ -11,9 +10,12 @@ import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { InputError } from "~ui/forms/InputError";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
+import { TextInput } from "~ui/forms/TextInput";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
 import { TeamMembersPicker } from "./TeamMembersPicker";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
+import { IconCommentText } from "~ui/icons";
+import { AnimateSharedLayout } from "framer-motion";
 
 interface RoomInputInitialData {
   name?: string;
@@ -104,20 +106,20 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
       <Modal onCloseRequest={() => resolve(null)}>
         <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
           <UIFormFields>
-            <UIRoomNameInput
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              autoFocus
-              placeholder="Room name"
-            />
+            <AnimateSharedLayout>
+              <TextInput
+                icon={<IconCommentText />}
+                value={roomName}
+                onChangeText={setRoomName}
+                autoFocus
+                placeholder="Room name"
+              />
+            </AnimateSharedLayout>
             <SpacePicker selectedSpaceId={selectedSpaceId} onChange={setSelectedSpaceId} />
-            <FieldWithName label="Participants">
-              <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
-            </FieldWithName>
 
-            <FieldWithName label="Due date">
-              <DateTimeInput value={deadline} onChange={setDeadline} />
-            </FieldWithName>
+            <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
+
+            <DateTimeInput value={deadline} onChange={setDeadline} label="Set a due date" />
           </UIFormFields>
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
@@ -145,18 +147,7 @@ const UIForm = styled.form`
 const UIFormFields = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 36px;
-`;
-
-const UIRoomNameInput = styled.input`
-  text-align: center;
-  font-size: 24px;
-
-  outline: none;
-
-  ::placeholder {
-    color: #b4b4b4;
-  }
+  gap: 16px;
 `;
 
 const UIBottomArea = styled.div`
