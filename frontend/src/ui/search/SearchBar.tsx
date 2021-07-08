@@ -27,11 +27,7 @@ const PureSearchBar = ({ className }: Props) => {
 
   return (
     <div className={className}>
-      <SearchInput
-        placeholder="Search for messages, transcriptions, rooms, and topics"
-        value={value}
-        onChangeText={(text) => setValue(text)}
-      />
+      <SearchInput placeholder="Search..." value={value} onChangeText={(text) => setValue(text)} />
       {searchTerm && <SearchResults searchTerm={searchTerm} results={searchResults} />}
     </div>
   );

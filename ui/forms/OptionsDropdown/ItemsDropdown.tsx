@@ -76,7 +76,14 @@ const UIMenu = styled(PopPresenceAnimator)`
   overflow-y: auto;
   border: 1px solid ${BACKGROUND_ACCENT};
   width: 100%;
+  padding: 12px;
   ${borderRadius.menu};
   background: #ffffff;
-  ${shadow.modal}
+  ${shadow.popover}
+
+  ${DropdownItem} {
+    &:not(:last-child) {
+      margin-bottom: 4px;
+    }
+  }
 `;

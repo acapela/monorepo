@@ -23,21 +23,38 @@ function getDefaultSize(ref: RefObject<HTMLElement>): PlainDomRect {
   return rect;
 }
 
+function getSerializableBoundingBox(box: DOMRect): PlainDomRect {
+  const rect: PlainDomRect = {
+    bottom: box.bottom,
+    top: box.top,
+    left: box.left,
+    right: box.right,
+    x: box.x,
+    y: box.y,
+    height: box.height,
+    width: box.width,
+  };
+
+  return rect;
+}
+
 /**
  * Will return current bounding box of an element.
  */
 export function useBoundingBox(ref: RefObject<HTMLElement>) {
   const [box, setBox] = useEqualState<PlainDomRect>(() => getDefaultSize(ref));
 
-  useResizeCallback(ref, (entry) => {
-    setBox(entry.contentRect);
-  });
-
-  useLayoutEffect(() => {
+  function updateBox() {
     if (!ref.current) return;
 
-    setBox(ref.current.getBoundingClientRect());
-  }, []);
+    const newBox = getSerializableBoundingBox(ref.current.getBoundingClientRect());
+
+    setBox(newBox);
+  }
+
+  useResizeCallback(ref, updateBox);
+
+  useLayoutEffect(updateBox, []);
 
   return box;
 }

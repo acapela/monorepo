@@ -3,6 +3,7 @@ import { UserBasicInfoFragment } from "~gql";
 import { MultipleOptionsDropdown } from "~ui/forms/OptionsDropdown/multiple";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { IconUsers } from "~ui/icons";
 
 interface Props {
   selectedMemberIds: string[];
@@ -16,6 +17,7 @@ export const TeamMembersPicker = ({ selectedMemberIds, onChange }: Props) => {
 
   return (
     <MultipleOptionsDropdown<UserBasicInfoFragment>
+      icon={<IconUsers />}
       items={teamMembers}
       selectedItems={selectedMembers}
       onChange={(members) => {
@@ -24,7 +26,7 @@ export const TeamMembersPicker = ({ selectedMemberIds, onChange }: Props) => {
       keyGetter={(user) => user.id}
       labelGetter={(user) => user.name ?? user.email ?? "Unknown user"}
       placeholder="Select participants"
-      iconGetter={(user) => <UserAvatar size="font-size" user={user} />}
+      iconGetter={(user) => <UserAvatar size="small" user={user} />}
     />
   );
 };

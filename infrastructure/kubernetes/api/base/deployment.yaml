@@ -17,29 +17,29 @@ spec:
     spec:
       serviceAccountName: gsm
       containers:
-        - name: backend
-          image: eu.gcr.io/meetnomoreapp/monorepo:1.19.0
-          command: ["yarn", "run", "start:backend"]
-          ports:
-            - containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: api-default
-          env:
-            - name: BACKEND_PORT
-              value: "8080"
-          readinessProbe:
-            httpGet:
-              port: 8080
-              path: /healthz
-            initialDelaySeconds: 20
-            timeoutSeconds: 5
-        - name: cloudsql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
-          command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
-          envFrom:
-            - configMapRef:
-                name: api-default
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsUser: 2 # non-root user
+      - name: backend
+        image: eu.gcr.io/meetnomoreapp/monorepo:1.19.0
+        command: ["yarn", "run", "start:backend"]
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: api-default
+        env:
+        - name: BACKEND_PORT
+          value: "8080"
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+          initialDelaySeconds: 20
+          timeoutSeconds: 5
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.19.2
+        command: ["/cloud_sql_proxy", "-ip_address_types=PRIVATE", "-instances=meetnomoreapp:europe-west1:$(CLOUDSQL_INSTANCE_NAME)=tcp:5432"]
+        envFrom:
+        - configMapRef:
+            name: api-default
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 2 # non-root user

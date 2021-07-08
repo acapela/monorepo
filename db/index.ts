@@ -12,7 +12,6 @@ export type {
   user as User,
   verification_requests as VerificationRequest,
   attachment as Attachment,
-  message_attachment as MessageAttachments,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
   team as Team,

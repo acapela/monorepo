@@ -5,11 +5,12 @@ import { handleTeamInvitationCreated } from "../teamInvitation/events";
 import { handleRoomUpdates } from "../rooms/events";
 import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
-import { handleMessageCreated, prepareMessagePlainTextData } from "../messages/events";
+import { prepareMessagePlainTextData } from "../messages/events";
 import { handleSpaceUpdates } from "../spaces/events";
 import { handleTopicCreated } from "../topics/events";
 import { handleUserCreated } from "../users/events";
 import { handleRoomParticipantCreated } from "~backend/src/roomInvitation/events";
+import { handleAttachmentUpdates } from "~backend/src/attachments/events";
 
 export const router = Router();
 
@@ -17,7 +18,7 @@ hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates)
 hasuraEvents.addHandler("topic_updates", ["INSERT"], handleTopicCreated);
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
-hasuraEvents.addHandler("message_updates", "INSERT", handleMessageCreated);
+hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantCreated);

@@ -1,11 +1,13 @@
 import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { SELECTED_ITEM_COLOR } from "~ui/colors";
 import { OptionLabel } from "./OptionLabel";
 
 export const SelectedOptionPreview = styled(OptionLabel)`
-  background-color: ${BACKGROUND_ACCENT};
-  padding: 8px;
+  background-color: ${SELECTED_ITEM_COLOR};
+  padding: 4px;
+  padding-right: 12px;
+  min-height: 32px;
   white-space: nowrap;
-  ${borderRadius.item};
+  ${borderRadius.circle};
 `;

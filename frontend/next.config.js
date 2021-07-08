@@ -3,6 +3,7 @@ process.env.APP = "frontend";
 const withPlugins = require("next-compose-plugins");
 const bundleAnalyzer = require("@next/bundle-analyzer");
 const withTranspileModules = require("next-transpile-modules");
+const { withSentryConfig } = require("@sentry/nextjs");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
@@ -121,6 +122,15 @@ module.exports = withPlugins(
     ],
     //
     createTsPackagesPlugin(),
+    [
+      withSentryConfig,
+      {
+        sentry: {
+          disableServerWebpackPlugin: true,
+          disableClientWebpackPlugin: true,
+        },
+      },
+    ],
   ],
   {
     typescript: {

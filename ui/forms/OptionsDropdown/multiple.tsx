@@ -3,12 +3,9 @@ import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
-import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
-import { IconChevronDown, IconPlus } from "~ui/icons";
-import { hoverActionCss } from "~ui/transitions";
+import { IconPlus } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { FieldWithName } from "../FieldWithName";
+import { FieldWithLabel } from "../FieldWithLabel";
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
 import { SelectedOptionPreview } from "./SelectedOptionPreview";
@@ -30,6 +27,7 @@ interface Props<I> {
   placeholder?: string;
   selectedItemsPreviewRenderer?: (items: I[]) => ReactNode;
   closeAfterItemPicked?: boolean;
+  icon?: ReactNode;
 }
 
 export function MultipleOptionsDropdown<I>({
@@ -40,16 +38,18 @@ export function MultipleOptionsDropdown<I>({
   labelGetter,
   iconGetter,
   newItem,
-  placeholder,
   onChange,
   onItemSelected,
   onItemUnselected,
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
+  icon,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isOpened, { unset: close, toggle }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
+
+  const hasSelection = selectedKeys.length > 0;
 
   function handleItemPicked(pickedItem: I) {
     if (closeAfterItemPicked) {
@@ -79,9 +79,9 @@ export function MultipleOptionsDropdown<I>({
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
 
   return (
-    <FieldWithName label={name} onLabelClick={toggle}>
+    <FieldWithLabel ref={openerRef} label={name} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
       <UIHolder>
-        <UIMenuOpener ref={openerRef} onClick={toggle}>
+        <UIMenuOpener>
           {selectedItems.length > 0 && (
             <UISelectedItemsPreview>
               {selectedItemsPreviewRenderer && selectedItemsPreviewRenderer(selectedItems)}
@@ -93,9 +93,6 @@ export function MultipleOptionsDropdown<I>({
                 })}
             </UISelectedItemsPreview>
           )}
-          {selectedItems.length === 0 && placeholder}
-
-          <IconChevronDown />
         </UIMenuOpener>
         <AnimatePresence>
           {isOpened && (
@@ -127,34 +124,20 @@ export function MultipleOptionsDropdown<I>({
           )}
         </AnimatePresence>
       </UIHolder>
-    </FieldWithName>
+    </FieldWithLabel>
   );
 }
 
 const UIHolder = styled.div`
   position: relative;
   min-width: 0;
+  display: flex;
+  flex-grow: 1;
 `;
 
 const UIMenuOpener = styled.div`
-  outline: none;
-  width: 100%;
+  padding: 12px 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  ${hoverActionCss}
-  padding: 8px 16px;
-  cursor: pointer;
-  background: #ffffff;
-  border-radius: ${borderRadius.input};
-  border: 1px solid ${BACKGROUND_ACCENT};
-  text-align: start;
-  min-width: 0;
-
-  svg {
-    font-size: 24px;
-    min-width: 24px;
-  }
 `;
 
 const UIDropdownHolder = styled.div``;

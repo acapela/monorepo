@@ -26,7 +26,6 @@ const UIHolder = styled.div`
 
   ${SecondaryText} {
     flex: 1;
-    font-weight: bold;
   }
 
   svg {

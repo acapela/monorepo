@@ -46,9 +46,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
         transcript
       }
       message_attachments {
-        attachment {
-          ...AttachmentDetailedInfo
-        }
+        ...AttachmentDetailedInfo
       }
       message_reactions {
         ...ReactionBasicInfo
@@ -77,19 +75,12 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
   () => gql`
     ${MessageFeedInfoFragment()}
 
-    mutation CreateMessage(
-      $topicId: uuid!
-      $content: jsonb!
-      $type: message_type_enum!
-      $attachments: [message_attachment_insert_input!]!
-      $replied_to_message_id: uuid
-    ) {
+    mutation CreateMessage($topicId: uuid!, $content: jsonb!, $type: message_type_enum!, $replied_to_message_id: uuid) {
       message: insert_message_one(
         object: {
           content: $content
           topic_id: $topicId
           type: $type
-          message_attachments: { data: $attachments }
           replied_to_message_id: $replied_to_message_id
           is_draft: false
         }

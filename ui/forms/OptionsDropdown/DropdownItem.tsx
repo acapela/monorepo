@@ -1,7 +1,9 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { IconCheckCircle } from "~ui/icons";
-import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
+import { setColorOpacity } from "~shared/colors";
+import { borderRadius } from "~ui/baseStyles";
+import { PRIMARY_PINK_1 } from "~ui/colors";
+import { IconCheck } from "~ui/icons";
 import { OptionLabel } from "./OptionLabel";
 
 interface Props {
@@ -12,9 +14,10 @@ interface Props {
   onStopHighlightRequest?: () => void;
   isHighlighted?: boolean;
   isSelected?: boolean;
+  className?: string;
 }
 
-export function DropdownItem({
+export const DropdownItem = styled(function DropdownItem({
   label,
   icon,
   onClick,
@@ -22,9 +25,11 @@ export function DropdownItem({
   isSelected = false,
   onHighlightRequest,
   onStopHighlightRequest,
+  className,
 }: Props) {
   return (
     <UIOption
+      className={className}
       isHighlighted={isHighlighted}
       onMouseEnter={onHighlightRequest}
       onMouseLeave={onStopHighlightRequest}
@@ -36,10 +41,10 @@ export function DropdownItem({
       }}
     >
       <OptionLabel icon={icon} label={label} />
-      {isSelected && <IconCheckCircle />}
+      {isSelected && <IconCheck />}
     </UIOption>
   );
-}
+})``;
 
 const UIOption = styled.div<{ isHighlighted: boolean }>`
   display: flex;
@@ -49,6 +54,9 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   display: flex;
   align-items: center;
   cursor: pointer;
+  ${borderRadius.item};
+  border: 1px solid transparent;
+  transition: 0.15s all;
 
   svg {
     font-size: 24px;
@@ -59,12 +67,17 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   }
 
   &:hover {
-    background-color: ${ACTION_ACTIVE_COLOR};
+    background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+  }
+
+  svg {
+    color: ${PRIMARY_PINK_1};
   }
 
   ${(props) =>
     props.isHighlighted &&
     css`
-      background-color: ${ACTION_ACTIVE_COLOR};
+      border: 1px solid ${PRIMARY_PINK_1};
+      background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
     `}
 `;

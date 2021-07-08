@@ -7,11 +7,13 @@ import { createPromiseUI } from "~ui/createPromiseUI";
 import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { InputValidatorFunction } from "~shared/validation/inputValidation";
+import { ReactNode } from "react";
 
 interface PromptInput {
   title: string;
   description?: string;
   placeholder?: string;
+  inputIcon?: ReactNode;
   submitLabel?: string;
   initialValue?: string;
   anchor?: ModalAnchor;
@@ -21,7 +23,10 @@ interface PromptInput {
 type PromptResult = string | null;
 
 export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
-  ({ title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor, validateInput }, resolve) => {
+  (
+    { title, initialValue = "", submitLabel = "Submit", placeholder, description, anchor, validateInput, inputIcon },
+    resolve
+  ) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [value, setValue] = useState(initialValue);
     const [shouldShowValidationError, { set: showValidationErrors }] = useBoolean(false);
@@ -69,6 +74,7 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
         <UIContentWrapper>
           <TextInput
             ref={inputRef}
+            icon={inputIcon}
             onBlur={showValidationErrors}
             autoFocus
             placeholder={placeholder}

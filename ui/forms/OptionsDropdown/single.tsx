@@ -16,6 +16,7 @@ interface Props<I> {
     label: string;
   };
   placeholder?: string;
+  icon?: ReactNode;
 }
 
 export function SingleOptionDropdown<I>({
@@ -28,10 +29,12 @@ export function SingleOptionDropdown<I>({
   newItem,
   placeholder,
   onChange,
+  icon,
 }: Props<I>) {
   return (
     <MultipleOptionsDropdown<I>
       name={name}
+      icon={icon}
       items={items}
       selectedItems={selectedItem ? [selectedItem] : []}
       keyGetter={keyGetter}

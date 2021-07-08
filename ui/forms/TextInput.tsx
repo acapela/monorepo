@@ -1,35 +1,48 @@
-import { ChangeEvent, forwardRef, InputHTMLAttributes } from "react";
-import { AnimatePresence } from "framer-motion";
+import { HTMLMotionProps, motion } from "framer-motion";
+import { ChangeEvent, forwardRef, ReactNode } from "react";
 import styled from "styled-components";
-import { InputError } from "./InputError";
-import { baseInputStyles } from "./utils";
+import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { FieldWithLabel } from "./FieldWithLabel";
 
-export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface TextInputProps extends HTMLMotionProps<"input"> {
   onChangeText?: (text: string) => void;
   errorMessage?: string;
+  icon?: ReactNode;
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(props, ref) {
-  const { onChangeText, errorMessage, ...regularProps } = props;
+  const inputRef = useSharedRef<HTMLInputElement | null>(null, [ref]);
+  const { onChangeText, errorMessage, placeholder, icon, ...regularProps } = props;
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    regularProps?.onChange?.(event);
-
+  function handleChangeText(event: ChangeEvent<HTMLInputElement>) {
     onChangeText?.(event.target.value);
   }
 
+  const assertedValue = `${props.value ?? ""}`;
+
+  const shouldPushLabel = assertedValue.length > 0;
+
   return (
-    <UIHolder>
-      <TextInputElem ref={ref} {...regularProps} onChange={handleChange} />
-      <AnimatePresence exitBeforeEnter>{errorMessage && <InputError message={errorMessage} />}</AnimatePresence>
-    </UIHolder>
+    <FieldWithLabel
+      onClick={() => {
+        inputRef.current?.focus();
+      }}
+      pushLabel={shouldPushLabel}
+      icon={icon}
+      hasError={!!errorMessage}
+      label={placeholder}
+    >
+      <TextInputElem ref={inputRef} {...regularProps} onChange={combineCallbacks(props.onChange, handleChangeText)} />
+    </FieldWithLabel>
   );
 });
 
-const UIHolder = styled.div``;
-
-const TextInputElem = styled.input`
-  ${baseInputStyles}
-
-  height: 38px;
+const TextInputElem = styled(motion.input)`
+  padding: 16px 16px 16px 0;
+  width: 100%;
+  border: none;
+  box-sizing: border-box;
+  outline: none;
+  background: transparent;
 `;

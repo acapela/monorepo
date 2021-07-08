@@ -6,7 +6,7 @@ export const baseInputStyles = css`
   flex-direction: row;
   align-items: center;
 
-  padding: 8px 16px;
+  padding: 16px;
   width: 100%;
 
   border: 1px solid hsla(0, 0%, 75%, 0.25);
