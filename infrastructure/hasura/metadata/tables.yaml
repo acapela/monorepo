@@ -33,17 +33,7 @@
           - message_id
           - mime_type
           - original_name
-        filter:
-          message:
-            topic:
-              _or:
-                - members:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-                - room:
-                    members:
-                      user_id:
-                        _eq: X-Hasura-User-Id
+        filter: {}
   update_permissions:
     - role: user
       permission:
@@ -52,14 +42,8 @@
           - message_id
           - mime_type
           - original_name
-        filter:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
-        check:
-          message:
-            user_id:
-              _eq: X-Hasura-User-Id
+        filter: {}
+        check: {}
   delete_permissions:
     - role: user
       permission:
