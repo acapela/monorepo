@@ -4,12 +4,11 @@ import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { getSonixClient, MediaResponse } from "./sonixClient";
 
 export async function sendForTranscription(messageId: string) {
-  const messageAttachment = await db.message_attachment.findFirst({
+  const messageAttachment = await db.attachment.findFirst({
     where: { message_id: messageId },
-    include: { attachment: true },
   });
 
-  const attachment = assertGet(messageAttachment?.attachment, "Message to be transcribed has no attachment");
+  const attachment = assertGet(messageAttachment, "Message to be transcribed has no attachment");
   const sonix = getSonixClient();
   const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);
   const language = "en";
