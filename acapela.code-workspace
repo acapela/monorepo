@@ -1,7 +1,40 @@
 {
   "folders": [
     {
-      "path": "."
+      "path": "./frontend"
+    },
+    {
+      "path": "./backend"
+    },
+    {
+      "path": "./config"
+    },
+    {
+      "path": "./db"
+    },
+    {
+      "path": "./docs"
+    },
+    {
+      "path": "./gql"
+    },
+    {
+      "path": "./infrastructure"
+    },
+    {
+      "path": "./richEditor"
+    },
+    {
+      "path": "./scripts"
+    },
+    {
+      "path": "./shared"
+    },
+    {
+      "path": "./tooling"
+    },
+    {
+      "path": "./ui"
     }
   ],
   "settings": {
