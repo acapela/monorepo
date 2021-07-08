@@ -6,6 +6,7 @@ import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
 import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export function TeamPickerView() {
   const [teams = []] = useTeamsQuery();
@@ -28,6 +29,8 @@ export function TeamPickerView() {
     const slug = slugify(name);
 
     await createTeam({ name, slug });
+
+    trackEvent("Account Created");
   }
 
   async function handleChangeTeam(teamId: string) {
