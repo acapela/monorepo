@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { TopicsList } from "./TopicsList";
 import { DeadlineManager } from "./DeadlineManager";
-import { TextH3, TextBody, TextBody12 } from "~ui/typo";
+import { TextH3, TextBody12 } from "~ui/typo";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { TextBody, TextH3 } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
 

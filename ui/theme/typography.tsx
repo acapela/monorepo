@@ -248,7 +248,3 @@ function getActiveVariant<N extends string>(prop: VariantProp<N>, propsList: N[]
 
   return activeVariant ?? null;
 }
-
-function getVariantValue<N extends string, V>(variant: N, valuesMap: Record<N, V>): V {
-  return valuesMap[variant];
-}

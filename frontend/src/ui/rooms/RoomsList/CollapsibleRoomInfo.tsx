@@ -11,7 +11,7 @@ import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { CardBase } from "~ui/card/Base";
-import { TextH3, TextH4 } from "~ui/typo";
+import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";

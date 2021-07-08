@@ -1,4 +1,4 @@
-import { HTMLMotionProps, motion } from "framer-motion";
+import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
