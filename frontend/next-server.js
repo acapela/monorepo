@@ -20,7 +20,7 @@ if (["staging", "production"].includes(stage)) {
     environment: stage,
   });
 } else {
-  console.log(`Sentry disabled for ${stage}`);
+  console.info(`Sentry disabled for ${stage}`);
 }
 
 const production = process.env.NODE_ENV === "production";
