@@ -6,7 +6,6 @@ import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
-
 import { createGlobalStyle } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
@@ -19,6 +18,7 @@ import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 interface AddedProps {
   session: Session;
@@ -46,7 +46,10 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <AnalyticsManager />
+      <ClientSideOnly>
+        <AnalyticsManager />
+      </ClientSideOnly>
+
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>

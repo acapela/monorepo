@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { identifyUser, identifyUserGroup } from "./tracking";
 import { SegmentScript } from "./SegmentScript";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
 
 export function AnalyticsManager() {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
@@ -39,8 +40,8 @@ export function AnalyticsManager() {
   }, [currentUser, isSegmentLoaded]);
 
   return (
-    <>
+    <ErrorBoundary errorFallback={null}>
       <SegmentScript />
-    </>
+    </ErrorBoundary>
   );
 }
