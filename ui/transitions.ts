@@ -26,8 +26,6 @@ export const hoverActionNegativeSpacingCss = css`
 `;
 
 export const hoverActionCss = css`
-  ${borderRadius.button}
-
   ${hoverTransition()}
 
   &:hover {

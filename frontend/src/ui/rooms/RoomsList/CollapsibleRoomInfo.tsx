@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronDown, IconChevronRight } from "~ui/icons";
+import { IconChevronDown } from "~ui/icons";
 import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -28,7 +28,7 @@ interface Props {
   className?: string;
 }
 
-const INITIAL_TOPICS_SHOWN_LIMIT = 5;
+const INITIAL_TOPICS_SHOWN_LIMIT = 3;
 const TOPICS_SHOWN_WITHOUT_LIMIT = Number.POSITIVE_INFINITY;
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
@@ -65,7 +65,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
+            <IconButton shape={"circle"} icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
@@ -129,7 +129,7 @@ const UICollapseHolder = styled.div<{ isOpened: boolean }>`
     svg {
       transform: rotateZ(
         ${(props) => {
-          return props.isOpened ? "90deg" : "0deg";
+          return props.isOpened ? "0deg" : "180deg";
         }}
       );
       transition: 0.15s all;
