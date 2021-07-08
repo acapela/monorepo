@@ -6,19 +6,19 @@ import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
-import Script from "next/script";
+
 import { createGlobalStyle } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
-import segmentSnippet from "~frontend/scripts/segment";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
+import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 
 interface AddedProps {
   session: Session;
@@ -46,7 +46,7 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <AnalyticsPlugin />
+      <AnalyticsManager />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
@@ -73,16 +73,6 @@ const CommonMetadata = () => {
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     </Head>
-  );
-};
-
-const AnalyticsPlugin = () => {
-  return (
-    <Script
-      dangerouslySetInnerHTML={{
-        __html: segmentSnippet(),
-      }}
-    />
   );
 };
 

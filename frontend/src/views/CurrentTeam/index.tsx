@@ -8,6 +8,7 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
 import { ItemTitle } from "~ui/typo";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export function CurrentTeamInfoView() {
   const [team] = useCurrentTeamDetails();
@@ -40,6 +41,8 @@ export function CurrentTeamInfoView() {
     if (!teamId) return;
 
     await createTeamInvitation({ email, teamId });
+
+    trackEvent("Invite Sent");
   }
 
   const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
