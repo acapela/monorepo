@@ -9,12 +9,25 @@ export function relativeFormatDate(date: Date): string {
   return upperFirst(formatRelative(date, new Date()));
 }
 
-export function niceFormatDate(date: Date): string {
-  return format(date, "MMM do");
+interface DateFormatOptions {
+  showWeekDay?: "long" | "short";
+}
+function getWeekDayFormat(options?: DateFormatOptions) {
+  if (!options || !options.showWeekDay) return "";
+
+  if (options.showWeekDay === "long") {
+    return "EEEE, ";
+  }
+
+  return "EEE ";
 }
 
-export function niceFormatDateTime(date: Date): string {
-  return format(date, "MMM do") + " at " + niceFormatTime(date);
+export function niceFormatDate(date: Date, options?: DateFormatOptions): string {
+  return format(date, `${getWeekDayFormat(options)}MMM do`);
+}
+
+export function niceFormatDateTime(date: Date, options?: DateFormatOptions): string {
+  return format(date, `${getWeekDayFormat(options)}MMM do`) + " at " + niceFormatTime(date);
 }
 
 export function niceFormatTime(date: Date): string {

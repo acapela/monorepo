@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronDown } from "~ui/icons";
+import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
 import { routes } from "~frontend/routes";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -13,12 +13,12 @@ import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { CardBase } from "~ui/card/Base";
 import { ItemTitle } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { niceFormatDateTime } from "~shared/dates/format";
+import { niceFormatDate } from "~shared/dates/format";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { formatNumberWithMaxValue } from "~shared/numbers";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
+import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { UICardListItem } from "./shared";
-import { ValueDescriptor, UIValueDescriptorSeparator } from "~ui/meta/ValueDescriptor";
+import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 
@@ -58,10 +58,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 
   return (
     <UIHolder className={className}>
-      {unreadNotificationsCount > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxValue(unreadNotificationsCount, 99)}</ElementNotificationBadge>
-      )}
-
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
@@ -81,15 +77,24 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
             </ItemTitle>
 
             <UIRoomMetaData>
-              <ValueDescriptor title="Due date" value={niceFormatDateTime(new Date(room.deadline))} />
-              <UIValueDescriptorSeparator />
-              {space && <ValueDescriptor title="Space" value={space.name} />}
-              <UIValueDescriptorSeparator />
-              <ValueDescriptor title="Topics" value={topics.length} />
+              <ValueDescriptor
+                keyNode={
+                  <NotificationCount hasNotification={unreadNotificationsCount > 0}>
+                    {formatNumberWithMaxValue(unreadNotificationsCount, 9)}
+                  </NotificationCount>
+                }
+                value={"New Messages"}
+              />
+              <ValueDescriptor keyNode={<IconComment2Dots />} isIconKey value={`${topics.length} Topics`} />
+              <ValueDescriptor
+                keyNode={<IconCalendarDates />}
+                isIconKey
+                value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
+              />
+              {space && <ValueDescriptor keyNode={<IconBox />} isIconKey value={space.name} />}
+              <AvatarList users={room.members.map((membership) => membership.user)} />
             </UIRoomMetaData>
           </UIHeadPrimary>
-
-          <AvatarList users={room.members.map((membership) => membership.user)} />
         </UIHead>
         {isOpen && (
           <UICollapsedItems>
@@ -160,7 +165,7 @@ const UIHeadPrimary = styled.div`
 const UIRoomMetaData = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   padding-top: 16px;
 `;
 

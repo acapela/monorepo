@@ -6,7 +6,7 @@ export function pluralize(count: number, singular: string, plural: string) {
   return `${count} ${plural}`;
 }
 
-export function formatNumberWithMaxValue(inputNumber: number, max: number, alwaysShowMoreIndicator = true) {
+export function formatNumberWithMaxValue(inputNumber: number, max: number, alwaysShowMoreIndicator = false) {
   if (inputNumber < max) {
     if (alwaysShowMoreIndicator) {
       return `${inputNumber}+`;

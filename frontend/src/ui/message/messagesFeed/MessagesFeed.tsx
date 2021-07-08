@@ -47,7 +47,7 @@ export function MessagesFeed({ messages, isReadonly }: Props) {
 }
 
 function DateHeader({ date }: { date: Date }) {
-  return <UIDateHeader>{niceFormatDate(date)}</UIDateHeader>;
+  return <UIDateHeader>{niceFormatDate(date, { showWeekDay: "long" })}</UIDateHeader>;
 }
 
 const UIHolder = styled.div`
