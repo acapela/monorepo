@@ -11,6 +11,9 @@ export const richEditorContentCss = css`
 
   line-height: 1.25;
 
+  max-height: 25vh;
+  overflow: auto;
+
   ol {
     list-style-type: decimal;
   }

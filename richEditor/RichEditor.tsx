@@ -71,6 +71,9 @@ export const RichEditor = ({
     const handleContentUpdate = () => {
       const content = editor.getJSON() as JSONContent;
 
+      // Moves scroll to cursor when new line is added
+      editor.chain().scrollIntoView().run();
+
       onChange(content);
     };
 
