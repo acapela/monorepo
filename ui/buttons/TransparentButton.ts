@@ -1,22 +1,19 @@
 import styled from "styled-components";
 import { Button } from "./Button";
-import { hoverActionCss, hoverActionActiveCss } from "../transitions";
+import { BASE_GREY_2, BASE_GREY_3, BASE_GREY_6 } from "~ui/colors";
 
 export const TransparentButton = styled(Button)`
-  /* Hax: For some reason styled-component adds TransparentButton styles before Button so they have lower priority.
-     Let's make sure they're used with && selector.
-   */
-  && {
-    background-color: transparent;
-    ${(props) => {
-      if (props.onClick) {
-        return hoverActionCss;
-      }
+  color: hsl(214.7, 11.8%, 31.6%);
+  box-shadow: none;
 
-      // If there is no onClick handler - highlight button all the time and don't add hover effect.
-      return hoverActionActiveCss;
-    }}
-
-    color: hsl(214.7, 11.8%, 31.6%);
+  color: ${BASE_GREY_3};
+  background: transparent;
+  &:hover {
+    color: ${BASE_GREY_2};
+    background: ${BASE_GREY_6};
+  }
+  &:active {
+    color: ${BASE_GREY_2};
+    background: ${BASE_GREY_6};
   }
 `;

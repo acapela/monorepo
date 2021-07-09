@@ -13,6 +13,8 @@ export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
 export const PRIMARY_TEAL_1 = "hsl(180, 76%, 55%)";
 export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
 export const BASE_GREY_1 = "hsl(0, 2%, 12%)";
+export const BASE_GREY_2 = "hsl(0, 1%, 21%)";
+export const BASE_GREY_3 = "hsl(0, 0%, 47%)";
 export const BASE_GREY_4 = "hsl(0, 0%, 82%)";
 export const BASE_GREY_6 = "hsl(0, 0%, 96%)";
 
