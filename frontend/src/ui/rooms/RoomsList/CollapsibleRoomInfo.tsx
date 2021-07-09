@@ -1,26 +1,26 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { Button } from "~ui/buttons/Button";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconChevronDown, IconChevronRight } from "~ui/icons";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { niceFormatDate } from "~shared/dates/format";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
+import { IconButton } from "~ui/buttons/IconButton";
 import { CardBase } from "~ui/card/Base";
 import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { niceFormatDateTime } from "~shared/dates/format";
-import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { formatNumberWithMaxValue } from "~shared/numbers";
-import { ElementNotificationBadge } from "~frontend/ui/ElementNotificationBadge";
-import { UICardListItem } from "./shared";
-import { ValueDescriptor, UIValueDescriptorSeparator } from "~ui/meta/ValueDescriptor";
+import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
+import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
+import { UICardListItem } from "./shared";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -28,7 +28,7 @@ interface Props {
   className?: string;
 }
 
-const INITIAL_TOPICS_SHOWN_LIMIT = 5;
+const INITIAL_TOPICS_SHOWN_LIMIT = 3;
 const TOPICS_SHOWN_WITHOUT_LIMIT = Number.POSITIVE_INFINITY;
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
@@ -53,26 +53,22 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
     });
   }
 
-  const isRoomOpen = !room.finished_at;
+  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
   const topicsNotShownCount = topics.length - shownTopicsLimit;
 
   return (
     <UIHolder className={className}>
-      {unreadNotificationsCount > 0 && (
-        <ElementNotificationBadge>{formatNumberWithMaxValue(unreadNotificationsCount, 99)}</ElementNotificationBadge>
-      )}
-
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton icon={<IconChevronRight />} onClick={toggleIsOpen} />
+            <IconButton type="tertiary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <TextH4 medium>
+            <TextH4 medium spezia>
               {room.name}{" "}
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
@@ -81,15 +77,24 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
             </TextH4>
 
             <UIRoomMetaData>
-              <ValueDescriptor title="Due date" value={niceFormatDateTime(new Date(room.deadline))} />
-              <UIValueDescriptorSeparator />
-              {space && <ValueDescriptor title="Space" value={space.name} />}
-              <UIValueDescriptorSeparator />
-              <ValueDescriptor title="Topics" value={topics.length} />
+              <ValueDescriptor
+                keyNode={<NotificationCount value={unreadNotificationsCount} />}
+                value={"New Messages"}
+              />
+              <ValueDescriptor
+                keyNode={<IconComment2Dots />}
+                isIconKey
+                value={`${topics.length} Topic${topics.length > 1 ? "s" : ""}`}
+              />
+              <ValueDescriptor
+                keyNode={<IconCalendarDates />}
+                isIconKey
+                value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
+              />
+              {space && <ValueDescriptor keyNode={<IconBox />} isIconKey value={space.name} />}
+              <AvatarList users={room.members.map((membership) => membership.user)} />
             </UIRoomMetaData>
           </UIHeadPrimary>
-
-          <AvatarList users={room.members.map((membership) => membership.user)} />
         </UIHead>
         {isOpen && (
           <UICollapsedItems>
@@ -105,7 +110,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 ...
               </UIShowRemainingTopics>
             )}
-            {isRoomOpen && (
+            {isAbleToAddTopic && (
               <UIAddTopicButton ref={buttonRef} onClick={handleCreateTopic}>
                 Add topic
               </UIAddTopicButton>
@@ -117,19 +122,16 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   );
 })``;
 
-const UIHolder = styled(CardBase)`
-  position: relative;
-`;
+const UIHolder = styled(CardBase)``;
+
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 
   ${IconButton} {
-    font-size: 2rem;
-
     svg {
       transform: rotateZ(
         ${(props) => {
-          return props.isOpened ? "90deg" : "0deg";
+          return props.isOpened ? "0deg" : "180deg";
         }}
       );
       transition: 0.15s all;
@@ -162,7 +164,7 @@ const UIHeadPrimary = styled.div`
 const UIRoomMetaData = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   padding-top: 16px;
 `;
 

@@ -1,10 +1,6 @@
 import React from "react";
-import styled from "styled-components";
-import { IconButton } from "~ui/buttons/IconButton";
-import { ITEM_COVER_COLOR } from "~ui/colors";
-import { IconTrash } from "~ui/icons";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { IconTrash } from "~ui/icons";
 
 interface AttachmentProps {
   onRemoveRequest: () => void;
@@ -24,22 +20,4 @@ export const MessageAttachmentActions = ({ onRemoveRequest }: AttachmentProps) =
       tooltip="Show options..."
     />
   );
-  return (
-    <UIHolder presenceStyles={{ opacity: [0, 1] }}>
-      <IconButton isPrimary icon={<IconTrash />} tooltip="Remove attachment" />
-    </UIHolder>
-  );
 };
-
-const UIHolder = styled(PresenceAnimator)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${ITEM_COVER_COLOR};
-  color: #fff;
-`;

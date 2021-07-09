@@ -35,6 +35,7 @@ export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
 export const WARNING_COLOR = SECONDARY_ORANGE_1;
 export const SELECTED_ITEM_COLOR = "hsl(210, 22%, 96%)";
+export const STRONG_LINE_COLOR = "hsla(0, 0%, 82%, 1)";
 
 /**
  * Those colors are in harmony with the rest of our colors, but are not neccessarily part of our design language.

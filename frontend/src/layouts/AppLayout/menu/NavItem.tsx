@@ -9,6 +9,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { UIPopoverMenuModal } from "~ui/popovers/PopoverMenu";
 import { useIsRoutePathActive } from "~frontend/routes";
 import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
+import { borderRadius } from "~ui/baseStyles";
 
 export interface NavItemInfo {
   key: string;
@@ -71,6 +72,7 @@ const UIHolder = styled.a<{ isActive: boolean; isDisabled?: boolean }>`
   padding: 0.5rem 1rem;
 
   ${hoverActionCss}
+  ${borderRadius.button}
 
   ${(props) =>
     props.isDisabled &&

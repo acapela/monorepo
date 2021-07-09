@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
-import { TextH3 } from "~ui/typo";
+import { TextH6 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
@@ -34,7 +34,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   const { isClosed } = useTopic(topic);
 
-  const [lastMessageWrapped = []] = useTopicMessagesQuery({
+  const [lastMessageWrapped = [], { loading: isLastMessageLoading }] = useTopicMessagesQuery({
     topicId,
     order: "desc",
     limit: 1,
@@ -53,11 +53,23 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
     <UIHolder onClick={handleOpen} className={className}>
       <UIInfo>
         {unreadCount > 0 && <UIUnreadMessagesNotification />}
-        <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
-        {lastMessage && (
+        <UITopicTitle isClosed={isClosed} spezia medium>
+          {topic.name}
+        </UITopicTitle>
+        {isLastMessageLoading && (
+          <UILastMessage>
+            <UILastMessageContent>Loading...</UILastMessageContent>
+          </UILastMessage>
+        )}
+        {lastMessage && !isLastMessageLoading && (
           <UILastMessage>
             <UILastMessageSender size="font-size" user={lastMessage.user} />
             <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
+          </UILastMessage>
+        )}
+        {!lastMessage && !isLastMessageLoading && (
+          <UILastMessage>
+            <UILastMessageContent>No messages in topic</UILastMessageContent>
           </UILastMessage>
         )}
       </UIInfo>
@@ -71,7 +83,7 @@ const UIInfo = styled.div`
   display: grid;
 `;
 
-const UITopicTitle = styled(TextH3)<{ isClosed: boolean }>`
+const UITopicTitle = styled(TextH6)<{ isClosed: boolean }>`
   ${(props) => {
     if (props.isClosed) {
       return css`
@@ -106,10 +118,10 @@ const UILastMessageSender = styled(UserAvatar)``;
 
 const UILastMessageContent = styled.div`
   display: grid;
+  opacity: 0.5;
+  line-height: 1.5rem;
 
   #UILastMessageContent__message {
-    opacity: 0.5;
-    line-height: 1.5rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

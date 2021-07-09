@@ -68,8 +68,10 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   width: 100%;
   align-items: center;
 
-  ${hoverActionCss}
+  ${borderRadius.button}
 
+  ${hoverActionCss}
+  
   ${(props) => {
     if (props.isActive) {
       return css`

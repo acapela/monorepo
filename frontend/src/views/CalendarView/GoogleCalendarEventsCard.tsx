@@ -65,7 +65,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
           </UIName>
           {deadline && (
             <UIMeta>
-              <ValueDescriptor title="Due date" value={niceFormatDateTime(deadline)} />
+              <ValueDescriptor keyNode="Due date" value={niceFormatDateTime(deadline)} />
             </UIMeta>
           )}
         </UIInfo>

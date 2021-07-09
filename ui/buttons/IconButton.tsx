@@ -1,31 +1,33 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { getButtonColorStyles, hoverActionCss } from "../transitions";
 import { ReactNode, forwardRef } from "react";
 import { borderRadius } from "~ui/baseStyles";
-import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK, BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+
+type ActionType = "primary" | "secondary" | "tertiary";
 
 interface Props {
   icon: ReactNode;
   onClick?: () => void;
   className?: string;
   tooltip?: string;
-  isPrimary?: boolean;
+  type?: ActionType;
 }
 
 export const IconButton = styled(
   forwardRef<HTMLButtonElement, Props>(function IconButton(
-    { icon, onClick, className, tooltip, isPrimary = false },
+    { icon, onClick, className, tooltip, type = "secondary" },
     ref
   ) {
     return (
-      <UIHolder ref={ref} data-tooltip={tooltip} onClick={onClick} className={className} isPrimary={isPrimary}>
+      <UIHolder ref={ref} data-tooltip={tooltip} onClick={onClick} className={className} actionType={type}>
         <UIIconHolder>{icon}</UIIconHolder>
       </UIHolder>
     );
   })
 )``;
 
-const UIHolder = styled.button<{ isPrimary: boolean }>`
+const UIHolder = styled.button<{ actionType: ActionType }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -34,8 +36,8 @@ const UIHolder = styled.button<{ isPrimary: boolean }>`
   width: 1.5em;
   height: 1.5em;
 
-  ${borderRadius.button}
-  background-color: transparent;
+  ${borderRadius.circle}
+
   border: none;
   cursor: pointer;
 
@@ -44,11 +46,15 @@ const UIHolder = styled.button<{ isPrimary: boolean }>`
   font-size: 1.5rem;
 
   ${(props) => {
-    if (!props.isPrimary) {
-      return hoverActionCss;
+    if (props.actionType === "primary") {
+      return getButtonColorStyles(BUTTON_BACKGROUND_COLOR);
+    } else if (props.actionType === "tertiary") {
+      return getButtonColorStyles(BACKGROUND_ACCENT_WEAK);
     }
-
-    return getButtonColorStyles(BUTTON_BACKGROUND_COLOR);
+    return css`
+      background-color: transparent;
+      ${hoverActionCss}
+    `;
   }}
 
   svg {
