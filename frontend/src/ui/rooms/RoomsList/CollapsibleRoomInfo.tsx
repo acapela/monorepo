@@ -63,7 +63,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton shape={"circle"} type={"tertiary"} icon={<IconChevronDown />} onClick={toggleIsOpen} />
+            <IconButton shape="circle" type="tertiary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
@@ -87,7 +87,11 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 }
                 value={"New Messages"}
               />
-              <ValueDescriptor keyNode={<IconComment2Dots />} isIconKey value={`${topics.length} Topics`} />
+              <ValueDescriptor
+                keyNode={<IconComment2Dots />}
+                isIconKey
+                value={`${topics.length} Topic${topics.length > 1 ? "s" : ""}`}
+              />
               <ValueDescriptor
                 keyNode={<IconCalendarDates />}
                 isIconKey
