@@ -58,31 +58,31 @@ export const colors = {
 export const TextH1 = styled(motion.h1)<TypographyProps>`
   ${() => typographyCommonStyles};
   ${() => typographyStyles};
-  font-size: 40px;
+  font-size: 2.5rem;
 `;
 
 export const TextH2 = styled(motion.h2)<TypographyProps>`
   ${() => typographyCommonStyles};
   ${() => typographyStyles};
-  font-size: 32px;
+  font-size: 2rem;
 `;
 
 export const TextH3 = styled(motion.h3)<TypographyProps>`
   ${() => typographyCommonStyles};
   ${() => typographyStyles};
-  font-size: 24px;
+  font-size: 1.5rem;
 `;
 
 export const TextH4 = styled(motion.h4)<TypographyProps>`
   ${() => typographyStyles};
   ${() => typographyCommonStyles};
-  font-size: 20px;
+  font-size: 1.25rem;
 `;
 
 export const TextH5 = styled(motion.h5)<TypographyProps>`
   ${() => typographyStyles};
   ${() => typographyCommonStyles};
-  font-size: 18px;
+  font-size: 1.125rem;
 `;
 
 export const TextH6 = styled(motion.h6)<TypographyProps>`
@@ -97,13 +97,13 @@ export const TextBody = styled(motion.p)<TypographyProps>`
 
 export const TextBody14 = styled(motion.p)<TypographyProps>`
   ${() => typographyStyles};
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
 `;
 
 export const TextBody12 = styled(motion.p)<TypographyProps>`
   ${() => typographyStyles};
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 `;
 
