@@ -22,6 +22,7 @@ import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { shadow } from "~ui/baseStyles";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -125,7 +126,9 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 
 const UIHolder = styled(CardBase)`
   position: relative;
+  ${shadow.card}
 `;
+
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 
