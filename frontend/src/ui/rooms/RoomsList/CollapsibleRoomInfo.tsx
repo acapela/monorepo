@@ -21,6 +21,7 @@ import { UICardListItem } from "./shared";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -53,7 +54,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
     });
   }
 
-  const isRoomOpen = !room.finished_at;
+  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
   const topicsNotShownCount = topics.length - shownTopicsLimit;
 
   return (
@@ -110,7 +111,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 ...
               </UIShowRemainingTopics>
             )}
-            {isRoomOpen && (
+            {isAbleToAddTopic && (
               <UIAddTopicButton ref={buttonRef} onClick={handleCreateTopic}>
                 Add topic
               </UIAddTopicButton>
