@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { PageTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -79,7 +79,7 @@ const UIHolder = styled.div`
   justify-content: center;
 `;
 
-const UITitle = styled(PageTitle)<{ isClosed: boolean }>`
+const UITitle = styled(TextH3)<{ isClosed: boolean }>`
   padding: 0 25%;
   text-align: center;
 

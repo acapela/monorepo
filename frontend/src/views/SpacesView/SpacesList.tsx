@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PageTitle } from "~ui/typo";
+import { TextH3, TextBody14 } from "~ui/typo";
 import { useTeamSpacesQuery } from "~frontend/gql/spaces";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
@@ -22,7 +22,9 @@ export function SpacesList() {
       {hasNoSpaces && <NoticeLabel>No spaces yet</NoticeLabel>}
       {mySpaces.length > 0 && (
         <UISpacesGroup key="mine">
-          <PageTitle>Joined spaces</PageTitle>
+          <TextBody14 secondary speziaMono>
+            Joined spaces
+          </TextBody14>
           <UISpaces>
             {mySpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;
@@ -32,7 +34,9 @@ export function SpacesList() {
       )}
       {notJoinedSpaces.length > 0 && (
         <UISpacesGroup key="to-join">
-          <PageTitle>Other spaces</PageTitle>
+          <TextBody14 secondary speziaMono>
+            Other spaces
+          </TextBody14>
           <UISpaces>
             {notJoinedSpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;
@@ -45,13 +49,17 @@ export function SpacesList() {
 }
 
 const UIHolder = styled.div`
-  ${PageTitle} {
+  ${TextH3} {
     margin-bottom: 2rem;
   }
 `;
 
 const UISpacesGroup = styled.div`
   margin-bottom: 48px;
+
+  ${TextBody14} {
+    margin-bottom: 16px;
+  }
 `;
 
 const UISpaces = styled.div`

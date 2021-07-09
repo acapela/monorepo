@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { TextTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 import { Modal } from "~frontend/ui/Modal";
 import { TextArea } from "~ui/forms/TextArea";
 import { Button } from "~ui/buttons/Button";
@@ -64,8 +64,7 @@ const UIBody = styled.div`
   text-align: center;
 `;
 
-const UITitle = styled(TextTitle)`
-  font-size: 2rem;
+const UITitle = styled(TextH3)`
   padding-bottom: 16px;
 `;
 

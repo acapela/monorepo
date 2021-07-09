@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR } from "~ui/colors";
 import { IconChevronDown } from "~ui/icons";
 
 export interface Props {
@@ -91,7 +91,6 @@ const UIIconHolder = styled.div`
 
 const UIPlaceholdersHolder = styled.div`
   display: flex;
-  opacity: 0.6;
   max-width: 100%;
 `;
 
@@ -102,6 +101,7 @@ const sharedPlaceholderStyles = css`
   overflow: hidden;
   text-overflow: ellipsis; /* This is to avoid bottom of letters like jg to be hidden by overflow: hidden */
   height: 1.5em;
+  color: ${SECONDARY_TEXT_COLOR};
 `;
 
 const UIPlaceholder = styled(motion.div)`
@@ -111,13 +111,14 @@ const UIPlaceholder = styled(motion.div)`
   align-self: center;
 `;
 const UIFocusedPlaceholder = styled(motion.div)`
+  ${sharedPlaceholderStyles}
   align-self: flex-start;
   font-size: 12px;
   background-color: #fff;
-  opacity: 0.6;
 
   /* Move it up by half of its height and border to be 'crossing' the top border in the middle of its height */
-  margin-top: calc(-0.75em + 1px);
+  margin-top: calc(-0.75em + 2px);
+  box-shadow: 0 0 0px 6px #fff;
 `;
 
 const UIContentHolder = styled.div`

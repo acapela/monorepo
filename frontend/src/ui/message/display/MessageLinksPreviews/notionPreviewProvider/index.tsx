@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { IconNotionLogo } from "~ui/icons";
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
-import { TextTitle } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { getNotionPreviewText } from "./getNotionPreviewText";
 import { BACKGROUND_ACCENT_WEAK, BACKGROUND_ACCENT } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
@@ -30,7 +30,7 @@ export const notionPreviewProvider: MessageEmbedPreviewConfig = {
       <a href={url} target="_blank" rel="noopener noreferrer">
         <UICard>
           <IconNotionLogo />
-          <TextTitle>{previewText}</TextTitle>
+          <TextBody semibold>{previewText}</TextBody>
         </UICard>
       </a>
     );

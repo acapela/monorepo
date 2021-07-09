@@ -86,7 +86,7 @@ const UIDayButton = styled(TransparentButton)<{ isToday: boolean; isSelected: bo
     ${(props) => {
       if (props.isDisabled) {
         return css`
-          opacity: 0.2;
+          opacity: 0.4;
         `;
       }
 

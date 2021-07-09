@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
 import { RadioOption } from "~ui/forms/RadioOption";
 import { useRendersCount } from "react-use";
-import { SecondaryText } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import styled from "styled-components";
 
 interface Props {
@@ -44,7 +44,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
         return (
           <div key={minutes} ref={isSelected ? selectedElement : undefined}>
             <RadioOption value={minutes} onSelect={() => onChange(minutes)} name="time" selected={isSelected}>
-              <SecondaryText>{format(addMinutes(dayStart, minutes), "p")}</SecondaryText>
+              <TextBody>{format(addMinutes(dayStart, minutes), "p")}</TextBody>
             </RadioOption>
           </div>
         );
@@ -54,7 +54,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
 };
 
 const UIHolder = styled.div`
-  ${SecondaryText} {
+  ${TextBody} {
     font-weight: bold;
   }
 `;

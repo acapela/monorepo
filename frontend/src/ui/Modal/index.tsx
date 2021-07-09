@@ -7,7 +7,7 @@ import { IconCross } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { SecondaryText } from "~ui/typo";
+import { TextBody, TextH3 } from "~ui/typo";
 import { ScreenCover } from "./ScreenCover";
 
 export interface ModalAnchor {
@@ -42,18 +42,20 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
     >
       {hasCloseButton && (
         <UIToolbar>
+          <UIHead>
+            {head && (
+              <>
+                <TextH3 speziaExtended semibold>
+                  {head.title}
+                </TextH3>
+                <TextBody secondary>{head.description}</TextBody>
+              </>
+            )}
+          </UIHead>
           <IconButton icon={<IconCross />} onClick={onCloseRequest} />
         </UIToolbar>
       )}
-      <UIBody>
-        {head && (
-          <UIHead>
-            <UIHeadTitle>{head.title}</UIHeadTitle>
-            <SecondaryText>{head.description}</SecondaryText>
-          </UIHead>
-        )}
-        {children}
-      </UIBody>
+      <UIBody>{children}</UIBody>
     </UIModal>
   );
 
@@ -83,9 +85,7 @@ const UIModal = styled(PresenceAnimator)`
 `;
 
 const UIHead = styled.div`
-  line-height: 1.5;
-  text-align: center;
-  margin-bottom: 32px;
+  flex: 1;
 `;
 
 const UIBody = styled.div`
@@ -93,10 +93,12 @@ const UIBody = styled.div`
   padding: 24px;
 `;
 
-const UIHeadTitle = styled.div``;
-
 const UIToolbar = styled.div`
   display: flex;
-  justify-content: flex-end;
-  padding: 16px 16px 0;
+  padding: 24px 24px 0;
+  margin-bottom: 32px;
+
+  ${IconButton} {
+    margin-top: -4px;
+  }
 `;

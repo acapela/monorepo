@@ -11,7 +11,7 @@ import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { CardBase } from "~ui/card/Base";
-import { ItemTitle } from "~ui/typo";
+import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -72,13 +72,13 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <ItemTitle>
+            <TextH4 medium>
               {room.name}{" "}
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
               )}
               {room.is_private && <PrivateTag />}
-            </ItemTitle>
+            </TextH4>
 
             <UIRoomMetaData>
               <ValueDescriptor title="Due date" value={niceFormatDateTime(new Date(room.deadline))} />
@@ -152,7 +152,7 @@ const UIHeadPrimary = styled.div`
   flex: 1;
   cursor: pointer;
 
-  ${ItemTitle} {
+  ${TextH4} {
     display: flex;
     align-items: center;
     gap: 8px;
