@@ -11,7 +11,6 @@ import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { shadow } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
 import { CardBase } from "~ui/card/Base";
@@ -123,9 +122,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   );
 })``;
 
-const UIHolder = styled(CardBase)`
-  position: relative;
-`;
+const UIHolder = styled(CardBase)``;
 
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
