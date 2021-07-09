@@ -1,10 +1,11 @@
-import { HTMLMotionProps, motion } from "framer-motion";
+import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { getButtonColorStyles } from "~ui/transitions";
 import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { TextBody } from "~ui/typo";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -49,6 +50,8 @@ export const Button = styled(
         isWide={isWide}
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}
+        spezia
+        medium
         {...finalProps}
       >
         {iconPosition === "start" && iconNode}
@@ -60,8 +63,8 @@ export const Button = styled(
   })
 )``;
 
-export const UIButton = styled(motion.button)<Props & { isClickable: boolean }>`
-  display: flex;
+export const UIButton = styled(TextBody)<Props & { isClickable: boolean }>`
+  display: inline-flex;
   align-items: center;
   padding: 12px 16px;
   font: inherit;

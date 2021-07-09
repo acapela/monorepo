@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
-import { TextTitle } from "~ui/typo";
+import { TextH4 } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useTopic } from "~frontend/topics/useTopic";
 import { formatDate } from "../shared";
@@ -26,7 +26,7 @@ export const TopicSummary = ({ topic }: Props) => {
   return (
     <UITopicSummary>
       <UITopicSummaryMetadata>
-        <TextTitle>{topic.name}</TextTitle> was closed by{" "}
+        <TextH4 spezia>{topic.name}</TextH4> was closed by{" "}
         <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
       </UITopicSummaryMetadata>
       <UITopicSummaryContent
@@ -62,7 +62,7 @@ const UITopicSummaryMetadata = styled.div`
   display: flex;
   align-items: center;
 
-  ${TextTitle} {
+  ${TextH4} {
     font-size: 1rem;
     padding-right: 4px;
   }

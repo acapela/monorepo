@@ -14,7 +14,7 @@ import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconSelection, IconTrash } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
-import { ItemTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { SpaceGradient } from "./spaceGradient";
@@ -109,7 +109,9 @@ export function SpaceCard({ space, isClickable = true }: Props) {
         </UIBanner>
 
         <UIInfo>
-          <ItemTitle onClick={handleOpen}>{space.name}</ItemTitle>
+          <TextH3 onClick={handleOpen} speziaExtended>
+            {space.name}
+          </TextH3>
 
           <UIMembers>
             <MembersManager

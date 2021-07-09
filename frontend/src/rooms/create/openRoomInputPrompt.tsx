@@ -103,7 +103,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
     };
 
     return (
-      <Modal onCloseRequest={() => resolve(null)}>
+      <Modal onCloseRequest={() => resolve(null)} head={{ title: "Create room" }}>
         <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
           <UIFormFields>
             <AnimateSharedLayout>

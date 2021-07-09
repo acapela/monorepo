@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { PageTitle, SecondaryText } from "~ui/typo";
+import { TextH3, TextBody } from "~ui/typo";
 import { useSingleRoomQuery, useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { RoomView } from "./RoomView";
 import { TextArea } from "~ui/forms/TextArea";
@@ -39,8 +39,8 @@ export function RoomSummaryView({ roomId }: Props) {
     <RoomView room={room} selectedTopicId={null}>
       <UIHolder>
         <UIHeader>
-          <PageTitle>Summary</PageTitle>
-          {room && room.finished_at && <SecondaryText>Created {formatDate(room.finished_at)}</SecondaryText>}
+          <TextH3>Summary</TextH3>
+          {room && room.finished_at && <TextBody>Created {formatDate(room.finished_at)}</TextBody>}
         </UIHeader>
         <UITopicSummaries>
           {room?.topics.map((topic) => (
@@ -65,7 +65,7 @@ const UIHolder = styled.div`
 `;
 
 const UIHeader = styled.div`
-  ${SecondaryText} {
+  ${TextBody} {
     line-height: 2rem;
   }
 `;

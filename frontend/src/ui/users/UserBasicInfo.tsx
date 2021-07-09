@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { SecondaryText, TextTitle } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
 
@@ -13,8 +13,8 @@ export const UserBasicInfo = ({ user }: Props) => {
     <UIHolder>
       <Avatar url={user.avatar_url} />
       <div>
-        <TextTitle>{user.name}</TextTitle>
-        <SecondaryText>{user.email}</SecondaryText>
+        <TextBody medium>{user.name}</TextBody>
+        <TextBody>{user.email}</TextBody>
       </div>
     </UIHolder>
   );

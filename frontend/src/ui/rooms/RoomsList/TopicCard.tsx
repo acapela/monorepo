@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
-import { TextTitle } from "~ui/typo";
+import { TextH3 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
@@ -81,7 +81,7 @@ const UIInfo = styled.div`
   display: grid;
 `;
 
-const UITopicTitle = styled(TextTitle)<{ isClosed: boolean }>`
+const UITopicTitle = styled(TextH3)<{ isClosed: boolean }>`
   ${(props) => {
     if (props.isClosed) {
       return css`

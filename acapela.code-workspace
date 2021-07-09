@@ -110,6 +110,7 @@
       "prosemirror",
       "sendgrid",
       "sonix",
+      "spezia",
       "timestamptz"
     ]
   }

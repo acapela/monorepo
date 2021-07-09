@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { SecondaryText } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 
 interface Props {
   label: string;
@@ -12,7 +12,7 @@ export const OptionLabel = styled(function OptionLabel({ label, icon, className 
   return (
     <UIHolder className={className}>
       {icon && <UIIcon>{icon}</UIIcon>}
-      <SecondaryText>{label}</SecondaryText>
+      <TextBody>{label}</TextBody>
     </UIHolder>
   );
 })``;
@@ -24,7 +24,7 @@ const UIHolder = styled.div`
   user-select: none;
   flex-grow: 0;
 
-  ${SecondaryText} {
+  ${TextBody} {
     flex: 1;
   }
 

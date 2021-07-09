@@ -10,7 +10,7 @@ import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt"
 import { niceFormatDateTime } from "~shared/dates/format";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
-import { ItemTitle } from "~ui/typo";
+import { TextH4 } from "~ui/typo";
 
 interface Props {
   event: JsonValue<GoogleCalendarEvent>;
@@ -60,7 +60,9 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
     <>
       <UIHolder className={className}>
         <UIInfo>
-          <UIName>{event.title}</UIName>
+          <UIName spezia medium>
+            {event.title}
+          </UIName>
           {deadline && (
             <UIMeta>
               <ValueDescriptor keyNode="Due date" value={niceFormatDateTime(deadline)} />
@@ -99,8 +101,7 @@ const UIInfo = styled.div`
   ${hoverTransition("opacity")};
 `;
 
-const UIName = styled(ItemTitle)`
-  margin-bottom: 8px;
+const UIName = styled(TextH4)`
   font-weight: bold;
 `;
 

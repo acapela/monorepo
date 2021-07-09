@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useMemo } from "react";
-import { PageTitle } from "~ui/typo";
+import { TextH2, TextH3 } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { Container } from "~ui/layout/Container";
@@ -26,8 +26,8 @@ export function HomeView() {
       </UISearchWrapper>
       <UIMainSection>
         <UIGreeting>
-          <PageTitle>Hello, {user.name}!</PageTitle>
-          <div>Here are rooms & topics with recent activity.</div>
+          <TextH2 speziaExtended>Hello, {user.name}!</TextH2>
+          <TextH3 spezia>Here are rooms & topics with recent activity.</TextH3>
         </UIGreeting>
         <CreateRoomButton />
       </UIMainSection>
@@ -60,7 +60,7 @@ const UIMainSection = styled.div`
 `;
 
 const UIGreeting = styled.div`
-  ${PageTitle} {
+  ${TextH2} {
     margin-bottom: 1rem;
   }
 

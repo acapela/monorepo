@@ -14,12 +14,12 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { IconButton } from "~ui/buttons/IconButton";
 import { CardBase } from "~ui/card/Base";
+import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
-import { ItemTitle } from "~ui/typo";
 import { UICardListItem } from "./shared";
 
 interface Props {
@@ -68,13 +68,13 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <ItemTitle>
+            <TextH4 medium>
               {room.name}{" "}
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
               )}
               {room.is_private && <PrivateTag />}
-            </ItemTitle>
+            </TextH4>
 
             <UIRoomMetaData>
               <ValueDescriptor
@@ -154,7 +154,7 @@ const UIHeadPrimary = styled.div`
   flex: 1;
   cursor: pointer;
 
-  ${ItemTitle} {
+  ${TextH4} {
     display: flex;
     align-items: center;
     gap: 8px;

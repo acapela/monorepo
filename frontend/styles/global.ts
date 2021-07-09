@@ -1,8 +1,10 @@
 import { css } from "styled-components";
 import { base } from "./base";
+import { fontFacesStyles } from "./fontFaces";
 
 export const global = css`
   ${base}
+  ${fontFacesStyles}
 
   html {
     -ms-text-size-adjust: 100%;
@@ -12,7 +14,7 @@ export const global = css`
     -webkit-font-smoothing: antialiased;
 
     font-family: "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif";
-    font-weight: 500;
+    font-weight: 400;
     color: #232b35;
   }
 

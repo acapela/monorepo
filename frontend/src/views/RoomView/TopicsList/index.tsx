@@ -7,7 +7,7 @@ import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
 import { StaticTopicsList } from "./StaticTopicsList";
 import { LazyTopicsList } from "./LazyTopicsList";
 import styled from "styled-components";
-import { ItemTitle } from "~ui/typo";
+import { TextH4 } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 
@@ -72,7 +72,9 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   return (
     <UIHolder>
       <UIHeader>
-        <ItemTitle>Topics</ItemTitle>
+        <TextH4 spezia semibold>
+          Topics
+        </TextH4>
         {isRoomOpen && (
           <UINewTopicButton
             ref={buttonRef}

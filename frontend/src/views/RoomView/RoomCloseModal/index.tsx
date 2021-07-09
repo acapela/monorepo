@@ -8,7 +8,7 @@ import { useCloseOpenTopicsMutation } from "~frontend/gql/rooms";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
-import { PageTitle, SecondaryText } from "~ui/typo";
+import { TextH3, TextBody } from "~ui/typo";
 
 interface RoomCloseModalInput {
   roomId: string;
@@ -56,7 +56,7 @@ export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCl
     return (
       <Modal onCloseRequest={() => resolve(false)}>
         <UIContentWrapper>
-          <PageTitle>Just a sec, there are open topics!</PageTitle>
+          <TextH3>Just a sec, there are open topics!</TextH3>
           <UITopicClosingInfo>
             In order to close the room, all topics must be closed. We can do it for you now or you go back to the room
             and do it manually. Just a quick reminder, here is the list of open topics:
@@ -93,7 +93,7 @@ const UIContentWrapper = styled.div`
   padding: 0 52px 24px 52px;
 `;
 
-const UITopicClosingInfo = styled(SecondaryText)`
+const UITopicClosingInfo = styled(TextBody)`
   color: hsla(0, 0%, 71%, 1);
 `;
 

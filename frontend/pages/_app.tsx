@@ -6,7 +6,6 @@ import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
-
 import { createGlobalStyle } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
@@ -19,6 +18,26 @@ import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import * as Sentry from "@sentry/nextjs";
+
+const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
+if (["staging", "production"].includes(stage)) {
+  Sentry.init({
+    dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+    // ...
+    // Note: if you want to override the automatic release value, do not set a
+    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
+    // that it will also get attached to your source maps
+    environment: stage,
+    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+  });
+} else {
+  console.info("Sentry is disabled");
+}
 
 interface AddedProps {
   session: Session;
@@ -46,7 +65,10 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <AnalyticsManager />
+      <ClientSideOnly>
+        <AnalyticsManager />
+      </ClientSideOnly>
+
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>

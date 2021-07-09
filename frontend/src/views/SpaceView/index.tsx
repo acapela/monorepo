@@ -7,7 +7,7 @@ import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { Container } from "~ui/layout/Container";
-import { SecondaryText } from "~ui/typo";
+import { TextBody } from "~ui/typo";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { useMemo, useState } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
@@ -70,9 +70,9 @@ export function SpaceView({ spaceId }: Props) {
             <UIFilters onFiltersChange={setFilters} />
             <UIRooms>
               <UIRoomsHeader>
-                <SecondaryText>Rooms</SecondaryText>
+                <TextBody>Rooms</TextBody>
                 <UIClosedRoomsFilter>
-                  <SecondaryText>Closed</SecondaryText>
+                  <TextBody>Closed</TextBody>
                   <Toggle
                     size="small"
                     onSet={() => setRoomOpenStatusFilter(closedRoomsFilter)}
