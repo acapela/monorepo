@@ -2,7 +2,7 @@ import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { borderRadius } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { hoverTransition } from "~ui/transitions";
 import { BASE_GREY_4, BUTTON_BACKGROUND_COLOR, BUTTON_BACKGROUND_ACTIVE_COLOR, WHITE } from "~ui/colors";
 import { TextBody } from "~ui/typo";
@@ -105,6 +105,8 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
   }
 
   ${borderRadius.circle}
+  ${shadow.button}
+
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
   ${(props) =>
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)

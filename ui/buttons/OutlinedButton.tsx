@@ -1,11 +1,16 @@
 import styled from "styled-components";
 import { Button } from "./Button";
-import { getButtonColorStyles } from "../transitions";
-import { BACKGROUND_ACCENT } from "../colors";
+import { WHITE, BASE_GREY_1, BASE_GREY_4, BASE_GREY_6 } from "~ui/colors";
 
 export const OutlinedButton = styled(Button)`
-  color: #474f5a;
-  background: transparent;
-  border: 1px solid ${BACKGROUND_ACCENT};
-  ${getButtonColorStyles("#ffffff")}
+  color: ${BASE_GREY_1};
+  border: 1px solid ${BASE_GREY_4};
+
+  background: ${WHITE};
+  &:active {
+    background: ${BASE_GREY_6};
+  }
+  &:hover {
+    background: ${BASE_GREY_6};
+  }
 `;

@@ -1,6 +1,6 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
-import { Button } from "~ui/buttons/Button";
+import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 
 export const GoogleLoginButton = ({
   className,
@@ -14,8 +14,8 @@ export const GoogleLoginButton = ({
   }
 
   return (
-    <Button className={className} onClick={() => handleLogin()} isLoading={false}>
+    <OutlinedButton size="large" className={className} onClick={() => handleLogin()} isLoading={false}>
       {children || "Log in with Google"}
-    </Button>
+    </OutlinedButton>
   );
 };
