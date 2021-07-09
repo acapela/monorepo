@@ -34,7 +34,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   const { isClosed } = useTopic(topic);
 
-  const [lastMessageWrapped = []] = useTopicMessagesQuery({
+  const [lastMessageWrapped = [], { loading: isLastMessageLoading }] = useTopicMessagesQuery({
     topicId,
     order: "desc",
     limit: 1,
@@ -54,10 +54,20 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
       <UIInfo>
         {unreadCount > 0 && <UIUnreadMessagesNotification />}
         <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
-        {lastMessage && (
+        {isLastMessageLoading && (
+          <UILastMessage>
+            <UILastMessageContent>Loading...</UILastMessageContent>
+          </UILastMessage>
+        )}
+        {lastMessage && !isLastMessageLoading && (
           <UILastMessage>
             <UILastMessageSender size="font-size" user={lastMessage.user} />
             <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
+          </UILastMessage>
+        )}
+        {!lastMessage && !isLastMessageLoading && (
+          <UILastMessage>
+            <UILastMessageContent>No messages in topic</UILastMessageContent>
           </UILastMessage>
         )}
       </UIInfo>
@@ -106,10 +116,10 @@ const UILastMessageSender = styled(UserAvatar)``;
 
 const UILastMessageContent = styled.div`
   display: grid;
+  opacity: 0.5;
+  line-height: 1.5rem;
 
   #UILastMessageContent__message {
-    opacity: 0.5;
-    line-height: 1.5rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
