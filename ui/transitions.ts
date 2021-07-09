@@ -1,6 +1,5 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
-import { borderRadius } from "./baseStyles";
 import { BUTTON_ACCENT_COLOR, WHITE } from "./colors";
 
 export function hoverTransition(propName = "all") {
