@@ -171,7 +171,7 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
   return new ApolloClient({
     ssrMode,
     link,
-    cache,
+    cache: ssrMode ? new InMemoryCache({ typePolicies }) : cache,
   });
 });
 
