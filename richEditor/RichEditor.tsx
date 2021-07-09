@@ -176,8 +176,12 @@ const UIEditorHolder = styled.div`
 const UIEditorContent = styled.div`
   padding: 16px;
   display: flex;
+
   flex-direction: column;
   gap: 16px;
+
+  max-height: 25vh;
+  overflow: auto;
 `;
 
 const UIHolder = styled.div`
