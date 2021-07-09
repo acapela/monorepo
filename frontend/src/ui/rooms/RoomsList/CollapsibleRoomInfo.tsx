@@ -1,28 +1,27 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { Button } from "~ui/buttons/Button";
-import { IconButton } from "~ui/buttons/IconButton";
-import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
+import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
-import { CardBase } from "~ui/card/Base";
-import { ItemTitle } from "~ui/typo";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { niceFormatDate } from "~shared/dates/format";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { formatNumberWithMaxValue } from "~shared/numbers";
-import { NotificationCount } from "~frontend/ui/NotificationCount";
-import { UICardListItem } from "./shared";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { niceFormatDate } from "~shared/dates/format";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { shadow } from "~ui/baseStyles";
+import { Button } from "~ui/buttons/Button";
+import { IconButton } from "~ui/buttons/IconButton";
+import { CardBase } from "~ui/card/Base";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { shadow } from "~ui/baseStyles";
+import { ItemTitle } from "~ui/typo";
+import { UICardListItem } from "./shared";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -80,11 +79,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 
             <UIRoomMetaData>
               <ValueDescriptor
-                keyNode={
-                  <NotificationCount hasNotification={unreadNotificationsCount > 0}>
-                    {formatNumberWithMaxValue(unreadNotificationsCount, 9)}
-                  </NotificationCount>
-                }
+                keyNode={<NotificationCount value={unreadNotificationsCount} />}
                 value={"New Messages"}
               />
               <ValueDescriptor

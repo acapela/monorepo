@@ -1,23 +1,22 @@
-import { ReactNode } from "react";
 import styled from "styled-components";
+import { formatNumberWithMaxValue } from "~shared/numbers";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { NOTIFICATION_COLOR, STRONG_LINE_COLOR } from "~ui/colors";
 
 interface Props {
-  children?: ReactNode;
   className?: string;
-  hasNotification: boolean;
+  value: number;
 }
 
-export const NotificationCount = ({ className, children, hasNotification }: Props) => {
+export const NotificationCount = styled(({ className, value }: Props) => {
   return (
-    <UIHolder hasNotification={hasNotification} className={className}>
-      {children}
+    <UIHolder isHighlighted={value > 0} className={className}>
+      {formatNumberWithMaxValue(value, 9)}
     </UIHolder>
   );
-};
+})``;
 
-const UIHolder = styled.div<{ hasNotification: boolean }>`
+const UIHolder = styled.div<{ isHighlighted: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,7 +25,7 @@ const UIHolder = styled.div<{ hasNotification: boolean }>`
   height: 1.25rem;
   min-width: 1.25rem;
 
-  background: ${(props) => (props.hasNotification ? NOTIFICATION_COLOR : STRONG_LINE_COLOR)};
+  background: ${(props) => (props.isHighlighted ? NOTIFICATION_COLOR : STRONG_LINE_COLOR)};
 
   color: #fff;
   ${borderRadius.label}

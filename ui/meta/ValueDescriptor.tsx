@@ -26,7 +26,7 @@ const UIHolder = styled.div`
 `;
 
 const UIHolderKey = styled.div`
-  font-weight: 600;
+  line-height: 1.25;
 `;
 
 const UIHolderIconKey = styled.div`
