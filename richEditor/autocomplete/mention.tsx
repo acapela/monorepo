@@ -5,6 +5,7 @@ import { ComponentType, FunctionComponent } from "react";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
 import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
+import { MentionData } from "~frontend/message/extensions/mentions";
 
 interface AutocompletePluginOptions<D> {
   type: string;
@@ -155,7 +156,15 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
       ];
     },
     renderHTML({ HTMLAttributes }) {
-      return ["span", mergeAttributes(HTMLAttributes, { "data-autocomplete-type": options.type })];
+      let mentionedName: string;
+      try {
+        const parsed: MentionData = JSON.parse(HTMLAttributes["data-info"]);
+        mentionedName = `@${parsed.originalName}`;
+      } catch (e) {
+        mentionedName = "";
+      }
+
+      return ["span", mergeAttributes(HTMLAttributes, { "data-autocomplete-type": options.type }), mentionedName];
     },
     addKeyboardShortcuts() {
       return createKeyboardHandlers(this.editor);
