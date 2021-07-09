@@ -8,6 +8,7 @@ import { Account, db, User } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { DEFAULT_ROLE, ALLOWED_ROLES } from "~shared/roles";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -87,6 +88,8 @@ const authAdapterProvider = {
         const user = await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
+
+        trackBackendUserEvent(user, "Signed Up");
 
         return user;
       },
@@ -278,6 +281,8 @@ async function getAuthInitOptions() {
         if (getIsNewUser(user)) {
           return true;
         }
+
+        trackBackendUserEvent(user, "Signed In");
 
         try {
           const existingAccount = await db.account.findFirst({

@@ -60,11 +60,14 @@ const requiredEnvVarNamesFrontend = [
   "FRONTEND_URL",
 ] as const;
 
+const optionalEnvVarNames = ["NEXT_PUBLIC_SEGMENT_API_KEY", "NEXT_PUBLIC_USERBACK_ACCESS_TOKEN"] as const;
+
 // Out of array of variable names, prepare types for process.env
 
 type EnvVariablesMap = Record<typeof requiredEnvVarNames[number], string> &
   Record<typeof requiredEnvVarNamesBackend[number], string> &
-  Record<typeof requiredEnvVarNamesFrontend[number], string>;
+  Record<typeof requiredEnvVarNamesFrontend[number], string> &
+  Record<typeof optionalEnvVarNames[number], string>;
 
 // It is possible to mark some env vars as optional by providing their default value.
 const optionalEnvVars: Partial<NodeJS.ProcessEnv> = {

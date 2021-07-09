@@ -70,6 +70,8 @@
     "sendgrid",
     "sonix",
     "spezia",
-    "timestamptz"
+    "timestamptz",
+    "preconnect",
+    "buildinfo"
   ]
 }

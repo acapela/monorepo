@@ -1,5 +1,6 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
+import { useEffect } from "react";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
@@ -10,12 +11,33 @@ import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~f
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
-import { useEffect } from "react";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
+import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import * as Sentry from "@sentry/nextjs";
+
+const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
+if (["staging", "production"].includes(stage)) {
+  Sentry.init({
+    dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+    // ...
+    // Note: if you want to override the automatic release value, do not set a
+    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
+    // that it will also get attached to your source maps
+    environment: stage,
+    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+  });
+} else {
+  console.info("Sentry is disabled");
+}
 
 interface AddedProps {
   session: Session;
@@ -36,20 +58,17 @@ export default function App({
 }: AppProps & AddedProps): JSX.Element {
   // Load Userback integration after initial app render
   useEffect(() => {
-    window.Userback = window.Userback || {};
-    window.Userback.access_token = "29970|44040|bV1489q26af7ZoRzAgnJrfPsV";
-    (function (d) {
-      const s = d.createElement("script");
-      s.async = true;
-      s.src = "https://static.userback.io/widget/v1.js";
-      (d.head || d.body).appendChild(s);
-    })(document);
+    initializeUserbackPlugin();
   }, []);
 
   return (
     <>
       <BuiltInStyles />
       <CommonMetadata />
+      <ClientSideOnly>
+        <AnalyticsManager />
+      </ClientSideOnly>
+
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
