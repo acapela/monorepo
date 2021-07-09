@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
-import { TextH3 } from "~ui/typo";
+import { TextH6 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { NOTIFICATION_COLOR } from "~ui/colors";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
@@ -53,7 +53,9 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
     <UIHolder onClick={handleOpen} className={className}>
       <UIInfo>
         {unreadCount > 0 && <UIUnreadMessagesNotification />}
-        <UITopicTitle isClosed={isClosed}>{topic.name}</UITopicTitle>
+        <UITopicTitle isClosed={isClosed} spezia medium>
+          {topic.name}
+        </UITopicTitle>
         {isLastMessageLoading && (
           <UILastMessage>
             <UILastMessageContent>Loading...</UILastMessageContent>
@@ -81,7 +83,7 @@ const UIInfo = styled.div`
   display: grid;
 `;
 
-const UITopicTitle = styled(TextH3)<{ isClosed: boolean }>`
+const UITopicTitle = styled(TextH6)<{ isClosed: boolean }>`
   ${(props) => {
     if (props.isClosed) {
       return css`

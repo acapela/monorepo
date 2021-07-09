@@ -68,7 +68,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <TextH4 medium>
+            <TextH4 medium spezia>
               {room.name}{" "}
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
