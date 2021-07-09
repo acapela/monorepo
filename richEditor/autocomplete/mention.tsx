@@ -156,15 +156,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
       ];
     },
     renderHTML({ HTMLAttributes }) {
-      let mentionedName: string;
-      try {
-        const parsed: MentionData = JSON.parse(HTMLAttributes["data-info"]);
-        mentionedName = `@${parsed.originalName}`;
-      } catch (e) {
-        mentionedName = "";
-      }
-
-      return ["span", mergeAttributes(HTMLAttributes, { "data-autocomplete-type": options.type }), mentionedName];
+      return ["span", mergeAttributes(HTMLAttributes, { "data-autocomplete-type": options.type })];
     },
     addKeyboardShortcuts() {
       return createKeyboardHandlers(this.editor);

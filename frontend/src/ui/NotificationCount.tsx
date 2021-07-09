@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { NOTIFICATION_COLOR, STRONG_LINE_COLOR } from "~ui/colors";
 
-interface UnreadTopicIndicatorProps {
+interface Props {
   children?: ReactNode;
   className?: string;
   hasNotification: boolean;
 }
 
-export const NotificationCount = ({ className, children, hasNotification }: UnreadTopicIndicatorProps) => {
+export const NotificationCount = ({ className, children, hasNotification }: Props) => {
   return (
     <UIHolder hasNotification={hasNotification} className={className}>
       {children}
