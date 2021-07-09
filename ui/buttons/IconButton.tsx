@@ -5,38 +5,29 @@ import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT_WEAK, BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
 type ActionType = "primary" | "secondary" | "tertiary";
-type Shape = "circle" | "rounded-square";
 
 interface Props {
   icon: ReactNode;
   onClick?: () => void;
   className?: string;
   tooltip?: string;
-  shape?: Shape;
   type?: ActionType;
 }
 
 export const IconButton = styled(
   forwardRef<HTMLButtonElement, Props>(function IconButton(
-    { icon, onClick, className, tooltip, shape = "rounded-square", type = "secondary" },
+    { icon, onClick, className, tooltip, type = "secondary" },
     ref
   ) {
     return (
-      <UIHolder
-        ref={ref}
-        data-tooltip={tooltip}
-        onClick={onClick}
-        className={className}
-        actionType={type}
-        shape={shape}
-      >
+      <UIHolder ref={ref} data-tooltip={tooltip} onClick={onClick} className={className} actionType={type}>
         <UIIconHolder>{icon}</UIIconHolder>
       </UIHolder>
     );
   })
 )``;
 
-const UIHolder = styled.button<{ actionType: ActionType; shape: Shape }>`
+const UIHolder = styled.button<{ actionType: ActionType }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -45,12 +36,7 @@ const UIHolder = styled.button<{ actionType: ActionType; shape: Shape }>`
   width: 1.5em;
   height: 1.5em;
 
-  ${(props) => {
-    if (props.shape === "circle") {
-      return borderRadius.circle;
-    }
-    return borderRadius.button;
-  }}
+  ${borderRadius.circle}
 
   border: none;
   cursor: pointer;

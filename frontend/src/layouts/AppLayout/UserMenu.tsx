@@ -5,6 +5,7 @@ import { routes } from "~frontend/routes";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { hoverActionCss } from "~ui/transitions";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { borderRadius } from "~ui/baseStyles";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
@@ -55,4 +56,5 @@ const UIAvatarWithArrow = styled.div`
   cursor: pointer;
 
   ${hoverActionCss}
+  ${borderRadius.button}
 `;

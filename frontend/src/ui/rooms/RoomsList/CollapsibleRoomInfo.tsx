@@ -62,7 +62,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton shape="circle" type="tertiary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
+            <IconButton type="tertiary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
@@ -125,7 +125,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 
 const UIHolder = styled(CardBase)`
   position: relative;
-  ${shadow.card}
 `;
 
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
