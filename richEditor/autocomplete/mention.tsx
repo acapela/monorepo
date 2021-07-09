@@ -5,7 +5,6 @@ import { ComponentType, FunctionComponent } from "react";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
 import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
-import { MentionData } from "~frontend/message/extensions/mentions";
 
 interface AutocompletePluginOptions<D> {
   type: string;
