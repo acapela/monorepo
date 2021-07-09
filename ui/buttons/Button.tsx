@@ -1,10 +1,10 @@
 import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
-import styled, { css } from "styled-components";
+import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { getButtonColorStyles } from "~ui/transitions";
-import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { borderRadius } from "~ui/baseStyles";
+import { hoverTransition } from "~ui/transitions";
+import { BASE_GREY_4, BUTTON_BACKGROUND_COLOR, BUTTON_BACKGROUND_ACTIVE_COLOR, WHITE } from "~ui/colors";
 import { TextBody } from "~ui/typo";
 
 export type ButtonIconPosition = "start" | "end";
@@ -13,6 +13,8 @@ export interface ButtonDisabledInfo {
   reason: string;
 }
 
+type ButtonSize = "small" | "medium" | "large";
+
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
   iconPosition?: ButtonIconPosition;
@@ -20,11 +22,12 @@ interface Props extends HTMLMotionProps<"button"> {
   isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
   tooltip?: string;
+  size?: ButtonSize;
 }
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", children, ...htmlProps },
+    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", size = "medium", children, ...htmlProps },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -52,6 +55,7 @@ export const Button = styled(
         data-tooltip={getTooltipLabel()}
         spezia
         medium
+        size={size}
         {...finalProps}
       >
         {iconPosition === "start" && iconNode}
@@ -63,18 +67,44 @@ export const Button = styled(
   })
 )``;
 
-export const UIButton = styled(TextBody)<Props & { isClickable: boolean }>`
+const buttonSizeSpecificStyle: { [key in ButtonSize]: FlattenSimpleInterpolation } = {
+  small: css`
+    font-size: 12px;
+    padding: 10px 8px;
+    gap: 4px;
+  `,
+  medium: css`
+    font-size: 14px;
+    padding: 12px;
+    gap: 8px;
+  `,
+  large: css`
+    font-size: 16px;
+    padding: 18px 16px;
+    gap: 8px;
+  `,
+};
+
+export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: ButtonSize }>`
   display: inline-flex;
   align-items: center;
-  padding: 12px 16px;
-  font: inherit;
-  font-size: ${fontSize.copy};
-  font-weight: 600;
-  color: #fff;
-  background: #474f5a;
-  ${getButtonColorStyles(BUTTON_BACKGROUND_COLOR)}
-  ${borderRadius.button}
   justify-content: center;
+
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.2rem;
+  color: ${WHITE};
+
+  ${hoverTransition()}
+  background: ${BUTTON_BACKGROUND_COLOR};
+  &:active {
+    background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+  }
+  &:hover {
+    background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+  }
+
+  ${borderRadius.circle}
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
   ${(props) =>
     // Enable hover effect and pointer cursor only if button is clickable (has onClick)
@@ -85,9 +115,10 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean }>`
   ${(props) =>
     props.isWide &&
     css`
-      display: block;
       width: 100%;
     `}
+
+  ${({ size }) => buttonSizeSpecificStyle[size]}
 `;
 
 const UIContentHolder = styled.div`
@@ -97,15 +128,8 @@ const UIContentHolder = styled.div`
 `;
 
 const UIIconHolder = styled.div`
-  font-size: 1.5em;
-  margin-top: -0.5em;
-  margin-bottom: -0.5em;
-  &:first-child {
-    margin-right: 0.25em;
-  }
-  &:last-child {
-    margin-left: 0.25em;
-  }
+  font-size: 1.2rem;
+  color: ${BASE_GREY_4};
 `;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
