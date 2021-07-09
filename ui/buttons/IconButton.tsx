@@ -5,8 +5,7 @@ import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT_WEAK, BUTTON_BACKGROUND_COLOR } from "~ui/colors";
 
 type ActionType = "primary" | "secondary" | "tertiary";
-type Shape = "circle" | "rounded-rectangle";
-const DEFAULT_SHAPE = "rounded-rectangle";
+type Shape = "circle" | "rounded-square";
 
 interface Props {
   icon: ReactNode;
@@ -19,7 +18,7 @@ interface Props {
 
 export const IconButton = styled(
   forwardRef<HTMLButtonElement, Props>(function IconButton(
-    { icon, onClick, className, tooltip, shape = DEFAULT_SHAPE, type = "secondary" },
+    { icon, onClick, className, tooltip, shape = "rounded-square", type = "secondary" },
     ref
   ) {
     return (
