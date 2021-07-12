@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@godaddy/terminus": "^4.8.0",
-    "@google-cloud/secret-manager": "^3.7.1",
+    "@google-cloud/secret-manager": "^3.7.3",
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.8.0",
     "express-async-errors": "^3.1.1",
-    "googleapis": "^76.0.0",
+    "googleapis": "^81.0.0",
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1",
