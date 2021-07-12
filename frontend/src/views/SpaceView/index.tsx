@@ -17,7 +17,7 @@ import { createOpenRoomFilter, createSpaceFilter } from "~frontend/ui/rooms/filt
 import { IconPlusSquare } from "~ui/icons";
 import { Toggle } from "~ui/toggle";
 import { zIndex } from "~ui/zIndex";
-import { useHasMounted } from "~shared/hooks/useHasMounted";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 interface Props {
   spaceId: string;
@@ -27,8 +27,6 @@ const openRoomsFilter = createOpenRoomFilter(true);
 const closedRoomsFilter = createOpenRoomFilter(false);
 
 export function SpaceView({ spaceId }: Props) {
-  const hasMounted = useHasMounted();
-
   const [space] = useSingleSpaceQuery({ id: spaceId });
   const roomsInCurrentSpaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
   const amIMember = isCurrentUserSpaceMember(space ?? undefined);
@@ -87,7 +85,7 @@ export function SpaceView({ spaceId }: Props) {
             </UIRooms>
           </UIContent>
         </UIHolder>
-        {hasMounted && (
+        <ClientSideOnly>
           <UIFlyingCreateRoomButton
             onClick={onCreate}
             iconPosition="start"
@@ -96,7 +94,7 @@ export function SpaceView({ spaceId }: Props) {
           >
             Create room
           </UIFlyingCreateRoomButton>
-        )}
+        </ClientSideOnly>
       </UIContainer>
     </>
   );
