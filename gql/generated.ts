@@ -8964,6 +8964,19 @@ export type TeamDetailsQuery = (
   )> }
 );
 
+export type TeamBasicInfoQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type TeamBasicInfoQuery = (
+  { __typename?: 'query_root' }
+  & { team?: Maybe<(
+    { __typename?: 'team' }
+    & TeamBasicInfoFragment
+  )> }
+);
+
 export type CreateTeamInvitationMutationVariables = Exact<{
   teamId: Scalars['uuid'];
   email: Scalars['String'];
