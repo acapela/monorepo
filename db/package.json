@@ -10,10 +10,11 @@
     "update": "yarn introspect && yarn generate"
   },
   "devDependencies": {
-    "cross-env": "7.0.3"
+    "cross-env": "7.0.3",
+    "prisma": "2.25.0"
   },
   "dependencies": {
-    "@prisma/client": "^2.23.0",
+    "@prisma/client": "2.25.0",
     "dotenv-cli": "^4.0.0",
     "prisma": "^2.23.0",
     "~config": "0.1.0",
