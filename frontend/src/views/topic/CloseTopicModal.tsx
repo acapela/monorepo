@@ -4,7 +4,6 @@ import { TextH3 } from "~ui/typo";
 import { Modal } from "~frontend/ui/Modal";
 import { TextArea } from "~ui/forms/TextArea";
 import { Button } from "~ui/buttons/Button";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 
 interface Props {
@@ -44,9 +43,9 @@ export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Pr
         />
         <UIButtons justifyContent="space-around">
           <UIButtonsSection justifyContent="end" gap={8}>
-            <TransparentButton isLoading={loading} onClick={closeWithoutSummary}>
+            <Button kind="transparent" isLoading={loading} onClick={closeWithoutSummary}>
               Close without summary
-            </TransparentButton>
+            </Button>
             <Button isLoading={loading} onClick={closeWithSummary}>
               Submit
             </Button>

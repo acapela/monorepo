@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { IconButton } from "~ui/buttons/IconButton";
 import { IconCross } from "~ui/icons";
 import { getObjectKey } from "~shared/object";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { Button } from "~ui/buttons/Button";
 import { RoomFilter } from "./filter";
 
 interface Props {
@@ -15,10 +15,10 @@ export function FiltersList({ filters, onFilterRemoveRequest }: Props) {
     <UIHolder>
       {filters.map((filter) => {
         return (
-          <TransparentButton icon={filter.icon} iconPosition="start" key={getObjectKey(filter)}>
+          <Button kind="transparent" icon={filter.icon} iconPosition="start" key={getObjectKey(filter)}>
             {filter.label}
             <IconButton icon={<IconCross />} onClick={() => onFilterRemoveRequest(filter)} />
-          </TransparentButton>
+          </Button>
         );
       })}
     </UIHolder>

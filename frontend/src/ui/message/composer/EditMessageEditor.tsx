@@ -3,7 +3,6 @@ import { useList } from "react-use";
 import styled from "styled-components";
 import { MessageDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
@@ -91,7 +90,9 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
         hideEditorSubmitButton
       />
       <UIButtons gap={8} justifyContent="end">
-        <TransparentButton onClick={onCancelRequest}>Cancel</TransparentButton>
+        <Button kind="transparent" onClick={onCancelRequest}>
+          Cancel
+        </Button>
         <Button isDisabled={!getCanSubmit()} onClick={handleSubmit}>
           Save
         </Button>
