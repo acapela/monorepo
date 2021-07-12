@@ -10,6 +10,8 @@ import {
   CreateTeamInvitationMutationVariables,
   TeamInvitationQuery,
   TeamInvitationQueryVariables,
+  TeamBasicInfoQuery,
+  TeamBasicInfoQueryVariables,
   TeamBasicInfoFragment as TeamBasicInfoFragmentType,
   TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
   TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
@@ -95,6 +97,20 @@ export const [useTeamDetailsQuery] = createQuery<TeamDetailsQuery, TeamDetailsQu
     query TeamDetails($teamId: uuid!) {
       team: team_by_pk(id: $teamId) {
         ...TeamDetailedInfo
+      }
+    }
+  `
+);
+
+export const [useTeamBasicInfoQuery, { fetch: fetchTeamBasicInfoQuery }] = createQuery<
+  TeamBasicInfoQuery,
+  TeamBasicInfoQueryVariables
+>(
+  () => gql`
+    ${TeamBasicInfoFragment()}
+    query TeamBasicInfo($teamId: uuid!) {
+      team: team_by_pk(id: $teamId) {
+        ...TeamBasicInfo
       }
     }
   `
