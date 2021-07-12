@@ -66,7 +66,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
   useShortcut("Enter", handleSubmit);
 
   return (
-    <UIForm {...getComboboxProps()}>
+    <UIHolder {...getComboboxProps()}>
       <UICombobox ref={comboboxRef}>
         <UIInput
           areResultsVisible={areResultsVisible}
@@ -94,11 +94,11 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
       <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!selectedItem}>
         Add member
       </Button>
-    </UIForm>
+    </UIHolder>
   );
 };
 
-const UIForm = styled.form`
+const UIHolder = styled.div`
   position: relative;
   display: grid;
   grid-template-columns: 1fr auto;

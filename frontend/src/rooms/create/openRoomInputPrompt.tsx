@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Modal } from "~frontend/ui/Modal";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
-import { handleWithPreventDefault } from "~shared/events";
 import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
@@ -15,6 +14,7 @@ import { TeamMembersPicker } from "./TeamMembersPicker";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 import { IconCommentText } from "~ui/icons";
 import { AnimateSharedLayout } from "framer-motion";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface RoomInputInitialData {
   name?: string;
@@ -100,10 +100,11 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
         setFormErrorMessage("Oops something went wrong");
       }
     };
+    useShortcut("Enter", handleSubmit);
 
     return (
       <Modal onCloseRequest={() => resolve(null)} head={{ title: "Create room" }}>
-        <UIForm onSubmit={handleWithPreventDefault(handleSubmit)}>
+        <UIHolder>
           <UIFormFields>
             <AnimateSharedLayout>
               <TextInput
@@ -129,13 +130,13 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
               <Button onClick={handleSubmit}>Create</Button>
             </UIButtons>
           </UIBottomArea>
-        </UIForm>
+        </UIHolder>
       </Modal>
     );
   }
 );
 
-const UIForm = styled.form`
+const UIHolder = styled.div`
   display: grid;
   align-items: center;
   gap: 60px;
