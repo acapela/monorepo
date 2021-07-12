@@ -8,6 +8,7 @@ import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { IconPlusSquare } from "~ui/icons";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -56,17 +57,16 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     menuMaxHeight = comboboxRef.current.getBoundingClientRect().bottom - 20;
   }
 
+  const handleSubmit = () => {
+    if (selectedItem) {
+      onSelect(selectedItem.id);
+      reset();
+    }
+  };
+  useShortcut("Enter", handleSubmit);
+
   return (
-    <UIForm
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (selectedItem) {
-          onSelect(selectedItem.id);
-          reset();
-        }
-      }}
-      {...getComboboxProps()}
-    >
+    <UIForm {...getComboboxProps()}>
       <UICombobox ref={comboboxRef}>
         <UIInput
           areResultsVisible={areResultsVisible}
@@ -91,7 +91,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
             ))}
         </UIMenu>
       </UICombobox>
-      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={() => null} isDisabled={!selectedItem}>
+      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!selectedItem}>
         Add member
       </Button>
     </UIForm>
