@@ -1,10 +1,20 @@
 import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
-import styled, { css } from "styled-components";
+import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { getButtonColorStyles } from "~ui/transitions";
-import { BUTTON_BACKGROUND_COLOR } from "~ui/colors";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { hoverTransition } from "~ui/transitions";
+import {
+  BASE_GREY_1,
+  BASE_GREY_2,
+  BASE_GREY_3,
+  BASE_GREY_4,
+  BASE_GREY_6,
+  BUTTON_BACKGROUND_COLOR,
+  BUTTON_BACKGROUND_ACTIVE_COLOR,
+  WHITE,
+  PRIMARY_PINK_1,
+} from "~ui/colors";
 import { TextBody } from "~ui/typo";
 
 export type ButtonIconPosition = "start" | "end";
@@ -13,6 +23,9 @@ export interface ButtonDisabledInfo {
   reason: string;
 }
 
+type ButtonSize = "small" | "medium" | "large";
+type ButtonKind = "primary" | "outlined" | "transparent";
+
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
   iconPosition?: ButtonIconPosition;
@@ -20,11 +33,24 @@ interface Props extends HTMLMotionProps<"button"> {
   isDisabled?: boolean | ButtonDisabledInfo;
   isWide?: boolean;
   tooltip?: string;
+  size?: ButtonSize;
+  kind?: ButtonKind;
 }
 
 export const Button = styled(
   forwardRef<HTMLButtonElement, Props>(function Button(
-    { isLoading, isDisabled, isWide, icon, tooltip, iconPosition = "end", children, ...htmlProps },
+    {
+      isLoading,
+      isDisabled,
+      isWide,
+      icon,
+      tooltip,
+      iconPosition = "end",
+      size = "medium",
+      kind = "primary",
+      children,
+      ...htmlProps
+    },
     ref
   ) {
     const iconNode = icon && <UIIconHolder>{icon}</UIIconHolder>;
@@ -52,6 +78,8 @@ export const Button = styled(
         data-tooltip={getTooltipLabel()}
         spezia
         medium
+        size={size}
+        kind={kind}
         {...finalProps}
       >
         {iconPosition === "start" && iconNode}
@@ -63,49 +91,121 @@ export const Button = styled(
   })
 )``;
 
-export const UIButton = styled(TextBody)<Props & { isClickable: boolean }>`
+const UIIconHolder = styled.div`
+  font-size: 1.2rem;
+`;
+
+const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
+  small: css`
+    font-size: 12px;
+    padding: 10px 8px;
+    gap: 4px;
+  `,
+  medium: css`
+    font-size: 14px;
+    padding: 12px;
+    gap: 8px;
+  `,
+  large: css`
+    font-size: 16px;
+    padding: 18px 16px;
+    gap: 8px;
+  `,
+};
+
+const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  primary: css`
+    background: ${BUTTON_BACKGROUND_COLOR};
+    color: ${WHITE};
+    ${shadow.button}
+
+    ${UIIconHolder} {
+      color: ${BASE_GREY_4};
+    }
+  `,
+  outlined: css`
+    background: ${WHITE};
+    color: ${BASE_GREY_1};
+    border: 1px solid ${BASE_GREY_4};
+    ${shadow.button}
+
+    ${UIIconHolder} {
+      color: ${PRIMARY_PINK_1};
+    }
+  `,
+  transparent: css`
+    background: transparent;
+    color: ${BASE_GREY_3};
+
+    ${UIIconHolder} {
+      color: ${BASE_GREY_3};
+    }
+  `,
+};
+
+const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  primary: css`
+    &:active {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+    &:hover {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+  `,
+  outlined: css`
+    &:hover {
+      background: ${BASE_GREY_6};
+    }
+    &:active {
+      background: ${BASE_GREY_6};
+    }
+  `,
+  transparent: css`
+    &:hover {
+      color: ${BASE_GREY_2};
+      background: ${BASE_GREY_6};
+    }
+    &:active {
+      color: ${BASE_GREY_2};
+      background: ${BASE_GREY_6};
+    }
+
+    &:hover ${UIIconHolder} {
+      color: ${PRIMARY_PINK_1};
+    }
+  `,
+};
+
+export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
   display: inline-flex;
   align-items: center;
-  padding: 12px 16px;
-  font: inherit;
-  font-size: ${fontSize.copy};
-  font-weight: 600;
-  color: #fff;
-  background: #474f5a;
-  ${getButtonColorStyles(BUTTON_BACKGROUND_COLOR)}
-  ${borderRadius.button}
   justify-content: center;
+
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.2rem;
+  cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
+
+  ${hoverTransition()}
+
+  ${borderRadius.circle}
+
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
-  ${(props) =>
-    // Enable hover effect and pointer cursor only if button is clickable (has onClick)
-    props.isClickable &&
-    css`
-      cursor: ${props.isLoading ? "wait" : "pointer"};
-    `}
   ${(props) =>
     props.isWide &&
     css`
-      display: block;
       width: 100%;
     `}
+
+  ${({ size }) => buttonSizeSpecificStyle[size]}
+  ${({ kind }) => buttonKindSpecificStyle[kind]}
+  ${({ isClickable, kind }) => isClickable && buttonKindSpecificInteractionStyle[kind]}
 `;
 
 const UIContentHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const UIIconHolder = styled.div`
-  font-size: 1.5em;
-  margin-top: -0.5em;
-  margin-bottom: -0.5em;
-  &:first-child {
-    margin-right: 0.25em;
-  }
-  &:last-child {
-    margin-left: 0.25em;
-  }
 `;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

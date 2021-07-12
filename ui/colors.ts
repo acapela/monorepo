@@ -6,10 +6,17 @@ import { setColorOpacity } from "~shared/colors";
  *
  */
 
+export const PRIMARY_PURPLE_1 = "hsl(297, 24%, 15%)";
+export const PRIMARY_PURPLE_2 = "hsl(296, 24%, 22%)";
 export const PRIMARY_PINK_1 = "hsl(344, 67%, 66%)";
 export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
 export const PRIMARY_TEAL_1 = "hsl(180, 76%, 55%)";
 export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
+export const BASE_GREY_1 = "hsl(0, 2%, 12%)";
+export const BASE_GREY_2 = "hsl(0, 1%, 21%)";
+export const BASE_GREY_3 = "hsl(0, 0%, 47%)";
+export const BASE_GREY_4 = "hsl(0, 0%, 82%)";
+export const BASE_GREY_6 = "hsl(0, 0%, 96%)";
 
 /*
  *
@@ -28,10 +35,12 @@ export const ACTIVE_COLOR = `hsl(250, 100%, 68%)`;
 export const SUCCESS_COLOR = `hsla(149, 99%, 33%, 1)`;
 export const HIGHLIGHT_COLOR = `hsl(47, 85%, 64%)`;
 export const NOTIFICATION_COLOR = `hsl(352, 92%, 71%)`;
-export const PRIMARY_COLOR = `hsl(296, 24%, 22%)`;
+export const PRIMARY_COLOR = PRIMARY_PURPLE_1;
+export const PRIMARY_ACTIVE_COLOR = PRIMARY_PURPLE_2;
 export const MODAL_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const ITEM_COVER_COLOR = setColorOpacity(PRIMARY_COLOR, 0.5);
 export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
+export const BUTTON_BACKGROUND_ACTIVE_COLOR = PRIMARY_ACTIVE_COLOR;
 export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
 export const WARNING_COLOR = SECONDARY_ORANGE_1;
 export const SELECTED_ITEM_COLOR = "hsl(210, 22%, 96%)";

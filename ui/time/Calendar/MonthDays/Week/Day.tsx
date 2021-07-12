@@ -3,7 +3,7 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { ACTIVE_COLOR } from "~ui/colors";
 import { getButtonColorStyles } from "~ui/transitions";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { Button } from "~ui/buttons/Button";
 
 interface Props {
   dayDate: Date;
@@ -25,6 +25,7 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
       <UISquareWrapper>
         <UISquareContent>
           <UIDayButton
+            kind="transparent"
             data-tooltip={isTodayDay && "Today"}
             isToday={isTodayDay}
             isSelected={isSelected}
@@ -66,7 +67,7 @@ const UISquareContent = styled.div`
   justify-content: stretch;
   align-items: stretch;
 
-  ${TransparentButton} {
+  ${Button} {
     padding: 0;
     flex: 1;
     display: flex;
@@ -75,7 +76,7 @@ const UISquareContent = styled.div`
   }
 `;
 
-const UIDayButton = styled(TransparentButton)<{ isToday: boolean; isSelected: boolean }>`
+const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
   padding: 0;
   flex: 1;
   display: flex;

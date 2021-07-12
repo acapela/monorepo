@@ -7,6 +7,7 @@ import { Button } from "~ui/buttons/Button";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { BACKGROUND_ACCENT } from "~ui/colors";
+import { IconPlusSquare } from "~ui/icons";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -90,7 +91,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
             ))}
         </UIMenu>
       </UICombobox>
-      <Button onClick={() => null} isDisabled={!selectedItem}>
+      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={() => null} isDisabled={!selectedItem}>
         Add member
       </Button>
     </UIForm>

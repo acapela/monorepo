@@ -2,7 +2,6 @@ import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { HStack } from "~ui/Stack";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { BodyPortal } from "~ui/BodyPortal";
@@ -51,7 +50,9 @@ export const RecorderControls = styled(
         <UIControls gap={8} alignItems="center">
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
 
-          <TransparentButton onClick={() => onCancel()}>Cancel</TransparentButton>
+          <Button kind="transparent" onClick={() => onCancel()}>
+            Cancel
+          </Button>
           <Button onClick={() => onStop()}>Submit</Button>
         </UIControls>
       </UIHolder>

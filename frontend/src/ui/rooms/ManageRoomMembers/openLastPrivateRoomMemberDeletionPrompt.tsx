@@ -6,9 +6,8 @@ import { ModalAnchor } from "~frontend/ui/Modal";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { RoomBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { Button } from "~ui/buttons/Button";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
 import { createPromiseUI } from "~ui/createPromiseUI";
+import { Button } from "~ui/buttons/Button";
 
 interface PromptInput {
   room: RoomBasicInfoFragment;
@@ -48,21 +47,17 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
         hasCloseButton={true}
       >
         <UIActionButtons>
-          <UIDeleteButton isDisabled={isDeletingRoom} onClick={handleDeleteRoom}>
+          <Button isDisabled={isDeletingRoom} onClick={handleDeleteRoom}>
             Leave and Delete room
-          </UIDeleteButton>
-          <UICloseButton isDisabled={isDeletingRoom} onClick={handleCancel}>
+          </Button>
+          <Button kind="transparent" isDisabled={isDeletingRoom} onClick={handleCancel}>
             Cancel
-          </UICloseButton>
+          </Button>
         </UIActionButtons>
       </WarningModal>
     );
   }
 );
-
-const UIDeleteButton = styled(Button)``;
-
-const UICloseButton = styled(TransparentButton)``;
 
 const UIActionButtons = styled.div`
   padding-top: 16px;

@@ -6,7 +6,6 @@ import { getRoomDefaultDeadline } from "~frontend/utils/room";
 import { handleWithPreventDefault } from "~shared/events";
 import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
-import { OutlinedButton } from "~ui/buttons/OutlinedButton";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { InputError } from "~ui/forms/InputError";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
@@ -124,9 +123,9 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
             <UIButtons>
-              <OutlinedButton type="reset" onClick={() => resolve(null)}>
+              <Button kind="transparent" type="reset" onClick={() => resolve(null)}>
                 Cancel
-              </OutlinedButton>
+              </Button>
               <Button onClick={() => null}>Create</Button>
             </UIButtons>
           </UIBottomArea>

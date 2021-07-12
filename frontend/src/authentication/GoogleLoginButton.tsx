@@ -14,7 +14,7 @@ export const GoogleLoginButton = ({
   }
 
   return (
-    <Button className={className} onClick={() => handleLogin()} isLoading={false}>
+    <Button kind="outlined" size="large" className={className} onClick={() => handleLogin()} isLoading={false}>
       {children || "Log in with Google"}
     </Button>
   );

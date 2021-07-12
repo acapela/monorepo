@@ -5,7 +5,7 @@ import { UserBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
-import { TransparentButton } from "~ui/buttons/TransparentButton";
+import { Button } from "~ui/buttons/Button";
 import { UserPickerModal } from "./UserPickerModal";
 
 interface Props {
@@ -44,19 +44,21 @@ export const MembersManager = styled(function MembersManager({
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}
           {!isReadonly && (
-            <TransparentButton onClick={handleWithStopPropagation(openUserPicker)}>Manage</TransparentButton>
+            <Button kind="transparent" onClick={handleWithStopPropagation(openUserPicker)}>
+              Manage
+            </Button>
           )}
         </UIMembers>
         <UIActions>
           {user && isMember && (
-            <TransparentButton onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
+            <Button kind="transparent" onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
               Leave
-            </TransparentButton>
+            </Button>
           )}
           {user && !isMember && (
-            <TransparentButton onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
+            <Button kind="transparent" onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
               Join
-            </TransparentButton>
+            </Button>
           )}
         </UIActions>
       </UIHolder>

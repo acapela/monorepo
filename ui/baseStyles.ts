@@ -28,6 +28,9 @@ export const shadow = {
   popover: css`
     box-shadow: 0px 8px 40px rgba(147, 158, 170, 0.2);
   `,
+  button: css`
+    box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
+  `,
 };
 
 export const borderRadius = {
