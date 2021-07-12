@@ -20,6 +20,11 @@ function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys 
   return convertMaybeArrayToArray(shortcut);
 }
 
+/**
+ * If any handler return true, we don't want any other handler to be able to be called.
+ *
+ * This list will keep track of events for which some shortcut callback has returned true.
+ */
 const finallyHandledEvents = new WeakSet<KeyboardEvent>();
 
 /**
