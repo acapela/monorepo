@@ -13,6 +13,7 @@ import {
   BUTTON_BACKGROUND_COLOR,
   BUTTON_BACKGROUND_ACTIVE_COLOR,
   WHITE,
+  PRIMARY_PINK_1,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
 
@@ -90,6 +91,10 @@ export const Button = styled(
   })
 )``;
 
+const UIIconHolder = styled.div`
+  font-size: 1.2rem;
+`;
+
 const buttonSizeSpecificStyle: { [key in ButtonSize]: FlattenSimpleInterpolation } = {
   small: css`
     font-size: 12px;
@@ -113,16 +118,28 @@ const buttonKindSpecificStyle: { [key in ButtonKind]: FlattenSimpleInterpolation
     background: ${BUTTON_BACKGROUND_COLOR};
     color: ${WHITE};
     ${shadow.button}
+
+    ${UIIconHolder} {
+      color: ${BASE_GREY_4};
+    }
   `,
   outlined: css`
     background: ${WHITE};
     color: ${BASE_GREY_1};
     border: 1px solid ${BASE_GREY_4};
     ${shadow.button}
+
+    ${UIIconHolder} {
+      color: ${PRIMARY_PINK_1};
+    }
   `,
   transparent: css`
     background: transparent;
     color: ${BASE_GREY_3};
+
+    ${UIIconHolder} {
+      color: ${BASE_GREY_3};
+    }
   `,
 };
 
@@ -151,6 +168,10 @@ const buttonKindSpecificInteractionStyle: { [key in ButtonKind]: FlattenSimpleIn
     &:active {
       color: ${BASE_GREY_2};
       background: ${BASE_GREY_6};
+    }
+
+    &:hover ${UIIconHolder} {
+      color: ${PRIMARY_PINK_1};
     }
   `,
 };
@@ -185,11 +206,6 @@ const UIContentHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const UIIconHolder = styled.div`
-  font-size: 1.2rem;
-  color: ${BASE_GREY_4};
 `;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
