@@ -95,7 +95,7 @@ const UIIconHolder = styled.div`
   font-size: 1.2rem;
 `;
 
-const buttonSizeSpecificStyle: { [key in ButtonSize]: FlattenSimpleInterpolation } = {
+const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
     font-size: 12px;
     padding: 10px 8px;
@@ -113,7 +113,7 @@ const buttonSizeSpecificStyle: { [key in ButtonSize]: FlattenSimpleInterpolation
   `,
 };
 
-const buttonKindSpecificStyle: { [key in ButtonKind]: FlattenSimpleInterpolation } = {
+const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
   primary: css`
     background: ${BUTTON_BACKGROUND_COLOR};
     color: ${WHITE};
@@ -143,7 +143,7 @@ const buttonKindSpecificStyle: { [key in ButtonKind]: FlattenSimpleInterpolation
   `,
 };
 
-const buttonKindSpecificInteractionStyle: { [key in ButtonKind]: FlattenSimpleInterpolation } = {
+const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
   primary: css`
     &:active {
       background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
