@@ -5,7 +5,7 @@ import { AttachmentDetailedInfoFragment } from "~gql";
 import { useDownloadUrlQuery } from "~frontend/gql/attachments";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { zIndex } from "~ui/zIndex";
-import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+import { MessageAttachmentDisplayer, ATTACHMENT_PREVIEW_HEIGHT_PX } from "./MessageAttachmentDisplayer";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
 import { borderRadius } from "~ui/baseStyles";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -116,4 +116,9 @@ const UIInlineAttachmentHolder = styled.div`
   position: relative;
   ${borderRadius.item}
   overflow: hidden;
+
+  /* Set explicit max height so it works properly in Safari. */
+  ${MessageAttachmentDisplayer} {
+    max-height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
+  }
 `;
