@@ -19,7 +19,7 @@ import { borderRadius } from "~ui/baseStyles";
 import { PrivateTag } from "~ui/tags";
 
 interface Props {
-  room?: RoomDetailedInfoFragment | null;
+  room: RoomDetailedInfoFragment;
   selectedTopicId: string | null;
   children: React.ReactNode;
 }
@@ -64,29 +64,28 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
       <PageMeta title={room?.name} />
       <UIHolder>
         <UIRoomInfo>
-          {room && (
-            <UIRoomHead spezia semibold>
-              <UIRoomTitle ref={titleHolderRef}>
-                <div
-                  {...(amIMember
-                    ? {
-                        ["data-tooltip"]: "Edit room name...",
-                        onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
-                      }
-                    : {})}
-                >
-                  {room.name}
-                </div>{" "}
-                {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
-              </UIRoomTitle>
+          <UIRoomHead spezia semibold>
+            <UIRoomTitle ref={titleHolderRef}>
+              <div
+                {...(amIMember
+                  ? {
+                      ["data-tooltip"]: "Edit room name...",
+                      onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
+                    }
+                  : {})}
+              >
+                {room.name}
+              </div>
 
-              {amIMember && (
-                <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
-                  <OptionsButton />
-                </PopoverMenuTrigger>
-              )}
-            </UIRoomHead>
-          )}
+              {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+            </UIRoomTitle>
+
+            {amIMember && (
+              <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
+                <OptionsButton />
+              </PopoverMenuTrigger>
+            )}
+          </UIRoomHead>
 
           <UIManageSection>
             <TextBody12 speziaMono secondary>
@@ -96,19 +95,18 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
           </UIManageSection>
 
           <UIManageSections>
-            {room && (
-              <>
-                <UIManageSection>
-                  <TextBody12 speziaMono secondary>
-                    Due date
-                  </TextBody12>
-                  <DeadlineManager room={room} isReadonly={!amIMember} />
-                </UIManageSection>
-              </>
-            )}
+            <UIManageSection>
+              <TextBody12 speziaMono secondary>
+                Due date
+              </TextBody12>
+              <DeadlineManager room={room} isReadonly={!amIMember} />
+            </UIManageSection>
           </UIManageSections>
+
           <UILine />
-          {room && <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />}
+
+          <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
+
           <UIFlyingCloseRoomToggle>
             <Button
               isWide={true}
@@ -123,6 +121,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             </Button>
           </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
+
         <UIContentHolder>{children}</UIContentHolder>
       </UIHolder>
     </>
