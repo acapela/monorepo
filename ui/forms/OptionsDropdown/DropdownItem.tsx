@@ -33,7 +33,10 @@ export const DropdownItem = styled(function DropdownItem({
       isHighlighted={isHighlighted}
       onMouseEnter={onHighlightRequest}
       onMouseLeave={onStopHighlightRequest}
-      onClick={onClick}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
       onMouseMove={() => {
         if (isHighlighted) return;
 
