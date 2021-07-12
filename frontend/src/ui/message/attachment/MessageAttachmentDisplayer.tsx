@@ -13,7 +13,6 @@ interface AttachmentProps {
   attachmentUrl: string;
   className?: string;
   onClick?: () => void;
-  layoutId?: string | null;
 }
 
 export const MessageAttachmentDisplayer = ({
@@ -22,7 +21,6 @@ export const MessageAttachmentDisplayer = ({
   className,
   attachmentUrl,
   onClick,
-  layoutId = `attachment-${attachment.id}`,
 }: AttachmentProps) => {
   const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
@@ -69,11 +67,7 @@ export const MessageAttachmentDisplayer = ({
   }
 
   return (
-    <UIHolder
-      layoutId={layoutId ?? undefined}
-      onClick={onClick}
-      transition={{ type: "spring", stiffness: 400, damping: 40 }}
-    >
+    <UIHolder onClick={onClick} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
       {renderAttachment()}
     </UIHolder>
   );
@@ -87,6 +81,10 @@ const UIHolder = styled(motion.div)`
 
 const ImageWrapper = styled.img`
   max-height: 100%;
+  max-height: 100%;
+  /* Don't allow image to extend over space of the parent */
+  min-width: 0;
+  min-height: 0;
   user-select: none;
   ${borderRadius.item}
 `;

@@ -1,16 +1,18 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import { useDownloadUrlQuery } from "~frontend/gql/attachments";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
 import { borderRadius } from "~ui/baseStyles";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useShortcuts } from "~ui/keyboard/useShortcut";
+import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { IconCross } from "~ui/icons";
+import { IconButton } from "~ui/buttons/IconButton";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -26,7 +28,7 @@ export const MessageAttachment = styled(
     const user = useCurrentUser();
     const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
     const canEditAttachments = attachment.message?.user_id === user?.id;
-    const [isFullscreenOpened, { toggle: toggleIsFullscreenOpened }] = useBoolean(false);
+    const [isFullscreenOpened, { set: openFullScreen, unset: closeFullscreen }] = useBoolean(false);
 
     const onTimeUpdate = () => onMediaTimeUpdate?.(mediaRef.current?.currentTime ?? 0);
 
@@ -41,21 +43,28 @@ export const MessageAttachment = styled(
       return () => mediaRef.current?.removeEventListener("timeupdate", onTimeUpdate);
     }, [mediaRef.current]);
 
+    useShortcuts(
+      ["Space", "Esc"],
+      () => {
+        closeFullscreen();
+      },
+      { isEnabled: isFullscreenOpened }
+    );
+
     if (!attachmentInfo) {
       return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
     }
 
     if (!attachment) return null;
 
-    const renderAttachment = (isPlaceholder = false) => {
+    const renderAttachment = () => {
       return (
         <MessageAttachmentDisplayer
           mediaRef={mediaRef}
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           attachment={attachment!}
           attachmentUrl={attachmentInfo.downloadUrl}
-          onClick={toggleIsFullscreenOpened}
-          layoutId={isPlaceholder ? null : `attachment-${attachment.id}`}
+          onClick={openFullScreen}
         />
       );
     };
@@ -63,35 +72,28 @@ export const MessageAttachment = styled(
     return (
       <AnimateSharedLayout>
         <UIInlineAttachmentHolder>
-          {!isFullscreenOpened && renderAttachment()}
-          {isFullscreenOpened && <UIAttachmentPlaceholder>{renderAttachment(true)}</UIAttachmentPlaceholder>}
+          {renderAttachment()}
           <AnimatePresence>
             {canEditAttachments && (
               <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
             )}
           </AnimatePresence>
         </UIInlineAttachmentHolder>
-        <BodyPortal>
-          <AnimatePresence>
-            {isFullscreenOpened && (
-              <UIFullscreenHolder
-                presenceStyles={{
-                  backgroundColor: ["#0000", "#0004"],
-                  pointerEvents: ["none", "all"],
-                }}
-                onClick={toggleIsFullscreenOpened}
-              >
-                {renderAttachment()}
-              </UIFullscreenHolder>
-            )}
-          </AnimatePresence>
-        </BodyPortal>
+
+        {isFullscreenOpened && (
+          <UIFullscreenHolder onClick={closeFullscreen}>
+            <CornerButtonWrapper>
+              <IconButton tooltip="Esc or Space" onClick={closeFullscreen} type="primary" icon={<IconCross />} />
+            </CornerButtonWrapper>
+            {renderAttachment()}
+          </UIFullscreenHolder>
+        )}
       </AnimateSharedLayout>
     );
   }
 )``;
 
-const UIFullscreenHolder = styled(PresenceAnimator)`
+const UIFullscreenHolder = styled.div`
   position: fixed;
   z-index: ${zIndex.FullScreenPreview};
   top: 0;
@@ -102,16 +104,11 @@ const UIFullscreenHolder = styled(PresenceAnimator)`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 48px;
 `;
 
 const UILoadingPlaceholder = styled.div`
   height: 100%;
-`;
-
-const UIAttachmentPlaceholder = styled.div`
-  visibility: hidden;
-  opacity: 0;
-  display: flex;
 `;
 
 const UIInlineAttachmentHolder = styled.div`
