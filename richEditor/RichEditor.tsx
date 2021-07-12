@@ -103,11 +103,18 @@ export const RichEditor = ({
    * enter = submit + stop propagation (handled by useShortcut)
    * shift+enter / mod+enter > default enter behavior
    */
-  useShortcut("Enter", handleSubmitIfEnabled, {
-    isEnabled: isFocused,
-    // Allow children of the editor to stopPropagation of Enter shortcut. Use case might be eg. popovers with enter support
-    phase: "bubble",
-  });
+  useShortcut(
+    "Enter",
+    () => {
+      handleSubmitIfEnabled();
+
+      // Mark as handled which will prevent it from reaching editor itself
+      return true;
+    },
+    {
+      isEnabled: isFocused,
+    }
+  );
 
   function sendDefaultEnterCommandToEditor() {
     editor?.commands.keyboardShortcut("Enter");

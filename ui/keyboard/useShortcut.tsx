@@ -1,55 +1,103 @@
-import { convertMaybeArrayToArray } from "~shared/array";
+import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
 import { Key } from "./codes";
 import isHotkey from "is-hotkey";
 import { useEffect } from "react";
-import { createElementEvent } from "~shared/domEvents";
 import { createCleanupObject } from "~shared/cleanup";
+import { onDocumentReady } from "~shared/document";
+import { mapGetOrCreate } from "~shared/map";
 
 type ShortcutDefinition = Key | Key[];
 
 type ShortcutKeys = Key[];
 
-/**
- * Phase of the event we want to be capturing at (https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)
- *
- * Capture means we start from the root (html) till we reach the final keyboard event target.
- *
- * Bubble means we start from the target and propagate to the root (html).
- *
- * Capture phase is run before bubble phase.
- *
- * If you want to be sure your handler is executed before anything else and can block other handlers with eg. stopPropagation, use capture phase.
- */
-type EventPhase = "capture" | "bubble";
-
 interface ShortcutHookOptions {
   isEnabled?: boolean;
-  // Allows deciding at which event life phase should the handler be added.
-  phase?: EventPhase;
 }
 
-type ShortcutCallback = (event: KeyboardEvent) => void;
+type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
 
 function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys {
   return convertMaybeArrayToArray(shortcut);
 }
 
-function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback, phase: EventPhase = "capture") {
-  return createElementEvent(
-    document.body,
+const finallyHandledEvents = new WeakSet<KeyboardEvent>();
+
+/**
+ * We'll manually keep list of all shortcuts handlers instead of adding event listener for each one.
+ *
+ * This is because of the reason how DOM is ordering events execution:
+ *
+ * By default in DOM - who is first to add listener is first to be called
+ *
+ * eg
+ * body.addEventListener('click', () => console.log('a'));
+ * body.addEventListener('click', () => console.log('b'));
+ *
+ * // Click!
+ * // Output in the console: a, b
+ *
+ * With shortcuts we want it in reverse order - who is last to add shortcut is the first to handle it (and potentially prevent propagation to other handlers).
+ *
+ * useShortcut('Enter', () => {
+ *   console.log('foo')
+ * });
+ *
+ * useShortcut('Enter', () => {
+ *   // !!! I'll be first to handle this event. If I'll return true (handled) no other handler will be called!
+ * });
+ */
+const shortcutHandlersMap = new Map<string, ShortcutCallback[]>();
+
+/**
+ * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
+ */
+onDocumentReady(() => {
+  document.body.addEventListener(
     "keydown",
     (event) => {
-      if (!isHotkey(keys.join("+"), event)) {
-        return;
-      }
+      shortcutHandlersMap.forEach((callbacks, shortcut) => {
+        if (!isHotkey(shortcut, event)) {
+          return;
+        }
 
-      event.stopPropagation();
-      event.preventDefault();
+        for (const callback of callbacks) {
+          // If some of the handlers already returned true, don't allow other handlers to be called.
+          if (finallyHandledEvents.has(event)) {
+            return;
+          }
 
-      callback?.(event);
+          const callbackResult = callback?.(event);
+
+          // Handled returned true - prevent propagation of event and other shortcut handlers to be called.
+          if (callbackResult === true) {
+            event.stopPropagation();
+            event.preventDefault();
+            finallyHandledEvents.add(event);
+          }
+        }
+      });
     },
-    { capture: phase === "capture" }
+    { capture: true }
   );
+});
+
+function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) {
+  const shortcut = keys.join("+");
+
+  const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => []);
+
+  /**
+   * Important!
+   *
+   * We add new callbacks AT START of handlers list (unshift), not at the end (push!).
+   *
+   * This is because we want new handlers to be called first instead of default DOM behavior!
+   */
+  shortcutHandlers.unshift(callback);
+
+  return () => {
+    removeElementFromArray(shortcutHandlers, callback);
+  };
 }
 
 export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutHookOptions) {
@@ -58,8 +106,8 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
   useEffect(() => {
     if (options?.isEnabled === false) return;
     if (!callback) return;
-    return createShortcutListener(keys, callback, options?.phase);
-  }, [keys, callback, options?.isEnabled, options?.phase]);
+    return createShortcutListener(keys, callback);
+  }, [keys, callback, options?.isEnabled]);
 }
 
 export function useShortcuts(
@@ -76,9 +124,9 @@ export function useShortcuts(
     shortcuts.forEach((shortcut) => {
       const keys = resolveShortcutsDefinition(shortcut);
 
-      cleanup.enqueue(createShortcutListener(keys, callback, options?.phase));
+      cleanup.enqueue(createShortcutListener(keys, callback));
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback, options?.isEnabled, options?.phase]);
+  }, [shortcuts, callback, options?.isEnabled]);
 }
