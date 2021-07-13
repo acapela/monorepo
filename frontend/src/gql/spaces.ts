@@ -145,7 +145,12 @@ export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
     optimisticResponse(variables) {
       return {
         __typename: "mutation_root",
-        space: { id: getUUID(), name: variables.name, __typename: "space", members: [] },
+        space: {
+          id: getUUID(),
+          name: variables.name,
+          __typename: "space",
+          members: [],
+        },
       };
     },
     onOptimisticOrActualResponse(space, { teamId }) {

@@ -177,20 +177,23 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
         space.rooms.push(room);
       });
     },
-    optimisticResponse(variables) {
+    optimisticResponse({ input }) {
       return {
         __typename: "mutation_root",
         room: {
           __typename: "room",
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          deadline: variables.input.deadline!,
+          deadline: input.deadline!,
           id: getUUID(),
           members: [],
           topics: [],
-          is_private: variables.input.is_private ?? false,
-          name: variables.input.name,
+          is_private: input.is_private ?? false,
+          name: input.name,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          space_id: variables.input.space_id!,
+          space_id: input.space_id!,
+          finished_at: null,
+          source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
+          summary: input.summary ?? null,
         },
       };
     },

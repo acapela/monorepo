@@ -23,6 +23,7 @@ import { assertGet } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { createDateParseLink } from "./dateStringParseLink";
+import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
@@ -41,8 +42,23 @@ const typePolicies: TypedTypePolicies = {
   },
 };
 
-// Create cache and try to populate it if there is pre-fetched data
-const cache = new InMemoryCache({ typePolicies });
+/**
+ * Create cache and try to populate it if there is pre-fetched data
+ *
+ * We keep it in module scope as it has to be re-used between server side page renders (1 render - data requirements collection, 2nd render - render with pre-fetched cache)
+ *
+ * We'll however have to clear this cache between requests.
+ *
+ * TODO: Maybe something like unique request id would simplify it so we'd attach cache-per-request, this way we can do pre-fetching
+ * but it's harder to make security bug.
+ */
+let cache = new InMemoryCache({ typePolicies });
+
+export function clearApolloCache() {
+  cache = new InMemoryCache({ typePolicies });
+}
+
+const localStorageCacheWrapper = typeof window !== "undefined" ? new LocalStorageWrapper(window.localStorage) : null;
 
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
@@ -168,10 +184,18 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
     cache.restore(initialCacheState);
   }
 
+  if (localStorageCacheWrapper) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    persistCache<any>({
+      cache: cache,
+      storage: localStorageCacheWrapper,
+    });
+  }
+
   return new ApolloClient({
     ssrMode,
     link,
-    cache: ssrMode ? new InMemoryCache({ typePolicies }) : cache,
+    cache,
   });
 });
 
