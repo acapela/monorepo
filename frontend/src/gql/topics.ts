@@ -100,7 +100,6 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
       };
     },
     onOptimisticOrActualResponse(topic, variables) {
-      console.log("UPDATING", { variables, topic });
       RoomDetailedInfoFragment.update(variables.roomId, (data) => {
         data.topics.push(topic);
       });
