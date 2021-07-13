@@ -1,4 +1,4 @@
-import React, { Ref } from "react";
+import React, { Ref, ReactNode } from "react";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
@@ -19,39 +19,37 @@ export const MessageAttachmentDisplayer = styled(
   ({ mediaRef, attachment, className, attachmentUrl, onClick }: AttachmentProps) => {
     const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
-    function renderAttachment() {
-      if (messageType === "VIDEO") {
-        return (
-          <PlayableMediaWrapper>
-            <video ref={mediaRef} src={attachmentUrl} controls>
-              Sorry, your browser doesn't support embedded videos.
-            </video>
-          </PlayableMediaWrapper>
-        );
-      }
+    function renderAttachment(): ReactNode {
+      switch (messageType) {
+        case "VIDEO":
+          return (
+            <PlayableMediaWrapper>
+              <video ref={mediaRef} src={attachmentUrl} controls>
+                Sorry, your browser doesn't support embedded videos.
+              </video>
+            </PlayableMediaWrapper>
+          );
+        case "AUDIO":
+          return (
+            <PlayableMediaWrapper>
+              <audio ref={mediaRef} src={attachmentUrl} controls>
+                Sorry, your browser doesn't support embedded audios.
+              </audio>
+            </PlayableMediaWrapper>
+          );
+        case "TEXT": {
+          const [type] = attachment.mimeType.split("/");
 
-      if (messageType === "AUDIO") {
-        return (
-          <PlayableMediaWrapper>
-            <audio ref={mediaRef} src={attachmentUrl} controls>
-              Sorry, your browser doesn't support embedded audios.
-            </audio>
-          </PlayableMediaWrapper>
-        );
-      }
+          if (type === "image") {
+            return <ImageWrapper src={attachmentUrl} alt={attachment.originalName || ""} />;
+          }
 
-      if (messageType === "TEXT") {
-        const [type] = attachment.mimeType.split("/");
-
-        if (type === "image") {
-          return <ImageWrapper src={attachmentUrl} alt={attachment.originalName || ""} />;
+          return (
+            <a href={attachmentUrl} target="_blank">
+              <span>{attachment.originalName}</span>
+            </a>
+          );
         }
-
-        return (
-          <a href={attachmentUrl} target="_blank">
-            <span>{attachment.originalName}</span>
-          </a>
-        );
       }
 
       return (
