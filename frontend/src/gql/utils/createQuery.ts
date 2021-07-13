@@ -6,7 +6,6 @@ import {
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
-  useApolloClient,
 } from "@apollo/client";
 import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
