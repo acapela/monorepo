@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
+import { handleWithStopPropagation } from "~shared/events";
 import { borderRadius } from "~ui/baseStyles";
 import { PRIMARY_PINK_1 } from "~ui/colors";
 import { IconCheck } from "~ui/icons";
@@ -33,7 +34,7 @@ export const DropdownItem = styled(function DropdownItem({
       isHighlighted={isHighlighted}
       onMouseEnter={onHighlightRequest}
       onMouseLeave={onStopHighlightRequest}
-      onClick={onClick}
+      onClick={handleWithStopPropagation(onClick)}
       onMouseMove={() => {
         if (isHighlighted) return;
 
