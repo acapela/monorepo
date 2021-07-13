@@ -34,14 +34,10 @@ export function createQuery<Data, Variables>(
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
 
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
+    // Don't report query usage if skip option is enabled.
     if (!options?.skip) {
-      console.log("reporting");
       reportQueryUsage({ query: getQuery(), variables: variables });
     }
-
-    const contextClient = useApolloClient();
-
-    const cacheQuery = contextClient.readQuery({ query: getQuery(), variables });
 
     const { data, ...rest } = useRawQuery(getQuery(), {
       ...{
@@ -51,8 +47,6 @@ export function createQuery<Data, Variables>(
       },
       variables: variables as Variables,
     });
-
-    console.log("raw data", !!data, !!cacheQuery);
 
     return [unwrapQueryData(data), rest] as const;
   }

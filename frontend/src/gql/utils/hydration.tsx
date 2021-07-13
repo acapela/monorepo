@@ -1,26 +1,26 @@
 import { ApolloClient, DocumentNode } from "@apollo/client";
 
-interface QueryUseageData {
+interface QueryUsageData {
   query: DocumentNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variables?: Record<string, any> | void;
 }
 
-type QueryUseageRecorder = (query: QueryUseageData) => void;
+type QueryUsageRecorder = (query: QueryUsageData) => void;
 
-const queryUseageRecorders = new Set<QueryUseageRecorder>();
+const queryUsageRecorders = new Set<QueryUsageRecorder>();
 
 export function startRecordingUsedQueries() {
-  const recordedQueries: Array<QueryUseageData> = [];
+  const recordedQueries: Array<QueryUsageData> = [];
 
-  const recorder: QueryUseageRecorder = (queryInfo) => {
+  const recorder: QueryUsageRecorder = (queryInfo) => {
     recordedQueries.push({ ...queryInfo });
   };
 
-  queryUseageRecorders.add(recorder);
+  queryUsageRecorders.add(recorder);
 
   function finishRecording() {
-    queryUseageRecorders.delete(recorder);
+    queryUsageRecorders.delete(recorder);
 
     return recordedQueries;
   }
@@ -28,8 +28,8 @@ export function startRecordingUsedQueries() {
   return [finishRecording, recordedQueries] as const;
 }
 
-export function reportQueryUsage(queryInfo: QueryUseageData) {
-  queryUseageRecorders.forEach((recorder) => {
+export function reportQueryUsage(queryInfo: QueryUsageData) {
+  queryUsageRecorders.forEach((recorder) => {
     recorder(queryInfo);
   });
 }
@@ -72,7 +72,7 @@ export function getQueryNameFromDocument(doc: DocumentNode): string | null {
   return null;
 }
 
-export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {
+export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUsageData[]) {
   // For each used query - fetch it using the client
 
   const errors: string[] = [];
