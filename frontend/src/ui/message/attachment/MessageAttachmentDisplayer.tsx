@@ -1,4 +1,4 @@
-import React, { Ref } from "react";
+import React, { Ref, ReactNode } from "react";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
@@ -13,45 +13,43 @@ interface AttachmentProps {
   attachmentUrl: string;
   className?: string;
   onClick?: () => void;
-  layoutId?: string | null;
 }
 
-export const MessageAttachmentDisplayer = ({
-  mediaRef,
-  attachment,
-  className,
-  attachmentUrl,
-  onClick,
-  layoutId = `attachment-${attachment.id}`,
-}: AttachmentProps) => {
-  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+export const MessageAttachmentDisplayer = styled(
+  ({ mediaRef, attachment, className, attachmentUrl, onClick }: AttachmentProps) => {
+    const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
-  function renderAttachment() {
-    if (messageType === "VIDEO") {
-      return (
-        <PlayableMediaWrapper>
-          <video ref={mediaRef} className={className} src={attachmentUrl} controls>
-            Sorry, your browser doesn't support embedded videos.
-          </video>
-        </PlayableMediaWrapper>
-      );
-    }
+    function renderAttachment(): ReactNode {
+      switch (messageType) {
+        case "VIDEO":
+          return (
+            <PlayableMediaWrapper>
+              <video ref={mediaRef} src={attachmentUrl} controls>
+                Sorry, your browser doesn't support embedded videos.
+              </video>
+            </PlayableMediaWrapper>
+          );
+        case "AUDIO":
+          return (
+            <PlayableMediaWrapper>
+              <audio ref={mediaRef} src={attachmentUrl} controls>
+                Sorry, your browser doesn't support embedded audios.
+              </audio>
+            </PlayableMediaWrapper>
+          );
+        case "TEXT": {
+          const [type] = attachment.mimeType.split("/");
 
-    if (messageType === "AUDIO") {
-      return (
-        <PlayableMediaWrapper>
-          <audio ref={mediaRef} className={className} src={attachmentUrl} controls>
-            Sorry, your browser doesn't support embedded audios.
-          </audio>
-        </PlayableMediaWrapper>
-      );
-    }
+          if (type === "image") {
+            return <ImageWrapper src={attachmentUrl} alt={attachment.originalName || ""} />;
+          }
 
-    if (messageType === "TEXT") {
-      const [type] = attachment.mimeType.split("/");
-
-      if (type === "image") {
-        return <ImageWrapper className={className} src={attachmentUrl} alt={attachment.originalName || ""} />;
+          return (
+            <a href={attachmentUrl} target="_blank">
+              <span>{attachment.originalName}</span>
+            </a>
+          );
+        }
       }
 
       return (
@@ -62,22 +60,12 @@ export const MessageAttachmentDisplayer = ({
     }
 
     return (
-      <a href={attachmentUrl} target="_blank">
-        <span>{attachment.originalName}</span>
-      </a>
+      <UIHolder className={className} onClick={onClick} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
+        {renderAttachment()}
+      </UIHolder>
     );
   }
-
-  return (
-    <UIHolder
-      layoutId={layoutId ?? undefined}
-      onClick={onClick}
-      transition={{ type: "spring", stiffness: 400, damping: 40 }}
-    >
-      {renderAttachment()}
-    </UIHolder>
-  );
-};
+)``;
 
 const UIHolder = styled(motion.div)`
   max-height: 100%;
@@ -87,8 +75,16 @@ const UIHolder = styled(motion.div)`
 
 const ImageWrapper = styled.img`
   max-height: 100%;
+  /* Allow parent to control max-height so it can be used both for fullscreen and inline displaying. */
+  max-height: inherit;
+  /* Don't allow image to extend over space of the parent */
+  min-width: 0;
+  min-height: 0;
   user-select: none;
   ${borderRadius.item}
+
+  /* Safari fix - make sure image always keeps its aspect ratio. */
+  object-fit: scale-down;
 `;
 
 const PlayableMediaWrapper = styled.div`
