@@ -6,6 +6,7 @@ import {
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
+  useApolloClient,
 } from "@apollo/client";
 import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
@@ -33,18 +34,31 @@ export function createQuery<Data, Variables>(
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
 
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
-    reportQueryUsage({ query: getQuery(), variables: variables });
+    if (!options?.skip) {
+      console.log("reporting");
+      reportQueryUsage({ query: getQuery(), variables: variables });
+    }
+
+    const contextClient = useApolloClient();
+
+    const cacheQuery = contextClient.readQuery({ query: getQuery(), variables });
 
     const { data, ...rest } = useRawQuery(getQuery(), {
-      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      ...{
+        // fetchPolicy: "cache-and-network",
+        ...options,
+        // context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
+      },
       variables: variables as Variables,
     });
+
+    console.log("raw data", !!data, !!cacheQuery);
 
     return [unwrapQueryData(data), rest] as const;
   }
 
   function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
-    const [queryData] = useQuery(variables);
+    const [queryData] = useQuery(variables, options);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
       variables: variables as Variables,
