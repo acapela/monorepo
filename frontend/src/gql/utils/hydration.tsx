@@ -58,6 +58,20 @@ export const getApolloInitialState = () => {
   return JSON.parse(queriesDataElement.innerHTML);
 };
 
+export function getQueryNameFromDocument(doc: DocumentNode): string | null {
+  if (doc.kind !== "Document") return null;
+
+  for (const definition of doc.definitions) {
+    if (definition.kind !== "OperationDefinition") continue;
+
+    if (definition.operation !== "query") continue;
+
+    return definition.name?.value ?? null;
+  }
+
+  return null;
+}
+
 export async function prefetchRecordedQueries(client: ApolloClient<unknown>, recordings: QueryUseageData[]) {
   // For each used query - fetch it using the client
 
@@ -65,17 +79,21 @@ export async function prefetchRecordedQueries(client: ApolloClient<unknown>, rec
 
   await Promise.all(
     recordings.map(async (query) => {
+      const queryName = getQueryNameFromDocument(query.query) ?? "UnknownQuery";
+
       try {
         const { data } = await client.query({
           query: query.query,
           variables: query.variables,
+          // Don't use cache when pre-fetching queries.
+          fetchPolicy: "network-only",
         });
 
         client.writeQuery({ data, query: query.query, variables: query.variables });
       } catch (error) {
         const message = Reflect.get(error, "message") ?? "Unknown error";
-        errors.push(message);
-        //
+
+        errors.push(`[${queryName}]: ${message}`);
       }
     })
   );
