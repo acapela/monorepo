@@ -86,7 +86,9 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
         )}
         {!isRoomOpen && (
           <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
-            <UIOpenRoomSummaryButton ref={buttonRef}>Room summary</UIOpenRoomSummaryButton>
+            <Button kind="secondary" ref={buttonRef}>
+              Room summary
+            </Button>
           </routes.spaceRoomSummary.Link>
         )}
       </UIHeader>
@@ -111,8 +113,6 @@ const UIHolder = styled.div`
 `;
 
 const UINewTopicButton = styled(Button)``;
-
-const UIOpenRoomSummaryButton = styled(Button)``;
 
 const UIHeader = styled.div`
   display: flex;
