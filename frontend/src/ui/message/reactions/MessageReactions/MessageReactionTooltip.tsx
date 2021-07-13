@@ -36,7 +36,7 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
   return (
     <UIHolder>
       <UIContent>
-        <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with :{emojiShortName}:
+        <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>:{emojiShortName}:</UIEmojiName>
       </UIContent>
     </UIHolder>
   );
@@ -54,12 +54,17 @@ const UIHolder = styled.div`
   line-height: 1.2rem;
 `;
 
-const UIContent = styled.p`
+const UIContent = styled.div`
   font-size: 12px;
   color: hsla(0, 0%, 100%, 60%);
   text-align: center;
+  word-break: break-word;
 `;
 
 const UIReacted = styled.span`
   color: ${WHITE};
+`;
+
+const UIEmojiName = styled.div`
+  word-break: break-all;
 `;
