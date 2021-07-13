@@ -18,7 +18,6 @@ import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
 import * as Sentry from "@sentry/nextjs";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
@@ -65,10 +64,7 @@ export default function App({
     <>
       <BuiltInStyles />
       <CommonMetadata />
-      <ClientSideOnly>
-        <AnalyticsManager />
-      </ClientSideOnly>
-
+      <AnalyticsManager />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>

@@ -1,23 +1,22 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { TextH3, TextBody } from "~ui/typo";
-import { useSingleRoomQuery, useUpdateRoomMutation } from "~frontend/gql/rooms";
+import { useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { RoomView } from "./RoomView";
 import { TextArea } from "~ui/forms/TextArea";
 import { TopicSummary } from "./TopicSummary";
 import { useDebounce } from "react-use";
 import { formatDate } from "./shared";
+import { RoomDetailedInfoFragment } from "~gql";
 
 interface Props {
-  roomId: string;
+  room: RoomDetailedInfoFragment;
 }
 
 const AUTO_SAVE_DEBOUNCE_DELAY_MS = 400;
 
-export function RoomSummaryView({ roomId }: Props) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-
-  const [roomSummary, setRoomSummary] = useState(room?.summary ?? "");
+export function RoomSummaryView({ room }: Props) {
+  const [roomSummary, setRoomSummary] = useState(room.summary ?? "");
 
   const [updateRoom] = useUpdateRoomMutation();
 
