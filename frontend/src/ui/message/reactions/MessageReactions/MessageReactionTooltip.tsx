@@ -54,7 +54,7 @@ const UIHolder = styled.div`
   line-height: 1.2rem;
 `;
 
-const UIContent = styled.p`
+const UIContent = styled.div`
   font-size: 12px;
   color: hsla(0, 0%, 100%, 60%);
   text-align: center;
@@ -65,6 +65,6 @@ const UIReacted = styled.span`
   color: ${WHITE};
 `;
 
-const UIEmojiName = styled.span`
+const UIEmojiName = styled.div`
   word-break: break-all;
 `;
