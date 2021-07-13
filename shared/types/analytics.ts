@@ -48,6 +48,7 @@ export type AnalyticsEventPayload<Name extends AnalyticsEventName> = AnalyticsEv
 
 export type AnalyticsGroupsMap = {
   Team: {
+    teamName: string;
     teamId: string;
   };
 };

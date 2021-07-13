@@ -17,6 +17,7 @@ import { createOpenRoomFilter, createSpaceFilter } from "~frontend/ui/rooms/filt
 import { IconPlusSquare } from "~ui/icons";
 import { Toggle } from "~ui/toggle";
 import { zIndex } from "~ui/zIndex";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 interface Props {
   spaceId: string;
@@ -84,14 +85,16 @@ export function SpaceView({ spaceId }: Props) {
             </UIRooms>
           </UIContent>
         </UIHolder>
-        <UIFlyingCreateRoomButton
-          onClick={onCreate}
-          iconPosition="start"
-          icon={<IconPlusSquare />}
-          isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
-        >
-          Create room
-        </UIFlyingCreateRoomButton>
+        <ClientSideOnly>
+          <UIFlyingCreateRoomButton
+            onClick={onCreate}
+            iconPosition="start"
+            icon={<IconPlusSquare />}
+            isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
+          >
+            Create room
+          </UIFlyingCreateRoomButton>
+        </ClientSideOnly>
       </UIContainer>
     </>
   );

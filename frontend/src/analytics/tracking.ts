@@ -13,10 +13,10 @@ export function trackEvent<N extends keyof AnalyticsEventsMap>(eventName: N, eve
 }
 
 export function identifyUserGroup<N extends keyof AnalyticsGroupsMap>(
-  groupName: N,
-  groupProperties: AnalyticsGroupsMap[N]
+  groupId: string,
+  groupProperties?: AnalyticsGroupsMap[N]
 ) {
   if (window.analytics) {
-    window.analytics.group(groupName, groupProperties);
+    window.analytics.group(groupId, groupProperties);
   }
 }

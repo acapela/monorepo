@@ -71,6 +71,7 @@ export const Button = styled(
     return (
       <UIButton
         ref={ref}
+        as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
         isWide={isWide}

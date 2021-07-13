@@ -22,6 +22,9 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
     if (!activeItem) return;
 
     onItemSelected(activeItem);
+
+    // If item is selected, mark event as handled preventing other shortcut handlers from reaching it.
+    return true;
   });
 
   return (

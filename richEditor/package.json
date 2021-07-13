@@ -5,9 +5,9 @@
   "dependencies": {
     "@tiptap/extension-link": "^2.0.0-beta.18",
     "@tiptap/extension-mention": "^2.0.0-beta.61",
-    "@tiptap/html": "^2.0.0-beta.84",
+    "@tiptap/html": "^2.0.0-beta.85",
     "@tiptap/react": "^2.0.0-beta.52",
-    "@tiptap/starter-kit": "^2.0.0-beta.81",
+    "@tiptap/starter-kit": "^2.0.0-beta.82",
     "@tiptap/suggestion": "^2.0.0-beta.59",
     "html-to-text": "^8.0.0",
     "quill": "^1.3.7",
@@ -19,6 +19,6 @@
     "react": "*"
   },
   "devDependencies": {
-    "@types/html-to-text": "^8.0.0"
+    "@types/html-to-text": "^8.0.1"
   }
 }
