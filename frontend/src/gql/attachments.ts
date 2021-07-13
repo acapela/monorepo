@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { assert } from "~shared/assert";
 import {
   AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
   AttachmentQuery,
@@ -22,6 +23,7 @@ export const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedI
       originalName: original_name
       mimeType: mime_type
       message {
+        id
         user_id
       }
     }
@@ -55,17 +57,23 @@ export const [useRemoveAttachment, { mutate: removeAttachment }] = createMutatio
   () => gql`
     mutation RemoveAttachment($id: uuid!) {
       delete_attachment_by_pk(id: $id) {
+        id
         message_id
       }
     }
   `,
   {
     optimisticResponse(variables) {
+      const attachment = AttachmentDetailedInfoFragment.assertRead(variables.id);
+
+      assert(attachment.message, "No attachment message");
+
       return {
         __typename: "mutation_root",
         delete_attachment_by_pk: {
           __typename: "attachment",
           id: variables.id,
+          message_id: attachment.message.id,
         },
       };
     },

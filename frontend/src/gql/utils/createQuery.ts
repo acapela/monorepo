@@ -52,7 +52,34 @@ export function createQuery<Data, Variables>(
   function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
     const [queryData] = useQuery(variables, options);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
-      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      ...{
+        ...options,
+        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
+        /**
+         * We don't need cache for subscriptions and it can actually introduce hard to debug
+         * race conditions.
+         *
+         * If subscription is connected to cache, all updates it gets are automatically filled into cache.
+         * Cache is shared between queries and subscriptions.
+         *
+         * Possible race condition:
+         * Subscription is listening for Room updates (and it's topic via room>topics)
+         * You create new room that has callback (optimistic and actual) that pushes new topic to room info fragment
+         * Now race condition starts.
+         *
+         * It is possible that room subscription will pick new info about the room (with new topic!) before mutation
+         * result will return to the client!
+         *
+         * In such case, new topic will already be in the cache before mutation finishes running
+         *
+         * If that happens, mutation callback will manually add new topic to room fragment even tho it's already there,
+         * resulting in duplicate being created.
+         *
+         *
+         * TLDR: subscription is by nature 'up-to-date' so there is no sense to connect it with cache.
+         */
+        fetchPolicy: "no-cache",
+      },
       variables: variables as Variables,
     });
 

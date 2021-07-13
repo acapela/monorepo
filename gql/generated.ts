@@ -8317,7 +8317,7 @@ export type AttachmentDetailedInfoFragment = (
   & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
   & { message?: Maybe<(
     { __typename?: 'message' }
-    & Pick<Message, 'user_id'>
+    & Pick<Message, 'id' | 'user_id'>
   )> }
 );
 
@@ -8344,7 +8344,7 @@ export type RemoveAttachmentMutation = (
   { __typename?: 'mutation_root' }
   & { delete_attachment_by_pk?: Maybe<(
     { __typename?: 'attachment' }
-    & Pick<Attachment, 'message_id'>
+    & Pick<Attachment, 'id' | 'message_id'>
   )> }
 );
 
@@ -11284,11 +11284,9 @@ export type TypedTypePolicies = TypePolicies & {
 	}
 };
 
-      export interface PossibleTypesResultData {
-        possibleTypes: {
-          [key: string]: string[]
-        }
-      }
+      export type PossibleTypesResultData = {
+  "possibleTypes": {}
+};
       const result: PossibleTypesResultData = {
   "possibleTypes": {}
 };

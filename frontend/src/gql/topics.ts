@@ -84,16 +84,23 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
           index: variables.index,
           lastMessage: {
             __typename: "message_aggregate",
-            aggregate: { __typename: "message_aggregate_fields", max: null },
+            aggregate: {
+              __typename: "message_aggregate_fields",
+              max: null,
+            },
           },
           members: [],
           room: RoomBasicInfoFragment.assertRead(variables.roomId),
           name: variables.name,
           slug: variables.slug,
+          closed_at: null,
+          closed_by_user: null,
+          closing_summary: null,
         },
       };
     },
     onOptimisticOrActualResponse(topic, variables) {
+      console.log("UPDATING", { variables, topic });
       RoomDetailedInfoFragment.update(variables.roomId, (data) => {
         data.topics.push(topic);
       });
