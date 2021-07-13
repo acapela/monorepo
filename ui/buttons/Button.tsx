@@ -127,6 +127,7 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
   secondary: css`
     background: ${BASE_GREY_6};
     color: ${BASE_GREY_1};
+    border: 1.5px solid transparent;
 
     ${UIIconHolder} {
       color: ${BASE_GREY_2};
@@ -167,7 +168,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
     }
     &:active {
       background: ${BASE_GREY_LINES};
-      border: 1.5px solid ${PRIMARY_PINK_1};
+      border-color: ${PRIMARY_PINK_1};
     }
   `,
   outlined: css`
