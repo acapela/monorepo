@@ -116,12 +116,14 @@ export const RichEditor = ({
     }
   );
 
-  function sendDefaultEnterCommandToEditor() {
+  function handleEnterShortcut() {
     editor?.commands.keyboardShortcut("Enter");
+
+    return true;
   }
 
-  useShortcut(["Shift", "Enter"], sendDefaultEnterCommandToEditor, { isEnabled: isFocused });
-  useShortcut(["Meta", "Enter"], sendDefaultEnterCommandToEditor, { isEnabled: isFocused });
+  useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
+  useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
 
   function handleSubmitIfEnabled() {
     if (submitMode !== "enable") return;
