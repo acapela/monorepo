@@ -41,9 +41,8 @@ export function createQuery<Data, Variables>(
 
     const { data, ...rest } = useRawQuery(getQuery(), {
       ...{
-        // fetchPolicy: "cache-and-network",
         ...options,
-        // context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
+        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
       },
       variables: variables as Variables,
     });
