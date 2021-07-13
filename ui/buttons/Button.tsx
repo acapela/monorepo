@@ -14,6 +14,7 @@ import {
   BUTTON_BACKGROUND_ACTIVE_COLOR,
   WHITE,
   PRIMARY_PINK_1,
+  BASE_GREY_LINES,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
 
@@ -24,7 +25,7 @@ export interface ButtonDisabledInfo {
 }
 
 type ButtonSize = "small" | "medium" | "large";
-type ButtonKind = "primary" | "outlined" | "transparent";
+type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -124,6 +125,15 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
       color: ${BASE_GREY_4};
     }
   `,
+  secondary: css`
+    background: ${BASE_GREY_6};
+    color: ${BASE_GREY_1};
+    border: 1.5px solid transparent;
+
+    ${UIIconHolder} {
+      color: ${BASE_GREY_2};
+    }
+  `,
   outlined: css`
     background: ${WHITE};
     color: ${BASE_GREY_1};
@@ -146,11 +156,20 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
 
 const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
   primary: css`
+    &:hover {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
     &:active {
       background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
     }
+  `,
+  secondary: css`
     &:hover {
-      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+      background: ${BASE_GREY_4};
+    }
+    &:active {
+      background: ${BASE_GREY_LINES};
+      border-color: ${PRIMARY_PINK_1};
     }
   `,
   outlined: css`
