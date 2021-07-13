@@ -29,7 +29,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
-  const isEditingAnyMessage = useTopicStoreSelector((store) => !!store.editedMessageId);
+  const [isEditingAnyMessage] = useTopicStoreSelector((store) => !!store.editedMessageId);
 
   const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
   const handleStopReplyingToMessage = () => {
@@ -84,14 +84,20 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         onSubmit={async () => {
           if (isCreatingMessage) return;
 
-          await submitMessage({
-            type: "TEXT",
-            content: value,
-            attachments,
-          });
-
           attachmentsList.clear();
           setValue(getEmptyRichContent());
+
+          try {
+            await submitMessage({
+              type: "TEXT",
+              content: value,
+              attachments,
+            });
+          } catch (error) {
+            // In case of error - restore attachments and content you were trying to send
+            attachmentsList.set(attachments);
+            setValue(value);
+          }
         }}
         onFilesSelected={handleNewFiles}
         autofocusKey={topicId}
