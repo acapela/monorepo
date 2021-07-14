@@ -1,6 +1,5 @@
 import styled, { css } from "styled-components";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { IconButton } from "~ui/buttons/IconButton";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { OptionsButton } from "./OptionsButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -45,8 +44,4 @@ const UIMenuIcon = styled.div<{ forceVisible: boolean }>`
       }
     `;
   }}
-
-  ${IconButton} {
-    color: inherit;
-  }
 `;

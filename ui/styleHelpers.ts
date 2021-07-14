@@ -23,3 +23,8 @@ export function boolPropStyles<P>(name: keyof P, styles: FlattenSimpleInterpolat
     }
   };
 }
+
+export const squareStyle = (size: number) => css`
+  width: ${size}px;
+  height: ${size}px;
+`;

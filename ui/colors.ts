@@ -18,6 +18,9 @@ export const BASE_GREY_3 = "hsl(0, 0%, 47%)";
 export const BASE_GREY_4 = "hsl(0, 0%, 82%)";
 export const BASE_GREY_6 = "hsl(0, 0%, 96%)";
 export const BASE_GREY_LINES = "hsl(0, 0%, 91%)";
+export const CLOUD_LIGHTER = "hsl(210, 22%, 96%)";
+export const DARK_ONYX = "hsl(213, 20%, 17%)";
+
 /*
  *
  * Theme Colors
@@ -43,7 +46,7 @@ export const BUTTON_BACKGROUND_COLOR = PRIMARY_COLOR;
 export const BUTTON_BACKGROUND_ACTIVE_COLOR = PRIMARY_ACTIVE_COLOR;
 export const BUTTON_ACCENT_COLOR = "hsl(209, 11%, 52%)";
 export const WARNING_COLOR = SECONDARY_ORANGE_1;
-export const SELECTED_ITEM_COLOR = "hsl(210, 22%, 96%)";
+export const SELECTED_ITEM_COLOR = CLOUD_LIGHTER;
 export const STRONG_LINE_COLOR = "hsla(0, 0%, 82%, 1)";
 
 /**
