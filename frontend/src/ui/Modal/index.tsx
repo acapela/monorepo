@@ -2,7 +2,7 @@ import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { IconButton } from "~ui/buttons/IconButton";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconCross } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
@@ -52,7 +52,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
               </>
             )}
           </UIHead>
-          <IconButton icon={<IconCross />} onClick={onCloseRequest} />
+          <CircleIconButton icon={<IconCross />} onClick={onCloseRequest} />
         </UIToolbar>
       )}
       <UIBody>{children}</UIBody>
@@ -98,7 +98,7 @@ const UIToolbar = styled.div`
   padding: 24px 24px 0;
   margin-bottom: 32px;
 
-  ${IconButton} {
+  ${CircleIconButton} {
     margin-top: -4px;
   }
 `;

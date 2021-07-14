@@ -12,7 +12,7 @@ import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
-import { IconButton } from "~ui/buttons/IconButton";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { CardBase } from "~ui/card/Base";
 import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
@@ -61,7 +61,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
       <UIIndentBody>
         <UIHead>
           <UICollapseHolder isOpened={isOpen}>
-            <IconButton type="tertiary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
+            <CircleIconButton kind="secondary" icon={<IconChevronDown />} onClick={toggleIsOpen} />
           </UICollapseHolder>
           <UIHeadPrimary
             onClick={() => {
@@ -127,7 +127,7 @@ const UIHolder = styled(CardBase)``;
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 
-  ${IconButton} {
+  ${CircleIconButton} {
     svg {
       transform: rotateZ(
         ${(props) => {

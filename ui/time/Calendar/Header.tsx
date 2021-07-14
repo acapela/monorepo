@@ -3,7 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 import { PopPresenceAnimator } from "~ui/animations";
-import { IconButton } from "~ui/buttons/IconButton";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconCalendar, IconChevronLeft, IconChevronRight } from "~ui/icons";
 import { TextH6 } from "~ui/typo";
 
@@ -28,7 +28,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
       <AnimatePresence>
         {canReturnToCurrentMonth && (
           <PopPresenceAnimator key="fo">
-            <IconButton
+            <WideIconButton
               tooltip={`Current month - ${format(now, "MMMM")}`}
               icon={<IconCalendar />}
               onClick={() => {
@@ -39,7 +39,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
         )}
       </AnimatePresence>
 
-      <IconButton
+      <WideIconButton
         tooltip={format(endOfPrevious, "MMMM")}
         icon={<IconChevronLeft />}
         onClick={() => {
@@ -47,7 +47,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
         }}
       />
 
-      <IconButton
+      <WideIconButton
         icon={<IconChevronRight />}
         tooltip={format(startOfNext, "MMMM")}
         onClick={() => {
@@ -61,6 +61,7 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
 const UIHeader = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
   flex: 1;
 `;
 

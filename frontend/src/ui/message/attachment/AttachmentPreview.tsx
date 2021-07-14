@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useAttachmentQuery, useDownloadUrlQuery } from "~frontend/gql/attachments";
-import { IconButton } from "~ui/buttons/IconButton";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconTrash } from "~ui/icons";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
@@ -20,7 +20,12 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
     <UIHolder>
       {!!attachmentInfo && !!onRemoveRequest && (
         <UIRemoveButtonHolder>
-          <IconButton tooltip="Remove attachment" isPrimary icon={<IconTrash />} onClick={() => onRemoveRequest(id)} />
+          <WideIconButton
+            tooltip="Remove attachment"
+            kind="primary"
+            icon={<IconTrash />}
+            onClick={() => onRemoveRequest(id)}
+          />
         </UIRemoveButtonHolder>
       )}
 

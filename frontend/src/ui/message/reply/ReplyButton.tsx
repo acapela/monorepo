@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton } from "~ui/buttons/IconButton";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconReply } from "~ui/icons";
 import { useTopicStoreUpdate } from "~frontend/topics/TopicStore";
 import { MessageDetailedInfoFragment } from "~gql";
@@ -15,5 +15,5 @@ export const ReplyButton = ({ message }: Props) => {
     updateTopicStore((draft) => (draft.currentlyReplyingToMessage = message));
   }
 
-  return <IconButton tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
+  return <WideIconButton kind="secondary" tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
 };

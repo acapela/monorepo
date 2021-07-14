@@ -10,16 +10,17 @@ type ButtonSize = "small" | "large";
 interface Props {
   icon: ReactNode;
   size?: ButtonSize;
-  onClick: () => void;
+  onClick?: () => void;
+  className?: string;
 }
 
-export const CircleIconButton = ({ icon, size = "small", onClick }: Props) => {
+export const CircleIconButton = styled(function CircleIconButton({ icon, size = "small", onClick, className }: Props) {
   return (
-    <UIButton onClick={onClick} size={size}>
+    <UIButton className={className} onClick={onClick} size={size}>
       {icon}
     </UIButton>
   );
-};
+})``;
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
@@ -35,11 +36,12 @@ export const UIButton = styled.button<{ size: ButtonSize }>`
   align-items: center;
   justify-content: center;
 
+  cursor: pointer;
   ${borderRadius.circle};
+  font-size: 16px;
+  padding: 0;
 
   ${hoverTransition()}
-
-  font-size: 16px;
 
   ${({ size }) => buttonSizeSpecificStyle[size]}
 

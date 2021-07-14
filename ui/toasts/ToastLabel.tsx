@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { IconButton } from "~ui/buttons/IconButton";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/colors";
 import { IconCross } from "~ui/icons";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -36,7 +36,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       className={className}
     >
       <UIContent>{toast.content}</UIContent>
-      <IconButton icon={<IconCross />} onClick={() => onCloseRequest(toast)} />
+      <CircleIconButton icon={<IconCross />} onClick={() => onCloseRequest(toast)} />
     </UIHolder>
   );
 })``;

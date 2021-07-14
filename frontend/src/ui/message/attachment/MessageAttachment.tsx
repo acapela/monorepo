@@ -12,7 +12,7 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useShortcuts } from "~ui/keyboard/useShortcut";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { IconCross } from "~ui/icons";
-import { IconButton } from "~ui/buttons/IconButton";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -83,7 +83,7 @@ export const MessageAttachment = styled(
         {isFullscreenOpened && (
           <UIFullscreenHolder onClick={closeFullscreen}>
             <CornerButtonWrapper>
-              <IconButton tooltip="Esc or Space" onClick={closeFullscreen} type="primary" icon={<IconCross />} />
+              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
             </CornerButtonWrapper>
             {renderAttachment()}
           </UIFullscreenHolder>
