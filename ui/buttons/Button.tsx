@@ -154,6 +154,14 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
   `,
 };
 
+export const activeTransparentButtonStyles = css`
+  color: ${BASE_GREY_2};
+  background: ${BASE_GREY_6};
+  ${UIIconHolder} {
+    color: ${PRIMARY_PINK_1};
+  }
+`;
+
 const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
   primary: css`
     &:hover {
@@ -186,8 +194,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
       background: ${BASE_GREY_6};
     }
     &:active {
-      color: ${BASE_GREY_2};
-      background: ${BASE_GREY_6};
+      ${activeTransparentButtonStyles};
     }
 
     &:hover ${UIIconHolder} {
