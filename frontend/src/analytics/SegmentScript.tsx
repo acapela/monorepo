@@ -1,5 +1,6 @@
 import snippet from "@segment/snippet";
 import Script from "next/script";
+import { useConst } from "~shared/hooks/useConst";
 
 const segmentApiKey = process.env.NEXT_PUBLIC_SEGMENT_API_KEY;
 
@@ -10,15 +11,26 @@ const segmentOptions = {
   page: true,
 };
 
+function getSegmentOptions() {
+  /**
+   * We're cloning the object as under the hood sentry will extend this object every time snippet.min is called.
+   *
+   * After 10-20 rounds it quickly results with options.load having 20mb long string that is JSON.stringified
+   */
+  return { ...segmentOptions };
+}
+
 export const SegmentScript = () => {
   if (!segmentOptions.apiKey) {
     return null;
   }
 
+  const snippetHTML = useConst(() => snippet.min(getSegmentOptions()));
+
   return (
     <Script
       dangerouslySetInnerHTML={{
-        __html: snippet.min(segmentOptions),
+        __html: snippetHTML,
       }}
     />
   );
