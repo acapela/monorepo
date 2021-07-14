@@ -11,6 +11,7 @@ import { getSpringTransitionWithDuration } from "~ui/animations";
 import { useRoomsQuery } from "~frontend/gql/rooms";
 import { GoogleCalendarEventsInDay } from "./GoogleCalendarEventsInDay";
 import { googleCalendarEventsApi } from "~frontend/requests/googleCalendar";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   startDate: Date;
@@ -23,12 +24,18 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
   className,
   displayEmpty,
 }: Props) {
+  const user = useAssertCurrentUser();
   const [dayStart, dayEnd] = getDayBoundaries(startDate);
   const [rooms = []] = useRoomsQuery({
     where: {
       deadline: {
         _gte: dayStart.toISOString(),
         _lte: dayEnd.toISOString(),
+      },
+      members: {
+        user_id: {
+          _eq: user.id,
+        },
       },
       // Only show rooms that are created from Google Calendar events
       source_google_calendar_event_id: { _is_null: false },
@@ -38,6 +45,7 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
   const [googleCalendarEvents = []] = googleCalendarEventsApi.use({
     eventsStartDate: startOfDay(startDate),
     eventsEndDate: endOfDay(startDate),
+    ignoreRejected: true,
   });
 
   const googleCalendarEventsToShow = googleCalendarEvents.filter((googleCalendarEvent) => {

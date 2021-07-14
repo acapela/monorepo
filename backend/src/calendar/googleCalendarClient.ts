@@ -43,6 +43,7 @@ function extractParticipantEmailsFromGoogleCalendarEvent(event: calendar_v3.Sche
  * This function extracts only the relevant fields from the fetched Google Calendar Event
  */
 function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): GoogleCalendarEvent {
+  const isInvitationRejected = isGoogleEventDeclinedByRequestingUser(event);
   return {
     title: event.summary ?? undefined,
     participantEmails: extractParticipantEmailsFromGoogleCalendarEvent(event),
@@ -53,7 +54,18 @@ function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): Go
     authorName: event.organizer?.displayName,
     description: event.description ?? undefined,
     videoCallLink: extractVideoCallLink(event),
+    isInvitationRejected,
   };
+}
+
+function isGoogleEventDeclinedByRequestingUser(event: calendar_v3.Schema$Event) {
+  if (!event.attendees) return false;
+
+  const selfAttendee = event.attendees.find((attendee) => attendee.self === true);
+
+  if (!selfAttendee) return false;
+
+  return selfAttendee.responseStatus === "declined";
 }
 
 function getAuthorizedGoogleCalendarApi(userAccount: Account) {
