@@ -309,7 +309,7 @@ async function getAuthInitOptions() {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       session: async (session, tokenData) => {
-        const userId = Reflect.get(tokenData, "sub") as string;
+        const userId = Reflect.get(tokenData, "id") as string;
         if (!userId) return null;
 
         const user = await db.user.findFirst({ where: { id: userId } });

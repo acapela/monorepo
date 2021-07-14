@@ -9,6 +9,7 @@ export interface GoogleCalendarEvent {
   authorEmail?: string;
   authorName?: string;
   videoCallLink?: string;
+  isRejected: boolean;
 }
 
 export interface GoogleCalendarEventsAPIRequestBody {

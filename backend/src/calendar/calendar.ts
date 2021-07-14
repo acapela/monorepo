@@ -17,6 +17,8 @@ export const router = Router();
 router.post(
   "/v1/google-calendar/events",
   createAuthorizedEndpointHandler<GoogleCalendarEventsAPIRequestBody, GoogleCalendarEvent[]>(async (input) => {
+    assert(input.user.id, "User id is required to fetch google calendar events");
+
     const userGoogleAccount = await db.account.findFirst({ where: { user_id: input.user.id, provider_id: "google" } });
 
     const startDate = tryParseStringDate(input.eventsStartDate) || new Date();
