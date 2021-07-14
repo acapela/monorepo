@@ -45,11 +45,10 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
   const [googleCalendarEvents = []] = googleCalendarEventsApi.use({
     eventsStartDate: startOfDay(startDate),
     eventsEndDate: endOfDay(startDate),
+    ignoreRejected: true,
   });
 
   const googleCalendarEventsToShow = googleCalendarEvents.filter((googleCalendarEvent) => {
-    if (googleCalendarEvent.isRejected) return false;
-
     const hasRoomAlready = rooms.some((room) => {
       return room.source_google_calendar_event_id === googleCalendarEvent.id;
     });

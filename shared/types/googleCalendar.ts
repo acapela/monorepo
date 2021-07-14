@@ -9,10 +9,11 @@ export interface GoogleCalendarEvent {
   authorEmail?: string;
   authorName?: string;
   videoCallLink?: string;
-  isRejected: boolean;
+  isInvitationRejected: boolean;
 }
 
 export interface GoogleCalendarEventsAPIRequestBody {
+  ignoreRejected?: boolean;
   eventsStartDate?: Date;
   eventsEndDate?: Date;
 }

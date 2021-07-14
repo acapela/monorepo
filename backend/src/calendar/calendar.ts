@@ -33,6 +33,10 @@ router.post(
 
     const calendarEvents = await fetchSingleCalendarEventsInRange(userGoogleAccount, "primary", startDate, endDate);
 
+    if (input.ignoreRejected) {
+      return calendarEvents.filter((event) => !event.isInvitationRejected);
+    }
+
     return calendarEvents;
   })
 );

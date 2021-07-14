@@ -43,7 +43,7 @@ function extractParticipantEmailsFromGoogleCalendarEvent(event: calendar_v3.Sche
  * This function extracts only the relevant fields from the fetched Google Calendar Event
  */
 function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): GoogleCalendarEvent {
-  const isRejected = isGoogleEventDeclinedByRequestingUser(event);
+  const isInvitationRejected = isGoogleEventDeclinedByRequestingUser(event);
   return {
     title: event.summary ?? undefined,
     participantEmails: extractParticipantEmailsFromGoogleCalendarEvent(event),
@@ -54,7 +54,7 @@ function extractInfoFromGoogleCalendarEvent(event: calendar_v3.Schema$Event): Go
     authorName: event.organizer?.displayName,
     description: event.description ?? undefined,
     videoCallLink: extractVideoCallLink(event),
-    isRejected,
+    isInvitationRejected,
   };
 }
 
