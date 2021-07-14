@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import { PrimaryNavigationItem } from "./PrimaryNavigationItem";
-import { IconHome, IconSpaces, IconCalendar } from "~ui/icons";
+import { IconHome, IconSpaces, IconCalendarDates } from "~ui/icons";
 
 export const PrimaryNavigation = () => (
   <UINav>
     <PrimaryNavigationItem icon={<IconHome />} title={"Home"} href="/" />
     <PrimaryNavigationItem icon={<IconSpaces />} title={"Spaces"} href="/spaces" />
-    <PrimaryNavigationItem icon={<IconCalendar />} title={"Calendar"} href="/calendar" />
+    <PrimaryNavigationItem icon={<IconCalendarDates />} title={"Calendar"} href="/calendar" />
   </UINav>
 );
 
