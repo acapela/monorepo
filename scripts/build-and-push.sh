@@ -12,7 +12,7 @@ IMAGE_NAME="eu.gcr.io/meetnomoreapp/monorepo"
 IMAGE_NAME_VERSION="$IMAGE_NAME:$VERSION"
 
 echo "building image..."
-docker build --build-arg SENTRY_RELEASE=$VERSION -t $IMAGE_NAME_VERSION .
+docker build --build-arg BUILD_ID=$GITHUB_SHA --build-arg SENTRY_RELEASE=$VERSION -t $IMAGE_NAME_VERSION .
 docker tag $IMAGE_NAME_VERSION $IMAGE_NAME
 
 echo "pushing to gcr..."
