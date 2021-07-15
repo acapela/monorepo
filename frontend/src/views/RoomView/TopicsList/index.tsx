@@ -7,9 +7,10 @@ import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
 import { StaticTopicsList } from "./StaticTopicsList";
 import { LazyTopicsList } from "./LazyTopicsList";
 import styled from "styled-components";
-import { TextH4 } from "~ui/typo";
+import { TextH6 } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { CollapsePanel } from "~frontend/../../ui/collapse/CollapsePanel";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -70,41 +71,48 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   }
 
   return (
-    <UIHolder>
-      <UIHeader>
-        <TextH4 spezia semibold>
+    <CollapsePanel
+      persistanceKey={`room-topics-${room.id}`}
+      initialIsOpened={true}
+      headerNode={
+        <TextH6 spezia semibold>
           Topics
-        </TextH4>
-        {isRoomOpen && (
-          <UINewTopicButton
-            ref={buttonRef}
-            onClick={handleCreateTopic}
-            isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
-          >
-            New topic
-          </UINewTopicButton>
+        </TextH6>
+      }
+    >
+      <UIHolder>
+        <UIHeader>
+          {isRoomOpen && (
+            <UINewTopicButton
+              ref={buttonRef}
+              onClick={handleCreateTopic}
+              isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
+            >
+              New topic
+            </UINewTopicButton>
+          )}
+          {!isRoomOpen && (
+            <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
+              <Button kind="secondary" ref={buttonRef}>
+                Room summary
+              </Button>
+            </routes.spaceRoomSummary.Link>
+          )}
+        </UIHeader>
+        {amIMember && (
+          <LazyTopicsList
+            topics={topics}
+            activeTopicId={activeTopicId}
+            isDisabled={isExecutingBulkReorder || isReordering}
+            onMoveBetween={moveBetween}
+            onMoveToStart={moveToStart}
+            onMoveToEnd={moveToEnd}
+          />
         )}
-        {!isRoomOpen && (
-          <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
-            <Button kind="secondary" ref={buttonRef}>
-              Room summary
-            </Button>
-          </routes.spaceRoomSummary.Link>
-        )}
-      </UIHeader>
-      {amIMember && (
-        <LazyTopicsList
-          topics={topics}
-          activeTopicId={activeTopicId}
-          isDisabled={isExecutingBulkReorder || isReordering}
-          onMoveBetween={moveBetween}
-          onMoveToStart={moveToStart}
-          onMoveToEnd={moveToEnd}
-        />
-      )}
-      {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
-      {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
-    </UIHolder>
+        {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
+        {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
+      </UIHolder>
+    </CollapsePanel>
   );
 }
 
