@@ -1,4 +1,4 @@
-import { TeamInvitation, User } from "~db";
+import { TeamInvitation } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { sendNotification } from "../notifications/sendNotification";
