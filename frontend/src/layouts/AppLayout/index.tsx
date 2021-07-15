@@ -7,7 +7,9 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TeamPickerView } from "./TeamPicker";
 import { WindowView } from "~frontend/views/WindowView";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
-import { TopBarMenu } from "./menu/TopbarMenu";
+import { routes, useIsAnyRouteActive } from "~frontend/routes";
+import { Breadcrumbs } from "./menu/Bredcrumbs";
+import { PrimaryNavigation } from "./menu/PrimaryNavigation";
 
 interface Props {
   children?: ReactNode;
@@ -15,6 +17,13 @@ interface Props {
 
 export const AppLayout = ({ children }: Props) => {
   const user = useCurrentUser();
+
+  const shouldShowBreadcrumbs = useIsAnyRouteActive([
+    routes.space.path,
+    routes.spaceRoom.path,
+    routes.spaceRoomTopic.path,
+    routes.spaceRoomSummary.path,
+  ]);
 
   if (!user) {
     return (
@@ -41,8 +50,12 @@ export const AppLayout = ({ children }: Props) => {
               <SmallLogo />
             </UILogo>
           </Link>
-
-          <TopBarMenu />
+          {shouldShowBreadcrumbs && (
+            <UIBreadcrumbsHolder>
+              <Breadcrumbs/>
+            </UIBreadcrumbsHolder>
+          )}
+          {!shouldShowBreadcrumbs && <PrimaryNavigation />}
           <UIUserMenu>
             <UserMenu />
           </UIUserMenu>
@@ -69,6 +82,10 @@ const UITopBar = styled.div`
   background: #ffffff;
   box-shadow: 0px 1px 0px #ededed;
 `;
+
+const UIBreadcrumbsHolder = styled.div`
+  justify-self: flex-start;
+`
 
 const UILogo = styled.a`
   display: block;
