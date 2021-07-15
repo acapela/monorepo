@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Modal } from "~frontend/ui/Modal";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
-import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { InputError } from "~ui/forms/InputError";

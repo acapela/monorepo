@@ -59,17 +59,3 @@ const UIManageSection = styled.div`
   align-content: start;
   gap: 8px;
 `;
-
-const UIRoomHead = styled(TextH3)`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-`;
-
-const UIRoomTitle = styled.div`
-  ${(props) =>
-    props.onClick &&
-    css`
-      cursor: pointer;
-    `}
-`;

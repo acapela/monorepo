@@ -28,9 +28,13 @@ export function EditableText({
     setSelectionToElement(ref.current);
   }, [isInEditMode]);
 
-  useDoubleClick(ref, () => {
-    onEditModeChangeRequest(true);
-  });
+  useDoubleClick(
+    ref,
+    () => {
+      onEditModeChangeRequest(true);
+    },
+    { isEnabled: allowDoubleClickEditRequest }
+  );
 
   useElementEvent(
     ref,

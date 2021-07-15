@@ -39,33 +39,9 @@ export function RoomView(props: Props) {
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, setIsEditingRoomName] = useState(false);
-
-  const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
 
   const isRoomOpen = !room.finished_at;
-
-  const onCloseRoomToggleClicked = async () => {
-    if (!room) return;
-
-    startLoading();
-
-    const isRoomOpen = await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
-
-    if (!isRoomOpen) {
-      routes.spaceRoomSummary.replace({
-        roomId: room.id,
-        spaceId: room.space_id,
-      });
-    } else if (routes.spaceRoomSummary.getIsActive()) {
-      routes.spaceRoom.replace({
-        roomId: room.id,
-        spaceId: room.space_id,
-      });
-    } else {
-      endLoading();
-    }
-  };
 
   async function handleRoomNameChange(newName: string) {
     await updateRoom({ roomId: room.id, input: { name: newName } });

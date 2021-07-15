@@ -2,6 +2,13 @@ import { RefObject, useEffect } from "react";
 import { createElementEvent } from "~shared/domEvents";
 import { createTimeout } from "~shared/time";
 
+interface Options {
+  isEnabled?: boolean;
+  secondClickWaitTime?: number;
+}
+
+const DEFAULT_SECOND_CLICK_TIMEOUT = 250;
+
 /**
  * Allows attaching double click event to an element.
  *
@@ -15,9 +22,10 @@ import { createTimeout } from "~shared/time";
  *
  * Result it that 'single' click will be executed with delay.
  */
-export function useDoubleClick(ref: RefObject<HTMLElement>, callback: () => void, secondClickWaitTime = 250) {
+export function useDoubleClick(ref: RefObject<HTMLElement>, callback: () => void, options?: Options) {
   useEffect(() => {
     if (!ref.current) return;
+    if (options?.isEnabled === false) return;
 
     /**
      * Timeout called after 'first click' that is waiting for 2nd click.
@@ -72,7 +80,7 @@ export function useDoubleClick(ref: RefObject<HTMLElement>, callback: () => void
         isEmittingClickEvent = true;
         // Emit click event
         ref.current?.click();
-      }, secondClickWaitTime);
+      }, options?.secondClickWaitTime ?? DEFAULT_SECOND_CLICK_TIMEOUT);
     });
-  }, [ref, ref.current, callback, secondClickWaitTime]);
+  }, [ref, ref.current, callback, options?.isEnabled, options?.secondClickWaitTime]);
 }

@@ -3,8 +3,6 @@ import { TopicDetailedInfoFragment } from "~gql";
 import { useTopic } from "~frontend/topics/useTopic";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
@@ -14,7 +12,7 @@ interface Props {
 }
 
 export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
-  const { edit, deleteTopic } = useTopic(topic);
+  const { deleteTopic } = useTopic(topic);
 
   const handleDeleteSelect = useCallback(async () => {
     const isDeleteConfirmed = await openConfirmPrompt({

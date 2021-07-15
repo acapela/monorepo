@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useHoverDirty, useIsomorphicLayoutEffect } from "react-use";
+import { ReactNode, useRef, useState } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
@@ -45,7 +45,7 @@ export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerN
   useShortcut(
     "Space",
     () => {
-      // If anything is focused, dont use space for toggling
+      // If anything is focused, don't use space for toggling
       if (document.activeElement && document.activeElement !== document.body) return;
 
       setIsOpened(!isOpened);

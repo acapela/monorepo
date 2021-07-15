@@ -4,7 +4,6 @@ import { createLastItemIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { slugify } from "~shared/slugify";
 
 interface CreateTopicInput {
   roomId: string;

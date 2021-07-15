@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { gql } from "@apollo/client";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";

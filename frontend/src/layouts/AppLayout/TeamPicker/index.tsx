@@ -1,4 +1,3 @@
-import { slugify } from "~shared/slugify";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeamMutation, useTeamsQuery } from "~frontend/gql/teams";
