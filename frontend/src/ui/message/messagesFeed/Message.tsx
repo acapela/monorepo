@@ -10,7 +10,7 @@ import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
-import { useTopicStoreSelector } from "~frontend/topics/TopicStore";
+import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -31,16 +31,16 @@ export const Message = styled(({ message, className, isReadonly }: Props) => {
   const user = useCurrentUser();
   const [deleteMessage] = useDeleteTextMessageMutation();
 
-  const [isInEditMode, updateTopicStore] = useTopicStoreSelector(
-    (topicStore) => topicStore.editedMessageId === message.id
-  );
+  const topicContext = useTopicStoreContext();
+
+  const isInEditMode = topicContext.useSelector((topicStore) => topicStore.editedMessageId === message.id);
 
   function handleStartEditing() {
-    updateTopicStore((draft) => (draft.editedMessageId = message.id));
+    topicContext.update((draft) => (draft.editedMessageId = message.id));
   }
 
   function handleStopEditing() {
-    updateTopicStore((draft) => {
+    topicContext.update((draft) => {
       if (draft.editedMessageId !== message.id) return;
 
       draft.editedMessageId = null;

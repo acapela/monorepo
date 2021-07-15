@@ -27,6 +27,12 @@ export function isLastItem<T>(array: T[], item: T) {
   return index === array.length - 1;
 }
 
+export function getLastElementFromArray<T>(array: T[]): T | null {
+  const lastIndex = array.length - 1;
+
+  return array[lastIndex] ?? null;
+}
+
 /**
  * This function will pick 'random' item from array, but in a repetitive way, basing on provided 'seed' string.
  * As long as the seed is the same, result of 'random' pick will be the same as well.

@@ -9,7 +9,7 @@ import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
 import { uploadFiles } from "./attachments";
-import { useTopicStore, useTopicStoreSelector } from "~frontend/topics/TopicStore";
+import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { Message_Type_Enum } from "~gql";
 import { RichEditorContent } from "~richEditor/content/types";
@@ -29,11 +29,13 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
-  const [isEditingAnyMessage] = useTopicStoreSelector((store) => !!store.editedMessageId);
+  const topicContext = useTopicStoreContext();
 
-  const [{ currentlyReplyingToMessage }, updateTopicState] = useTopicStore();
+  const isEditingAnyMessage = topicContext.useSelector((store) => !!store.editedMessageId);
+
+  const { currentlyReplyingToMessage } = topicContext.useValue();
   const handleStopReplyingToMessage = () => {
-    updateTopicState((draft) => (draft.currentlyReplyingToMessage = null));
+    topicContext.update((draft) => (draft.currentlyReplyingToMessage = null));
   };
 
   async function handleNewFiles(files: File[]) {

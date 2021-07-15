@@ -13,6 +13,8 @@ import { borderRadius } from "~ui/baseStyles";
 import { EditableText } from "~ui/forms/EditableText";
 import { useState } from "react";
 import { updateTopic } from "~frontend/gql/topics";
+import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
+import { useEffect } from "react";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -24,12 +26,21 @@ interface Props {
 const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
+  const roomContext = useRoomStoreContext();
   const [isEditingName, setIsEditingName] = useState(false);
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
 
   const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
+
+  const isNewTopic = roomContext.useSelector((state) => state.newTopicId === topic.id);
+
+  useEffect(() => {
+    if (!isNewTopic) return;
+
+    setIsEditingName(true);
+  }, [isNewTopic]);
 
   function handleNewTopicName(newName: string) {
     updateTopic({ topicId: topic.id, input: { name: newName } });

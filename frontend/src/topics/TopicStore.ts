@@ -6,14 +6,7 @@ interface State {
   editedMessageId: string | null;
 }
 
-export const [
-  TopicStoreContext,
-  {
-    useSharedState: useTopicStore,
-    useSharedStateSelector: useTopicStoreSelector,
-    useSharedStateUpdate: useTopicStoreUpdate,
-  },
-] = createSharedStateContext<State>(() => ({
+export const [TopicStoreContext, useTopicStoreContext] = createSharedStateContext<State>(() => ({
   currentlyReplyingToMessage: null,
   editedMessageId: null,
 }));
