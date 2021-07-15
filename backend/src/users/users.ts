@@ -39,3 +39,17 @@ export async function createUser({
     data: { name, email, avatar_url: avatarUrl },
   });
 }
+
+export function getNormalizedUserName(user: User): string {
+  if (user.name) {
+    return getFirstName(user.name);
+  }
+  if (user.email) {
+    return user.email;
+  }
+  return "Your colleague";
+}
+
+export function getFirstName(name: string): string {
+  return name.trim().split(" ")[0];
+}

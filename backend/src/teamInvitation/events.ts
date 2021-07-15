@@ -3,7 +3,7 @@ import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { sendNotification } from "../notifications/sendNotification";
 import { findTeamById } from "../teams/helpers";
-import { findUserById } from "../users/users";
+import { findUserById, getNormalizedUserName } from "../users/users";
 import { TeamInvitationNotification } from "./InviteNotification";
 
 export async function handleTeamInvitationCreated(invite: TeamInvitation, userId: string | null) {
@@ -24,7 +24,7 @@ export async function handleTeamInvitationCreated(invite: TeamInvitation, userId
   const notification = new TeamInvitationNotification({
     recipientEmail: invite.email,
     roomName: team.name || "an acapela discussion",
-    inviterName: getInviterName(inviter),
+    inviterName: getNormalizedUserName(inviter),
     inviteCode: invite.token,
   });
 
@@ -34,18 +34,4 @@ export async function handleTeamInvitationCreated(invite: TeamInvitation, userId
     userId,
     teamId,
   });
-}
-
-export function getInviterName(inviter: User): string {
-  if (inviter.name) {
-    return firstName(inviter.name);
-  }
-  if (inviter.email) {
-    return inviter.email;
-  }
-  return "Your colleague";
-}
-
-function firstName(name: string): string {
-  return name.trim().split(" ")[0];
 }

@@ -2,7 +2,7 @@ import { validate as validateUuid } from "uuid";
 import { db } from "~db";
 import { ActionHandler } from "../actions/actionHandlers";
 import { NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
-import { getInviterName } from "./events";
+import { getNormalizedUserName } from "~backend/src/users/users";
 
 export interface LookupTeamNameActionInputs {
   token: string;
@@ -39,7 +39,7 @@ export const lookupTeamName: ActionHandler<
 
     return {
       team_name: teamInvitation.team.name,
-      inviter_name: getInviterName(teamInvitation.user),
+      inviter_name: getNormalizedUserName(teamInvitation.user),
     };
   },
 };
