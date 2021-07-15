@@ -1,4 +1,4 @@
-import { RoomParticipants, User } from "~db";
+import { RoomParticipants } from "~db";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
