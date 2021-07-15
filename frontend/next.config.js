@@ -139,6 +139,10 @@ module.exports = withPlugins(
     },
     webpack5: true,
 
+    generateBuildId: async () => {
+      return process.env.BUILD_ID || "dev-build";
+    },
+
     async rewrites() {
       return [
         {
