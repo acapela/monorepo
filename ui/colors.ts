@@ -22,6 +22,7 @@ export const BASE_GREY_6 = "hsl(0, 0%, 96%)";
 export const BASE_GREY_LINES = "hsl(0, 0%, 91%)";
 export const CLOUD_LIGHTER = "hsl(210, 22%, 96%)";
 export const DARK_ONYX = "hsl(213, 20%, 17%)";
+export const ONYX_LIGHTEST = "hsl(211, 12%, 62%)";
 
 /*
  *

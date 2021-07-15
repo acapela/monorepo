@@ -8,8 +8,8 @@ import { TeamPickerView } from "./TeamPicker";
 import { WindowView } from "~frontend/views/WindowView";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { routes, useIsAnyRouteActive } from "~frontend/routes";
-import { Breadcrumbs } from "./menu/Bredcrumbs";
-import { PrimaryNavigation } from "./menu/PrimaryNavigation";
+import { Breadcrumbs } from "./Bredcrumbs";
+import { PrimaryNavigation } from "./PrimaryNavigation";
 
 interface Props {
   children?: ReactNode;
@@ -52,7 +52,7 @@ export const AppLayout = ({ children }: Props) => {
           </Link>
           {shouldShowBreadcrumbs && (
             <UIBreadcrumbsHolder>
-              <Breadcrumbs/>
+              <Breadcrumbs />
             </UIBreadcrumbsHolder>
           )}
           {!shouldShowBreadcrumbs && <PrimaryNavigation />}
@@ -84,8 +84,9 @@ const UITopBar = styled.div`
 `;
 
 const UIBreadcrumbsHolder = styled.div`
+  flex: 1;
   justify-self: flex-start;
-`
+`;
 
 const UILogo = styled.a`
   display: block;

@@ -69,6 +69,7 @@ export const fontSize = {
   itemTitle: "1.25rem",
   label: "0.875rem",
   messageText: "0.875rem",
+  navigation: "0.9375rem",
 };
 
 export const colors = {
