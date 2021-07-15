@@ -34,7 +34,7 @@ export async function handleMentionCreated(message: Message, userId: string | nu
     return;
   }
 
-  const [topic, taggerUser] = await Promise.all([
+  const [topic, messageAuthor] = await Promise.all([
     db.topic.findUnique({
       where: { id: message.topic_id },
       include: {
@@ -47,12 +47,12 @@ export async function handleMentionCreated(message: Message, userId: string | nu
   if (!topic) {
     throw new UnprocessableEntityError(`topic ${message.topic_id} does not exist`);
   }
-  if (!taggerUser) {
+  if (!messageAuthor) {
     throw new UnprocessableEntityError(`user ${message.user_id} does not exist`);
   }
 
   const defaultMentionNotificationParams = {
-    taggerName: getNormalizedUserName(taggerUser),
+    authorName: getNormalizedUserName(messageAuthor),
     topicName: topic.name || "a topic",
     spaceId: topic.room.space_id,
     roomId: topic.room.id,

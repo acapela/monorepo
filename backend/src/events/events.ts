@@ -24,6 +24,7 @@ hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantCreated);
 // Create plain text version of each message so it can be used by search views.
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], prepareMessagePlainTextData);
+// mentions are part of the message object
 hasuraEvents.addHandler("message_updates", ["INSERT"], handleMentionCreated);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
