@@ -26,8 +26,8 @@ if (["staging", "production"].includes(stage)) {
 const production = process.env.NODE_ENV === "production";
 dotenv.config({ path: production ? process.cwd() : path.resolve(__dirname, "..", ".env") });
 
-const app = next({ dir: process.cwd(), customServer: false });
-const handle = app.getRequestHandler();
+const nextApp = next({ dir: process.cwd(), customServer: false });
+const handle = nextApp.getRequestHandler();
 
 function proxyReqPathResolverWithPrefix(prefix) {
   prefix = prefix || "/";
