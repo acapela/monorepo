@@ -3,9 +3,16 @@ import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { PopPresenceAnimator } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { DANGER_COLOR } from "~ui/colors";
-import { hoverActionCss } from "~ui/transitions";
+import { borderRadius, shadow, fontSize } from "~ui/baseStyles";
+import {
+  DANGER_COLOR,
+  WHITE,
+  BASE_GREY_LINES,
+  BASE_GREY_1,
+  PRIMARY_PINK_2,
+  PRIMARY_PINK_1_TRANSPARENT,
+} from "~ui/colors";
+import { hoverTransition } from "~ui/transitions";
 import { Popover, PopoverPlacement } from "./Popover";
 
 interface Props {
@@ -60,12 +67,15 @@ export const PopoverMenu = styled(
 )``;
 
 export const UIPopoverMenuModal = styled(PopPresenceAnimator)`
-  padding: 9.5px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 
-  background: #ffffff;
-  border: 1px solid #e0e3e7;
+  background: ${WHITE};
+  border: 1px solid ${BASE_GREY_LINES};
   box-sizing: border-box;
-  ${shadow.modal};
+  ${shadow.popover};
   ${borderRadius.menu}
   min-width: 200px;
 `;
@@ -74,16 +84,21 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 4px 8px;
+  padding: 10px 8px;
 
-  font-size: 1rem;
-  line-height: 2em;
+  font-size: ${fontSize.label};
+  line-height: 1.5em;
+  border: 1px solid transparent;
 
   ${(props) =>
     props.isClickable &&
     css`
-      ${hoverActionCss};
       cursor: pointer;
+      ${hoverTransition()};
+      &:hover {
+        border-color: ${PRIMARY_PINK_2};
+        background: ${PRIMARY_PINK_1_TRANSPARENT};
+      }
     `}
 
   ${(props) =>
@@ -93,7 +108,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
       pointer-events: none;
     `}
 
-  color: ${(props) => (props.isDestructive ? DANGER_COLOR : "#232b35")};
+  color: ${(props) => (props.isDestructive ? DANGER_COLOR : BASE_GREY_1)};
 
   ${borderRadius.item}
 `;

@@ -1,22 +1,30 @@
 import { ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, PRIMARY_PINK_1 } from "~ui/colors";
+import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
 import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
 
 type ButtonSize = "small" | "large";
+type ButtonKind = "secondary" | "transparent";
 
 interface Props {
   icon: ReactNode;
   size?: ButtonSize;
+  kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
 }
 
-export const CircleIconButton = styled(function CircleIconButton({ icon, size = "small", onClick, className }: Props) {
+export const CircleIconButton = styled(function CircleIconButton({
+  icon,
+  size = "small",
+  kind = "secondary",
+  onClick,
+  className,
+}: Props) {
   return (
-    <UIButton className={className} onClick={onClick} size={size}>
+    <UIButton className={className} onClick={onClick} size={size} kind={kind}>
       {icon}
     </UIButton>
   );
@@ -31,7 +39,30 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
   `,
 };
 
-export const UIButton = styled.button<{ size: ButtonSize }>`
+const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  secondary: css`
+    background: ${CLOUD_LIGHTER};
+    border: 1px solid transparent;
+    &:hover {
+      background: ${BASE_GREY_4};
+    }
+    &:active {
+      background: ${CLOUD_LIGHTER};
+      border-color: ${PRIMARY_PINK_1};
+    }
+  `,
+  transparent: css`
+    background: transparent;
+    &:hover {
+      background: ${BASE_GREY_6};
+    }
+    &:active {
+      background: ${BASE_GREY_6};
+    }
+  `,
+};
+
+export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,20 +70,11 @@ export const UIButton = styled.button<{ size: ButtonSize }>`
   cursor: pointer;
   ${borderRadius.circle};
   font-size: 16px;
+  color: ${DARK_ONYX};
   padding: 0;
 
   ${hoverTransition()}
 
   ${({ size }) => buttonSizeSpecificStyle[size]}
-
-  background: ${CLOUD_LIGHTER};
-  color: ${DARK_ONYX};
-  border: 1px solid transparent;
-  &:hover {
-    background: ${BASE_GREY_4};
-  }
-  &:active {
-    background: ${CLOUD_LIGHTER};
-    border-color: ${PRIMARY_PINK_1};
-  }
+  ${({ kind }) => buttonKindSpecificStyle[kind]}
 `;

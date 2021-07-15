@@ -26,7 +26,7 @@ export const shadow = {
       0px 8.14815px 6.51852px rgba(0, 0, 0, 0.0274815), 0px 1.85185px 3.14815px rgba(0, 0, 0, 0.0168519);
   `,
   popover: css`
-    box-shadow: 0px 8px 40px rgba(147, 158, 170, 0.2);
+    box-shadow: 0px 3px 16px rgba(43, 42, 53, 0.07);
   `,
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
@@ -35,7 +35,7 @@ export const shadow = {
 
 export const borderRadius = {
   menu: css`
-    border-radius: 12px;
+    border-radius: 8px;
   `,
   card: css`
     border-radius: 16px;
@@ -69,6 +69,7 @@ export const fontSize = {
   itemTitle: "1.25rem",
   label: "0.875rem",
   messageText: "0.875rem",
+  navigation: "0.9375rem",
 };
 
 export const colors = {
