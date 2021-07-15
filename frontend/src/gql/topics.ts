@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
-import { getUUID } from "~frontend/../../shared/uuid";
+import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
 import {
   AddTopicMemberMutation,
   AddTopicMemberMutationVariables,
@@ -22,7 +23,6 @@ import {
   UpdateTopicMutation,
   UpdateTopicMutationVariables,
 } from "~gql";
-import { getLocalId } from "~shared/id";
 import { addToast } from "~ui/toasts/data";
 import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
@@ -82,6 +82,11 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
           id: getUUID(),
         },
       };
+    },
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
     },
     optimisticResponse({ input }) {
       return {
@@ -255,12 +260,19 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
 >(
   () => gql`
     ${TopicDetailedInfoFragment()}
-    mutation UpdateTopic($topicId: uuid!, $input: topic_set_input) {
+    mutation UpdateTopic($topicId: uuid!, $input: topic_set_input!) {
       topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: $input) {
         ...TopicDetailedInfo
       }
     }
-  `
+  `,
+  {
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
+  }
 );
 
 export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(

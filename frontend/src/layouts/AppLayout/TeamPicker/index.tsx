@@ -26,9 +26,7 @@ export function TeamPickerView() {
       return;
     }
 
-    const slug = slugify(name);
-
-    await createTeam({ name, slug });
+    await createTeam({ input: { name } });
 
     trackEvent("Account Created");
     trackEvent("Trial Started");

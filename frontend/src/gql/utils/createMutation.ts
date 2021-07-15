@@ -7,6 +7,7 @@ import {
 } from "@apollo/client";
 import { memoize, merge } from "lodash";
 import { DeepPartial } from "utility-types";
+import { ValueUpdater, updateValue } from "~shared/updateValue";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
@@ -23,6 +24,7 @@ interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
   onActualResponse?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
   optimisticResponse?: (vars: Variables) => Data;
   defaultVariables?: () => DeepPartial<Variables>;
+  inputMapper?: ValueUpdater<Variables>;
 }
 
 type MutationResultPhase = "actual" | "optimistic";
@@ -78,13 +80,17 @@ export function createMutation<Data, Variables>(
   }
 
   function getFinalVariables(input: Variables): Variables {
-    if (!mutationDefinitionOptions?.defaultVariables) {
-      return input;
+    let finalVariables = input;
+    if (mutationDefinitionOptions?.defaultVariables) {
+      const defaultVariables = mutationDefinitionOptions.defaultVariables();
+      finalVariables = merge(defaultVariables, input) as Variables;
     }
 
-    const defaultVariables = mutationDefinitionOptions.defaultVariables();
+    if (mutationDefinitionOptions?.inputMapper) {
+      finalVariables = updateValue(finalVariables, mutationDefinitionOptions.inputMapper);
+    }
 
-    return merge(defaultVariables, input) as Variables;
+    return finalVariables;
   }
 
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
@@ -93,8 +99,9 @@ export function createMutation<Data, Variables>(
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
       variables = getFinalVariables(variables);
       const rawResult = await runMutationRaw({
+        ...options,
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-        ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
+        context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
         variables,
         update: createMutationUpdateCallback(variables, options),
       });
@@ -109,9 +116,11 @@ export function createMutation<Data, Variables>(
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
     variables = getFinalVariables(variables);
+
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
+      ...options,
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-      ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
+      context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
       mutation: getMutation(),
       variables,
       update: createMutationUpdateCallback(variables, options),

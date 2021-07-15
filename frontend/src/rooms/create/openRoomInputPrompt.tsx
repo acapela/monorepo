@@ -27,7 +27,6 @@ interface RoomInputOutputData {
   name: string;
   deadline: Date;
   spaceId: string;
-  slug: string;
   participantsIds: string[];
 }
 
@@ -86,7 +85,6 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             deadline,
             name: roomName,
             spaceId: selectedSpaceId,
-            slug: slugify(roomName),
             participantsIds: participantIdsWithCurrentUser,
           });
         } catch (err) {
@@ -100,7 +98,10 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
         setFormErrorMessage("Oops something went wrong");
       }
     };
-    useShortcut("Enter", handleSubmit);
+
+    useShortcut("Enter", () => {
+      handleSubmit();
+    });
 
     return (
       <Modal onCloseRequest={() => resolve(null)} head={{ title: "Create room" }}>

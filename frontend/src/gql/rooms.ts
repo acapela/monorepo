@@ -32,7 +32,6 @@ import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
-import { getLocalId } from "~shared/id";
 import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";

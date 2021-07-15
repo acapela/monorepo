@@ -22,6 +22,7 @@ import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { addToast } from "~ui/toasts/data";
+import { slugify } from "~shared/slugify";
 
 const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
   () => gql`
@@ -71,12 +72,19 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
 export const [useCreateTeamMutation] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
   () => gql`
     ${TeamDetailedInfoFragment()}
-    mutation CreateTeam($slug: String!, $name: String!) {
-      insert_team_one(object: { slug: $slug, name: $name }) {
+    mutation CreateTeam($input: team_insert_input!) {
+      insert_team_one(object: $input) {
         ...TeamDetailedInfo
       }
     }
-  `
+  `,
+  {
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
+  }
 );
 
 export const [useTeamsQuery] = createQuery<TeamsQuery, TeamsQueryVariables>(

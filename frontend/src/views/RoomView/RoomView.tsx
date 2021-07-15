@@ -1,15 +1,19 @@
 import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import { CardBase } from "~ui/card/Base";
+import { getLastElementFromArray } from "~shared/array";
+import { generateId } from "~shared/id";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
+import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { routes } from "~frontend/routes";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
+import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -24,7 +28,15 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function RoomView({ room, selectedTopicId, children }: Props) {
+export function RoomView(props: Props) {
+  return (
+    <RoomStoreContext>
+      <RoomViewDisplayer {...props} />
+    </RoomStoreContext>
+  );
+}
+
+function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, setIsEditingRoomName] = useState(false);
 
@@ -57,6 +69,17 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
 
   async function handleRoomNameChange(newName: string) {
     await updateRoom({ roomId: room.id, input: { name: newName } });
+  }
+
+  async function handleCreateNewTopic() {
+    const currentLastIndex = getLastElementFromArray(room.topics)?.index;
+    await startCreateNewTopicFlow({
+      name: "New topic",
+      slug: `new-topic-${generateId(5)}`,
+      roomId: room.id,
+      navigateAfterCreation: true,
+      currentLastIndex,
+    });
   }
 
   return (
@@ -101,9 +124,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
 
           <UIFlyingCloseRoomToggle>
             <Button
-              isWide={true}
-              onClick={onCloseRoomToggleClicked}
-              isLoading={isChangingRoomState}
+              onClick={handleCreateNewTopic}
               isDisabled={
                 !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
               }
@@ -165,7 +186,11 @@ const UIRoomTitle = styled.div`
 
 const UIFlyingCloseRoomToggle = styled.div`
   position: absolute;
+  display: flex;
+  justify-content: center;
   width: 100%;
   padding: 0 16px;
   bottom: 0;
+  left: 0;
+  right: 0;
 `;

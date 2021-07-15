@@ -25,10 +25,10 @@ import { UserBasicInfoFragment } from "./user";
 
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { getLocalId } from "~shared/id";
 import { TeamDetailedInfoFragment } from "./teams";
 import { assert } from "~shared/assert";
-import { getUUID } from "~frontend/../../shared/uuid";
+import { getUUID } from "~shared/uuid";
+import { slugify } from "~shared/slugify";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -143,6 +143,11 @@ export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
     }
   `,
   {
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
     defaultVariables() {
       return {
         input: {
@@ -177,16 +182,23 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
-    mutation EditSpace($name: String!, $spaceId: uuid!) {
-      space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: { name: $name }) {
+    mutation EditSpace($spaceId: uuid!, $input: space_set_input!) {
+      space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: $input) {
         ...SpaceDetailedInfo
       }
     }
   `,
   {
-    optimisticResponse(vars) {
-      const updatedSpace = SpaceDetailedInfoFragment.produce(vars.spaceId, (space) => {
-        space.name = vars.name;
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
+    optimisticResponse({ input }) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const updatedSpace = SpaceDetailedInfoFragment.produce(input.spaceId!, (space) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        space.name = input.name!;
       });
 
       assert(updatedSpace, "Cannot create optimistic update for edit space");

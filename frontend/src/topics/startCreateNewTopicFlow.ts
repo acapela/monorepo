@@ -12,6 +12,7 @@ interface CreateTopicInput {
   navigateAfterCreation?: boolean;
   currentLastIndex?: string;
   name?: string;
+  slug?: string;
 }
 
 export async function startCreateNewTopicFlow({
@@ -20,6 +21,7 @@ export async function startCreateNewTopicFlow({
   navigateAfterCreation,
   currentLastIndex,
   name,
+  slug,
 }: CreateTopicInput) {
   let topicName: string | null = name ?? null;
 
@@ -38,7 +40,6 @@ export async function startCreateNewTopicFlow({
   }
 
   const index = createLastItemIndex(currentLastIndex);
-  const slug = slugify(topicName);
 
   const [topic] = await createTopic({
     input: {
