@@ -11,6 +11,7 @@ import { TextH6 } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -20,7 +21,6 @@ interface Props {
 
 export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [newlyCreatedTopic, setNewlyCreatedTopic] = useState<string | null>(null);
   const roomId = room.id;
   const spaceId = room.space_id;
 
@@ -29,13 +29,6 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const amIMember = isCurrentUserRoomMember(room);
 
   /*
-    ## Routing on new topic
-
-    Routing to new topics is only done after finding our created topic inside a subscription.
-
-    This is done in order to prevent a race-condition between room data, and mechanisms
-    that handle routing in the Room page.
-
     ## Bulk reordering
     -- go to hook definition for explanation
   */
@@ -44,20 +37,15 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
       const topicIds = topics.map(({ id }) => id);
       bulkReorder(topicIds);
     }
-    const found = topics.find(({ id }) => id === newlyCreatedTopic);
-    if (found) {
-      const {
-        id: topicId,
-        room: { space_id: spaceId, id: roomId },
-      } = found;
-
-      routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
-      setNewlyCreatedTopic(null);
-    }
   }, [topics]);
 
+  useNewItemInArrayEffect(topics, (newTopic) => {
+    console.log("new item here", newTopic);
+    routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
+  });
+
   async function handleCreateTopic() {
-    const topic = await startCreateNewTopicFlow({
+    await startCreateNewTopicFlow({
       roomId,
       modalAnchor: {
         ref: buttonRef,
@@ -66,8 +54,6 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
       navigateAfterCreation: true,
       currentLastIndex,
     });
-
-    setNewlyCreatedTopic(topic?.id ?? null);
   }
 
   return (

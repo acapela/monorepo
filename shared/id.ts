@@ -21,3 +21,11 @@ export function generateId(idDesiredLength = 5, alphabet = DEFAULT_ALPHABET): st
 export function useId() {
   return useConst(() => generateId());
 }
+
+export function getLocalId() {
+  return `local(${generateId()})`;
+}
+
+export function isLocalId(id: string) {
+  return id.startsWith(`local(`);
+}

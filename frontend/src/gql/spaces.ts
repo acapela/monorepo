@@ -25,9 +25,10 @@ import { UserBasicInfoFragment } from "./user";
 
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { getUUID } from "~shared/uuid";
+import { getLocalId } from "~shared/id";
 import { TeamDetailedInfoFragment } from "./teams";
 import { assert } from "~shared/assert";
+import { getUUID } from "~frontend/../../shared/uuid";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -135,26 +136,37 @@ export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
   () => gql`
     ${SpaceBasicInfoFragment()}
 
-    mutation CreateSpace($name: String!, $teamId: uuid!, $slug: String!) {
-      space: insert_space_one(object: { name: $name, team_id: $teamId, slug: $slug }) {
+    mutation CreateSpace($input: space_insert_input!) {
+      space: insert_space_one(object: $input) {
         ...SpaceBasicInfo
       }
     }
   `,
   {
-    optimisticResponse(variables) {
+    defaultVariables() {
+      return {
+        input: {
+          id: getUUID(),
+        },
+      };
+    },
+    optimisticResponse({ input }) {
       return {
         __typename: "mutation_root",
         space: {
-          id: getUUID(),
-          name: variables.name,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: input.id!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          name: input.name!,
           __typename: "space",
           members: [],
         },
       };
     },
-    onOptimisticOrActualResponse(space, { teamId }) {
-      TeamDetailedInfoFragment.update(teamId, (team) => {
+    onOptimisticOrActualResponse(space, { input }) {
+      if (!input.team_id) return;
+
+      TeamDetailedInfoFragment.update(input.team_id, (team) => {
         team.spaces.push(space);
       });
     },

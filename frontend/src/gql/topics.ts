@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { getUUID } from "~frontend/../../shared/uuid";
 import {
   AddTopicMemberMutation,
   AddTopicMemberMutationVariables,
@@ -21,7 +22,7 @@ import {
   UpdateTopicMutation,
   UpdateTopicMutationVariables,
 } from "~gql";
-import { getUUID } from "~shared/uuid";
+import { getLocalId } from "~shared/id";
 import { addToast } from "~ui/toasts/data";
 import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
@@ -68,20 +69,27 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
 >(
   () => gql`
     ${TopicDetailedInfoFragment()}
-    mutation CreateTopic($name: String!, $roomId: uuid!, $index: String!, $slug: String!) {
-      topic: insert_topic_one(object: { name: $name, room_id: $roomId, index: $index, slug: $slug }) {
+    mutation CreateTopic($input: topic_insert_input!) {
+      topic: insert_topic_one(object: $input) {
         ...TopicDetailedInfo
       }
     }
   `,
   {
-    optimisticResponse(variables) {
+    defaultVariables() {
+      return {
+        input: {
+          id: getUUID(),
+        },
+      };
+    },
+    optimisticResponse({ input }) {
       return {
         __typename: "mutation_root",
         topic: {
           __typename: "topic",
-          id: getUUID(),
-          index: variables.index,
+          id: input.id!,
+          index: input.index!,
           lastMessage: {
             __typename: "message_aggregate",
             aggregate: {
@@ -90,9 +98,9 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
             },
           },
           members: [],
-          room: RoomBasicInfoFragment.assertRead(variables.roomId),
-          name: variables.name,
-          slug: variables.slug,
+          room: RoomBasicInfoFragment.assertRead(input.room_id!),
+          name: input.name!,
+          slug: input.slug!,
           closed_at: null,
           closed_by_user: null,
           closing_summary: null,
@@ -100,7 +108,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
       };
     },
     onOptimisticOrActualResponse(topic, variables) {
-      RoomDetailedInfoFragment.update(variables.roomId, (data) => {
+      RoomDetailedInfoFragment.update(variables.input.room_id!, (data) => {
         data.topics.push(topic);
       });
     },

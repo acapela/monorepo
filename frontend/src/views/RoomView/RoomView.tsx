@@ -108,8 +108,7 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
                 !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
               }
             >
-              {!isRoomOpen && "Reopen room"}
-              {isRoomOpen && "Close room"}
+              New Topic
             </Button>
           </UIFlyingCloseRoomToggle>
         </UIRoomInfo>

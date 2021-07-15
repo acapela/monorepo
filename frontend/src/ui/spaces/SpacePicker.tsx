@@ -31,7 +31,7 @@ export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
 
     if (!spaceName) return;
 
-    const [newSpace] = await createSpace({ name: spaceName, slug: slugify(spaceName), teamId });
+    const [newSpace] = await createSpace({ input: { name: spaceName, slug: slugify(spaceName), team_id: teamId } });
 
     if (!newSpace) return;
 

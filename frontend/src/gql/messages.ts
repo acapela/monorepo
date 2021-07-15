@@ -75,9 +75,16 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
   () => gql`
     ${MessageFeedInfoFragment()}
 
-    mutation CreateMessage($topicId: uuid!, $content: jsonb!, $type: message_type_enum!, $replied_to_message_id: uuid) {
+    mutation CreateMessage(
+      $id: uuid
+      $topicId: uuid!
+      $content: jsonb!
+      $type: message_type_enum!
+      $replied_to_message_id: uuid
+    ) {
       message: insert_message_one(
         object: {
+          id: $id
           content: $content
           topic_id: $topicId
           type: $type
@@ -90,6 +97,9 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
     }
   `,
   {
+    defaultVariables() {
+      return { id: getUUID() };
+    },
     optimisticResponse(vars) {
       const userData = assertReadUserDataFromCookie();
 
@@ -116,7 +126,8 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
             email: userData.email,
             name: userData.name,
           },
-          id: getUUID(),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: vars.id!,
           content: vars.content,
           replied_to_message: getRepliedMessageFragmentData(),
         },

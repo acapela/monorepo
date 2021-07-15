@@ -4,13 +4,11 @@ type Mutation {
   ): InviteAcceptResponse
 }
 
-
 type Query {
   get_download_url (
     uuid: uuid!
   ): DownloadUrlResponse
 }
-
 
 type Query {
   get_upload_url (
@@ -19,20 +17,15 @@ type Query {
   ): UploadUrlResponse
 }
 
-
 type Query {
   lookup_team_name (
     token: String!
   ): LookupTeamNameResponse
 }
 
-
 type Mutation {
   upgrade_current_user : UpgradeUserResponse
 }
-
-
-
 
 input InviteAcceptCommand {
   code : String!

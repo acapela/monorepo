@@ -32,7 +32,7 @@ export function SpacesView() {
 
     if (!spaceName?.trim()) return;
 
-    const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
+    const [space] = await createSpace({ input: { name: spaceName, team_id: teamId, slug: slugify(spaceName) } });
 
     const spaceId = space?.id;
 

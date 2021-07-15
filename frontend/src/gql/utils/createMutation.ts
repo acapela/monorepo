@@ -5,7 +5,8 @@ import {
   MutationOptions,
   useMutation as useRawMutation,
 } from "@apollo/client";
-import { memoize } from "lodash";
+import { memoize, merge } from "lodash";
+import { DeepPartial } from "utility-types";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
@@ -21,6 +22,7 @@ interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
   onOptimisticResponse?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
   onActualResponse?: (data: NonNullable<UnwrapQueryData<Data>>, variables: Variables) => void;
   optimisticResponse?: (vars: Variables) => Data;
+  defaultVariables?: () => DeepPartial<Variables>;
 }
 
 type MutationResultPhase = "actual" | "optimistic";
@@ -75,10 +77,21 @@ export function createMutation<Data, Variables>(
     return mutationUpdateCallback;
   }
 
+  function getFinalVariables(input: Variables): Variables {
+    if (!mutationDefinitionOptions?.defaultVariables) {
+      return input;
+    }
+
+    const defaultVariables = mutationDefinitionOptions.defaultVariables();
+
+    return merge(defaultVariables, input) as Variables;
+  }
+
   function useMutation(options?: MutationHookOptions<Data, Variables>) {
     const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
+      variables = getFinalVariables(variables);
       const rawResult = await runMutationRaw({
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
         ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
@@ -95,6 +108,7 @@ export function createMutation<Data, Variables>(
   }
 
   async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
+    variables = getFinalVariables(variables);
     const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
       optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
       ...{ ...options, context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole) },
