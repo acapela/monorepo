@@ -39,10 +39,14 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
     }
   }, [topics]);
 
-  useNewItemInArrayEffect(topics, (newTopic) => {
-    console.log("new item here", newTopic);
-    routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
-  });
+  useNewItemInArrayEffect(
+    topics,
+    (topic) => topic.id,
+    (newTopic) => {
+      console.log("new item here", newTopic);
+      routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
+    }
+  );
 
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
