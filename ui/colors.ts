@@ -9,6 +9,8 @@ import { setColorOpacity } from "~shared/colors";
 export const PRIMARY_PURPLE_1 = "hsl(297, 24%, 15%)";
 export const PRIMARY_PURPLE_2 = "hsl(296, 24%, 22%)";
 export const PRIMARY_PINK_1 = "hsl(344, 67%, 66%)";
+export const PRIMARY_PINK_1_TRANSPARENT = "hsl(344, 67%, 66%, 0.05)";
+export const PRIMARY_PINK_2 = "hsl(345, 93%, 73%)";
 export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
 export const PRIMARY_TEAL_1 = "hsl(180, 76%, 55%)";
 export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
