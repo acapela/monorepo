@@ -2,7 +2,13 @@ import { useRef } from "react";
 import { useDependencyChangeEffect } from "./useChangeEffect";
 import { useMethod } from "./useMethod";
 
-export function useNewItemInArrayEffect<T>(items: T[], keyGetter: (item: T) => string, callback: (newItem: T) => void) {
+type Cleanup = () => void;
+
+export function useNewItemInArrayEffect<T>(
+  items: T[],
+  keyGetter: (item: T) => string,
+  callback: (newItem: T) => Cleanup | void
+) {
   const callbackRef = useMethod(callback);
   const keyGetterRef = useMethod(keyGetter);
   const previousItemsRef = useRef(items);
@@ -17,9 +23,12 @@ export function useNewItemInArrayEffect<T>(items: T[], keyGetter: (item: T) => s
       return;
     }
 
-    callbackRef(firstNewItem);
+    const maybeCleanup = callbackRef(firstNewItem);
 
     return () => {
+      if (maybeCleanup) {
+        maybeCleanup();
+      }
       previousItemsRef.current = items;
     };
   }, [items]);

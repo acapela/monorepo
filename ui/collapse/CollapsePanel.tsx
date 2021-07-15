@@ -42,7 +42,16 @@ export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerN
 
   const isHovered = useIsElementOrChildHovered(holderRef);
 
-  useShortcut("Space", () => setIsOpened(!isOpened), { isEnabled: isHovered });
+  useShortcut(
+    "Space",
+    () => {
+      // If anything is focused, dont use space for toggling
+      if (document.activeElement && document.activeElement !== document.body) return;
+
+      setIsOpened(!isOpened);
+    },
+    { isEnabled: isHovered }
+  );
 
   return (
     <UIHolder ref={holderRef}>

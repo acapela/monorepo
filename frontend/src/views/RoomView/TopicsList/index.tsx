@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { routes } from "~frontend/routes";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { Button } from "~ui/buttons/Button";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
@@ -12,6 +11,7 @@ import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
+import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -23,15 +23,17 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const roomId = room.id;
   const spaceId = room.space_id;
+  const roomContext = useRoomStoreContext();
 
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
-  const { topics, moveBetween, moveToStart, moveToEnd, currentLastIndex, isReordering } = useRoomTopicList(room.id);
+  const { topics, moveBetween, moveToStart, moveToEnd, isReordering } = useRoomTopicList(room.id);
   const amIMember = isCurrentUserRoomMember(room);
 
-  /*
-    ## Bulk reordering
-    -- go to hook definition for explanation
-  */
+  /**
+   * ## Bulk reordering
+   *
+   * go to hook definition for explanation
+   */
   useEffect(() => {
     if (topics && topics.every(({ index }) => !index || index.trim().length === 0)) {
       const topicIds = topics.map(({ id }) => id);
@@ -43,52 +45,31 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
     topics,
     (topic) => topic.id,
     (newTopic) => {
-      console.log("new item here", newTopic);
+      roomContext.update((draft) => (draft.newTopicId = newTopic.id));
       routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
     }
   );
-
-  async function handleCreateTopic() {
-    await startCreateNewTopicFlow({
-      roomId,
-      modalAnchor: {
-        ref: buttonRef,
-        placement: "bottom-start",
-      },
-      navigateAfterCreation: true,
-      currentLastIndex,
-    });
-  }
 
   return (
     <CollapsePanel
       persistanceKey={`room-topics-${room.id}`}
       initialIsOpened={true}
       headerNode={
-        <TextH6 spezia semibold>
-          Topics
-        </TextH6>
-      }
-    >
-      <UIHolder>
         <UIHeader>
-          {isRoomOpen && (
-            <UINewTopicButton
-              ref={buttonRef}
-              onClick={handleCreateTopic}
-              isDisabled={!amIMember && { reason: `You have to be room member to add new topics` }}
-            >
-              New topic
-            </UINewTopicButton>
-          )}
+          <TextH6 spezia semibold>
+            Topics
+          </TextH6>
           {!isRoomOpen && (
             <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
-              <Button kind="secondary" ref={buttonRef}>
+              <Button size="small" kind="secondary" ref={buttonRef}>
                 Room summary
               </Button>
             </routes.spaceRoomSummary.Link>
           )}
         </UIHeader>
+      }
+    >
+      <UIHolder>
         {amIMember && (
           <LazyTopicsList
             topics={topics}
@@ -110,13 +91,10 @@ const UIHolder = styled.div`
   overflow-y: hidden;
 `;
 
-const UINewTopicButton = styled(Button)``;
-
 const UIHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
 `;
 
 const UINoTopicsMessage = styled.div``;
