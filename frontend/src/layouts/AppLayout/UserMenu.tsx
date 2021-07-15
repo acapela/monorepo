@@ -1,17 +1,17 @@
 import styled from "styled-components";
 import { IconChevronDown, IconSignOut, IconUsers } from "~ui/icons";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { routes } from "~frontend/routes";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { hoverActionCss } from "~ui/transitions";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { borderRadius } from "~ui/baseStyles";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
 
   return (
     <UIHolder>
+      <UserAvatar user={user} size="regular" disableNameTooltip />
       <PopoverMenuTrigger
         options={[
           {
@@ -31,30 +31,14 @@ export function UserMenu() {
           },
         ]}
       >
-        <UIAvatarWithArrow>
-          <IconChevronDown />
-          <UserAvatar user={user} size="small" disableNameTooltip />
-        </UIAvatarWithArrow>
+        <CircleIconButton kind="transparent" icon={<IconChevronDown />} />
       </PopoverMenuTrigger>
     </UIHolder>
   );
 }
 
-const UIHolder = styled.div``;
-
-const UIAvatarWithArrow = styled.div`
+const UIHolder = styled.div`
   display: flex;
   align-items: center;
-
-  & > svg {
-    font-size: 24px;
-    margin-right: 8px;
-  }
-
-  padding: 8px;
-  margin: -8px;
-  cursor: pointer;
-
-  ${hoverActionCss}
-  ${borderRadius.button}
+  gap: 8px;
 `;
