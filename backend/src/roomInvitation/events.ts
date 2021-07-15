@@ -1,7 +1,7 @@
 import { RoomParticipants, User } from "~db";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { findRoomById } from "~backend/src/rooms/rooms";
-import { findUserById } from "~backend/src/users/users";
+import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
 import { RoomAddedNotification } from "~backend/src/roomInvitation/RoomAddedNotification";
 import { sendNotification } from "~backend/src/notifications/sendNotification";
 import logger from "~shared/logger";
@@ -42,7 +42,7 @@ export async function handleRoomParticipantCreated(invite: RoomParticipants, use
 
   const notification = new RoomAddedNotification({
     recipientEmail: addedUser.email,
-    inviterName: getInviterName(inviter),
+    inviterName: getNormalizedUserName(inviter),
     roomName: room.name || "an acapela discussion",
     spaceId: room.space_id,
     roomId: room.id,
@@ -55,18 +55,4 @@ export async function handleRoomParticipantCreated(invite: RoomParticipants, use
     userId,
     addedUserId,
   });
-}
-
-function getInviterName(inviter: User): string {
-  if (inviter.name) {
-    return firstName(inviter.name);
-  }
-  if (inviter.email) {
-    return inviter.email;
-  }
-  return "Your colleague";
-}
-
-function firstName(name: string): string {
-  return name.trim().split(" ")[0];
 }
