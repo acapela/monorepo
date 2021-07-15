@@ -84,11 +84,25 @@ export async function handleToggleRoomPrivate(room: RoomBasicInfoFragment) {
   }
 }
 
-export function getRoomManagePopoverOptions(room: RoomBasicInfoFragment): PopoverMenuOption[] {
+interface GetRoomManagePopoverOptionsConfig {
+  onEditRoomNameRequest: () => void;
+}
+
+export function getRoomManagePopoverOptions(
+  room: RoomBasicInfoFragment,
+  config?: GetRoomManagePopoverOptionsConfig
+): PopoverMenuOption[] {
   return [
     {
       label: "Edit room name...",
-      onSelect: () => handleEditRoomName(room),
+      onSelect: () => {
+        if (config?.onEditRoomNameRequest) {
+          config.onEditRoomNameRequest();
+          return;
+        }
+
+        handleEditRoomName(room);
+      },
       icon: <IconEdit />,
     },
     {

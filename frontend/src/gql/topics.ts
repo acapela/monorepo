@@ -241,7 +241,10 @@ export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   `
 );
 
-export const [useUpdateTopicMutation] = createMutation<UpdateTopicMutation, UpdateTopicMutationVariables>(
+export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
+  UpdateTopicMutation,
+  UpdateTopicMutationVariables
+>(
   () => gql`
     ${TopicDetailedInfoFragment()}
     mutation UpdateTopic($topicId: uuid!, $input: topic_set_input) {

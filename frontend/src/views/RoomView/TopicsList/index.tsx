@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { TextH6 } from "~ui/typo";
 import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { CollapsePanel } from "~frontend/../../ui/collapse/CollapsePanel";
+import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 
 interface Props {
   room: RoomDetailedInfoFragment;

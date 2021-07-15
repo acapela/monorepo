@@ -1,21 +1,22 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
+import { CardBase } from "~ui/card/Base";
+import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+import { getRoomManagePopoverOptions, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
 import { routes } from "~frontend/routes";
-import { OptionsButton, CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
+import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
 import { Button } from "~ui/buttons/Button";
+import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
-import { CollapsePanel } from "~ui/collapse/CollapsePanel";
-import { CardBase } from "~frontend/../../ui/card/Base";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -25,6 +26,7 @@ interface Props {
 
 export function RoomView({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
+  const [isEditingRoomName, setIsEditingRoomName] = useState(false);
 
   const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
@@ -53,6 +55,10 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
     }
   };
 
+  async function handleRoomNameChange(newName: string) {
+    await updateRoom({ roomId: room.id, input: { name: newName } });
+  }
+
   return (
     <>
       <PageMeta title={room.name} />
@@ -63,22 +69,23 @@ export function RoomView({ room, selectedTopicId, children }: Props) {
             headerNode={
               <UIRoomHead spezia semibold>
                 <UIRoomTitle ref={titleHolderRef}>
-                  <div
-                    {...(amIMember
-                      ? {
-                          ["data-tooltip"]: "Edit room name...",
-                          onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
-                        }
-                      : {})}
-                  >
-                    {room.name}
-                  </div>
+                  <EditableText
+                    value={room.name ?? ""}
+                    onValueSubmit={handleRoomNameChange}
+                    isInEditMode={isEditingRoomName}
+                    onEditModeChangeRequest={setIsEditingRoomName}
+                    allowDoubleClickEditRequest
+                  />
 
                   {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
                 </UIRoomTitle>
 
                 {amIMember && (
-                  <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
+                  <PopoverMenuTrigger
+                    options={getRoomManagePopoverOptions(room, {
+                      onEditRoomNameRequest: () => setIsEditingRoomName(true),
+                    })}
+                  >
                     <CircleOptionsButton />
                   </PopoverMenuTrigger>
                 )}
@@ -129,25 +136,6 @@ const UIRoomInfo = styled.div`
   align-content: start;
   gap: 24px;
   overflow-y: hidden;
-`;
-
-const UIManageSections = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, auto);
-  align-content: start;
-  gap: 16px;
-`;
-
-const UIManageSection = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, auto);
-  align-content: start;
-  gap: 8px;
-`;
-
-const UILine = styled.div`
-  height: 1px;
-  background: #ebebec;
 `;
 
 const UIContentHolder = styled.div`

@@ -10,6 +10,9 @@ import { useRef } from "react";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconDragAndDrop } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
+import { EditableText } from "~ui/forms/EditableText";
+import { useState } from "react";
+import { updateTopic } from "~frontend/gql/topics";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -21,11 +24,16 @@ interface Props {
 const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
+  const [isEditingName, setIsEditingName] = useState(false);
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
 
   const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
+
+  function handleNewTopicName(newName: string) {
+    updateTopic({ topicId: topic.id, input: { name: newName } });
+  }
 
   return (
     <>
@@ -40,12 +48,17 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
             onMouseLeave={hideDragIcon}
           >
             {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-            {topic.name}
+            <EditableText
+              value={topic.name ?? ""}
+              isInEditMode={isEditingName}
+              onEditModeChangeRequest={setIsEditingName}
+              onValueSubmit={handleNewTopicName}
+            />
           </UIHolder>
         </TopicLink>
         {!isEditingDisabled && (
           <UIManageTopicWrapper>
-            <ManageTopic topic={topic} />
+            <ManageTopic topic={topic} onRenameRequest={() => setIsEditingName(true)} />
           </UIManageTopicWrapper>
         )}
       </UIFlyingTooltipWrapper>
