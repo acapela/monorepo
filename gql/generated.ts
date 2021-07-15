@@ -8843,8 +8843,8 @@ export type CreateSpaceMutation = (
 );
 
 export type EditSpaceMutationVariables = Exact<{
-  name: Scalars['String'];
   spaceId: Scalars['uuid'];
+  input: Space_Set_Input;
 }>;
 
 
@@ -8926,8 +8926,7 @@ export type TeamDetailedInfoFragment = (
 );
 
 export type CreateTeamMutationVariables = Exact<{
-  slug: Scalars['String'];
-  name: Scalars['String'];
+  input: Team_Insert_Input;
 }>;
 
 
@@ -9144,7 +9143,7 @@ export type TopicsQuery = (
 
 export type UpdateTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  input?: Maybe<Topic_Set_Input>;
+  input: Topic_Set_Input;
 }>;
 
 

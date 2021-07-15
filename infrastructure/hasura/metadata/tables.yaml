@@ -1081,6 +1081,7 @@
           - closing_summary
           - index
           - name
+          - slug
         filter:
           _and:
             - room:
