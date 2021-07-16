@@ -28,7 +28,7 @@ jobs:
       - run: yarn generate
       - name: Setup dotenv
         run: cp .env.sample .env
-      - run: docker-compose -d -f ./docker-compose.ci.yaml --env-file .env up
+      - run: docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
       - run: |
           sleep 5
           yarn hasura:migrations
