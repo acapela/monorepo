@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { IconPlusSquare } from "~ui/icons";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -102,6 +103,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
               isDisabled={
                 !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
               }
+              icon={<IconPlusSquare />}
             >
               New Topic
             </Button>
