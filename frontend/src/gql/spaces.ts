@@ -25,9 +25,10 @@ import { UserBasicInfoFragment } from "./user";
 
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { getUUID } from "~shared/uuid";
 import { TeamDetailedInfoFragment } from "./teams";
 import { assert } from "~shared/assert";
+import { getUUID } from "~shared/uuid";
+import { slugify } from "~shared/slugify";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -135,26 +136,42 @@ export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
   () => gql`
     ${SpaceBasicInfoFragment()}
 
-    mutation CreateSpace($name: String!, $teamId: uuid!, $slug: String!) {
-      space: insert_space_one(object: { name: $name, team_id: $teamId, slug: $slug }) {
+    mutation CreateSpace($input: space_insert_input!) {
+      space: insert_space_one(object: $input) {
         ...SpaceBasicInfo
       }
     }
   `,
   {
-    optimisticResponse(variables) {
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
+    defaultVariables() {
+      return {
+        input: {
+          id: getUUID(),
+        },
+      };
+    },
+    optimisticResponse({ input }) {
       return {
         __typename: "mutation_root",
         space: {
-          id: getUUID(),
-          name: variables.name,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: input.id!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          name: input.name!,
           __typename: "space",
           members: [],
         },
       };
     },
-    onOptimisticOrActualResponse(space, { teamId }) {
-      TeamDetailedInfoFragment.update(teamId, (team) => {
+    onOptimisticOrActualResponse(space, { input }) {
+      if (!input.team_id) return;
+
+      TeamDetailedInfoFragment.update(input.team_id, (team) => {
         team.spaces.push(space);
       });
     },
@@ -165,16 +182,23 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
-    mutation EditSpace($name: String!, $spaceId: uuid!) {
-      space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: { name: $name }) {
+    mutation EditSpace($spaceId: uuid!, $input: space_set_input!) {
+      space: update_space_by_pk(pk_columns: { id: $spaceId }, _set: $input) {
         ...SpaceDetailedInfo
       }
     }
   `,
   {
-    optimisticResponse(vars) {
-      const updatedSpace = SpaceDetailedInfoFragment.produce(vars.spaceId, (space) => {
-        space.name = vars.name;
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
+    optimisticResponse({ input }) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const updatedSpace = SpaceDetailedInfoFragment.produce(input.spaceId!, (space) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        space.name = input.name!;
       });
 
       assert(updatedSpace, "Cannot create optimistic update for edit space");

@@ -3846,7 +3846,7 @@ export interface Room {
   members: Array<Room_Member>;
   /** An aggregated array relationship */
   members_aggregate: Room_Member_Aggregate;
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   notification_job_id?: Maybe<Scalars['String']>;
   /** An array relationship */
   room_invites: Array<Room_Invites>;
@@ -6609,7 +6609,7 @@ export interface Topic {
   messages: Array<Message>;
   /** An aggregated array relationship */
   messages_aggregate: Message_Aggregate;
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   /** An object relationship */
   room: Room;
   room_id: Scalars['uuid'];
@@ -8467,6 +8467,7 @@ export type MessageFeedInfoFragment = (
 );
 
 export type CreateMessageMutationVariables = Exact<{
+  id?: Maybe<Scalars['uuid']>;
   topicId: Scalars['uuid'];
   content: Scalars['jsonb'];
   type: Message_Type_Enum;
@@ -8829,9 +8830,7 @@ export type SingleSpaceQuery = (
 );
 
 export type CreateSpaceMutationVariables = Exact<{
-  name: Scalars['String'];
-  teamId: Scalars['uuid'];
-  slug: Scalars['String'];
+  input: Space_Insert_Input;
 }>;
 
 
@@ -8844,8 +8843,8 @@ export type CreateSpaceMutation = (
 );
 
 export type EditSpaceMutationVariables = Exact<{
-  name: Scalars['String'];
   spaceId: Scalars['uuid'];
+  input: Space_Set_Input;
 }>;
 
 
@@ -8927,8 +8926,7 @@ export type TeamDetailedInfoFragment = (
 );
 
 export type CreateTeamMutationVariables = Exact<{
-  slug: Scalars['String'];
-  name: Scalars['String'];
+  input: Team_Insert_Input;
 }>;
 
 
@@ -9032,10 +9030,7 @@ export type TopicDetailedInfoFragment = (
 );
 
 export type CreateTopicMutationVariables = Exact<{
-  name: Scalars['String'];
-  roomId: Scalars['uuid'];
-  index: Scalars['String'];
-  slug: Scalars['String'];
+  input: Topic_Insert_Input;
 }>;
 
 
@@ -9148,7 +9143,7 @@ export type TopicsQuery = (
 
 export type UpdateTopicMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  input?: Maybe<Topic_Set_Input>;
+  input: Topic_Set_Input;
 }>;
 
 

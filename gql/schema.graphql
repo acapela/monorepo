@@ -5959,7 +5959,7 @@ type room {
     """
     where: room_member_bool_exp
   ): room_member_aggregate!
-  name: String
+  name: String!
   notification_job_id: String
 
   """
@@ -10599,7 +10599,7 @@ type topic {
     """
     where: message_bool_exp
   ): message_aggregate!
-  name: String
+  name: String!
 
   """
   An object relationship

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { slugify } from "~shared/slugify";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
@@ -32,7 +31,7 @@ export function SpacesView() {
 
     if (!spaceName?.trim()) return;
 
-    const [space] = await createSpace({ name: spaceName, teamId, slug: slugify(spaceName) });
+    const [space] = await createSpace({ input: { name: spaceName, team_id: teamId } });
 
     const spaceId = space?.id;
 

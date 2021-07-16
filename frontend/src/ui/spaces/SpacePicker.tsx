@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { slugify } from "~shared/slugify";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { createSpace, useCurrentTeamSpaces } from "~frontend/gql/spaces";
@@ -31,7 +30,7 @@ export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
 
     if (!spaceName) return;
 
-    const [newSpace] = await createSpace({ name: spaceName, slug: slugify(spaceName), teamId });
+    const [newSpace] = await createSpace({ input: { name: spaceName, team_id: teamId } });
 
     if (!newSpace) return;
 

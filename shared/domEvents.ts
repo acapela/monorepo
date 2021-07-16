@@ -4,7 +4,7 @@ import { useBoolean } from "./hooks/useBoolean";
 export function createWindowEvent<K extends keyof WindowEventMap>(
   type: K,
   handler: (event: WindowEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: AddEventListenerOptions
 ) {
   window.addEventListener(type, handler, options);
 
@@ -16,7 +16,7 @@ export function createWindowEvent<K extends keyof WindowEventMap>(
 export function useWindowEvent<K extends keyof WindowEventMap>(
   type: K,
   handler: (event: WindowEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: AddEventListenerOptions
 ) {
   useEffect(() => {
     return createWindowEvent(type, handler, options);
@@ -26,7 +26,7 @@ export function useWindowEvent<K extends keyof WindowEventMap>(
 export function createDocumentEvent<K extends keyof DocumentEventMap>(
   type: K,
   handler: (event: DocumentEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: AddEventListenerOptions
 ) {
   document.addEventListener(type, handler, options);
 
@@ -35,12 +35,17 @@ export function createDocumentEvent<K extends keyof DocumentEventMap>(
   };
 }
 
+interface HookEventOptions extends AddEventListenerOptions {
+  isEnabled?: boolean;
+}
+
 export function useDocumentEvent<K extends keyof DocumentEventMap>(
   type: K,
   handler: (event: DocumentEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: HookEventOptions
 ) {
   useEffect(() => {
+    if (options?.isEnabled === false) return;
     return createDocumentEvent(type, handler, options);
   }, [type, handler, options]);
 }
@@ -49,7 +54,7 @@ export function useDebouncedDocumentEvent<K extends keyof DocumentEventMap>(
   type: K,
   handler: (event: DocumentEventMap[K]) => void,
   timeout: number,
-  options?: boolean | AddEventListenerOptions
+  options?: HookEventOptions
 ) {
   const [isDebouncing, { set: startDebounceWindow, unset: endDebounceWindow }] = useBoolean(false);
 
@@ -71,7 +76,7 @@ export function createElementEvent<K extends keyof HTMLElementEventMap>(
   element: HTMLElement,
   type: K,
   handler: (event: HTMLElementEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: AddEventListenerOptions
 ) {
   element.addEventListener(type, handler, options);
 
@@ -84,9 +89,10 @@ export function useElementEvent<K extends keyof HTMLElementEventMap>(
   ref: RefObject<HTMLElement>,
   type: K,
   handler: (event: HTMLElementEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: HookEventOptions
 ) {
   useEffect(() => {
+    if (options?.isEnabled === false) return;
     const element = ref.current;
 
     if (!element) return;
@@ -99,7 +105,7 @@ export function createElementEvents<K extends keyof HTMLElementEventMap>(
   element: HTMLElement,
   types: Array<K>,
   handler: (event: HTMLElementEventMap[K]) => void,
-  options?: boolean | AddEventListenerOptions
+  options?: AddEventListenerOptions
 ) {
   const cleanups = types.map((type) => {
     return createElementEvent(element, type, handler, options);

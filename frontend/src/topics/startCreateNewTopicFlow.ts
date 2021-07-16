@@ -4,13 +4,14 @@ import { createLastItemIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { slugify } from "~shared/slugify";
 
 interface CreateTopicInput {
   roomId: string;
   modalAnchor?: ModalAnchor;
   navigateAfterCreation?: boolean;
   currentLastIndex?: string;
+  name?: string;
+  slug?: string;
 }
 
 export async function startCreateNewTopicFlow({
@@ -18,27 +19,34 @@ export async function startCreateNewTopicFlow({
   modalAnchor,
   navigateAfterCreation,
   currentLastIndex,
+  name,
+  slug,
 }: CreateTopicInput) {
-  const topicName = await openUIPrompt({
-    title: "New topic name",
-    submitLabel: "Create topic",
-    placeholder: "eg. Our brand colors",
-    anchor: modalAnchor,
-    validateInput: createLengthValidator("Topic name", 3),
-  });
+  let topicName: string | null = name ?? null;
+
+  if (topicName === null) {
+    topicName = await openUIPrompt({
+      title: "New topic name",
+      submitLabel: "Create topic",
+      placeholder: "eg. Our brand colors",
+      anchor: modalAnchor,
+      validateInput: createLengthValidator("Topic name", 3),
+    });
+  }
 
   if (!topicName?.trim()) {
     return;
   }
 
   const index = createLastItemIndex(currentLastIndex);
-  const slug = slugify(topicName);
 
   const [topic] = await createTopic({
-    name: topicName,
-    slug,
-    index,
-    roomId,
+    input: {
+      name: topicName,
+      slug,
+      index,
+      room_id: roomId,
+    },
   });
 
   if (!topic) {

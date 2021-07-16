@@ -41,7 +41,7 @@ export function useTopic(value?: TopicDetailedInfoFragment | null) {
 
     isParentRoomOpen: !value?.room.finished_at,
 
-    edit: (name: string) =>
+    editName: (name: string) =>
       update({
         name,
       }),

@@ -1,22 +1,24 @@
-import { useRef } from "react";
-import { useRouter } from "next/router";
+import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
+import { RoomStoreContext } from "~frontend/rooms/RoomStore";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { TopicsList } from "./TopicsList";
-import { DeadlineManager } from "./DeadlineManager";
-import { TextH3, TextBody12 } from "~ui/typo";
-import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { OptionsButton } from "~frontend/ui/options/OptionsButton";
-import { getRoomManagePopoverOptions, handleEditRoomName, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
-import { Button } from "~ui/buttons/Button";
 import { RoomDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { routes } from "~frontend/routes";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { getLastElementFromArray } from "~shared/array";
+import { generateId } from "~shared/id";
 import { borderRadius } from "~ui/baseStyles";
-
+import { Button } from "~ui/buttons/Button";
+import { CardBase } from "~ui/card/Base";
+import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { EditableText } from "~ui/forms/EditableText";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { PrivateTag } from "~ui/tags";
+import { TextH4 } from "~ui/typo";
+import { RoomSidebarInfo } from "./RoomSidebarInfo";
+import { TopicsList } from "./TopicsList";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -24,100 +26,84 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function RoomView({ room, selectedTopicId, children }: Props) {
-  const router = useRouter();
-  const titleHolderRef = useRef<HTMLDivElement>(null);
+export function RoomView(props: Props) {
+  return (
+    <RoomStoreContext>
+      <RoomViewDisplayer {...props} />
+    </RoomStoreContext>
+  );
+}
 
-  const [isChangingRoomState, { set: startLoading, unset: endLoading }] = useBoolean(false);
+function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
+  const titleHolderRef = useRef<HTMLDivElement>(null);
+  const [isEditingRoomName, setIsEditingRoomName] = useState(false);
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
 
-  const handleRoomLeave = () => {
-    router.replace(`/space/${room?.space_id || ""}`);
-  };
+  const isRoomOpen = !room.finished_at;
 
-  const isRoomOpen = !room?.finished_at;
+  async function handleRoomNameChange(newName: string) {
+    await updateRoom({ roomId: room.id, input: { name: newName } });
+  }
 
-  const onCloseRoomToggleClicked = async () => {
-    if (!room) return;
-
-    startLoading();
-
-    const isRoomOpen = await handleToggleCloseRoom(room as RoomDetailedInfoFragment);
-
-    if (!isRoomOpen) {
-      routes.spaceRoomSummary.replace({
-        roomId: room.id,
-        spaceId: room.space_id,
-      });
-    } else if (routes.spaceRoomSummary.getIsActive()) {
-      routes.spaceRoom.replace({
-        roomId: room.id,
-        spaceId: room.space_id,
-      });
-    } else {
-      endLoading();
-    }
-  };
+  async function handleCreateNewTopic() {
+    const currentLastIndex = getLastElementFromArray(room.topics)?.index;
+    await startCreateNewTopicFlow({
+      name: "New topic",
+      slug: `new-topic-${generateId(5)}`,
+      roomId: room.id,
+      navigateAfterCreation: true,
+      currentLastIndex,
+    });
+  }
 
   return (
     <>
-      <PageMeta title={room?.name} />
+      <PageMeta title={room.name} />
       <UIHolder>
         <UIRoomInfo>
-          <UIRoomHead spezia semibold>
-            <UIRoomTitle ref={titleHolderRef}>
-              <div
-                {...(amIMember
-                  ? {
-                      ["data-tooltip"]: "Edit room name...",
-                      onClick: () => handleEditRoomName(room, { ref: titleHolderRef, placement: "bottom" }),
-                    }
-                  : {})}
-              >
-                {room.name}
-              </div>
+          <CollapsePanel
+            persistanceKey={`room-info-${room.id}`}
+            headerNode={
+              <UIRoomHead spezia semibold>
+                <UIRoomTitle ref={titleHolderRef}>
+                  <EditableText
+                    value={room.name ?? ""}
+                    onValueSubmit={handleRoomNameChange}
+                    isInEditMode={isEditingRoomName}
+                    onEditModeChangeRequest={setIsEditingRoomName}
+                    allowDoubleClickEditRequest
+                  />
 
-              {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
-            </UIRoomTitle>
+                  {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+                </UIRoomTitle>
 
-            {amIMember && (
-              <PopoverMenuTrigger options={getRoomManagePopoverOptions(room)}>
-                <OptionsButton />
-              </PopoverMenuTrigger>
-            )}
-          </UIRoomHead>
+                {amIMember && (
+                  <PopoverMenuTrigger
+                    options={getRoomManagePopoverOptions(room, {
+                      onEditRoomNameRequest: () => setIsEditingRoomName(true),
+                    })}
+                  >
+                    <CircleOptionsButton />
+                  </PopoverMenuTrigger>
+                )}
+              </UIRoomHead>
+            }
+          >
+            <RoomSidebarInfo room={room} />
+          </CollapsePanel>
 
-          <UIManageSection>
-            <TextBody12 speziaMono secondary>
-              Participants
-            </TextBody12>
-            <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
-          </UIManageSection>
-
-          <UIManageSections>
-            <UIManageSection>
-              <TextBody12 speziaMono secondary>
-                Due date
-              </TextBody12>
-              <DeadlineManager room={room} isReadonly={!amIMember} />
-            </UIManageSection>
-          </UIManageSections>
-
-          <UILine />
-
-          <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
+          <CardBase>
+            <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
+          </CardBase>
 
           <UIFlyingCloseRoomToggle>
             <Button
-              isWide={true}
-              onClick={onCloseRoomToggleClicked}
-              isLoading={isChangingRoomState}
+              onClick={handleCreateNewTopic}
               isDisabled={
                 !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
               }
             >
-              {!isRoomOpen && "Reopen room"}
-              {isRoomOpen && "Close room"}
+              New Topic
             </Button>
           </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
@@ -146,25 +132,6 @@ const UIRoomInfo = styled.div`
   overflow-y: hidden;
 `;
 
-const UIManageSections = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, auto);
-  align-content: start;
-  gap: 16px;
-`;
-
-const UIManageSection = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, auto);
-  align-content: start;
-  gap: 8px;
-`;
-
-const UILine = styled.div`
-  height: 1px;
-  background: #ebebec;
-`;
-
 const UIContentHolder = styled.div`
   flex-grow: 1;
   background: #ffffff;
@@ -174,15 +141,17 @@ const UIContentHolder = styled.div`
   ${borderRadius.card};
   padding: 2rem;
   min-height: 0;
+  min-width: 0;
 `;
 
-const UIRoomHead = styled(TextH3)`
+const UIRoomHead = styled(TextH4)`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 `;
 
 const UIRoomTitle = styled.div`
+  padding-right: 16px;
   ${(props) =>
     props.onClick &&
     css`
@@ -192,7 +161,11 @@ const UIRoomTitle = styled.div`
 
 const UIFlyingCloseRoomToggle = styled.div`
   position: absolute;
+  display: flex;
+  justify-content: center;
   width: 100%;
   padding: 0 16px;
   bottom: 0;
+  left: 0;
+  right: 0;
 `;

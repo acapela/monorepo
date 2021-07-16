@@ -1,5 +1,6 @@
 import { IconMoreHoriz } from "~ui/icons";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 
 interface Props {
   onClick?: () => void;
@@ -11,4 +12,8 @@ interface Props {
  */
 export function OptionsButton({ onClick, tooltip = "Show options..." }: Props) {
   return <WideIconButton kind="secondary" onClick={onClick} tooltip={tooltip} icon={<IconMoreHoriz />} />;
+}
+
+export function CircleOptionsButton({ onClick, tooltip = "Show options..." }: Props) {
+  return <CircleIconButton kind="secondary" onClick={onClick} tooltip={tooltip} icon={<IconMoreHoriz />} />;
 }

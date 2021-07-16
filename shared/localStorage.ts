@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createChannel } from "./channel";
 import { getJSONValue, typeSafeParseJSON } from "./dates/parseJSONWithDates";
 import { JsonValue } from "./types";
+import { updateValue, ValueUpdater } from "./updateValue";
 
 type ValueWrapper<T> = { value: T };
 
@@ -21,6 +22,14 @@ export function createLocalStorageValueManager<T>(name: string, defaultValue: T)
     if (rawValue === null) return defaultValueJSON;
 
     return typeSafeParseJSON<T>(rawValue);
+  }
+
+  function update(updater: ValueUpdater<JSONType>) {
+    const currentValue = get();
+
+    const newValue = updateValue(currentValue, updater);
+
+    set(newValue as T);
   }
 
   function set(value: T) {
@@ -53,5 +62,6 @@ export function createLocalStorageValueManager<T>(name: string, defaultValue: T)
     set,
     useValue,
     clear,
+    update,
   };
 }

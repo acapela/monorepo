@@ -1,4 +1,3 @@
-import { slugify } from "~shared/slugify";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCreateTeamMutation, useTeamsQuery } from "~frontend/gql/teams";
@@ -26,9 +25,7 @@ export function TeamPickerView() {
       return;
     }
 
-    const slug = slugify(name);
-
-    await createTeam({ name, slug });
+    await createTeam({ input: { name } });
 
     trackEvent("Account Created");
     trackEvent("Trial Started");

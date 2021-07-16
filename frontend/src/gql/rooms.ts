@@ -170,6 +170,11 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
     }
   `,
   {
+    defaultVariables() {
+      return {
+        input: { id: getUUID() },
+      };
+    },
     onOptimisticOrActualResponse(room, variables) {
       if (!room || !variables.input.space_id) return;
 
@@ -184,7 +189,8 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           __typename: "room",
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           deadline: input.deadline!,
-          id: getUUID(),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: input.id!,
           members: [],
           topics: [],
           is_private: input.is_private ?? false,

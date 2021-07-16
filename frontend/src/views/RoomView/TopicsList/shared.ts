@@ -6,11 +6,7 @@ export const UIScrollContainer = styled.div`
   overflow-y: auto;
 `;
 
-export const UITopicsList = styled.div`
-  &:last-child {
-    margin-bottom: 106px;
-  }
-`;
+export const UITopicsList = styled.div``;
 
 export const UITopic = styled.div<{ isDragging: boolean }>`
   position: relative;

@@ -1,34 +1,20 @@
 import React, { useCallback } from "react";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useTopic } from "~frontend/topics/useTopic";
-import { OptionsButton } from "~frontend/ui/options/OptionsButton";
+import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { openUIPrompt } from "~frontend/utils/prompt";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
+  onRenameRequest?: () => void;
 }
 
-export const ManageTopic = ({ topic }: Props) => {
-  const { edit, deleteTopic } = useTopic(topic);
-
-  const handleRenameSelect = useCallback(async () => {
-    const name = await openUIPrompt({
-      initialValue: topic.name || "",
-      title: "Rename topic",
-      submitLabel: "Rename",
-      placeholder: "Enter topic name",
-      validateInput: createLengthValidator("Topic name", 3),
-    });
-
-    if (!name?.trim()) {
-      return;
-    }
-    await edit(name);
-  }, [topic.name]);
+export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
+  const { deleteTopic, editName } = useTopic(topic);
 
   const handleDeleteSelect = useCallback(async () => {
     const isDeleteConfirmed = await openConfirmPrompt({
@@ -41,6 +27,21 @@ export const ManageTopic = ({ topic }: Props) => {
     }
   }, [topic.name]);
 
+  const handleRenameWithModal = useCallback(async () => {
+    const name = await openUIPrompt({
+      initialValue: topic.name || "",
+      title: "Rename topic",
+      submitLabel: "Rename",
+      placeholder: "Enter topic name",
+      validateInput: createLengthValidator("Topic name", 3),
+    });
+
+    if (!name?.trim()) {
+      return;
+    }
+    await editName(name);
+  }, [topic.name]);
+
   return (
     <>
       <PopoverMenuTrigger
@@ -48,7 +49,7 @@ export const ManageTopic = ({ topic }: Props) => {
         options={[
           {
             label: "Rename topic",
-            onSelect: handleRenameSelect,
+            onSelect: onRenameRequest ?? handleRenameWithModal,
             icon: <IconEdit />,
           },
           {
@@ -59,7 +60,7 @@ export const ManageTopic = ({ topic }: Props) => {
           },
         ]}
       >
-        <OptionsButton />
+        <CircleOptionsButton />
       </PopoverMenuTrigger>
     </>
   );

@@ -62,7 +62,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
 
     if (newSpaceName === space.name) return;
 
-    await editSpace({ spaceId: space?.id, name: newSpaceName });
+    await editSpace({ spaceId: space?.id, input: { name: newSpaceName } });
   }
 
   async function handleDeleteSpace() {

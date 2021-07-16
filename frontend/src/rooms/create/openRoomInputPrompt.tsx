@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { Modal } from "~frontend/ui/Modal";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
-import { slugify } from "~shared/slugify";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { InputError } from "~ui/forms/InputError";
@@ -27,7 +26,6 @@ interface RoomInputOutputData {
   name: string;
   deadline: Date;
   spaceId: string;
-  slug: string;
   participantsIds: string[];
 }
 
@@ -86,7 +84,6 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             deadline,
             name: roomName,
             spaceId: selectedSpaceId,
-            slug: slugify(roomName),
             participantsIds: participantIdsWithCurrentUser,
           });
         } catch (err) {
@@ -100,7 +97,10 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
         setFormErrorMessage("Oops something went wrong");
       }
     };
-    useShortcut("Enter", handleSubmit);
+
+    useShortcut("Enter", () => {
+      handleSubmit();
+    });
 
     return (
       <Modal onCloseRequest={() => resolve(null)} head={{ title: "Create room" }}>

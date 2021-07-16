@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { slugify } from "~shared/slugify";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { isCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
@@ -49,9 +48,7 @@ export function SpaceView({ spaceId }: Props) {
       return;
     }
 
-    const slug = slugify(roomName);
-
-    const [room] = await createRoom({ input: { name: roomName, space_id: spaceId, slug } });
+    const [room] = await createRoom({ input: { name: roomName, space_id: spaceId } });
 
     const roomId = room?.id;
 

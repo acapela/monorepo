@@ -76,7 +76,7 @@ model message_type {
 model room {
   id                              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   creator_id                      String         @db.Uuid
-  name                            String?
+  name                            String
   created_at                      DateTime       @default(now()) @db.Timestamptz(6)
   deadline                        DateTime       @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
   notification_job_id             String?
@@ -179,7 +179,7 @@ model team_member {
 model topic {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   room_id           String              @db.Uuid
-  name              String?
+  name              String
   index             String
   slug              String
   closed_at         DateTime?           @db.Timestamp(6)
