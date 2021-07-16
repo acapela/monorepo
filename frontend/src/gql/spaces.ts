@@ -195,7 +195,6 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
       }
     },
     optimisticResponse({ spaceId, input }) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const updatedSpace = SpaceDetailedInfoFragment.produce(spaceId, (space) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         space.name = input.name!;
