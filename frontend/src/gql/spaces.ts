@@ -194,9 +194,8 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
         input.slug = slugify(input.name);
       }
     },
-    optimisticResponse({ input }) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const updatedSpace = SpaceDetailedInfoFragment.produce(input.spaceId!, (space) => {
+    optimisticResponse({ spaceId, input }) {
+      const updatedSpace = SpaceDetailedInfoFragment.produce(spaceId, (space) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         space.name = input.name!;
       });
