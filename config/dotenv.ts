@@ -138,7 +138,7 @@ const appType = assertGet(process.env.APP, "APP environment variable must always
 
 loadRootDotEnv();
 
-assertEnvVarsLoaded(requiredEnvVarNames);
+// assertEnvVarsLoaded(requiredEnvVarNames);
 
-if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
-if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
+// if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
+// if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);

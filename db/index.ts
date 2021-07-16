@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import logger from "~shared/logger";
+import { assert } from "~shared/assert";
 
 export type {
   account as Account,
@@ -24,23 +25,11 @@ export type {
   whitelist as Whitelist,
 } from "@prisma/client";
 
-const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];
-const ENV_VARS = Object.keys(process.env);
-
-if (DB_VARS.some((key) => !ENV_VARS.includes(key))) {
-  const error = new Error("Failed to construct database URL, check environment variables");
-  const missingStr = "<missing>";
-
-  logger.error(error.message, {
-    DB_HOST: process.env.DB_HOST || missingStr,
-    DB_PORT: process.env.DB_PORT || missingStr,
-    DB_USER: process.env.DB_USER || missingStr,
-    DB_PASSWORD: process.env.DB_PASSWORD || missingStr,
-    DB_NAME: process.env.DB_NAME || missingStr,
-  });
-
-  throw error;
-}
+assert(process.env.DB_HOST, "DB_HOST required");
+assert(process.env.DB_PORT, "DB_PORT required");
+assert(process.env.DB_USER, "DB_USER required");
+assert(process.env.DB_PASSWORD, "DB_PASSWORD required");
+assert(process.env.DB_NAME, "DB_NAME required");
 
 const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@${
   process.env.DB_HOST
