@@ -123,3 +123,4 @@ dist
 credentials.json
 kustomize
 .envrc
+nohup.out

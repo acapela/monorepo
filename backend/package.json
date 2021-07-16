@@ -7,6 +7,7 @@
     "test": "APP=backend jest src --runInBand",
     "test:watch": "APP=backend jest src --runInBand --watch",
     "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
+    "start:ci": "nohup ts-node --transpile-only ./src/index.ts & echo $! > backend.pid",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
