@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import logger from "~shared/logger";
 import { assert } from "~shared/assert";
 
 export type {
