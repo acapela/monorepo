@@ -4,6 +4,7 @@ import { Maybe } from "~gql";
 import { getInitials } from "~frontend/utils";
 import { borderRadius } from "~ui/baseStyles";
 import { NamedSize, getNamedSizeValue } from "~ui/namedSize";
+import { PRIMARY_PINK_1, WHITE } from "~ui/colors";
 
 interface Props {
   name?: Maybe<string>;
@@ -13,7 +14,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export type AvatarSize = NamedSize | "font-size";
+export type AvatarSize = NamedSize | "inherit";
 
 export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
@@ -21,7 +22,7 @@ export const Avatar = styled(({ url, name, className, size = "regular", disableN
   if (!url || failedToLoad) {
     return (
       <UIHolder size={size} className={className}>
-        {!!name && getInitials(name)}
+        <UINameLabel>{!!name && getInitials(name)}</UINameLabel>
       </UIHolder>
     );
   }
@@ -38,16 +39,18 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   justify-content: center;
   align-items: center;
 
-  width: ${(props) => getAvatarSize(props.size)};
-  min-width: ${(props) => getAvatarSize(props.size)};
-  height: ${(props) => getAvatarSize(props.size)};
+  font-size: ${(props) => getAvatarSize(props.size)};
+
+  width: 1em;
+  min-width: 1em;
+  height: 1em;
 
   font-weight: 600;
 
-  background-color: #ffaa70;
+  background-color: ${PRIMARY_PINK_1};
+  color: ${WHITE};
 
   ${borderRadius.circle}
-
   overflow: hidden;
 
   img {
@@ -56,8 +59,12 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   }
 `;
 
+const UINameLabel = styled.span`
+  font-size: 0.5em;
+`;
+
 function getAvatarSize(size: AvatarSize) {
-  if (size === "font-size") return "1em";
+  if (size === "inherit") return "1em";
 
   const sizeInPx = getNamedSizeValue(size);
 

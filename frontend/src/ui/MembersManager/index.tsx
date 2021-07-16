@@ -7,8 +7,9 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
 import { ToggleButton } from "~ui/buttons/ToggleButton";
-import { IconLogIn, IconCheck } from "~ui/icons";
+import { IconLogIn, IconCheck, IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
+import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -43,12 +44,16 @@ export const MembersManager = styled(function MembersManager({
         )}
       </AnimatePresence>
       <UIHolder className={className}>
-        <UIMembers>
-          {users.length > 0 && <AvatarList users={users} />}
+        <UIMembers onClick={handleWithStopPropagation(openUserPicker)}>
+          {users.length > 0 && <AvatarList users={users} size="inherit" />}
           {!isReadonly && (
-            <Button kind="transparent" onClick={handleWithStopPropagation(openUserPicker)}>
-              Manage
-            </Button>
+            <CircleIconButton
+              kind="primary"
+              onClick={handleWithStopPropagation(openUserPicker)}
+              icon={<IconPlus />}
+              size="inherit"
+              tooltip="Manage members"
+            />
           )}
         </UIMembers>
         <UIActions>
@@ -81,6 +86,8 @@ const UIMembers = styled.div`
   grid-template-columns: auto 1fr;
   gap: 4px;
   align-items: center;
+  font-size: 24px;
+  cursor: pointer;
 `;
 
 const UIActions = styled.div`

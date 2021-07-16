@@ -63,7 +63,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
         )}
         {lastMessage && !isLastMessageLoading && (
           <UILastMessage>
-            <UILastMessageSender size="font-size" user={lastMessage.user} />
+            <UILastMessageSender size="inherit" user={lastMessage.user} />
             <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
           </UILastMessage>
         )}

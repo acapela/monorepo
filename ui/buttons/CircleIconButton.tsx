@@ -1,12 +1,21 @@
 import { ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
+import {
+  CLOUD_LIGHTER,
+  DARK_ONYX,
+  BASE_GREY_4,
+  BASE_GREY_6,
+  PRIMARY_PINK_1,
+  BUTTON_BACKGROUND_COLOR,
+  WHITE,
+  BUTTON_BACKGROUND_ACTIVE_COLOR,
+} from "~ui/colors";
 import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
 
-type ButtonSize = "small" | "large";
-type ButtonKind = "secondary" | "transparent";
+type ButtonSize = "small" | "large" | "inherit";
+type ButtonKind = "secondary" | "transparent" | "primary";
 
 interface Props {
   icon: ReactNode;
@@ -34,14 +43,28 @@ export const CircleIconButton = styled(function CircleIconButton({
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
-    ${squareStyle(24)}
+    font-size: 24px;
   `,
   large: css`
-    ${squareStyle(36)}
+    font-size: 36px;
+  `,
+  inherit: css`
+    font-size: inherit;
   `,
 };
 
 const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  primary: css`
+    background: ${BUTTON_BACKGROUND_COLOR};
+    color: ${WHITE};
+    border: 1px solid transparent;
+    &:hover {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+    &:active {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+  `,
   secondary: css`
     background: ${CLOUD_LIGHTER};
     border: 1px solid transparent;
@@ -71,12 +94,18 @@ export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind }>`
 
   cursor: pointer;
   ${borderRadius.circle};
-  font-size: 16px;
+  ${({ size }) => buttonSizeSpecificStyle[size]};
   color: ${DARK_ONYX};
   padding: 0;
 
   ${hoverTransition()}
 
-  ${({ size }) => buttonSizeSpecificStyle[size]}
+  width: 1em;
+  height: 1em;
+
+  svg {
+    font-size: 0.75em;
+  }
+
   ${({ kind }) => buttonKindSpecificStyle[kind]}
 `;
