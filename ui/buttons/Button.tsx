@@ -85,7 +85,6 @@ export const Button = styled(
         {...finalProps}
       >
         {iconPosition === "start" && iconNode}
-        {/* We wrap it in span so icon can detect weather it is :last-child or :first-child for spacing */}
         <UIContentHolder>{children}</UIContentHolder>
         {iconPosition === "end" && iconNode}
       </UIButton>
