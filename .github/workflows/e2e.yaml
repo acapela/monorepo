@@ -8,7 +8,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.ref }}
+      group: e2e-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
