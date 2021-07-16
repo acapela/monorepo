@@ -1,11 +1,34 @@
 import { RichEditorContent } from "./types";
-import { convert } from "html-to-text";
-import { convertRichEditorContentToHtml } from "./html";
 
-export function convertMessageContentToPlainText(content: RichEditorContent) {
-  const contentHTML = convertRichEditorContentToHtml(content);
+/**
+ * Types of nodes that should indicate new lines in plain text.
+ */
+const newLineNodeTypes = ["paragraph", "bulletList", "listItem", "code", "codeBlock", "blockQuote", "hardBreak"];
 
-  const plainText = convert(contentHTML);
+function normalizePlainTextOutput(plainText: string) {
+  return plainText.replace(/\n{2,}/, `\n`).trim();
+}
+
+export function convertMessageContentToPlainText(content: RichEditorContent, isRoot = true) {
+  let plainText = "";
+
+  if (newLineNodeTypes.includes(content.type)) {
+    plainText += "\n";
+  }
+
+  if (content.text) {
+    plainText += content.text;
+  }
+
+  if (content.content) {
+    for (const childNode of content.content) {
+      plainText += convertMessageContentToPlainText(childNode, false);
+    }
+  }
+
+  if (isRoot) {
+    return normalizePlainTextOutput(plainText);
+  }
 
   return plainText;
 }
