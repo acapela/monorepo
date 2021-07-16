@@ -35,6 +35,7 @@ import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { slugify } from "~shared/slugify";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -175,6 +176,11 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
         input: { id: getUUID() },
       };
     },
+    inputMapper({ input }) {
+      if (input.name && !input.slug) {
+        input.slug = slugify(input.name);
+      }
+    },
     onOptimisticOrActualResponse(room, variables) {
       if (!room || !variables.input.space_id) return;
 
@@ -194,7 +200,8 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           members: [],
           topics: [],
           is_private: input.is_private ?? false,
-          name: input.name,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          name: input.name!,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           space_id: input.space_id!,
           finished_at: null,
@@ -296,7 +303,6 @@ export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
         __typename: "mutation_root",
         room: {
           __typename: "room",
-
           ...existingData,
           ...inputToReplace,
           deadline: deadline ?? existingData.deadline,
