@@ -20,14 +20,12 @@ interface Props {
   tooltip?: string;
 }
 
-export const WideIconButton = forwardRef<HTMLButtonElement, Props>(function WideIconButton({
-  icon,
-  kind = "primary",
-  onClick,
-  tooltip,
-}: Props) {
+export const WideIconButton = forwardRef<HTMLButtonElement, Props>(function WideIconButton(
+  { icon, kind = "primary", onClick, tooltip }: Props,
+  ref
+) {
   return (
-    <UIButton data-tooltip={tooltip} onClick={onClick} kind={kind}>
+    <UIButton ref={ref} data-tooltip={tooltip} onClick={onClick} kind={kind}>
       {icon}
     </UIButton>
   );

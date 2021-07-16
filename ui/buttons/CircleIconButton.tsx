@@ -14,6 +14,7 @@ interface Props {
   kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
+  tooltip?: string;
 }
 
 export const CircleIconButton = styled(function CircleIconButton({
@@ -22,9 +23,10 @@ export const CircleIconButton = styled(function CircleIconButton({
   kind = "secondary",
   onClick,
   className,
+  tooltip,
 }: Props) {
   return (
-    <UIButton className={className} onClick={onClick} size={size} kind={kind}>
+    <UIButton data-tooltip={tooltip} className={className} onClick={onClick} size={size} kind={kind}>
       {icon}
     </UIButton>
   );
