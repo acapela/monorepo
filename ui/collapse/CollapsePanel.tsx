@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ReactNode, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
+import { getFocusedElement } from "~shared/focus";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { createLocalStorageValueManager } from "~shared/localStorage";
@@ -46,7 +47,9 @@ export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerN
     "Space",
     () => {
       // If anything is focused, don't use space for toggling
-      if (document.activeElement && document.activeElement !== document.body) return;
+      if (getFocusedElement()) {
+        return;
+      }
 
       setIsOpened(!isOpened);
     },

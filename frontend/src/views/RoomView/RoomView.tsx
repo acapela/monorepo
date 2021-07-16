@@ -141,6 +141,7 @@ const UIContentHolder = styled.div`
   ${borderRadius.card};
   padding: 2rem;
   min-height: 0;
+  min-width: 0;
 `;
 
 const UIRoomHead = styled(TextH4)`

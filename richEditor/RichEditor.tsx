@@ -3,7 +3,9 @@ import { isEqual } from "lodash";
 import React, { ReactNode, useEffect } from "react";
 import { useMemo } from "react";
 import styled from "styled-components";
+import { getFocusedElement } from "~shared/focus";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
+import { createTimeout } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { RichEditorContent } from "./content/types";
@@ -61,8 +63,17 @@ export const RichEditor = ({
 
   // Handle autofocus
   useEffect(() => {
-    editor?.chain?.().focus().run();
-  }, [autofocusKey]);
+    if (!editor || !autofocusKey) return;
+
+    // Don't take focus away from other inputs etc if they're focused.
+    if (getFocusedElement()) {
+      return;
+    }
+
+    return createTimeout(() => {
+      editor.chain?.().focus("end").run();
+    }, 0);
+  }, [autofocusKey, editor]);
 
   // Attach onChange prop to editor content changes.
   useEffect(() => {
@@ -92,7 +103,7 @@ export const RichEditor = ({
 
     if (!didChange) return;
 
-    editor?.chain().setContent(value).run();
+    editor?.chain().focus().setContent(value).run();
   }, [value]);
 
   /**
@@ -159,10 +170,14 @@ export const RichEditor = ({
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
-        <UIEditorContent>
+        <UIEditorContent
+          onClick={() => {
+            editor?.chain().focus().run();
+          }}
+        >
           {additionalTopContent}
           <UIEditorHolder>
-            <EditorContent placeholder={placeholder} autoFocus editor={editor} spellCheck />
+            <EditorContent placeholder={placeholder} editor={editor} spellCheck />
           </UIEditorHolder>
           {additionalBottomContent}
         </UIEditorContent>
@@ -191,11 +206,12 @@ const UIEditorContent = styled.div`
 
   max-height: 25vh;
   overflow: auto;
+  cursor: text;
 `;
 
 const UIHolder = styled.div`
   width: 100%;
-  min-width: 570px;
+  min-width: 500px;
   border: 1px solid #ccc;
   ${borderRadius.card}
 `;

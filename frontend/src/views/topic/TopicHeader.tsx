@@ -74,7 +74,6 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
 
 const UIHolder = styled.div`
   display: flex;
-  height: 60px;
   align-items: center;
   justify-content: center;
 `;

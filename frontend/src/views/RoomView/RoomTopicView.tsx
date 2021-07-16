@@ -72,7 +72,7 @@ export function RoomTopicView({ room, topicId }: Props) {
 
   return (
     <RoomView room={room} selectedTopicId={selectedTopicId}>
-      {selectedTopicId && <TopicView topicId={selectedTopicId} />}
+      {selectedTopicId && <TopicView key={selectedTopicId} topicId={selectedTopicId} />}
     </RoomView>
   );
 }
