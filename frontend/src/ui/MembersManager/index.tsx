@@ -6,6 +6,8 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
+import { ToggleButton } from "~ui/buttons/ToggleButton";
+import { IconLogIn, IconCheck } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
 
 interface Props {
@@ -50,15 +52,16 @@ export const MembersManager = styled(function MembersManager({
           )}
         </UIMembers>
         <UIActions>
-          {user && isMember && (
-            <Button kind="transparent" onClick={handleWithStopPropagation(() => onRemoveMemberRequest(user.id))}>
-              Leave
-            </Button>
-          )}
-          {user && !isMember && (
-            <Button kind="transparent" onClick={handleWithStopPropagation(() => onAddMemberRequest(user.id))}>
-              Join
-            </Button>
+          {user && (
+            <ToggleButton
+              onClick={handleWithStopPropagation(() =>
+                isMember ? onRemoveMemberRequest(user.id) : onAddMemberRequest(user.id)
+              )}
+              isActive={isMember}
+              icon={isMember ? <IconCheck /> : <IconLogIn />}
+            >
+              {isMember ? "Joined" : "Join"}
+            </ToggleButton>
           )}
         </UIActions>
       </UIHolder>
