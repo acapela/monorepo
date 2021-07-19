@@ -33,6 +33,7 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const topicContext = useTopicStoreContext();
 
   const isEditingAnyMessage = topicContext.useSelector((store) => !!store.editedMessageId);
+  const replyingToMessageId = topicContext.useSelector((store) => store.currentlyReplyingToMessage);
 
   const { currentlyReplyingToMessage } = topicContext.useValue();
   const handleStopReplyingToMessage = () => {
@@ -64,6 +65,8 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
 
     handleStopReplyingToMessage();
   };
+
+  const autofocusKey = `${topicId}-${replyingToMessageId ?? ""}`;
 
   return (
     <UIEditorContainer>
@@ -103,7 +106,7 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
           }
         }}
         onFilesSelected={handleNewFiles}
-        autofocusKey={topicId}
+        autofocusKey={autofocusKey}
         attachments={attachments}
         onAttachmentRemoveRequest={(attachmentId) => {
           attachmentsList.filter((existingAttachment) => {
