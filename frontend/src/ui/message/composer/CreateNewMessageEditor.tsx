@@ -16,6 +16,7 @@ import { RichEditorContent } from "~richEditor/content/types";
 
 interface Props {
   topicId: string;
+  isDisabled?: boolean;
 }
 
 interface SubmitMessageParams {
@@ -24,7 +25,7 @@ interface SubmitMessageParams {
   attachments: EditorAttachmentInfo[];
 }
 
-export const CreateNewMessageEditor = ({ topicId }: Props) => {
+export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
@@ -80,7 +81,7 @@ export const CreateNewMessageEditor = ({ topicId }: Props) => {
         }}
       />
       <MessageContentEditor
-        disableFileDrop={isEditingAnyMessage}
+        isDisabled={isDisabled || isEditingAnyMessage}
         content={value}
         onContentChange={setValue}
         onSubmit={async () => {

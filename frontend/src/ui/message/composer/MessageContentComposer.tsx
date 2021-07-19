@@ -18,7 +18,7 @@ interface Props {
   onAttachmentRemoveRequest: (attachmentId: string) => void;
   hideEditorSubmitButton?: boolean;
   additionalContent?: React.ReactNode;
-  disableFileDrop?: boolean;
+  isDisabled?: boolean;
 }
 
 export const MessageContentEditor = ({
@@ -31,7 +31,7 @@ export const MessageContentEditor = ({
   onAttachmentRemoveRequest,
   hideEditorSubmitButton,
   additionalContent = null,
-  disableFileDrop,
+  isDisabled,
 }: Props) => {
   function getSubmitButtonMode(): RichEditorSubmitMode {
     if (hideEditorSubmitButton) return "hide";
@@ -53,7 +53,7 @@ export const MessageContentEditor = ({
       placeholder="Type here to start contributing..."
       autofocusKey={autofocusKey}
       submitMode={getSubmitButtonMode()}
-      disableFileDrop={disableFileDrop}
+      isDisabled={isDisabled}
       additionalTopContent={additionalContent}
       additionalBottomContent={
         attachments.length > 0 && (

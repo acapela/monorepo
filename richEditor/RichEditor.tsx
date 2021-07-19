@@ -197,7 +197,7 @@ export const RichEditor = ({
         >
           {additionalTopContent}
           <UIEditorHolder>
-            <EditorContent placeholder={placeholder} editor={editor} spellCheck />
+            <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
           </UIEditorHolder>
           {additionalBottomContent}
         </UIEditorContent>
