@@ -45,7 +45,7 @@ export const [useTeamMembersQuery] = createQuery<TeamMembersQuery, TeamMembersQu
   `
 );
 
-export function useCurrentTeamMembers() {
+export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   const teamId = useAssertCurrentTeamId();
 
   const [teamMembers = []] = useTeamMembersQuery({ teamId: teamId });

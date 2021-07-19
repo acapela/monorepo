@@ -17,7 +17,10 @@ interface Props {
   className?: string;
 }
 
-export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard({ event, className }: Props) {
+export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard({
+  event,
+  className,
+}: Props): JSX.Element {
   const currentTeamMembers = useCurrentTeamMembers();
   const deadline = tryParseStringDate(event.startTime) ?? undefined;
 
@@ -27,7 +30,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
     return event.participantEmails.includes(teamMember.email);
   });
 
-  async function handleCreateRoom() {
+  async function handleCreateRoom(): Promise<void> {
     const createRoomInput = await openRoomInputPrompt({
       name: event.title,
       deadline,

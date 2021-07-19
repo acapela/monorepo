@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/client";
+import { UserBasicInfoFragment } from "~gql";
 import { convertUserAuthToBasicFragment } from "~frontend/utils/user";
 import { assertGet } from "~shared/assert";
 import { UserTokenData } from "~shared/types/jwtAuth";
@@ -7,7 +8,7 @@ import { UserTokenData } from "~shared/types/jwtAuth";
  * This hook works exactly like default next-auth useSession, but has proper typing for user data and also does some
  * simple data mapping.
  */
-function useAdjustedSession() {
+function useAdjustedSession(): UserTokenData | null {
   const [session] = useSession();
 
   if (!session) return null;
@@ -18,7 +19,7 @@ function useAdjustedSession() {
   return { ...session, id, picture } as unknown as UserTokenData;
 }
 
-function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T) {
+function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T): T {
   if (!target) return defaultValue;
 
   const existingValue = Reflect.get(target, key) as T;
@@ -26,7 +27,7 @@ function get<T>(target: Record<string, unknown> | null | void, key: string, defa
   return existingValue ?? defaultValue;
 }
 
-export function useCurrentUser() {
+export function useCurrentUser(): UserTokenData | null {
   const user = useAdjustedSession();
 
   return user;
@@ -37,7 +38,7 @@ export function useCurrentUser() {
  *
  * Therefore in components that renders only on logged in use-cases, we can assert current user
  */
-export function useAssetCurrentUserAuth() {
+export function useAssetCurrentUserAuth(): UserTokenData {
   const user = useCurrentUser();
 
   const validatedUser = assertGet(user, `Using useAssertCurrentUser with null user`);
@@ -45,19 +46,19 @@ export function useAssetCurrentUserAuth() {
   return validatedUser;
 }
 
-export function useAssertCurrentUser() {
+export function useAssertCurrentUser(): UserBasicInfoFragment {
   const validatedUser = useAssetCurrentUserAuth();
 
   return convertUserAuthToBasicFragment(validatedUser);
 }
 
-export function useCurrentTeamId() {
+export function useCurrentTeamId(): string | null {
   const user = useCurrentUser();
 
   return user?.currentTeamId ?? null;
 }
 
-export function useAssertCurrentTeamId() {
+export function useAssertCurrentTeamId(): string {
   const user = useAssetCurrentUserAuth();
 
   return assertGet(user.currentTeamId, "No team id");
