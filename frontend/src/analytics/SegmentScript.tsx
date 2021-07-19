@@ -34,5 +34,5 @@ export const SegmentScript = memo(() => {
     };
   });
 
-  return <Script id="segment-script" dangerouslySetInnerHTML={dangerouslySetInnerHTML} onLoad={console.log} />;
+  return <Script id="segment-script" dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
 });

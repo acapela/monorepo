@@ -1,24 +1,20 @@
 import {
   DocumentNode,
-  gql,
   QueryHookOptions,
   QueryOptions,
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
-import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { memoize } from "lodash";
 import { useRef } from "react";
 import { VoidableIfEmpty } from "~shared/types";
-import { assert } from "~shared/assert";
 import { reportQueryUsage } from "./hydration";
 import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
-import { clone } from "lodash";
 
 type QueryDefinitionOptions = RequestWithRole;
 
