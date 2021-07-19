@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 
 interface Props {
   children: ReactNode;
+  onClientRendered?: () => void;
 }
 
 export function ClientSideOnly(props: Props) {
@@ -10,6 +11,12 @@ export function ClientSideOnly(props: Props) {
   useEffect(() => {
     setShouldRender(true);
   }, []);
+
+  useEffect(() => {
+    if (shouldRender) {
+      props.onClientRendered?.();
+    }
+  }, [shouldRender]);
 
   if (!shouldRender) return null;
 
