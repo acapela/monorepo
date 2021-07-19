@@ -15,7 +15,7 @@ import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
 import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots } from "~ui/icons";
+import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots, IconPlusSquare } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
@@ -111,8 +111,14 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               </UIShowRemainingTopics>
             )}
             {isAbleToAddTopic && (
-              <UIAddTopicButton ref={buttonRef} onClick={handleCreateTopic}>
-                Add topic
+              <UIAddTopicButton
+                kind="outlined"
+                ref={buttonRef}
+                onClick={handleCreateTopic}
+                icon={<IconPlusSquare />}
+                iconPosition="start"
+              >
+                New topic
               </UIAddTopicButton>
             )}
           </UICollapsedItems>
