@@ -21,6 +21,7 @@ const UIHolder = styled.div<{ isHighlighted: boolean }>`
   justify-content: center;
   align-items: center;
   padding: 2px;
+  padding-bottom: 3px;
 
   height: 1.25rem;
   min-width: 1.25rem;
