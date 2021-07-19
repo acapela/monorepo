@@ -28,7 +28,7 @@ type SharedTimelineEntityData = { date: Date; id: string };
 type CalendarEventEntity = { type: "event"; event: JsonValue<GoogleCalendarEvent> } & SharedTimelineEntityData;
 type RoomEntity = { type: "room"; room: RoomDetailedInfoFragment } & SharedTimelineEntityData;
 
-type EventOrRoom = CalendarEventEntity | RoomEntity;
+type CalendarListItem = CalendarEventEntity | RoomEntity;
 
 /**
  * We want to order Google Calendar Events and Rooms by date. It means they can be 'mixed' together.
@@ -39,7 +39,7 @@ type EventOrRoom = CalendarEventEntity | RoomEntity;
  * Thus this hooks returns 'mixed' array of both events and room ordered by date making it easy to display it in order
  * in the UI.
  */
-function useOrderedEventsAndRooms(startDate: Date): EventOrRoom[] {
+function useOrderedEventsAndRooms(startDate: Date): CalendarListItem[] {
   const user = useAssertCurrentUser();
   const [dayStart, dayEnd] = getDayBoundaries(startDate);
   const [rooms = []] = useRoomsQuery({
@@ -92,7 +92,7 @@ function useOrderedEventsAndRooms(startDate: Date): EventOrRoom[] {
     };
   });
 
-  const roomsAndEvents: EventOrRoom[] = [...googleCalendarEventEntities, ...roomEntities];
+  const roomsAndEvents: CalendarListItem[] = [...googleCalendarEventEntities, ...roomEntities];
 
   return sortBy(roomsAndEvents, (roomOrEvent) => roomOrEvent.date);
 }
