@@ -18,6 +18,7 @@ import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
+import { clone } from "lodash";
 
 type QueryDefinitionOptions = RequestWithRole;
 
@@ -155,19 +156,15 @@ export function createQuery<Data, Variables>(
 }
 
 function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
-  const subscriptionSource = print(queryNode);
+  const subscriptionNode = JSON.parse(JSON.stringify(queryNode)) as DocumentNode;
 
-  assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
-  assert(
-    subscriptionSource.includes("query"),
-    "Incorrect query string cannot be converted to subscription (provided graphql definition is not a query)"
-  );
-
-  const subscriptionString = subscriptionSource.replace("query", "subscription");
-
-  const subscriptionNode = gql`
-    ${subscriptionString}
-  `;
+  for (const definition of subscriptionNode.definitions) {
+    if (definition.kind === "OperationDefinition" && definition.operation === "query") {
+      // Definition type is 'readonly' so TS would complain about assigning it directly. We're working on clone,
+      // so mutating it is safe.
+      Reflect.set(definition, "operation", "subscription");
+    }
+  }
 
   return subscriptionNode;
 }
