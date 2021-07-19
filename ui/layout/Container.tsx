@@ -15,6 +15,6 @@ export const Container = styled.div`
 
   & & {
     padding-left: 0;
-    podding-right: 0;
+    padding-right: 0;
   }
 `;
