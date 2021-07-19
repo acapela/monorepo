@@ -7,6 +7,7 @@ import { getFocusedElement } from "~shared/focus";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { createTimeout } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
+import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { RichEditorContent } from "./content/types";
 import { RichEditorContext } from "./context";
@@ -35,7 +36,7 @@ export interface RichEditorProps {
   placeholder?: string;
   autofocusKey?: string;
   submitMode?: RichEditorSubmitMode;
-  disableFileDrop?: boolean;
+  isDisabled?: boolean;
   extensions?: Extensions;
 }
 
@@ -49,7 +50,7 @@ export const RichEditor = ({
   placeholder,
   autofocusKey,
   submitMode = "enable",
-  disableFileDrop,
+  isDisabled,
   extensions = [],
 }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
@@ -136,6 +137,25 @@ export const RichEditor = ({
   useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
   useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
 
+  /**
+   * Let's use any key pressed to instantly focus inside the editor
+   */
+  useAlphanumericShortcut(
+    () => {
+      /**
+       * I initially wanted to run editor.chain().focus().insertContent(input).run(); to manually insert content
+       * from alphanumeric shortcut. This however caused char to be inserted twice, even if I did stop propagation of the
+       * event. I don't fully understand it, but it seems tiptap was watching somehow for this event very early as well.
+       *
+       * TLDR: only focusing the editor was enough - tiptap did capture keyboard event in such case and did properly
+       * insert pressed key into the content.
+       */
+      editor?.chain().focus().run();
+      return true;
+    },
+    { isEnabled: !isFocused && !isDisabled }
+  );
+
   function handleSubmitIfEnabled() {
     if (submitMode !== "enable") return;
 
@@ -146,14 +166,14 @@ export const RichEditor = ({
     (files) => {
       onFilesSelected?.(files);
     },
-    { isDisabled: disableFileDrop }
+    { isDisabled }
   );
 
   useDocumentFilesPaste(
     (files) => {
       onFilesSelected?.(files);
     },
-    { isDisabled: disableFileDrop }
+    { isDisabled }
   );
 
   function insertEmoji(emoji: string) {

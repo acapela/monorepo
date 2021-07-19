@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { createCleanupObject } from "~shared/cleanup";
 import { onDocumentReady } from "~shared/document";
 import { mapGetOrCreate } from "~shared/map";
+import { sortBy } from "lodash";
 
 type ShortcutDefinition = Key | Key[];
 
@@ -12,9 +13,16 @@ type ShortcutKeys = Key[];
 
 interface ShortcutHookOptions {
   isEnabled?: boolean;
+  ignoreIfAlreadyDefined?: boolean;
 }
 
 type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
+
+function getShortcutDescription(keys: ShortcutKeys) {
+  return sortBy(keys, (key) => key)
+    .join("+")
+    .toLowerCase();
+}
 
 function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys {
   return convertMaybeArrayToArray(shortcut);
@@ -53,6 +61,16 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  */
 const shortcutHandlersMap = new Map<string, ShortcutCallback[]>();
 
+function getIsShortcutAlreadyDefined(shortcutDescriptor: string) {
+  const shortcutListeners = shortcutHandlersMap.get(shortcutDescriptor);
+
+  if (!shortcutListeners) {
+    return false;
+  }
+
+  return shortcutListeners.length > 0;
+}
+
 /**
  * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
  */
@@ -87,7 +105,7 @@ onDocumentReady(() => {
 });
 
 function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) {
-  const shortcut = keys.join("+");
+  const shortcut = getShortcutDescription(keys);
 
   const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => []);
 
@@ -111,8 +129,13 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
   useEffect(() => {
     if (options?.isEnabled === false) return;
     if (!callback) return;
+
+    if (options?.ignoreIfAlreadyDefined && getIsShortcutAlreadyDefined(getShortcutDescription(keys))) {
+      return;
+    }
+
     return createShortcutListener(keys, callback);
-  }, [keys, callback, options?.isEnabled]);
+  }, [keys, callback, options?.isEnabled, options?.ignoreIfAlreadyDefined]);
 }
 
 export function useShortcuts(
@@ -129,9 +152,13 @@ export function useShortcuts(
     shortcuts.forEach((shortcut) => {
       const keys = resolveShortcutsDefinition(shortcut);
 
+      if (options?.ignoreIfAlreadyDefined && getIsShortcutAlreadyDefined(getShortcutDescription(keys))) {
+        return;
+      }
+
       cleanup.enqueue(createShortcutListener(keys, callback));
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback, options?.isEnabled]);
+  }, [shortcuts, callback, options?.isEnabled, options?.ignoreIfAlreadyDefined]);
 }
