@@ -68,7 +68,7 @@ export const RichEditor = ({
 
     // Don't take focus away from other inputs etc if they're focused.
     if (getFocusedElement()) {
-      // return;
+      return;
     }
 
     return createTimeout(() => {
