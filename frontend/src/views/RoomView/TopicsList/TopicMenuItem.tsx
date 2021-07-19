@@ -44,6 +44,10 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
 
   function handleNewTopicName(newName: string) {
     updateTopic({ topicId: topic.id, input: { name: newName } });
+
+    if (isNewTopic) {
+      roomContext.update((state) => (state.newTopicId = null));
+    }
   }
 
   return (
@@ -62,6 +66,7 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
             <EditableText
               value={topic.name ?? ""}
               isInEditMode={isEditingName}
+              focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
               onEditModeChangeRequest={setIsEditingName}
               onValueSubmit={handleNewTopicName}
             />

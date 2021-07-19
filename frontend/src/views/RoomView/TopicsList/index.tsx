@@ -89,6 +89,7 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
 
 const UIHolder = styled.div`
   overflow-y: hidden;
+  margin-top: 16px;
 `;
 
 const UIHeader = styled.div`
