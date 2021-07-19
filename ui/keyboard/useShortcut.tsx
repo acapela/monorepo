@@ -18,6 +18,14 @@ interface ShortcutHookOptions {
 
 type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
 
+/**
+ * This will create 'normalized' definition of a shortcut. It is to be able to compare 2 shortcuts defined differently
+ * that mean the same things eg:
+ *
+ * ['Shift', 'A'] and ['A', 'Shift']
+ *
+ * ^ if we just do .join('+'), the two above would return different string, while they mean exactly the same shortcut.
+ */
 function getShortcutDescription(keys: ShortcutKeys) {
   return sortBy(keys, (key) => key)
     .join("+")
