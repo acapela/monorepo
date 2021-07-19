@@ -150,7 +150,7 @@ export const RichEditor = ({
        * TLDR: only focusing the editor was enough - tiptap did capture keyboard event in such case and did properly
        * insert pressed key into the content.
        */
-      editor?.chain().focus().run();
+      editor?.chain().focus("end").run();
       return true;
     },
     { isEnabled: !isFocused && !isDisabled }
