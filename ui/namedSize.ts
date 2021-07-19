@@ -2,7 +2,7 @@ import { css } from "styled-components";
 
 const namedSize = {
   small: 24,
-  regular: 40,
+  regular: 32,
 };
 
 export type NamedSize = keyof typeof namedSize;

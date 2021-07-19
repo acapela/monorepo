@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { TextBody } from "~ui/typo";
+import { TextBody14, TextMeta10 } from "~ui/typo";
 import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
+import { BASE_GREY_3 } from "~ui/colors";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -13,8 +14,8 @@ export const UserBasicInfo = ({ user }: Props) => {
     <UIHolder>
       <Avatar url={user.avatar_url} />
       <div>
-        <TextBody medium>{user.name}</TextBody>
-        <TextBody>{user.email}</TextBody>
+        <TextBody14 semibold>{user.name}</TextBody14>
+        <UIEmail>{user.email}</UIEmail>
       </div>
     </UIHolder>
   );
@@ -23,6 +24,10 @@ export const UserBasicInfo = ({ user }: Props) => {
 const UIHolder = styled.div`
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+`;
+
+const UIEmail = styled(TextMeta10)`
+  color: ${BASE_GREY_3};
 `;

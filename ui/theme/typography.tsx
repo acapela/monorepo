@@ -107,6 +107,12 @@ export const TextBody12 = styled(motion.p)<TypographyProps>`
   line-height: 1.5;
 `;
 
+export const TextMeta10 = styled(motion.p)<TypographyProps>`
+  ${() => typographyStyles};
+  font-size: 0.625rem;
+  line-height: 1.2;
+`;
+
 /**
  * TODO: Those are exported from figma and not used yet.
  */

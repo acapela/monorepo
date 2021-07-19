@@ -14,7 +14,7 @@ import {
   BUTTON_BACKGROUND_ACTIVE_COLOR,
   WHITE,
   PRIMARY_PINK_1,
-  BASE_GREY_LINES,
+  BASE_GREY_5,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
 
@@ -175,7 +175,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
       background: ${BASE_GREY_4};
     }
     &:active {
-      background: ${BASE_GREY_LINES};
+      background: ${BASE_GREY_5};
       border-color: ${PRIMARY_PINK_1};
     }
   `,
