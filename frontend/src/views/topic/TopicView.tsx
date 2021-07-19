@@ -69,7 +69,7 @@ export const TopicView = ({ topicId }: Props) => {
           {!isTopicClosed && (
             <ClientSideOnly>
               <UIMessageComposer isDisabled={!isMember}>
-                <CreateNewMessageEditor topicId={topicId} />
+                <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
               </UIMessageComposer>
             </ClientSideOnly>
           )}

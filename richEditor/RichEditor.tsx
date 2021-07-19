@@ -35,7 +35,7 @@ export interface RichEditorProps {
   placeholder?: string;
   autofocusKey?: string;
   submitMode?: RichEditorSubmitMode;
-  disableFileDrop?: boolean;
+  isDisabled?: boolean;
   extensions?: Extensions;
 }
 
@@ -49,7 +49,7 @@ export const RichEditor = ({
   placeholder,
   autofocusKey,
   submitMode = "enable",
-  disableFileDrop,
+  isDisabled,
   extensions = [],
 }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
@@ -146,14 +146,14 @@ export const RichEditor = ({
     (files) => {
       onFilesSelected?.(files);
     },
-    { isDisabled: disableFileDrop }
+    { isDisabled }
   );
 
   useDocumentFilesPaste(
     (files) => {
       onFilesSelected?.(files);
     },
-    { isDisabled: disableFileDrop }
+    { isDisabled }
   );
 
   function insertEmoji(emoji: string) {
@@ -177,7 +177,7 @@ export const RichEditor = ({
         >
           {additionalTopContent}
           <UIEditorHolder>
-            <EditorContent placeholder={placeholder} editor={editor} spellCheck />
+            <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
           </UIEditorHolder>
           {additionalBottomContent}
         </UIEditorContent>
