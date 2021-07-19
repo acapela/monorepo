@@ -3,7 +3,7 @@ import { routes } from "~frontend/routes";
 import { createRoom } from "~frontend/gql/rooms";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 import { Button } from "~ui/buttons/Button";
-import { IconPlus } from "~ui/icons/default";
+import { IconPlusSquare } from "~ui/icons/default";
 
 export const CreateRoomButton = () => {
   async function handleCreate() {
@@ -18,7 +18,6 @@ export const CreateRoomButton = () => {
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
-        slug: createRoomInput.slug,
       },
     });
 
@@ -29,8 +28,8 @@ export const CreateRoomButton = () => {
 
   return (
     <>
-      <Button iconPosition="start" icon={<IconPlus />} onClick={handleCreate}>
-        Create a new Room
+      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleCreate} size="large">
+        New Room
       </Button>
     </>
   );
