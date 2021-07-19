@@ -44,7 +44,12 @@ export const PopoverMenuTrigger = styled(
         </UIHolder>
         <AnimatePresence>
           {isOpen && (
-            <PopoverMenu placement={placement} options={options} anchorRef={anchorRef} onCloseRequest={closePopover} />
+            <UIPopoverMenu
+              placement={placement}
+              options={options}
+              anchorRef={anchorRef}
+              onCloseRequest={closePopover}
+            />
           )}
         </AnimatePresence>
       </>
@@ -52,6 +57,8 @@ export const PopoverMenuTrigger = styled(
   }
 )``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div``;
+
+const UIPopoverMenu = styled(PopoverMenu)`
   z-index: ${zIndex.Popover};
 `;
