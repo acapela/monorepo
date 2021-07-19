@@ -99,7 +99,7 @@ const UILogo = styled.a`
 `;
 
 const UIMainContent = styled.div`
-  padding: 2rem;
+  padding-bottom: 0;
   min-height: 0;
   overflow-y: auto;
   flex-grow: 1;

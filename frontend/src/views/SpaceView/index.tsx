@@ -5,7 +5,6 @@ import { routes } from "~frontend/routes";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
-import { Container } from "~ui/layout/Container";
 import { TextBody } from "~ui/typo";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { useMemo, useState } from "react";
@@ -17,6 +16,7 @@ import { IconPlusSquare } from "~ui/icons";
 import { Toggle } from "~ui/toggle";
 import { zIndex } from "~ui/zIndex";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 
 interface Props {
   spaceId: string;
@@ -97,7 +97,7 @@ export function SpaceView({ spaceId }: Props) {
   );
 }
 
-const UIContainer = styled(Container)`
+const UIContainer = styled(SpacedAppLayoutContainer)`
   position: relative;
 `;
 
@@ -135,7 +135,7 @@ const UIRoomsHeader = styled.div`
 const UIFlyingCreateRoomButton = styled(Button)`
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: 32px;
   z-index: ${zIndex.FlyingButton};
 `;
 

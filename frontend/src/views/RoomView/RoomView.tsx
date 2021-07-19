@@ -116,20 +116,19 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
 const UIHolder = styled.div`
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 400px 1fr;
   width: 100%;
   flex-grow: 1;
-  grid-gap: 2rem;
   min-height: 0;
 `;
 
 const UIRoomInfo = styled.div`
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, auto);
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
-  overflow-y: hidden;
+  padding: 32px;
+  overflow-y: auto;
 `;
 
 const UIContentHolder = styled.div`
@@ -160,12 +159,6 @@ const UIRoomTitle = styled.div`
 `;
 
 const UIFlyingCloseRoomToggle = styled.div`
-  position: absolute;
   display: flex;
   justify-content: center;
-  width: 100%;
-  padding: 0 16px;
-  bottom: 0;
-  left: 0;
-  right: 0;
 `;
