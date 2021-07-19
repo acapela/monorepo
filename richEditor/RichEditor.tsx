@@ -1,6 +1,6 @@
-import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
+import { EditorContent, Extensions, JSONContent, useEditor, Editor } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { ReactNode, useEffect } from "react";
+import React, { forwardRef, ReactNode, useEffect, useImperativeHandle } from "react";
 import { useMemo } from "react";
 import styled from "styled-components";
 import { getFocusedElement } from "~shared/focus";
@@ -18,6 +18,8 @@ import { Toolbar, RichEditorSubmitMode } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 
 export type { RichEditorSubmitMode } from "./Toolbar";
+
+export type { Editor } from "@tiptap/react";
 
 export function getEmptyRichContent(): JSONContent {
   return {
@@ -40,19 +42,22 @@ export interface RichEditorProps {
   extensions?: Extensions;
 }
 
-export const RichEditor = ({
-  value = getEmptyRichContent(),
-  onChange,
-  onSubmit,
-  onFilesSelected,
-  additionalTopContent,
-  additionalBottomContent,
-  placeholder,
-  autofocusKey,
-  submitMode = "enable",
-  isDisabled,
-  extensions = [],
-}: RichEditorProps) => {
+export const RichEditor = forwardRef<Editor | null, RichEditorProps>(function RichEditor(
+  {
+    value = getEmptyRichContent(),
+    onChange,
+    onSubmit,
+    onFilesSelected,
+    additionalTopContent,
+    additionalBottomContent,
+    placeholder,
+    autofocusKey,
+    submitMode = "enable",
+    isDisabled,
+    extensions = [],
+  },
+  ref
+) {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
   const editor = useEditor({
     extensions: finalExtensions,
@@ -61,6 +66,10 @@ export const RichEditor = ({
   });
 
   const isFocused = editor?.isFocused ?? false;
+
+  useImperativeHandle(ref, () => {
+    return editor;
+  });
 
   // Handle autofocus
   useEffect(() => {
@@ -142,6 +151,8 @@ export const RichEditor = ({
    */
   useAlphanumericShortcut(
     () => {
+      // Don't support alphanumeric shortcut focus if anything has focus
+      if (getFocusedElement()) return;
       /**
        * I initially wanted to run editor.chain().focus().insertContent(input).run(); to manually insert content
        * from alphanumeric shortcut. This however caused char to be inserted twice, even if I did stop propagation of the
@@ -184,9 +195,6 @@ export const RichEditor = ({
     editor.chain().focus().insertContent(contentToInsert).run();
   }
 
-  // Handle server side rendering gracefully.
-  if (!editor) return null;
-
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
@@ -210,7 +218,7 @@ export const RichEditor = ({
       </RichEditorContext>
     </UIHolder>
   );
-};
+});
 
 const UIEditorHolder = styled.div`
   flex-grow: 1;
@@ -225,6 +233,7 @@ const UIEditorContent = styled.div`
   gap: 16px;
 
   max-height: 25vh;
+  min-height: 50px;
   overflow: auto;
   cursor: text;
 `;

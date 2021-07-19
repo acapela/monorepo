@@ -1,8 +1,8 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import styled from "styled-components";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
-import { RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
+import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { RichEditorContent } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
 import { messageComposerExtensions } from "~frontend/message/extensions";
@@ -21,18 +21,21 @@ interface Props {
   isDisabled?: boolean;
 }
 
-export const MessageContentEditor = ({
-  autofocusKey,
-  onSubmit,
-  content,
-  onContentChange,
-  attachments,
-  onFilesSelected,
-  onAttachmentRemoveRequest,
-  hideEditorSubmitButton,
-  additionalContent = null,
-  isDisabled,
-}: Props) => {
+export const MessageContentEditor = forwardRef<Editor, Props>(function MessageContentEditor(
+  {
+    autofocusKey,
+    onSubmit,
+    content,
+    onContentChange,
+    attachments,
+    onFilesSelected,
+    onAttachmentRemoveRequest,
+    hideEditorSubmitButton,
+    additionalContent = null,
+    isDisabled,
+  },
+  ref
+) {
   function getSubmitButtonMode(): RichEditorSubmitMode {
     if (hideEditorSubmitButton) return "hide";
 
@@ -45,6 +48,7 @@ export const MessageContentEditor = ({
 
   return (
     <RichEditor
+      ref={ref}
       extensions={messageComposerExtensions}
       value={content}
       onChange={onContentChange}
@@ -72,7 +76,7 @@ export const MessageContentEditor = ({
       }
     />
   );
-};
+});
 
 const UIAttachmentsPreviews = styled.div`
   height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;

@@ -9,13 +9,11 @@ export const RichEditorContext = RichEditorReactContext.Provider;
 export function useRichEditorContext() {
   const richEditorContext = useContext(RichEditorReactContext);
 
-  assert(richEditorContext, "useRichEditorContext can only be called inside RichEditorContext");
-
   return richEditorContext;
 }
 
 export function useRichEditorIsEmpty() {
   const editor = useRichEditorContext();
 
-  return editor.getCharacterCount() === 0;
+  return editor?.getCharacterCount() === 0;
 }

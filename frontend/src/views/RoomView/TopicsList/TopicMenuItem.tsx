@@ -27,7 +27,6 @@ const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
   const roomContext = useRoomStoreContext();
-  const [isEditingName, setIsEditingName] = useState(false);
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
 
@@ -35,15 +34,12 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const isNewTopic = roomContext.useSelector((state) => state.newTopicId === topic.id);
-
-  useEffect(() => {
-    if (!isNewTopic) return;
-
-    setIsEditingName(true);
-  }, [isNewTopic]);
+  const isInEditMode = roomContext.useSelector((state) => state.editingNameTopicId === topic.id);
 
   function handleNewTopicName(newName: string) {
     updateTopic({ topicId: topic.id, input: { name: newName } });
+
+    roomContext.update((state) => (state.editingNameTopicId = null));
 
     if (isNewTopic) {
       roomContext.update((state) => (state.newTopicId = null));
@@ -65,16 +61,19 @@ export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, cl
             {hasUnreadMessaged && <UIUnreadMessagesNotification />}
             <EditableText
               value={topic.name ?? ""}
-              isInEditMode={isEditingName}
+              isInEditMode={isInEditMode}
               focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-              onEditModeChangeRequest={setIsEditingName}
+              onEditModeChangeRequest={() => roomContext.update((draft) => (draft.editingNameTopicId = topic.id))}
               onValueSubmit={handleNewTopicName}
             />
           </UIHolder>
         </TopicLink>
         {!isEditingDisabled && (
           <UIManageTopicWrapper>
-            <ManageTopic topic={topic} onRenameRequest={() => setIsEditingName(true)} />
+            <ManageTopic
+              topic={topic}
+              onRenameRequest={() => roomContext.update((draft) => (draft.editingNameTopicId = topic.id))}
+            />
           </UIManageTopicWrapper>
         )}
       </UIFlyingTooltipWrapper>
@@ -117,6 +116,11 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
       `;
     }
   }}
+
+  ${EditableText} {
+    display: block;
+    flex-grow: 1;
+  }
 `;
 
 const UIManageTopicWrapper = styled.div`

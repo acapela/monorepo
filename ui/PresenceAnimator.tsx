@@ -32,6 +32,14 @@ export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function Prese
   );
 });
 
+/**
+ * React `forwardRef` does not pick provided function name so component is annonymous. This could result in next.js
+ * fast refresh being confused an warning about it.
+ *
+ * TODO: Maybe we should create `namedForwardRef` that would do this automatically. I think, tho, that it would be a bit
+ * confusing to devs 'why do you use custom forwardRef function?'
+ *
+ */
 PresenceAnimator.displayName = "PresenceAnimator";
 
 const UIHolder = styled(motion.div)`

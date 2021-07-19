@@ -12,17 +12,20 @@ interface Props {
   onEditModeChangeRequest: (isInEditMode: boolean) => void;
   allowDoubleClickEditRequest?: boolean;
   focusSelectMode?: FocusSelectMode;
+  className?: string;
 }
 
 type FocusSelectMode = "cursor-at-end" | "select";
 
-export function EditableText({
+export const EditableText = styled(function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
   onEditModeChangeRequest,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   allowDoubleClickEditRequest = true,
   focusSelectMode = "cursor-at-end",
+  className,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -42,7 +45,7 @@ export function EditableText({
      * as soon as we finish edition, instantly give focus back to them.
      */
 
-    let otherElementTryingToFocusWhileInEditMode: HTMLElement | null;
+    let otherElementTryingToFocusWhileInEditMode: HTMLElement | null = null;
 
     const cleanupWatchingOtherElementsFocus = createDocumentEvent(
       "focus",
@@ -65,19 +68,16 @@ export function EditableText({
     return () => {
       cleanupWatchingOtherElementsFocus();
       // If we exit edit mode and other element was trying to focus, give focus back to it.
+
       if (otherElementTryingToFocusWhileInEditMode) {
         otherElementTryingToFocusWhileInEditMode?.focus?.();
       }
     };
   }, [isInEditMode]);
 
-  useDoubleClick(
-    ref,
-    () => {
-      onEditModeChangeRequest(true);
-    },
-    { isEnabled: allowDoubleClickEditRequest }
-  );
+  useDoubleClick(ref, () => {
+    onEditModeChangeRequest(true);
+  });
 
   useElementEvent(
     ref,
@@ -121,8 +121,10 @@ export function EditableText({
     { isEnabled: isInEditMode }
   );
 
-  return <UIHolder isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>;
-}
+  return (
+    <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>
+  );
+})``;
 
 const UIHolder = styled.span<{ isInEditMode: boolean }>`
   /* 
