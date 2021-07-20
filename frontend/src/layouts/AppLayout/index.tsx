@@ -1,16 +1,16 @@
 import Link from "next/link";
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { SmallLogo } from "~frontend/ui/Logo";
-import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TeamPickerView } from "./TeamPicker";
-import { WindowView } from "~frontend/views/WindowView";
-import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { routes, useIsAnyRouteActive } from "~frontend/routes";
+import { SmallLogo } from "~frontend/ui/Logo";
+import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { WindowView } from "~frontend/views/WindowView";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
+import { TeamPickerView } from "./TeamPicker";
+import { UserMenu } from "./UserMenu";
 
 interface Props {
   children?: ReactNode;

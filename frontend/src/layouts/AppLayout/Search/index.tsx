@@ -41,7 +41,7 @@ export const TopBarSearchBar = (): JSX.Element => {
           <TextBody14>Search</TextBody14>
         </UIPlaceholder>
         <ClientSideOnly>
-          {isMac && <UIShortcutIndicator>⌘/</UIShortcutIndicator>}
+          {isMac && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
           {!isMac && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
         </ClientSideOnly>
       </UIHolder>
