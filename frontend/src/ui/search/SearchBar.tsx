@@ -5,6 +5,8 @@ import { borderRadius } from "~ui/baseStyles";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { SearchResults } from "./SearchResults";
+import { forwardRef } from "react";
+import { WHITE } from "~ui/colors";
 
 interface Props {
   className?: string;
@@ -12,7 +14,7 @@ interface Props {
 
 const DEBOUNCE_DELAY_MS = 400;
 
-const PureSearchBar = ({ className }: Props) => {
+const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }: Props, ref) => {
   const [value, setValue] = useState("");
   const [searchTerm, setSearchTerm] = useState(value);
   const [searchResults = []] = useFullTextSearchQuery({ term: searchTerm });
@@ -26,15 +28,16 @@ const PureSearchBar = ({ className }: Props) => {
   );
 
   return (
-    <div className={className}>
-      <SearchInput placeholder="Search..." value={value} onChangeText={(text) => setValue(text)} />
+    <div className={className} onClick={(event) => event.stopPropagation()}>
+      <SearchInput autoFocus={true} ref={ref} value={value} onChangeText={(text) => setValue(text)} />
       {searchTerm && <SearchResults searchTerm={searchTerm} results={searchResults} />}
     </div>
   );
-};
+});
 
 export const SearchBar = styled(PureSearchBar)`
   position: relative;
+  background: ${WHITE};
 
   ${SearchInput} > input {
     ${borderRadius.input}
@@ -43,7 +46,7 @@ export const SearchBar = styled(PureSearchBar)`
   ${SearchResults} {
     position: absolute;
     /* for explicity: 2.5rem is the height of the search bar wrapper */
-    top: calc(2.5rem + 0.4rem);
+    top: calc(2.5rem + 1rem);
     width: 100%;
   }
 `;
