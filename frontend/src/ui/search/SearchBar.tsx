@@ -29,7 +29,7 @@ const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }: Props,
 
   return (
     <div className={className} onClick={(event) => event.stopPropagation()}>
-      <SearchInput autoFocus={true} ref={ref} value={value} onChangeText={(text) => setValue(text)} />
+      <SearchInput autoFocus ref={ref} value={value} onChangeText={(text) => setValue(text)} />
       {searchTerm && <SearchResults searchTerm={searchTerm} results={searchResults} />}
     </div>
   );
@@ -45,8 +45,8 @@ export const SearchBar = styled(PureSearchBar)`
 
   ${SearchResults} {
     position: absolute;
-    /* for explicity: 2.5rem is the height of the search bar wrapper */
-    top: calc(2.5rem + 1rem);
+    /* for explicity: 40px is the height of the search bar wrapper */
+    top: calc(40px + 16px);
     width: 100%;
   }
 `;

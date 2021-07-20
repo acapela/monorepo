@@ -16,7 +16,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export const AppLayout = ({ children }: Props) => {
+export const AppLayout = ({ children }: Props): JSX.Element => {
   const user = useCurrentUser();
   const topBarRef = useRef<HTMLDivElement | null>(null);
 
@@ -90,13 +90,12 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
     }
     return css`
       display: grid;
-      grid-auto-flow: column;
       grid-template-columns: minmax(200px, 1fr) 2fr minmax(200px, 1fr);
     `;
   }}
 
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: 12px 24px;
 
   background: #ffffff;
   box-shadow: 0px 1px 0px #ededed;
@@ -115,7 +114,7 @@ const UIPrimaryNavigation = styled.div`
 const UILogo = styled.a`
   display: block;
   font-size: 1.5rem;
-  margin-right: 2rem;
+  margin-right: 32px;
 
   ${SmallLogo} {
     height: 32px;
@@ -123,7 +122,7 @@ const UILogo = styled.a`
 `;
 
 const UISearchAndUserMenu = styled.div`
-  margin-left: 2rem;
+  margin-left: 32px;
 
   display: flex;
   flex-direction: row;
@@ -132,7 +131,7 @@ const UISearchAndUserMenu = styled.div`
 `;
 
 const UIMainContent = styled.div`
-  padding: 2rem;
+  padding: 32px;
   min-height: 0;
   overflow-y: auto;
   flex-grow: 1;

@@ -25,9 +25,9 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
   const isMac = platform && platform.toLowerCase().includes("mac");
 
   useShortcut(["Mod", "/"], handleSearchBarModalOpen);
-  useShortcut("Escape", () => unset());
+  useShortcut("Escape", () => closeModal());
 
-  const [isShowingSearchModal, { set: openModal, unset }] = useBoolean(false);
+  const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
 
   function handleSearchBarModalOpen(event: KeyboardEvent | React.MouseEvent) {
     event.stopPropagation();
@@ -49,7 +49,7 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
         </ClientSideOnly>
       </UIHolder>
       {isShowingSearchModal && (
-        <ScreenCover isTransparent={true} onCloseRequest={unset}>
+        <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
           <Popover anchorRef={anchorRef} placement={"bottom"} distance={-42}>
             <UISearchContainer presenceStyles={POP_PRESENCE_STYLES}>
               <SearchBar />
