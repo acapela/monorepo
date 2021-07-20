@@ -6,7 +6,7 @@ import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/colors";
 import { IconSearch } from "~ui/icons";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
-import { borderRadius } from "~ui/baseStyles";
+import { borderRadius, shadow } from "~ui/baseStyles";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
@@ -50,7 +50,7 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
       </UIHolder>
       {isShowingSearchModal && (
         <ScreenCover isTransparent={true} onCloseRequest={unset}>
-          <Popover anchorRef={anchorRef} placement={"bottom"} distance={-45}>
+          <Popover anchorRef={anchorRef} placement={"bottom"} distance={-42}>
             <UISearchContainer presenceStyles={POP_PRESENCE_STYLES}>
               <SearchBar />
             </UISearchContainer>
@@ -110,4 +110,5 @@ const UIShortcutIndicator = styled(TextBody14)`
 const UISearchContainer = styled(PresenceAnimator)`
   width: 600px;
   ${borderRadius.input}
+  ${shadow.card}
 `;

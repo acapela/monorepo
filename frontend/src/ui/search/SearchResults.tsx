@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
-import { HIGHLIGHT_COLOR, PRIMARY_PINK_1 } from "~ui/colors";
+import { BASE_GREY_5, HIGHLIGHT_COLOR, PRIMARY_PINK_1 } from "~ui/colors";
 import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
@@ -82,7 +82,7 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
 export const SearchResults = styled(PureSearchResults)`
   padding: 16px 16px;
   background-color: #fff;
-  border: 1px solid rgba(190, 190, 190, 0.25);
+  border: 1px solid ${BASE_GREY_5};
   z-index: ${zIndex.Popover};
   ${borderRadius.modal}
 `;
