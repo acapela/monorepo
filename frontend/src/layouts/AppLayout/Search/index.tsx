@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { hoverTransition } from "~ui/transitions";
 import { TextBody14 } from "~ui/typo";
 import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/colors";
@@ -11,6 +11,8 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { Popover } from "~ui/popovers/Popover";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 
 interface Props {
   anchorRef: RefObject<HTMLElement>;
@@ -49,7 +51,9 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
       {isShowingSearchModal && (
         <ScreenCover isTransparent={true} onCloseRequest={unset}>
           <Popover anchorRef={anchorRef} placement={"bottom"} distance={-45}>
-            <UISearchContainer />
+            <UISearchContainer presenceStyles={POP_PRESENCE_STYLES}>
+              <SearchBar />
+            </UISearchContainer>
           </Popover>
         </ScreenCover>
       )}
@@ -103,7 +107,7 @@ const UIShortcutIndicator = styled(TextBody14)`
   line-height: 1.25rem;
 `;
 
-const UISearchContainer = styled(SearchBar)`
+const UISearchContainer = styled(PresenceAnimator)`
   width: 600px;
   ${borderRadius.input}
 `;

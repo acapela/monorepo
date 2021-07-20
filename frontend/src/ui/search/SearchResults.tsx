@@ -1,9 +1,13 @@
 import Link from "next/link";
-import styled from "styled-components";
-import { HIGHLIGHT_COLOR } from "~ui/colors";
+import styled, { css } from "styled-components";
+import { HIGHLIGHT_COLOR, PRIMARY_PINK_1 } from "~ui/colors";
 import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
+import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
+import { setColorOpacity } from "~shared/colors";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
 
 interface Props {
   className?: string;
@@ -47,24 +51,36 @@ function renderResultMatchString(result: SearchResultFragment, searchTerm: strin
   }
 }
 
-const PureSearchResults = ({ className, searchTerm, results }: Props) => (
-  <ul className={className}>
-    {!results.length && <UINoResults>No results</UINoResults>}
-    {results.map((result, idx) => (
-      <UISearchResultRow key={idx}>
-        <Link href={composeTopicLink(result)} passHref>
-          <UISearchResultLink>
-            <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
-            <UISearchResultBreadcrumb>{composeResultBreadcrumb(result)}</UISearchResultBreadcrumb>
-          </UISearchResultLink>
-        </Link>
-      </UISearchResultRow>
-    ))}
-  </ul>
-);
+// TODO: Attempt to use ItemsDropdown when we have a clearer idea of where search is going to move
+const PureSearchResults = ({ className, searchTerm, results }: Props) => {
+  const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(results, {
+    enableKeyboard: true,
+  });
+
+  return (
+    <ul className={className}>
+      <PresenceAnimator presenceStyles={POP_PRESENCE_STYLES}>
+        {!results.length && <UINoResults>No results</UINoResults>}
+        {results.map((result, idx) => (
+          <UISearchResultRow key={idx}>
+            <Link href={composeTopicLink(result)} passHref>
+              <UISearchResultLink
+                onMouseEnter={() => setHighlightedItem(result)}
+                isHighlighted={result === highlightedItem}
+              >
+                <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
+                <UISearchResultBreadcrumb>{composeResultBreadcrumb(result)}</UISearchResultBreadcrumb>
+              </UISearchResultLink>
+            </Link>
+          </UISearchResultRow>
+        ))}
+      </PresenceAnimator>
+    </ul>
+  );
+};
 
 export const SearchResults = styled(PureSearchResults)`
-  padding: 1rem 0.6rem;
+  padding: 16px 16px;
   background-color: #fff;
   border: 1px solid rgba(190, 190, 190, 0.25);
   z-index: ${zIndex.Popover};
@@ -75,21 +91,34 @@ const UINoResults = styled.span``;
 
 const UISearchResultRow = styled.li`
   & ~ & {
-    margin-top: 0.4rem;
+    margin-top: 4px;
   }
 `;
 
-const UISearchResultLink = styled.a`
+const UISearchResultLink = styled.a<{ isHighlighted: boolean }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   line-height: 1.5;
-  padding: 0.4rem 0.8rem;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+
   ${borderRadius.item}
 
-  :hover {
-    background-color: #ffeddd;
+  &:hover {
+    background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
   }
+
+  svg {
+    color: ${PRIMARY_PINK_1};
+  }
+
+  ${(props) =>
+    props.isHighlighted &&
+    css`
+      border: 1px solid ${PRIMARY_PINK_1};
+      background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+    `}
 `;
 
 const UISearchResultMatch = styled.span``;

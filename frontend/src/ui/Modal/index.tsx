@@ -14,6 +14,7 @@ export interface ModalAnchor {
   ref: RefObject<HTMLElement>;
   placement?: PopoverPlacement;
 }
+
 interface Props {
   head?: {
     title: ReactNode;
