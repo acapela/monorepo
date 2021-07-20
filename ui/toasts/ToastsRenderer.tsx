@@ -34,6 +34,7 @@ const UIFlyer = styled.div`
   flex-direction: column;
   align-items: center;
   z-index: ${zIndex.Toast};
+  pointer-events: none;
 `;
 
 const UIToastsHolder = styled.div`
@@ -43,5 +44,6 @@ const UIToastsHolder = styled.div`
 
   ${ToastLabel} {
     margin-top: 8px;
+    pointer-events: all;
   }
 `;

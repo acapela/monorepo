@@ -35,11 +35,12 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   const editor = useRichEditorContext();
 
   function getIsFormatActive(formatName: string, formatOptions?: Record<string, unknown>) {
-    return editor.isActive(formatName, formatOptions);
+    return editor?.isActive(formatName, formatOptions) ?? false;
   }
 
   function createFormatHandler<N extends keyof ChainedCommands>(name: N, ...args: Parameters<ChainedCommands[N]>) {
     return function run() {
+      if (!editor) return;
       let command = editor.chain().focus();
 
       command = Reflect.apply(command[name], null, args);
@@ -49,6 +50,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   }
 
   function handleCreateCodeSnippet() {
+    if (!editor) return;
     const isSelectionEmpty = editor.state.selection.empty;
 
     if (isSelectionEmpty) {
@@ -60,6 +62,8 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   }
 
   function insertTextAtCursor(text: string) {
+    if (!editor) return;
+
     editor
       .chain()
       .focus()
@@ -82,7 +86,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
         <ToolbarButton
           tooltipLabel="Italic"
           onClick={() => {
-            editor.chain().focus().toggleItalic().run();
+            editor?.chain().focus().toggleItalic().run();
           }}
           isHighlighted={getIsFormatActive("italic")}
           icon={<IconTextItalic />}

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { createCleanupObject } from "~shared/cleanup";
 import { onDocumentReady } from "~shared/document";
 import { mapGetOrCreate } from "~shared/map";
+import { sortBy } from "lodash";
 
 type ShortcutDefinition = Key | Key[];
 
@@ -12,9 +13,28 @@ type ShortcutKeys = Key[];
 
 interface ShortcutHookOptions {
   isEnabled?: boolean;
+  /**
+   * This flag indicates that shortcut will not be fired if there is any other shortcut (without this flag) running for
+   * the same keyboard shortcut.
+   */
+  ignoreIfAlreadyDefined?: boolean;
 }
 
 type ShortcutCallback = (event: KeyboardEvent) => void | boolean;
+
+/**
+ * This will create 'normalized' definition of a shortcut. It is to be able to compare 2 shortcuts defined differently
+ * that mean the same things eg:
+ *
+ * ['Shift', 'A'] and ['A', 'Shift']
+ *
+ * ^ if we just do .join('+'), the two above would return different string, while they mean exactly the same shortcut.
+ */
+function getShortcutDescription(keys: ShortcutKeys) {
+  return sortBy(keys, (key) => key)
+    .join("+")
+    .toLowerCase();
+}
 
 function resolveShortcutsDefinition(shortcut: ShortcutDefinition): ShortcutKeys {
   return convertMaybeArrayToArray(shortcut);
@@ -51,7 +71,12 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  *   // !!! I'll be first to handle this event. If I'll return true (handled) no other handler will be called!
  * });
  */
-const shortcutHandlersMap = new Map<string, ShortcutCallback[]>();
+const shortcutHandlersMap = new Map<string, RunningShortcutInfo[]>();
+
+interface RunningShortcutInfo {
+  callback: ShortcutCallback;
+  options?: ShortcutHookOptions;
+}
 
 /**
  * Let's create only one 'master' keyboard handler to compare keyboard events with each registered shortcuts.
@@ -65,13 +90,29 @@ onDocumentReady(() => {
           return;
         }
 
-        for (const callback of callbacks) {
+        const hasAlwaysRunningCallback = callbacks.some((callbackInfo) => {
+          if (!callbackInfo.options) return true;
+          if (callbackInfo.options.isEnabled === false) return false;
+          if (callbackInfo.options.ignoreIfAlreadyDefined) return false;
+
+          return true;
+        });
+
+        for (const callbackInfo of callbacks) {
+          if (callbackInfo.options?.isEnabled === false) {
+            continue;
+          }
+
           // If some of the handlers already returned true, don't allow other handlers to be called.
           if (finallyHandledEvents.has(event)) {
             return;
           }
 
-          const callbackResult = callback?.(event);
+          if (callbackInfo.options?.ignoreIfAlreadyDefined && hasAlwaysRunningCallback) {
+            continue;
+          }
+
+          const callbackResult = callbackInfo.callback(event);
 
           // Handled returned true - prevent propagation of event and other shortcut handlers to be called.
           if (callbackResult === true) {
@@ -86,8 +127,8 @@ onDocumentReady(() => {
   );
 });
 
-function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) {
-  const shortcut = keys.join("+");
+function createShortcutListener(keys: ShortcutKeys, info: RunningShortcutInfo) {
+  const shortcut = getShortcutDescription(keys);
 
   const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => []);
 
@@ -98,10 +139,10 @@ function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) 
    *
    * This is because we want new handlers to be called first instead of default DOM behavior!
    */
-  shortcutHandlers.unshift(callback);
+  shortcutHandlers.unshift(info);
 
   return () => {
-    removeElementFromArray(shortcutHandlers, callback);
+    removeElementFromArray(shortcutHandlers, info);
   };
 }
 
@@ -109,10 +150,10 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
   const keys = resolveShortcutsDefinition(shortcut);
 
   useEffect(() => {
-    if (options?.isEnabled === false) return;
     if (!callback) return;
-    return createShortcutListener(keys, callback);
-  }, [keys, callback, options?.isEnabled]);
+
+    return createShortcutListener(keys, { callback, options });
+  }, [keys, callback, options]);
 }
 
 export function useShortcuts(
@@ -122,16 +163,15 @@ export function useShortcuts(
 ) {
   useEffect(() => {
     if (!callback) return;
-    if (options?.isEnabled === false) return;
 
     const cleanup = createCleanupObject();
 
     shortcuts.forEach((shortcut) => {
       const keys = resolveShortcutsDefinition(shortcut);
 
-      cleanup.enqueue(createShortcutListener(keys, callback));
+      cleanup.enqueue(createShortcutListener(keys, { callback, options }));
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback, options?.isEnabled]);
+  }, [shortcuts, callback, options]);
 }

@@ -1,13 +1,11 @@
-import styled from "styled-components";
 import { useMemo } from "react";
-import { TextH2, TextH3 } from "~ui/typo";
+import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { SearchBar } from "~frontend/ui/search/SearchBar";
-import { Container } from "~ui/layout/Container";
-import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
-import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
+import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
+import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
+import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { CreateRoomButton } from "./CreateRoomButton";
 
 const openRoomFilter = createOpenRoomFilter(true);
@@ -30,7 +28,7 @@ export function HomeView() {
   );
 }
 
-const UIHolder = styled(Container)``;
+const UIHolder = styled(SpacedAppLayoutContainer)``;
 
 const UIContent = styled.div`
   display: flex;

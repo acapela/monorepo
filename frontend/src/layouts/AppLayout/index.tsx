@@ -132,7 +132,7 @@ const UISearchAndUserMenu = styled.div`
 `;
 
 const UIMainContent = styled.div`
-  padding: 32px;
+  padding-bottom: 0;
   min-height: 0;
   overflow-y: auto;
   flex-grow: 1;

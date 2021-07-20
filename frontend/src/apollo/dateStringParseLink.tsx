@@ -39,8 +39,6 @@ function parseResponse(response: FetchResult) {
     } catch (err) {
       console.error("err", err);
     }
-
-    // return foo;
   }
 
   return response;

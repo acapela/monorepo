@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
-import { useElementEvent } from "~shared/domEvents";
+import { createDocumentEvent, useElementEvent } from "~shared/domEvents";
 import { useDoubleClick } from "~shared/hooks/useDoubleClick";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
@@ -11,30 +11,73 @@ interface Props {
   onValueSubmit: (newValue: string) => void;
   onEditModeChangeRequest: (isInEditMode: boolean) => void;
   allowDoubleClickEditRequest?: boolean;
+  focusSelectMode?: FocusSelectMode;
+  className?: string;
 }
 
-export function EditableText({
+type FocusSelectMode = "cursor-at-end" | "select";
+
+export const EditableText = styled(function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
   onEditModeChangeRequest,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   allowDoubleClickEditRequest = true,
+  focusSelectMode = "cursor-at-end",
+  className,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+
+  function focusEditable() {
+    if (!ref.current) return;
+    ref.current?.focus();
+    setSelectionToElement(ref.current, focusSelectMode);
+  }
 
   useEffect(() => {
     if (!isInEditMode || !ref.current) return;
 
-    setSelectionToElement(ref.current);
+    focusEditable();
+
+    /**
+     * If other elements are trying to focus while we're in edit mode - prevent them from doing so, but
+     * as soon as we finish edition, instantly give focus back to them.
+     */
+
+    let otherElementTryingToFocusWhileInEditMode: HTMLElement | null = null;
+
+    const cleanupWatchingOtherElementsFocus = createDocumentEvent(
+      "focus",
+      (event) => {
+        if (!ref.current) return;
+        // If it's another focus on this editable text itself, do nothing
+        if (event.target === ref.current) return;
+
+        // Capture element trying to focus and ensure it is not gaining the focus.
+        otherElementTryingToFocusWhileInEditMode = event.target as HTMLElement;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        focusEditable();
+      },
+      { capture: true }
+    );
+
+    return () => {
+      cleanupWatchingOtherElementsFocus();
+      // If we exit edit mode and other element was trying to focus, give focus back to it.
+
+      if (otherElementTryingToFocusWhileInEditMode) {
+        otherElementTryingToFocusWhileInEditMode?.focus?.();
+      }
+    };
   }, [isInEditMode]);
 
-  useDoubleClick(
-    ref,
-    () => {
-      onEditModeChangeRequest(true);
-    },
-    { isEnabled: allowDoubleClickEditRequest }
-  );
+  useDoubleClick(ref, () => {
+    onEditModeChangeRequest(true);
+  });
 
   useElementEvent(
     ref,
@@ -55,9 +98,11 @@ export function EditableText({
     const currentValue = ref.current.innerText;
     onEditModeChangeRequest(false);
 
-    if (currentValue === value) return;
+    if (currentValue === value) return true;
 
     onValueSubmit(currentValue);
+
+    return true;
   }
 
   useClickAway(ref, () => {
@@ -76,8 +121,10 @@ export function EditableText({
     { isEnabled: isInEditMode }
   );
 
-  return <UIHolder isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>;
-}
+  return (
+    <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>
+  );
+})``;
 
 const UIHolder = styled.span<{ isInEditMode: boolean }>`
   /* 
@@ -111,10 +158,10 @@ const UIHolder = styled.span<{ isInEditMode: boolean }>`
   }}
 `;
 
-function setSelectionToElement(element: HTMLElement) {
+function setSelectionToElement(element: HTMLElement, mode: FocusSelectMode) {
   const selection = window.getSelection();
   const range = document.createRange();
-  range.setStart(element, 1);
+  range.setStart(element, mode === "cursor-at-end" ? 1 : 0);
   range.setEnd(element, 1);
 
   selection?.removeAllRanges();

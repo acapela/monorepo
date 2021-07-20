@@ -46,7 +46,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         icon={<IconCalendar />}
         indicateDropdown
       >
-        <UIHolder isReadonly={isReadonly} onFocus={openPicker} type="button" onClick={openPicker}>
+        <UIHolder isReadonly={isReadonly} onFocus={openPicker} onClick={openPicker}>
           <TextBody>{format(value, "dd.MM.yyyy, p")}</TextBody>
         </UIHolder>
       </FieldWithLabel>

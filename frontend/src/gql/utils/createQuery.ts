@@ -1,18 +1,15 @@
 import {
   DocumentNode,
-  gql,
   QueryHookOptions,
   QueryOptions,
   SubscriptionHookOptions,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
-import { print } from "graphql/language/printer";
 import produce, { Draft } from "immer";
 import { memoize } from "lodash";
 import { useRef } from "react";
 import { VoidableIfEmpty } from "~shared/types";
-import { assert } from "~shared/assert";
 import { reportQueryUsage } from "./hydration";
 import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
@@ -31,6 +28,10 @@ export function createQuery<Data, Variables>(
 
   const getQuery = memoize(query);
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
+
+  function requestPrefetch(variables: VoidableVariables) {
+    reportQueryUsage({ query: getQuery(), variables: variables });
+  }
 
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
     // Don't report query usage if skip option is enabled.
@@ -89,6 +90,7 @@ export function createQuery<Data, Variables>(
   }
 
   useAsSubscription.query = useQuery;
+  useAsSubscription.requestPrefetch = requestPrefetch;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
     const client = getCurrentApolloClientHandler();
@@ -149,25 +151,22 @@ export function createQuery<Data, Variables>(
     read,
     fetch,
     subscribe,
+    requestPrefetch,
   };
 
   return [useAsSubscription, manager] as const;
 }
 
 function getSubscriptionNodeFromQueryNode(queryNode: DocumentNode): DocumentNode {
-  const subscriptionSource = print(queryNode);
+  const subscriptionNode = JSON.parse(JSON.stringify(queryNode)) as DocumentNode;
 
-  assert(subscriptionSource, "Incorrect query string cannot be converted to subscription");
-  assert(
-    subscriptionSource.includes("query"),
-    "Incorrect query string cannot be converted to subscription (provided graphql definition is not a query)"
-  );
-
-  const subscriptionString = subscriptionSource.replace("query", "subscription");
-
-  const subscriptionNode = gql`
-    ${subscriptionString}
-  `;
+  for (const definition of subscriptionNode.definitions) {
+    if (definition.kind === "OperationDefinition" && definition.operation === "query") {
+      // Definition type is 'readonly' so TS would complain about assigning it directly. We're working on clone,
+      // so mutating it is safe.
+      Reflect.set(definition, "operation", "subscription");
+    }
+  }
 
   return subscriptionNode;
 }

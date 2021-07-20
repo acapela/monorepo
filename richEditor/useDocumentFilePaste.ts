@@ -9,7 +9,7 @@ interface Options {
 
 export function useDocumentFilesPaste(onFilesPaste?: (files: File[]) => void, options?: Options) {
   useEffect(() => {
-    if (options?.isDisabled === false) return;
+    if (options?.isDisabled) return;
 
     if (isAnyWatchingForPaste) {
       console.warn(`Multiple useDocumentFilePaste cannot be runnign at once`);
