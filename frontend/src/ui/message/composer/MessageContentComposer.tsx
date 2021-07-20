@@ -19,6 +19,7 @@ interface Props {
   hideEditorSubmitButton?: boolean;
   additionalContent?: React.ReactNode;
   isDisabled?: boolean;
+  onEditorReady?: (editor: Editor) => void;
 }
 
 export const MessageContentEditor = forwardRef<Editor, Props>(function MessageContentEditor(
@@ -33,6 +34,7 @@ export const MessageContentEditor = forwardRef<Editor, Props>(function MessageCo
     hideEditorSubmitButton,
     additionalContent = null,
     isDisabled,
+    onEditorReady,
   },
   ref
 ) {
@@ -59,6 +61,7 @@ export const MessageContentEditor = forwardRef<Editor, Props>(function MessageCo
       submitMode={getSubmitButtonMode()}
       isDisabled={isDisabled}
       additionalTopContent={additionalContent}
+      onEditorReady={onEditorReady}
       additionalBottomContent={
         attachments.length > 0 && (
           <UIAttachmentsPreviews>

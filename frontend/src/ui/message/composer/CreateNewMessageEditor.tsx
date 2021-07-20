@@ -44,10 +44,8 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const isEditingAnyTopicTitle = roomContext.useSelector((store) => !!store.editingNameTopicId);
 
   function focusEditor() {
-    editorRef.current?.chain().focus().run();
+    editorRef.current?.chain().focus("end").run();
   }
-
-  useEffect(focusEditor, []);
 
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
@@ -130,6 +128,7 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
         }}
         onFilesSelected={handleNewFiles}
         attachments={attachments}
+        onEditorReady={focusEditor}
         onAttachmentRemoveRequest={(attachmentId) => {
           attachmentsList.filter((existingAttachment) => {
             return existingAttachment.uuid !== attachmentId;

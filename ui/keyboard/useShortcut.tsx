@@ -13,6 +13,10 @@ type ShortcutKeys = Key[];
 
 interface ShortcutHookOptions {
   isEnabled?: boolean;
+  /**
+   * This flag indicates that shortcut will not be fired if there is any other shortcut (without this flag) running for
+   * the same keyboard shortcut.
+   */
   ignoreIfAlreadyDefined?: boolean;
 }
 
@@ -67,16 +71,11 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  *   // !!! I'll be first to handle this event. If I'll return true (handled) no other handler will be called!
  * });
  */
-const shortcutHandlersMap = new Map<string, ShortcutCallback[]>();
+const shortcutHandlersMap = new Map<string, RunningShortcutInfo[]>();
 
-function getIsShortcutAlreadyDefined(shortcutDescriptor: string) {
-  const shortcutListeners = shortcutHandlersMap.get(shortcutDescriptor);
-
-  if (!shortcutListeners) {
-    return false;
-  }
-
-  return shortcutListeners.length > 0;
+interface RunningShortcutInfo {
+  callback: ShortcutCallback;
+  options?: ShortcutHookOptions;
 }
 
 /**
@@ -91,13 +90,25 @@ onDocumentReady(() => {
           return;
         }
 
-        for (const callback of callbacks) {
+        const hasAlwaysRunningCallback = callbacks.some((callbackInfo) => {
+          if (!callbackInfo.options) return true;
+          if (callbackInfo.options.isEnabled === false) return false;
+          if (callbackInfo.options.ignoreIfAlreadyDefined) return false;
+
+          return true;
+        });
+
+        for (const callbackInfo of callbacks) {
           // If some of the handlers already returned true, don't allow other handlers to be called.
           if (finallyHandledEvents.has(event)) {
             return;
           }
 
-          const callbackResult = callback?.(event);
+          if (callbackInfo.options?.ignoreIfAlreadyDefined && hasAlwaysRunningCallback) {
+            continue;
+          }
+
+          const callbackResult = callbackInfo.callback(event);
 
           // Handled returned true - prevent propagation of event and other shortcut handlers to be called.
           if (callbackResult === true) {
@@ -112,7 +123,7 @@ onDocumentReady(() => {
   );
 });
 
-function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) {
+function createShortcutListener(keys: ShortcutKeys, info: RunningShortcutInfo) {
   const shortcut = getShortcutDescription(keys);
 
   const shortcutHandlers = mapGetOrCreate(shortcutHandlersMap, shortcut, () => []);
@@ -124,10 +135,10 @@ function createShortcutListener(keys: ShortcutKeys, callback: ShortcutCallback) 
    *
    * This is because we want new handlers to be called first instead of default DOM behavior!
    */
-  shortcutHandlers.unshift(callback);
+  shortcutHandlers.unshift(info);
 
   return () => {
-    removeElementFromArray(shortcutHandlers, callback);
+    removeElementFromArray(shortcutHandlers, info);
   };
 }
 
@@ -135,15 +146,10 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
   const keys = resolveShortcutsDefinition(shortcut);
 
   useEffect(() => {
-    if (options?.isEnabled === false) return;
     if (!callback) return;
 
-    if (options?.ignoreIfAlreadyDefined && getIsShortcutAlreadyDefined(getShortcutDescription(keys))) {
-      return;
-    }
-
-    return createShortcutListener(keys, callback);
-  }, [keys, callback, options?.isEnabled, options?.ignoreIfAlreadyDefined]);
+    return createShortcutListener(keys, { callback, options });
+  }, [keys, callback, options]);
 }
 
 export function useShortcuts(
@@ -153,20 +159,15 @@ export function useShortcuts(
 ) {
   useEffect(() => {
     if (!callback) return;
-    if (options?.isEnabled === false) return;
 
     const cleanup = createCleanupObject();
 
     shortcuts.forEach((shortcut) => {
       const keys = resolveShortcutsDefinition(shortcut);
 
-      if (options?.ignoreIfAlreadyDefined && getIsShortcutAlreadyDefined(getShortcutDescription(keys))) {
-        return;
-      }
-
-      cleanup.enqueue(createShortcutListener(keys, callback));
+      cleanup.enqueue(createShortcutListener(keys, { callback, options }));
     });
 
     return cleanup.clean;
-  }, [shortcuts, callback, options?.isEnabled, options?.ignoreIfAlreadyDefined]);
+  }, [shortcuts, callback, options]);
 }
