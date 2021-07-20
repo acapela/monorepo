@@ -92,9 +92,7 @@ export const Button = styled(
   })
 )``;
 
-const UIIconHolder = styled.div`
-  font-size: 1.2rem;
-`;
+const UIIconHolder = styled.div``;
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
@@ -106,11 +104,19 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
     font-size: 14px;
     padding: 12px;
     gap: 8px;
+
+    ${UIIconHolder} {
+      font-size: 1.14;
+    }
   `,
   large: css`
     font-size: 16px;
     padding: 18px 16px;
     gap: 8px;
+
+    ${UIIconHolder} {
+      font-size: 1.25;
+    }
   `,
 };
 
@@ -209,9 +215,8 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
 
   font: inherit;
   font-weight: 400;
-  line-height: 1.2rem;
-
   white-space: nowrap;
+  line-height: 1.2;
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
