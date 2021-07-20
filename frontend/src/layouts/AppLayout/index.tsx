@@ -1,6 +1,6 @@
 import Link from "next/link";
-import React, { ReactNode } from "react";
-import styled from "styled-components";
+import React, { ReactNode, useRef } from "react";
+import styled, { css } from "styled-components";
 import { SmallLogo } from "~frontend/ui/Logo";
 import { UserMenu } from "./UserMenu";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -8,8 +8,9 @@ import { TeamPickerView } from "./TeamPicker";
 import { WindowView } from "~frontend/views/WindowView";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { routes, useIsAnyRouteActive } from "~frontend/routes";
-import { Breadcrumbs } from "./Bredcrumbs";
+import { Breadcrumbs } from "./Breadcrumbs";
 import { PrimaryNavigation } from "./PrimaryNavigation";
+import { TopBarSearchBar } from "./Search";
 
 interface Props {
   children?: ReactNode;
@@ -17,6 +18,7 @@ interface Props {
 
 export const AppLayout = ({ children }: Props) => {
   const user = useCurrentUser();
+  const topBarRef = useRef<HTMLDivElement | null>(null);
 
   const shouldShowBreadcrumbs = useIsAnyRouteActive([
     routes.space.path,
@@ -44,7 +46,7 @@ export const AppLayout = ({ children }: Props) => {
   return (
     <>
       <UIHolder>
-        <UITopBar>
+        <UITopBar ref={topBarRef} isCenteringMiddleElement={!shouldShowBreadcrumbs}>
           <Link href="/" passHref>
             <UILogo>
               <SmallLogo />
@@ -55,10 +57,16 @@ export const AppLayout = ({ children }: Props) => {
               <Breadcrumbs />
             </UIBreadcrumbsHolder>
           )}
-          {!shouldShowBreadcrumbs && <PrimaryNavigation />}
-          <UIUserMenu>
+          {!shouldShowBreadcrumbs && (
+            <UIPrimaryNavigation>
+              <PrimaryNavigation />
+            </UIPrimaryNavigation>
+          )}
+
+          <UISearchAndUserMenu>
+            <TopBarSearchBar anchorRef={topBarRef} />
             <UserMenu />
-          </UIUserMenu>
+          </UISearchAndUserMenu>
         </UITopBar>
         <UIMainContent>{children}</UIMainContent>
       </UIHolder>
@@ -72,10 +80,21 @@ const UIHolder = styled.div`
   height: 100vh;
 `;
 
-const UITopBar = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
+  ${(props) => {
+    if (!props.isCenteringMiddleElement) {
+      return css`
+        display: flex;
+        justify-content: space-around;
+      `;
+    }
+    return css`
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: minmax(200px, 1fr) 2fr minmax(200px, 1fr);
+    `;
+  }}
+
   align-items: center;
   padding: 0.75rem 1.5rem;
 
@@ -88,6 +107,11 @@ const UIBreadcrumbsHolder = styled.div`
   justify-self: flex-start;
 `;
 
+const UIPrimaryNavigation = styled.div`
+  align-self: center;
+  justify-self: center;
+`;
+
 const UILogo = styled.a`
   display: block;
   font-size: 1.5rem;
@@ -98,6 +122,15 @@ const UILogo = styled.a`
   }
 `;
 
+const UISearchAndUserMenu = styled.div`
+  margin-left: 2rem;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+`;
+
 const UIMainContent = styled.div`
   padding: 2rem;
   min-height: 0;
@@ -105,8 +138,4 @@ const UIMainContent = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-`;
-
-const UIUserMenu = styled.div`
-  margin-left: 2rem;
 `;

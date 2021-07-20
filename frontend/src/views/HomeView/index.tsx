@@ -21,14 +21,10 @@ export function HomeView() {
 
   return (
     <UIHolder>
-      <UISearchWrapper>
-        <SearchBar />
-      </UISearchWrapper>
       <UIContent>
         <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
         <FilteredRoomsList query={roomQuery} />
       </UIContent>
-
       <UIFlyingNewRoomButton />
     </UIHolder>
   );
@@ -50,11 +46,6 @@ const UIContent = styled.div`
     max-width: 800px;
     width: 100%;
   }
-`;
-
-const UISearchWrapper = styled.div`
-  margin: 0 auto;
-  margin-bottom: 3rem;
 `;
 
 const UIFlyingNewRoomButton = styled(CreateRoomButton)`
