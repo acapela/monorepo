@@ -16,6 +16,7 @@ import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
 import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
+import { useUpdate } from "react-use";
 
 export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";
@@ -68,6 +69,15 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
         enableInputRules: true,
       })
   );
+  const forceUpdate = useUpdate();
+
+  useEffect(() => {
+    editor.on("transaction", forceUpdate);
+
+    return () => {
+      editor.off("transaction", forceUpdate);
+    };
+  }, [editor]);
 
   const isFocused = editor?.isFocused ?? false;
 

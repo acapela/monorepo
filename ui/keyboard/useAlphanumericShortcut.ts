@@ -15,7 +15,7 @@ export function useAlphanumericShortcut(callback: AlphanumericShortcutCallback, 
   useShortcuts(
     shortcuts,
     (event) => {
-      callback(event, event.key);
+      return callback(event, event.key);
     },
     { ignoreIfAlreadyDefined: true, isEnabled: options?.isEnabled }
   );
@@ -23,7 +23,7 @@ export function useAlphanumericShortcut(callback: AlphanumericShortcutCallback, 
   useShortcuts(
     shortcuts.map((key): Key[] => ["Shift", key]),
     (event) => {
-      callback(event, event.key);
+      return callback(event, event.key);
     },
     { ignoreIfAlreadyDefined: true, isEnabled: options?.isEnabled }
   );
