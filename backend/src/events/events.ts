@@ -11,6 +11,7 @@ import { handleTopicCreated } from "../topics/events";
 import { handleUserCreated } from "../users/events";
 import { handleRoomParticipantCreated } from "~backend/src/roomInvitation/events";
 import { handleAttachmentUpdates } from "~backend/src/attachments/events";
+import { handleTeamMemberDeleted } from "../teamMember/events";
 
 export const router = Router();
 
@@ -26,6 +27,7 @@ hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipant
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], prepareMessagePlainTextData);
 // mentions are part of the message object
 hasuraEvents.addHandler("message_updates", ["INSERT"], handleMentionCreated);
+hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
