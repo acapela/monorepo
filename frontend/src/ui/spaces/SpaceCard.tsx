@@ -115,6 +115,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
 
           <UIMembers>
             <MembersManager
+              title="Invite your team to this Space"
               users={space.members.map((m) => m.user)}
               onAddMemberRequest={handleJoin}
               onRemoveMemberRequest={handleLeave}

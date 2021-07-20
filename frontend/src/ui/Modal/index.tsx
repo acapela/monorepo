@@ -39,7 +39,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
       // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
       onClick={(event) => event.stopPropagation()}
     >
-      {hasCloseButton && (
+      {(hasCloseButton || head) && (
         <UIToolbar>
           <UIHead>
             {head && (
@@ -51,7 +51,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
               </>
             )}
           </UIHead>
-          <CircleIconButton icon={<IconCross />} onClick={onCloseRequest} />
+          {hasCloseButton && <CircleIconButton icon={<IconCross />} onClick={onCloseRequest} />}
         </UIToolbar>
       )}
       <UIBody>{children}</UIBody>

@@ -1,20 +1,24 @@
 import { useMemo } from "react";
 import styled from "styled-components";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { Modal } from "~frontend/ui/Modal";
 import { UserBasicInfoFragment } from "~gql";
 import { UsersCombobox } from "./UsersCombobox";
 import { MembersContainer } from "./MembersContainer";
 import { MemberItem } from "./MemberItem";
+import { MembersManagerContainer } from "./MembersManagerContainer";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { POP_PRESENCE_STYLES } from "~ui/animations";
+import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 
 interface Props {
+  title: string;
   currentUsers: UserBasicInfoFragment[];
   onCloseRequest: () => void;
   onAddUser: (userId: string) => void;
   onRemoveUser: (userId: string) => void;
 }
 
-export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser }: Props) {
+export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser, title }: Props) {
   const teamMembers = useCurrentTeamMembers();
 
   const potentialUsers = useMemo(() => {
@@ -23,24 +27,22 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
   }, [teamMembers, currentUsers]);
 
   return (
-    <Modal
-      onCloseRequest={onCloseRequest}
-      hasCloseButton={false}
-      head={{
-        title: "Room participants",
-      }}
-    >
-      <UIHolder>
-        <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
-        {currentUsers.length > 0 && (
-          <MembersContainer>
-            {currentUsers.map((user) => (
-              <MemberItem key={user.id} user={user} onRemove={() => onRemoveUser(user.id)} />
-            ))}
-          </MembersContainer>
-        )}
-      </UIHolder>
-    </Modal>
+    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
+      <PresenceAnimator presenceStyles={POP_PRESENCE_STYLES}>
+        <MembersManagerContainer title={title} onClose={onCloseRequest}>
+          <UIHolder>
+            <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
+            {currentUsers.length > 0 && (
+              <MembersContainer>
+                {currentUsers.map((user) => (
+                  <MemberItem key={user.id} user={user} onRemove={() => onRemoveUser(user.id)} />
+                ))}
+              </MembersContainer>
+            )}
+          </UIHolder>
+        </MembersManagerContainer>
+      </PresenceAnimator>
+    </ScreenCover>
   );
 }
 

@@ -5,7 +5,7 @@ import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } fr
 import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
 
-type ButtonSize = "small" | "large";
+type ButtonSize = "small" | "medium" | "large";
 type ButtonKind = "secondary" | "transparent";
 
 interface Props {
@@ -35,6 +35,9 @@ export const CircleIconButton = styled(function CircleIconButton({
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
     ${squareStyle(24)}
+  `,
+  medium: css`
+    ${squareStyle(32)}
   `,
   large: css`
     ${squareStyle(36)}
