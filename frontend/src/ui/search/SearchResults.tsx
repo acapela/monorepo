@@ -1,11 +1,10 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
-import { BASE_GREY_5, HIGHLIGHT_COLOR, PRIMARY_PINK_1 } from "~ui/colors";
+import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/colors";
 import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { setColorOpacity } from "~shared/colors";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 
@@ -100,13 +99,19 @@ const UISearchResultLink = styled.a<{ isHighlighted: boolean }>`
   flex-direction: row;
   justify-content: space-between;
   line-height: 1.5;
+  gap: 24px;
   padding: 4px 8px;
   border: 1px solid transparent;
+  align-items: center;
+  vertical-align: center;
+
+  overflow: hidden;
+  white-space: nowrap;
 
   ${borderRadius.item}
 
   &:hover {
-    background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+    background-color: ${PRIMARY_PINK_1_TRANSPARENT};
   }
 
   svg {
@@ -117,16 +122,18 @@ const UISearchResultLink = styled.a<{ isHighlighted: boolean }>`
     props.isHighlighted &&
     css`
       border: 1px solid ${PRIMARY_PINK_1};
-      background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
+      background-color: ${PRIMARY_PINK_1_TRANSPARENT};
     `}
 `;
 
 const UISearchResultMatch = styled.span``;
 
 const UISearchResultMatchHighlight = styled.span`
-  background-color: ${HIGHLIGHT_COLOR};
+  background-color: ${PRIMARY_PINK_1};
+  color: white;
 `;
 
 const UISearchResultBreadcrumb = styled.span`
   flex-shrink: 0;
+  font-size: 0.8rem;
 `;
