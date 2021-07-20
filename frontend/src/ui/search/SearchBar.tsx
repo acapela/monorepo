@@ -39,6 +39,8 @@ export const SearchBar = styled(PureSearchBar)`
   position: relative;
   background: ${WHITE};
 
+  ${borderRadius.input}
+
   ${SearchInput} > input {
     ${borderRadius.input}
   }

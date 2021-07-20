@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverTransition } from "~ui/transitions";
 import { TextBody12, TextBody14 } from "~ui/typo";
@@ -13,15 +13,13 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { Popover } from "~ui/popovers/Popover";
 import { PopPresenceAnimator } from "~ui/animations";
 
-interface Props {
-  anchorRef: RefObject<HTMLElement>;
-}
-
-export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
+export const TopBarSearchBar = (): JSX.Element => {
   // All of apple computers use "Mac".
   // https://stackoverflow.com/a/11752084
   const platform = global.window && window.navigator.platform;
   const isMac = platform && platform.toLowerCase().includes("mac");
+
+  const staticSearchBarRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
 
@@ -37,7 +35,7 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
 
   return (
     <>
-      <UIHolder isInvisible={isShowingSearchModal} onClick={handleSearchBarModalOpen}>
+      <UIHolder ref={staticSearchBarRef} onClick={handleSearchBarModalOpen}>
         <UIPlaceholder>
           <UISearchIcon />
           <TextBody14>Search</TextBody14>
@@ -49,7 +47,7 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
       </UIHolder>
       {isShowingSearchModal && (
         <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
-          <Popover anchorRef={anchorRef} placement={"bottom"} distance={-42}>
+          <Popover anchorRef={staticSearchBarRef} placement={"bottom-end"} distance={-32}>
             <UISearchContainer>
               <SearchBar />
             </UISearchContainer>
@@ -60,7 +58,7 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
   );
 };
 
-const UIHolder = styled.div<{ isInvisible: boolean }>`
+const UIHolder = styled.div`
   padding: 14px;
 
   height: 32px;
@@ -82,8 +80,6 @@ const UIHolder = styled.div<{ isInvisible: boolean }>`
   }
 
   ${hoverTransition()}
-
-  opacity: ${(props) => (props.isInvisible ? 0 : 1)};
 `;
 
 const UIPlaceholder = styled.div`

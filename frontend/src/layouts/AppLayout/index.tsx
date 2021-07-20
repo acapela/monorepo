@@ -18,7 +18,6 @@ interface Props {
 
 export const AppLayout = ({ children }: Props): JSX.Element => {
   const user = useCurrentUser();
-  const topBarRef = useRef<HTMLDivElement | null>(null);
 
   const shouldShowBreadcrumbs = useIsAnyRouteActive([
     routes.space.path,
@@ -46,7 +45,7 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
   return (
     <>
       <UIHolder>
-        <UITopBar ref={topBarRef} isCenteringMiddleElement={!shouldShowBreadcrumbs}>
+        <UITopBar isCenteringMiddleElement={!shouldShowBreadcrumbs}>
           <Link href="/" passHref>
             <UILogo>
               <SmallLogo />
@@ -64,7 +63,7 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
           )}
 
           <UISearchAndUserMenu>
-            <TopBarSearchBar anchorRef={topBarRef} />
+            <TopBarSearchBar />
             <UserMenu />
           </UISearchAndUserMenu>
         </UITopBar>
