@@ -16,6 +16,8 @@ import {
   TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
   TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
+  RemoveTeamMemberMutation,
+  RemoveTeamMemberMutationVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -166,4 +168,34 @@ export const [useTeamInvitationByTokenQuery] = createQuery<TeamInvitationQuery, 
       }
     }
   `
+);
+
+export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutation<
+  RemoveTeamMemberMutation,
+  RemoveTeamMemberMutationVariables
+>(
+  () => gql`
+    mutation RemoveTeamMember($teamId: uuid!, $userId: uuid!) {
+      delete_team_member_by_pk(team_id: $teamId, user_id: $userId) {
+        user_id
+      }
+    }
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        delete_message_reaction_by_pk: {
+          __typename: "team_member",
+          team_id: variables.teamId,
+          user_id: variables.userId,
+        },
+      };
+    },
+    onOptimisticOrActualResponse(teamMember, variables) {
+      TeamDetailedInfoFragment.update(variables.teamId, (team) => {
+        team.memberships = team.memberships.filter((member) => member.user.id !== variables.userId);
+      });
+    },
+  }
 );

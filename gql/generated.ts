@@ -9002,6 +9002,20 @@ export type TeamInvitationQuery = (
   )> }
 );
 
+export type RemoveTeamMemberMutationVariables = Exact<{
+  teamId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveTeamMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_team_member_by_pk?: Maybe<(
+    { __typename?: 'team_member' }
+    & Pick<Team_Member, 'user_id'>
+  )> }
+);
+
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
