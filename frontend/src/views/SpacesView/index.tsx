@@ -5,11 +5,11 @@ import { routes } from "~frontend/routes";
 import { Toolbar } from "~frontend/ui/Toolbar";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
-import { Container } from "~ui/layout/Container";
 import { SpacesList } from "./SpacesList";
 import { useRef } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconSelection } from "~ui/icons";
+import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 
 export function SpacesView() {
   const teamId = useAssertCurrentTeamId();
@@ -44,7 +44,7 @@ export function SpacesView() {
 
   return (
     <>
-      <Container>
+      <SpacedAppLayoutContainer>
         <Toolbar>
           <Button ref={buttonRef} onClick={handleCreateSpace}>
             Create new space
@@ -53,7 +53,7 @@ export function SpacesView() {
         <UISpaces>
           <SpacesList />
         </UISpaces>
-      </Container>
+      </SpacedAppLayoutContainer>
     </>
   );
 }

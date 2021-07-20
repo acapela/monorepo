@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 
 interface Props {
   children: ReactNode;
+  onClientRendered?: () => void;
+  fallback?: ReactNode;
 }
 
 export function ClientSideOnly(props: Props) {
@@ -11,7 +13,13 @@ export function ClientSideOnly(props: Props) {
     setShouldRender(true);
   }, []);
 
-  if (!shouldRender) return null;
+  useEffect(() => {
+    if (shouldRender) {
+      props.onClientRendered?.();
+    }
+  }, [shouldRender]);
+
+  if (!shouldRender) return <>{props.fallback ?? null}</>;
 
   return <>{props.children}</>;
 }

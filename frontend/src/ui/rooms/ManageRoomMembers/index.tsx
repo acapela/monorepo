@@ -1,4 +1,4 @@
-import { MembersManager } from "../../MembersManager";
+import { MembersManager } from "~frontend/ui/MembersManager";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertGet } from "~shared/assert";

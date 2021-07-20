@@ -3,12 +3,12 @@ import { useMemo } from "react";
 import { TextH2, TextH3 } from "~ui/typo";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
-import { Container } from "~ui/layout/Container";
 import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { CreateRoomButton } from "./CreateRoomButton";
+import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 
 const openRoomFilter = createOpenRoomFilter(true);
 
@@ -37,7 +37,7 @@ export function HomeView() {
   );
 }
 
-const UIHolder = styled(Container)`
+const UIHolder = styled(SpacedAppLayoutContainer)`
   ${RoomFilters} {
     margin-bottom: 32px;
   }

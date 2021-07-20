@@ -3,7 +3,7 @@ import { RefObject } from "react";
 import styled from "styled-components";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
-import { useLayoutEffect } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
@@ -52,7 +52,7 @@ export function ScrollToBottomMonitor({
   useResizeCallback(parentRef, () => performScrollToBottom("auto"));
 
   // On mount try to scroll down without animation
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!scrollInitially) return;
 
     performScrollToBottom("auto");

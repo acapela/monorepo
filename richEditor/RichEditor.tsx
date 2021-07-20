@@ -1,21 +1,24 @@
-import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { ReactNode, useEffect } from "react";
-import { useMemo } from "react";
+import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import styled from "styled-components";
 import { getFocusedElement } from "~shared/focus";
+import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
-import { createTimeout } from "~shared/time";
+import { createTimeout, wait } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
+import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { RichEditorContent } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
-import { Toolbar, RichEditorSubmitMode } from "./Toolbar";
+import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
+import { useUpdate } from "react-use";
 
+export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";
 
 export function getEmptyRichContent(): JSONContent {
@@ -37,38 +40,83 @@ export interface RichEditorProps {
   submitMode?: RichEditorSubmitMode;
   isDisabled?: boolean;
   extensions?: Extensions;
+  onEditorReady?: (editor: Editor) => void;
 }
 
-export const RichEditor = ({
-  value = getEmptyRichContent(),
-  onChange,
-  onSubmit,
-  onFilesSelected,
-  additionalTopContent,
-  additionalBottomContent,
-  placeholder,
-  autofocusKey,
-  submitMode = "enable",
-  isDisabled,
-  extensions = [],
-}: RichEditorProps) => {
+export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEditor(
+  {
+    value = getEmptyRichContent(),
+    onChange,
+    onSubmit,
+    onFilesSelected,
+    additionalTopContent,
+    additionalBottomContent,
+    placeholder,
+    autofocusKey,
+    submitMode = "enable",
+    isDisabled,
+    extensions = [],
+    onEditorReady,
+  },
+  ref
+) {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
-  const editor = useEditor({
-    extensions: finalExtensions,
-    content: value,
-    enableInputRules: true,
-  });
+  const editor = useConst(
+    () =>
+      new Editor({
+        extensions: finalExtensions,
+        content: value,
+        enableInputRules: true,
+      })
+  );
+  const forceUpdate = useUpdate();
+
+  useEffect(() => {
+    editor.on("transaction", forceUpdate);
+
+    return () => {
+      editor.off("transaction", forceUpdate);
+    };
+  }, [editor]);
 
   const isFocused = editor?.isFocused ?? false;
+
+  useImperativeHandle(ref, () => {
+    return editor;
+  });
+
+  useEffect(() => {
+    /**
+     * Under the hook, `EditorContent` is using 0ms timeout before it initializes the view.
+     *
+     * Sadly, there is no callback we can assign to be informed about when it's done. Therefore to be sure to
+     * avoid race condition with this timeout, we'll wait 2 times for 0ms timeout and then inform that editor is ready.
+     */
+
+    let isStillMounted = true;
+    async function waitAndInformEditorIsReady() {
+      // First timeout is fired 'in the tick' time as EditorContent (as it uses componentDidMount) which
+      // will be called together with this useEffect.
+      await wait(0);
+      // We want to make sure our callback will be fired after EditorContent init, so let's wait for another 'tick'
+      await wait(0);
+
+      // Make sure component was not unmounted in the meanwhile
+      if (!isStillMounted) return;
+
+      onEditorReady?.(editor);
+    }
+
+    waitAndInformEditorIsReady();
+
+    return () => {
+      isStillMounted = false;
+    };
+  }, [editor]);
 
   // Handle autofocus
   useEffect(() => {
     if (!editor || !autofocusKey) return;
-
-    // Don't take focus away from other inputs etc if they're focused.
-    if (getFocusedElement()) {
-      return;
-    }
 
     return createTimeout(() => {
       editor.chain?.().focus("end").run();
@@ -136,6 +184,27 @@ export const RichEditor = ({
   useShortcut(["Shift", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
   useShortcut(["Meta", "Enter"], handleEnterShortcut, { isEnabled: isFocused });
 
+  /**
+   * Let's use any key pressed to instantly focus inside the editor
+   */
+  useAlphanumericShortcut(
+    () => {
+      // Don't support alphanumeric shortcut focus if anything has focus
+      if (getFocusedElement()) return;
+      /**
+       * I initially wanted to run editor.chain().focus().insertContent(input).run(); to manually insert content
+       * from alphanumeric shortcut. This however caused char to be inserted twice, even if I did stop propagation of the
+       * event. I don't fully understand it, but it seems tiptap was watching somehow for this event very early as well.
+       *
+       * TLDR: only focusing the editor was enough - tiptap did capture keyboard event in such case and did properly
+       * insert pressed key into the content.
+       */
+      editor?.chain().focus("end").run();
+      return true;
+    },
+    { isEnabled: !isFocused && !isDisabled }
+  );
+
   function handleSubmitIfEnabled() {
     if (submitMode !== "enable") return;
 
@@ -164,9 +233,6 @@ export const RichEditor = ({
     editor.chain().focus().insertContent(contentToInsert).run();
   }
 
-  // Handle server side rendering gracefully.
-  if (!editor) return null;
-
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
@@ -190,7 +256,7 @@ export const RichEditor = ({
       </RichEditorContext>
     </UIHolder>
   );
-};
+});
 
 const UIEditorHolder = styled.div`
   flex-grow: 1;
@@ -205,6 +271,7 @@ const UIEditorContent = styled.div`
   gap: 16px;
 
   max-height: 25vh;
+  min-height: 50px;
   overflow: auto;
   cursor: text;
 `;

@@ -45,7 +45,7 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void, opti
 
   useEffect(() => {
     if (!dropFileContext) return;
-    if (options?.isDisabled === true) return;
+    if (options?.isDisabled) return;
 
     const dropElement = dropFileContext.holderRef.current;
 

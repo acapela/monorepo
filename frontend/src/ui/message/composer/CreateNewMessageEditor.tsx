@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
-import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { getEmptyRichContent } from "~richEditor/RichEditor";
-import { EditorAttachmentInfo } from "./attachments";
-import { MessageContentEditor } from "./MessageContentComposer";
-import { Recorder } from "./Recorder";
-import { uploadFiles } from "./attachments";
+import { useCreateMessageMutation } from "~frontend/gql/messages";
+import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
+import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
 import { RichEditorContent } from "~richEditor/content/types";
+import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { EditorAttachmentInfo, uploadFiles } from "./attachments";
+import { MessageContentEditor } from "./MessageContentComposer";
+import { Recorder } from "./Recorder";
 
 interface Props {
   topicId: string;
@@ -30,9 +31,33 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
+  const editorRef = useRef<Editor>(null);
+
   const topicContext = useTopicStoreContext();
+  const roomContext = useRoomStoreContext();
 
   const isEditingAnyMessage = topicContext.useSelector((store) => !!store.editedMessageId);
+  const replyingToMessageId = topicContext.useSelector((store) => store.currentlyReplyingToMessage);
+  const isEditingAnyTopicTitle = roomContext.useSelector((store) => !!store.editingNameTopicId);
+
+  function focusEditor() {
+    // Don't focus editor if editing some topic name
+    if (roomContext.getValue().editingNameTopicId) {
+      return;
+    }
+
+    editorRef.current?.chain().focus("end").run();
+  }
+
+  useDependencyChangeEffect(() => {
+    if (!isEditingAnyMessage) focusEditor();
+  }, [isEditingAnyMessage]);
+
+  useDependencyChangeEffect(() => {
+    if (!isEditingAnyTopicTitle) focusEditor();
+  }, [isEditingAnyTopicTitle]);
+
+  useDependencyChangeEffect(focusEditor, [replyingToMessageId]);
 
   const { currentlyReplyingToMessage } = topicContext.useValue();
   const handleStopReplyingToMessage = () => {
@@ -81,6 +106,7 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
         }}
       />
       <MessageContentEditor
+        ref={editorRef}
         isDisabled={isDisabled || isEditingAnyMessage}
         content={value}
         onContentChange={setValue}
@@ -103,8 +129,8 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
           }
         }}
         onFilesSelected={handleNewFiles}
-        autofocusKey={topicId}
         attachments={attachments}
+        onEditorReady={focusEditor}
         onAttachmentRemoveRequest={(attachmentId) => {
           attachmentsList.filter((existingAttachment) => {
             return existingAttachment.uuid !== attachmentId;

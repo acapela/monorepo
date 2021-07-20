@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { routes } from "~frontend/routes";
-
 import { TopicView } from "../topic/TopicView";
 import { RoomView } from "./RoomView";
 import { RoomDetailedInfoFragment } from "~gql";
@@ -11,7 +10,7 @@ interface Props {
 }
 
 export function RoomTopicView({ room, topicId }: Props) {
-  const firstTopic = room?.topics?.[0] ?? null;
+  const firstTopic = room.topics?.[0] ?? null;
 
   function getSelectedTopicId() {
     if (topicId) return topicId;

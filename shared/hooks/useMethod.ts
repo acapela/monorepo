@@ -1,4 +1,5 @@
-import { useCallback, useRef, useLayoutEffect } from "react";
+import { useCallback, useRef } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 
 type Callback<Args extends unknown[], Result> = (...args: Args) => Result;
 
@@ -38,7 +39,7 @@ export function useMethod<Args extends unknown[], Result>(callback: Callback<Arg
    * - it means that even if some callbacks are called - they'll use proper, last working callback
    */
   // TODO: During first render - we assign callback ref instantly which could break in concurrent mode due to above reasons.
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // render is committed - it's safe to update the callback
     lastRenderCallbackRef.current = callback;
   });

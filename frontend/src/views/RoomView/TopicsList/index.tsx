@@ -45,7 +45,10 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
     topics,
     (topic) => topic.id,
     (newTopic) => {
-      roomContext.update((draft) => (draft.newTopicId = newTopic.id));
+      roomContext.update((draft) => {
+        draft.newTopicId = newTopic.id;
+        draft.editingNameTopicId = newTopic.id;
+      });
       routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
     }
   );
@@ -89,6 +92,7 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
 
 const UIHolder = styled.div`
   overflow-y: hidden;
+  margin-top: 16px;
 `;
 
 const UIHeader = styled.div`
