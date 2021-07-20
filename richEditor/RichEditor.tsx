@@ -180,7 +180,6 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
   useAlphanumericShortcut(
     () => {
       // Don't support alphanumeric shortcut focus if anything has focus
-      console.log("aaa", getFocusedElement());
       if (getFocusedElement()) return;
       /**
        * I initially wanted to run editor.chain().focus().insertContent(input).run(); to manually insert content

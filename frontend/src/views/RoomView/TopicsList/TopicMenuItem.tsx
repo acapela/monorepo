@@ -1,20 +1,18 @@
-import styled, { css } from "styled-components";
-import { routes } from "~frontend/routes";
-import { TopicDetailedInfoFragment } from "~gql";
-import { hoverActionCss, ACTION_ACTIVE_COLOR } from "~ui/transitions";
-import { ManageTopic } from "./ManageTopic";
-import { NOTIFICATION_COLOR } from "~ui/colors";
-import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { Popover } from "~ui/popovers/Popover";
 import { useRef } from "react";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { IconDragAndDrop } from "~ui/icons";
-import { borderRadius } from "~ui/baseStyles";
-import { EditableText } from "~ui/forms/EditableText";
-import { useState } from "react";
+import styled, { css } from "styled-components";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { useEffect } from "react";
+import { routes } from "~frontend/routes";
+import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { TopicDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { borderRadius } from "~ui/baseStyles";
+import { NOTIFICATION_COLOR } from "~ui/colors";
+import { EditableText } from "~ui/forms/EditableText";
+import { IconDragAndDrop } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
+import { ACTION_ACTIVE_COLOR, hoverActionCss } from "~ui/transitions";
+import { ManageTopic } from "./ManageTopic";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

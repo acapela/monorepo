@@ -1,6 +1,5 @@
 import { Editor } from "@tiptap/react";
 import { createContext, useContext } from "react";
-import { assert } from "~shared/assert";
 
 const RichEditorReactContext = createContext<Editor | null>(null);
 
