@@ -41,6 +41,11 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const isEditingAnyTopicTitle = roomContext.useSelector((store) => !!store.editingNameTopicId);
 
   function focusEditor() {
+    // Don't focus editor if editing some topic name
+    if (roomContext.getValue().editingNameTopicId) {
+      return;
+    }
+
     editorRef.current?.chain().focus("end").run();
   }
 

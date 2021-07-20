@@ -99,6 +99,10 @@ onDocumentReady(() => {
         });
 
         for (const callbackInfo of callbacks) {
+          if (callbackInfo.options?.isEnabled === false) {
+            continue;
+          }
+
           // If some of the handlers already returned true, don't allow other handlers to be called.
           if (finallyHandledEvents.has(event)) {
             return;
