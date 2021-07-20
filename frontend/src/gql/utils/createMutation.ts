@@ -12,6 +12,7 @@ import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
 import { addRoleToContext, RequestWithRole } from "./withRole";
+import { createPromisesGroup } from "~shared/promiseGroup";
 
 interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
   // This callback is called optionally twice for both optimistic and actual response
@@ -28,6 +29,10 @@ interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
 }
 
 type MutationResultPhase = "actual" | "optimistic";
+
+const runningMutationsGroup = createPromisesGroup();
+
+export const waitForAllRunningMutationsToFinish = runningMutationsGroup.waitForAllRunningPromises;
 
 /**
  * This function allows creating type-safe mutation wrapper around mutation gql document.
@@ -97,11 +102,34 @@ export function createMutation<Data, Variables>(
     const [runMutationRaw, result] = useRawMutation<Data, Variables>(getMutation(), options);
 
     async function runMutation(variables: Variables, options?: MutationFunctionOptions<Data, Variables>) {
+      return runningMutationsGroup.run(async () => {
+        variables = getFinalVariables(variables);
+        const rawResult = await runMutationRaw({
+          ...options,
+          optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
+          context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
+          variables,
+          update: createMutationUpdateCallback(variables, options),
+        });
+
+        const resultData = unwrapQueryData(rawResult.data);
+
+        return [resultData, rawResult] as const;
+      });
+    }
+
+    return [runMutation, result] as const;
+  }
+
+  async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
+    return runningMutationsGroup.run(async () => {
       variables = getFinalVariables(variables);
-      const rawResult = await runMutationRaw({
+
+      const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
         ...options,
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
         context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
+        mutation: getMutation(),
         variables,
         update: createMutationUpdateCallback(variables, options),
       });
@@ -109,26 +137,7 @@ export function createMutation<Data, Variables>(
       const resultData = unwrapQueryData(rawResult.data);
 
       return [resultData, rawResult] as const;
-    }
-
-    return [runMutation, result] as const;
-  }
-
-  async function mutate(variables: Variables, options?: MutationOptions<Data, Variables>) {
-    variables = getFinalVariables(variables);
-
-    const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
-      ...options,
-      optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-      context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
-      mutation: getMutation(),
-      variables,
-      update: createMutationUpdateCallback(variables, options),
     });
-
-    const resultData = unwrapQueryData(rawResult.data);
-
-    return [resultData, rawResult] as const;
   }
 
   const manager = {

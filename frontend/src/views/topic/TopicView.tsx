@@ -17,6 +17,8 @@ import { TopicHeader } from "./TopicHeader";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
+import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
+import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
 
 interface Props {
   topicId: string;
@@ -25,15 +27,22 @@ interface Props {
 function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]) {
   const [updateLastSeenMessage] = useLastSeenMessageMutation();
 
-  useIsomorphicLayoutEffect(() => {
-    if (messages) {
+  useAsyncLayoutEffect(
+    async (getIsCancelled) => {
+      if (!messages) return;
+
       const lastMessage = messages[messages.length - 1];
 
-      if (lastMessage) {
-        updateLastSeenMessage({ topicId, messageId: lastMessage.id });
-      }
-    }
-  }, [messages]);
+      if (!lastMessage) return;
+
+      await waitForAllRunningMutationsToFinish();
+
+      if (getIsCancelled()) return;
+
+      updateLastSeenMessage({ topicId, messageId: lastMessage.id });
+    },
+    [messages]
+  );
 }
 
 export const TopicView = ({ topicId }: Props) => {
