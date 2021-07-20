@@ -14,7 +14,7 @@ interface Props {
 
 const DEBOUNCE_DELAY_MS = 400;
 
-const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }: Props, ref) => {
+const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }, ref) => {
   const [value, setValue] = useState("");
   const [searchTerm, setSearchTerm] = useState(value);
   const [searchResults = []] = useFullTextSearchQuery({ term: searchTerm });

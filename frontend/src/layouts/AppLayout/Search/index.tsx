@@ -1,7 +1,7 @@
 import React, { RefObject } from "react";
 import styled from "styled-components";
 import { hoverTransition } from "~ui/transitions";
-import { TextBody14 } from "~ui/typo";
+import { TextBody12, TextBody14 } from "~ui/typo";
 import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/colors";
 import { IconSearch } from "~ui/icons";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
@@ -11,8 +11,7 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { Popover } from "~ui/popovers/Popover";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { POP_PRESENCE_STYLES } from "~ui/animations";
+import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {
   anchorRef: RefObject<HTMLElement>;
@@ -24,10 +23,10 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
   const platform = global.window && window.navigator.platform;
   const isMac = platform && platform.toLowerCase().includes("mac");
 
-  useShortcut(["Mod", "/"], handleSearchBarModalOpen);
-  useShortcut("Escape", () => closeModal());
-
   const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
+
+  useShortcut(["Mod", "/"], handleSearchBarModalOpen);
+  useShortcut("Escape", () => closeModal(), { isEnabled: isShowingSearchModal });
 
   function handleSearchBarModalOpen(event: KeyboardEvent | React.MouseEvent) {
     event.stopPropagation();
@@ -45,13 +44,13 @@ export const TopBarSearchBar = ({ anchorRef }: Props): JSX.Element => {
         </UIPlaceholder>
         <ClientSideOnly>
           {isMac && <UIShortcutIndicator>⌘/</UIShortcutIndicator>}
-          {!isMac && <UIShortcutIndicator>control+/</UIShortcutIndicator>}
+          {!isMac && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
         </ClientSideOnly>
       </UIHolder>
       {isShowingSearchModal && (
         <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
           <Popover anchorRef={anchorRef} placement={"bottom"} distance={-42}>
-            <UISearchContainer presenceStyles={POP_PRESENCE_STYLES}>
+            <UISearchContainer>
               <SearchBar />
             </UISearchContainer>
           </Popover>
@@ -66,7 +65,6 @@ const UIHolder = styled.div<{ isInvisible: boolean }>`
 
   height: 32px;
   width: 208px;
-  max-width: 208px;
 
   display: flex;
   flex-direction: row;
@@ -101,13 +99,11 @@ const UISearchIcon = styled(IconSearch)`
   color: ${BASE_GREY_1};
 `;
 
-const UIShortcutIndicator = styled(TextBody14)`
+const UIShortcutIndicator = styled(TextBody12)`
   color: ${BASE_GREY_1};
-  font-size: 0.875rem;
-  line-height: 1.25rem;
 `;
 
-const UISearchContainer = styled(PresenceAnimator)`
+const UISearchContainer = styled(PopPresenceAnimator)`
   width: 600px;
   ${borderRadius.input}
   ${shadow.card}

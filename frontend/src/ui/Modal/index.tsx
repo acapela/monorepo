@@ -1,12 +1,11 @@
 import { ReactNode, RefObject, useRef } from "react";
 import styled from "styled-components";
-import { POP_PRESENCE_STYLES } from "~ui/animations";
+import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconCross } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover, PopoverPlacement } from "~ui/popovers/Popover";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { TextBody, TextH3 } from "~ui/typo";
 import { ScreenCover } from "./ScreenCover";
 
@@ -37,7 +36,6 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
     <UIModal
       ref={modalRef}
       className={className}
-      presenceStyles={POP_PRESENCE_STYLES}
       // Stop propagation so click is not reaching screen covering holder of modal. (holder clicks are closing the modal)
       onClick={(event) => event.stopPropagation()}
     >
@@ -74,7 +72,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   );
 }
 
-const UIModal = styled(PresenceAnimator)`
+const UIModal = styled(PopPresenceAnimator)`
   min-width: 368px;
 
   background: #ffffff;

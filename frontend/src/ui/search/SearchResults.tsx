@@ -5,8 +5,7 @@ import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { POP_PRESENCE_STYLES } from "~ui/animations";
+import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {
   className?: string;
@@ -58,7 +57,7 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
 
   return (
     <ul className={className}>
-      <PresenceAnimator presenceStyles={POP_PRESENCE_STYLES}>
+      <PopPresenceAnimator>
         {!results.length && <UINoResults>No results</UINoResults>}
         {results.map((result, idx) => (
           <UISearchResultRow key={idx}>
@@ -73,7 +72,7 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
             </Link>
           </UISearchResultRow>
         ))}
-      </PresenceAnimator>
+      </PopPresenceAnimator>
     </ul>
   );
 };

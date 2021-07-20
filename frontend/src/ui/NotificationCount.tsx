@@ -21,6 +21,8 @@ const UIHolder = styled.div<{ isHighlighted: boolean }>`
   justify-content: center;
   align-items: center;
   padding: 2px;
+
+  /* This extra pixel is needed to make the right font fit */
   padding-bottom: 3px;
 
   height: 1.25rem;
