@@ -1,18 +1,13 @@
-import { ReactNode, RefObject, useRef } from "react";
+import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 import { handleWithStopPropagation } from "~shared/events";
 import { createLocalStorageValueManager } from "~shared/localStorage";
 import { BodyPortal } from "~ui/BodyPortal";
-import { PopoverPlacement } from "~ui/popovers/Popover";
 import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
 import { startMeasuringFps, EndFpsMeasurement } from "~shared/performance";
 import { setColorOpacity } from "~shared/colors";
 import { MODAL_BACKGROUND_COLOR } from "~ui/colors";
 
-export interface ModalAnchor {
-  ref: RefObject<HTMLElement>;
-  placement?: PopoverPlacement;
-}
 interface Props {
   children: ReactNode;
   onCloseRequest?: () => void;

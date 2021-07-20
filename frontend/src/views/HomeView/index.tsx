@@ -1,14 +1,12 @@
-import styled from "styled-components";
 import { useMemo } from "react";
-import { TextH2, TextH3 } from "~ui/typo";
+import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { SearchBar } from "~frontend/ui/search/SearchBar";
-import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
-import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
-import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { CreateRoomButton } from "./CreateRoomButton";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
+import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
+import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
+import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
+import { CreateRoomButton } from "./CreateRoomButton";
 
 const openRoomFilter = createOpenRoomFilter(true);
 
@@ -21,48 +19,35 @@ export function HomeView() {
 
   return (
     <UIHolder>
-      <UISearchWrapper>
-        <SearchBar />
-      </UISearchWrapper>
-      <UIMainSection>
-        <UIGreeting>
-          <TextH2 speziaExtended>Hello, {user.name}!</TextH2>
-          <TextH3 spezia>Here are rooms & topics with recent activity.</TextH3>
-        </UIGreeting>
-        <CreateRoomButton />
-      </UIMainSection>
-      <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
-      <FilteredRoomsList query={roomQuery} />
+      <UIContent>
+        <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
+        <FilteredRoomsList query={roomQuery} />
+      </UIContent>
+      <UIFlyingNewRoomButton />
     </UIHolder>
   );
 }
 
-const UIHolder = styled(SpacedAppLayoutContainer)`
+const UIHolder = styled(SpacedAppLayoutContainer)``;
+
+const UIContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   ${RoomFilters} {
     margin-bottom: 32px;
   }
 
   ${FilteredRoomsList} {
     margin-bottom: 32px;
+    max-width: 800px;
+    width: 100%;
   }
 `;
 
-const UISearchWrapper = styled.div`
-  margin: 0 auto;
-  margin-bottom: 3rem;
-`;
-
-const UIMainSection = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 40px;
-  align-items: start;
-`;
-
-const UIGreeting = styled.div`
-  ${TextH2} {
-    margin-bottom: 1rem;
-  }
-
-  margin-bottom: 2rem;
+const UIFlyingNewRoomButton = styled(CreateRoomButton)`
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
 `;

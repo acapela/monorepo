@@ -3,9 +3,14 @@ import { routes } from "~frontend/routes";
 import { createRoom } from "~frontend/gql/rooms";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
 import { Button } from "~ui/buttons/Button";
-import { IconPlus } from "~ui/icons/default";
+import { IconPlusSquare } from "~ui/icons/default";
+import styled from "styled-components";
 
-export const CreateRoomButton = () => {
+interface Props {
+  className?: string;
+}
+
+export const CreateRoomButton = styled(function CreateRoomButton({ className }: Props) {
   async function handleCreate() {
     const createRoomInput = await openRoomInputPrompt({});
 
@@ -18,7 +23,6 @@ export const CreateRoomButton = () => {
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
-        slug: createRoomInput.slug,
       },
     });
 
@@ -29,9 +33,9 @@ export const CreateRoomButton = () => {
 
   return (
     <>
-      <Button iconPosition="start" icon={<IconPlus />} onClick={handleCreate}>
-        Create a new Room
+      <Button className={className} iconPosition="start" icon={<IconPlusSquare />} onClick={handleCreate} size="large">
+        New Room
       </Button>
     </>
   );
-};
+})``;

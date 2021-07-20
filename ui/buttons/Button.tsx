@@ -210,6 +210,9 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
   font: inherit;
   font-weight: 400;
   line-height: 1.2rem;
+
+  white-space: nowrap;
+
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
   ${hoverTransition()}
