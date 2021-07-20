@@ -29,6 +29,10 @@ export function createQuery<Data, Variables>(
   const getQuery = memoize(query);
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
 
+  function requestPrefetch(variables: VoidableVariables) {
+    reportQueryUsage({ query: getQuery(), variables: variables });
+  }
+
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
     // Don't report query usage if skip option is enabled.
     if (!options?.skip) {
@@ -86,6 +90,7 @@ export function createQuery<Data, Variables>(
   }
 
   useAsSubscription.query = useQuery;
+  useAsSubscription.requestPrefetch = requestPrefetch;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
     const client = getCurrentApolloClientHandler();
@@ -146,6 +151,7 @@ export function createQuery<Data, Variables>(
     read,
     fetch,
     subscribe,
+    requestPrefetch,
   };
 
   return [useAsSubscription, manager] as const;

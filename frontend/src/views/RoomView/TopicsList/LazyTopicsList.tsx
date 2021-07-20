@@ -30,7 +30,7 @@ export const LazyTopicsList = ({
   SortableTopicsList.preload();
 
   return (
-    <ClientSideOnly>
+    <ClientSideOnly fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
       <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
         <SortableTopicsList
           topics={topics}

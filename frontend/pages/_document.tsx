@@ -44,21 +44,6 @@ export default class AppDocument extends Document<Props> {
       forcedAuthToken: graphqlAuthToken ?? undefined,
     });
 
-    /**
-     * We need proper cache management in order to make pre-fetching work.
-     *
-     * We'll perform 2 page renders on server side - one for collecting data requirements, then we pre-fetch, then render again
-     * with pre-fetched data in apollo cache.
-     *
-     * This creates a situation when we need to keep the cache between those 2 renders, but not longer.
-     *
-     * We don't want to keep it longer as the same cache would be used for totally different and un-related requests
-     * resulting in security issue.
-     *
-     * Therefore on server side we manually clear the cache before every request, but reuse it between page renders.
-     */
-    clearApolloCache();
-
     // Pre-fetch queries only if user is authorized
     if (graphqlAuthToken) {
       // ! We are 'wasting' one render of entire page here.
@@ -81,11 +66,28 @@ export default class AppDocument extends Document<Props> {
 
     sheet.seal();
 
+    const apolloInitialState = apolloClient.extract();
+
+    /**
+     * We need proper cache management in order to make pre-fetching work.
+     *
+     * We'll perform 2 page renders on server side - one for collecting data requirements, then we pre-fetch, then render again
+     * with pre-fetched data in apollo cache.
+     *
+     * This creates a situation when we need to keep the cache between those 2 renders, but not longer.
+     *
+     * We don't want to keep it longer as the same cache would be used for totally different and un-related requests
+     * resulting in security issue.
+     *
+     * Therefore on server side we manually clear the cache before every request, but reuse it between page renders.
+     */
+    clearApolloCache();
+
     return {
       ...documentProps,
       // Pass apollo cache content as prop so it'll be rendered as json and capture by frontend side when initializing
       // apollo client there.
-      apolloInitialState: apolloClient.extract(),
+      apolloInitialState,
       styles: (
         <>
           {documentProps.styles}

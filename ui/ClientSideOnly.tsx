@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useState } from "react";
 interface Props {
   children: ReactNode;
   onClientRendered?: () => void;
+  fallback?: ReactNode;
 }
 
 export function ClientSideOnly(props: Props) {
@@ -18,7 +19,7 @@ export function ClientSideOnly(props: Props) {
     }
   }, [shouldRender]);
 
-  if (!shouldRender) return null;
+  if (!shouldRender) return <>{props.fallback ?? null}</>;
 
   return <>{props.children}</>;
 }
