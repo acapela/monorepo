@@ -99,6 +99,7 @@ export type Key =
   | "Y"
   | "Z"
   | "Meta"
+  | "Mod" // Either Ctrl for windows or Meta in Mac
   | "LeftWindowKey"
   | "RightWindowKey"
   | "Numpad0"
@@ -139,6 +140,7 @@ export type Key =
   | "UnderScore"
   | "PlusSign"
   | "ForwardSlash"
+  | "/"
   | "Tilde"
   | "GraveAccent"
   | "OpenBracket"
