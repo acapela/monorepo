@@ -15,6 +15,8 @@ import { unwrapQueryData } from "./unwrapQueryData";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
+import { waitForAllRunningMutationsToFinish } from "./createMutation";
+import { useAsyncEffect } from "~frontend/../../shared/hooks/useAsyncEffect";
 
 type QueryDefinitionOptions = RequestWithRole;
 
@@ -85,6 +87,48 @@ export function createQuery<Data, Variables>(
     });
 
     const data = useLatest(unwrapQueryData(subscriptionResult.data), queryData);
+
+    /**
+     * After each subscription data update, we eventually want to use this data to update apollo cache.
+     *
+     * We're not doing it normally in `useSubscription` hook to avoid race-conditions with optimistic updates
+     * where it would be possible that:
+     *
+     * we send mutation (with cache update callbacks eg. adding item to some list of items)
+     * while we wait for mutation to resolve, subscription socket already picked new data first and updated the cache
+     * mutation resolves and we call it's callback (resulting in the same item being added twice to some list of items).
+     *
+     * To avoid it, we update cache with subscription data only after all mutations will finish running (which means
+     * all optimistic updates and cache updates are already flushed)
+     *
+     * Note:
+     *
+     * Why do we even need this? Initially I thought having `useQuery` is enough to have cache working great.
+     *
+     * There are however some use cases that would mean not doing it would result in flicker of old results.
+     *
+     * Use case:
+     * eg. we use `topic messages`.
+     * Both useQuery and useSubscription are run.
+     * useQuery fetches results and adds it to cache properly (let's call it "results A")
+     * useSubscription is watching for updates.
+     * update happens (eg. some message is added)
+     * useSubscription gets it ("results B", but it is not added to cache!)
+     * It means next time we use 'topic messages' (eg navigating to other topic and back) we'll first see
+     * "results A" from useQuery being quickly replaced by "results B" when subscription gets them again
+     */
+    useAsyncEffect(
+      async (getIsCancelled) => {
+        if (!subscriptionResult.data) return;
+
+        await waitForAllRunningMutationsToFinish();
+
+        if (getIsCancelled()) return;
+
+        write(variables as Variables, subscriptionResult.data);
+      },
+      [subscriptionResult.data]
+    );
 
     return [data, subscriptionResult] as const;
   }

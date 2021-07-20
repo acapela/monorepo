@@ -17,6 +17,8 @@ import { TopicHeader } from "./TopicHeader";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
+import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
+import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
 
 interface Props {
   topicId: string;
@@ -25,15 +27,31 @@ interface Props {
 function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]) {
   const [updateLastSeenMessage] = useLastSeenMessageMutation();
 
-  useIsomorphicLayoutEffect(() => {
-    if (messages) {
+  /**
+   * Let's mark last message as read each time we have new messages.
+   */
+  useAsyncLayoutEffect(
+    async (getIsCancelled) => {
+      if (!messages) return;
+
       const lastMessage = messages[messages.length - 1];
 
-      if (lastMessage) {
-        updateLastSeenMessage({ topicId, messageId: lastMessage.id });
-      }
-    }
-  }, [messages]);
+      if (!lastMessage) return;
+
+      /**
+       * Let's make sure we're never marking message from 'optimistic' response (because it is not in the DB yet so it
+       * would result in DB error).
+       */
+      await waitForAllRunningMutationsToFinish();
+
+      if (getIsCancelled()) return;
+
+      // There are no mutations in progress now so we can safely mark new message as read as mutation creating it already
+      // finished running
+      updateLastSeenMessage({ topicId, messageId: lastMessage.id });
+    },
+    [messages]
+  );
 }
 
 export const TopicView = ({ topicId }: Props) => {
