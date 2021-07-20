@@ -1,13 +1,11 @@
 import { useMemo } from "react";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { Modal } from "~frontend/ui/Modal";
 import { UserBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT } from "~ui/colors";
-import { IconCross } from "~ui/icons";
-import { UserBasicInfo } from "../users/UserBasicInfo";
 import { UsersCombobox } from "./UsersCombobox";
+import { MembersContainer } from "./MembersContainer";
+import { MemberItem } from "./MemberItem";
 
 interface Props {
   currentUsers: UserBasicInfoFragment[];
@@ -35,18 +33,11 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       <UIHolder>
         <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
         {currentUsers.length > 0 && (
-          <UIMembers>
-            {currentUsers.map((user) => {
-              return (
-                <UIMember>
-                  <UserBasicInfo user={user} />
-                  <UIRemoveMemberButton onClick={() => onRemoveUser(user.id)}>
-                    <IconCross />
-                  </UIRemoveMemberButton>
-                </UIMember>
-              );
-            })}
-          </UIMembers>
+          <MembersContainer>
+            {currentUsers.map((user) => (
+              <MemberItem key={user.id} user={user} onRemove={() => onRemoveUser(user.id)} />
+            ))}
+          </MembersContainer>
         )}
       </UIHolder>
     </Modal>
@@ -57,31 +48,4 @@ const UIHolder = styled.div`
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 20px;
-`;
-
-const UIMembers = styled.div`
-  width: 640px;
-  border: 1px solid ${BACKGROUND_ACCENT};
-  ${borderRadius.modal};
-  @media (max-width: 800px) {
-    width: 100%;
-  }
-`;
-
-const UIMember = styled.div`
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid ${BACKGROUND_ACCENT};
-  :last-child {
-    border-bottom: none;
-  }
-`;
-
-const UIRemoveMemberButton = styled.button`
-  padding: 6px;
-  background: ${BACKGROUND_ACCENT};
-  cursor: pointer;
-  ${borderRadius.circle}
 `;
