@@ -43,6 +43,7 @@ export const UIButton = styled.button<{ isActive: boolean }>`
 
   padding: 10px 8px;
   font-size: 12px;
+  font-weight: 500;
   color: ${BASE_GREY_1};
   ${shadow.button}
   ${borderRadius.circle}

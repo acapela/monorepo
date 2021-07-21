@@ -208,7 +208,7 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
   justify-content: center;
 
   font: inherit;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.2rem;
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
