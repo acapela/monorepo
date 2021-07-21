@@ -10,6 +10,7 @@ interface Props {
   scrollToBottomKey?: string;
   scrollInitially?: boolean;
   isDisabled?: boolean;
+  getShouldScroll?: () => boolean;
 }
 
 function scrollToBottom(element: HTMLElement, behavior: ScrollBehavior = "smooth") {
@@ -35,10 +36,15 @@ export function ScrollToBottomMonitor({
   scrollToBottomKey,
   scrollInitially = true,
   isDisabled = false,
+  getShouldScroll,
 }: Props) {
   const monitorRef = useRef<HTMLDivElement>(null);
 
   function performScrollToBottom(behavior: ScrollBehavior) {
+    if (getShouldScroll && !getShouldScroll()) {
+      return;
+    }
+
     if (isDisabled) return;
 
     const parentNode = parentRef.current;
