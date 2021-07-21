@@ -1,5 +1,7 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
+import { useId } from "~shared/id";
+import { getColorHoverVariant, hoverActionCss } from "~ui/transitions";
 import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../colors";
 
 const sizes: Record<ToggleSize, Dimensions> = {
@@ -33,6 +35,7 @@ interface Props {
 }
 
 export const Toggle = ({ size = "large", onSet, onUnset }: Props) => {
+  const id = useId();
   function onSwitch(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation();
 
@@ -45,8 +48,8 @@ export const Toggle = ({ size = "large", onSet, onUnset }: Props) => {
 
   return (
     <UIToggle dimensions={getDimensions(size)}>
-      <input type="checkbox" id="switch" onChange={onSwitch} />
-      <label htmlFor="switch"></label>
+      <input type="checkbox" id={id} onChange={onSwitch} />
+      <label htmlFor={id}></label>
     </UIToggle>
   );
 };
@@ -61,6 +64,8 @@ function getDimensions(toggleSize: ToggleSize) {
 }
 
 const UIToggle = styled.div<{ dimensions: Dimensions }>`
+  user-select: none;
+
   input[type="checkbox"] {
     display: block;
     height: 0;
@@ -79,6 +84,12 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
     background: ${BACKGROUND_ACCENT};
 
     border-radius: ${({ dimensions }) => dimensions.height}px;
+
+    transition: 0.2s;
+
+    &:hover {
+      background: ${getColorHoverVariant(BACKGROUND_ACCENT)};
+    }
   }
 
   label:after {
@@ -99,6 +110,10 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
 
   input:checked + label {
     background: ${BUTTON_BACKGROUND_COLOR};
+
+    &:hover {
+      background: ${getColorHoverVariant(BUTTON_BACKGROUND_COLOR)};
+    }
   }
 
   input:checked + label:after {
@@ -107,6 +122,12 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
   }
 
   label:active:after {
-    width: ${(props) => props.dimensions.width}px;
+    width: ${(props) => {
+      const fullInnerWidth = props.dimensions.width * 0.6;
+
+      return fullInnerWidth;
+    }}px;
+
+    transition-delay: 0.066s;
   }
 `;
