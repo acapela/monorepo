@@ -8989,6 +8989,19 @@ export type CreateTeamInvitationMutation = (
   )> }
 );
 
+export type RemoveTeamInvitationMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type RemoveTeamInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_team_invitation_by_pk?: Maybe<(
+    { __typename?: 'team_invitation' }
+    & Pick<Team_Invitation, 'team_id'>
+  )> }
+);
+
 export type TeamInvitationQueryVariables = Exact<{
   tokenId: Scalars['uuid'];
 }>;

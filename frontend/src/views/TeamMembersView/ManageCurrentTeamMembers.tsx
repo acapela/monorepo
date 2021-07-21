@@ -1,5 +1,5 @@
 import { MembersManagerContainer } from "~frontend/ui/MembersManager/MembersManagerContainer";
-import { removeTeamMember, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { MembersContainer } from "~frontend/ui/MembersManager/MembersContainer";
 import { UserItem } from "~frontend/ui/MembersManager/UserItem";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
@@ -10,6 +10,7 @@ export const ManageCurrentTeamMembers = () => {
   const [team] = useCurrentTeamDetails();
 
   const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
+  const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
   const handleRemoveTeamMember = (userId: string) => {
     if (!team?.id) return;
@@ -18,9 +19,10 @@ export const ManageCurrentTeamMembers = () => {
   };
 
   const invitations = team?.invitations ?? [];
+  const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
   const handleRemoveInvitation = (invitationId: string) => {
-    console.log("remove invitation: ", invitationId);
+    removeTeamInvitation({ id: invitationId });
   };
 
   return (
@@ -33,7 +35,7 @@ export const ManageCurrentTeamMembers = () => {
               <UserBasicInfo user={user} />
             </UserItem>
           ))}
-          {invitations.map(({ email, id }) => (
+          {pendingInvitations.map(({ email, id }) => (
             <UserItem key={email} onRemove={() => handleRemoveInvitation(id)}>
               <InvitationInfo email={email} />
             </UserItem>
