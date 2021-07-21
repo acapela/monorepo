@@ -6,8 +6,7 @@ import { UsersCombobox } from "./UsersCombobox";
 import { MembersContainer } from "./MembersContainer";
 import { MemberItem } from "./MemberItem";
 import { MembersManagerContainer } from "./MembersManagerContainer";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { POP_PRESENCE_STYLES } from "~ui/animations";
+import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 
 interface Props {
@@ -28,7 +27,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
 
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
-      <PresenceAnimator presenceStyles={POP_PRESENCE_STYLES}>
+      <PopPresenceAnimator>
         <MembersManagerContainer title={title} onClose={onCloseRequest}>
           <UIHolder>
             <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
@@ -41,7 +40,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
             )}
           </UIHolder>
         </MembersManagerContainer>
-      </PresenceAnimator>
+      </PopPresenceAnimator>
     </ScreenCover>
   );
 }

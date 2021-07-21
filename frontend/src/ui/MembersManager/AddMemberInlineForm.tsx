@@ -11,11 +11,7 @@ interface Props {
 }
 
 export const AddMemberInlineForm = ({ input, isValid, onSubmit }: Props) => {
-  useShortcut("Enter", () => {
-    if (!isValid) return;
-
-    onSubmit();
-  });
+  useShortcut("Enter", onSubmit, { isEnabled: isValid });
 
   return (
     <UIHolder>
