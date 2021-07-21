@@ -5,10 +5,10 @@ import { createDocumentEvent, createWindowEvent } from "~shared/domEvents";
  * This module allow checking if user just performed any interaction
  */
 
-let didUserJustInteract = false;
+let hasUserRecentlyInteracted = false;
 
 export function getDidUserJustInteract() {
-  return didUserJustInteract;
+  return hasUserRecentlyInteracted;
 }
 
 /**
@@ -24,12 +24,12 @@ const windowInteractionEvents: Array<keyof WindowEventMap> = ["resize", "scroll"
 
 // Will mark as interacting and add delayed marking as not interacting
 function markInteraction() {
-  didUserJustInteract = true;
+  hasUserRecentlyInteracted = true;
   markAsNotInteractingWithDelay();
 }
 
 const markAsNotInteractingWithDelay = debounce(() => {
-  didUserJustInteract = false;
+  hasUserRecentlyInteracted = false;
 }, IDLE_TIMEOUT);
 
 documentInteractionEvents.forEach((eventName) => {
