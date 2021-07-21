@@ -17,6 +17,7 @@ import { Toggle } from "~ui/toggle";
 import { zIndex } from "~ui/zIndex";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { PageMeta } from "~frontend/utils/PageMeta";
 
 interface Props {
   spaceId: string;
@@ -61,6 +62,7 @@ export function SpaceView({ spaceId }: Props) {
 
   return (
     <>
+      {space && <PageMeta title={space.name} />}
       <UIContainer>
         <UIHolder>
           <UISpace>{space && <SpaceCard space={space} isClickable={false} />}</UISpace>
