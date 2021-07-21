@@ -1,18 +1,17 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
-import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { UserBasicInfoFragment } from "~gql";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconCross } from "~ui/icons";
 
 interface Props {
-  user: UserBasicInfoFragment;
+  children: ReactNode;
   onRemove: () => void;
 }
 
-export const MemberItem = ({ user, onRemove }: Props) => {
+export const UserItem = ({ children, onRemove }: Props) => {
   return (
     <UIHolder>
-      <UserBasicInfo user={user} />
+      {children}
       <CircleIconButton onClick={onRemove} icon={<IconCross />} />
     </UIHolder>
   );

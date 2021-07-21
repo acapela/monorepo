@@ -4,7 +4,8 @@ import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserBasicInfoFragment } from "~gql";
 import { UsersCombobox } from "./UsersCombobox";
 import { MembersContainer } from "./MembersContainer";
-import { MemberItem } from "./MemberItem";
+import { UserItem } from "./UserItem";
+import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { MembersManagerContainer } from "./MembersManagerContainer";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
@@ -34,7 +35,9 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
             {currentUsers.length > 0 && (
               <MembersContainer>
                 {currentUsers.map((user) => (
-                  <MemberItem key={user.id} user={user} onRemove={() => onRemoveUser(user.id)} />
+                  <UserItem key={user.id} onRemove={() => onRemoveUser(user.id)}>
+                    <UserBasicInfo user={user} />
+                  </UserItem>
                 ))}
               </MembersContainer>
             )}
