@@ -5,6 +5,7 @@ import { AddMemberInlineForm } from "~frontend/ui/MembersManager/AddMemberInline
 import { createTeamIvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { useMemo } from "react";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export const InviteMemberForm = () => {
   const teamId = useAssertCurrentTeamId();
@@ -27,6 +28,9 @@ export const InviteMemberForm = () => {
 
   const handleSubmit = () => {
     createTeamIvitation({ email, teamId });
+
+    trackEvent("Invite Sent");
+
     setEmail("");
   };
 
