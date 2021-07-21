@@ -27,6 +27,7 @@ export const InviteMemberForm = () => {
 
   const handleSubmit = () => {
     createTeamIvitation({ email, teamId });
+    setEmail("");
   };
 
   return (
