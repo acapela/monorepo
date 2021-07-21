@@ -4,6 +4,11 @@ import { useId } from "~shared/id";
 import { getColorHoverVariant } from "~ui/transitions";
 import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../colors";
 
+/**
+ * How big part of full width will toggle occupy to indicate change on long press.
+ */
+const STATE_CHANGE_WIDTH_INDICATION_RATIO = 0.65;
+
 const sizes: Record<ToggleSize, Dimensions> = {
   large: {
     width: 56,
@@ -123,9 +128,9 @@ const UIToggle = styled.div<{ dimensions: Dimensions }>`
 
   label:active:after {
     width: ${(props) => {
-      const fullInnerWidth = props.dimensions.width * 0.6;
+      const fullInnerWidth = props.dimensions.width - props.dimensions.horizontalOffset * 2;
 
-      return fullInnerWidth;
+      return fullInnerWidth * STATE_CHANGE_WIDTH_INDICATION_RATIO;
     }}px;
 
     transition-delay: 0.066s;
