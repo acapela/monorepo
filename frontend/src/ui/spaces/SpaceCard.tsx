@@ -12,13 +12,19 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconEdit, IconSelection, IconTrash } from "~ui/icons";
+import { IconCheck, IconEdit, IconLogIn, IconSelection, IconTrash } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
 import { TextH3 } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { SpaceGradient } from "./spaceGradient";
 import { routes } from "~frontend/../routes";
+import { CardBase } from "~frontend/../../ui/card/Base";
+import { EntityKindLabel } from "~frontend/../../ui/theme/functional";
+import { AvatarList } from "../users/AvatarList";
+import { ToggleButton } from "~frontend/../../ui/buttons/ToggleButton";
+import { handleWithStopPropagation } from "~frontend/../../shared/events";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -29,17 +35,18 @@ export function SpaceCard({ space, isClickable = true }: Props) {
   const spaceId = space.id;
   const router = useRouter();
   const amIMember = isCurrentUserSpaceMember(space);
+  const user = useAssertCurrentUser();
 
   const [addSpaceMember] = useAddSpaceMemberMutation();
   const [removeSpaceMember] = useRemoveSpaceMemberMutation();
   const [editSpace] = useEditSpaceMutation();
 
-  async function handleJoin(userId: string) {
-    await addSpaceMember({ userId, spaceId });
+  async function handleJoin() {
+    await addSpaceMember({ userId: user.id, spaceId });
   }
 
-  async function handleLeave(userId: string) {
-    await removeSpaceMember({ userId, spaceId });
+  async function handleLeave() {
+    await removeSpaceMember({ userId: user.id, spaceId });
   }
 
   function handleOpen() {
@@ -105,21 +112,23 @@ export function SpaceCard({ space, isClickable = true }: Props) {
               tooltip="Show options..."
             />
           )}
-          <UIImage onClick={handleOpen} spaceId={space.id}></UIImage>
         </UIBanner>
 
         <UIInfo>
+          <AvatarList size={32} users={space.members.map((m) => m.user)} />
+          <EntityKindLabel>SPACE</EntityKindLabel>
           <TextH3 onClick={handleOpen} speziaExtended>
             {space.name}
           </TextH3>
 
           <UIMembers>
-            <MembersManager
-              users={space.members.map((m) => m.user)}
-              onAddMemberRequest={handleJoin}
-              onRemoveMemberRequest={handleLeave}
-              isReadonly={!amIMember}
-            />
+            <ToggleButton
+              onClick={handleWithStopPropagation(() => (amIMember ? handleLeave() : handleJoin()))}
+              isActive={amIMember}
+              icon={amIMember ? <IconCheck /> : <IconLogIn />}
+            >
+              {amIMember ? "Joined" : "Join"}
+            </ToggleButton>
           </UIMembers>
         </UIInfo>
       </UIHolder>
@@ -127,29 +136,26 @@ export function SpaceCard({ space, isClickable = true }: Props) {
   );
 }
 
-const UIHolder = styled.div<{ isClickable?: boolean }>`
-  padding: 1rem;
-  margin: -1rem;
-  cursor: ${(props) => (props.isClickable ? "pointer" : "default")};
+const UIHolder = styled(CardBase)`
+  cursor: pointer;
   position: relative;
   /* Don't over-stretch inside grid/flex if has wide content */
   min-width: 0;
-
-  ${(props) => (props.isClickable ? hoverActionCss : null)}
 `;
 
 const UIBanner = styled.div`
   position: relative;
 `;
 
-const UIImage = styled(SpaceGradient)`
-  padding-bottom: 58%;
-  ${borderRadius.card};
-  margin-bottom: 16px;
-`;
-
 const UIInfo = styled.div`
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  ${AvatarList} {
+    margin-bottom: 24px;
+  }
 `;
 
 const UIMembers = styled.div``;
