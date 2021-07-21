@@ -4,7 +4,7 @@ import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserBasicInfoFragment } from "~gql";
 import { UsersCombobox } from "./UsersCombobox";
 import { UISelectGridContainer } from "./UISelectGridContainer";
-import { UserItem } from "./UserItem";
+import { LabelWithRemoveButton } from "./LabelWithRemoveButton";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
 import { PopPresenceAnimator } from "~ui/animations";
@@ -35,9 +35,9 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (
-                  <UserItem key={user.id} onRemove={() => onRemoveUser(user.id)}>
+                  <LabelWithRemoveButton key={user.id} onRemove={() => onRemoveUser(user.id)}>
                     <UserBasicInfo user={user} />
-                  </UserItem>
+                  </LabelWithRemoveButton>
                 ))}
               </UISelectGridContainer>
             )}

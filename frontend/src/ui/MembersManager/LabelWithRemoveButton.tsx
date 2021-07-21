@@ -8,7 +8,7 @@ interface Props {
   onRemove: () => void;
 }
 
-export const UserItem = ({ children, onRemove }: Props) => {
+export const LabelWithRemoveButton = ({ children, onRemove }: Props) => {
   return (
     <UIHolder>
       {children}

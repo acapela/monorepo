@@ -1,7 +1,7 @@
 import { PanelWithTopbarAndCloseButton } from "~frontend/ui/MembersManager/PanelWithTopbarAndCloseButton";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
-import { UserItem } from "~frontend/ui/MembersManager/UserItem";
+import { LabelWithRemoveButton } from "~frontend/ui/MembersManager/LabelWithRemoveButton";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationInfo } from "./InvitationInfo";
@@ -31,14 +31,14 @@ export const ManageCurrentTeamMembers = () => {
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
           {teamMembers.map((user) => (
-            <UserItem key={user.id} onRemove={() => handleRemoveTeamMember(user.id)}>
+            <LabelWithRemoveButton key={user.id} onRemove={() => handleRemoveTeamMember(user.id)}>
               <UserBasicInfo user={user} />
-            </UserItem>
+            </LabelWithRemoveButton>
           ))}
           {pendingInvitations.map(({ email, id }) => (
-            <UserItem key={email} onRemove={() => handleRemoveInvitation(id)}>
+            <LabelWithRemoveButton key={email} onRemove={() => handleRemoveInvitation(id)}>
               <InvitationInfo email={email} />
-            </UserItem>
+            </LabelWithRemoveButton>
           ))}
         </UISelectGridContainer>
       )}
