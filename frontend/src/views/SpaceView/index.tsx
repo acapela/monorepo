@@ -17,6 +17,8 @@ import { Toggle } from "~ui/toggle";
 import { zIndex } from "~ui/zIndex";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { SpaceHeader } from "./SpaceHeader";
+import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
 
 interface Props {
   spaceId: string;
@@ -63,12 +65,12 @@ export function SpaceView({ spaceId }: Props) {
     <>
       <UIContainer>
         <UIHolder>
-          <UISpace>{space && <SpaceCard space={space} isClickable={false} />}</UISpace>
+          {space && <SpaceHeader space={space} />}
+
           <UIContent>
             <UIFilters onFiltersChange={setFilters} />
             <UIRooms>
               <UIRoomsHeader>
-                <TextBody>Rooms</TextBody>
                 <UIClosedRoomsFilter>
                   <TextBody>Closed</TextBody>
                   <Toggle
@@ -101,12 +103,7 @@ const UIContainer = styled(SpacedAppLayoutContainer)`
   position: relative;
 `;
 
-const UIHolder = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  grid-gap: 4rem;
-`;
+const UIHolder = styled.div``;
 
 const UISpace = styled.div``;
 
