@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 import { useId } from "~shared/id";
-import { getColorHoverVariant, hoverActionCss } from "~ui/transitions";
+import { getColorHoverVariant } from "~ui/transitions";
 import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../colors";
 
 const sizes: Record<ToggleSize, Dimensions> = {
