@@ -28,7 +28,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
 
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
-      <PopPresenceAnimator>
+      <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
         <MembersManagerContainer title={title} onClose={onCloseRequest}>
           <UIHolder>
             <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
