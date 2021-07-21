@@ -13,7 +13,7 @@ interface Props {
   onClose?: () => void;
 }
 
-export const MembersManagerContainer = ({ title, children, onClose }: Props) => {
+export const PanelWithTopbarAndCloseButton = ({ title, children, onClose }: Props) => {
   useShortcut("Escape", onClose, { isEnabled: Boolean(onClose) });
 
   return (

@@ -1,4 +1,4 @@
-import { MembersManagerContainer } from "~frontend/ui/MembersManager/MembersManagerContainer";
+import { PanelWithTopbarAndCloseButton } from "~frontend/ui/MembersManager/PanelWithTopbarAndCloseButton";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserItem } from "~frontend/ui/MembersManager/UserItem";
@@ -26,7 +26,7 @@ export const ManageCurrentTeamMembers = () => {
   };
 
   return (
-    <MembersManagerContainer title="Team members">
+    <PanelWithTopbarAndCloseButton title="Team members">
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
@@ -42,6 +42,6 @@ export const ManageCurrentTeamMembers = () => {
           ))}
         </UISelectGridContainer>
       )}
-    </MembersManagerContainer>
+    </PanelWithTopbarAndCloseButton>
   );
 };

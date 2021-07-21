@@ -6,7 +6,7 @@ import { UsersCombobox } from "./UsersCombobox";
 import { UISelectGridContainer } from "./UISelectGridContainer";
 import { UserItem } from "./UserItem";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { MembersManagerContainer } from "./MembersManagerContainer";
+import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 
@@ -29,7 +29,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
       <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
-        <MembersManagerContainer title={title} onClose={onCloseRequest}>
+        <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
           <UIHolder>
             <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
             {currentUsers.length > 0 && (
@@ -42,7 +42,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
               </UISelectGridContainer>
             )}
           </UIHolder>
-        </MembersManagerContainer>
+        </PanelWithTopbarAndCloseButton>
       </PopPresenceAnimator>
     </ScreenCover>
   );
