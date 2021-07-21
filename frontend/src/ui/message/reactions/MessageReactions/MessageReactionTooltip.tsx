@@ -4,7 +4,6 @@ import { getEmojiDataFromNative, Data as EmojiDataset } from "emoji-mart";
 import data from "emoji-mart/data/all.json";
 import { ReactionBasicInfoFragment } from "~gql";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { borderRadius, colors } from "~ui/baseStyles";
 import { WHITE } from "~ui/colors";
 
 interface Props {
@@ -34,28 +33,13 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
   const emojiShortName = getEmojiDataFromNative(emoji, "apple", data as never as EmojiDataset).id;
 
   return (
-    <UIHolder>
-      <UIContent>
-        <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>:{emojiShortName}:</UIEmojiName>
-      </UIContent>
-    </UIHolder>
+    <UIContent>
+      <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>:{emojiShortName}:</UIEmojiName>
+    </UIContent>
   );
 };
 
-const UIHolder = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: ${colors.tooltip.background};
-  max-width: 160px;
-  padding: 8px;
-  ${borderRadius.label};
-  pointer-events: none;
-  line-height: 1.2rem;
-`;
-
 const UIContent = styled.div`
-  font-size: 12px;
   color: hsla(0, 0%, 100%, 60%);
   text-align: center;
   word-break: break-word;

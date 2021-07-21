@@ -9,6 +9,7 @@ export interface Channel<T> {
   subscribe(subscriber: Subscriber<T>): Cancel;
   useLastValue(): T | null;
   useSubscribe(subscriber: Subscriber<T>): void;
+  useLastValueSelector<R>(selector: (lastValue: T | null) => R): R;
 }
 
 type ValueWrapper<T> = { value: T } | null;
@@ -70,6 +71,18 @@ export function createChannel<T>(): Channel<T> {
     return value;
   }
 
+  function useLastValueSelector<R>(selector: (lastValue: T | null) => R): R {
+    const [selectedValue, setSelectedValue] = useState(() => {
+      return selector(getLastValue());
+    });
+
+    useSubscribe((newValue) => {
+      setSelectedValue(selector(newValue));
+    });
+
+    return selectedValue;
+  }
+
   function useSubscribe(subscriber: Subscriber<T>) {
     useEffect(() => {
       return subscribe(subscriber);
@@ -82,6 +95,7 @@ export function createChannel<T>(): Channel<T> {
     subscribe,
     useLastValue,
     useSubscribe,
+    useLastValueSelector,
   };
 }
 
