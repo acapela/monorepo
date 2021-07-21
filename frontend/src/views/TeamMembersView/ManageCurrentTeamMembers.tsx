@@ -2,7 +2,7 @@ import { MembersManagerContainer } from "~frontend/ui/MembersManager/MembersMana
 import { removeTeamMember, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { MembersContainer } from "~frontend/ui/MembersManager/MembersContainer";
 import { MemberItem } from "~frontend/ui/MembersManager/MemberItem";
-import { AddMemberInlineForm } from "~frontend/ui/MembersManager/AddMemberInlineForm";
+import { InviteMemberForm } from "./InviteMemberForm";
 
 export const ManageCurrentTeamMembers = () => {
   const [team] = useCurrentTeamDetails();
@@ -17,7 +17,7 @@ export const ManageCurrentTeamMembers = () => {
 
   return (
     <MembersManagerContainer title="Team members">
-      <AddMemberInlineForm input={null} isValid={false} onSubmit={console.log} />
+      <InviteMemberForm />
       {teamMembers.length > 0 && (
         <MembersContainer>
           {teamMembers.map((user) => (

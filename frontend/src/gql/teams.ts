@@ -138,7 +138,7 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export const [useCreateTeamInvitationMutation] = createMutation<
+export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables
 >(
