@@ -1,15 +1,12 @@
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { AnimatePresence } from "framer-motion";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/colors";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
-import { Popover } from "~ui/popovers/Popover";
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { fontSize } from "~ui/baseStyles";
+import { Tooltip } from "~ui/popovers/Tooltip";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -41,28 +38,18 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
   };
 
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
-  const shouldShowTooltip = useDebouncedValue(isHovered, { onDelay: 150, offDelay: 0 });
 
   return (
     <>
-      <UIReactionButton
-        onMouseEnter={setHovered}
-        onMouseLeave={unsetHovered}
-        ref={buttonRef}
-        onClick={handleClick}
-        isSelected={isSelectedByCurrentUser}
-      >
+      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={isSelectedByCurrentUser}>
         <p>{emoji}</p>
         <p>{reactions.length}</p>
       </UIReactionButton>
-      <AnimatePresence>
-        {shouldShowTooltip && (
-          <Popover distance={10} anchorRef={buttonRef} placement="bottom">
-            <MessageReactionTooltip reactions={reactions} emoji={emoji} />
-          </Popover>
-        )}
-      </AnimatePresence>
+      <Tooltip
+        anchorRef={buttonRef}
+        placement="bottom"
+        label={<MessageReactionTooltip reactions={reactions} emoji={emoji} />}
+      />
     </>
   );
 };
