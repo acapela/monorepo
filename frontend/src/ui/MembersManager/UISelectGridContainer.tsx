@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { BASE_GREY_5 } from "~ui/colors";
 
-export const MembersContainer = styled.div`
+export const UISelectGridContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;

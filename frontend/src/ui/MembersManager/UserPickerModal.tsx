@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserBasicInfoFragment } from "~gql";
 import { UsersCombobox } from "./UsersCombobox";
-import { MembersContainer } from "./MembersContainer";
+import { UISelectGridContainer } from "./UISelectGridContainer";
 import { UserItem } from "./UserItem";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { MembersManagerContainer } from "./MembersManagerContainer";
@@ -33,13 +33,13 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
           <UIHolder>
             <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
             {currentUsers.length > 0 && (
-              <MembersContainer>
+              <UISelectGridContainer>
                 {currentUsers.map((user) => (
                   <UserItem key={user.id} onRemove={() => onRemoveUser(user.id)}>
                     <UserBasicInfo user={user} />
                   </UserItem>
                 ))}
-              </MembersContainer>
+              </UISelectGridContainer>
             )}
           </UIHolder>
         </MembersManagerContainer>

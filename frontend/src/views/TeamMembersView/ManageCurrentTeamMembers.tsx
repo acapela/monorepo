@@ -1,6 +1,6 @@
 import { MembersManagerContainer } from "~frontend/ui/MembersManager/MembersManagerContainer";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
-import { MembersContainer } from "~frontend/ui/MembersManager/MembersContainer";
+import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserItem } from "~frontend/ui/MembersManager/UserItem";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
@@ -29,7 +29,7 @@ export const ManageCurrentTeamMembers = () => {
     <MembersManagerContainer title="Team members">
       <InviteMemberForm />
       {teamMembers.length > 0 && (
-        <MembersContainer>
+        <UISelectGridContainer>
           {teamMembers.map((user) => (
             <UserItem key={user.id} onRemove={() => handleRemoveTeamMember(user.id)}>
               <UserBasicInfo user={user} />
@@ -40,7 +40,7 @@ export const ManageCurrentTeamMembers = () => {
               <InvitationInfo email={email} />
             </UserItem>
           ))}
-        </MembersContainer>
+        </UISelectGridContainer>
       )}
     </MembersManagerContainer>
   );
