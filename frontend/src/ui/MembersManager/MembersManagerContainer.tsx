@@ -14,9 +14,7 @@ interface Props {
 }
 
 export const MembersManagerContainer = ({ title, children, onClose }: Props) => {
-  useShortcut("Escape", () => {
-    onClose?.();
-  });
+  useShortcut("Escape", onClose, { isEnabled: Boolean(onClose) });
 
   return (
     <UIHolder>
