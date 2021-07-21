@@ -2,6 +2,7 @@ import { css } from "styled-components";
 
 const namedSize = {
   small: 24,
+  medium: 32,
   regular: 40,
 };
 

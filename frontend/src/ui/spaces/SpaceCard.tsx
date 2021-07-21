@@ -1,6 +1,11 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
+import { handleWithStopPropagation } from "~shared/events";
+import { ToggleButton } from "~ui/buttons/ToggleButton";
+import { CardBase } from "~ui/card/Base";
+import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
+import { routes } from "~frontend/../routes";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
   deleteSpace,
   isCurrentUserSpaceMember,
@@ -13,25 +18,14 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconCheck, IconEdit, IconLogIn, IconSelection, IconTrash } from "~ui/icons";
-import { hoverActionCss } from "~ui/transitions";
-import { TextH3 } from "~ui/typo";
-import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
-import { SpaceGradient } from "./spaceGradient";
-import { routes } from "~frontend/../routes";
-import { CardBase } from "~frontend/../../ui/card/Base";
-import { EntityKindLabel } from "~frontend/../../ui/theme/functional";
 import { AvatarList } from "../users/AvatarList";
-import { ToggleButton } from "~frontend/../../ui/buttons/ToggleButton";
-import { handleWithStopPropagation } from "~frontend/../../shared/events";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   space: SpaceBasicInfoFragment;
-  isClickable?: boolean;
 }
 
-export function SpaceCard({ space, isClickable = true }: Props) {
+export function SpaceCard({ space }: Props) {
   const spaceId = space.id;
   const router = useRouter();
   const amIMember = isCurrentUserSpaceMember(space);
@@ -50,9 +44,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
   }
 
   function handleOpen() {
-    if (isClickable) {
-      router.push(`space/${space.id}`);
-    }
+    router.push(`space/${space.id}`);
   }
 
   async function handleEditSpace() {
@@ -92,7 +84,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
 
   return (
     <>
-      <UIHolder isClickable={isClickable}>
+      <UIHolder isClickable onClick={handleOpen}>
         <UIBanner>
           {amIMember && (
             <CornerOptionsMenu
@@ -115,11 +107,9 @@ export function SpaceCard({ space, isClickable = true }: Props) {
         </UIBanner>
 
         <UIInfo>
-          <AvatarList size={32} users={space.members.map((m) => m.user)} />
+          <AvatarList size="medium" users={space.members.map((m) => m.user)} />
           <EntityKindLabel>SPACE</EntityKindLabel>
-          <TextH3 onClick={handleOpen} speziaExtended>
-            {space.name}
-          </TextH3>
+          <PrimaryItemTitle>{space.name}</PrimaryItemTitle>
 
           <UIMembers>
             <ToggleButton

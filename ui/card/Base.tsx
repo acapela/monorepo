@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { WHITE, BACKGROUND_ACCENT_WEAK } from "~ui/colors";
-import { getColorHoverVariant } from "~ui/transitions";
+import { getColorHoverVariant, hoverTransition } from "~ui/transitions";
 
 export const CardBase = styled.div<{ isClickable?: boolean }>`
   padding: 24px 20px;
@@ -11,13 +11,15 @@ export const CardBase = styled.div<{ isClickable?: boolean }>`
   ${borderRadius.card}
   ${shadow.card}
 
+  ${hoverTransition()}
+
   ${(props) => {
     if (!props.isClickable) return;
 
     return css`
       cursor: pointer;
       &:hover {
-        background-color: ${getColorHoverVariant(WHITE)};
+        background-color: ${getColorHoverVariant(WHITE, 0.2)};
       }
     `;
   }}

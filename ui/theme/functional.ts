@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { injectProps } from "~shared/components/injectProps";
 import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/colors";
-import { TextBody14, TextH2 } from "./typography";
+import { TextBody14, TextH2, TextH3 } from "./typography";
 
 export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true }))`
   color: ${PRIMARY_PINK_1};
@@ -18,5 +18,7 @@ export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true
 `;
 
 export const HeroItemTitle = injectProps(TextH2, { speziaExtended: true });
+
+export const PrimaryItemTitle = injectProps(TextH3, { speziaExtended: true });
 
 export const CategoryNameLabel = injectProps(TextBody14, { speziaMono: true, secondary: true });
