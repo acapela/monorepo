@@ -1,6 +1,5 @@
 import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
-import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
