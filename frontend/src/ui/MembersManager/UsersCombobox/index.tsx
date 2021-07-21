@@ -6,7 +6,9 @@ import { baseInputStyles } from "~ui/forms/utils";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { BACKGROUND_ACCENT } from "~ui/colors";
-import { AddMemberInlineForm } from "../AddMemberInlineForm";
+import { Button } from "~ui/buttons/Button";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { IconPlusSquare } from "~ui/icons";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -55,48 +57,57 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     menuMaxHeight = comboboxRef.current.getBoundingClientRect().bottom - 20;
   }
 
+  const isSubmitEnabled = Boolean(selectedItem);
+
   const handleSubmit = () => {
-    if (selectedItem) {
-      onSelect(selectedItem.id);
-      reset();
-    }
+    if (!selectedItem) return;
+
+    onSelect(selectedItem.id);
+    reset();
   };
 
+  useShortcut("Enter", handleSubmit, { isEnabled: isSubmitEnabled });
+
   return (
-    <AddMemberInlineForm
-      onSubmit={handleSubmit}
-      isValid={Boolean(selectedItem)}
-      input={
-        <UIComboboxHolder {...getComboboxProps()}>
-          <UICombobox ref={comboboxRef}>
-            <UIInput
-              areResultsVisible={areResultsVisible}
-              onFocus={() => {
-                if (!isOpen) {
-                  openMenu();
-                }
-              }}
-              placeholder="Search with name or email"
-              {...getInputProps()}
-            />
-            <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={areResultsVisible}>
-              {areResultsVisible &&
-                inputItems.map((user, index) => (
-                  <UIOption
-                    key={user.id}
-                    isHighlighted={highlightedIndex === index}
-                    {...getItemProps({ item: user, index })}
-                  >
-                    <UserBasicInfo user={user} />
-                  </UIOption>
-                ))}
-            </UIMenu>
-          </UICombobox>
-        </UIComboboxHolder>
-      }
-    />
+    <UIHolder>
+      <UIComboboxHolder {...getComboboxProps()}>
+        <UICombobox ref={comboboxRef}>
+          <UIInput
+            areResultsVisible={areResultsVisible}
+            onFocus={() => {
+              if (!isOpen) {
+                openMenu();
+              }
+            }}
+            placeholder="Search with name or email"
+            {...getInputProps()}
+          />
+          <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={areResultsVisible}>
+            {areResultsVisible &&
+              inputItems.map((user, index) => (
+                <UIOption
+                  key={user.id}
+                  isHighlighted={highlightedIndex === index}
+                  {...getItemProps({ item: user, index })}
+                >
+                  <UserBasicInfo user={user} />
+                </UIOption>
+              ))}
+          </UIMenu>
+        </UICombobox>
+      </UIComboboxHolder>
+      <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isSubmitEnabled}>
+        Add Member
+      </Button>
+    </UIHolder>
   );
 };
+
+const UIHolder = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+`;
 
 const UIComboboxHolder = styled.div``;
 
