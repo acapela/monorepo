@@ -1,6 +1,7 @@
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
+import { getDidUserJustInteract } from "~shared/interaction/isUserInteracting";
 
 interface Props {
   children: ReactNode;
@@ -13,7 +14,17 @@ export const ScrollableMessages = styled(({ children, className }: Props) => {
   return (
     <UIHolder className={className} ref={holderRef}>
       <UIInner>
-        <ScrollToBottomMonitor parentRef={holderRef} />
+        <ScrollToBottomMonitor
+          parentRef={holderRef}
+          getShouldScroll={() => {
+            if (getDidUserJustInteract()) {
+              return false;
+            }
+
+            return true;
+          }}
+        />
+
         {children}
       </UIInner>
     </UIHolder>

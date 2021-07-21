@@ -1,4 +1,5 @@
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useRef } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 
 function getSizeChange(previous: ResizeObserverEntry, current: ResizeObserverEntry) {
   const widthChange = Math.abs(previous.contentRect.width - current.contentRect.width);
@@ -15,7 +16,7 @@ function getSizeChange(previous: ResizeObserverEntry, current: ResizeObserverEnt
  */
 export function useResizeCallback(ref: RefObject<HTMLElement>, callback: (entry: ResizeObserverEntry) => void) {
   const previousEntryRef = useRef<ResizeObserverEntry | null>(null);
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const element = ref.current;
 
     if (!element) return;

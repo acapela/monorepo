@@ -6,6 +6,8 @@ export function createWindowEvent<K extends keyof WindowEventMap>(
   handler: (event: WindowEventMap[K]) => void,
   options?: AddEventListenerOptions
 ) {
+  if (typeof window === "undefined") return;
+
   window.addEventListener(type, handler, options);
 
   return function cancel() {
@@ -28,6 +30,8 @@ export function createDocumentEvent<K extends keyof DocumentEventMap>(
   handler: (event: DocumentEventMap[K]) => void,
   options?: AddEventListenerOptions
 ) {
+  if (typeof document === "undefined") return;
+
   document.addEventListener(type, handler, options);
 
   return function cancel() {
