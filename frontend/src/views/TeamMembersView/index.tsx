@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 export const TeamMembersView = () => {
-  const teamId = useAssertCurrentTeamId();
+  const user = useCurrentUser();
 
-  return <UIHolder>{teamId && <CurrentTeamMembersManager />}</UIHolder>;
+  return <UIHolder>{user?.currentTeamId && <CurrentTeamMembersManager />}</UIHolder>;
 };
 
 const UIHolder = styled.div`
