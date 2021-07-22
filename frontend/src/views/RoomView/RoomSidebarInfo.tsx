@@ -1,28 +1,22 @@
-import { useRouter } from "next/router";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
+import { RoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { RoomDetailedInfoFragment } from "~gql";
 import { TextBody12 } from "~ui/typo";
 import { DeadlineManager } from "./DeadlineManager";
 
 interface Props {
   room: RoomDetailedInfoFragment;
+  onUserLeavingRoom: () => Promise<void>;
 }
 
-export function RoomSidebarInfo({ room }: Props) {
-  const router = useRouter();
-
+export function RoomSidebarInfo({ room, onUserLeavingRoom }: Props) {
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
-
-  const handleRoomLeave = () => {
-    router.replace(`/space/${room?.space_id || ""}`);
-  };
 
   return (
     <UIRoomInfo>
       <UIManageSection>
-        <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
+        <RoomMembers onCurrentUserLeave={onUserLeavingRoom} room={room} />
       </UIManageSection>
 
       <UIManageSections>

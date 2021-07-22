@@ -1,13 +1,17 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
 import { deleteRoom, getSingleRoomQueryManager, updateRoom } from "~frontend/gql/rooms";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock, IconUsers } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 import { routes } from "~frontend/routes";
+import { openUserPickerModal } from "~frontend/ui/MembersManager/openUserPickerModal";
+import { addMember, removeMember, removeCurrentUser } from "~frontend/ui/rooms/ManageRoomMembers";
+import { assertGet } from "~shared/assert";
+import { createResolvablePromise } from "~shared/promises";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -24,6 +28,39 @@ export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: M
   if (newName === room.name) return;
 
   await updateRoom({ roomId: room.id, input: { name: newName } });
+}
+
+export async function handleManageMembers(
+  basicRoom: RoomBasicInfoFragment,
+  currentUser: UserBasicInfoFragment,
+  onUserLeave: () => Promise<void>
+) {
+  const roomId = basicRoom.id;
+
+  const detailedRoom = await getSingleRoomQueryManager.fetch({ id: roomId });
+  const room = assertGet(detailedRoom?.room, "Error: Unable to load room");
+
+  const [closeModalPromise, closeModal] = createResolvablePromise<void>();
+
+  async function handleRemoveUser(userToRemove: string) {
+    if (userToRemove === currentUser.id) {
+      await removeCurrentUser(currentUser, room, onUserLeave);
+      closeModal();
+    } else {
+      await removeMember(userToRemove, room);
+    }
+  }
+
+  async function handleAddUser(userToAdd: string) {
+    await addMember(userToAdd, roomId);
+  }
+
+  await openUserPickerModal({
+    currentUsers: room.members.map((m) => m.user),
+    onAddUser: handleAddUser,
+    onRemoveUser: handleRemoveUser,
+    asyncResolveRequest: closeModalPromise,
+  });
 }
 
 export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
@@ -86,17 +123,19 @@ export async function handleToggleRoomPrivate(room: RoomBasicInfoFragment) {
 
 interface GetRoomManagePopoverOptionsConfig {
   onEditRoomNameRequest: () => void;
+  currentUser: UserBasicInfoFragment;
+  onUserLeave: () => Promise<void>;
 }
 
 export function getRoomManagePopoverOptions(
   room: RoomBasicInfoFragment,
-  config?: GetRoomManagePopoverOptionsConfig
+  config: GetRoomManagePopoverOptionsConfig
 ): PopoverMenuOption[] {
   return [
     {
       label: "Edit room name...",
       onSelect: () => {
-        if (config?.onEditRoomNameRequest) {
+        if (config.onEditRoomNameRequest) {
           config.onEditRoomNameRequest();
           return;
         }
@@ -104,6 +143,11 @@ export function getRoomManagePopoverOptions(
         handleEditRoomName(room);
       },
       icon: <IconEdit />,
+    },
+    {
+      label: "Manage members...",
+      icon: <IconUsers />,
+      onSelect: () => handleManageMembers(room, config.currentUser, config.onUserLeave),
     },
     {
       label: room.finished_at ? "Reopen room..." : "Close room...",

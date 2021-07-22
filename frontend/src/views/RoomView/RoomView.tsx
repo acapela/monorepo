@@ -1,5 +1,8 @@
+import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { makePromiseVoidable } from "~shared/promises";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -37,12 +40,18 @@ export function RoomView(props: Props) {
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, setIsEditingRoomName] = useState(false);
+  const currentUser = useAssertCurrentUser();
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
+  const router = useRouter();
 
   const isRoomOpen = !room.finished_at;
 
   async function handleRoomNameChange(newName: string) {
     await updateRoom({ roomId: room.id, input: { name: newName } });
+  }
+
+  async function handleUserLeavingRoom(): Promise<void> {
+    return makePromiseVoidable(router.replace(`/space/${room.space_id || ""}`));
   }
 
   async function handleCreateNewTopic() {
@@ -81,6 +90,8 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                   <PopoverMenuTrigger
                     options={getRoomManagePopoverOptions(room, {
                       onEditRoomNameRequest: () => setIsEditingRoomName(true),
+                      currentUser,
+                      onUserLeave: handleUserLeavingRoom,
                     })}
                   >
                     <CircleOptionsButton />
@@ -89,7 +100,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
               </UIRoomHead>
             }
           >
-            <RoomSidebarInfo room={room} />
+            <RoomSidebarInfo room={room} onUserLeavingRoom={handleUserLeavingRoom} />
           </CollapsePanel>
 
           <CardBase>
