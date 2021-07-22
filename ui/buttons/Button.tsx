@@ -106,6 +106,7 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
     gap: 8px;
 
     ${UIIconHolder} {
+      // specific font size to match the design
       font-size: 1.14;
     }
   `,
@@ -115,6 +116,7 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
     gap: 8px;
 
     ${UIIconHolder} {
+      // specific font size to match the design
       font-size: 1.25;
     }
   `,
