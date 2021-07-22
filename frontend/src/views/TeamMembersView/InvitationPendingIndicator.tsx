@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { PRIMARY_PINK_1, PRIMARY_PURPLE_1, WHITE } from "~ui/colors";
+import { PRIMARY_PURPLE_1, WHITE } from "~ui/colors";
 import { IconUserPlus } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
 import { squareStyle } from "~ui/styleHelpers";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
-import { TextMeta12, TextMeta10Secondary } from "~ui/typo";
+import { TextMeta12Primary, TextMeta10Secondary } from "~ui/typo";
 
 interface Props {
   email: string;
@@ -17,7 +17,7 @@ export const InvitationPendingIndicator = ({ email }: Props) => {
         <IconUserPlus />
       </UIIconHolder>
       <TextMeta10Secondary>{email}</TextMeta10Secondary>
-      <UIStatus speziaMono>(Invite pending)</UIStatus>
+      <TextMeta12Primary speziaMono>(Invite pending)</TextMeta12Primary>
     </UserBasicInfoContainer>
   );
 };
@@ -34,8 +34,4 @@ const UIIconHolder = styled.div`
 
   background: ${PRIMARY_PURPLE_1};
   ${borderRadius.circle};
-`;
-
-const UIStatus = styled(TextMeta12)`
-  color: ${PRIMARY_PINK_1};
 `;
