@@ -27,8 +27,8 @@ export const CurrentTeamMembersManager = () => {
     removeTeamInvitation({ id: invitationId });
   };
 
-  const user = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = user.id === team?.owner_id;
+  const currentUser = useAssertCurrentUser();
+  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
   return (
     <PanelWithTopbarAndCloseButton title="Team members">
@@ -38,15 +38,17 @@ export const CurrentTeamMembersManager = () => {
           {teamMembers.map((user) => (
             <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
-              <CircleCloseIconButton
-                isDisabled={!isCurrentUserTeamOwner}
-                onClick={() => handleRemoveTeamMember(user.id)}
-                tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete members" : undefined}
-              />
+              {!(user.id === team?.owner_id) && (
+                <CircleCloseIconButton
+                  isDisabled={!isCurrentUserTeamOwner}
+                  onClick={() => handleRemoveTeamMember(user.id)}
+                  tooltip={isCurrentUserTeamOwner ? undefined : "Only team owner can delete members"}
+                />
+              )}
             </UIItemHolder>
           ))}
           {pendingInvitations.map(({ email, id }) => (
-            <UIItemHolder key={user.id}>
+            <UIItemHolder key={id}>
               <InvitationPendingIndicator email={email} />
               <CircleCloseIconButton
                 isDisabled={!isCurrentUserTeamOwner}
