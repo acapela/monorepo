@@ -24,8 +24,8 @@ export interface ButtonDisabledInfo {
   reason: string;
 }
 
-type ButtonSize = "small" | "medium" | "large";
-type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
+export type ButtonSize = "small" | "medium" | "large";
+export type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -94,12 +94,14 @@ export const Button = styled(
 
 const UIIconHolder = styled.div``;
 
+export const smallSizeButtonStyle = css`
+  font-size: 12px;
+  padding: 10px 8px;
+  gap: 4px;
+`;
+
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
-  small: css`
-    font-size: 12px;
-    padding: 10px 8px;
-    gap: 4px;
-  `,
+  small: smallSizeButtonStyle,
   medium: css`
     font-size: 14px;
     padding: 12px;

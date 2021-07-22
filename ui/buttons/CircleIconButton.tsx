@@ -3,8 +3,8 @@ import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
+import { ButtonSize } from "./Button";
 
-type ButtonSize = "small" | "medium" | "large";
 type ButtonKind = "secondary" | "transparent";
 
 export interface Props {

@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { BASE_GREY_1, BASE_GREY_4, PRIMARY_PINK_1, WHITE, BASE_GREY_6, BASE_GREY_7 } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
+import { smallSizeButtonStyle } from "./Button";
 
 interface Props {
   isActive: boolean;
@@ -39,10 +40,9 @@ const activeButtonStyles = css`
 export const UIButton = styled.button<{ isActive: boolean }>`
   display: flex;
   align-items: center;
-  gap: 4px;
 
-  padding: 10px 8px;
-  font-size: 12px;
+  ${smallSizeButtonStyle}
+
   color: ${BASE_GREY_1};
   ${shadow.button}
   ${borderRadius.circle}
