@@ -1,6 +1,7 @@
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { motion } from "framer-motion";
 import { typedKeys } from "~shared/object";
+import { BASE_GREY_3 } from "~ui/colors";
 
 /**
  * TODO: Those are not used yet. Goal is to replace current `ui/colors` with those.
@@ -111,6 +112,10 @@ export const TextMeta10 = styled(motion.p)<TypographyProps>`
   ${() => typographyStyles};
   font-size: 0.625rem;
   line-height: 1.2;
+`;
+
+export const TextMeta10Secondary = styled(TextMeta10)`
+  color: ${BASE_GREY_3};
 `;
 
 export const TextMeta12 = styled(motion.p)<TypographyProps>`

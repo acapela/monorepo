@@ -4,8 +4,7 @@ import { IconUserPlus } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
 import { squareStyle } from "~ui/styleHelpers";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
-import { UserBasicInfoEmail } from "~frontend/ui/users/UserBasicInfoEmail";
-import { TextMeta12 } from "~frontend/../../ui/typo";
+import { TextMeta12, TextMeta10Secondary } from "~ui/typo";
 
 interface Props {
   email: string;
@@ -17,7 +16,7 @@ export const InvitationInfo = ({ email }: Props) => {
       <UIIconHolder>
         <IconUserPlus />
       </UIIconHolder>
-      <UserBasicInfoEmail>{email}</UserBasicInfoEmail>
+      <TextMeta10Secondary>{email}</TextMeta10Secondary>
       <UIStatus speziaMono>(Invite pending)</UIStatus>
     </UserBasicInfoContainer>
   );
