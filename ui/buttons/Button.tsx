@@ -25,7 +25,7 @@ export interface ButtonDisabledInfo {
 }
 
 type ButtonSize = "small" | "medium" | "large";
-type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
+type ButtonKind = "primary" | "secondary" | "tertiary" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -124,7 +124,7 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
       color: ${BASE_GREY_4};
     }
   `,
-  secondary: css`
+  tertiary: css`
     background: ${BASE_GREY_6};
     color: ${BASE_GREY_1};
     border: 1.5px solid transparent;
@@ -133,7 +133,7 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
       color: ${BASE_GREY_2};
     }
   `,
-  outlined: css`
+  secondary: css`
     background: ${WHITE};
     color: ${BASE_GREY_1};
     border: 1px solid ${BASE_GREY_4};
@@ -170,7 +170,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
       background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
     }
   `,
-  secondary: css`
+  tertiary: css`
     &:hover {
       background: ${BASE_GREY_4};
     }
@@ -179,7 +179,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
       border-color: ${PRIMARY_PINK_1};
     }
   `,
-  outlined: css`
+  secondary: css`
     &:hover {
       background: ${BASE_GREY_6};
     }

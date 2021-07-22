@@ -64,7 +64,7 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
           </TextH6>
           {!isRoomOpen && (
             <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
-              <Button size="small" kind="secondary" ref={buttonRef}>
+              <Button size="small" kind="tertiary" ref={buttonRef}>
                 Room summary
               </Button>
             </routes.spaceRoomSummary.Link>

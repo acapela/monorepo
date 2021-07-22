@@ -112,7 +112,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
             )}
             {isAbleToAddTopic && (
               <UIAddTopicButton
-                kind="outlined"
+                kind="secondary"
                 ref={buttonRef}
                 onClick={handleCreateTopic}
                 icon={<IconPlusSquare />}
