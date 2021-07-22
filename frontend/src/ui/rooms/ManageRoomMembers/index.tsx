@@ -1,6 +1,6 @@
 import { flipExecutionOrder } from "~shared/array";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { addRoomMember, isCurrentUserRoomMember, removeRoomMember } from "~frontend/gql/rooms";
+import { addRoomMember, removeRoomMember } from "~frontend/gql/rooms";
 import { MembersManager } from "~frontend/ui/MembersManager";
 import { RoomDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
@@ -13,7 +13,6 @@ interface Props {
 export const RoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const currentUser = useAssertCurrentUser();
   const members = room.members.map((m) => m.user);
-  const amIMember = isCurrentUserRoomMember(room);
 
   async function handleAddMember(userId: string) {
     await addMember(userId, room.id);
@@ -28,12 +27,7 @@ export const RoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   }
 
   return (
-    <MembersManager
-      isReadonly={!amIMember}
-      users={members}
-      onAddMemberRequest={handleAddMember}
-      onRemoveMemberRequest={handleRemoveMember}
-    />
+    <MembersManager users={members} onAddMemberRequest={handleAddMember} onRemoveMemberRequest={handleRemoveMember} />
   );
 };
 

@@ -21,6 +21,7 @@ import { SpaceGradient } from "./spaceGradient";
 import { routes } from "~frontend/../routes";
 import { openUserPickerModal } from "../MembersManager/openUserPickerModal";
 import { createResolvablePromise } from "~shared/promises";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -31,6 +32,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
   const spaceId = space.id;
   const router = useRouter();
   const amIMember = isCurrentUserSpaceMember(space);
+  const currentUser = useAssertCurrentUser();
 
   const [addSpaceMember] = useAddSpaceMemberMutation();
   const [removeSpaceMember] = useRemoveSpaceMemberMutation();
@@ -71,7 +73,7 @@ export function SpaceCard({ space, isClickable = true }: Props) {
     const [closeModalPromise, closeModal] = createResolvablePromise<void>();
 
     function leaveAndCloseWhenNoMembers(userToRemove: string) {
-      if (space.members.length === 1) {
+      if (userToRemove === currentUser.id) {
         closeModal();
       }
 
@@ -145,7 +147,6 @@ export function SpaceCard({ space, isClickable = true }: Props) {
               users={space.members.map((m) => m.user)}
               onAddMemberRequest={handleJoin}
               onRemoveMemberRequest={handleLeave}
-              isReadonly={!amIMember}
             />
           </UIMembers>
         </UIInfo>
