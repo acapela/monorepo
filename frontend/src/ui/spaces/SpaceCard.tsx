@@ -1,27 +1,14 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { handleWithStopPropagation } from "~shared/events";
-import { ToggleButton } from "~ui/buttons/ToggleButton";
-import { CardBase } from "~ui/card/Base";
-import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
-import { routes } from "~frontend/../routes";
+import { useSpaceManager } from "~frontend/../pages/space/useSpaceManager";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import {
-  deleteSpace,
-  isCurrentUserSpaceMember,
-  useAddSpaceMemberMutation,
-  useEditSpaceMutation,
-  useRemoveSpaceMemberMutation,
-} from "~frontend/gql/spaces";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconCheck, IconEdit, IconLogIn, IconSelection, IconTrash } from "~ui/icons";
+import { CardBase } from "~ui/card/Base";
+import { IconEdit, IconTrash } from "~ui/icons";
+import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
+import { JoinToggleButton } from "../buttons/JoinToggleButton";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { AvatarList } from "../users/AvatarList";
-import { JoinToggleButton } from "../buttons/JoinToggleButton";
-import { useSpaceManager } from "~frontend/../pages/space/useSpaceManager";
 
 interface Props {
   space: SpaceBasicInfoFragment;

@@ -5,11 +5,11 @@ import { routes } from "~frontend/routes";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { FilteredRoomsList } from "~frontend/ui/rooms/RoomsList";
-import { createOpenRoomFilter, createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
+import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { IconPlusSquare } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { SpaceHeader } from "./SpaceHeader";
@@ -20,9 +20,6 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 interface Props {
   spaceId: string;
 }
-
-const openRoomsFilter = createOpenRoomFilter(true);
-const closedRoomsFilter = createOpenRoomFilter(false);
 
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });

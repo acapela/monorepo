@@ -1,8 +1,10 @@
 import { ComponentType } from "react";
 import styled from "styled-components";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type InferProps<C extends ComponentType<any>> = C extends ComponentType<infer P> ? P : never;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function injectProps<C extends ComponentType<any>>(Component: C, injectedProps: Partial<InferProps<C>>): C {
   function ComponentWithInjectedProps(props: InferProps<C>) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

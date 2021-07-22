@@ -11,7 +11,6 @@ import {
   WHITE,
   BUTTON_BACKGROUND_ACTIVE_COLOR,
 } from "~ui/colors";
-import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
 
 type ButtonSize = "small" | "large" | "inherit";
