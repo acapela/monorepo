@@ -28,7 +28,7 @@ const UIHolder = styled.div`
   display: flex;
   column-gap: 8px;
 
-  ${CircleIconButton} {
+  ${CircleCloseIconButton} {
     margin-left: 8px;
   }
 `;
