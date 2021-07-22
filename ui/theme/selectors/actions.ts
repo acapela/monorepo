@@ -11,6 +11,59 @@ type CssActionState = VariantStates<CssColorProvider>;
 /*
  * Our action states try to keep DRY and don't include colors already included in the default state.
  * This function includes all of these defaults so that the clients of this selector doesn't need to
+ *
+ * # Before
+ * {
+ *   default: {
+ *     background: colors.BASE_GREY_6,
+ *     text: colors.BASE_GREY_1,
+ *     icon: colors.PRIMARY_PINK_1,
+ *   },
+ *   hover: {
+ *     background: colors.BASE_GREY_4,
+ *   },
+ *   disabled: {
+ *     icon: colors.BASE_GREY_4,
+ *     text: colors.BASE_GREY_4,
+ *     background: setColorOpacity(colors.BASE_GREY_7, 0.5),
+ *   }
+ * }
+ *
+ * # After
+ * {
+ *   default: {
+ *     background: colors.BASE_GREY_6,
+ *     text: colors.BASE_GREY_1,
+ *     icon: colors.PRIMARY_PINK_1,
+ *   },
+ *   hover: {
+ *     background: colors.BASE_GREY_4,
+ *     text: colors.BASE_GREY_1,        // <---- This is added from default
+ *     icon: colors.PRIMARY_PINK_1,     // <---- This is added from default
+ *   },
+ *   disabled: {
+ *     icon: colors.BASE_GREY_4,
+ *     text: colors.BASE_GREY_4,
+ *     background: setColorOpacity(colors.BASE_GREY_7, 0.5),
+ *   }
+ * }
+ *
+ * ** Note: The above example used strings for simplicity sake, but this will actually return a styled components
+ * selector for that value
+ * {
+ *   default: {
+ *     ...
+ *     text: ${props => props.them.interactive.primary.default.text}
+ *     ...
+ *   },
+ *   hover: {
+ *     ...
+ *     text: ${props => props.them.interactive.primary.default.text}
+ *     ...
+ *   }
+ *   ...
+ * }
+ *
  */
 function withDefaults(actionState: ContextualActionState): ContextualActionState {
   return produce(actionState, (draft: ContextualActionState) => {
