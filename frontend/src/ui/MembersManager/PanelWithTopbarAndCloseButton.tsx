@@ -3,8 +3,7 @@ import styled from "styled-components";
 import { TextH3 } from "~ui/typo";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { WHITE } from "~ui/colors";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { IconCross } from "~ui/icons";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
@@ -20,7 +19,7 @@ export const PanelWithTopbarAndCloseButton = ({ title, children, onClose }: Prop
     <UIHolder>
       <UIHeader>
         <TextH3 spezia>{title}</TextH3>
-        {onClose && <CircleIconButton size="medium" icon={<IconCross />} onClick={onClose} />}
+        {onClose && <CircleCloseIconButton onClick={onClose} />}
       </UIHeader>
       {children}
     </UIHolder>

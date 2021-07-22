@@ -4,11 +4,11 @@ import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserBasicInfoFragment } from "~gql";
 import { UsersCombobox } from "./UsersCombobox";
 import { UISelectGridContainer } from "./UISelectGridContainer";
-import { LabelWithRemoveButton } from "./LabelWithRemoveButton";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 
 interface Props {
   title: string;
@@ -35,9 +35,10 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (
-                  <LabelWithRemoveButton key={user.id} onRemove={() => onRemoveUser(user.id)}>
+                  <UIItemHolder>
                     <UserBasicInfo user={user} />
-                  </LabelWithRemoveButton>
+                    <CircleCloseIconButton onClick={() => onRemoveUser(user.id)} />
+                  </UIItemHolder>
                 ))}
               </UISelectGridContainer>
             )}
@@ -52,4 +53,12 @@ const UIHolder = styled.div`
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 20px;
+`;
+
+const UIItemHolder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px;
 `;

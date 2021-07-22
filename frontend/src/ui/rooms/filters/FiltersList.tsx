@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { IconCross } from "~ui/icons";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { getObjectKey } from "~shared/object";
 import { Button } from "~ui/buttons/Button";
 import { RoomFilter } from "./filter";
@@ -17,7 +16,7 @@ export function FiltersList({ filters, onFilterRemoveRequest }: Props) {
         return (
           <Button kind="transparent" icon={filter.icon} iconPosition="start" key={getObjectKey(filter)}>
             {filter.label}
-            <CircleIconButton icon={<IconCross />} onClick={() => onFilterRemoveRequest(filter)} />
+            <CircleCloseIconButton onClick={() => onFilterRemoveRequest(filter)} />
           </Button>
         );
       })}

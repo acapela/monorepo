@@ -8909,7 +8909,7 @@ export type TeamInvitationBasicInfoFragment = (
 
 export type TeamDetailedInfoFragment = (
   { __typename?: 'team' }
-  & Pick<Team, 'id' | 'name' | 'slug'>
+  & Pick<Team, 'id' | 'name' | 'slug' | 'owner_id'>
   & { spaces: Array<(
     { __typename?: 'space' }
     & SpaceBasicInfoFragment

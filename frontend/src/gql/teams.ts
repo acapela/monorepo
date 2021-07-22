@@ -58,6 +58,7 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
       id
       name
       slug
+      owner_id
       spaces {
         ...SpaceBasicInfo
       }

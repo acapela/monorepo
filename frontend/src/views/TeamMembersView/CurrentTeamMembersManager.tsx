@@ -1,10 +1,12 @@
+import styled from "styled-components";
 import { PanelWithTopbarAndCloseButton } from "~frontend/ui/MembersManager/PanelWithTopbarAndCloseButton";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
-import { LabelWithRemoveButton } from "~frontend/ui/MembersManager/LabelWithRemoveButton";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
@@ -25,23 +27,44 @@ export const CurrentTeamMembersManager = () => {
     removeTeamInvitation({ id: invitationId });
   };
 
+  const user = useAssertCurrentUser();
+  const isCurrentUserTeamOwner = user.id === team?.owner_id;
+
   return (
     <PanelWithTopbarAndCloseButton title="Team members">
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
           {teamMembers.map((user) => (
-            <LabelWithRemoveButton key={user.id} onRemove={() => handleRemoveTeamMember(user.id)}>
+            <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
-            </LabelWithRemoveButton>
+              <CircleCloseIconButton
+                isDisabled={!isCurrentUserTeamOwner}
+                onClick={() => handleRemoveTeamMember(user.id)}
+                tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete members" : undefined}
+              />
+            </UIItemHolder>
           ))}
           {pendingInvitations.map(({ email, id }) => (
-            <LabelWithRemoveButton key={email} onRemove={() => handleRemoveInvitation(id)}>
+            <UIItemHolder key={user.id}>
               <InvitationPendingIndicator email={email} />
-            </LabelWithRemoveButton>
+              <CircleCloseIconButton
+                isDisabled={!isCurrentUserTeamOwner}
+                onClick={() => handleRemoveInvitation(id)}
+                tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete invitations" : undefined}
+              />
+            </UIItemHolder>
           ))}
         </UISelectGridContainer>
       )}
     </PanelWithTopbarAndCloseButton>
   );
 };
+
+const UIItemHolder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px;
+`;
