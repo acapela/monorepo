@@ -6,7 +6,7 @@ import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
 
-export const ManageCurrentTeamMembers = () => {
+export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
 
   const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
