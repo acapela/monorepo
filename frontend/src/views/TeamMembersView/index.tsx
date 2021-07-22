@@ -2,6 +2,9 @@ import styled from "styled-components";
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { TextMeta10Secondary } from "~ui/typo";
+
+const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
 export const TeamMembersView = () => {
   const user = useCurrentUser();
@@ -11,7 +14,8 @@ export const TeamMembersView = () => {
   return (
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
-        <CurrentTeamMembersManager />
+        {user?.currentTeamId ? <CurrentTeamMembersManager /> : <div />}
+        {appVersion && <TextMeta10Secondary>Version: {appVersion}</TextMeta10Secondary>}
       </UIHolder>
     </SpacedAppLayoutContainer>
   );
@@ -19,6 +23,10 @@ export const TeamMembersView = () => {
 
 const UIHolder = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: start;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  min-height: 100%;
 `;
