@@ -4,7 +4,7 @@ import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridC
 import { LabelWithRemoveButton } from "~frontend/ui/MembersManager/LabelWithRemoveButton";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
-import { InvitationInfo } from "./InvitationInfo";
+import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
 
 export const ManageCurrentTeamMembers = () => {
   const [team] = useCurrentTeamDetails();
@@ -37,7 +37,7 @@ export const ManageCurrentTeamMembers = () => {
           ))}
           {pendingInvitations.map(({ email, id }) => (
             <LabelWithRemoveButton key={email} onRemove={() => handleRemoveInvitation(id)}>
-              <InvitationInfo email={email} />
+              <InvitationPendingIndicator email={email} />
             </LabelWithRemoveButton>
           ))}
         </UISelectGridContainer>

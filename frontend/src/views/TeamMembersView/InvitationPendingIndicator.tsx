@@ -10,7 +10,7 @@ interface Props {
   email: string;
 }
 
-export const InvitationInfo = ({ email }: Props) => {
+export const InvitationPendingIndicator = ({ email }: Props) => {
   return (
     <UserBasicInfoContainer>
       <UIIconHolder>
