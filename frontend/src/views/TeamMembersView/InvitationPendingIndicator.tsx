@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { PRIMARY_PURPLE_1, WHITE } from "~ui/colors";
 import { IconUserPlus } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
-import { squareStyle } from "~ui/styleHelpers";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
 import { TextMeta12Primary, TextMeta10Secondary } from "~ui/typo";
 
@@ -27,7 +26,8 @@ const UIIconHolder = styled.div`
   align-items: center;
   justify-content: center;
 
-  ${squareStyle(32)};
+  width: 32px;
+  height: 32px;
 
   font-size: 1.25rem;
   color: ${WHITE};

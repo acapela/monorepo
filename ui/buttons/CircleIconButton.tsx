@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
-import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
 
 type ButtonSize = "small" | "medium" | "large";
@@ -43,13 +42,16 @@ export const CircleIconButton = styled(function CircleIconButton({
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
-    ${squareStyle(24)}
+    width: 24px;
+    height: 24px;
   `,
   medium: css`
-    ${squareStyle(32)}
+    width: 32px;
+    height: 32px;
   `,
   large: css`
-    ${squareStyle(36)}
+    width: 36px;
+    height: 36px;
   `,
 };
 
