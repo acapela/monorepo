@@ -1,5 +1,5 @@
 import { HTMLMotionProps } from "framer-motion";
-import { forwardRef, ReactNode } from "react";
+import { ForwardedRef, forwardRef, ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { borderRadius, shadow } from "~ui/baseStyles";
@@ -17,15 +17,11 @@ import {
   BASE_GREY_LINES,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
-
-export type ButtonIconPosition = "start" | "end";
+import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
 
 export interface ButtonDisabledInfo {
   reason: string;
 }
-
-type ButtonSize = "small" | "medium" | "large";
-type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -71,7 +67,8 @@ export const Button = styled(
 
     return (
       <UIButton
-        ref={ref}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ref={ref as ForwardedRef<any>}
         as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
@@ -96,7 +93,7 @@ const UIIconHolder = styled.div`
   font-size: 1.2rem;
 `;
 
-const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
+const buttonSizeSpecificStyle: Partial<Record<ButtonSize, FlattenSimpleInterpolation>> = {
   small: css`
     font-size: 12px;
     padding: 10px 8px;

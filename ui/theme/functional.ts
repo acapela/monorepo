@@ -12,6 +12,7 @@ export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true
   color: ${PRIMARY_PINK_1};
   letter-spacing: 0.4em;
 
+  /* If possible, style 'gradient based' text color */
   @supports (-webkit-background-clip: text) {
     background: linear-gradient(90deg, ${PRIMARY_TEAL_1}, ${PRIMARY_PINK_1});
     background-clip: text;

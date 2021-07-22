@@ -12,9 +12,7 @@ import {
   BUTTON_BACKGROUND_ACTIVE_COLOR,
 } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
-
-type ButtonSize = "small" | "large" | "inherit";
-type ButtonKind = "secondary" | "transparent" | "primary";
+import { ButtonKind, ButtonSize } from "./types";
 
 interface Props {
   icon: ReactNode;
@@ -44,6 +42,9 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
   small: css`
     font-size: 24px;
   `,
+  medium: css`
+    font-size: 30px;
+  `,
   large: css`
     font-size: 36px;
   `,
@@ -52,7 +53,7 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
   `,
 };
 
-const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
   primary: css`
     background: ${BUTTON_BACKGROUND_COLOR};
     color: ${WHITE};
