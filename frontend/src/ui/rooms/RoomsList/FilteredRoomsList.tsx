@@ -1,10 +1,8 @@
 import styled from "styled-components";
 import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
-import { RoomsList } from "./RoomsList";
 import { useRoomsQuery } from "~frontend/gql/rooms";
-import { groupByFilter } from "~frontend/../../shared/groupByFilter";
+import { groupByFilter } from "~shared/groupByFilter";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
 import { RoomsListCategory } from "./RoomsListCategory";
 
 interface Props {

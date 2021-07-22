@@ -23,11 +23,19 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
   const [edit] = useEditSpaceMutation();
 
   async function join() {
-    await addSpaceMember({ userId: user.id, spaceId });
+    await addMember(user.id);
   }
 
   async function leave() {
-    await removeSpaceMember({ userId: user.id, spaceId });
+    await removeMember(user.id);
+  }
+
+  async function addMember(userId: string) {
+    addSpaceMember({ userId, spaceId });
+  }
+
+  async function removeMember(userId: string) {
+    removeSpaceMember({ userId, spaceId });
   }
 
   async function toggleJoin() {
@@ -73,6 +81,8 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     await deleteSpace({ spaceId: space.id });
   }
 
+  const members = space.members.map((member) => member.user);
+
   return {
     edit,
     join,
@@ -81,5 +91,8 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     isCurrentUserMember,
     editNameWithModal,
     remove,
+    addMember,
+    removeMember,
+    members,
   };
 }

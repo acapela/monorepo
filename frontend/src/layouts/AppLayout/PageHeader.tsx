@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { PopoverMenuOption } from "~frontend/../../ui/popovers/PopoverMenu";
-import { HeroItemTitle } from "~frontend/../../ui/theme/functional";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
+import { HeroItemTitle } from "~ui/theme/functional";
 
 interface Props {
   title: string;

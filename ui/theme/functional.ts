@@ -3,6 +3,11 @@ import { injectProps } from "~shared/components/injectProps";
 import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/colors";
 import { TextBody14, TextH2, TextH3 } from "./typography";
 
+/**
+ * The goal of this module is to create functional text styles that are used in multiple similar use cases.
+ *
+ */
+
 export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true }))`
   color: ${PRIMARY_PINK_1};
   letter-spacing: 0.4em;

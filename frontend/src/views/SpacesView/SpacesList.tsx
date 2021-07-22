@@ -5,7 +5,7 @@ import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { groupByFilter } from "~shared/groupByFilter";
-import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
+import { CategoryNameLabel } from "~ui/theme/functional";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();

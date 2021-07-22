@@ -5,11 +5,9 @@ import { UserBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
-import { Button } from "~ui/buttons/Button";
-import { ToggleButton } from "~ui/buttons/ToggleButton";
-import { IconLogIn, IconCheck, IconPlus } from "~ui/icons";
+import { IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
-import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { JoinToggleButton } from "../buttons/JoinToggleButton";
 
 interface Props {

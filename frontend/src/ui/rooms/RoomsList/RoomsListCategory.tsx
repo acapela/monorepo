@@ -1,12 +1,9 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
+import { RoomDetailedInfoFragment } from "~gql";
 import { RoomsList } from "./RoomsList";
-import { useRoomsQuery } from "~frontend/gql/rooms";
-import { groupByFilter } from "~frontend/../../shared/groupByFilter";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
-import { Toggle } from "~frontend/../../ui/toggle";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
+import { CategoryNameLabel } from "~ui/theme/functional";
+import { Toggle } from "~ui/toggle";
+import { useBoolean } from "~shared/hooks/useBoolean";
 
 interface Props {
   className?: string;
@@ -34,10 +31,12 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
     <UIGroupHolder className={className}>
       <UIHeader>
         <CategoryNameLabel>{categoryName}</CategoryNameLabel>
-        <UIClosedRoomsFilter>
-          <CategoryNameLabel>Closed</CategoryNameLabel>
-          <Toggle size="small" onSet={showClosed} onUnset={dontShowClosed} label="Closed" />
-        </UIClosedRoomsFilter>
+        {showClosedToggle && (
+          <UIClosedRoomsFilter>
+            <CategoryNameLabel>Closed</CategoryNameLabel>
+            <Toggle size="small" onSet={showClosed} onUnset={dontShowClosed} label="Closed" />
+          </UIClosedRoomsFilter>
+        )}
       </UIHeader>
 
       <RoomsList rooms={roomsToShow} />

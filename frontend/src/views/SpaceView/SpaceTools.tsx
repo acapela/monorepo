@@ -1,23 +1,44 @@
 import styled from "styled-components";
-import { SpaceDetailedInfoFragment } from "~frontend/../../gql";
-import { PopoverMenuTrigger } from "~frontend/../../ui/popovers/PopoverMenuTrigger";
-import { useSpaceManager } from "~frontend/../pages/space/useSpaceManager";
+import { SpaceDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { useSpaceManager } from "~frontend/pages/space/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { CircleOptionsButton, OptionsButton } from "~frontend/ui/options/OptionsButton";
+import { UserPickerModal } from "~frontend/ui/MembersManager/UserPickerModal";
+import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 
 interface Props {
   space: SpaceDetailedInfoFragment;
 }
 
 export function SpaceTools({ space }: Props) {
-  const { isCurrentUserMember, join, leave } = useSpaceManager(space);
+  const { isCurrentUserMember, join, leave, addMember, removeMember, members, editNameWithModal, remove } =
+    useSpaceManager(space);
+  const [isPickingUser, { set: openUsersManager, unset: closeUsersManager }] = useBoolean(false);
+
   return (
-    <UIHolder>
-      <JoinToggleButton isMember={isCurrentUserMember} onJoin={join} onLeave={leave} />
-      <PopoverMenuTrigger options={[]}>
-        <CircleOptionsButton />
-      </PopoverMenuTrigger>
-    </UIHolder>
+    <>
+      {isPickingUser && (
+        <UserPickerModal
+          currentUsers={members}
+          onCloseRequest={closeUsersManager}
+          onAddUser={addMember}
+          onRemoveUser={removeMember}
+        />
+      )}
+      <UIHolder>
+        <JoinToggleButton isMember={isCurrentUserMember} onJoin={join} onLeave={leave} />
+        <PopoverMenuTrigger
+          options={[
+            { label: "Manage team members", onSelect: openUsersManager },
+            { label: "Rename space...", onSelect: editNameWithModal },
+            { label: "Delete space...", onSelect: remove, isDestructive: true },
+          ]}
+        >
+          <CircleOptionsButton />
+        </PopoverMenuTrigger>
+      </UIHolder>
+    </>
   );
 }
 
