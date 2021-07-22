@@ -10,6 +10,7 @@ import { ToggleButton } from "~ui/buttons/ToggleButton";
 import { IconLogIn, IconCheck, IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
 import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
+import { JoinToggleButton } from "../buttons/JoinToggleButton";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -58,15 +59,11 @@ export const MembersManager = styled(function MembersManager({
         </UIMembers>
         <UIActions>
           {user && (
-            <ToggleButton
-              onClick={handleWithStopPropagation(() =>
-                isMember ? onRemoveMemberRequest(user.id) : onAddMemberRequest(user.id)
-              )}
-              isActive={isMember}
-              icon={isMember ? <IconCheck /> : <IconLogIn />}
-            >
-              {isMember ? "Joined" : "Join"}
-            </ToggleButton>
+            <JoinToggleButton
+              isMember={isMember}
+              onJoin={() => onAddMemberRequest(user.id)}
+              onLeave={() => onRemoveMemberRequest(user.id)}
+            />
           )}
         </UIActions>
       </UIHolder>

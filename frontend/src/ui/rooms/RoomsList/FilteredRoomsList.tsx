@@ -5,6 +5,7 @@ import { useRoomsQuery } from "~frontend/gql/rooms";
 import { groupByFilter } from "~frontend/../../shared/groupByFilter";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
+import { RoomsListCategory } from "./RoomsListCategory";
 
 interface Props {
   className?: string;
@@ -21,17 +22,9 @@ export const FilteredRoomsList = styled(function FilteredRoomsList({ className, 
 
   return (
     <UIHolder className={className}>
-      {joinedRooms.length > 0 && (
-        <UIGroupHolder>
-          <CategoryNameLabel>Joined Rooms</CategoryNameLabel>
-          <RoomsList rooms={joinedRooms} />
-        </UIGroupHolder>
-      )}
+      {joinedRooms.length > 0 && <RoomsListCategory categoryName="Joined Rooms" rooms={joinedRooms} showClosedToggle />}
       {notJoinedRooms.length > 0 && (
-        <UIGroupHolder>
-          <CategoryNameLabel>Other rooms</CategoryNameLabel>
-          <RoomsList rooms={notJoinedRooms} />
-        </UIGroupHolder>
+        <RoomsListCategory categoryName="Joined Rooms" rooms={notJoinedRooms} showClosedToggle />
       )}
     </UIHolder>
   );
@@ -41,9 +34,4 @@ const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   gap: 64px;
-`;
-const UIGroupHolder = styled.div`
-  ${CategoryNameLabel} {
-    margin-bottom: 16px;
-  }
 `;

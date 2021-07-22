@@ -18,7 +18,7 @@ export function HomeView() {
   const [roomQuery, setFilters] = useRoomFilterVariables([openRoomFilter]);
 
   return (
-    <UIHolder>
+    <UIHolder isNarrow>
       <UIContent>
         <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
         <FilteredRoomsList query={roomQuery} />
@@ -41,7 +41,6 @@ const UIContent = styled.div`
 
   ${FilteredRoomsList} {
     margin-bottom: 32px;
-    max-width: 800px;
     width: 100%;
   }
 `;

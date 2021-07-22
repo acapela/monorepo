@@ -20,83 +20,38 @@ import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconCheck, IconEdit, IconLogIn, IconSelection, IconTrash } from "~ui/icons";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { AvatarList } from "../users/AvatarList";
+import { JoinToggleButton } from "../buttons/JoinToggleButton";
+import { useSpaceManager } from "~frontend/../pages/space/useSpaceManager";
 
 interface Props {
   space: SpaceBasicInfoFragment;
 }
 
 export function SpaceCard({ space }: Props) {
-  const spaceId = space.id;
+  const { editNameWithModal, isCurrentUserMember, join, leave, remove } = useSpaceManager(space);
+
   const router = useRouter();
-  const amIMember = isCurrentUserSpaceMember(space);
   const user = useAssertCurrentUser();
-
-  const [addSpaceMember] = useAddSpaceMemberMutation();
-  const [removeSpaceMember] = useRemoveSpaceMemberMutation();
-  const [editSpace] = useEditSpaceMutation();
-
-  async function handleJoin() {
-    await addSpaceMember({ userId: user.id, spaceId });
-  }
-
-  async function handleLeave() {
-    await removeSpaceMember({ userId: user.id, spaceId });
-  }
 
   function handleOpen() {
     router.push(`space/${space.id}`);
-  }
-
-  async function handleEditSpace() {
-    const newSpaceName = await openUIPrompt({
-      title: "Change space name",
-      placeholder: "e.g. Design team, Marketing department, iOS developers...",
-      inputIcon: <IconSelection />,
-      submitLabel: "Change name",
-      validateInput: createLengthValidator("Space name", 3),
-      initialValue: space.name,
-    });
-
-    if (!newSpaceName?.trim()) return;
-
-    if (newSpaceName === space.name) return;
-
-    await editSpace({ spaceId: space?.id, input: { name: newSpaceName } });
-  }
-
-  async function handleDeleteSpace() {
-    const didConfirm = await openConfirmPrompt({
-      title: `Remove space`,
-      description: (
-        <>
-          Are you sure you want to remove space <strong>{space.name}</strong>
-        </>
-      ),
-      confirmLabel: `Remove`,
-    });
-
-    if (!didConfirm) return;
-
-    routes.spaces.push({});
-
-    await deleteSpace({ spaceId: space.id });
   }
 
   return (
     <>
       <UIHolder isClickable onClick={handleOpen}>
         <UIBanner>
-          {amIMember && (
+          {isCurrentUserMember && (
             <CornerOptionsMenu
               options={[
                 {
                   label: "Edit space name...",
-                  onSelect: handleEditSpace,
+                  onSelect: editNameWithModal,
                   icon: <IconEdit />,
                 },
                 {
                   label: "Delete space...",
-                  onSelect: handleDeleteSpace,
+                  onSelect: remove,
                   icon: <IconTrash />,
                   isDestructive: true,
                 },
@@ -112,13 +67,7 @@ export function SpaceCard({ space }: Props) {
           <PrimaryItemTitle>{space.name}</PrimaryItemTitle>
 
           <UIMembers>
-            <ToggleButton
-              onClick={handleWithStopPropagation(() => (amIMember ? handleLeave() : handleJoin()))}
-              isActive={amIMember}
-              icon={amIMember ? <IconCheck /> : <IconLogIn />}
-            >
-              {amIMember ? "Joined" : "Join"}
-            </ToggleButton>
+            {user && <JoinToggleButton isMember={isCurrentUserMember} onJoin={join} onLeave={leave} />}
           </UIMembers>
         </UIInfo>
       </UIHolder>

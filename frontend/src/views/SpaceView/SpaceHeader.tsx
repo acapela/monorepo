@@ -6,16 +6,17 @@ import { EntityKindLabel, HeroItemTitle } from "~ui/theme/functional";
 
 interface Props {
   space: SpaceDetailedInfoFragment;
+  className?: string;
 }
 
-export function SpaceHeader({ space }: Props) {
+export const SpaceHeader = styled(function SpaceHeader({ space, className }: Props) {
   return (
-    <UIHolder>
+    <UIHolder className={className}>
       <EntityKindLabel>SPACE</EntityKindLabel>
       <HeroItemTitle>{space.name}</HeroItemTitle>
     </UIHolder>
   );
-}
+})``;
 
 const UIHolder = styled.div`
   display: flex;

@@ -2,14 +2,14 @@ import styled from "styled-components";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
-import { Toolbar } from "~frontend/ui/Toolbar";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { SpacesList } from "./SpacesList";
 import { useRef } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconSelection } from "~ui/icons";
+import { IconPlusSquare, IconSelection } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { PageHeader } from "~frontend/layouts/AppLayout/PageHeader";
 
 export function SpacesView() {
   const teamId = useAssertCurrentTeamId();
@@ -45,11 +45,14 @@ export function SpacesView() {
   return (
     <>
       <SpacedAppLayoutContainer>
-        <Toolbar>
-          <Button ref={buttonRef} onClick={handleCreateSpace}>
-            Create new space
-          </Button>
-        </Toolbar>
+        <PageHeader
+          title="Spaces"
+          actions={
+            <Button ref={buttonRef} onClick={handleCreateSpace} icon={<IconPlusSquare />}>
+              Create new space
+            </Button>
+          }
+        />
         <UISpaces>
           <SpacesList />
         </UISpaces>
@@ -58,6 +61,4 @@ export function SpacesView() {
   );
 }
 
-const UISpaces = styled.div`
-  margin-top: 2rem;
-`;
+const UISpaces = styled.div``;
