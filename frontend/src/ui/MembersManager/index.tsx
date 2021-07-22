@@ -46,7 +46,8 @@ export const MembersManager = styled(function MembersManager({
         <UIMembers>
           {users.length > 0 && <AvatarList users={users} />}
           {!isReadonly && (
-            <Button kind="transparent" onClick={handleWithStopPropagation(openUserPicker)}>
+            // TODO: Move this to the "edit entity" menu
+            <Button kind="secondary" onClick={handleWithStopPropagation(openUserPicker)}>
               Manage
             </Button>
           )}

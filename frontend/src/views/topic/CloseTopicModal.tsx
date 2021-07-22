@@ -43,7 +43,7 @@ export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Pr
         />
         <UIButtons justifyContent="space-around">
           <UIButtonsSection justifyContent="end" gap={8}>
-            <Button kind="transparent" isLoading={loading} onClick={closeWithoutSummary}>
+            <Button kind="secondary" isLoading={loading} onClick={closeWithoutSummary}>
               Close without summary
             </Button>
             <Button isLoading={loading} onClick={closeWithSummary}>

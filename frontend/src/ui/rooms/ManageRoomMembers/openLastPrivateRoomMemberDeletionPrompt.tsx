@@ -50,7 +50,7 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
           <Button isDisabled={isDeletingRoom} onClick={handleDeleteRoom}>
             Leave and Delete room
           </Button>
-          <Button kind="transparent" isDisabled={isDeletingRoom} onClick={handleCancel}>
+          <Button kind="secondary" isDisabled={isDeletingRoom} onClick={handleCancel}>
             Cancel
           </Button>
         </UIActionButtons>

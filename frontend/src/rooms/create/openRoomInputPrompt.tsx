@@ -124,7 +124,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
             <UIButtons>
-              <Button kind="transparent" type="reset" onClick={() => resolve(null)}>
+              <Button kind="secondary" type="reset" onClick={() => resolve(null)}>
                 Cancel
               </Button>
               <Button onClick={handleSubmit}>Create</Button>

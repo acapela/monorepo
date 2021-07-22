@@ -50,7 +50,7 @@ export const RecorderControls = styled(
         <UIControls gap={8} alignItems="center">
           <UIElapsedTime>{elapsedTime}</UIElapsedTime>
 
-          <Button kind="transparent" onClick={() => onCancel()}>
+          <Button kind="secondary" onClick={() => onCancel()}>
             Cancel
           </Button>
           <Button onClick={() => onStop()}>Submit</Button>

@@ -15,7 +15,7 @@ export function FiltersList({ filters, onFilterRemoveRequest }: Props) {
     <UIHolder>
       {filters.map((filter) => {
         return (
-          <Button kind="transparent" icon={filter.icon} iconPosition="start" key={getObjectKey(filter)}>
+          <Button kind="secondary" icon={filter.icon} iconPosition="start" key={getObjectKey(filter)}>
             {filter.label}
             <CircleIconButton icon={<IconCross />} onClick={() => onFilterRemoveRequest(filter)} />
           </Button>
