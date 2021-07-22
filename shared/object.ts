@@ -1,3 +1,4 @@
+import { forEach, isPlainObject } from "lodash";
 import { generateId } from "./id";
 
 export type AnyObject = Record<keyof unknown, unknown>;
@@ -67,4 +68,49 @@ export function removeUndefinedFromObject<T>(input: T): WithoutUndefined<T> {
   });
 
   return clone as WithoutUndefined<T>;
+}
+
+/*
+ * This function will return all possible paths to get to a value. The main use case comes when we need to access
+ * deep properties of an object without needed to traverse the whole object tree.
+ *
+ * Example:
+ *
+ * const obj = {
+ *  a: {
+ *    b: ['first', 'second'],
+ *    c: 'another value',
+ *    d: {
+ *      e: 'and another one',
+ *    }
+ *  }
+ * }
+ *
+ * console.log(getPaths(obj))
+ * > ['a.b[0]', 'a.b[1]', 'a.c', 'a.d.e']
+ *
+ * Lodash provides many methods that deal with paths, se we can simple do something like
+ * `_.get(obj, 'a.b[0]')` if we need to interact with the path.
+ *
+ */
+export function getPaths(obj = {}) {
+  const result: string[] = [];
+
+  const flatten = (collection: Array<unknown> | Record<string, unknown>, prefix = "", suffix = "") => {
+    forEach(collection, (value, key) => {
+      const path = `${prefix}${key}${suffix}`;
+
+      if (Array.isArray(value)) {
+        flatten(value, `${path}[`, "]");
+      } else if (isPlainObject(value)) {
+        flatten(value as Record<string, unknown>, `${path}.`);
+      } else {
+        result.push(path);
+      }
+    });
+  };
+
+  flatten(obj);
+
+  return result;
 }
