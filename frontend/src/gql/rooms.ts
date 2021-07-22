@@ -225,7 +225,10 @@ export const [useRoomParticipantsQuery] = createQuery<RoomParticipantsQuery, Roo
   `
 );
 
-export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, AddRoomMemberMutationVariables>(
+export const [useAddRoomMemberMutation, { mutate: addRoomMember }] = createMutation<
+  AddRoomMemberMutation,
+  AddRoomMemberMutationVariables
+>(
   () => gql`
     mutation AddRoomMember($roomId: uuid!, $userId: uuid!) {
       insert_room_member_one(object: { room_id: $roomId, user_id: $userId }) {
@@ -252,7 +255,7 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
   }
 );
 
-export const [useRemoveRoomMemberMutation] = createMutation<
+export const [useRemoveRoomMemberMutation, { mutate: removeRoomMember }] = createMutation<
   RemoveRoomMemberMutation,
   RemoveRoomMemberMutationVariables
 >(

@@ -1,3 +1,5 @@
+import { reverse } from "lodash";
+
 export function removeElementFromArray<T>(arr: T[], element: T) {
   const index = arr.indexOf(element);
   if (index > -1) {
@@ -72,4 +74,15 @@ export function pickNArrayItemsWithSeed<T>(array: T[], countToPick: number, seed
   });
 
   return pickedItems;
+}
+
+/**
+ * This function will grab an array of functions,invert their order of execution, and call each function.
+ * It takes an optional predicate that allows it to prevent flipping the execution order.
+ *
+ * It is useful for 'randomized' effects, but in a such way that give the same result every time.
+ */
+export function flipExecutionOrder<R>(toExecute: Array<() => R>, preventFlip?: boolean): R[] {
+  const inCorrectOrder = preventFlip ? toExecute : reverse(toExecute);
+  return inCorrectOrder.map((fn: () => R) => fn());
 }

@@ -1,42 +1,29 @@
+import { flipExecutionOrder } from "~shared/array";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { addRoomMember, isCurrentUserRoomMember, removeRoomMember } from "~frontend/gql/rooms";
 import { MembersManager } from "~frontend/ui/MembersManager";
-import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { assertGet } from "~shared/assert";
-import { RoomDetailedInfoFragment } from "~gql";
+import { RoomDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 
 interface Props {
   room: RoomDetailedInfoFragment;
-  onCurrentUserLeave?: () => void;
+  onCurrentUserLeave?: () => Promise<void>;
 }
 
-export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
-  const currentUser = useCurrentUser();
+export const RoomMembers = ({ room, onCurrentUserLeave }: Props) => {
+  const currentUser = useAssertCurrentUser();
   const members = room.members.map((m) => m.user);
   const amIMember = isCurrentUserRoomMember(room);
 
-  const [addRoomMember] = useAddRoomMemberMutation();
-  const [removeRoomMember] = useRemoveRoomMemberMutation();
-
-  function isLastMemberInRoom() {
-    return room.members.length === 1;
+  async function handleAddMember(userId: string) {
+    await addMember(userId, room.id);
   }
 
-  async function handleJoin(userId: string) {
-    await addRoomMember({ userId, roomId: room.id });
-  }
-
-  async function handleLeave(userId: string) {
-    const safeCurrentUser = assertGet(currentUser, "user required");
-
-    if (room.is_private && isLastMemberInRoom()) {
-      await openLastPrivateRoomMemberDeletionPrompt({ room });
-      return;
-    }
-
-    await removeRoomMember({ userId, roomId: room.id });
-    if (onCurrentUserLeave && userId === safeCurrentUser.id) {
-      onCurrentUserLeave();
+  async function handleRemoveMember(userId: string) {
+    if (userId === currentUser.id) {
+      await removeCurrentUser(currentUser, room, onCurrentUserLeave);
+    } else {
+      await removeMember(userId, room);
     }
   }
 
@@ -44,8 +31,44 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     <MembersManager
       isReadonly={!amIMember}
       users={members}
-      onAddMemberRequest={handleJoin}
-      onRemoveMemberRequest={handleLeave}
+      onAddMemberRequest={handleAddMember}
+      onRemoveMemberRequest={handleRemoveMember}
     />
   );
 };
+
+export function isLastMember(room: RoomDetailedInfoFragment) {
+  return room.members.length === 1;
+}
+
+export async function addMember(userId: string, roomId: string) {
+  await addRoomMember({ userId, roomId });
+}
+
+export async function removeMember(userId: string, room: RoomDetailedInfoFragment) {
+  await removeRoomMember({ userId, roomId: room.id });
+}
+
+export async function removeCurrentUser(
+  currentUser: UserBasicInfoFragment,
+  room: RoomDetailedInfoFragment,
+  onCurrentUserLeave?: () => Promise<void>
+) {
+  if (room.is_private && isLastMember(room)) {
+    await openLastPrivateRoomMemberDeletionPrompt({ room });
+    return;
+  }
+
+  const leaveRoom = () => removeMember(currentUser.id, room);
+
+  // Works for routing out of the room when leaving it
+  // This is done before as to prevent "This is a private room" warning from popping up
+  // Since routing is pretty slow, we only want to route before leaving the room when the room is private
+  if (onCurrentUserLeave) {
+    const canKeepSameExecutionOrder = room.is_private;
+    const results = flipExecutionOrder([onCurrentUserLeave, leaveRoom], canKeepSameExecutionOrder);
+    await Promise.all(results);
+  } else {
+    await leaveRoom();
+  }
+}
