@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { TextMeta10Secondary } from "~ui/typo";
+import { TextMeta10 } from "~ui/typo";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
@@ -15,7 +15,7 @@ export const TeamMembersView = () => {
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
         {user?.currentTeamId ? <CurrentTeamMembersManager /> : <div />}
-        {appVersion && <TextMeta10Secondary>Version: {appVersion}</TextMeta10Secondary>}
+        {appVersion && <TextMeta10 secondary>Version: {appVersion}</TextMeta10>}
       </UIHolder>
     </SpacedAppLayoutContainer>
   );

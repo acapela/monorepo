@@ -3,7 +3,7 @@ import { PRIMARY_PURPLE_1, WHITE } from "~ui/colors";
 import { IconUserPlus } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";
-import { TextMeta12Primary, TextMeta10Secondary } from "~ui/typo";
+import { TextMeta12, TextMeta10 } from "~ui/typo";
 
 interface Props {
   email: string;
@@ -15,8 +15,10 @@ export const InvitationPendingIndicator = ({ email }: Props) => {
       <UIIconHolder>
         <IconUserPlus />
       </UIIconHolder>
-      <TextMeta10Secondary>{email}</TextMeta10Secondary>
-      <TextMeta12Primary speziaMono>(Invite pending)</TextMeta12Primary>
+      <TextMeta10 secondary>{email}</TextMeta10>
+      <TextMeta12 primary speziaMono>
+        (Invite pending)
+      </TextMeta12>
     </UserBasicInfoContainer>
   );
 };

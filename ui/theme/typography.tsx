@@ -1,7 +1,7 @@
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { motion } from "framer-motion";
 import { typedKeys } from "~shared/object";
-import { BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/colors";
+import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/colors";
 
 /**
  * TODO: Those are not used yet. Goal is to replace current `ui/colors` with those.
@@ -114,18 +114,10 @@ export const TextMeta10 = styled(motion.p)<TypographyProps>`
   line-height: 1.2;
 `;
 
-export const TextMeta10Secondary = styled(TextMeta10)`
-  color: ${BASE_GREY_3};
-`;
-
 export const TextMeta12 = styled(motion.p)<TypographyProps>`
   ${() => typographyStyles};
   font-size: 0.75rem;
   line-height: 1.2;
-`;
-
-export const TextMeta12Primary = styled(TextMeta12)`
-  color: ${PRIMARY_PINK_1};
 `;
 
 /**
@@ -149,6 +141,28 @@ const typographyCommonStyles = css`
   line-height: 1.2;
   letter-spacing: -0.02%;
 `;
+
+type KindType = "regular" | "secondary" | "primary";
+
+const kindStyles: Record<KindType, FlattenSimpleInterpolation> = {
+  regular: css`
+    color: ${BASE_GREY_1};
+  `,
+  secondary: css`
+    color: ${BASE_GREY_3};
+  `,
+  primary: css`
+    color: ${PRIMARY_PINK_1};
+  `,
+};
+
+type KindProp = VariantProp<KindType>;
+
+function getKindStyle(props: KindProp) {
+  const activeKindVariant = getActiveVariant<KindType>(props, ["regular", "secondary", "primary"]) ?? "regular";
+
+  return kindStyles[activeKindVariant];
+}
 
 type FamilyType = "inter" | "spezia" | "speziaMono" | "speziaExtended";
 
@@ -231,18 +245,20 @@ function getImportanceStyles(props: ImportanceProp) {
  */
 type VariantProp<N extends string> = { [key in N]?: boolean };
 
-type TypographyProps = WeightProp & FamilyProp & ImportanceProp;
+type TypographyProps = WeightProp & FamilyProp & ImportanceProp & KindProp;
 
 const typographyStyles = css`
   ${(props: TypographyProps) => {
     const family = getFontFamilyStyle(props);
     const weight = getFontWeightStyle(props);
     const importance = getImportanceStyles(props);
+    const kind = getKindStyle(props);
 
     return css`
       ${family};
       ${weight};
       ${importance};
+      ${kind};
     `;
   }}
 `;
