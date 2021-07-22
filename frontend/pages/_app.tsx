@@ -6,7 +6,7 @@ import { Session } from "next-auth";
 import { getSession, Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { global } from "~frontend/styles/global";
@@ -19,6 +19,7 @@ import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import * as Sentry from "@sentry/nextjs";
+import { defaultTheme } from "~ui/theme/default";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
@@ -68,14 +69,16 @@ export default function App({
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <AnimatePresence>
-              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                {renderWithPageLayout(Component, pageProps)}
-              </PresenceAnimator>
-            </AnimatePresence>
+            <ThemeProvider theme={defaultTheme}>
+              <PromiseUIRenderer />
+              <TooltipsRenderer />
+              <ToastsRenderer />
+              <AnimatePresence>
+                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                  {renderWithPageLayout(Component, pageProps)}
+                </PresenceAnimator>
+              </AnimatePresence>
+            </ThemeProvider>
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
