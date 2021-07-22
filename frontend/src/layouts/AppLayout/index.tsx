@@ -11,6 +11,7 @@ import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
+import { BASE_GREY_7, WHITE } from "~ui/colors";
 
 interface Props {
   children?: ReactNode;
@@ -95,8 +96,7 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
 
   align-items: center;
   padding: 12px 24px;
-
-  background: #ffffff;
+  background: ${WHITE};
   box-shadow: 0px 1px 0px #ededed;
 `;
 
@@ -138,4 +138,5 @@ const UIMainContent = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  background: ${BASE_GREY_7};
 `;

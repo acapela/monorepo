@@ -42,6 +42,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   return (
     <MembersManager
+      title="Invite your team to this room"
       isReadonly={!amIMember}
       users={members}
       onAddMemberRequest={handleJoin}

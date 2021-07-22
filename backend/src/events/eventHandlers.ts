@@ -1,4 +1,4 @@
-import { Message, Room, RoomParticipants, Space, Team, TeamInvitation, Topic, User, Attachment } from "~db";
+import { Message, Room, RoomParticipants, Space, Team, TeamInvitation, Topic, User, Attachment, TeamMember } from "~db";
 import { createHasuraEventsHandler } from "../hasura/events";
 
 export const hasuraEvents = createHasuraEventsHandler<{
@@ -11,4 +11,5 @@ export const hasuraEvents = createHasuraEventsHandler<{
   user_updates: User;
   room_member_updates: RoomParticipants;
   attachment_updates: Attachment;
+  team_member_updates: TeamMember;
 }>();

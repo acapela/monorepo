@@ -4,14 +4,7 @@ import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius, shadow, fontSize } from "~ui/baseStyles";
-import {
-  DANGER_COLOR,
-  WHITE,
-  BASE_GREY_LINES,
-  BASE_GREY_1,
-  PRIMARY_PINK_2,
-  PRIMARY_PINK_1_TRANSPARENT,
-} from "~ui/colors";
+import { DANGER_COLOR, WHITE, BASE_GREY_5, BASE_GREY_1, PRIMARY_PINK_2, PRIMARY_PINK_1_TRANSPARENT } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
 import { Popover, PopoverPlacement } from "./Popover";
 
@@ -73,7 +66,7 @@ export const UIPopoverMenuModal = styled(PopPresenceAnimator)`
   gap: 2px;
 
   background: ${WHITE};
-  border: 1px solid ${BASE_GREY_LINES};
+  border: 1px solid ${BASE_GREY_5};
   box-sizing: border-box;
   ${shadow.popover};
   ${borderRadius.menu}

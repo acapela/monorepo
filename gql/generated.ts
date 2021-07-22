@@ -8909,7 +8909,7 @@ export type TeamInvitationBasicInfoFragment = (
 
 export type TeamDetailedInfoFragment = (
   { __typename?: 'team' }
-  & Pick<Team, 'id' | 'name' | 'slug'>
+  & Pick<Team, 'id' | 'name' | 'slug' | 'owner_id'>
   & { spaces: Array<(
     { __typename?: 'space' }
     & SpaceBasicInfoFragment
@@ -8989,6 +8989,19 @@ export type CreateTeamInvitationMutation = (
   )> }
 );
 
+export type RemoveTeamInvitationMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type RemoveTeamInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_team_invitation_by_pk?: Maybe<(
+    { __typename?: 'team_invitation' }
+    & Pick<Team_Invitation, 'team_id'>
+  )> }
+);
+
 export type TeamInvitationQueryVariables = Exact<{
   tokenId: Scalars['uuid'];
 }>;
@@ -8999,6 +9012,20 @@ export type TeamInvitationQuery = (
   & { team_invitation: Array<(
     { __typename?: 'team_invitation' }
     & Pick<Team_Invitation, 'id' | 'team_id' | 'token' | 'used_by_user_id'>
+  )> }
+);
+
+export type RemoveTeamMemberMutationVariables = Exact<{
+  teamId: Scalars['uuid'];
+  userId: Scalars['uuid'];
+}>;
+
+
+export type RemoveTeamMemberMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_team_member_by_pk?: Maybe<(
+    { __typename?: 'team_member' }
+    & Pick<Team_Member, 'user_id'>
   )> }
 );
 

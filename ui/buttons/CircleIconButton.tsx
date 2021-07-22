@@ -2,19 +2,19 @@ import { ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
-import { squareStyle } from "~ui/styleHelpers";
 import { hoverTransition } from "~ui/transitions";
+import { ButtonSize } from "./Button";
 
-type ButtonSize = "small" | "large";
 type ButtonKind = "secondary" | "transparent";
 
-interface Props {
+export interface Props {
   icon: ReactNode;
   size?: ButtonSize;
   kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
   tooltip?: string;
+  isDisabled?: boolean;
 }
 
 export const CircleIconButton = styled(function CircleIconButton({
@@ -24,9 +24,17 @@ export const CircleIconButton = styled(function CircleIconButton({
   onClick,
   className,
   tooltip,
+  isDisabled = false,
 }: Props) {
   return (
-    <UIButton data-tooltip={tooltip} className={className} onClick={onClick} size={size} kind={kind}>
+    <UIButton
+      data-tooltip={tooltip}
+      className={className}
+      onClick={onClick}
+      size={size}
+      kind={kind}
+      isDisabled={isDisabled}
+    >
       {icon}
     </UIButton>
   );
@@ -34,10 +42,16 @@ export const CircleIconButton = styled(function CircleIconButton({
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
-    ${squareStyle(24)}
+    width: 24px;
+    height: 24px;
+  `,
+  medium: css`
+    width: 32px;
+    height: 32px;
   `,
   large: css`
-    ${squareStyle(36)}
+    width: 36px;
+    height: 36px;
   `,
 };
 
@@ -45,6 +59,14 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
   secondary: css`
     background: ${CLOUD_LIGHTER};
     border: 1px solid transparent;
+  `,
+  transparent: css`
+    background: transparent;
+  `,
+};
+
+const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  secondary: css`
     &:hover {
       background: ${BASE_GREY_4};
     }
@@ -54,7 +76,6 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
     }
   `,
   transparent: css`
-    background: transparent;
     &:hover {
       background: ${BASE_GREY_6};
     }
@@ -64,19 +85,24 @@ const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = 
   `,
 };
 
-export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind }>`
+export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDisabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
   ${borderRadius.circle};
   font-size: 16px;
   color: ${DARK_ONYX};
   padding: 0;
 
-  ${hoverTransition()}
-
   ${({ size }) => buttonSizeSpecificStyle[size]}
   ${({ kind }) => buttonKindSpecificStyle[kind]}
+
+  ${(props) =>
+    !props.isDisabled &&
+    css`
+      cursor: pointer;
+      ${hoverTransition()}
+      ${buttonKindSpecificInteractionStyle[props.kind]}
+    `};
 `;

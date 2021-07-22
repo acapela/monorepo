@@ -1,14 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { IconCross } from "~ui/icons";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { MessageDetailedInfoFragment } from "~gql";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK, SECONDARY_ORANGE_1, PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/colors";
 import { borderRadius } from "~ui/baseStyles";
 import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -38,7 +37,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>
-          <CircleIconButton size="small" icon={<IconCross />} onClick={onRemove} />
+          <CircleCloseIconButton size="small" onClick={onRemove} />
         </CornerButtonWrapper>
       )}
     </UIHolder>

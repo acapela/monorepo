@@ -1,22 +1,24 @@
 import { useMemo } from "react";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { Modal } from "~frontend/ui/Modal";
 import { UserBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT } from "~ui/colors";
-import { IconCross } from "~ui/icons";
-import { UserBasicInfo } from "../users/UserBasicInfo";
 import { UsersCombobox } from "./UsersCombobox";
+import { UISelectGridContainer } from "./UISelectGridContainer";
+import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
+import { PopPresenceAnimator } from "~ui/animations";
+import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 
 interface Props {
+  title: string;
   currentUsers: UserBasicInfoFragment[];
   onCloseRequest: () => void;
   onAddUser: (userId: string) => void;
   onRemoveUser: (userId: string) => void;
 }
 
-export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser }: Props) {
+export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser, title }: Props) {
   const teamMembers = useCurrentTeamMembers();
 
   const potentialUsers = useMemo(() => {
@@ -25,31 +27,25 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
   }, [teamMembers, currentUsers]);
 
   return (
-    <Modal
-      onCloseRequest={onCloseRequest}
-      hasCloseButton={false}
-      head={{
-        title: "Room participants",
-      }}
-    >
-      <UIHolder>
-        <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
-        {currentUsers.length > 0 && (
-          <UIMembers>
-            {currentUsers.map((user) => {
-              return (
-                <UIMember>
-                  <UserBasicInfo user={user} />
-                  <UIRemoveMemberButton onClick={() => onRemoveUser(user.id)}>
-                    <IconCross />
-                  </UIRemoveMemberButton>
-                </UIMember>
-              );
-            })}
-          </UIMembers>
-        )}
-      </UIHolder>
-    </Modal>
+    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
+      <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
+        <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
+          <UIHolder>
+            <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
+            {currentUsers.length > 0 && (
+              <UISelectGridContainer>
+                {currentUsers.map((user) => (
+                  <UIItemHolder>
+                    <UserBasicInfo user={user} />
+                    <CircleCloseIconButton onClick={() => onRemoveUser(user.id)} />
+                  </UIItemHolder>
+                ))}
+              </UISelectGridContainer>
+            )}
+          </UIHolder>
+        </PanelWithTopbarAndCloseButton>
+      </PopPresenceAnimator>
+    </ScreenCover>
   );
 }
 
@@ -59,29 +55,10 @@ const UIHolder = styled.div`
   gap: 20px;
 `;
 
-const UIMembers = styled.div`
-  width: 640px;
-  border: 1px solid ${BACKGROUND_ACCENT};
-  ${borderRadius.modal};
-  @media (max-width: 800px) {
-    width: 100%;
-  }
-`;
-
-const UIMember = styled.div`
-  padding: 16px;
+const UIItemHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid ${BACKGROUND_ACCENT};
-  :last-child {
-    border-bottom: none;
-  }
-`;
 
-const UIRemoveMemberButton = styled.button`
-  padding: 6px;
-  background: ${BACKGROUND_ACCENT};
-  cursor: pointer;
-  ${borderRadius.circle}
+  padding: 8px;
 `;
