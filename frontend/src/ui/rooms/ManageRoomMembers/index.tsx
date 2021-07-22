@@ -18,16 +18,12 @@ export const RoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     await addMember(userId, room.id);
   }
 
-  async function handleRemoveMember(userId: string) {
-    if (userId === currentUser.id) {
-      await removeCurrentUser(currentUser, room, onCurrentUserLeave);
-    } else {
-      await removeMember(userId, room);
-    }
+  async function handleRemoveMember() {
+    await removeCurrentUser(currentUser, room, onCurrentUserLeave);
   }
 
   return (
-    <MembersManager users={members} onAddMemberRequest={handleAddMember} onRemoveMemberRequest={handleRemoveMember} />
+    <MembersManager users={members} onAddMemberRequest={handleAddMember} onLeaveRoomRequest={handleRemoveMember} />
   );
 };
 

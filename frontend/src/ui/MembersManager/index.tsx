@@ -9,30 +9,30 @@ import { IconCheck, IconLogIn } from "~ui/icons";
 interface Props {
   users: UserBasicInfoFragment[];
   onAddMemberRequest: (userId: string) => Promise<void> | void;
-  onRemoveMemberRequest: (userId: string) => Promise<void> | void;
+  onLeaveRoomRequest: (currentUserId: string) => Promise<void> | void;
   className?: string;
   isReadonly?: boolean;
 }
 
 export const MembersManager = styled(function MembersManager({
   users,
-  onRemoveMemberRequest,
+  onLeaveRoomRequest,
   onAddMemberRequest,
   className,
 }: Props) {
-  const user = useCurrentUser();
+  const currentUser = useCurrentUser();
 
-  const isMember = users.some((memberUser) => memberUser.id === user?.id);
+  const isMember = users.some((memberUser) => memberUser.id === currentUser?.id);
 
   return (
     <>
       <UIHolder className={className}>
         <UIMembers>{users.length > 0 && <AvatarList users={users} />}</UIMembers>
         <UIActions>
-          {user && (
+          {currentUser && (
             <ToggleButton
               onClick={handleWithStopPropagation(() =>
-                isMember ? onRemoveMemberRequest(user.id) : onAddMemberRequest(user.id)
+                isMember ? onLeaveRoomRequest(currentUser.id) : onAddMemberRequest(currentUser.id)
               )}
               isActive={isMember}
               icon={isMember ? <IconCheck /> : <IconLogIn />}
