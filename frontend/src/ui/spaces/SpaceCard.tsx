@@ -12,13 +12,15 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconEdit, IconSelection, IconTrash } from "~ui/icons";
+import { IconEdit, IconSelection, IconTrash, IconUsers } from "~ui/icons";
 import { hoverActionCss } from "~ui/transitions";
 import { TextH3 } from "~ui/typo";
 import { MembersManager } from "../MembersManager";
 import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
 import { SpaceGradient } from "./spaceGradient";
 import { routes } from "~frontend/../routes";
+import { openUserPickerModal } from "../MembersManager/openUserPickerModal";
+import { createResolvablePromise } from "~shared/promises";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -65,6 +67,26 @@ export function SpaceCard({ space, isClickable = true }: Props) {
     await editSpace({ spaceId: space?.id, input: { name: newSpaceName } });
   }
 
+  async function handleMemberManagement() {
+    const [closeModalPromise, closeModal] = createResolvablePromise<void>();
+
+    function leaveAndCloseWhenNoMembers(userToRemove: string) {
+      if (space.members.length === 1) {
+        closeModal();
+      }
+
+      handleLeave(userToRemove);
+    }
+
+    await openUserPickerModal({
+      id: space.id,
+      placeOfMembership: "space",
+      onAddUser: handleJoin,
+      onRemoveUser: leaveAndCloseWhenNoMembers,
+      asyncResolveRequest: closeModalPromise,
+    });
+  }
+
   async function handleDeleteSpace() {
     const didConfirm = await openConfirmPrompt({
       title: `Remove space`,
@@ -91,12 +113,17 @@ export function SpaceCard({ space, isClickable = true }: Props) {
             <CornerOptionsMenu
               options={[
                 {
-                  label: "Edit space name...",
+                  label: "Edit name...",
                   onSelect: handleEditSpace,
                   icon: <IconEdit />,
                 },
                 {
-                  label: "Delete space...",
+                  label: "Manage members...",
+                  onSelect: handleMemberManagement,
+                  icon: <IconUsers />,
+                },
+                {
+                  label: "Delete...",
                   onSelect: handleDeleteSpace,
                   icon: <IconTrash />,
                   isDestructive: true,

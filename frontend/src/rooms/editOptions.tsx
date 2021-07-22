@@ -56,7 +56,8 @@ export async function handleManageMembers(
   }
 
   await openUserPickerModal({
-    currentUsers: room.members.map((m) => m.user),
+    id: room.id,
+    placeOfMembership: "room",
     onAddUser: handleAddUser,
     onRemoveUser: handleRemoveUser,
     asyncResolveRequest: closeModalPromise,
