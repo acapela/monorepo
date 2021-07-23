@@ -2,15 +2,17 @@ import { autorun, computed, configure, makeAutoObservable, runInAction } from "m
 import { createContext, PropsWithChildren, useContext, useEffect } from "react";
 import { useConst } from "~shared/hooks/useConst";
 import { assert } from "./assert";
+import { useMethod } from "./hooks/useMethod";
 
 export function select<T>(selector: () => T): T {
   return computed(selector).get();
 }
 
 export function useAutorun(runner: () => void) {
+  const runnerRef = useMethod(runner);
   useEffect(() => {
-    return autorun(runner);
-  });
+    return autorun(runnerRef);
+  }, []);
 }
 
 export function createActionHandler(handler: () => void) {
