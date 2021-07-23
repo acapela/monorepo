@@ -55,6 +55,32 @@ export const colors = {
  * typography which might be confusing "what props should I use here?"
  */
 
+/**
+ * PR note: Those would be actually removed.
+ *
+ * We now have all 'figma compatible' typo styles in `theme` so we can only create functional reusable or local components like
+ *
+ * const SpaceTitle = styled.h2`
+ *   ${theme.font.h2.spezia.semibold}
+ * `
+ *
+ * The idea here is that 'text styles' are like 'abstract class'. They exist but you only use them via functional UI
+ * pieces, not 'by itself' as a standalone component.
+ *
+ * For backup, those ofc can still exist and be defined like
+ *
+ * export const TextH1 = styled(motion.h1)`
+ *   ${theme.font.h1}
+ * `;
+ *
+ * Note ^ intentionally `TextH1` no longer has `TypographyProps` to discourage using it directly as `<TextH1 speziaMono />`
+ * and instead encourage using functional component like:
+ *
+ * const MetaDescription = styled.h2`
+ *   ${theme.font.speziaMono.semibold}
+ * `
+ */
+
 export const TextH1 = styled(motion.h1)<TypographyProps>`
   ${() => typographyCommonStyles};
   ${() => typographyStyles};

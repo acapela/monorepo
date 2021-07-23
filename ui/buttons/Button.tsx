@@ -1,31 +1,16 @@
+import { theme } from "~ui/theme2/theme";
 import { HTMLMotionProps } from "framer-motion";
 import { forwardRef, ReactNode } from "react";
+import { motion } from "framer-motion";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
-import { disabledOpacityCss } from "~ui/disabled";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { hoverTransition } from "~ui/transitions";
-import {
-  BASE_GREY_1,
-  BASE_GREY_2,
-  BASE_GREY_3,
-  BASE_GREY_4,
-  BASE_GREY_6,
-  BUTTON_BACKGROUND_COLOR,
-  BUTTON_BACKGROUND_ACTIVE_COLOR,
-  WHITE,
-  PRIMARY_PINK_1,
-  BASE_GREY_LINES,
-} from "~ui/colors";
-import { TextBody } from "~ui/typo";
+import { shadow } from "~ui/baseStyles";
+import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_3, BASE_GREY_4, BASE_GREY_6, WHITE, PRIMARY_PINK_1 } from "~ui/colors";
 
 export type ButtonIconPosition = "start" | "end";
 
 export interface ButtonDisabledInfo {
   reason: string;
 }
-
-type ButtonSize = "small" | "medium" | "large";
-type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -116,40 +101,25 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
 
 const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
   primary: css`
-    background: ${BUTTON_BACKGROUND_COLOR};
+    ${theme.colors.actions.primary.interactive("background-color")}
+    ${theme.shadow.button}
     color: ${WHITE};
-    ${shadow.button}
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_4};
-    }
   `,
   secondary: css`
-    background: ${BASE_GREY_6};
+    ${theme.colors.actions.secondary.interactive("background-color")}
     color: ${BASE_GREY_1};
     border: 1.5px solid transparent;
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_2};
-    }
   `,
   outlined: css`
-    background: ${WHITE};
+    ${theme.colors.transparent.secondary.interactive("background-color")}
+
     color: ${BASE_GREY_1};
     border: 1px solid ${BASE_GREY_4};
     ${shadow.button}
-
-    ${UIIconHolder} {
-      color: ${PRIMARY_PINK_1};
-    }
   `,
   transparent: css`
-    background: transparent;
+    ${theme.colors.transparent.secondary.interactive("background-color")}
     color: ${BASE_GREY_3};
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_3};
-    }
   `,
 };
 
@@ -161,65 +131,26 @@ export const activeTransparentButtonStyles = css`
   }
 `;
 
-const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
-  primary: css`
-    &:hover {
-      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
-    }
-    &:active {
-      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
-    }
-  `,
-  secondary: css`
-    &:hover {
-      background: ${BASE_GREY_4};
-    }
-    &:active {
-      background: ${BASE_GREY_LINES};
-      border-color: ${PRIMARY_PINK_1};
-    }
-  `,
-  outlined: css`
-    &:hover {
-      background: ${BASE_GREY_6};
-    }
-    &:active {
-      background: ${BASE_GREY_6};
-    }
-  `,
-  transparent: css`
-    &:hover {
-      color: ${BASE_GREY_2};
-      background: ${BASE_GREY_6};
-    }
-    &:active {
-      ${activeTransparentButtonStyles};
-    }
+export const UIButton = styled(motion.button)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
+  ${theme.font.body.spezia.semibold};
+  ${theme.transitions.quickHover};
+  ${theme.radius.circle};
 
-    &:hover ${UIIconHolder} {
-      color: ${PRIMARY_PINK_1};
-    }
-  `,
-};
-
-export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  font: inherit;
-  font-weight: 400;
   line-height: 1.2rem;
 
   white-space: nowrap;
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
-  ${hoverTransition()}
+  ${UIIconHolder} {
+    color: inherit;
+  }
 
-  ${borderRadius.circle}
-
-  ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
+  ${(props) => (props.isDisabled || props.isLoading) && theme.interactivity.disabled};
   ${(props) =>
     props.isWide &&
     css`
@@ -228,7 +159,6 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
 
   ${({ size }) => buttonSizeSpecificStyle[size]}
   ${({ kind }) => buttonKindSpecificStyle[kind]}
-  ${({ isClickable, kind }) => isClickable && buttonKindSpecificInteractionStyle[kind]}
 `;
 
 const UIContentHolder = styled.div`
