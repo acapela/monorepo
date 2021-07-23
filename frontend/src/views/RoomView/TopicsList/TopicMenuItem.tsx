@@ -1,5 +1,7 @@
+import { observer } from "mobx-react";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
+import { select } from "~frontend/../../shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { routes } from "~frontend/routes";
@@ -23,66 +25,65 @@ interface Props {
 
 const TopicLink = routes.spaceRoomTopic.Link;
 
-export const TopicMenuItem = styled(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
-  const roomContext = useRoomStoreContext();
-  const unreadCount = useTopicUnreadMessagesCount(topic.id);
-  const hasUnreadMessaged = !isActive && unreadCount > 0;
+export const TopicMenuItem = styled(
+  observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
+    const roomContext = useRoomStoreContext();
+    const unreadCount = useTopicUnreadMessagesCount(topic.id);
+    const hasUnreadMessaged = !isActive && unreadCount > 0;
 
-  const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
-  const anchorRef = useRef<HTMLAnchorElement | null>(null);
+    const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
+    const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-  const isNewTopic = roomContext.useSelector((state) => state.newTopicId === topic.id);
-  const isInEditMode = roomContext.useSelector((state) => state.editingNameTopicId === topic.id);
+    const isNewTopic = select(() => roomContext.newTopicId === topic.id);
+    const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-  function handleNewTopicName(newName: string) {
-    updateTopic({ topicId: topic.id, input: { name: newName } });
+    function handleNewTopicName(newName: string) {
+      updateTopic({ topicId: topic.id, input: { name: newName } });
 
-    roomContext.update((state) => (state.editingNameTopicId = null));
+      roomContext.editingNameTopicId = null;
 
-    if (isNewTopic) {
-      roomContext.update((state) => (state.newTopicId = null));
+      if (isNewTopic) {
+        roomContext.newTopicId = null;
+      }
     }
-  }
 
-  return (
-    <>
-      <UIFlyingTooltipWrapper>
-        <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
-          <UIHolder
-            ref={anchorRef}
-            className={className}
-            isActive={isActive}
-            isClosed={!!topic.closed_at}
-            onMouseEnter={showDragIcon}
-            onMouseLeave={hideDragIcon}
-          >
-            {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-            <EditableText
-              value={topic.name ?? ""}
-              isInEditMode={isInEditMode}
-              focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-              onEditModeChangeRequest={() => roomContext.update((draft) => (draft.editingNameTopicId = topic.id))}
-              onValueSubmit={handleNewTopicName}
-            />
-          </UIHolder>
-        </TopicLink>
-        {!isEditingDisabled && (
-          <UIManageTopicWrapper>
-            <ManageTopic
-              topic={topic}
-              onRenameRequest={() => roomContext.update((draft) => (draft.editingNameTopicId = topic.id))}
-            />
-          </UIManageTopicWrapper>
+    return (
+      <>
+        <UIFlyingTooltipWrapper>
+          <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
+            <UIHolder
+              ref={anchorRef}
+              className={className}
+              isActive={isActive}
+              isClosed={!!topic.closed_at}
+              onMouseEnter={showDragIcon}
+              onMouseLeave={hideDragIcon}
+            >
+              {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+              <EditableText
+                value={topic.name ?? ""}
+                isInEditMode={isInEditMode}
+                focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+                onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
+                onValueSubmit={handleNewTopicName}
+              />
+            </UIHolder>
+          </TopicLink>
+          {!isEditingDisabled && (
+            <UIManageTopicWrapper>
+              <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+            </UIManageTopicWrapper>
+          )}
+        </UIFlyingTooltipWrapper>
+        {isShowingDragIcon && !isEditingDisabled && (
+          <Popover anchorRef={anchorRef} placement={"left"}>
+            <IconDragAndDrop />
+          </Popover>
         )}
-      </UIFlyingTooltipWrapper>
-      {isShowingDragIcon && !isEditingDisabled && (
-        <Popover anchorRef={anchorRef} placement={"left"}>
-          <IconDragAndDrop />
-        </Popover>
-      )}
-    </>
-  );
-})``;
+      </>
+    );
+  })
+)``;
 
 const PADDING = "12px";
 

@@ -20,6 +20,8 @@ import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksP
 import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
 import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
+import { select } from "~shared/sharedState";
+import { observer } from "mobx-react";
 
 interface Props extends MotionProps {
   message: MessageFeedInfoFragment;
@@ -27,108 +29,108 @@ interface Props extends MotionProps {
   className?: string;
 }
 
-export const Message = styled(({ message, className, isReadonly }: Props) => {
-  const user = useCurrentUser();
-  const [deleteMessage] = useDeleteTextMessageMutation();
+export const Message = styled(
+  observer(({ message, className, isReadonly }: Props) => {
+    const user = useCurrentUser();
+    const [deleteMessage] = useDeleteTextMessageMutation();
 
-  const topicContext = useTopicStoreContext();
+    const topicContext = useTopicStoreContext();
 
-  const isInEditMode = topicContext.useSelector((topicStore) => topicStore.editedMessageId === message.id);
+    const isInEditMode = select(() => topicContext.editedMessageId === message.id);
 
-  function handleStartEditing() {
-    topicContext.update((draft) => (draft.editedMessageId = message.id));
-  }
-
-  function handleStopEditing() {
-    topicContext.update((draft) => {
-      if (draft.editedMessageId !== message.id) return;
-
-      draft.editedMessageId = null;
-    });
-  }
-
-  const [isActive, setIsActive] = useState(false);
-  const holderRef = useRef<HTMLDivElement>(null);
-
-  const isOwnMessage = user?.id === message.user.id;
-
-  useClickAway(holderRef, () => {
-    setIsActive(false);
-  });
-
-  async function handleRemoveWithConfirm() {
-    const didConfirm = await openConfirmPrompt({
-      title: "Are you sure?",
-      description: "This action cannot be undone.",
-      confirmLabel: "Remove message",
-    });
-
-    if (didConfirm) {
-      await deleteMessage({ id: message.id });
-    }
-  }
-
-  const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
-
-  const getMessageActionsOptions = () => {
-    const options = [];
-
-    if (isOwnMessage) {
-      options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
+    function handleStartEditing() {
+      topicContext.editedMessageId = message.id;
     }
 
-    if (isOwnMessage) {
-      options.push({
-        label: "Delete message",
-        onSelect: handleRemoveWithConfirm,
-        isDestructive: true,
-        icon: <IconTrash />,
+    function handleStopEditing() {
+      if (topicContext.editedMessageId !== message.id) return;
+
+      topicContext.editedMessageId = null;
+    }
+
+    const [isActive, setIsActive] = useState(false);
+    const holderRef = useRef<HTMLDivElement>(null);
+
+    const isOwnMessage = user?.id === message.user.id;
+
+    useClickAway(holderRef, () => {
+      setIsActive(false);
+    });
+
+    async function handleRemoveWithConfirm() {
+      const didConfirm = await openConfirmPrompt({
+        title: "Are you sure?",
+        description: "This action cannot be undone.",
+        confirmLabel: "Remove message",
       });
+
+      if (didConfirm) {
+        await deleteMessage({ id: message.id });
+      }
     }
 
-    return options;
-  };
+    const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
 
-  return (
-    <UIHolder id={message.id}>
-      <MessageLikeContent
-        className={className}
-        tools={
-          shouldShowTools && (
-            <UITools>
-              <MakeReactionButton message={message} />
-              <ReplyButton message={message} />
-              <PopoverMenuTrigger
-                onOpen={() => setIsActive(true)}
-                onClose={() => setIsActive(false)}
-                options={getMessageActionsOptions()}
-              >
-                <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-              </PopoverMenuTrigger>
-            </UITools>
-          )
-        }
-        user={message.user}
-        date={new Date(message.createdAt)}
-      >
-        <UIMessageBody>
-          {isInEditMode && (
-            <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
-          )}
-          {!isInEditMode && (
-            <UIMessageContent>
-              {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
-              <MessageText message={message} />
-              <MessageMedia message={message} />
-              <MessageLinksPreviews message={message} />
-              <MessageReactions message={message} />
-            </UIMessageContent>
-          )}
-        </UIMessageBody>
-      </MessageLikeContent>
-    </UIHolder>
-  );
-})``;
+    const getMessageActionsOptions = () => {
+      const options = [];
+
+      if (isOwnMessage) {
+        options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
+      }
+
+      if (isOwnMessage) {
+        options.push({
+          label: "Delete message",
+          onSelect: handleRemoveWithConfirm,
+          isDestructive: true,
+          icon: <IconTrash />,
+        });
+      }
+
+      return options;
+    };
+
+    return (
+      <UIHolder id={message.id}>
+        <MessageLikeContent
+          className={className}
+          tools={
+            shouldShowTools && (
+              <UITools>
+                <MakeReactionButton message={message} />
+                <ReplyButton message={message} />
+                <PopoverMenuTrigger
+                  onOpen={() => setIsActive(true)}
+                  onClose={() => setIsActive(false)}
+                  options={getMessageActionsOptions()}
+                >
+                  <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                </PopoverMenuTrigger>
+              </UITools>
+            )
+          }
+          user={message.user}
+          date={new Date(message.createdAt)}
+        >
+          <UIMessageBody>
+            {isInEditMode && (
+              <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
+            )}
+            {!isInEditMode && (
+              <UIMessageContent>
+                {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
+                <MessageText message={message} />
+                <MessageMedia message={message} />
+                <MessageLinksPreviews message={message} />
+                <MessageReactions message={message} />
+              </UIMessageContent>
+            )}
+          </UIMessageBody>
+        </MessageLikeContent>
+      </UIHolder>
+    );
+  })
+)``;
 
 const UIHolder = styled.div``;
 

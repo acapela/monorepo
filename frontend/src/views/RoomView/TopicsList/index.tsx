@@ -12,6 +12,8 @@ import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
+import { runInAction } from "mobx";
+import { observer } from "mobx-react";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -19,7 +21,7 @@ interface Props {
   isRoomOpen: boolean;
 }
 
-export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const roomId = room.id;
   const spaceId = room.space_id;
@@ -45,9 +47,9 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
     topics,
     (topic) => topic.id,
     (newTopic) => {
-      roomContext.update((draft) => {
-        draft.newTopicId = newTopic.id;
-        draft.editingNameTopicId = newTopic.id;
+      runInAction(() => {
+        roomContext.newTopicId = newTopic.id;
+        roomContext.editingNameTopicId = newTopic.id;
       });
       routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
     }
@@ -88,7 +90,7 @@ export function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
       </UIHolder>
     </CollapsePanel>
   );
-}
+});
 
 const UIHolder = styled.div`
   overflow-y: hidden;
