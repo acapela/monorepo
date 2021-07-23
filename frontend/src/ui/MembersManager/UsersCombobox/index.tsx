@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { useCombobox } from "downshift";
 import { UserBasicInfoFragment } from "~gql";
-import { baseInputStyles } from "~ui/forms/utils";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { IconPlusSquare } from "~ui/icons";
+import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -72,14 +72,13 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     <UIHolder>
       <UIComboboxHolder {...getComboboxProps()}>
         <UICombobox ref={comboboxRef}>
-          <UIInput
-            areResultsVisible={areResultsVisible}
+          <RoundedTextInput
             onFocus={() => {
               if (!isOpen) {
                 openMenu();
               }
             }}
-            placeholder="Search with name or email"
+            placeholder="Search or enter email"
             {...getInputProps()}
           />
           <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={areResultsVisible}>
@@ -113,19 +112,6 @@ const UIComboboxHolder = styled.div``;
 
 const UICombobox = styled.div`
   position: relative;
-`;
-
-const UIInput = styled.input<{ areResultsVisible: boolean }>`
-  ${baseInputStyles}
-  height: 42px;
-  width: 100%;
-  ${(props) =>
-    props.areResultsVisible &&
-    css`
-      border-bottom-color: transparent;
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    `}
 `;
 
 const UIMenu = styled.div<{ isVisible: boolean }>`
