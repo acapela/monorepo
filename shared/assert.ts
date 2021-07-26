@@ -23,7 +23,7 @@ export function assertGet<T>(input: T | Empty, messageOrError: MessageOrError): 
 }
 
 export function assert(input: unknown, messageOrError: MessageOrError): asserts input {
-  if (isNotEmpty(input)) {
+  if (input) {
     return;
   }
 
