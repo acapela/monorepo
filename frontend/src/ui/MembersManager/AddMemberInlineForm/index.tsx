@@ -76,7 +76,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
         <RoundedTextInput
           icon={<IconSearch />}
           onFocus={openMenu}
-          placeholder="Search or enter email"
+          placeholder="Search with name or email"
           value={inputValue}
           onChangeText={setInputValue}
         />
