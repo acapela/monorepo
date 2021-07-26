@@ -341,6 +341,30 @@
           user_id:
             _eq: X-Hasura-User-Id
         check: null
+  event_triggers:
+    - name: notification_updates
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+        delete:
+          columns: "*"
+        update:
+          columns:
+            - data
+            - created_at
+            - read_at
+            - updated_at
+            - id
+            - user_id
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
     name: room

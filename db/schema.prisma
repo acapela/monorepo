@@ -231,6 +231,7 @@ model user {
   last_seen_message                                     last_seen_message[]
   message                                               message[]
   message_reaction                                      message_reaction[]
+  notification                                          notification[]
   room                                                  room[]
   room_invites                                          room_invites[]
   room_member                                           room_member[]
@@ -265,4 +266,14 @@ model message_reaction {
   user       user    @relation(fields: [user_id], references: [id])
 
   @@id([message_id, user_id, emoji])
+}
+
+model notification {
+  id         String    @id @db.Uuid
+  user_id    String    @db.Uuid
+  data       Json
+  read_at    DateTime? @db.Timestamptz(6)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  user       user      @relation(fields: [user_id], references: [id])
 }
