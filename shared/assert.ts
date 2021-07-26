@@ -1,4 +1,4 @@
-import { Empty, isNotEmpty } from "./empty";
+import { Nullish, isNotNullish } from "./nullish";
 
 export class AssertError extends Error {
   constructor(message: string) {
@@ -16,8 +16,8 @@ function getErrorFromMessageOrError(messageOrError: MessageOrError): Error {
   return messageOrError;
 }
 
-export function assertGet<T>(input: T | Empty, messageOrError: MessageOrError): T {
-  assert(input, messageOrError);
+export function assertGet<T>(input: T | Nullish, messageOrError: MessageOrError): T {
+  assert(isNotNullish(input), messageOrError);
 
   return input;
 }
@@ -32,7 +32,7 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   throw error;
 }
 
-export async function assertGetAsync<T>(promise: Promise<T | Empty>, messageOrError: MessageOrError): Promise<T> {
+export async function assertGetAsync<T>(promise: Promise<T | Nullish>, messageOrError: MessageOrError): Promise<T> {
   try {
     const result = await promise;
 

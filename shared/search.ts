@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { isNotEmpty } from "./empty";
+import { isNotNullish } from "./nullish";
 import { Maybe } from "./types";
 
 export function removeAccents(input: string) {
@@ -27,7 +27,7 @@ export function useSearch<T>(items: T[], termsGetter: (item: T) => Array<Maybe<s
     return items.map((item) => {
       return {
         item,
-        terms: termsGetter(item).filter(isNotEmpty).map(prepareSearchString),
+        terms: termsGetter(item).filter(isNotNullish).map(prepareSearchString),
       };
     });
   }, [items]);
