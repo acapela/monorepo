@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
-import { BLACK } from "./colors";
+import { BLACK } from "./theme/colors/base";
 
 function createShadowCss(size: number, opacity = 0.2) {
   const shadowColor = setColorOpacity(BLACK, opacity);

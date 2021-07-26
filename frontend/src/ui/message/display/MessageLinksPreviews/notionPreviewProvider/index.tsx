@@ -4,7 +4,7 @@ import { IconNotionLogo } from "~ui/icons";
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
 import { TextBody } from "~ui/typo";
 import { getNotionPreviewText } from "./getNotionPreviewText";
-import { BACKGROUND_ACCENT_WEAK, BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK, BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 
 export const notionPreviewProvider: MessageEmbedPreviewConfig = {

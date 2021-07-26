@@ -5,7 +5,7 @@ import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { IconSpaces, IconBox } from "~ui/icons";
-import { ONYX_LIGHTEST } from "~ui/colors";
+import { ONYX_LIGHTEST } from "~ui/theme/colors/base";
 import { fontSize } from "~ui/baseStyles";
 import { routes } from "~frontend/routes";
 

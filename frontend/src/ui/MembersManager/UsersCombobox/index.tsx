@@ -5,7 +5,7 @@ import { UserBasicInfoFragment } from "~gql";
 import { baseInputStyles } from "~ui/forms/utils";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { IconPlusSquare } from "~ui/icons";

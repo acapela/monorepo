@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
-import { BUTTON_ACCENT_COLOR, WHITE } from "./colors";
+import { BUTTON_ACCENT_COLOR, WHITE } from "./theme/colors/base";
 
 export function hoverTransition(propName = "all") {
   return css`

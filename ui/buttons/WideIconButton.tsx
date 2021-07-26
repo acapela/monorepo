@@ -7,7 +7,7 @@ import {
   PRIMARY_PINK_1,
   BASE_GREY_4,
   BASE_GREY_6,
-} from "~ui/colors";
+} from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 import { shadow } from "~ui/baseStyles";
 import { ButtonKind } from "./types";

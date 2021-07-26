@@ -9,7 +9,7 @@ import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
-import { NOTIFICATION_COLOR } from "~ui/colors";
+import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { EditableText } from "~ui/forms/EditableText";
 import { IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";

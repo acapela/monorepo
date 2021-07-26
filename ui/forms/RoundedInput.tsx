@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { BASE_GREY_1, BASE_GREY_3, BASE_GREY_5, BASE_GREY_6, PRIMARY_PINK_1, WHITE } from "~ui/colors";
+import { BASE_GREY_1, BASE_GREY_3, BASE_GREY_5, BASE_GREY_6, PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 
 export const RoundedInput = styled.input`

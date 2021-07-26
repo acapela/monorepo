@@ -10,7 +10,7 @@ import {
   BUTTON_BACKGROUND_COLOR,
   WHITE,
   BUTTON_BACKGROUND_ACTIVE_COLOR,
-} from "~ui/colors";
+} from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 import { ButtonKind, ButtonSize } from "./types";
 
