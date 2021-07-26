@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { useCombobox } from "downshift";
 import { AnimatePresence } from "framer-motion";
 import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
@@ -11,46 +10,45 @@ import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { Popover } from "~ui/popovers/Popover";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Avatar } from "~frontend/ui/users/Avatar";
+import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
+import isEmail from "validator/lib/isEmail";
 
 interface Props {
   users: UserBasicInfoFragment[];
   onSelect: (userId: string) => void;
 }
 
-export const UsersCombobox = ({ users, onSelect }: Props) => {
-  const [inputItems, setInputItems] = useState(users);
+export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
+  const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
-  const handleInputChange = (inputValue: string | undefined) => {
-    const lowerCaseInputValue = (inputValue || "").toLowerCase();
-    const newItems = users.filter((user) => {
+  const [suggestedUsers, setSuggestedUsers] = useState(users);
+
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputValueChange = (newInputValue: string) => {
+    const lowerCaseInputValue = newInputValue.toLowerCase();
+    const newSuggestedUsers = users.filter((user) => {
       const joinedFields = [user.email, user.name].join("").toLowerCase();
       return joinedFields.includes(lowerCaseInputValue);
     });
-    setInputItems(newItems);
+
+    setSuggestedUsers(newSuggestedUsers);
+
+    setInputValue(newInputValue);
   };
 
-  const { isOpen, selectedItem, getComboboxProps, getInputProps, openMenu, reset, inputValue, selectItem } =
-    useCombobox({
-      items: inputItems,
-      defaultHighlightedIndex: 0,
-      onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
-      itemToString: (user) => user?.email || "",
-    });
-
   useEffect(() => {
-    handleInputChange(inputValue);
+    handleInputValueChange(inputValue);
   }, [users]);
 
-  const areResultsVisible = isOpen && inputItems.length > 0;
-
   const comboboxRef = useRef<HTMLDivElement | null>(null);
-  const isSubmitEnabled = Boolean(selectedItem);
+  const isSubmitEnabled = isEmail(inputValue);
 
   const handleSubmit = () => {
-    if (!selectedItem) return;
+    onSelect(inputValue);
 
-    onSelect(selectedItem.id);
-    reset();
+    setInputValue("");
+    closeMenu();
   };
 
   useShortcut("Enter", handleSubmit, { isEnabled: isSubmitEnabled });
@@ -59,28 +57,29 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
 
   return (
     <UIHolder>
-      <UIComboboxHolder {...getComboboxProps()}>
+      <UIComboboxHolder>
         <UICombobox ref={comboboxRef}>
           <RoundedTextInput
             icon={<IconSearch />}
-            onFocus={() => {
-              if (!isOpen) {
-                openMenu();
-              }
-            }}
+            onFocus={openMenu}
             placeholder="Search or enter email"
-            {...getInputProps()}
+            value={inputValue}
+            onChangeText={setInputValue}
           />
           <AnimatePresence>
-            {areResultsVisible && (
+            {isMenuOpen && (
               <Popover anchorRef={comboboxRef} placement="bottom-start">
                 <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
                   <ItemsDropdown
-                    items={inputItems}
+                    items={suggestedUsers}
                     keyGetter={(item) => item.id}
                     labelGetter={(item) => item.name || ""}
-                    onItemSelected={selectItem}
-                    selectedItems={selectedItem ? [selectedItem] : []}
+                    onItemSelected={({ email }) => {
+                      if (!email) return;
+
+                      setInputValue(email);
+                    }}
+                    selectedItems={users.filter(({ email }) => email === inputValue)}
                     onCloseRequest={close}
                     iconGetter={(item) => <Avatar size="small" url={item.avatar_url} />}
                   />
