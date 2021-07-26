@@ -12,6 +12,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { useSearch } from "~shared/search";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -21,19 +22,10 @@ interface Props {
 export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
-  const [suggestedUsers, setSuggestedUsers] = useState(users);
-
   const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-    const lowerCaseInputValue = inputValue.toLowerCase();
-    const newSuggestedUsers = users.filter((user) => {
-      const joinedFields = [user.email, user.name].join("").toLowerCase();
-      return joinedFields.includes(lowerCaseInputValue);
-    });
-
-    setSuggestedUsers(newSuggestedUsers);
-  }, [inputValue, users]);
+  const getSuggestedUsers = useSearch(users, (user) => [user.email, user.name]);
+  const suggestedUsers = getSuggestedUsers(inputValue);
 
   const comboboxRef = useRef<HTMLDivElement | null>(null);
 
