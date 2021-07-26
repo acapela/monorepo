@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { SpaceDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { useSpaceManager } from "~frontend/pages/space/useSpaceManager";
+import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { UserPickerModal } from "~frontend/ui/MembersManager/UserPickerModal";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -20,6 +20,7 @@ export function SpaceTools({ space }: Props) {
     <>
       {isPickingUser && (
         <UserPickerModal
+          title="Space Members"
           currentUsers={members}
           onCloseRequest={closeUsersManager}
           onAddUser={addMember}

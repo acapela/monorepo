@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { useSpaceManager } from "~frontend/../pages/space/useSpaceManager";
+import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpaceBasicInfoFragment } from "~gql";
 import { CardBase } from "~ui/card/Base";
