@@ -16,7 +16,7 @@ import { getCurrentApolloClientHandler } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
 import { waitForAllRunningMutationsToFinish } from "./createMutation";
-import { useAsyncEffect } from "~frontend/../../shared/hooks/useAsyncEffect";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
 
 type QueryDefinitionOptions = RequestWithRole;
 

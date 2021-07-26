@@ -48,6 +48,7 @@ export const UIButton = styled.button<{ isActive: boolean }>`
   ${borderRadius.circle}
   border: 1px solid;
   cursor: pointer;
+  font-weight: 500;
 
   ${({ isActive }) => (isActive ? activeButtonStyles : inactiveButtonStyles)}
 

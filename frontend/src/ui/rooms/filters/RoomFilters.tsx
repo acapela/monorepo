@@ -68,7 +68,13 @@ export const RoomFilters = styled(function RecentTopicFilters({
     <AnimateSharedLayout>
       <UIHolder className={className}>
         <FiltersList filters={filters} onFilterRemoveRequest={removeFilter} />
-        <Button key="add-filter" ref={buttonRef} icon={<IconChevronDown />} onClick={() => setStage("main")}>
+        <Button
+          kind="outlined"
+          key="add-filter"
+          ref={buttonRef}
+          icon={<IconChevronDown />}
+          onClick={() => setStage("main")}
+        >
           Add filter...
         </Button>
         <AnimatePresence>

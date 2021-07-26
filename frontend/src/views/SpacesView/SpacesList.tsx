@@ -5,6 +5,7 @@ import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { groupByFilter } from "~shared/groupByFilter";
+import { CategoryNameLabel } from "~ui/theme/functional";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();
@@ -22,9 +23,8 @@ export function SpacesList() {
       {hasNoSpaces && <NoticeLabel>No spaces yet</NoticeLabel>}
       {mySpaces.length > 0 && (
         <UISpacesGroup key="mine">
-          <TextBody14 secondary speziaMono>
-            Joined spaces
-          </TextBody14>
+          <CategoryNameLabel>Joined spaces</CategoryNameLabel>
+
           <UISpaces>
             {mySpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;
@@ -34,9 +34,7 @@ export function SpacesList() {
       )}
       {notJoinedSpaces.length > 0 && (
         <UISpacesGroup key="to-join">
-          <TextBody14 secondary speziaMono>
-            Other spaces
-          </TextBody14>
+          <CategoryNameLabel>Other spaces</CategoryNameLabel>
           <UISpaces>
             {notJoinedSpaces.map((space) => {
               return <SpaceCard key={space.id} space={space} />;
@@ -64,6 +62,6 @@ const UISpacesGroup = styled.div`
 
 const UISpaces = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 3rem;
 `;

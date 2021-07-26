@@ -34,12 +34,12 @@ export const hoverActionCss = css`
 
 const HOVER_COLOR_CHANGE = 5;
 
-export function getColorHoverVariant(color: string): string {
+export function getColorHoverVariant(color: string, ratio = 1): string {
   if (isColorDark(color)) {
-    return changeColorLightness(color, HOVER_COLOR_CHANGE);
+    return changeColorLightness(color, HOVER_COLOR_CHANGE * ratio);
   }
 
-  return changeColorLightness(color, -HOVER_COLOR_CHANGE);
+  return changeColorLightness(color, -HOVER_COLOR_CHANGE * ratio);
 }
 
 export function getColorActiveVariant(color: string): string {

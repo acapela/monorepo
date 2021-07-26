@@ -10,8 +10,7 @@ import {
 } from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
 import { shadow } from "~ui/baseStyles";
-
-type ButtonKind = "primary" | "secondary";
+import { ButtonKind } from "./types";
 
 interface Props {
   icon: ReactNode;
@@ -31,7 +30,7 @@ export const WideIconButton = forwardRef<HTMLButtonElement, Props>(function Wide
   );
 });
 
-const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
   primary: css`
     background: ${BUTTON_BACKGROUND_COLOR};
     color: ${WHITE};

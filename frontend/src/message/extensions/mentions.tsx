@@ -34,7 +34,7 @@ function Picker({ keyword, onSelect }: AutocompletePickerProps<MentionData>) {
       renderItem={(user) => {
         return (
           <UISelectItem>
-            <UserAvatar user={user} size="font-size" /> {user.name}
+            <UserAvatar user={user} size="inherit" /> {user.name}
           </UISelectItem>
         );
       }}

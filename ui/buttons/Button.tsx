@@ -1,5 +1,5 @@
 import { HTMLMotionProps } from "framer-motion";
-import { forwardRef, ReactNode } from "react";
+import { ForwardedRef, forwardRef, ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { borderRadius, shadow } from "~ui/baseStyles";
@@ -17,15 +17,11 @@ import {
   BASE_GREY_5,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
-
-export type ButtonIconPosition = "start" | "end";
+import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
 
 export interface ButtonDisabledInfo {
   reason: string;
 }
-
-export type ButtonSize = "small" | "medium" | "large";
-export type ButtonKind = "primary" | "secondary" | "outlined" | "transparent";
 
 interface Props extends HTMLMotionProps<"button"> {
   icon?: ReactNode;
@@ -71,7 +67,8 @@ export const Button = styled(
 
     return (
       <UIButton
-        ref={ref}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ref={ref as ForwardedRef<any>}
         as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}

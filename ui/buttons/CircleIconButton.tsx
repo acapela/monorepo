@@ -1,11 +1,18 @@
 import { ReactNode } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { CLOUD_LIGHTER, DARK_ONYX, BASE_GREY_4, BASE_GREY_6, PRIMARY_PINK_1 } from "~ui/colors";
+import {
+  CLOUD_LIGHTER,
+  DARK_ONYX,
+  BASE_GREY_4,
+  BASE_GREY_6,
+  PRIMARY_PINK_1,
+  BUTTON_BACKGROUND_COLOR,
+  WHITE,
+  BUTTON_BACKGROUND_ACTIVE_COLOR,
+} from "~ui/colors";
 import { hoverTransition } from "~ui/transitions";
-import { ButtonSize } from "./Button";
-
-type ButtonKind = "secondary" | "transparent";
+import { ButtonKind, ButtonSize } from "./types";
 
 export interface Props {
   icon: ReactNode;
@@ -42,20 +49,31 @@ export const CircleIconButton = styled(function CircleIconButton({
 
 const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
   small: css`
-    width: 24px;
-    height: 24px;
+    font-size: 24px;
   `,
   medium: css`
-    width: 32px;
-    height: 32px;
+    font-size: 30px;
   `,
   large: css`
-    width: 36px;
-    height: 36px;
+    font-size: 36px;
+  `,
+  inherit: css`
+    font-size: inherit;
   `,
 };
 
-const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
+  primary: css`
+    background: ${BUTTON_BACKGROUND_COLOR};
+    color: ${WHITE};
+    border: 1px solid transparent;
+    &:hover {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+    &:active {
+      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
+    }
+  `,
   secondary: css`
     background: ${CLOUD_LIGHTER};
     border: 1px solid transparent;
@@ -91,11 +109,19 @@ export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDi
   justify-content: center;
 
   ${borderRadius.circle};
-  font-size: 16px;
+  ${({ size }) => buttonSizeSpecificStyle[size]};
   color: ${DARK_ONYX};
   padding: 0;
 
-  ${({ size }) => buttonSizeSpecificStyle[size]}
+  ${hoverTransition()}
+
+  width: 1em;
+  height: 1em;
+
+  svg {
+    font-size: 0.75em;
+  }
+
   ${({ kind }) => buttonKindSpecificStyle[kind]}
 
   ${(props) =>

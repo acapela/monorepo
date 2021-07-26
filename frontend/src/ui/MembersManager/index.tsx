@@ -5,10 +5,10 @@ import { UserBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
-import { Button } from "~ui/buttons/Button";
-import { ToggleButton } from "~ui/buttons/ToggleButton";
-import { IconLogIn, IconCheck } from "~ui/icons";
+import { IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 
 interface Props {
   title: string;
@@ -46,25 +46,25 @@ export const MembersManager = styled(function MembersManager({
         )}
       </AnimatePresence>
       <UIHolder className={className}>
-        <UIMembers>
-          {users.length > 0 && <AvatarList users={users} />}
+        <UIMembers onClick={handleWithStopPropagation(openUserPicker)}>
+          {users.length > 0 && <AvatarList users={users} size="inherit" />}
           {!isReadonly && (
-            <Button kind="transparent" onClick={handleWithStopPropagation(openUserPicker)}>
-              Manage
-            </Button>
+            <CircleIconButton
+              kind="primary"
+              onClick={handleWithStopPropagation(openUserPicker)}
+              icon={<IconPlus />}
+              size="inherit"
+              tooltip="Manage members"
+            />
           )}
         </UIMembers>
         <UIActions>
           {user && (
-            <ToggleButton
-              onClick={handleWithStopPropagation(() =>
-                isMember ? onRemoveMemberRequest(user.id) : onAddMemberRequest(user.id)
-              )}
-              isActive={isMember}
-              icon={isMember ? <IconCheck /> : <IconLogIn />}
-            >
-              {isMember ? "Joined" : "Join"}
-            </ToggleButton>
+            <JoinToggleButton
+              isMember={isMember}
+              onJoin={() => onAddMemberRequest(user.id)}
+              onLeave={() => onRemoveMemberRequest(user.id)}
+            />
           )}
         </UIActions>
       </UIHolder>
@@ -84,6 +84,8 @@ const UIMembers = styled.div`
   grid-template-columns: auto 1fr;
   gap: 4px;
   align-items: center;
+  font-size: 24px;
+  cursor: pointer;
 `;
 
 const UIActions = styled.div`
