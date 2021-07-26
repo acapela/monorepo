@@ -13,7 +13,7 @@ export interface InteractiveProps<ColorGetter> {
   background: ColorGetter;
   text: ColorGetter;
   icon: ColorGetter;
-  border: ColorGetter;
+  border?: ColorGetter;
 }
 
 export interface ThemeColors<ColorGetter> {

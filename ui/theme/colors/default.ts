@@ -22,7 +22,6 @@ export const defaultTheme: ThemeColors<string> = {
           background: colors.PRIMARY_PURPLE_1,
           text: colors.WHITE,
           icon: colors.BASE_GREY_4,
-          border: colors.TRANSPARENT,
         },
         hover: {
           background: colors.PRIMARY_PURPLE_2,
@@ -56,7 +55,6 @@ export const defaultTheme: ThemeColors<string> = {
           background: colors.BASE_GREY_6,
           text: colors.BASE_GREY_1,
           icon: colors.BASE_GREY_1,
-          border: colors.TRANSPARENT,
         },
         hover: {
           background: colors.BASE_GREY_4,
