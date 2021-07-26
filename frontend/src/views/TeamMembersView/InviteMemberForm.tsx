@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
-import { RoundedInput } from "~ui/forms/RoundedInput";
+import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { createTeamIvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { useMemo } from "react";
@@ -41,7 +41,7 @@ export const InviteMemberForm = () => {
 
   return (
     <UIHolder>
-      <RoundedInput placeholder="Enter email" value={email} onChange={({ target }) => setEmail(target.value)} />
+      <RoundedTextInput placeholder="Enter email" value={email} onChangeText={setEmail} />
       <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isEmailAcceptable}>
         Add Member
       </Button>
