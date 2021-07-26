@@ -3,7 +3,7 @@ import { defaultTheme } from "./default";
 export type Variant = "primary" | "secondary" | "tertiary";
 
 export interface VariantStates<ColorGetter> {
-  default: InteractiveProps<ColorGetter>;
+  regular: InteractiveProps<ColorGetter>;
   hover?: Partial<InteractiveProps<ColorGetter>>;
   disabled?: Partial<InteractiveProps<ColorGetter>>;
   active?: Partial<InteractiveProps<ColorGetter>>;

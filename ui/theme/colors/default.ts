@@ -18,7 +18,7 @@ export const defaultTheme: ThemeColors<string> = {
     selected: colors.BASE_GREY_7,
     actions: {
       primary: {
-        default: {
+        regular: {
           background: colors.PRIMARY_PURPLE_1,
           text: colors.WHITE,
           icon: colors.BASE_GREY_4,
@@ -31,7 +31,7 @@ export const defaultTheme: ThemeColors<string> = {
         },
       },
       secondary: {
-        default: {
+        regular: {
           background: colors.WHITE,
           text: colors.BASE_GREY_1,
           icon: colors.PRIMARY_PINK_1,
@@ -51,7 +51,7 @@ export const defaultTheme: ThemeColors<string> = {
         },
       },
       tertiary: {
-        default: {
+        regular: {
           background: colors.BASE_GREY_6,
           text: colors.BASE_GREY_1,
           icon: colors.BASE_GREY_1,
