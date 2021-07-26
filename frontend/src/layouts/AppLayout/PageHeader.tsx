@@ -5,15 +5,15 @@ import { HeroItemTitle } from "~ui/theme/functional";
 
 interface Props {
   title: string;
-  actions?: ReactNode;
+  actionsNode?: ReactNode;
   options?: PopoverMenuOption[];
 }
 
-export function PageHeader({ title, actions }: Props) {
+export function PageHeader({ title, actionsNode }: Props) {
   return (
     <UIHolder>
       <HeroItemTitle>{title}</HeroItemTitle>
-      {actions && <UIActions>{actions}</UIActions>}
+      {actionsNode && <UIActions>{actionsNode}</UIActions>}
     </UIHolder>
   );
 }

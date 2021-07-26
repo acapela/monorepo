@@ -6,9 +6,9 @@ import { SpaceBasicInfoFragment } from "~gql";
 import { CardBase } from "~ui/card/Base";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
-import { JoinToggleButton } from "../buttons/JoinToggleButton";
-import { CornerOptionsMenu } from "../options/CornerOptionsMenu";
-import { AvatarList } from "../users/AvatarList";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
+import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
+import { AvatarList } from "~frontend/ui/users/AvatarList";
 
 interface Props {
   space: SpaceBasicInfoFragment;

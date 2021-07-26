@@ -7,7 +7,7 @@ import {
   useEditSpaceMutation,
   useRemoveSpaceMemberMutation,
   useAddSpaceMemberMutation,
-  isCurrentUserSpaceMember,
+  useIsCurrentUserSpaceMember,
   deleteSpace,
 } from "~frontend/gql/spaces";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -16,7 +16,7 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 export function useSpaceManager(space: SpaceBasicInfoFragment) {
   const spaceId = space.id;
   const user = useAssertCurrentUser();
-  const isCurrentUserMember = isCurrentUserSpaceMember(space);
+  const isCurrentUserMember = useIsCurrentUserSpaceMember(space);
 
   const [addSpaceMember] = useAddSpaceMemberMutation();
   const [removeSpaceMember] = useRemoveSpaceMemberMutation();

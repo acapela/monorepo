@@ -18,10 +18,10 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
   categoryName,
   showClosedToggle,
 }: Props) {
-  const [isShowingClosed, { set: showClosed, unset: dontShowClosed }] = useBoolean(false);
+  const [isShowingClosedRooms, { set: showClosed, unset: dontShowClosed }] = useBoolean(false);
 
   const roomsToShow = rooms.filter((room) => {
-    if (!isShowingClosed) {
+    if (!isShowingClosedRooms) {
       return room.finished_at === null;
     }
 

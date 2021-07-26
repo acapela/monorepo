@@ -47,7 +47,7 @@ export function SpacesView() {
       <SpacedAppLayoutContainer>
         <PageHeader
           title="Spaces"
-          actions={
+          actionsNode={
             <Button ref={buttonRef} onClick={handleCreateSpace} icon={<IconPlusSquare />}>
               Create new space
             </Button>

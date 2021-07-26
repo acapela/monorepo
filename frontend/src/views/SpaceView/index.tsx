@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
-import { isCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
+import { useIsCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
@@ -25,7 +25,7 @@ interface Props {
 export function SpaceView({ spaceId }: Props) {
   const [space] = useSingleSpaceQuery({ id: spaceId });
   const roomsInCurrentSpaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
-  const amIMember = isCurrentUserSpaceMember(space ?? undefined);
+  const amIMember = useIsCurrentUserSpaceMember(space ?? undefined);
 
   const [roomQuery, setFilters] = useRoomFilterVariables([roomsInCurrentSpaceFilter]);
 

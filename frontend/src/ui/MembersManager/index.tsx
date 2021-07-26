@@ -8,7 +8,7 @@ import { handleWithStopPropagation } from "~shared/events";
 import { IconPlus } from "~ui/icons";
 import { UserPickerModal } from "./UserPickerModal";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { JoinToggleButton } from "../buttons/JoinToggleButton";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 
 interface Props {
   title: string;
