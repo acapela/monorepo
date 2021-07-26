@@ -10,7 +10,7 @@ interface Props {
   query: RoomsQueryVariables;
 }
 
-export const FilteredRoomsList = styled(function FilteredRoomsList({ className, query }: Props) {
+export const RoomsListGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
   const [rooms = []] = useRoomsQuery(query);
   const user = useAssertCurrentUser();
 
