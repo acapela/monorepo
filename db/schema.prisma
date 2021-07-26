@@ -269,7 +269,7 @@ model message_reaction {
 }
 
 model notification {
-  id         String    @id @db.Uuid
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String    @db.Uuid
   data       Json
   read_at    DateTime? @db.Timestamptz(6)

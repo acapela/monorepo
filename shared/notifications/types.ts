@@ -28,6 +28,8 @@ export type NotificationData<Type extends NotificationType> = {
   data: NotificationTypesMap[Type];
 };
 
+export type AnyNotificationData = NotificationData<NotificationType>;
+
 export function createNotificationData<Type extends NotificationType>(
   type: Type,
   data: NotificationTypesMap[Type]
