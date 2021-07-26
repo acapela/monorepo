@@ -8,12 +8,21 @@ import { setColorOpacity } from "~shared/colors";
 
 export const PRIMARY_PURPLE_1 = "hsl(297, 24%, 15%)";
 export const PRIMARY_PURPLE_2 = "hsl(296, 24%, 22%)";
+
 export const PRIMARY_PINK_1 = "hsl(344, 67%, 66%)";
-export const PRIMARY_PINK_1_TRANSPARENT = "hsl(344, 67%, 66%, 0.05)";
 export const PRIMARY_PINK_2 = "hsl(345, 93%, 73%)";
 export const PRIMARY_PINK_3 = "hsla(345, 51%, 59%, 1)";
+export const PRIMARY_PINK_1_TRANSPARENT = "hsl(344, 67%, 66%, 0.05)";
+
 export const PRIMARY_TEAL_1 = "hsl(180, 76%, 55%)";
+export const PRIMARY_TEAL_2 = "hsl(180, 62%, 50%)";
+export const PRIMARY_TEAL_3 = "hsl(180, 100%, 62%)";
+
 export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
+export const SECONDARY_ORANGE_2 = "hsl(16, 78%, 48%)";
+export const SECONDARY_ORANGE_3 = "hsl(16, 97%, 60%)";
+
+export const WHITE = "hsl(0, 0%, 100%)";
 export const BASE_GREY_1 = "hsl(0, 2%, 12%)";
 export const BASE_GREY_2 = "hsl(0, 1%, 21%)";
 export const BASE_GREY_3 = "hsl(0, 0%, 47%)";
@@ -21,17 +30,20 @@ export const BASE_GREY_4 = "hsl(0, 0%, 82%)";
 export const BASE_GREY_5 = "hsl(0, 0%, 91%)";
 export const BASE_GREY_6 = "hsl(0, 0%, 96%)";
 export const BASE_GREY_7 = "hsl(0, 0%, 97%)";
-export const CLOUD_LIGHTER = "hsl(210, 22%, 96%)";
-export const DARK_ONYX = "hsl(213, 20%, 17%)";
-export const ONYX_LIGHTEST = "hsl(211, 12%, 62%)";
+
+export const SUPPORT_RED = "hsl(344, 87%, 56%)";
+export const SUPPORT_GREEN = "hsl(159, 60%, 46%)";
+export const SUPPORT_YELLOW = "hsl(62, 61%, 67%)";
 
 /*
  *
  * Theme Colors
- *
+ * TODO: To be removed
  */
+export const CLOUD_LIGHTER = "hsl(210, 22%, 96%)";
+export const DARK_ONYX = "hsl(213, 20%, 17%)";
+export const ONYX_LIGHTEST = "hsl(211, 12%, 62%)";
 export const BLACK = "hsl(0, 0%, 0%)";
-export const WHITE = "hsl(0, 0%, 100%)";
 export const ITEM_BACKGROUND_WEAK = "hsl(0, 0%, 96%)";
 export const ITEM_BACKGROUND_WEAK_TRANSPARENT = "hsla(0, 0%, 96%, 0.65)";
 export const BACKGROUND_ACCENT = "hsl(300, 2%, 92%)";
