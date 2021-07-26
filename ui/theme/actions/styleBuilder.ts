@@ -1,24 +1,57 @@
-import { css, SimpleInterpolation } from "styled-components";
+import { css, FlattenSimpleInterpolation, SimpleInterpolation } from "styled-components";
 import { InteractiveProps, VariantStates } from "../colors";
-import { createThemeTarget, ThemeTarget } from "../themeTarget";
+
+interface ActionStateInterpolations {
+  regular: () => FlattenSimpleInterpolation;
+  hover: () => FlattenSimpleInterpolation;
+  disabled: () => FlattenSimpleInterpolation;
+  active: () => FlattenSimpleInterpolation;
+  all: () => FlattenSimpleInterpolation;
+}
 
 type ColorFormat = string;
-export function variantToStyles(colorsForVariant: VariantStates<ColorFormat>): ThemeTarget {
-  return createThemeTarget(css`
-    ${stateToStyles(colorsForVariant.default)}
+export function variantToStyles(colorsForVariant: VariantStates<ColorFormat>): ActionStateInterpolations {
+  const result: ActionStateInterpolations = {
+    regular() {
+      return css`
+        ${stateToStyles(colorsForVariant.regular)}
+      `;
+    },
+    hover() {
+      return css`
+        ${stateToStyles(colorsForVariant.hover)}
+      `;
+    },
+    disabled() {
+      return css`
+        ${stateToStyles(colorsForVariant.disabled)}
+      `;
+    },
+    active() {
+      return css`
+        ${stateToStyles(colorsForVariant.active)}
+      `;
+    },
+    all() {
+      return css`
+        ${result.regular()}
 
-    &:hover {
-      ${stateToStyles(colorsForVariant.hover)}
-    }
+        &:hover {
+          ${result.hover()}
+        }
 
-    &:active {
-      ${stateToStyles(colorsForVariant.active)}
-    }
+        &:active {
+          ${result.active()}
+        }
 
-    &:disabled {
-      ${stateToStyles(colorsForVariant.disabled)}
-    }
-  `);
+        &:disabled {
+          ${result.disabled()}
+        }
+      `;
+    },
+  };
+
+  return result;
 }
 
 function stateToStyles(colorsForState?: Partial<InteractiveProps<ColorFormat>>): SimpleInterpolation {
