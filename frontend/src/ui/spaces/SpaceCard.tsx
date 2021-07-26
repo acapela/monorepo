@@ -67,10 +67,6 @@ const UIHolder = styled(CardBase)`
   min-width: 0;
 `;
 
-const UIBanner = styled.div`
-  position: relative;
-`;
-
 const UIInfo = styled.div`
   text-align: center;
   display: flex;
