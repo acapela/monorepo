@@ -27,26 +27,24 @@ export function SpaceCard({ space }: Props) {
   return (
     <>
       <UIHolder isClickable onClick={handleOpen}>
-        <UIBanner>
-          {isCurrentUserMember && (
-            <CornerOptionsMenu
-              options={[
-                {
-                  label: "Edit space name...",
-                  onSelect: editNameWithModal,
-                  icon: <IconEdit />,
-                },
-                {
-                  label: "Delete space...",
-                  onSelect: remove,
-                  icon: <IconTrash />,
-                  isDestructive: true,
-                },
-              ]}
-              tooltip="Show options..."
-            />
-          )}
-        </UIBanner>
+        {isCurrentUserMember && (
+          <CornerOptionsMenu
+            options={[
+              {
+                label: "Edit space name...",
+                onSelect: editNameWithModal,
+                icon: <IconEdit />,
+              },
+              {
+                label: "Delete space...",
+                onSelect: remove,
+                icon: <IconTrash />,
+                isDestructive: true,
+              },
+            ]}
+            tooltip="Show options..."
+          />
+        )}
 
         <UIInfo>
           <AvatarList size="medium" users={space.members.map((m) => m.user)} />
