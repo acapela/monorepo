@@ -1,8 +1,8 @@
 import React from "react";
-import styled from "styled-components";
-import { TextBody } from "~ui/typo";
+import { TextBody14, TextMeta10 } from "~ui/typo";
 import { UserBasicInfoFragment } from "~gql";
 import { Avatar } from "./Avatar";
+import { UserBasicInfoContainer } from "./UserBasicInfoContainer";
 
 interface Props {
   user: UserBasicInfoFragment;
@@ -10,19 +10,12 @@ interface Props {
 
 export const UserBasicInfo = ({ user }: Props) => {
   return (
-    <UIHolder>
+    <UserBasicInfoContainer>
       <Avatar url={user.avatar_url} />
       <div>
-        <TextBody medium>{user.name}</TextBody>
-        <TextBody>{user.email}</TextBody>
+        <TextBody14 semibold>{user.name}</TextBody14>
+        <TextMeta10 secondary>{user.email}</TextMeta10>
       </div>
-    </UIHolder>
+    </UserBasicInfoContainer>
   );
 };
-
-const UIHolder = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  align-items: center;
-`;

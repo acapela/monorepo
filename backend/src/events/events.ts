@@ -1,16 +1,17 @@
 import { Request, Response, Router } from "express";
-import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError } from "../errors/errorTypes";
-import { handleTeamInvitationCreated } from "../teamInvitation/events";
-import { handleRoomUpdates } from "../rooms/events";
-import { handleTeamUpdates } from "../teams/events";
 import { hasuraEvents } from "./eventHandlers";
-import { prepareMessagePlainTextData, handleMentionCreated } from "../messages/events";
-import { handleSpaceUpdates } from "../spaces/events";
-import { handleTopicCreated } from "../topics/events";
-import { handleUserCreated } from "../users/events";
+import { extractAndAssertBearerToken } from "~backend/src/authentication";
+import { AuthenticationError } from "~backend/src/errors/errorTypes";
+import { handleTeamInvitationCreated } from "~backend/src/teamInvitation/events";
+import { handleRoomUpdates } from "~backend/src/rooms/events";
+import { handleTeamUpdates } from "~backend/src/teams/events";
+import { prepareMessagePlainTextData, handleMentionCreated } from "~backend/src/messages/events";
+import { handleSpaceUpdates } from "~backend/src/spaces/events";
+import { handleTopicCreated } from "~backend/src/topics/events";
+import { handleUserCreated } from "~backend/src/users/events";
 import { handleRoomParticipantCreated } from "~backend/src/roomInvitation/events";
 import { handleAttachmentUpdates } from "~backend/src/attachments/events";
+import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 
 export const router = Router();
 
@@ -26,6 +27,7 @@ hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipant
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], prepareMessagePlainTextData);
 // mentions are part of the message object
 hasuraEvents.addHandler("message_updates", ["INSERT"], handleMentionCreated);
+hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);

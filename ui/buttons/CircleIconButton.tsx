@@ -14,13 +14,14 @@ import {
 import { hoverTransition } from "~ui/transitions";
 import { ButtonKind, ButtonSize } from "./types";
 
-interface Props {
+export interface Props {
   icon: ReactNode;
   size?: ButtonSize;
   kind?: ButtonKind;
   onClick?: () => void;
   className?: string;
   tooltip?: string;
+  isDisabled?: boolean;
 }
 
 export const CircleIconButton = styled(function CircleIconButton({
@@ -30,9 +31,17 @@ export const CircleIconButton = styled(function CircleIconButton({
   onClick,
   className,
   tooltip,
+  isDisabled = false,
 }: Props) {
   return (
-    <UIButton data-tooltip={tooltip} className={className} onClick={onClick} size={size} kind={kind}>
+    <UIButton
+      data-tooltip={tooltip}
+      className={className}
+      onClick={onClick}
+      size={size}
+      kind={kind}
+      isDisabled={isDisabled}
+    >
       {icon}
     </UIButton>
   );
@@ -68,6 +77,14 @@ const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpola
   secondary: css`
     background: ${CLOUD_LIGHTER};
     border: 1px solid transparent;
+  `,
+  transparent: css`
+    background: transparent;
+  `,
+};
+
+const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
+  secondary: css`
     &:hover {
       background: ${BASE_GREY_4};
     }
@@ -77,7 +94,6 @@ const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpola
     }
   `,
   transparent: css`
-    background: transparent;
     &:hover {
       background: ${BASE_GREY_6};
     }
@@ -87,12 +103,11 @@ const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpola
   `,
 };
 
-export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind }>`
+export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDisabled: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
   ${borderRadius.circle};
   ${({ size }) => buttonSizeSpecificStyle[size]};
   color: ${DARK_ONYX};
@@ -108,4 +123,12 @@ export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind }>`
   }
 
   ${({ kind }) => buttonKindSpecificStyle[kind]}
+
+  ${(props) =>
+    !props.isDisabled &&
+    css`
+      cursor: pointer;
+      ${hoverTransition()}
+      ${buttonKindSpecificInteractionStyle[props.kind]}
+    `};
 `;

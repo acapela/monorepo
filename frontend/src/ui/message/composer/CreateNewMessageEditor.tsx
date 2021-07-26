@@ -1,6 +1,8 @@
+import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
+import { select, useAutorun } from "~shared/sharedState";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -26,7 +28,7 @@ interface SubmitMessageParams {
   attachments: EditorAttachmentInfo[];
 }
 
-export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
@@ -36,32 +38,32 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
   const topicContext = useTopicStoreContext();
   const roomContext = useRoomStoreContext();
 
-  const isEditingAnyMessage = topicContext.useSelector((store) => !!store.editedMessageId);
-  const replyingToMessageId = topicContext.useSelector((store) => store.currentlyReplyingToMessage);
-  const isEditingAnyTopicTitle = roomContext.useSelector((store) => !!store.editingNameTopicId);
+  const isEditingAnyMessage = select(() => !!topicContext.editedMessageId);
+  const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessage);
 
   function focusEditor() {
     // Don't focus editor if editing some topic name
-    if (roomContext.getValue().editingNameTopicId) {
+    if (roomContext.editingNameTopicId) {
       return;
     }
 
     editorRef.current?.chain().focus("end").run();
   }
 
+  useAutorun(() => {
+    if (!roomContext.editingNameTopicId) {
+      focusEditor();
+    }
+  });
+
   useDependencyChangeEffect(() => {
     if (!isEditingAnyMessage) focusEditor();
   }, [isEditingAnyMessage]);
 
-  useDependencyChangeEffect(() => {
-    if (!isEditingAnyTopicTitle) focusEditor();
-  }, [isEditingAnyTopicTitle]);
-
   useDependencyChangeEffect(focusEditor, [replyingToMessageId]);
 
-  const { currentlyReplyingToMessage } = topicContext.useValue();
   const handleStopReplyingToMessage = () => {
-    topicContext.update((draft) => (draft.currentlyReplyingToMessage = null));
+    topicContext.currentlyReplyingToMessage = null;
   };
 
   async function handleNewFiles(files: File[]) {
@@ -75,7 +77,7 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
       topicId,
       type,
       content,
-      replied_to_message_id: currentlyReplyingToMessage?.id,
+      replied_to_message_id: topicContext.currentlyReplyingToMessage?.id,
     });
 
     if (message) {
@@ -137,14 +139,17 @@ export const CreateNewMessageEditor = ({ topicId, isDisabled }: Props) => {
           });
         }}
         additionalContent={
-          currentlyReplyingToMessage && (
-            <ReplyingToMessage onRemove={handleStopReplyingToMessage} message={currentlyReplyingToMessage} />
+          topicContext.currentlyReplyingToMessage && (
+            <ReplyingToMessage
+              onRemove={handleStopReplyingToMessage}
+              message={topicContext.currentlyReplyingToMessage}
+            />
           )
         }
       />
     </UIEditorContainer>
   );
-};
+});
 
 const UIEditorContainer = styled.div`
   display: flex;

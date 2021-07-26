@@ -1,9 +1,16 @@
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { CurrentTeamInfoView } from "~frontend/views/CurrentTeam";
+
+import { PageMeta } from "~frontend/utils/PageMeta";
+import { TeamMembersView } from "~frontend/views/TeamMembersView";
 
 export default function TeamInfoPage(): JSX.Element {
-  return <CurrentTeamInfoView />;
+  return (
+    <>
+      <PageMeta title="Team" />
+      <TeamMembersView />
+    </>
+  );
 }
 
 assignPageLayout(TeamInfoPage, AppLayout);

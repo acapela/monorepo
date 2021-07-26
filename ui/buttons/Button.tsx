@@ -14,7 +14,7 @@ import {
   BUTTON_BACKGROUND_ACTIVE_COLOR,
   WHITE,
   PRIMARY_PINK_1,
-  BASE_GREY_LINES,
+  BASE_GREY_5,
 } from "~ui/colors";
 import { TextBody } from "~ui/typo";
 import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
@@ -89,25 +89,35 @@ export const Button = styled(
   })
 )``;
 
-const UIIconHolder = styled.div`
-  font-size: 1.2rem;
+const UIIconHolder = styled.div``;
+
+export const smallSizeButtonStyle = css`
+  font-size: 12px;
+  padding: 10px 8px;
+  gap: 4px;
 `;
 
-const buttonSizeSpecificStyle: Partial<Record<ButtonSize, FlattenSimpleInterpolation>> = {
-  small: css`
-    font-size: 12px;
-    padding: 10px 8px;
-    gap: 4px;
-  `,
+const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
+  small: smallSizeButtonStyle,
   medium: css`
     font-size: 14px;
     padding: 12px;
     gap: 8px;
+
+    ${UIIconHolder} {
+      // specific font size to match the design
+      font-size: 1.14;
+    }
   `,
   large: css`
     font-size: 16px;
     padding: 18px 16px;
     gap: 8px;
+
+    ${UIIconHolder} {
+      // specific font size to match the design
+      font-size: 1.25;
+    }
   `,
 };
 
@@ -172,7 +182,7 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
       background: ${BASE_GREY_4};
     }
     &:active {
-      background: ${BASE_GREY_LINES};
+      background: ${BASE_GREY_5};
       border-color: ${PRIMARY_PINK_1};
     }
   `,
@@ -206,9 +216,8 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
 
   font: inherit;
   font-weight: 400;
-  line-height: 1.2rem;
-
   white-space: nowrap;
+  line-height: 1.2;
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 

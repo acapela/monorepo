@@ -45,7 +45,8 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const operationTypeHandlers = getTriggerOperationTypeHandlers(triggerName, operationType);
 
     for (const handler of operationTypeHandlers) {
-      await handler(event.event.data.new, userId);
+      const data = operationType === "DELETE" ? event.event.data.old : event.event.data.new;
+      await handler(data, userId);
     }
   }
 

@@ -16,6 +16,7 @@ import { SpaceHeader } from "./SpaceHeader";
 import { CenteredContentWithSides } from "~ui/layout/CenteredContentWithSides";
 import { SpaceTools } from "./SpaceTools";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
+import { PageMeta } from "~frontend/utils/PageMeta";
 
 interface Props {
   spaceId: string;
@@ -56,31 +57,34 @@ export function SpaceView({ spaceId }: Props) {
   const spaceMembers = space?.members.map((member) => member.user) ?? [];
 
   return (
-    <UIContainer isNarrow>
-      <CenteredContentWithSides rightNode={space && <SpaceTools space={space} />}>
-        <AvatarList users={spaceMembers} size="medium" />
-      </CenteredContentWithSides>
-      {space && <SpaceHeader space={space} />}
+    <>
+      {space && <PageMeta title={space.name} />}
+      <UIContainer isNarrow>
+        <CenteredContentWithSides rightNode={space && <SpaceTools space={space} />}>
+          <AvatarList users={spaceMembers} size="medium" />
+        </CenteredContentWithSides>
+        {space && <SpaceHeader space={space} />}
 
-      <CenteredContentWithSides
-        rightNode={
-          <UIFlyingCreateRoomButton
-            onClick={onCreate}
-            iconPosition="start"
-            icon={<IconPlusSquare />}
-            isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
-          >
-            New Room
-          </UIFlyingCreateRoomButton>
-        }
-      >
-        <UIFilters onFiltersChange={setFilters} />
-      </CenteredContentWithSides>
+        <CenteredContentWithSides
+          rightNode={
+            <UIFlyingCreateRoomButton
+              onClick={onCreate}
+              iconPosition="start"
+              icon={<IconPlusSquare />}
+              isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}
+            >
+              New Room
+            </UIFlyingCreateRoomButton>
+          }
+        >
+          <UIFilters onFiltersChange={setFilters} />
+        </CenteredContentWithSides>
 
-      <UIRooms>
-        <FilteredRoomsList query={roomQuery} />
-      </UIRooms>
-    </UIContainer>
+        <UIRooms>
+          <FilteredRoomsList query={roomQuery} />
+        </UIRooms>
+      </UIContainer>
+    </>
   );
 }
 

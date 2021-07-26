@@ -16,6 +16,10 @@ import {
   TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
   TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
+  RemoveTeamInvitationMutation,
+  RemoveTeamInvitationMutationVariables,
+  RemoveTeamMemberMutation,
+  RemoveTeamMemberMutationVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -54,6 +58,7 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
       id
       name
       slug
+      owner_id
       spaces {
         ...SpaceBasicInfo
       }
@@ -136,7 +141,7 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export const [useCreateTeamInvitationMutation] = createMutation<
+export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables
 >(
@@ -155,6 +160,38 @@ export const [useCreateTeamInvitationMutation] = createMutation<
   }
 );
 
+export const [useRemoveTeamInvitation, { mutate: removeTeamInvitation }] = createMutation<
+  RemoveTeamInvitationMutation,
+  RemoveTeamInvitationMutationVariables
+>(
+  () => gql`
+    mutation RemoveTeamInvitation($id: uuid!) {
+      delete_team_invitation_by_pk(id: $id) {
+        team_id
+      }
+    }
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        delete_message_reaction_by_pk: {
+          __typename: "team_invitation",
+          id: variables.id,
+        },
+      };
+    },
+    onOptimisticOrActualResponse(teamInvitation, variables) {
+      TeamDetailedInfoFragment.update(teamInvitation.team_id, (team) => {
+        team.invitations = team.invitations.filter(({ id }) => id !== variables.id);
+      });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Team invitation was removed` });
+    },
+  }
+);
+
 export const [useTeamInvitationByTokenQuery] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(
   () => gql`
     query TeamInvitation($tokenId: uuid!) {
@@ -166,4 +203,37 @@ export const [useTeamInvitationByTokenQuery] = createQuery<TeamInvitationQuery, 
       }
     }
   `
+);
+
+export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutation<
+  RemoveTeamMemberMutation,
+  RemoveTeamMemberMutationVariables
+>(
+  () => gql`
+    mutation RemoveTeamMember($teamId: uuid!, $userId: uuid!) {
+      delete_team_member_by_pk(team_id: $teamId, user_id: $userId) {
+        user_id
+      }
+    }
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        delete_message_reaction_by_pk: {
+          __typename: "team_member",
+          team_id: variables.teamId,
+          user_id: variables.userId,
+        },
+      };
+    },
+    onOptimisticOrActualResponse(teamMember, variables) {
+      TeamDetailedInfoFragment.update(variables.teamId, (team) => {
+        team.memberships = team.memberships.filter((member) => member.user.id !== variables.userId);
+      });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Team member was removed` });
+    },
+  }
 );

@@ -2,11 +2,10 @@ import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/colors";
-import { IconCross } from "~ui/icons";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { ToastData, ToastType } from "./data";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 
 interface Props {
   toast: ToastData;
@@ -36,7 +35,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       className={className}
     >
       <UIContent>{toast.content}</UIContent>
-      <CircleIconButton icon={<IconCross />} onClick={() => onCloseRequest(toast)} />
+      <CircleCloseIconButton size="small" onClick={() => onCloseRequest(toast)} />
     </UIHolder>
   );
 })``;

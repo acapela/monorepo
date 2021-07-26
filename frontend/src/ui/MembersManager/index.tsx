@@ -11,6 +11,7 @@ import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { JoinToggleButton } from "../buttons/JoinToggleButton";
 
 interface Props {
+  title: string;
   users: UserBasicInfoFragment[];
   onAddMemberRequest: (userId: string) => Promise<void> | void;
   onRemoveMemberRequest: (userId: string) => Promise<void> | void;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export const MembersManager = styled(function MembersManager({
+  title,
   users,
   onRemoveMemberRequest,
   onAddMemberRequest,
@@ -35,6 +37,7 @@ export const MembersManager = styled(function MembersManager({
       <AnimatePresence>
         {isPickingUser && (
           <UserPickerModal
+            title={title}
             currentUsers={users}
             onCloseRequest={closeUserPicker}
             onAddUser={onAddMemberRequest}
