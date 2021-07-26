@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 
 function getDotEnvPath() {
   if (!__dirname) {
@@ -134,7 +134,7 @@ function loadRootDotEnv(): void {
   dotenv.config({ path: dotEnvPath });
 }
 
-const appType = assertGet(process.env.APP, "APP environment variable must always be set");
+const appType = assertDefined(process.env.APP, "APP environment variable must always be set");
 
 loadRootDotEnv();
 

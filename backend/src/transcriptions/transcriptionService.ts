@@ -1,10 +1,10 @@
 import { Attachment, db } from "~db";
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { getSonixClient, MediaResponse } from "./sonixClient";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 
 export async function sendForTranscription(attachment: Attachment) {
-  const messageId = assertGet(attachment?.message_id, "Attachment to be transcribed does not have message_id");
+  const messageId = assertDefined(attachment?.message_id, "Attachment to be transcribed does not have message_id");
 
   const sonix = getSonixClient();
   const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);

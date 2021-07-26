@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/client";
 import { UserBasicInfoFragment } from "~gql";
 import { convertUserAuthToBasicFragment } from "~frontend/utils/user";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { UserTokenData } from "~shared/types/jwtAuth";
 
 /**
@@ -41,7 +41,7 @@ export function useCurrentUser(): UserTokenData | null {
 export function useAssetCurrentUserAuth(): UserTokenData {
   const user = useCurrentUser();
 
-  const validatedUser = assertGet(user, `Using useAssertCurrentUser with null user`);
+  const validatedUser = assertDefined(user, `Using useAssertCurrentUser with null user`);
 
   return validatedUser;
 }
@@ -61,5 +61,5 @@ export function useCurrentTeamId(): string | null {
 export function useAssertCurrentTeamId(): string {
   const user = useAssetCurrentUserAuth();
 
-  return assertGet(user.currentTeamId, "No team id");
+  return assertDefined(user.currentTeamId, "No team id");
 }

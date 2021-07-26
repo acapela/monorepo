@@ -16,7 +16,7 @@ function getErrorFromMessageOrError(messageOrError: MessageOrError): Error {
   return messageOrError;
 }
 
-export function assertGet<T>(input: T | Nullish, messageOrError: MessageOrError): T {
+export function assertDefined<T>(input: T | Nullish, messageOrError: MessageOrError): T {
   assert(isNotNullish(input), messageOrError);
 
   return input;

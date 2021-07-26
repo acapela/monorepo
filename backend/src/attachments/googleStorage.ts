@@ -1,7 +1,7 @@
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 
-const bucketName = assertGet(process.env.GOOGLE_STORAGE_BUCKET, "GOOGLE_STORAGE_BUCKET env variable is required");
+const bucketName = assertDefined(process.env.GOOGLE_STORAGE_BUCKET, "GOOGLE_STORAGE_BUCKET env variable is required");
 
 const directory = "attachments";
 
