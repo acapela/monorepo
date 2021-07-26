@@ -13,15 +13,12 @@ export function hoverTransition(propName = "all") {
   `;
 }
 
+// TODO: Remove most of this code once we've moved to use theme colors
+
 export const ACTION_ACTIVE_COLOR = "rgb(136 136 136 / 10%)";
 
 export const hoverActionActiveCss = css`
   background-color: ${ACTION_ACTIVE_COLOR};
-`;
-
-export const hoverActionNegativeSpacingCss = css`
-  padding: 0.75rem;
-  margin: -0.75rem;
 `;
 
 export const hoverActionCss = css`

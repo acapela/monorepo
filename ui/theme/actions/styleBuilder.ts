@@ -1,7 +1,7 @@
 import { css, FlattenSimpleInterpolation, SimpleInterpolation } from "styled-components";
 import { InteractiveProps, VariantStates } from "../colors";
 
-interface ActionStateInterpolations {
+export interface ActionStateInterpolations {
   regular: () => FlattenSimpleInterpolation;
   hover: () => FlattenSimpleInterpolation;
   disabled: () => FlattenSimpleInterpolation;
@@ -9,8 +9,7 @@ interface ActionStateInterpolations {
   all: () => FlattenSimpleInterpolation;
 }
 
-type ColorFormat = string;
-export function variantToStyles(colorsForVariant: VariantStates<ColorFormat>): ActionStateInterpolations {
+export function variantToStyles(colorsForVariant: VariantStates): ActionStateInterpolations {
   const result: ActionStateInterpolations = {
     regular() {
       return css`
@@ -54,7 +53,7 @@ export function variantToStyles(colorsForVariant: VariantStates<ColorFormat>): A
   return result;
 }
 
-function stateToStyles(colorsForState?: Partial<InteractiveProps<ColorFormat>>): SimpleInterpolation {
+function stateToStyles(colorsForState?: Partial<InteractiveProps>): SimpleInterpolation {
   if (!colorsForState) {
     return css``;
   }

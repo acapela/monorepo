@@ -1,13 +1,24 @@
-import { css } from "styled-components";
+import { css, FlattenSimpleInterpolation } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
 import { BLACK } from "./theme/colors/base";
 
-function createShadowCss(size: number, opacity = 0.2) {
+function createShadowCss(size: number, opacity = 0.2): FlattenSimpleInterpolation {
   const shadowColor = setColorOpacity(BLACK, opacity);
 
   return css`
     box-shadow: 0 0 ${size}rem ${shadowColor};
   `;
+}
+
+export interface Shadow {
+  small: FlattenSimpleInterpolation;
+  medium: FlattenSimpleInterpolation;
+  large: FlattenSimpleInterpolation;
+  card: FlattenSimpleInterpolation;
+  cardItem: FlattenSimpleInterpolation;
+  modal: FlattenSimpleInterpolation;
+  popover: FlattenSimpleInterpolation;
+  button: FlattenSimpleInterpolation;
 }
 
 export const shadow = {
@@ -32,6 +43,18 @@ export const shadow = {
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
 };
+
+export interface BorderRadius {
+  menu: FlattenSimpleInterpolation;
+  card: FlattenSimpleInterpolation;
+  modal: FlattenSimpleInterpolation;
+  label: FlattenSimpleInterpolation;
+  input: FlattenSimpleInterpolation;
+  item: FlattenSimpleInterpolation;
+  circle: FlattenSimpleInterpolation;
+  button: FlattenSimpleInterpolation;
+  tag: FlattenSimpleInterpolation;
+}
 
 export const borderRadius = {
   menu: css`

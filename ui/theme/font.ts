@@ -1,7 +1,7 @@
 import { css, FlattenSimpleInterpolation } from "styled-components";
 import { ThemeTarget } from "./themeTarget";
 
-interface Font extends ThemeTarget {
+export interface Font extends ThemeTarget {
   spezia: Font;
   speziaExtended: Font;
   speziaMono: Font;

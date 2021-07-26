@@ -2,44 +2,44 @@ import { defaultTheme } from "./default";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
-export interface VariantStates<ColorGetter> {
-  regular: InteractiveProps<ColorGetter>;
-  hover?: Partial<InteractiveProps<ColorGetter>>;
-  disabled?: Partial<InteractiveProps<ColorGetter>>;
-  active?: Partial<InteractiveProps<ColorGetter>>;
+export interface VariantStates {
+  regular: InteractiveProps;
+  hover?: Partial<InteractiveProps>;
+  disabled?: Partial<InteractiveProps>;
+  active?: Partial<InteractiveProps>;
 }
 
-export interface InteractiveProps<ColorGetter> {
-  background: ColorGetter;
-  text: ColorGetter;
-  icon: ColorGetter;
-  border?: ColorGetter;
+export interface InteractiveProps {
+  background: string;
+  text: string;
+  icon: string;
+  border?: string;
 }
 
-export interface ThemeColors<ColorGetter> {
+export interface ThemeColors {
   layout: {
-    background: ColorGetter;
-    foreground: ColorGetter;
-    softLine: ColorGetter;
-    strongLine: ColorGetter;
-    bodyText: ColorGetter;
-    headingText: ColorGetter;
+    background: string;
+    foreground: string;
+    softLine: string;
+    strongLine: string;
+    bodyText: string;
+    headingText: string;
   };
   interactive: {
-    notification: ColorGetter;
-    active: ColorGetter;
-    inactive: ColorGetter;
-    selected: ColorGetter;
-    actions: Record<Variant, VariantStates<ColorGetter>>;
+    notification: string;
+    active: string;
+    inactive: string;
+    selected: string;
+    actions: Record<Variant, VariantStates>;
   };
   status: {
-    error: ColorGetter;
-    warning: ColorGetter;
-    success: ColorGetter;
+    error: string;
+    warning: string;
+    success: string;
   };
 }
 
-type ThemeColorScheme = "default";
+export type ThemeColorScheme = "default";
 
 export const getColorTheme = (scheme: ThemeColorScheme) => {
   switch (scheme) {
