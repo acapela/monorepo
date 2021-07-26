@@ -25,36 +25,33 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
 
   const [inputValue, setInputValue] = useState("");
 
-  const handleInputValueChange = (newInputValue: string) => {
-    const lowerCaseInputValue = newInputValue.toLowerCase();
+  useEffect(() => {
+    const lowerCaseInputValue = inputValue.toLowerCase();
     const newSuggestedUsers = users.filter((user) => {
       const joinedFields = [user.email, user.name].join("").toLowerCase();
       return joinedFields.includes(lowerCaseInputValue);
     });
 
     setSuggestedUsers(newSuggestedUsers);
-
-    if (newInputValue) {
-      openMenu();
-    }
-
-    setInputValue(newInputValue);
-  };
-
-  useEffect(() => {
-    handleInputValueChange(inputValue);
-  }, [users]);
+  }, [inputValue, users]);
 
   const comboboxRef = useRef<HTMLDivElement | null>(null);
 
   const selectedUser = users.find(({ email }) => inputValue === email);
   const isSubmitEnabled = Boolean(selectedUser);
 
+  useEffect(() => {
+    if (selectedUser) {
+      closeMenu();
+    } else if (inputValue) {
+      openMenu();
+    }
+  }, [selectedUser, inputValue]);
+
   const handleSubmit = () => {
     if (!selectedUser) return;
 
     setInputValue("");
-    closeMenu();
 
     onSelect(selectedUser.id);
   };
@@ -75,38 +72,35 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
 
   return (
     <UIHolder>
-      <UIComboboxHolder>
-        <UICombobox ref={comboboxRef}>
-          <RoundedTextInput
-            icon={<IconSearch />}
-            onFocus={openMenu}
-            placeholder="Search or enter email"
-            value={inputValue}
-            onChangeText={handleInputValueChange}
-          />
-          <AnimatePresence>
-            {isMenuOpen && suggestedUsers.length > 0 && (
-              <Popover distance={-1} anchorRef={comboboxRef} placement="bottom-start">
-                <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
-                  <ItemsDropdown
-                    items={suggestedUsers}
-                    keyGetter={(item) => item.id}
-                    labelGetter={(item) => item.name || ""}
-                    onItemSelected={({ email }) => {
-                      if (!email) return;
+      <UICombobox ref={comboboxRef}>
+        <RoundedTextInput
+          icon={<IconSearch />}
+          onFocus={openMenu}
+          placeholder="Search or enter email"
+          value={inputValue}
+          onChangeText={setInputValue}
+        />
+        <AnimatePresence>
+          {isMenuOpen && suggestedUsers.length > 0 && (
+            <Popover distance={-2} anchorRef={comboboxRef} placement="bottom-start">
+              <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
+                <ItemsDropdown
+                  items={suggestedUsers}
+                  keyGetter={(item) => item.id}
+                  labelGetter={(item) => item.name || ""}
+                  onItemSelected={({ email }) => {
+                    if (!email) return;
 
-                      closeMenu();
-                      setInputValue(email);
-                    }}
-                    selectedItems={users.filter(({ email }) => email === inputValue)}
-                    iconGetter={(item) => <Avatar size="small" url={item.avatar_url} />}
-                  />
-                </UIDropdownHolder>
-              </Popover>
-            )}
-          </AnimatePresence>
-        </UICombobox>
-      </UIComboboxHolder>
+                    setInputValue(email);
+                  }}
+                  selectedItems={users.filter(({ email }) => email === inputValue)}
+                  iconGetter={(item) => <Avatar size="small" url={item.avatar_url} />}
+                />
+              </UIDropdownHolder>
+            </Popover>
+          )}
+        </AnimatePresence>
+      </UICombobox>
       <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isSubmitEnabled}>
         Add Member
       </Button>
@@ -119,8 +113,6 @@ const UIHolder = styled.div`
   grid-template-columns: 1fr auto;
   gap: 16px;
 `;
-
-const UIComboboxHolder = styled.div``;
 
 const UIDropdownHolder = styled.div``;
 
