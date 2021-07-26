@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { UserBasicInfoFragment } from "~gql";
@@ -10,8 +11,7 @@ import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { Popover } from "~ui/popovers/Popover";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Avatar } from "~frontend/ui/users/Avatar";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import isEmail from "validator/lib/isEmail";
+import { useBoolean } from "~shared/hooks/useBoolean";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -34,6 +34,10 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
 
     setSuggestedUsers(newSuggestedUsers);
 
+    if (newInputValue) {
+      openMenu();
+    }
+
     setInputValue(newInputValue);
   };
 
@@ -42,16 +46,30 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   }, [users]);
 
   const comboboxRef = useRef<HTMLDivElement | null>(null);
-  const isSubmitEnabled = isEmail(inputValue);
+
+  const selectedUser = users.find(({ email }) => inputValue === email);
+  const isSubmitEnabled = Boolean(selectedUser);
 
   const handleSubmit = () => {
-    onSelect(inputValue);
+    if (!selectedUser) return;
 
     setInputValue("");
     closeMenu();
+
+    onSelect(selectedUser.id);
   };
 
-  useShortcut("Enter", handleSubmit, { isEnabled: isSubmitEnabled });
+  useShortcut(
+    "Enter",
+    () => {
+      handleSubmit();
+
+      return true;
+    },
+    { isEnabled: isSubmitEnabled }
+  );
+
+  useClickAway(comboboxRef, closeMenu);
 
   const { width: comboboxWidth } = useBoundingBox(comboboxRef);
 
@@ -64,11 +82,11 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
             onFocus={openMenu}
             placeholder="Search or enter email"
             value={inputValue}
-            onChangeText={setInputValue}
+            onChangeText={handleInputValueChange}
           />
           <AnimatePresence>
-            {isMenuOpen && (
-              <Popover anchorRef={comboboxRef} placement="bottom-start">
+            {isMenuOpen && suggestedUsers.length > 0 && (
+              <Popover distance={-1} anchorRef={comboboxRef} placement="bottom-start">
                 <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
                   <ItemsDropdown
                     items={suggestedUsers}
@@ -77,10 +95,10 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
                     onItemSelected={({ email }) => {
                       if (!email) return;
 
+                      closeMenu();
                       setInputValue(email);
                     }}
                     selectedItems={users.filter(({ email }) => email === inputValue)}
-                    onCloseRequest={close}
                     iconGetter={(item) => <Avatar size="small" url={item.avatar_url} />}
                   />
                 </UIDropdownHolder>
