@@ -22,6 +22,7 @@ export const SECONDARY_ORANGE_1 = "hsl(16, 86%, 52%)";
 export const SECONDARY_ORANGE_2 = "hsl(16, 78%, 48%)";
 export const SECONDARY_ORANGE_3 = "hsl(16, 97%, 60%)";
 
+export const TRANSPARENT = "transparent";
 export const WHITE = "hsl(0, 0%, 100%)";
 export const BASE_GREY_1 = "hsl(0, 2%, 12%)";
 export const BASE_GREY_2 = "hsl(0, 1%, 21%)";
