@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useCombobox } from "downshift";
+import { AnimatePresence } from "framer-motion";
 import { UserBasicInfoFragment } from "~gql";
-import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
-import { BACKGROUND_ACCENT } from "~ui/colors";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { IconPlusSquare, IconSearch } from "~ui/icons";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
+import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { Popover } from "~ui/popovers/Popover";
+import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { Avatar } from "~frontend/ui/users/Avatar";
 
 interface Props {
   users: UserBasicInfoFragment[];
@@ -27,23 +29,13 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
     setInputItems(newItems);
   };
 
-  const {
-    isOpen,
-    selectedItem,
-    getComboboxProps,
-    getMenuProps,
-    getInputProps,
-    highlightedIndex,
-    getItemProps,
-    openMenu,
-    reset,
-    inputValue,
-  } = useCombobox({
-    items: inputItems,
-    defaultHighlightedIndex: 0,
-    onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
-    itemToString: (user) => user?.email || "",
-  });
+  const { isOpen, selectedItem, getComboboxProps, getInputProps, openMenu, reset, inputValue, selectItem } =
+    useCombobox({
+      items: inputItems,
+      defaultHighlightedIndex: 0,
+      onInputValueChange: ({ inputValue }) => handleInputChange(inputValue),
+      itemToString: (user) => user?.email || "",
+    });
 
   useEffect(() => {
     handleInputChange(inputValue);
@@ -52,11 +44,6 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
   const areResultsVisible = isOpen && inputItems.length > 0;
 
   const comboboxRef = useRef<HTMLDivElement | null>(null);
-  let menuMaxHeight;
-  if (comboboxRef.current) {
-    menuMaxHeight = comboboxRef.current.getBoundingClientRect().bottom - 20;
-  }
-
   const isSubmitEnabled = Boolean(selectedItem);
 
   const handleSubmit = () => {
@@ -67,6 +54,8 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
   };
 
   useShortcut("Enter", handleSubmit, { isEnabled: isSubmitEnabled });
+
+  const { width: comboboxWidth } = useBoundingBox(comboboxRef);
 
   return (
     <UIHolder>
@@ -82,18 +71,23 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
             placeholder="Search or enter email"
             {...getInputProps()}
           />
-          <UIMenu style={{ maxHeight: menuMaxHeight }} {...getMenuProps()} isVisible={areResultsVisible}>
-            {areResultsVisible &&
-              inputItems.map((user, index) => (
-                <UIOption
-                  key={user.id}
-                  isHighlighted={highlightedIndex === index}
-                  {...getItemProps({ item: user, index })}
-                >
-                  <UserBasicInfo user={user} />
-                </UIOption>
-              ))}
-          </UIMenu>
+          <AnimatePresence>
+            {areResultsVisible && (
+              <Popover anchorRef={comboboxRef} placement="bottom-start">
+                <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
+                  <ItemsDropdown
+                    items={inputItems}
+                    keyGetter={(item) => item.id}
+                    labelGetter={(item) => item.name || ""}
+                    onItemSelected={selectItem}
+                    selectedItems={selectedItem ? [selectedItem] : []}
+                    onCloseRequest={close}
+                    iconGetter={(item) => <Avatar size="small" url={item.avatar_url} />}
+                  />
+                </UIDropdownHolder>
+              </Popover>
+            )}
+          </AnimatePresence>
         </UICombobox>
       </UIComboboxHolder>
       <Button iconPosition="start" icon={<IconPlusSquare />} onClick={handleSubmit} isDisabled={!isSubmitEnabled}>
@@ -111,37 +105,8 @@ const UIHolder = styled.div`
 
 const UIComboboxHolder = styled.div``;
 
+const UIDropdownHolder = styled.div``;
+
 const UICombobox = styled.div`
   position: relative;
-`;
-
-const UIMenu = styled.div<{ isVisible: boolean }>`
-  position: absolute;
-  overflow-y: auto;
-  border-left: 1px solid ${BACKGROUND_ACCENT};
-  border-right: 1px solid ${BACKGROUND_ACCENT};
-  border-bottom: 1px solid ${BACKGROUND_ACCENT};
-  left: 0;
-  width: 100%;
-  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
-  border-radius: 0 0 16px 16px;
-  background: #ffffff;
-`;
-
-const UIOption = styled.div<{ isHighlighted: boolean }>`
-  padding: 16px;
-  border-bottom: 1px solid ${BACKGROUND_ACCENT};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  border-radius: 0;
-  ${(props) =>
-    props.isHighlighted &&
-    css`
-      background-color: ${ACTION_ACTIVE_COLOR};
-    `}
-  :last-child {
-    border-bottom: none;
-  }
 `;
