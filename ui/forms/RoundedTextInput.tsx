@@ -23,7 +23,7 @@ export const RoundedTextInput = ({ icon, onChangeText, onChange, ...inputProps }
         inputRef.current?.focus();
       }}
     >
-      {icon && UIIconHolder}
+      {icon && <UIIconHolder>{icon}</UIIconHolder>}
       <UIInput ref={inputRef} {...inputProps} onChange={combineCallbacks(onChange, handleChangeText)} />
     </UIHolder>
   );
@@ -32,6 +32,7 @@ export const RoundedTextInput = ({ icon, onChangeText, onChange, ...inputProps }
 const UIHolder = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
 
   color: ${BASE_GREY_1};
   font-size: 0.875rem;
@@ -54,7 +55,10 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIIconHolder = styled.div``;
+const UIIconHolder = styled.div`
+  font-size: 1.5rem;
+  color: ${BASE_GREY_3};
+`;
 
 const UIInput = styled.input`
   border: none;

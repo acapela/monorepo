@@ -7,7 +7,7 @@ import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { BACKGROUND_ACCENT } from "~ui/colors";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { IconPlusSquare } from "~ui/icons";
+import { IconPlusSquare, IconSearch } from "~ui/icons";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 
 interface Props {
@@ -73,6 +73,7 @@ export const UsersCombobox = ({ users, onSelect }: Props) => {
       <UIComboboxHolder {...getComboboxProps()}>
         <UICombobox ref={comboboxRef}>
           <RoundedTextInput
+            icon={<IconSearch />}
             onFocus={() => {
               if (!isOpen) {
                 openMenu();
