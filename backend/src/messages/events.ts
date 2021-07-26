@@ -49,6 +49,7 @@ function createMessageMentionNotifications(message: Message) {
 
     const isUserMentioningSelf = mentionedUserId === message.user_id;
 
+    // Don't create notification if user is mentioning self in the message.
     if (isUserMentioningSelf) {
       continue;
     }
@@ -65,5 +66,8 @@ function createMessageMentionNotifications(message: Message) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleMessageCreated(message: Message, _userId: string | null) {
-  await Promise.all([createMessageMentionNotifications(message)]);
+  await Promise.all([
+    // In case message includes @mentions, create notifications for them
+    createMessageMentionNotifications(message),
+  ]);
 }
