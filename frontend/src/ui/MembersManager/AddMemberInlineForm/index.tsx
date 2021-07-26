@@ -83,7 +83,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
         <AnimatePresence>
           {isMenuOpen && suggestedUsers.length > 0 && (
             <Popover distance={-2} anchorRef={comboboxRef} placement="bottom-start">
-              <UIDropdownHolder style={{ width: `${comboboxWidth}px` }}>
+              <UIDropdownHolder width={comboboxWidth}>
                 <ItemsDropdown
                   items={suggestedUsers}
                   keyGetter={(item) => item.id}
@@ -114,7 +114,9 @@ const UIHolder = styled.div`
   gap: 16px;
 `;
 
-const UIDropdownHolder = styled.div``;
+const UIDropdownHolder = styled.div<{ width: number }>`
+  width: ${({ width }) => width}px;
+`;
 
 const UICombobox = styled.div`
   position: relative;
