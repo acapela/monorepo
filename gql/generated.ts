@@ -1825,6 +1825,10 @@ export interface Mutation_Root {
   delete_message_type?: Maybe<Message_Type_Mutation_Response>;
   /** delete single row from the table: "message_type" */
   delete_message_type_by_pk?: Maybe<Message_Type>;
+  /** delete data from the table: "notification" */
+  delete_notification?: Maybe<Notification_Mutation_Response>;
+  /** delete single row from the table: "notification" */
+  delete_notification_by_pk?: Maybe<Notification>;
   /** delete data from the table: "room" */
   delete_room?: Maybe<Room_Mutation_Response>;
   /** delete single row from the table: "room" */
@@ -1913,6 +1917,10 @@ export interface Mutation_Root {
   insert_message_type?: Maybe<Message_Type_Mutation_Response>;
   /** insert a single row into the table: "message_type" */
   insert_message_type_one?: Maybe<Message_Type>;
+  /** insert data into the table: "notification" */
+  insert_notification?: Maybe<Notification_Mutation_Response>;
+  /** insert a single row into the table: "notification" */
+  insert_notification_one?: Maybe<Notification>;
   /** insert data into the table: "room" */
   insert_room?: Maybe<Room_Mutation_Response>;
   /** insert data into the table: "room_invites" */
@@ -1999,6 +2007,10 @@ export interface Mutation_Root {
   update_message_type?: Maybe<Message_Type_Mutation_Response>;
   /** update single row of the table: "message_type" */
   update_message_type_by_pk?: Maybe<Message_Type>;
+  /** update data of the table: "notification" */
+  update_notification?: Maybe<Notification_Mutation_Response>;
+  /** update single row of the table: "notification" */
+  update_notification_by_pk?: Maybe<Notification>;
   /** update data of the table: "room" */
   update_room?: Maybe<Room_Mutation_Response>;
   /** update single row of the table: "room" */
@@ -2156,6 +2168,18 @@ export interface Mutation_RootDelete_Message_TypeArgs {
 /** mutation root */
 export interface Mutation_RootDelete_Message_Type_By_PkArgs {
   value: Scalars['String'];
+}
+
+
+/** mutation root */
+export interface Mutation_RootDelete_NotificationArgs {
+  where: Notification_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootDelete_Notification_By_PkArgs {
+  id: Scalars['uuid'];
 }
 
 
@@ -2438,6 +2462,20 @@ export interface Mutation_RootInsert_Message_TypeArgs {
 export interface Mutation_RootInsert_Message_Type_OneArgs {
   object: Message_Type_Insert_Input;
   on_conflict?: Maybe<Message_Type_On_Conflict>;
+}
+
+
+/** mutation root */
+export interface Mutation_RootInsert_NotificationArgs {
+  objects: Array<Notification_Insert_Input>;
+  on_conflict?: Maybe<Notification_On_Conflict>;
+}
+
+
+/** mutation root */
+export interface Mutation_RootInsert_Notification_OneArgs {
+  object: Notification_Insert_Input;
+  on_conflict?: Maybe<Notification_On_Conflict>;
 }
 
 
@@ -2753,6 +2791,30 @@ export interface Mutation_RootUpdate_Message_Type_By_PkArgs {
 
 
 /** mutation root */
+export interface Mutation_RootUpdate_NotificationArgs {
+  _append?: Maybe<Notification_Append_Input>;
+  _delete_at_path?: Maybe<Notification_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Notification_Delete_Elem_Input>;
+  _delete_key?: Maybe<Notification_Delete_Key_Input>;
+  _prepend?: Maybe<Notification_Prepend_Input>;
+  _set?: Maybe<Notification_Set_Input>;
+  where: Notification_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_Notification_By_PkArgs {
+  _append?: Maybe<Notification_Append_Input>;
+  _delete_at_path?: Maybe<Notification_Delete_At_Path_Input>;
+  _delete_elem?: Maybe<Notification_Delete_Elem_Input>;
+  _delete_key?: Maybe<Notification_Delete_Key_Input>;
+  _prepend?: Maybe<Notification_Prepend_Input>;
+  _set?: Maybe<Notification_Set_Input>;
+  pk_columns: Notification_Pk_Columns_Input;
+}
+
+
+/** mutation root */
 export interface Mutation_RootUpdate_RoomArgs {
   _set?: Maybe<Room_Set_Input>;
   where: Room_Bool_Exp;
@@ -2957,6 +3019,231 @@ export interface Mutation_RootUpdate_Whitelist_By_PkArgs {
   pk_columns: Whitelist_Pk_Columns_Input;
 }
 
+/** columns and relationships of "notification" */
+export interface Notification {
+  __typename?: 'notification';
+  created_at: Scalars['timestamptz'];
+  data: Scalars['jsonb'];
+  id: Scalars['uuid'];
+  read_at?: Maybe<Scalars['timestamptz']>;
+  updated_at: Scalars['timestamptz'];
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+}
+
+
+/** columns and relationships of "notification" */
+export interface NotificationDataArgs {
+  path?: Maybe<Scalars['String']>;
+}
+
+/** aggregated selection of "notification" */
+export interface Notification_Aggregate {
+  __typename?: 'notification_aggregate';
+  aggregate?: Maybe<Notification_Aggregate_Fields>;
+  nodes: Array<Notification>;
+}
+
+/** aggregate fields of "notification" */
+export interface Notification_Aggregate_Fields {
+  __typename?: 'notification_aggregate_fields';
+  count?: Maybe<Scalars['Int']>;
+  max?: Maybe<Notification_Max_Fields>;
+  min?: Maybe<Notification_Min_Fields>;
+}
+
+
+/** aggregate fields of "notification" */
+export interface Notification_Aggregate_FieldsCountArgs {
+  columns?: Maybe<Array<Notification_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+}
+
+/** order by aggregate values of table "notification" */
+export interface Notification_Aggregate_Order_By {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Notification_Max_Order_By>;
+  min?: Maybe<Notification_Min_Order_By>;
+}
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export interface Notification_Append_Input {
+  data?: Maybe<Scalars['jsonb']>;
+}
+
+/** input type for inserting array relation for remote table "notification" */
+export interface Notification_Arr_Rel_Insert_Input {
+  data: Array<Notification_Insert_Input>;
+  on_conflict?: Maybe<Notification_On_Conflict>;
+}
+
+/** Boolean expression to filter rows from the table "notification". All fields are combined with a logical 'AND'. */
+export interface Notification_Bool_Exp {
+  _and?: Maybe<Array<Maybe<Notification_Bool_Exp>>>;
+  _not?: Maybe<Notification_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Notification_Bool_Exp>>>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  data?: Maybe<Jsonb_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  read_at?: Maybe<Timestamptz_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+}
+
+/** unique or primary key constraints on table "notification" */
+export type Notification_Constraint =
+  /** unique or primary key constraint */
+  | 'notification_pkey';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export interface Notification_Delete_At_Path_Input {
+  data?: Maybe<Array<Maybe<Scalars['String']>>>;
+}
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export interface Notification_Delete_Elem_Input {
+  data?: Maybe<Scalars['Int']>;
+}
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export interface Notification_Delete_Key_Input {
+  data?: Maybe<Scalars['String']>;
+}
+
+/** input type for inserting data into table "notification" */
+export interface Notification_Insert_Input {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  data?: Maybe<Scalars['jsonb']>;
+  id?: Maybe<Scalars['uuid']>;
+  read_at?: Maybe<Scalars['timestamptz']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** aggregate max on columns */
+export interface Notification_Max_Fields {
+  __typename?: 'notification_max_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  read_at?: Maybe<Scalars['timestamptz']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by max() on columns of table "notification" */
+export interface Notification_Max_Order_By {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  read_at?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** aggregate min on columns */
+export interface Notification_Min_Fields {
+  __typename?: 'notification_min_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  read_at?: Maybe<Scalars['timestamptz']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by min() on columns of table "notification" */
+export interface Notification_Min_Order_By {
+  created_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  read_at?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** response of any mutation on the table "notification" */
+export interface Notification_Mutation_Response {
+  __typename?: 'notification_mutation_response';
+  /** number of affected rows by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data of the affected rows by the mutation */
+  returning: Array<Notification>;
+}
+
+/** input type for inserting object relation for remote table "notification" */
+export interface Notification_Obj_Rel_Insert_Input {
+  data: Notification_Insert_Input;
+  on_conflict?: Maybe<Notification_On_Conflict>;
+}
+
+/** on conflict condition type for table "notification" */
+export interface Notification_On_Conflict {
+  constraint: Notification_Constraint;
+  update_columns: Array<Notification_Update_Column>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+/** ordering options when selecting data from "notification" */
+export interface Notification_Order_By {
+  created_at?: Maybe<Order_By>;
+  data?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  read_at?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** primary key columns input for table: "notification" */
+export interface Notification_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export interface Notification_Prepend_Input {
+  data?: Maybe<Scalars['jsonb']>;
+}
+
+/** select columns of table "notification" */
+export type Notification_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'data'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'read_at'
+  /** column name */
+  | 'updated_at'
+  /** column name */
+  | 'user_id';
+
+/** input type for updating data in table "notification" */
+export interface Notification_Set_Input {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  data?: Maybe<Scalars['jsonb']>;
+  id?: Maybe<Scalars['uuid']>;
+  read_at?: Maybe<Scalars['timestamptz']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** update columns of table "notification" */
+export type Notification_Update_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'data'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'read_at'
+  /** column name */
+  | 'updated_at'
+  /** column name */
+  | 'user_id';
+
 /** column ordering options */
 export type Order_By =
   /** in the ascending order, nulls last */
@@ -3027,6 +3314,12 @@ export interface Query_Root {
   message_type_aggregate: Message_Type_Aggregate;
   /** fetch data from the table: "message_type" using primary key columns */
   message_type_by_pk?: Maybe<Message_Type>;
+  /** fetch data from the table: "notification" */
+  notification: Array<Notification>;
+  /** fetch aggregated fields from the table: "notification" */
+  notification_aggregate: Notification_Aggregate;
+  /** fetch data from the table: "notification" using primary key columns */
+  notification_by_pk?: Maybe<Notification>;
   /** fetch data from the table: "room" */
   room: Array<Room>;
   /** fetch aggregated fields from the table: "room" */
@@ -3355,6 +3648,32 @@ export interface Query_RootMessage_Type_AggregateArgs {
 /** query root */
 export interface Query_RootMessage_Type_By_PkArgs {
   value: Scalars['String'];
+}
+
+
+/** query root */
+export interface Query_RootNotificationArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+
+/** query root */
+export interface Query_RootNotification_AggregateArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+
+/** query root */
+export interface Query_RootNotification_By_PkArgs {
+  id: Scalars['uuid'];
 }
 
 
@@ -5116,6 +5435,12 @@ export interface Subscription_Root {
   message_type_aggregate: Message_Type_Aggregate;
   /** fetch data from the table: "message_type" using primary key columns */
   message_type_by_pk?: Maybe<Message_Type>;
+  /** fetch data from the table: "notification" */
+  notification: Array<Notification>;
+  /** fetch aggregated fields from the table: "notification" */
+  notification_aggregate: Notification_Aggregate;
+  /** fetch data from the table: "notification" using primary key columns */
+  notification_by_pk?: Maybe<Notification>;
   /** fetch data from the table: "room" */
   room: Array<Room>;
   /** fetch aggregated fields from the table: "room" */
@@ -5444,6 +5769,32 @@ export interface Subscription_RootMessage_Type_AggregateArgs {
 /** subscription root */
 export interface Subscription_RootMessage_Type_By_PkArgs {
   value: Scalars['String'];
+}
+
+
+/** subscription root */
+export interface Subscription_RootNotificationArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+
+/** subscription root */
+export interface Subscription_RootNotification_AggregateArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+
+/** subscription root */
+export interface Subscription_RootNotification_By_PkArgs {
+  id: Scalars['uuid'];
 }
 
 
@@ -7709,6 +8060,10 @@ export interface User {
   messages_aggregate: Message_Aggregate;
   name?: Maybe<Scalars['String']>;
   /** An array relationship */
+  notifications: Array<Notification>;
+  /** An aggregated array relationship */
+  notifications_aggregate: Notification_Aggregate;
+  /** An array relationship */
   owned_teams: Array<Team>;
   /** An aggregated array relationship */
   owned_teams_aggregate: Team_Aggregate;
@@ -7808,6 +8163,26 @@ export interface UserMessages_AggregateArgs {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Order_By>>;
   where?: Maybe<Message_Bool_Exp>;
+}
+
+
+/** columns and relationships of "user" */
+export interface UserNotificationsArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
+}
+
+
+/** columns and relationships of "user" */
+export interface UserNotifications_AggregateArgs {
+  distinct_on?: Maybe<Array<Notification_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Notification_Order_By>>;
+  where?: Maybe<Notification_Bool_Exp>;
 }
 
 
@@ -7962,6 +8337,7 @@ export interface User_Bool_Exp {
   invites?: Maybe<Room_Invites_Bool_Exp>;
   messages?: Maybe<Message_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
+  notifications?: Maybe<Notification_Bool_Exp>;
   owned_teams?: Maybe<Team_Bool_Exp>;
   rooms?: Maybe<Room_Member_Bool_Exp>;
   space_memberships?: Maybe<Space_Member_Bool_Exp>;
@@ -7990,6 +8366,7 @@ export interface User_Insert_Input {
   invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   messages?: Maybe<Message_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
+  notifications?: Maybe<Notification_Arr_Rel_Insert_Input>;
   owned_teams?: Maybe<Team_Arr_Rel_Insert_Input>;
   rooms?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   space_memberships?: Maybe<Space_Member_Arr_Rel_Insert_Input>;
@@ -8079,6 +8456,7 @@ export interface User_Order_By {
   invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
+  notifications_aggregate?: Maybe<Notification_Aggregate_Order_By>;
   owned_teams_aggregate?: Maybe<Team_Aggregate_Order_By>;
   rooms_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   space_memberships_aggregate?: Maybe<Space_Member_Aggregate_Order_By>;
@@ -8513,6 +8891,50 @@ export type DeleteTextMessageMutation = (
     & { message: Array<(
       { __typename?: 'message' }
       & Pick<Message, 'id'>
+    )> }
+  )> }
+);
+
+export type NotificationInfoFragment = (
+  { __typename?: 'notification' }
+  & Pick<Notification, 'id' | 'created_at' | 'data' | 'read_at'>
+);
+
+export type NotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NotificationsQuery = (
+  { __typename?: 'query_root' }
+  & { notification: Array<(
+    { __typename?: 'notification' }
+    & NotificationInfoFragment
+  )> }
+);
+
+export type UnreadNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UnreadNotificationsQuery = (
+  { __typename?: 'query_root' }
+  & { notification: Array<(
+    { __typename?: 'notification' }
+    & NotificationInfoFragment
+  )> }
+);
+
+export type MarkNotificationAsReadMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  date: Scalars['timestamptz'];
+}>;
+
+
+export type MarkNotificationAsReadMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_notification?: Maybe<(
+    { __typename?: 'notification_mutation_response' }
+    & { returning: Array<(
+      { __typename?: 'notification' }
+      & NotificationInfoFragment
     )> }
   )> }
 );
@@ -9620,7 +10042,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9638,6 +10060,8 @@ export type mutation_rootFieldPolicy = {
 	delete_message_reaction_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9682,6 +10106,8 @@ export type mutation_rootFieldPolicy = {
 	insert_message_reaction_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_message_type_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_notification_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_invites_one?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9725,6 +10151,8 @@ export type mutation_rootFieldPolicy = {
 	update_message_reaction_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9755,7 +10183,49 @@ export type mutation_rootFieldPolicy = {
 	update_whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	upgrade_current_user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
+export type notificationKeySpecifier = ('created_at' | 'data' | 'id' | 'read_at' | 'updated_at' | 'user' | 'user_id' | notificationKeySpecifier)[];
+export type notificationFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	read_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type notification_aggregateKeySpecifier = ('aggregate' | 'nodes' | notification_aggregateKeySpecifier)[];
+export type notification_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type notification_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | notification_aggregate_fieldsKeySpecifier)[];
+export type notification_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type notification_max_fieldsKeySpecifier = ('created_at' | 'id' | 'read_at' | 'updated_at' | 'user_id' | notification_max_fieldsKeySpecifier)[];
+export type notification_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	read_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type notification_min_fieldsKeySpecifier = ('created_at' | 'id' | 'read_at' | 'updated_at' | 'user_id' | notification_min_fieldsKeySpecifier)[];
+export type notification_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	read_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type notification_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | notification_mutation_responseKeySpecifier)[];
+export type notification_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9783,6 +10253,9 @@ export type query_rootFieldPolicy = {
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10091,7 +10564,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10119,6 +10592,9 @@ export type subscription_rootFieldPolicy = {
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_type_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10554,7 +11030,7 @@ export type unread_messages_variance_fieldsKeySpecifier = ('unread_messages' | u
 export type unread_messages_variance_fieldsFieldPolicy = {
 	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
+export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'notifications' | 'notifications_aggregate' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10572,6 +11048,8 @@ export type userFieldPolicy = {
 	messages?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	notifications?: FieldPolicy<any> | FieldReadFunction<any>,
+	notifications_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	owned_teams?: FieldPolicy<any> | FieldReadFunction<any>,
 	owned_teams_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10867,6 +11345,30 @@ export type TypedTypePolicies = TypePolicies & {
 	mutation_root?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | mutation_rootKeySpecifier | (() => undefined | mutation_rootKeySpecifier),
 		fields?: mutation_rootFieldPolicy,
+	},
+	notification?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notificationKeySpecifier | (() => undefined | notificationKeySpecifier),
+		fields?: notificationFieldPolicy,
+	},
+	notification_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notification_aggregateKeySpecifier | (() => undefined | notification_aggregateKeySpecifier),
+		fields?: notification_aggregateFieldPolicy,
+	},
+	notification_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notification_aggregate_fieldsKeySpecifier | (() => undefined | notification_aggregate_fieldsKeySpecifier),
+		fields?: notification_aggregate_fieldsFieldPolicy,
+	},
+	notification_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notification_max_fieldsKeySpecifier | (() => undefined | notification_max_fieldsKeySpecifier),
+		fields?: notification_max_fieldsFieldPolicy,
+	},
+	notification_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notification_min_fieldsKeySpecifier | (() => undefined | notification_min_fieldsKeySpecifier),
+		fields?: notification_min_fieldsFieldPolicy,
+	},
+	notification_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | notification_mutation_responseKeySpecifier | (() => undefined | notification_mutation_responseKeySpecifier),
+		fields?: notification_mutation_responseFieldPolicy,
 	},
 	query_root?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | query_rootKeySpecifier | (() => undefined | query_rootKeySpecifier),

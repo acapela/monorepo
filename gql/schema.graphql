@@ -2553,6 +2553,21 @@ type mutation_root {
   delete_message_type_by_pk(value: String!): message_type
 
   """
+  delete data from the table: "notification"
+  """
+  delete_notification(
+    """
+    filter the rows which have to be deleted
+    """
+    where: notification_bool_exp!
+  ): notification_mutation_response
+
+  """
+  delete single row from the table: "notification"
+  """
+  delete_notification_by_pk(id: uuid!): notification
+
+  """
   delete data from the table: "room"
   """
   delete_room(
@@ -2991,6 +3006,36 @@ type mutation_root {
     """
     on_conflict: message_type_on_conflict
   ): message_type
+
+  """
+  insert data into the table: "notification"
+  """
+  insert_notification(
+    """
+    the rows to be inserted
+    """
+    objects: [notification_insert_input!]!
+
+    """
+    on conflict condition
+    """
+    on_conflict: notification_on_conflict
+  ): notification_mutation_response
+
+  """
+  insert a single row into the table: "notification"
+  """
+  insert_notification_one(
+    """
+    the row to be inserted
+    """
+    object: notification_insert_input!
+
+    """
+    on conflict condition
+    """
+    on_conflict: notification_on_conflict
+  ): notification
 
   """
   insert data into the table: "room"
@@ -3660,6 +3705,82 @@ type mutation_root {
   ): message_type
 
   """
+  update data of the table: "notification"
+  """
+  update_notification(
+    """
+    append existing jsonb value of filtered columns with new jsonb value
+    """
+    _append: notification_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: notification_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: notification_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: notification_delete_key_input
+
+    """
+    prepend existing jsonb value of filtered columns with new jsonb value
+    """
+    _prepend: notification_prepend_input
+
+    """
+    sets the columns of the filtered rows to the given values
+    """
+    _set: notification_set_input
+
+    """
+    filter the rows which have to be updated
+    """
+    where: notification_bool_exp!
+  ): notification_mutation_response
+
+  """
+  update single row of the table: "notification"
+  """
+  update_notification_by_pk(
+    """
+    append existing jsonb value of filtered columns with new jsonb value
+    """
+    _append: notification_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: notification_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: notification_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: notification_delete_key_input
+
+    """
+    prepend existing jsonb value of filtered columns with new jsonb value
+    """
+    _prepend: notification_prepend_input
+
+    """
+    sets the columns of the filtered rows to the given values
+    """
+    _set: notification_set_input
+    pk_columns: notification_pk_columns_input!
+  ): notification
+
+  """
   update data of the table: "room"
   """
   update_room(
@@ -4077,6 +4198,314 @@ type mutation_root {
   perform the action: "upgrade_current_user"
   """
   upgrade_current_user: UpgradeUserResponse
+}
+
+"""
+columns and relationships of "notification"
+"""
+type notification {
+  created_at: timestamptz!
+  data(
+    """
+    JSON select path
+    """
+    path: String
+  ): jsonb!
+  id: uuid!
+  read_at: timestamptz
+  updated_at: timestamptz!
+
+  """
+  An object relationship
+  """
+  user: user!
+  user_id: uuid!
+}
+
+"""
+aggregated selection of "notification"
+"""
+type notification_aggregate {
+  aggregate: notification_aggregate_fields
+  nodes: [notification!]!
+}
+
+"""
+aggregate fields of "notification"
+"""
+type notification_aggregate_fields {
+  count(columns: [notification_select_column!], distinct: Boolean): Int
+  max: notification_max_fields
+  min: notification_min_fields
+}
+
+"""
+order by aggregate values of table "notification"
+"""
+input notification_aggregate_order_by {
+  count: order_by
+  max: notification_max_order_by
+  min: notification_min_order_by
+}
+
+"""
+append existing jsonb value of filtered columns with new jsonb value
+"""
+input notification_append_input {
+  data: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "notification"
+"""
+input notification_arr_rel_insert_input {
+  data: [notification_insert_input!]!
+  on_conflict: notification_on_conflict
+}
+
+"""
+Boolean expression to filter rows from the table "notification". All fields are combined with a logical 'AND'.
+"""
+input notification_bool_exp {
+  _and: [notification_bool_exp]
+  _not: notification_bool_exp
+  _or: [notification_bool_exp]
+  created_at: timestamptz_comparison_exp
+  data: jsonb_comparison_exp
+  id: uuid_comparison_exp
+  read_at: timestamptz_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user: user_bool_exp
+  user_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "notification"
+"""
+enum notification_constraint {
+  """
+  unique or primary key constraint
+  """
+  notification_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input notification_delete_at_path_input {
+  data: [String]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input notification_delete_elem_input {
+  data: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input notification_delete_key_input {
+  data: String
+}
+
+"""
+input type for inserting data into table "notification"
+"""
+input notification_insert_input {
+  created_at: timestamptz
+  data: jsonb
+  id: uuid
+  read_at: timestamptz
+  updated_at: timestamptz
+  user: user_obj_rel_insert_input
+  user_id: uuid
+}
+
+"""
+aggregate max on columns
+"""
+type notification_max_fields {
+  created_at: timestamptz
+  id: uuid
+  read_at: timestamptz
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+order by max() on columns of table "notification"
+"""
+input notification_max_order_by {
+  created_at: order_by
+  id: order_by
+  read_at: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"""
+aggregate min on columns
+"""
+type notification_min_fields {
+  created_at: timestamptz
+  id: uuid
+  read_at: timestamptz
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+order by min() on columns of table "notification"
+"""
+input notification_min_order_by {
+  created_at: order_by
+  id: order_by
+  read_at: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+"""
+response of any mutation on the table "notification"
+"""
+type notification_mutation_response {
+  """
+  number of affected rows by the mutation
+  """
+  affected_rows: Int!
+
+  """
+  data of the affected rows by the mutation
+  """
+  returning: [notification!]!
+}
+
+"""
+input type for inserting object relation for remote table "notification"
+"""
+input notification_obj_rel_insert_input {
+  data: notification_insert_input!
+  on_conflict: notification_on_conflict
+}
+
+"""
+on conflict condition type for table "notification"
+"""
+input notification_on_conflict {
+  constraint: notification_constraint!
+  update_columns: [notification_update_column!]!
+  where: notification_bool_exp
+}
+
+"""
+ordering options when selecting data from "notification"
+"""
+input notification_order_by {
+  created_at: order_by
+  data: order_by
+  id: order_by
+  read_at: order_by
+  updated_at: order_by
+  user: user_order_by
+  user_id: order_by
+}
+
+"""
+primary key columns input for table: "notification"
+"""
+input notification_pk_columns_input {
+  id: uuid!
+}
+
+"""
+prepend existing jsonb value of filtered columns with new jsonb value
+"""
+input notification_prepend_input {
+  data: jsonb
+}
+
+"""
+select columns of table "notification"
+"""
+enum notification_select_column {
+  """
+  column name
+  """
+  created_at
+
+  """
+  column name
+  """
+  data
+
+  """
+  column name
+  """
+  id
+
+  """
+  column name
+  """
+  read_at
+
+  """
+  column name
+  """
+  updated_at
+
+  """
+  column name
+  """
+  user_id
+}
+
+"""
+input type for updating data in table "notification"
+"""
+input notification_set_input {
+  created_at: timestamptz
+  data: jsonb
+  id: uuid
+  read_at: timestamptz
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+"""
+update columns of table "notification"
+"""
+enum notification_update_column {
+  """
+  column name
+  """
+  created_at
+
+  """
+  column name
+  """
+  data
+
+  """
+  column name
+  """
+  id
+
+  """
+  column name
+  """
+  read_at
+
+  """
+  column name
+  """
+  updated_at
+
+  """
+  column name
+  """
+  user_id
 }
 
 """
@@ -4647,6 +5076,71 @@ type query_root {
   fetch data from the table: "message_type" using primary key columns
   """
   message_type_by_pk(value: String!): message_type
+
+  """
+  fetch data from the table: "notification"
+  """
+  notification(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): [notification!]!
+
+  """
+  fetch aggregated fields from the table: "notification"
+  """
+  notification_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): notification_aggregate!
+
+  """
+  fetch data from the table: "notification" using primary key columns
+  """
+  notification_by_pk(id: uuid!): notification
 
   """
   fetch data from the table: "room"
@@ -8231,6 +8725,71 @@ type subscription_root {
   fetch data from the table: "message_type" using primary key columns
   """
   message_type_by_pk(value: String!): message_type
+
+  """
+  fetch data from the table: "notification"
+  """
+  notification(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): [notification!]!
+
+  """
+  fetch aggregated fields from the table: "notification"
+  """
+  notification_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): notification_aggregate!
+
+  """
+  fetch data from the table: "notification" using primary key columns
+  """
+  notification_by_pk(id: uuid!): notification
 
   """
   fetch data from the table: "room"
@@ -12219,6 +12778,66 @@ type user {
   """
   An array relationship
   """
+  notifications(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): [notification!]!
+
+  """
+  An aggregated array relationship
+  """
+  notifications_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [notification_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [notification_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: notification_bool_exp
+  ): notification_aggregate!
+
+  """
+  An array relationship
+  """
   owned_teams(
     """
     distinct select on columns
@@ -12570,6 +13189,7 @@ input user_bool_exp {
   invites: room_invites_bool_exp
   messages: message_bool_exp
   name: String_comparison_exp
+  notifications: notification_bool_exp
   owned_teams: team_bool_exp
   rooms: room_member_bool_exp
   space_memberships: space_member_bool_exp
@@ -12608,6 +13228,7 @@ input user_insert_input {
   invites: room_invites_arr_rel_insert_input
   messages: message_arr_rel_insert_input
   name: String
+  notifications: notification_arr_rel_insert_input
   owned_teams: team_arr_rel_insert_input
   rooms: room_member_arr_rel_insert_input
   space_memberships: space_member_arr_rel_insert_input
@@ -12715,6 +13336,7 @@ input user_order_by {
   invites_aggregate: room_invites_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
   name: order_by
+  notifications_aggregate: notification_aggregate_order_by
   owned_teams_aggregate: team_aggregate_order_by
   rooms_aggregate: room_member_aggregate_order_by
   space_memberships_aggregate: space_member_aggregate_order_by

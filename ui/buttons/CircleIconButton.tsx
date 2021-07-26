@@ -22,6 +22,7 @@ export interface Props {
   className?: string;
   tooltip?: string;
   isDisabled?: boolean;
+  iconSizeRatio?: number;
 }
 
 export const CircleIconButton = styled(function CircleIconButton({
@@ -32,6 +33,7 @@ export const CircleIconButton = styled(function CircleIconButton({
   className,
   tooltip,
   isDisabled = false,
+  iconSizeRatio = 0.75,
 }: Props) {
   return (
     <UIButton
@@ -41,6 +43,7 @@ export const CircleIconButton = styled(function CircleIconButton({
       size={size}
       kind={kind}
       isDisabled={isDisabled}
+      iconSizeRatio={iconSizeRatio}
     >
       {icon}
     </UIButton>
@@ -103,7 +106,12 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
   `,
 };
 
-export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDisabled: boolean }>`
+export const UIButton = styled.button<{
+  size: ButtonSize;
+  kind: ButtonKind;
+  isDisabled: boolean;
+  iconSizeRatio: number;
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,7 +127,7 @@ export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDi
   height: 1em;
 
   svg {
-    font-size: 0.75em;
+    font-size: ${(props) => props.iconSizeRatio}em;
   }
 
   ${({ kind }) => buttonKindSpecificStyle[kind]}

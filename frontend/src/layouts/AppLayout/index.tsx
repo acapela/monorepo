@@ -12,6 +12,7 @@ import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
 import { BASE_GREY_7, WHITE } from "~ui/colors";
+import { NotificationsOpener } from "./NotificationsOpener";
 
 interface Props {
   children?: ReactNode;
@@ -63,10 +64,11 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
             </UIPrimaryNavigation>
           )}
 
-          <UISearchAndUserMenu>
+          <UITopbarTools>
             <TopBarSearchBar />
+            <NotificationsOpener />
             <UserMenu />
-          </UISearchAndUserMenu>
+          </UITopbarTools>
         </UITopBar>
         <UIMainContent>{children}</UIMainContent>
       </UIHolder>
@@ -120,7 +122,7 @@ const UILogo = styled.a`
   }
 `;
 
-const UISearchAndUserMenu = styled.div`
+const UITopbarTools = styled.div`
   margin-left: 32px;
 
   display: flex;
@@ -140,3 +142,5 @@ const UIMainContent = styled.div`
   flex-direction: column;
   background: ${BASE_GREY_7};
 `;
+
+const UINotificationsButton = styled.div``;

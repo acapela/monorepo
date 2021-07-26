@@ -51,7 +51,7 @@ function createMessageMentionNotifications(message: Message) {
 
     // Don't create notification if user is mentioning self in the message.
     if (isUserMentioningSelf) {
-      continue;
+      // continue;
     }
 
     const createNotificationPromise = db.notification.create({
