@@ -1,4 +1,4 @@
-import { NotificationInfoFragment } from "~frontend/../../gql";
+import { NotificationInfoFragment } from "~gql";
 import { routes } from "~frontend/../routes";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";

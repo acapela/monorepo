@@ -2,12 +2,12 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { borderRadius } from "~frontend/../../ui/baseStyles";
-import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
-import { NOTIFICATION_COLOR } from "~frontend/../../ui/colors";
-import { IconActivity } from "~frontend/../../ui/icons";
-import { Popover } from "~frontend/../../ui/popovers/Popover";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { borderRadius } from "~ui/baseStyles";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { NOTIFICATION_COLOR } from "~ui/colors";
+import { IconActivity } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
 import { useUnreadNotifications } from "~frontend/gql/notifications";
 import { NotificationsCenterPopover } from "./NotificationsCenterPopover";
 

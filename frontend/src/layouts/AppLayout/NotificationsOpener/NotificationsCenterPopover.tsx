@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { UIDropdownPanelBody } from "~frontend/../../ui/popovers/DropdownPanelBody";
-import { TextH3 } from "~frontend/../../ui/typo";
+import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
+import { TextH3 } from "~ui/typo";
 import { useNotifications } from "~frontend/gql/notifications";
 import { NotificationsTimeline } from "~frontend/ui/notifications/NotificationLabel/NotificationsTimeline";
 

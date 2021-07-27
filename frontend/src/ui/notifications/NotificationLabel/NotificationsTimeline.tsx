@@ -1,9 +1,9 @@
 import { startOfDay } from "date-fns";
 import { sortBy } from "lodash";
 import styled from "styled-components";
-import { NotificationInfoFragment } from "~frontend/../../gql";
-import { relativeFormatDate } from "~frontend/../../shared/dates/format";
-import { CategoryNameLabel } from "~frontend/../../ui/theme/functional";
+import { NotificationInfoFragment } from "~gql";
+import { relativeFormatDate } from "~shared/dates/format";
+import { CategoryNameLabel } from "~ui/theme/functional";
 import { groupByDate } from "~shared/dates/groupByDate";
 import { NotificationLabel } from "./NotificationLabel";
 

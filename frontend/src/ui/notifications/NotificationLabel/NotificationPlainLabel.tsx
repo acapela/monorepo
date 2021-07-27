@@ -2,17 +2,17 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { NotificationInfoFragment } from "~frontend/../../gql";
-import { relativeFormatDate } from "~frontend/../../shared/dates/format";
-import { handleWithStopPropagation } from "~frontend/../../shared/events";
-import { useIsElementOrChildHovered } from "~frontend/../../shared/hooks/useIsElementOrChildHovered";
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
-import { borderRadius } from "~frontend/../../ui/baseStyles";
-import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~frontend/../../ui/colors";
-import { IconCheck, IconFlag, IconNotificationIndicator, IconTarget } from "~frontend/../../ui/icons";
-import { hoverTransition } from "~frontend/../../ui/transitions";
-import { TextBody14, TextBody } from "~frontend/../../ui/typo";
+import { NotificationInfoFragment } from "~gql";
+import { relativeFormatDateTime } from "~shared/dates/format";
+import { handleWithStopPropagation } from "~shared/events";
+import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
+import { PopPresenceAnimator } from "~ui/animations";
+import { borderRadius } from "~ui/baseStyles";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
+import { IconCheck, IconFlag, IconNotificationIndicator, IconTarget } from "~ui/icons";
+import { hoverTransition } from "~ui/transitions";
+import { TextBody14, TextBody } from "~ui/typo";
 import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
@@ -52,7 +52,7 @@ export function NotificationPlainLabel({ userId, date, titleNode, id, onClick, n
       <UIContent>
         <UITitle>{titleNode}</UITitle>
         <UIDate secondary semibold>
-          {relativeFormatDate(date)}
+          {relativeFormatDateTime(date)}
         </UIDate>
       </UIContent>
       <UIStatus>
