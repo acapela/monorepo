@@ -16,7 +16,7 @@ README for packages:
 
 - [Backend README](./backend/README.md)
 
-- [Frontend README](./backend/README.md)
+- [Frontend README](./frontend/README.md)
 
 ## yarn
 

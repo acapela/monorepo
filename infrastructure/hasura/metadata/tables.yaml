@@ -392,13 +392,6 @@
             name: room_member
           column_mapping:
             id: room_id
-    - name: room_invites
-      using:
-        foreign_key_constraint_on:
-          column: room_id
-          table:
-            schema: public
-            name: room_invites
     - name: topics
       using:
         foreign_key_constraint_on:
@@ -519,43 +512,6 @@
       headers:
         - name: Authorization
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-- table:
-    schema: public
-    name: room_invites
-  object_relationships:
-    - name: inviter
-      using:
-        foreign_key_constraint_on: inviter_id
-    - name: room
-      using:
-        foreign_key_constraint_on: room_id
-  insert_permissions:
-    - role: user
-      permission:
-        check:
-          room:
-            creator_id:
-              _eq: X-Hasura-User-Id
-        set:
-          inviter_id: x-hasura-User-Id
-        columns:
-          - email
-          - room_id
-        backend_only: false
-  select_permissions:
-    - role: user
-      permission:
-        columns:
-          - used_at
-          - created_at
-          - email
-          - id
-          - inviter_id
-          - room_id
-        filter:
-          room:
-            creator_id:
-              _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: room_last_posted_message
@@ -1308,13 +1264,6 @@
           table:
             schema: public
             name: team_invitation
-    - name: invites
-      using:
-        foreign_key_constraint_on:
-          column: inviter_id
-          table:
-            schema: public
-            name: room_invites
     - name: messages
       using:
         manual_configuration:

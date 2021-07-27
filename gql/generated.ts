@@ -8766,37 +8766,6 @@ export type AttachmentQuery = (
   )> }
 );
 
-export type CreateInviteMutationVariables = Exact<{
-  email: Scalars['String'];
-  roomId?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateInviteMutation = (
-  { __typename?: 'mutation_root' }
-  & { invite?: Maybe<(
-    { __typename?: 'room_invites' }
-    & Pick<Room_Invites, 'id' | 'email'>
-    & { usedAt: Room_Invites['used_at'] }
-  )> }
-);
-
-export type AcceptInviteMutationVariables = Exact<{
-  token: Scalars['String'];
-}>;
-
-
-export type AcceptInviteMutation = (
-  { __typename?: 'mutation_root' }
-  & { invite?: Maybe<(
-    { __typename?: 'InviteAcceptResponse' }
-    & { team?: Maybe<(
-      { __typename?: 'team' }
-      & Pick<Team, 'id'>
-    )> }
-  )> }
-);
-
 export type LookupTeamNameQueryVariables = Exact<{
   token: Scalars['String'];
 }>;
@@ -8929,6 +8898,22 @@ export type MarkNotificationAsReadMutationVariables = Exact<{
 
 
 export type MarkNotificationAsReadMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_notification?: Maybe<(
+    { __typename?: 'notification_mutation_response' }
+    & { returning: Array<(
+      { __typename?: 'notification' }
+      & NotificationInfoFragment
+    )> }
+  )> }
+);
+
+export type MarkNotificationAsUnreadMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type MarkNotificationAsUnreadMutation = (
   { __typename?: 'mutation_root' }
   & { update_notification?: Maybe<(
     { __typename?: 'notification_mutation_response' }

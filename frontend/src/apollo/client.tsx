@@ -19,7 +19,7 @@ import { readCurrentToken, TOKEN_COOKIE_NAME } from "~frontend/authentication/co
 import { getApolloInitialState } from "~frontend/gql/utils/hydration";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { createDateParseLink } from "./dateStringParseLink";
@@ -210,7 +210,7 @@ interface ApolloClientProviderProps {
 let renderedApolloClient: ApolloClient<unknown> | null;
 
 export function getRenderedApolloClient() {
-  return assertGet(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
+  return assertDefined(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
 }
 
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {

@@ -1,7 +1,7 @@
 import sendgrid, { MailDataRequired } from "@sendgrid/mail";
-import { assertGet } from "./assert";
+import { assertDefined } from "./assert";
 
-const sendgridApiKey = assertGet(
+const sendgridApiKey = assertDefined(
   process.env.SENDGRID_API_KEY,
   "Cannot use mailer if there is no SENDGRID_API_KEY env variable."
 );

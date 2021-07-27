@@ -1,5 +1,5 @@
 import Cookie from "js-cookie";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { parseJWTWithoutValidation } from "~shared/jwt";
 import { UserTokenData } from "~shared/types/jwtAuth";
 
@@ -20,5 +20,5 @@ export function readUserDataFromCookie() {
 export function assertReadUserDataFromCookie() {
   const user = readUserDataFromCookie();
 
-  return assertGet(user, "No user during assertReadUserDataFromCookie");
+  return assertDefined(user, "No user during assertReadUserDataFromCookie");
 }

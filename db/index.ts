@@ -6,7 +6,6 @@ export type {
   message as Message,
   message_type as MessageType,
   room as Room,
-  room_invites as RoomInvites,
   room_member as RoomParticipants,
   topic as Topic,
   user as User,

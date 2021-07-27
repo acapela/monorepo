@@ -1,7 +1,7 @@
 import { MembersManager } from "~frontend/ui/MembersManager";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 
@@ -27,7 +27,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   }
 
   async function handleLeave(userId: string) {
-    const safeCurrentUser = assertGet(currentUser, "user required");
+    const safeCurrentUser = assertDefined(currentUser, "user required");
 
     if (room.is_private && isLastMemberInRoom()) {
       await openLastPrivateRoomMemberDeletionPrompt({ room });
