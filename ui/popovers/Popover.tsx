@@ -4,6 +4,7 @@ import React, { ReactNode, RefObject, useState } from "react";
 import { usePopper } from "react-popper";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
+import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { useRefValue } from "~shared/hooks/useRefValue";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
@@ -20,10 +21,20 @@ interface PopoverProps {
   placement?: PopoverPlacement;
   distance?: number;
   onClickOutside?: () => void;
+  enableScreenCover?: boolean;
 }
 
 export const Popover = styled(
-  ({ className, anchorRef, children, isDisabled, onClickOutside, distance = 5, placement = "auto" }: PopoverProps) => {
+  ({
+    className,
+    anchorRef,
+    children,
+    isDisabled,
+    onClickOutside,
+    distance = 5,
+    placement = "auto",
+    enableScreenCover = false,
+  }: PopoverProps) => {
     const anchorElement = useRefValue(anchorRef);
 
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -62,11 +73,16 @@ export const Popover = styled(
 
     if (isDisabled) return null;
 
+    const popoverNode = (
+      <UIHolder className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+        {children}
+      </UIHolder>
+    );
+
     return (
       <BodyPortal>
-        <UIHolder className={className} ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-          {children}
-        </UIHolder>
+        {!enableScreenCover && popoverNode}
+        {enableScreenCover && <ScreenCover>{popoverNode}</ScreenCover>}
       </BodyPortal>
     );
   }

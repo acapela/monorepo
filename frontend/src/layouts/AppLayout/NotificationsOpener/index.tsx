@@ -26,7 +26,7 @@ export function NotificationsOpener() {
       </UIHolder>
       <AnimatePresence>
         {isOpened && (
-          <Popover anchorRef={buttonRef} placement="bottom-end">
+          <Popover enableScreenCover anchorRef={buttonRef} placement="bottom-end">
             <NotificationsCenterPopover onCloseRequest={closeNotifications} />
           </Popover>
         )}
