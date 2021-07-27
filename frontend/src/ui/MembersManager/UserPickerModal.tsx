@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import styled from "styled-components";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserBasicInfoFragment } from "~gql";
-import { UsersCombobox } from "./UsersCombobox";
+import { AddMemberInlineForm } from "./AddMemberInlineForm";
 import { UISelectGridContainer } from "./UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
@@ -31,7 +31,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
         <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
           <UIHolder>
-            <UsersCombobox users={potentialUsers} onSelect={onAddUser} />
+            <AddMemberInlineForm users={potentialUsers} onSelect={onAddUser} />
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (

@@ -1,8 +1,8 @@
 import os from "os";
 import localtunnel, { Tunnel } from "localtunnel";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 
-const backendPort = assertGet(process.env.BACKEND_PORT, "BACKEND_PORT env variable is required");
+const backendPort = assertDefined(process.env.BACKEND_PORT, "BACKEND_PORT env variable is required");
 
 const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 

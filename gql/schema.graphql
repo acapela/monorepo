@@ -23,17 +23,6 @@ type DownloadUrlResponse {
   downloadUrl: String!
 }
 
-input InviteAcceptCommand {
-  code: String!
-}
-
-type InviteAcceptResponse {
-  invite: room_invites
-  invite_id: ID!
-  team: team
-  team_id: ID!
-}
-
 type LookupTeamNameResponse {
   inviter_name: String!
   team_name: String!
@@ -2433,11 +2422,6 @@ mutation root
 """
 type mutation_root {
   """
-  perform the action: "accept_invite"
-  """
-  accept_invite(token: String!): InviteAcceptResponse
-
-  """
   delete data from the table: "account"
   """
   delete_account(
@@ -2566,21 +2550,6 @@ type mutation_root {
   delete single row from the table: "room"
   """
   delete_room_by_pk(id: uuid!): room
-
-  """
-  delete data from the table: "room_invites"
-  """
-  delete_room_invites(
-    """
-    filter the rows which have to be deleted
-    """
-    where: room_invites_bool_exp!
-  ): room_invites_mutation_response
-
-  """
-  delete single row from the table: "room_invites"
-  """
-  delete_room_invites_by_pk(id: uuid!): room_invites
 
   """
   delete data from the table: "room_member"
@@ -3006,36 +2975,6 @@ type mutation_root {
     """
     on_conflict: room_on_conflict
   ): room_mutation_response
-
-  """
-  insert data into the table: "room_invites"
-  """
-  insert_room_invites(
-    """
-    the rows to be inserted
-    """
-    objects: [room_invites_insert_input!]!
-
-    """
-    on conflict condition
-    """
-    on_conflict: room_invites_on_conflict
-  ): room_invites_mutation_response
-
-  """
-  insert a single row into the table: "room_invites"
-  """
-  insert_room_invites_one(
-    """
-    the row to be inserted
-    """
-    object: room_invites_insert_input!
-
-    """
-    on conflict condition
-    """
-    on_conflict: room_invites_on_conflict
-  ): room_invites
 
   """
   insert data into the table: "room_member"
@@ -3684,32 +3623,6 @@ type mutation_root {
     _set: room_set_input
     pk_columns: room_pk_columns_input!
   ): room
-
-  """
-  update data of the table: "room_invites"
-  """
-  update_room_invites(
-    """
-    sets the columns of the filtered rows to the given values
-    """
-    _set: room_invites_set_input
-
-    """
-    filter the rows which have to be updated
-    """
-    where: room_invites_bool_exp!
-  ): room_invites_mutation_response
-
-  """
-  update single row of the table: "room_invites"
-  """
-  update_room_invites_by_pk(
-    """
-    sets the columns of the filtered rows to the given values
-    """
-    _set: room_invites_set_input
-    pk_columns: room_invites_pk_columns_input!
-  ): room_invites
 
   """
   update data of the table: "room_member"
@@ -4712,71 +4625,6 @@ type query_root {
   fetch data from the table: "room" using primary key columns
   """
   room_by_pk(id: uuid!): room
-
-  """
-  fetch data from the table: "room_invites"
-  """
-  room_invites(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): [room_invites!]!
-
-  """
-  fetch aggregated fields from the table: "room_invites"
-  """
-  room_invites_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): room_invites_aggregate!
-
-  """
-  fetch data from the table: "room_invites" using primary key columns
-  """
-  room_invites_by_pk(id: uuid!): room_invites
 
   """
   fetch data from the table: "room_last_posted_message"
@@ -5961,66 +5809,6 @@ type room {
   ): room_member_aggregate!
   name: String!
   notification_job_id: String
-
-  """
-  An array relationship
-  """
-  room_invites(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): [room_invites!]!
-
-  """
-  An aggregated array relationship
-  """
-  room_invites_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): room_invites_aggregate!
   slug: String!
   source_google_calendar_event_id: String
 
@@ -6144,7 +5932,6 @@ input room_bool_exp {
   members: room_member_bool_exp
   name: String_comparison_exp
   notification_job_id: String_comparison_exp
-  room_invites: room_invites_bool_exp
   slug: String_comparison_exp
   source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
@@ -6182,322 +5969,12 @@ input room_insert_input {
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
-  room_invites: room_invites_arr_rel_insert_input
   slug: String
   source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
   space_id: uuid
   summary: String
   topics: topic_arr_rel_insert_input
-}
-
-"""
-columns and relationships of "room_invites"
-"""
-type room_invites {
-  code: uuid!
-  created_at: timestamptz!
-  email: String!
-  id: uuid!
-
-  """
-  An object relationship
-  """
-  inviter: user!
-  inviter_id: uuid!
-
-  """
-  An object relationship
-  """
-  room: room!
-  room_id: uuid!
-  used_at: timestamptz
-}
-
-"""
-aggregated selection of "room_invites"
-"""
-type room_invites_aggregate {
-  aggregate: room_invites_aggregate_fields
-  nodes: [room_invites!]!
-}
-
-"""
-aggregate fields of "room_invites"
-"""
-type room_invites_aggregate_fields {
-  count(columns: [room_invites_select_column!], distinct: Boolean): Int
-  max: room_invites_max_fields
-  min: room_invites_min_fields
-}
-
-"""
-order by aggregate values of table "room_invites"
-"""
-input room_invites_aggregate_order_by {
-  count: order_by
-  max: room_invites_max_order_by
-  min: room_invites_min_order_by
-}
-
-"""
-input type for inserting array relation for remote table "room_invites"
-"""
-input room_invites_arr_rel_insert_input {
-  data: [room_invites_insert_input!]!
-  on_conflict: room_invites_on_conflict
-}
-
-"""
-Boolean expression to filter rows from the table "room_invites". All fields are combined with a logical 'AND'.
-"""
-input room_invites_bool_exp {
-  _and: [room_invites_bool_exp]
-  _not: room_invites_bool_exp
-  _or: [room_invites_bool_exp]
-  code: uuid_comparison_exp
-  created_at: timestamptz_comparison_exp
-  email: String_comparison_exp
-  id: uuid_comparison_exp
-  inviter: user_bool_exp
-  inviter_id: uuid_comparison_exp
-  room: room_bool_exp
-  room_id: uuid_comparison_exp
-  used_at: timestamptz_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "room_invites"
-"""
-enum room_invites_constraint {
-  """
-  unique or primary key constraint
-  """
-  room_invites_code_key
-
-  """
-  unique or primary key constraint
-  """
-  room_invites_pkey
-
-  """
-  unique or primary key constraint
-  """
-  room_invites_room_id_email_key
-}
-
-"""
-input type for inserting data into table "room_invites"
-"""
-input room_invites_insert_input {
-  code: uuid
-  created_at: timestamptz
-  email: String
-  id: uuid
-  inviter: user_obj_rel_insert_input
-  inviter_id: uuid
-  room: room_obj_rel_insert_input
-  room_id: uuid
-  used_at: timestamptz
-}
-
-"""
-aggregate max on columns
-"""
-type room_invites_max_fields {
-  code: uuid
-  created_at: timestamptz
-  email: String
-  id: uuid
-  inviter_id: uuid
-  room_id: uuid
-  used_at: timestamptz
-}
-
-"""
-order by max() on columns of table "room_invites"
-"""
-input room_invites_max_order_by {
-  code: order_by
-  created_at: order_by
-  email: order_by
-  id: order_by
-  inviter_id: order_by
-  room_id: order_by
-  used_at: order_by
-}
-
-"""
-aggregate min on columns
-"""
-type room_invites_min_fields {
-  code: uuid
-  created_at: timestamptz
-  email: String
-  id: uuid
-  inviter_id: uuid
-  room_id: uuid
-  used_at: timestamptz
-}
-
-"""
-order by min() on columns of table "room_invites"
-"""
-input room_invites_min_order_by {
-  code: order_by
-  created_at: order_by
-  email: order_by
-  id: order_by
-  inviter_id: order_by
-  room_id: order_by
-  used_at: order_by
-}
-
-"""
-response of any mutation on the table "room_invites"
-"""
-type room_invites_mutation_response {
-  """
-  number of affected rows by the mutation
-  """
-  affected_rows: Int!
-
-  """
-  data of the affected rows by the mutation
-  """
-  returning: [room_invites!]!
-}
-
-"""
-input type for inserting object relation for remote table "room_invites"
-"""
-input room_invites_obj_rel_insert_input {
-  data: room_invites_insert_input!
-  on_conflict: room_invites_on_conflict
-}
-
-"""
-on conflict condition type for table "room_invites"
-"""
-input room_invites_on_conflict {
-  constraint: room_invites_constraint!
-  update_columns: [room_invites_update_column!]!
-  where: room_invites_bool_exp
-}
-
-"""
-ordering options when selecting data from "room_invites"
-"""
-input room_invites_order_by {
-  code: order_by
-  created_at: order_by
-  email: order_by
-  id: order_by
-  inviter: user_order_by
-  inviter_id: order_by
-  room: room_order_by
-  room_id: order_by
-  used_at: order_by
-}
-
-"""
-primary key columns input for table: "room_invites"
-"""
-input room_invites_pk_columns_input {
-  id: uuid!
-}
-
-"""
-select columns of table "room_invites"
-"""
-enum room_invites_select_column {
-  """
-  column name
-  """
-  code
-
-  """
-  column name
-  """
-  created_at
-
-  """
-  column name
-  """
-  email
-
-  """
-  column name
-  """
-  id
-
-  """
-  column name
-  """
-  inviter_id
-
-  """
-  column name
-  """
-  room_id
-
-  """
-  column name
-  """
-  used_at
-}
-
-"""
-input type for updating data in table "room_invites"
-"""
-input room_invites_set_input {
-  code: uuid
-  created_at: timestamptz
-  email: String
-  id: uuid
-  inviter_id: uuid
-  room_id: uuid
-  used_at: timestamptz
-}
-
-"""
-update columns of table "room_invites"
-"""
-enum room_invites_update_column {
-  """
-  column name
-  """
-  code
-
-  """
-  column name
-  """
-  created_at
-
-  """
-  column name
-  """
-  email
-
-  """
-  column name
-  """
-  id
-
-  """
-  column name
-  """
-  inviter_id
-
-  """
-  column name
-  """
-  room_id
-
-  """
-  column name
-  """
-  used_at
 }
 
 """
@@ -6931,7 +6408,6 @@ input room_order_by {
   members_aggregate: room_member_aggregate_order_by
   name: order_by
   notification_job_id: order_by
-  room_invites_aggregate: room_invites_aggregate_order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space: space_order_by
@@ -8296,71 +7772,6 @@ type subscription_root {
   fetch data from the table: "room" using primary key columns
   """
   room_by_pk(id: uuid!): room
-
-  """
-  fetch data from the table: "room_invites"
-  """
-  room_invites(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): [room_invites!]!
-
-  """
-  fetch aggregated fields from the table: "room_invites"
-  """
-  room_invites_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): room_invites_aggregate!
-
-  """
-  fetch data from the table: "room_invites" using primary key columns
-  """
-  room_invites_by_pk(id: uuid!): room_invites
 
   """
   fetch data from the table: "room_last_posted_message"
@@ -12098,66 +11509,6 @@ type user {
   """
   An array relationship
   """
-  invites(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): [room_invites!]!
-
-  """
-  An aggregated array relationship
-  """
-  invites_aggregate(
-    """
-    distinct select on columns
-    """
-    distinct_on: [room_invites_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [room_invites_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: room_invites_bool_exp
-  ): room_invites_aggregate!
-
-  """
-  An array relationship
-  """
   messages(
     """
     distinct select on columns
@@ -12567,7 +11918,6 @@ input user_bool_exp {
   email: String_comparison_exp
   email_verified: timestamptz_comparison_exp
   id: uuid_comparison_exp
-  invites: room_invites_bool_exp
   messages: message_bool_exp
   name: String_comparison_exp
   owned_teams: team_bool_exp
@@ -12605,7 +11955,6 @@ input user_insert_input {
   email: String
   email_verified: timestamptz
   id: uuid
-  invites: room_invites_arr_rel_insert_input
   messages: message_arr_rel_insert_input
   name: String
   owned_teams: team_arr_rel_insert_input
@@ -12712,7 +12061,6 @@ input user_order_by {
   email: order_by
   email_verified: order_by
   id: order_by
-  invites_aggregate: room_invites_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
   name: order_by
   owned_teams_aggregate: team_aggregate_order_by
