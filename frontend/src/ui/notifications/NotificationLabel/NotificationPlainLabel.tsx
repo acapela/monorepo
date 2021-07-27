@@ -1,12 +1,19 @@
+import { AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { NotificationInfoFragment } from "~frontend/../../gql";
 import { relativeFormatDate } from "~frontend/../../shared/dates/format";
+import { handleWithStopPropagation } from "~frontend/../../shared/events";
+import { useIsElementOrChildHovered } from "~frontend/../../shared/hooks/useIsElementOrChildHovered";
+import { PopPresenceAnimator } from "~frontend/../../ui/animations";
 import { borderRadius } from "~frontend/../../ui/baseStyles";
+import { CircleIconButton } from "~frontend/../../ui/buttons/CircleIconButton";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~frontend/../../ui/colors";
+import { IconCheck, IconFlag, IconNotificationIndicator, IconTarget } from "~frontend/../../ui/icons";
 import { hoverTransition } from "~frontend/../../ui/transitions";
 import { TextBody14, TextBody } from "~frontend/../../ui/typo";
-import { markNotificationAsRead } from "~frontend/gql/notifications";
+import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
@@ -20,24 +27,59 @@ interface Props {
 }
 
 export function NotificationPlainLabel({ userId, date, titleNode, id, onClick, notification }: Props) {
+  const holderRef = useRef<HTMLDivElement>(null);
   const user = useCurrentTeamMember(userId);
-  const isUnread = !notification.read_at;
+  const isRead = !!notification.read_at;
+
+  const isHovered = useIsElementOrChildHovered(holderRef);
 
   function handleClick() {
-    markNotificationAsRead({ id });
+    markAsRead();
     onClick?.();
   }
 
+  function markAsRead() {
+    markNotificationAsRead({ id, date: new Date().toISOString() });
+  }
+
+  function markAsUnread() {
+    markNotificationAsUnread({ id });
+  }
+
   return (
-    <UIHolder onClick={handleClick}>
-      <UserAvatar user={user} />
+    <UIHolder onClick={handleClick} ref={holderRef}>
+      <UserAvatar user={user ?? undefined} />
       <UIContent>
         <UITitle>{titleNode}</UITitle>
         <UIDate secondary semibold>
           {relativeFormatDate(date)}
         </UIDate>
       </UIContent>
-      {isUnread && <UIUnreadIndicator />}
+      <UIStatus>
+        <AnimatePresence exitBeforeEnter>
+          {!isHovered && (
+            <PopPresenceAnimator key="not-hovered">{!isRead && <UIUnreadIndicator />}</PopPresenceAnimator>
+          )}
+          {isHovered && (
+            <PopPresenceAnimator key="hovered">
+              {isRead && (
+                <CircleIconButton
+                  icon={<IconNotificationIndicator />}
+                  tooltip="Mark as unread"
+                  onClick={handleWithStopPropagation(markAsUnread)}
+                />
+              )}
+              {!isRead && (
+                <CircleIconButton
+                  icon={<IconCheck />}
+                  tooltip="Mark as read"
+                  onClick={handleWithStopPropagation(markAsRead)}
+                />
+              )}
+            </PopPresenceAnimator>
+          )}
+        </AnimatePresence>
+      </UIStatus>
     </UIHolder>
   );
 }
@@ -71,6 +113,12 @@ const UITitle = styled(TextBody14)``;
 
 const UIDate = styled(TextBody)`
   font-size: 10px;
+`;
+
+const UIStatus = styled.div`
+  min-width: 32px;
+  display: flex;
+  justify-content: center;
 `;
 
 const UIUnreadIndicator = styled.div`
