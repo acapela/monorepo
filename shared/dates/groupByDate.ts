@@ -23,5 +23,5 @@ export function groupByDate<I>(items: I[], dateGetter: (item: I) => Date): Items
     }
   }
 
-  return sortBy(itemGroups, (group) => group.date);
+  return sortBy(itemGroups, (group) => -group.date);
 }
