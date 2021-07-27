@@ -1,8 +1,7 @@
 import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
 import { getColorTheme, ThemeColors, ThemeColorScheme, Variant } from "./colors";
 import { Font, font } from "./font";
-import { BorderRadius, Shadow, shadow } from "~ui/baseStyles";
-import { borderRadius } from "~ui/baseStyles";
+import { shadow, borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
 import { hoverTransition } from "~ui/transitions";
 import { spacer } from "~ui/spacer";
@@ -12,9 +11,9 @@ import DeepProxy from "proxy-deep";
 
 interface Theme {
   colors: ExtendedThemeColors;
-  shadow: Shadow;
+  shadow: typeof shadow;
   font: Font;
-  borderRadius: BorderRadius;
+  borderRadius: typeof borderRadius;
   zIndex: typeof zIndex;
   transitions: Record<string, () => FlattenSimpleInterpolation>;
   spacer: typeof spacer;

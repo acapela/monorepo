@@ -10,17 +10,6 @@ function createShadowCss(size: number, opacity = 0.2): FlattenSimpleInterpolatio
   `;
 }
 
-export interface Shadow {
-  small: FlattenSimpleInterpolation;
-  medium: FlattenSimpleInterpolation;
-  large: FlattenSimpleInterpolation;
-  card: FlattenSimpleInterpolation;
-  cardItem: FlattenSimpleInterpolation;
-  modal: FlattenSimpleInterpolation;
-  popover: FlattenSimpleInterpolation;
-  button: FlattenSimpleInterpolation;
-}
-
 export const shadow = {
   small: createShadowCss(1),
   medium: createShadowCss(2),
@@ -42,19 +31,7 @@ export const shadow = {
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
-};
-
-export interface BorderRadius {
-  menu: FlattenSimpleInterpolation;
-  card: FlattenSimpleInterpolation;
-  modal: FlattenSimpleInterpolation;
-  label: FlattenSimpleInterpolation;
-  input: FlattenSimpleInterpolation;
-  item: FlattenSimpleInterpolation;
-  circle: FlattenSimpleInterpolation;
-  button: FlattenSimpleInterpolation;
-  tag: FlattenSimpleInterpolation;
-}
+} as const;
 
 export const borderRadius = {
   menu: css`
@@ -84,7 +61,7 @@ export const borderRadius = {
   tag: css`
     border-radius: 8px;
   `,
-};
+} as const;
 
 export const fontSize = {
   copy: "1rem",
