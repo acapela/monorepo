@@ -1,29 +1,16 @@
-import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
-import { getColorTheme, ThemeColorScheme, ThemeColorSchemeName } from "./colors";
-import { Font, font } from "./font";
-import { shadow, borderRadius } from "~ui/baseStyles";
-import { zIndex } from "~ui/zIndex";
-import { hoverTransition } from "~ui/transitions";
-import { spacer } from "~ui/spacer";
-import { FlattenSimpleInterpolation } from "styled-components";
 import { get, isFunction, isPlainObject } from "lodash";
 import DeepProxy from "proxy-deep";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { spacer } from "~ui/spacer";
+import { hoverTransition } from "~ui/transitions";
+import { zIndex } from "~ui/zIndex";
+import { variantToStyles } from "./actions/styleBuilder";
+import { getColorTheme, ThemeColorSchemeName } from "./colors";
+import { font } from "./font";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
-interface Theme {
-  colors: ExtendedThemeColors;
-  shadow: typeof shadow;
-  font: Font;
-  borderRadius: typeof borderRadius;
-  zIndex: typeof zIndex;
-  transitions: Record<string, () => FlattenSimpleInterpolation>;
-  spacer: typeof spacer;
-}
-
-type ExtendedThemeColors = ThemeColorScheme & { actions: Record<Variant, ActionStateInterpolations> };
-
-export function getTheme(colorScheme: ThemeColorSchemeName): Theme {
+export function getTheme(colorScheme: ThemeColorSchemeName) {
   const themeColors = getColorTheme(colorScheme);
   const themeColorsForActions = themeColors.interactive.actions;
 
@@ -44,8 +31,12 @@ export function getTheme(colorScheme: ThemeColorSchemeName): Theme {
       hover: hoverTransition,
     },
     spacer,
-  };
+  } as const;
 }
+
+export const defaultTheme = getTheme("default");
+
+type Theme = typeof defaultTheme;
 
 /*
  * Creates a proxy that allows us to use the theme provided to the styled-components context. It looks for
