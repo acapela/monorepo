@@ -58,27 +58,33 @@ function stateToStyles(colorsForState?: Partial<InteractiveProps>): SimpleInterp
     return css``;
   }
 
+  const { text, background, icon, border } = colorsForState;
+
   return css`
-    ${colorsForState.text ??
-    css`
-      color: ${colorsForState.text};
-    `}
+    ${text
+      ? css`
+          color: ${text};
+        `
+      : ""}
 
-    ${colorsForState.background ??
-    css`
-      background-color: ${colorsForState.background};
-    `}
+    ${background
+      ? css`
+          background-color: ${background};
+        `
+      : ""}
     
-    ${colorsForState.icon ??
-    css`
-      svg {
-        color: ${colorsForState.icon};
-      }
-    `}
+    ${icon
+      ? css`
+          svg {
+            color: ${icon};
+          }
+        `
+      : ""}
 
-    ${colorsForState.border ??
-    css`
-      border-color: ${colorsForState.border};
-    `}
+    ${border
+      ? css`
+          border-color: ${border};
+        `
+      : ""}
   `;
 }
