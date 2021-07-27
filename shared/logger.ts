@@ -4,11 +4,11 @@ import { Request } from "express";
 import { ServerResponse } from "http";
 import pino from "pino";
 
-import { assertGet } from "./assert";
+import { assertDefined } from "./assert";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 
-const loggingLevel = assertGet(
+const loggingLevel = assertDefined(
   process.env.LOGGING_LEVEL,
   `LOGGING_LEVEL env variable is required. ('fatal', 'error', 'warn', 'info', 'debug', 'trace')`
 );

@@ -1,11 +1,11 @@
 import { google, calendar_v3 } from "googleapis";
-import { assert, assertGet, assertGetAsync } from "~shared/assert";
+import { assert, assertDefined, assertGetAsync } from "~shared/assert";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Account } from "~db";
 import { PublicInternalServerError } from "../errors/errorTypes";
 
-const clientId = assertGet(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID is required");
-const clientSecret = assertGet(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET is required");
+const clientId = assertDefined(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID is required");
+const clientSecret = assertDefined(process.env.GOOGLE_CLIENT_SECRET, "GOOGLE_CLIENT_SECRET is required");
 
 function convertGoogleDate(googleDate?: calendar_v3.Schema$EventDateTime): Date | undefined {
   if (!googleDate) return;

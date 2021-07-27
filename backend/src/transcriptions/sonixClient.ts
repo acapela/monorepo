@@ -1,6 +1,6 @@
 import axios, { Method } from "axios";
 import querystring from "querystring";
-import { assert, assertGet } from "~shared/assert";
+import { assert, assertDefined } from "~shared/assert";
 import { getTunnelPublicUrl } from "../localtunnel";
 import { isDev } from "../utils";
 
@@ -38,7 +38,7 @@ export interface JsonTranscriptResponse {
   }[];
 }
 
-const sonixCallbackSecret = assertGet(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
+const sonixCallbackSecret = assertDefined(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
 
 let sonixClient: Sonix;
 
@@ -47,7 +47,7 @@ class Sonix {
   private key: string;
 
   constructor({ key = process.env.SONIX_API_KEY }: SonixOptions = {}) {
-    const sonixApiKey = assertGet(key, "Sonix API key is required");
+    const sonixApiKey = assertDefined(key, "Sonix API key is required");
 
     this.key = sonixApiKey;
   }

@@ -1,5 +1,5 @@
 import Axios, { AxiosResponse } from "axios";
-import { assertGet } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 
 type HasuraRequestPayload = {
   type: string;
@@ -20,9 +20,9 @@ export type HasuraHeader = {
   value: string;
 };
 
-const apiUrl = assertGet(process.env.HASURA_API_URL, "HASURA_API_URL env variable is required");
-const apiSecret = assertGet(process.env.HASURA_API_SECRET, "HASURA_API_SECRET env variable is required");
-const apiRole = assertGet(process.env.HASURA_API_ADMIN_ROLE, "HASURA_API_ADMIN_ROLE env variable is required");
+const apiUrl = assertDefined(process.env.HASURA_API_URL, "HASURA_API_URL env variable is required");
+const apiSecret = assertDefined(process.env.HASURA_API_SECRET, "HASURA_API_SECRET env variable is required");
+const apiRole = assertDefined(process.env.HASURA_API_ADMIN_ROLE, "HASURA_API_ADMIN_ROLE env variable is required");
 
 export default abstract class Hasura {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
