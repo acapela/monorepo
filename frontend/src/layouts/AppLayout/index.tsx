@@ -142,5 +142,3 @@ const UIMainContent = styled.div`
   flex-direction: column;
   background: ${BASE_GREY_7};
 `;
-
-const UINotificationsButton = styled.div``;

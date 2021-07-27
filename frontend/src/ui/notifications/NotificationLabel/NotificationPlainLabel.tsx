@@ -10,7 +10,7 @@ import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
-import { IconCheck, IconFlag, IconNotificationIndicator, IconTarget } from "~ui/icons";
+import { IconCheck, IconNotificationIndicator } from "~ui/icons";
 import { hoverTransition } from "~ui/transitions";
 import { TextBody14, TextBody } from "~ui/typo";
 import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";

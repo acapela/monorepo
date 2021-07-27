@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
-import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
