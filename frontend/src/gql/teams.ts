@@ -20,6 +20,8 @@ import {
   RemoveTeamInvitationMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
+  LookupTeamNameQuery,
+  LookupTeamNameQueryVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -244,4 +246,15 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
       addToast({ type: "info", content: `Team member was removed` });
     },
   }
+);
+
+export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQueryVariables>(
+  () => gql`
+    query LookupTeamName($token: String!) {
+      invite: lookup_team_name(token: $token) {
+        team_name
+        inviter_name
+      }
+    }
+  `
 );

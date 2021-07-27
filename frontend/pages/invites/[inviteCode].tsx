@@ -6,7 +6,7 @@ import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
-import { lookupTeamName } from "~frontend/gql/invitations";
+import { lookupTeamName } from "~frontend/gql/team";
 
 export default function InvitePage() {
   const user = useCurrentUser();

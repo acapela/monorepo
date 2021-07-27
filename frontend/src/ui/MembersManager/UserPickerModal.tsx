@@ -26,12 +26,16 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
     return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
   }, [teamMembers, currentUsers]);
 
+  const handleInviteByEmail = (email: string) => {
+    console.log("invite by email! ", email);
+  };
+
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
       <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
         <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
           <UIHolder>
-            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} />
+            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={handleInviteByEmail} />
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (
