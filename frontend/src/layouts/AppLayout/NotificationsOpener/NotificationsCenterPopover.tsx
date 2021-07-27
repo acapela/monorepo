@@ -1,20 +1,13 @@
 import { useRef } from "react";
-import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
 import { TextH3 } from "~ui/typo";
 import { useNotifications } from "~frontend/gql/notifications";
 import { NotificationsTimeline } from "~frontend/ui/notifications/NotificationLabel/NotificationsTimeline";
 
-interface Props {
-  onCloseRequest: () => void;
-}
-
-export function NotificationsCenterPopover({ onCloseRequest }: Props) {
+export function NotificationsCenterPopover() {
   const holderRef = useRef<HTMLDivElement>(null);
-  const [notifications] = useNotifications();
-
-  useClickAway(holderRef, () => onCloseRequest());
+  const [notifications = []] = useNotifications();
 
   return (
     <UIHolder ref={holderRef}>
