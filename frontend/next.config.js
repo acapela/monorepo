@@ -3,7 +3,7 @@ process.env.NEXT_PUBLIC_STAGE = process.env.STAGE;
 process.env.NEXT_PUBLIC_SENTRY_RELEASE = process.env.SENTRY_RELEASE;
 /* eslint-disable @typescript-eslint/no-var-requires */
 const withPlugins = require("next-compose-plugins");
-const bundleAnalyzer = require("@next/bundle-analyzer");
+const withBundleAnalyzer = require("@next/bundle-analyzer");
 const withTranspileModules = require("next-transpile-modules");
 const dotenv = require("dotenv");
 const fs = require("fs");
@@ -109,10 +109,9 @@ module.exports = withPlugins(
   [
     //
     [
-      bundleAnalyzer,
-      {
+      withBundleAnalyzer({
         enabled: process.env.ANALYZE === "true",
-      },
+      }),
     ],
     //
     [
