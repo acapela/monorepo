@@ -118,6 +118,8 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
   useEffect(() => {
     if (!editor || !autofocusKey) return;
 
+    console.log("elomelofocus");
+
     return createTimeout(() => {
       editor.chain?.().focus("end").run();
     }, 0);
@@ -151,7 +153,9 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
 
     if (!didChange) return;
 
-    editor?.chain().focus().setContent(value).run();
+    editor.setOptions({ content: value });
+
+    // editor?.chain().focus().setContent(value).run();
   }, [value]);
 
   /**
