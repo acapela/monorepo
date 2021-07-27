@@ -1,4 +1,5 @@
 import { startOfDay } from "date-fns";
+import { sortBy } from "lodash";
 import styled from "styled-components";
 import { NotificationInfoFragment } from "~frontend/../../gql";
 import { relativeFormatDate } from "~frontend/../../shared/dates/format";
@@ -22,9 +23,11 @@ export function NotificationsTimeline({ notifications }: Props) {
           <UINotificationsDayGroup key={dayNotificationsGroup.date.getTime()}>
             <CategoryNameLabel>{relativeFormatDate(dayNotificationsGroup.date)}</CategoryNameLabel>
             <UINotificationsList>
-              {dayNotificationsGroup.items.map((notification) => {
-                return <NotificationLabel key={notification.id} notification={notification} />;
-              })}
+              {sortBy(dayNotificationsGroup.items, (notification) => -new Date(notification.created_at).getTime()).map(
+                (notification) => {
+                  return <NotificationLabel key={notification.id} notification={notification} />;
+                }
+              )}
             </UINotificationsList>
           </UINotificationsDayGroup>
         );
