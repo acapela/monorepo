@@ -1,22 +1,21 @@
+import { Variant } from "..";
 import { defaultTheme } from "./default";
 
-export type Variant = "primary" | "secondary" | "tertiary";
-
 export interface VariantStates {
-  regular: InteractiveProps;
-  hover?: Partial<InteractiveProps>;
-  disabled?: Partial<InteractiveProps>;
-  active?: Partial<InteractiveProps>;
+  regular: ColorTargetOptions;
+  hover?: Partial<ColorTargetOptions>;
+  disabled?: Partial<ColorTargetOptions>;
+  active?: Partial<ColorTargetOptions>;
 }
 
-export interface InteractiveProps {
+export interface ColorTargetOptions {
   background: string;
   text: string;
   icon: string;
   border?: string;
 }
 
-export interface ThemeColors {
+export interface ThemeColorScheme {
   layout: {
     background: string;
     foreground: string;
@@ -39,9 +38,9 @@ export interface ThemeColors {
   };
 }
 
-export type ThemeColorScheme = "default";
+export type ThemeColorSchemeName = "default";
 
-export const getColorTheme = (scheme: ThemeColorScheme) => {
+export const getColorTheme = (scheme: ThemeColorSchemeName) => {
   switch (scheme) {
     default:
       return defaultTheme;

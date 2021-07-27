@@ -1,5 +1,5 @@
 import { css, FlattenSimpleInterpolation, SimpleInterpolation } from "styled-components";
-import { InteractiveProps, VariantStates } from "../colors";
+import { ColorTargetOptions, VariantStates } from "../colors";
 
 export interface ActionStateInterpolations {
   regular: () => FlattenSimpleInterpolation;
@@ -53,7 +53,7 @@ export function variantToStyles(colorsForVariant: VariantStates): ActionStateInt
   return result;
 }
 
-function stateToStyles(colorsForState?: Partial<InteractiveProps>): SimpleInterpolation {
+function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): SimpleInterpolation {
   if (!colorsForState) {
     return css``;
   }

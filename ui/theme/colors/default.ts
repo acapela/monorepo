@@ -1,8 +1,8 @@
-import { ThemeColors } from ".";
+import { ThemeColorScheme } from ".";
 import { setColorOpacity } from "~shared/colors";
 import * as colors from "./base";
 
-export const defaultTheme: ThemeColors = {
+export const defaultTheme: ThemeColorScheme = {
   layout: {
     background: colors.BASE_GREY_7,
     foreground: colors.WHITE,

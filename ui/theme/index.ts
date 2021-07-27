@@ -1,5 +1,5 @@
 import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
-import { getColorTheme, ThemeColors, ThemeColorScheme, Variant } from "./colors";
+import { getColorTheme, ThemeColorScheme, ThemeColorSchemeName } from "./colors";
 import { Font, font } from "./font";
 import { shadow, borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
@@ -8,6 +8,8 @@ import { spacer } from "~ui/spacer";
 import { FlattenSimpleInterpolation } from "styled-components";
 import { get, isFunction, isPlainObject } from "lodash";
 import DeepProxy from "proxy-deep";
+
+export type Variant = "primary" | "secondary" | "tertiary";
 
 interface Theme {
   colors: ExtendedThemeColors;
@@ -19,9 +21,9 @@ interface Theme {
   spacer: typeof spacer;
 }
 
-type ExtendedThemeColors = ThemeColors & { actions: Record<Variant, ActionStateInterpolations> };
+type ExtendedThemeColors = ThemeColorScheme & { actions: Record<Variant, ActionStateInterpolations> };
 
-export function getTheme(colorScheme: ThemeColorScheme): Theme {
+export function getTheme(colorScheme: ThemeColorSchemeName): Theme {
   const themeColors = getColorTheme(colorScheme);
   const themeColorsForActions = themeColors.interactive.actions;
 
