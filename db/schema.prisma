@@ -38,7 +38,6 @@ model last_seen_message {
   message    message  @relation(fields: [message_id], references: [id])
   topic      topic    @relation(fields: [topic_id], references: [id])
   user       user     @relation(fields: [user_id], references: [id])
-
   @@id([user_id, topic_id])
 }
 
@@ -91,7 +90,6 @@ model room {
   room_invites                    room_invites[]
   room_member                     room_member[]
   topic                           topic[]
-
   @@unique([slug, space_id], name: "room_slug_space_id_key")
 }
 
@@ -100,7 +98,6 @@ model room_member {
   user_id String @db.Uuid
   room    room   @relation(fields: [room_id], references: [id])
   user    user   @relation(fields: [user_id], references: [id])
-
   @@id([room_id, user_id])
   @@unique([room_id, user_id], name: "room_participants_room_id_user_id_key")
 }
@@ -114,7 +111,6 @@ model space {
   team         team           @relation(fields: [team_id], references: [id])
   room         room[]
   space_member space_member[]
-
   @@unique([team_id, slug], name: "space_team_id_slug_key")
 }
 
@@ -123,7 +119,6 @@ model space_member {
   user_id  String @db.Uuid
   space    space  @relation(fields: [space_id], references: [id])
   user     user   @relation(fields: [user_id], references: [id])
-
   @@id([space_id, user_id])
 }
 
@@ -158,7 +153,6 @@ model team_member {
   user_id String @db.Uuid
   team    team   @relation(fields: [team_id], references: [id])
   user    user   @relation(fields: [user_id], references: [id])
-
   @@id([team_id, user_id])
 }
 
@@ -175,7 +169,6 @@ model topic {
   last_seen_message last_seen_message[]
   message           message[]
   topic_member      topic_member[]
-
   @@unique([slug, room_id], name: "topic_slug_room_id_key")
 }
 
@@ -184,7 +177,6 @@ model topic_member {
   user_id  String @db.Uuid
   topic    topic  @relation(fields: [topic_id], references: [id])
   user     user   @relation(fields: [user_id], references: [id])
-
   @@id([topic_id, user_id])
 }
 
@@ -250,7 +242,6 @@ model message_reaction {
   emoji      String
   message    message @relation(fields: [message_id], references: [id])
   user       user    @relation(fields: [user_id], references: [id])
-
   @@id([message_id, user_id, emoji])
 }
 
@@ -274,6 +265,5 @@ model room_invites {
   used_at    DateTime? @db.Timestamptz(6)
   user       user      @relation(fields: [inviter_id], references: [id])
   room       room      @relation(fields: [room_id], references: [id])
-
   @@unique([room_id, email], name: "room_invites_room_id_email_key")
 }
