@@ -31,7 +31,7 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
       <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
         <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
           <UIHolder>
-            <AddMemberInlineForm users={potentialUsers} onSelect={onAddUser} />
+            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} />
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (

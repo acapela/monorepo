@@ -13,13 +13,15 @@ import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
+import isEmail from "validator/lib/isEmail";
 
 interface Props {
   users: UserBasicInfoFragment[];
-  onSelect: (userId: string) => void;
+  onAddMember: (userId: string) => void;
+  onInviteByEmail?: (email: string) => void;
 }
 
-export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
+export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Props) => {
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
   const [inputValue, setInputValue] = useState("");
@@ -30,7 +32,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   const comboboxRef = useRef<HTMLDivElement | null>(null);
 
   const selectedUser = users.find(({ email }) => inputValue === email);
-  const isSubmitEnabled = Boolean(selectedUser);
+  const isSubmitEnabled = Boolean(selectedUser) || (onInviteByEmail && isEmail(inputValue));
 
   useEffect(() => {
     if (selectedUser) {
@@ -41,11 +43,13 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   }, [selectedUser, inputValue]);
 
   const handleSubmit = () => {
-    if (!selectedUser) return;
-
     setInputValue("");
 
-    onSelect(selectedUser.id);
+    if (selectedUser) {
+      onAddMember(selectedUser.id);
+    } else if (onInviteByEmail) {
+      onInviteByEmail(inputValue);
+    }
   };
 
   useShortcut(
