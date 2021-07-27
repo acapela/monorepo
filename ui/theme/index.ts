@@ -10,6 +10,10 @@ import { font } from "./font";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
+export const defaultTheme = getTheme("default");
+
+type Theme = typeof defaultTheme;
+
 export function getTheme(colorScheme: ThemeColorSchemeName) {
   const themeColors = getColorTheme(colorScheme);
   const themeColorsForActions = themeColors.interactive.actions;
@@ -34,13 +38,9 @@ export function getTheme(colorScheme: ThemeColorSchemeName) {
   } as const;
 }
 
-export const defaultTheme = getTheme("default");
-
-type Theme = typeof defaultTheme;
-
 /*
- * Creates a proxy that allows us to use the theme provided to the styled-components context. It looks for
- * all of the leafs in a provided object of type Theme and proxies to a function that returns the value
+ * Creates an access layer that allows us to easily use the theme provided to the styled-components context.
+ * It looks for all of the leafs in a provided object of type Theme and proxies them to a function that returns the value
  * as found in the styled-components context.
  *
  * Before:
@@ -50,31 +50,38 @@ type Theme = typeof defaultTheme;
  *
  * After:
  * const UIComponent = styled.div`
- *   // `themeStyles.colors.status.error` returns `props => props.theme.colors.status.error`
- *   background: ${themeStyles.colors.status.error};
+ *   // `theme.colors.status.error` returns `props => props.theme.colors.status.error`
+ *   background: ${theme.colors.status.error};
  * `;
  *
  */
-export const themeStyles = new DeepProxy(getTheme("default"), {
+export const theme = new DeepProxy(defaultTheme, {
   get(target, propertyName, receiver) {
     const value = Reflect.get(target, propertyName, receiver);
+
     if (isPlainObject(value)) {
       // Creates a nested DeepProxy
+      // Calling nest with the value allows DeepProxy to build the `path` (👀 this.path) to nested props
       return this.nest(value);
-    } else if (isFunction(value)) {
+    }
+
+    if (isFunction(value)) {
+      /* 
+      First function returned is the outer layer of the utility function that's being called. 
+      We use this to grab the arguments from that util and pass them as a closure to the equivalent theme function.
+
+      This way:
+      `style.utilityFunction(1,2,3)` becomes `props => props.theme.utilityFunction(1,2,3)`
+      */
       return (...args: unknown[]) =>
         (props: { theme: Theme }) => {
-          const theme = props.theme;
-
-          const fn = get(theme, [...this.path, propertyName]);
-
+          const fn = get(props.theme, [...this.path, propertyName]);
           return fn.call(null, ...args);
         };
-    } else {
-      return (props: { theme: Theme }) => {
-        const theme = props.theme;
-        return get(theme, [...this.path, propertyName]);
-      };
     }
+
+    return (props: { theme: Theme }) => {
+      return get(props.theme, [...this.path, propertyName]);
+    };
   },
 });
