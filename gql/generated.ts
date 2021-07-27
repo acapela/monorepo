@@ -8924,7 +8924,7 @@ export type UnreadNotificationsQuery = (
 
 export type MarkNotificationAsReadMutationVariables = Exact<{
   id: Scalars['uuid'];
-  date: Scalars['timestamptz'];
+  date?: Maybe<Scalars['timestamptz']>;
 }>;
 
 

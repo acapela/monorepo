@@ -82,3 +82,41 @@ export const [useMarkNotificationAsRead, { mutate: markNotificationAsRead }] = c
     },
   }
 );
+
+export const [useMarkNotificationAsUnread, { mutate: markNotificationAsUnread }] = createMutation<
+  MarkNotificationAsReadMutation,
+  MarkNotificationAsReadMutationVariables
+>(
+  () => gql`
+    ${NotificationInfoFragment()}
+    mutation MarkNotificationAsUnread($id: uuid!) {
+      update_notification(where: { id: { _eq: $id } }, _set: { read_at: null }) {
+        returning {
+          ...NotificationInfo
+        }
+      }
+    }
+  `,
+  {
+    defaultVariables() {
+      return {
+        date: new Date().toISOString(),
+      };
+    },
+    optimisticResponse({ id }) {
+      const originalData = NotificationInfoFragment.assertRead(id);
+      return {
+        __typename: "mutation_root",
+        update_notification: {
+          __typename: "notification_mutation_response",
+          returning: [
+            {
+              ...originalData,
+              read_at: null,
+            },
+          ],
+        },
+      };
+    },
+  }
+);
