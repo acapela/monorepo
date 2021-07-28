@@ -9,6 +9,12 @@ import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
+
+interface Invitation {
+  email: string;
+  id: string;
+}
 
 interface Props {
   title: string;
@@ -16,9 +22,22 @@ interface Props {
   onCloseRequest: () => void;
   onAddUser: (userId: string) => void;
   onRemoveUser: (userId: string) => void;
+
+  onInviteByEmail?: (email: string) => void;
+  invitations?: Invitation[];
+  onRemoveInvitation?: (invitationId: string) => void;
 }
 
-export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRemoveUser, title }: Props) {
+export function ManageMembersModal({
+  currentUsers,
+  onCloseRequest,
+  onAddUser,
+  onRemoveUser,
+  title,
+  onInviteByEmail,
+  invitations = [],
+  onRemoveInvitation,
+}: Props) {
   const teamMembers = useCurrentTeamMembers();
 
   const potentialUsers = useMemo(() => {
@@ -26,22 +45,24 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
     return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
   }, [teamMembers, currentUsers]);
 
-  const handleInviteByEmail = (email: string) => {
-    console.log("invite by email! ", email);
-  };
-
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
       <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
         <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
           <UIHolder>
-            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={handleInviteByEmail} />
+            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={onInviteByEmail} />
             {currentUsers.length > 0 && (
               <UISelectGridContainer>
                 {currentUsers.map((user) => (
-                  <UIItemHolder>
+                  <UIItemHolder key={user.id}>
                     <UserBasicInfo user={user} />
                     <CircleCloseIconButton onClick={() => onRemoveUser(user.id)} />
+                  </UIItemHolder>
+                ))}
+                {invitations.map(({ email, id }) => (
+                  <UIItemHolder key={id}>
+                    <InvitationPendingIndicator email={email} />
+                    {onRemoveInvitation && <CircleCloseIconButton onClick={() => onRemoveInvitation(id)} />}
                   </UIItemHolder>
                 ))}
               </UISelectGridContainer>

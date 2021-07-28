@@ -4,7 +4,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { UserPickerModal } from "~frontend/ui/MembersManager/UserPickerModal";
+import { ManageMembersModal } from "~frontend/ui/MembersManager/ManageMembersModal";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 
 interface Props {
@@ -19,7 +19,7 @@ export function SpaceTools({ space }: Props) {
   return (
     <>
       {isPickingUser && (
-        <UserPickerModal
+        <ManageMembersModal
           title="Space Members"
           currentUsers={members}
           onCloseRequest={closeUsersManager}

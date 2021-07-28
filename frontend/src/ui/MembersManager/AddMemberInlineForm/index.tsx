@@ -22,6 +22,8 @@ interface Props {
 }
 
 export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Props) => {
+  const canInviteByEmail = Boolean(onInviteByEmail);
+
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
   const [inputValue, setInputValue] = useState("");
@@ -32,7 +34,7 @@ export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Pro
   const comboboxRef = useRef<HTMLDivElement | null>(null);
 
   const selectedUser = users.find(({ email }) => inputValue === email);
-  const isSubmitEnabled = Boolean(selectedUser) || (onInviteByEmail && isEmail(inputValue));
+  const isSubmitEnabled = Boolean(selectedUser) || (canInviteByEmail && isEmail(inputValue));
 
   useEffect(() => {
     if (selectedUser) {
@@ -72,7 +74,7 @@ export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Pro
         <RoundedTextInput
           icon={<IconSearch />}
           onFocus={openMenu}
-          placeholder="Search with name or email"
+          placeholder={canInviteByEmail ? "Search or enter email" : "Search with name or email"}
           value={inputValue}
           onChangeText={setInputValue}
         />
