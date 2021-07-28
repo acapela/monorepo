@@ -939,9 +939,8 @@
       permission:
         filter:
           team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
+            owner_id:
+              _eq: X-Hasura-User-Id
   event_triggers:
     - name: team_member_updates
       definition:
