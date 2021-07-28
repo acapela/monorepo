@@ -7,7 +7,7 @@ import { assert } from "~shared/assert";
 
 async function sendMentionEmailNotification(notification: Notification, data: NotificationData<"topicMention">) {
   const {
-    data: { mentionedByUserId, topicId },
+    payload: { mentionedByUserId, topicId },
   } = data;
 
   const [topic, mentionedUser, mentioningUser] = await Promise.all([
