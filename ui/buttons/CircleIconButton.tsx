@@ -49,6 +49,7 @@ export const CircleIconButton = styled(function CircleIconButton({
       size={size}
       kind={kind}
       isDisabled={isDisabled}
+      disabled={isDisabled}
       iconSizeRatio={iconSizeRatio}
     >
       {icon}

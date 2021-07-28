@@ -72,6 +72,7 @@ export const Button = styled(
         as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
+        disabled={isDisabledBoolean}
         isWide={isWide}
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}
