@@ -18,6 +18,7 @@ export interface Font {
   body14: Font;
   body12: Font;
 
+  normal: Font;
   medium: Font;
   semibold: Font;
 
@@ -163,6 +164,15 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
         ...parentStyles,
         css`
           line-height: ${lineHeight};
+        `,
+      ]);
+    },
+
+    get normal() {
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          font-weight: normal;
         `,
       ]);
     },
