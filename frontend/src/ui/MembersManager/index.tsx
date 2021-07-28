@@ -6,7 +6,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { handleWithStopPropagation } from "~shared/events";
 import { IconPlus } from "~ui/icons";
-import { ManageMembersModal } from "./ManageMembersModal";
+import { MembersManagerModal } from "./MembersManagerModal";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 
@@ -36,7 +36,7 @@ export const MembersManager = styled(function MembersManager({
     <>
       <AnimatePresence>
         {isPickingUser && (
-          <ManageMembersModal
+          <MembersManagerModal
             title={title}
             currentUsers={users}
             onCloseRequest={closeUserPicker}

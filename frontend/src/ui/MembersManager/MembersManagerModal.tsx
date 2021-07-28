@@ -28,7 +28,7 @@ interface Props {
   onRemoveInvitation?: (invitationId: string) => void;
 }
 
-export function ManageMembersModal({
+export function MembersManagerModal({
   currentUsers,
   onCloseRequest,
   onAddUser,
