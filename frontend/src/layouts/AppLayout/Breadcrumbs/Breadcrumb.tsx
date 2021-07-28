@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { BASE_GREY_3, BASE_GREY_1 } from "~ui/colors";
+import { BASE_GREY_3, BASE_GREY_1 } from "~ui/theme/colors/base";
 import { fontSize } from "~ui/baseStyles";
 import { hoverTransition } from "~ui/transitions";
 import Link from "next/link";

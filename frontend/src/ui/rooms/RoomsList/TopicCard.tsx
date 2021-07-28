@@ -3,7 +3,7 @@ import { routes } from "~frontend/routes";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
 import { TextH6 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { NOTIFICATION_COLOR } from "~ui/colors";
+import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import React from "react";
 import { useTopic } from "~frontend/topics/useTopic";

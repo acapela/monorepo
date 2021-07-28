@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import styled from "styled-components";
 import { TextH3 } from "~ui/typo";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { WHITE } from "~ui/colors";
+import { WHITE } from "~ui/theme/colors/base";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 

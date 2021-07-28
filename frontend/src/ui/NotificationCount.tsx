@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { formatNumberWithMaxValue } from "~shared/numbers";
 import { borderRadius, fontSize } from "~ui/baseStyles";
-import { NOTIFICATION_COLOR, STRONG_LINE_COLOR } from "~ui/colors";
+import { NOTIFICATION_COLOR, STRONG_LINE_COLOR } from "~ui/theme/colors/base";
 
 interface Props {
   className?: string;

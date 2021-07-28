@@ -2,7 +2,7 @@ import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { WARNING_COLOR } from "~ui/colors";
+import { WARNING_COLOR } from "~ui/theme/colors/base";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { TextH2 } from "~ui/typo";
 

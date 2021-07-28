@@ -1,8 +1,8 @@
-import { css } from "styled-components";
+import { css, FlattenSimpleInterpolation } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
-import { BLACK } from "./colors";
+import { BLACK } from "./theme/colors/base";
 
-function createShadowCss(size: number, opacity = 0.2) {
+function createShadowCss(size: number, opacity = 0.2): FlattenSimpleInterpolation {
   const shadowColor = setColorOpacity(BLACK, opacity);
 
   return css`
@@ -31,7 +31,7 @@ export const shadow = {
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
-};
+} as const;
 
 export const borderRadius = {
   menu: css`
@@ -61,7 +61,7 @@ export const borderRadius = {
   tag: css`
     border-radius: 8px;
   `,
-};
+} as const;
 
 export const fontSize = {
   copy: "1rem",

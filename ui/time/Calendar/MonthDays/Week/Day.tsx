@@ -1,7 +1,7 @@
 import { format, isSameDay, isSameMonth } from "date-fns";
 import React from "react";
 import styled, { css } from "styled-components";
-import { ACTIVE_COLOR } from "~ui/colors";
+import { ACTIVE_COLOR } from "~ui/theme/colors/base";
 import { getButtonColorStyles } from "~ui/transitions";
 import { Button } from "~ui/buttons/Button";
 

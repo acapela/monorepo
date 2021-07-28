@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { BASE_GREY_1, BASE_GREY_4, PRIMARY_PINK_1, WHITE, BASE_GREY_6, BASE_GREY_7 } from "~ui/colors";
+import { BASE_GREY_1, BASE_GREY_4, PRIMARY_PINK_1, WHITE, BASE_GREY_6, BASE_GREY_7 } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 import { smallSizeButtonStyle } from "./Button";
 

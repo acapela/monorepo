@@ -1,7 +1,7 @@
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { motion } from "framer-motion";
 import { typedKeys } from "~shared/object";
-import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/colors";
+import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/theme/colors/base";
 
 /**
  * TODO: Those are not used yet. Goal is to replace current `ui/colors` with those.

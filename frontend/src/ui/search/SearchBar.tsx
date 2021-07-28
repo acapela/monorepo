@@ -6,7 +6,7 @@ import { useFullTextSearchQuery } from "~frontend/gql/search";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { SearchResults } from "./SearchResults";
 import { forwardRef } from "react";
-import { WHITE } from "~ui/colors";
+import { WHITE } from "~ui/theme/colors/base";
 
 interface Props {
   className?: string;
