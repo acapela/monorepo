@@ -116,6 +116,7 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
       new Editor({
         extensions: finalExtensions,
         content: value,
+        enableInputRules: true,
       })
   );
   const forceUpdate = useUpdate();
