@@ -23,9 +23,16 @@ export function NotificationsCenterPopover() {
 
 const UIHolder = styled(UIDropdownPanelBody)`
   min-width: 540px;
-  padding: 32px;
+  padding: 32px 0 0;
+
+  ${TextH3} {
+    padding: 0 32px;
+  }
 `;
 
 const UINotifications = styled.div`
   margin-top: 16px;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 32px;
 `;
