@@ -2,7 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 import { useId } from "~shared/id";
 import { getColorHoverVariant } from "~ui/transitions";
-import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../colors";
+import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../theme/colors/base";
 
 /**
  * How big part of full width will toggle occupy to indicate change on long press.

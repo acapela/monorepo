@@ -15,7 +15,7 @@ import {
   WHITE,
   PRIMARY_PINK_1,
   BASE_GREY_5,
-} from "~ui/colors";
+} from "~ui/theme/colors/base";
 import { TextBody } from "~ui/typo";
 import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
 
@@ -72,6 +72,7 @@ export const Button = styled(
         as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
+        disabled={isDisabledBoolean}
         isWide={isWide}
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}

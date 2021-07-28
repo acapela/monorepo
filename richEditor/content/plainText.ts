@@ -1,4 +1,4 @@
-import { RichEditorContent } from "./types";
+import { RichEditorNode } from "./types";
 
 /**
  * Types of nodes that should indicate new lines in plain text.
@@ -9,7 +9,7 @@ function normalizePlainTextOutput(plainText: string) {
   return plainText.replace(/\n{2,}/, `\n`).trim();
 }
 
-export function convertMessageContentToPlainText(content: RichEditorContent, isRoot = true) {
+export function convertMessageContentToPlainText(content: RichEditorNode, isRoot = true) {
   let plainText = "";
 
   if (newLineNodeTypes.includes(content.type)) {

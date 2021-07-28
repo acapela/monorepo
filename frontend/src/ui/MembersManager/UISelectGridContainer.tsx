@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BASE_GREY_5 } from "~ui/colors";
+import { BASE_GREY_5 } from "~ui/theme/colors/base";
 
 export const UISelectGridContainer = styled.div`
   display: flex;

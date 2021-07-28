@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { WHITE, BACKGROUND_ACCENT_WEAK } from "~ui/colors";
+import { WHITE, BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
 import { getColorHoverVariant, hoverTransition } from "~ui/transitions";
 
 export const CardBase = styled.div<{ isClickable?: boolean }>`

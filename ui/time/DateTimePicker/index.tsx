@@ -5,7 +5,7 @@ import { Calendar } from "~ui/time/Calendar";
 import { TimePicker } from "./TimePicker";
 import { Button } from "~ui/buttons/Button";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {

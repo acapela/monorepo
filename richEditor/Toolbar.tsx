@@ -1,7 +1,7 @@
 import { ChainedCommands } from "@tiptap/react";
 import { Children, forwardRef } from "react";
 import styled from "styled-components";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import {
   IconAt,
   IconBrackets,

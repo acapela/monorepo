@@ -9,7 +9,7 @@ import { createTimeout, wait } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { RichEditorContent } from "./content/types";
+import { RichEditorNode } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
 import { richEditorExtensions } from "./preset";
@@ -29,8 +29,8 @@ export function getEmptyRichContent(): JSONContent {
 }
 
 export interface RichEditorProps {
-  value: RichEditorContent;
-  onChange?: (value: RichEditorContent) => void;
+  value: RichEditorNode;
+  onChange?: (value: RichEditorNode) => void;
   onFilesSelected?: (files: File[]) => void;
   onSubmit?: () => void;
   additionalTopContent?: ReactNode;

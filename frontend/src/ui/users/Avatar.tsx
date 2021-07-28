@@ -4,7 +4,7 @@ import { Maybe } from "~gql";
 import { getInitials } from "~frontend/utils";
 import { borderRadius } from "~ui/baseStyles";
 import { NamedSize, getNamedSizeValue } from "~ui/namedSize";
-import { PRIMARY_PINK_1, WHITE } from "~ui/colors";
+import { PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";
 
 interface Props {
   name?: Maybe<string>;

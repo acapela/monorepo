@@ -6,7 +6,7 @@ import { BodyPortal } from "~ui/BodyPortal";
 import { PresenceAnimator, PresenceStyles } from "~ui/PresenceAnimator";
 import { startMeasuringFps, EndFpsMeasurement } from "~shared/performance";
 import { setColorOpacity } from "~shared/colors";
-import { MODAL_BACKGROUND_COLOR } from "~ui/colors";
+import { MODAL_BACKGROUND_COLOR } from "~ui/theme/colors/base";
 
 interface Props {
   children: ReactNode;

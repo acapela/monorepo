@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 import { fontSize } from "~ui/baseStyles";
-import { ACTIVE_COLOR } from "~ui/colors";
+import { ACTIVE_COLOR } from "~ui/theme/colors/base";
 
 export const richEditorContentCss = css`
   .ProseMirror {

@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 import { changeColorLightness, isColorDark } from "~shared/colors";
-import { BUTTON_ACCENT_COLOR, WHITE } from "./colors";
+import { BUTTON_ACCENT_COLOR, WHITE } from "./theme/colors/base";
 
 export function hoverTransition(propName = "all") {
   return css`
@@ -13,15 +13,12 @@ export function hoverTransition(propName = "all") {
   `;
 }
 
+// TODO: Remove most of this code once we've moved to use theme colors
+
 export const ACTION_ACTIVE_COLOR = "rgb(136 136 136 / 10%)";
 
 export const hoverActionActiveCss = css`
   background-color: ${ACTION_ACTIVE_COLOR};
-`;
-
-export const hoverActionNegativeSpacingCss = css`
-  padding: 0.75rem;
-  margin: -0.75rem;
 `;
 
 export const hoverActionCss = css`

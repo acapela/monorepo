@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT_WEAK } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
 import { IconSelection } from "~ui/icons";
 import { TextH3, TextBody } from "~ui/typo";
 

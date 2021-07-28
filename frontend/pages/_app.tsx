@@ -18,7 +18,9 @@ import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
+import { ThemeProvider } from "styled-components";
 import * as Sentry from "@sentry/nextjs";
+import { getTheme } from "~ui/theme";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
@@ -68,14 +70,16 @@ export default function App({
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <PromiseUIRenderer />
-            <TooltipsRenderer />
-            <ToastsRenderer />
-            <AnimatePresence>
-              <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                {renderWithPageLayout(Component, pageProps)}
-              </PresenceAnimator>
-            </AnimatePresence>
+            <ThemeProvider theme={getTheme("default")}>
+              <PromiseUIRenderer />
+              <TooltipsRenderer />
+              <ToastsRenderer />
+              <AnimatePresence>
+                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                  {renderWithPageLayout(Component, pageProps)}
+                </PresenceAnimator>
+              </AnimatePresence>
+            </ThemeProvider>
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
