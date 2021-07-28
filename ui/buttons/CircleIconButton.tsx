@@ -22,7 +22,14 @@ export interface Props {
   className?: string;
   tooltip?: string;
   isDisabled?: boolean;
+  iconSizeRatio?: number;
 }
+
+/**
+ * By default icon occupy 0.75 of circle size. It might 'look' good for various icons or use cases to modify this ratio.
+ * eg. 0.5 means if circle has 32px size, icon will have 16px size.
+ */
+const DEFAULT_ICON_SIZE_RATIO = 0.75;
 
 export const CircleIconButton = styled(function CircleIconButton({
   icon,
@@ -32,6 +39,7 @@ export const CircleIconButton = styled(function CircleIconButton({
   className,
   tooltip,
   isDisabled = false,
+  iconSizeRatio = DEFAULT_ICON_SIZE_RATIO,
 }: Props) {
   return (
     <UIButton
@@ -41,6 +49,7 @@ export const CircleIconButton = styled(function CircleIconButton({
       size={size}
       kind={kind}
       isDisabled={isDisabled}
+      iconSizeRatio={iconSizeRatio}
     >
       {icon}
     </UIButton>
@@ -103,7 +112,12 @@ const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterp
   `,
 };
 
-export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDisabled: boolean }>`
+export const UIButton = styled.button<{
+  size: ButtonSize;
+  kind: ButtonKind;
+  isDisabled: boolean;
+  iconSizeRatio: number;
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,7 +133,7 @@ export const UIButton = styled.button<{ size: ButtonSize; kind: ButtonKind; isDi
   height: 1em;
 
   svg {
-    font-size: 0.75em;
+    font-size: ${(props) => props.iconSizeRatio}em;
   }
 
   ${({ kind }) => buttonKindSpecificStyle[kind]}

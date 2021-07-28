@@ -141,6 +141,14 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
+export function useCurrentTeamMember(userId: string): UserBasicInfoFragmentType | null {
+  const [teamDetails] = useCurrentTeamDetails();
+
+  const teamMember = teamDetails?.memberships.find((membership) => membership.user.id === userId)?.user;
+
+  return teamMember ?? null;
+}
+
 export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables

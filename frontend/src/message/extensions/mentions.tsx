@@ -2,21 +2,18 @@ import { UserBasicInfoFragment } from "~gql";
 import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { createAutocompletePlugin } from "~richEditor/autocomplete/mention";
+import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { SelectList } from "~ui/SelectList";
 import { useSearch } from "~shared/search";
 import styled from "styled-components";
+import { EditorMentionData } from "~shared/types/editor";
 
 /**
  * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions
  * to create notifications.
  */
-export interface MentionData {
-  userId: string;
-  originalName: string;
-}
 
-function Picker({ keyword, onSelect }: AutocompletePickerProps<MentionData>) {
+function Picker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
   const teamMembers = useCurrentTeamMembers();
 
   const getMatchingUsers = useSearch(teamMembers, (user) => [user.email, user.name]);
@@ -42,7 +39,7 @@ function Picker({ keyword, onSelect }: AutocompletePickerProps<MentionData>) {
   );
 }
 
-export const userMentionExtension = createAutocompletePlugin<MentionData>({
+export const userMentionExtension = createAutocompletePlugin<EditorMentionData>({
   type: "mention",
   triggerChar: "@",
   nodeComponent(props) {

@@ -1,4 +1,4 @@
-import { RichEditorContent } from "./types";
+import { RichEditorNode } from "./types";
 import { JSONContent } from "@tiptap/react";
 
 function hasContentNodeAnyTextContent(node: JSONContent): boolean {
@@ -9,6 +9,6 @@ function hasContentNodeAnyTextContent(node: JSONContent): boolean {
   return node.content.some(hasContentNodeAnyTextContent);
 }
 
-export function isRichEditorContentEmpty(content: RichEditorContent): boolean {
+export function isRichEditorContentEmpty(content: RichEditorNode): boolean {
   return !hasContentNodeAnyTextContent(content);
 }
