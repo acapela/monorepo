@@ -6,6 +6,9 @@ import { relativeFormatDate } from "~shared/dates/format";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { groupByDate } from "~shared/dates/groupByDate";
 import { NotificationLabel } from "./NotificationLabel";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { IconNotificationIndicator } from "~ui/icons";
 
 interface Props {
   notifications: NotificationInfoFragment[];
@@ -18,6 +21,9 @@ export function NotificationsTimeline({ notifications }: Props) {
 
   return (
     <UIHolder>
+      {notificationsByDay.length === 0 && (
+        <EmptyStatePlaceholder description="No notifications yet" icon={<IconNotificationIndicator />} />
+      )}
       {notificationsByDay.map((dayNotificationsGroup) => {
         return (
           <UINotificationsDayGroup key={dayNotificationsGroup.date.getTime()}>
@@ -25,7 +31,11 @@ export function NotificationsTimeline({ notifications }: Props) {
             <UINotificationsList>
               {sortBy(dayNotificationsGroup.items, (notification) => -new Date(notification.created_at).getTime()).map(
                 (notification) => {
-                  return <NotificationLabel key={notification.id} notification={notification} />;
+                  return (
+                    <ErrorBoundary errorFallback={null}>
+                      <NotificationLabel key={notification.id} notification={notification} />
+                    </ErrorBoundary>
+                  );
                 }
               )}
             </UINotificationsList>
