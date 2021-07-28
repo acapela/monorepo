@@ -1,18 +1,18 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { AttachmentDetailedInfoFragment } from "~gql";
-import { useDownloadUrlQuery } from "~frontend/gql/attachments";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { zIndex } from "~ui/zIndex";
-import { MessageAttachmentDisplayer, ATTACHMENT_PREVIEW_HEIGHT_PX } from "./MessageAttachmentDisplayer";
-import { MessageAttachmentActions } from "./MessageAttachmentActions";
-import { borderRadius } from "~ui/baseStyles";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useShortcuts } from "~ui/keyboard/useShortcut";
+import { useDownloadUrlQuery } from "~frontend/gql/attachments";
+import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { AttachmentDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { IconCross } from "~ui/icons";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconCross } from "~ui/icons";
+import { useShortcuts } from "~ui/keyboard/useShortcut";
+import { theme } from "~ui/theme";
+import { MessageAttachmentActions } from "./MessageAttachmentActions";
+import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface AttachmentProps {
   attachment: AttachmentDetailedInfoFragment;
@@ -81,31 +81,17 @@ export const MessageAttachment = styled(
         </UIInlineAttachmentHolder>
 
         {isFullscreenOpened && (
-          <UIFullscreenHolder onClick={closeFullscreen}>
+          <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
             <CornerButtonWrapper>
               <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
             </CornerButtonWrapper>
             {renderAttachment()}
-          </UIFullscreenHolder>
+          </ScreenCover>
         )}
       </AnimateSharedLayout>
     );
   }
 )``;
-
-const UIFullscreenHolder = styled.div`
-  position: fixed;
-  z-index: ${zIndex.FullScreenPreview};
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #0004;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-`;
 
 const UILoadingPlaceholder = styled.div`
   height: 100%;
@@ -114,7 +100,7 @@ const UILoadingPlaceholder = styled.div`
 const UIInlineAttachmentHolder = styled.div`
   display: flex;
   position: relative;
-  ${borderRadius.item}
+  ${theme.borderRadius.item}
   overflow: hidden;
 
   /* Set explicit max height so it works properly in Safari. */
