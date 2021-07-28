@@ -8961,16 +8961,16 @@ export type RemoveMessageReactionMutation = (
   )> }
 );
 
-export type RoomInvitationsQueryVariables = Exact<{
-  roomId: Scalars['uuid'];
+export type RemoveRoomInvitationMutationVariables = Exact<{
+  id: Scalars['uuid'];
 }>;
 
 
-export type RoomInvitationsQuery = (
-  { __typename?: 'query_root' }
-  & { invitations: Array<(
+export type RemoveRoomInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_room_invitation_by_pk?: Maybe<(
     { __typename?: 'room_invitation' }
-    & RoomInvitationBasicInfoFragment
+    & Pick<Room_Invitation, 'room_id'>
   )> }
 );
 
@@ -8997,6 +8997,9 @@ export type RoomDetailedInfoFragment = (
   & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
+  )>, invitations: Array<(
+    { __typename?: 'room_invitation' }
+    & RoomInvitationBasicInfoFragment
   )> }
   & RoomBasicInfoFragment
 );

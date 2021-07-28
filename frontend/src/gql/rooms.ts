@@ -36,6 +36,7 @@ import { getUUID } from "~shared/uuid";
 import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { slugify } from "~shared/slugify";
+import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -75,12 +76,17 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
     ${TopicDetailedInfoFragment()}
     ${UserBasicInfoFragment()}
     ${RoomBasicInfoFragment()}
+    ${RoomInvitationBasicInfoFragment()}
 
     fragment RoomDetailedInfo on room {
       ...RoomBasicInfo
 
       topics(order_by: { index: asc }) {
         ...TopicDetailedInfo
+      }
+
+      invitations {
+        ...RoomInvitationBasicInfo
       }
     }
   `

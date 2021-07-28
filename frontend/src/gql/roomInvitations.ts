@@ -3,13 +3,14 @@ import {
   CreateRoomInvitationMutation,
   CreateRoomInvitationMutationVariables,
   RoomInvitationBasicInfoFragment as RoomInvitationBasicInfoFragmentType,
-  RoomInvitationsQuery,
-  RoomInvitationsQueryVariables,
+  RemoveRoomInvitationMutation,
+  RemoveRoomInvitationMutationVariables,
 } from "~gql";
-import { createMutation, createFragment, createQuery } from "./utils";
+import { createMutation, createFragment } from "./utils";
 import { addToast } from "~ui/toasts/data";
+import { RoomDetailedInfoFragment } from "./rooms";
 
-const RoomInvitationBasicInfoFragment = createFragment<RoomInvitationBasicInfoFragmentType>(
+export const RoomInvitationBasicInfoFragment = createFragment<RoomInvitationBasicInfoFragmentType>(
   () => gql`
     fragment RoomInvitationBasicInfo on room_invitation {
       email
@@ -39,14 +40,34 @@ export const [useCreateRoomInvitationMutation, { mutate: createRoomInvitation }]
   }
 );
 
-export const [useRoomInvitationsQuery] = createQuery<RoomInvitationsQuery, RoomInvitationsQueryVariables>(
+export const [useRemoveRoomInvitation, { mutate: removeRoomInvitation }] = createMutation<
+  RemoveRoomInvitationMutation,
+  RemoveRoomInvitationMutationVariables
+>(
   () => gql`
-    ${RoomInvitationBasicInfoFragment()}
-
-    query RoomInvitations($roomId: uuid!) {
-      invitations: room_invitation(where: { room_id: { _eq: $roomId } }, order_by: [{ created_at: desc }]) {
-        ...RoomInvitationBasicInfo
+    mutation RemoveRoomInvitation($id: uuid!) {
+      delete_room_invitation_by_pk(id: $id) {
+        room_id
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        delete_message_reaction_by_pk: {
+          __typename: "room_invitation",
+          id: variables.id,
+        },
+      };
+    },
+    onOptimisticOrActualResponse(roomInvitation, variables) {
+      RoomDetailedInfoFragment.update(roomInvitation.room_id, (room) => {
+        room.invitations = room.invitations.filter(({ id }) => id !== variables.id);
+      });
+    },
+    onActualResponse() {
+      addToast({ type: "info", content: `Room invitation was removed` });
+    },
+  }
 );
