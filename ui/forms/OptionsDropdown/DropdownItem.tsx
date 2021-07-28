@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
 import { handleWithStopPropagation } from "~shared/events";
 import { borderRadius } from "~ui/baseStyles";
-import { PRIMARY_PINK_1 } from "~ui/colors";
+import { PRIMARY_PINK_1 } from "~ui/theme/colors/base";
 import { IconCheck } from "~ui/icons";
 import { OptionLabel } from "./OptionLabel";
 

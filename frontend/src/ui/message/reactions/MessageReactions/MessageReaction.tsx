@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 import { fontSize } from "~ui/baseStyles";

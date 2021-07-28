@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components";
-import { BACKGROUND_ACCENT_WEAK } from "~ui/colors";
+import { BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
 import { getButtonColorStyles } from "~ui/transitions";
 import { borderRadius } from "~ui/baseStyles";
 

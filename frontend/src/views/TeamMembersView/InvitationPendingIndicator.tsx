@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PRIMARY_PURPLE_1, WHITE } from "~ui/colors";
+import { PRIMARY_PURPLE_1, WHITE } from "~ui/theme/colors/base";
 import { IconUserPlus } from "~ui/icons";
 import { borderRadius } from "~ui/baseStyles";
 import { UserBasicInfoContainer } from "~frontend/ui/users/UserBasicInfoContainer";

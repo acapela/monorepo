@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { borderRadius, fontSize } from "~ui/baseStyles";
-import { PRIMARY_COLOR } from "~ui/colors";
+import { PRIMARY_COLOR } from "~ui/theme/colors/base";
 import { NamedSize, getNamedSizeSquareStyles } from "~ui/namedSize";
 import { getTextColorForBackgroundColor } from "~ui/transitions";
 

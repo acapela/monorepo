@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/colors";
+import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/theme/colors/base";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { ToastData, ToastType } from "./data";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";

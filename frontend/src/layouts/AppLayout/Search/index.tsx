@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import { hoverTransition } from "~ui/transitions";
 import { TextBody12, TextBody14 } from "~ui/typo";
-import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/colors";
+import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/theme/colors/base";
 import { IconSearch } from "~ui/icons";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";

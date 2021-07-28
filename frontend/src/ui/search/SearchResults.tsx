@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
-import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/colors";
+import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/theme/colors/base";
 import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";

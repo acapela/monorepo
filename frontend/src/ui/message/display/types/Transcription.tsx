@@ -1,6 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { HIGHLIGHT_COLOR } from "~ui/colors";
+import { HIGHLIGHT_COLOR } from "~ui/theme/colors/base";
 import { Transcription } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 

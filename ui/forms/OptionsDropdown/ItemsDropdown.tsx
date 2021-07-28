@@ -3,7 +3,7 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { borderRadius, shadow } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/colors";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import { PopPresenceAnimator } from "~ui/animations";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { DropdownItem } from "./DropdownItem";

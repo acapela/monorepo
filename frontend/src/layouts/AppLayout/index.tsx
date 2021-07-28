@@ -11,8 +11,8 @@ import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
-import { BASE_GREY_7, WHITE } from "~ui/colors";
 import { NotificationsOpener } from "./NotificationsOpener";
+import { BASE_GREY_7, WHITE } from "~ui/theme/colors/base";
 
 interface Props {
   children?: ReactNode;

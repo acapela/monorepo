@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { injectProps } from "~shared/components/injectProps";
-import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/colors";
+import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
 import { TextBody14, TextH2, TextH3 } from "./typography";
 
 /**
