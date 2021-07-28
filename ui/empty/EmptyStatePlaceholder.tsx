@@ -1,9 +1,7 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
 import { IconSelection } from "~ui/icons";
-import { TextH3, TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
 
 interface Props {
   title?: ReactNode;
@@ -15,8 +13,8 @@ export function EmptyStatePlaceholder({ title, description, icon = <IconSelectio
   return (
     <UIHolder>
       {icon && <UIIcon>{icon}</UIIcon>}
-      {title && <TextH3>{title}</TextH3>}
-      {description && <TextBody spezia>{description}</TextBody>}
+      {title && <UITitle>{title}</UITitle>}
+      {description && <UIBody>{description}</UIBody>}
     </UIHolder>
   );
 }
@@ -28,17 +26,22 @@ const UIIcon = styled.div`
 `;
 
 const UIHolder = styled.div`
+  padding: 16px;
   display: flex;
   flex-direction: column;
   text-align: center;
   align-items: center;
-  background-color: ${BACKGROUND_ACCENT_WEAK};
-  ${borderRadius.card}
-  padding: 16px;
 
-  & {
-    ${TextH3}, ${TextBody}, ${UIIcon} {
-      opacity: 0.8;
-    }
-  }
+  background-color: ${theme.colors.layout.background};
+  ${theme.borderRadius.card}
+`;
+
+const UITitle = styled.div`
+  ${theme.font.h3.build}
+  opacity: 0.8;
+`;
+
+const UIBody = styled.div`
+  ${theme.font.body.spezia.build}
+  opacity: 0.8;
 `;

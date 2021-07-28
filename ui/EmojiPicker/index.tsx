@@ -78,10 +78,6 @@ const UIOpenIcon = styled(IconEmotionHappy)`
   font-size: 2rem;
   cursor: pointer;
   border-radius: 100px;
-
-  &:hover {
-    background-color: #e8e8e8;
-  }
 `;
 
 const UIPopupHolder = styled(PresenceAnimator)`
