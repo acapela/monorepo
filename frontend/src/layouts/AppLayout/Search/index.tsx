@@ -87,7 +87,7 @@ const UISearchIcon = styled(IconSearch)`
 `;
 
 const UIShortcutIndicator = styled.div`
-  ${theme.font.body12.getStyles}
+  ${theme.font.body12.build}
 `;
 
 const UISearchContainer = styled(PopPresenceAnimator)`

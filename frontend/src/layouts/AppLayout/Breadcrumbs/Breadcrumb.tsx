@@ -1,9 +1,7 @@
+import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { BASE_GREY_3, BASE_GREY_1 } from "~ui/theme/colors/base";
-import { fontSize } from "~ui/baseStyles";
-import { hoverTransition } from "~ui/transitions";
-import Link from "next/link";
+import { theme } from "~ui/theme";
 
 export interface Props {
   href?: string;
@@ -39,15 +37,16 @@ const UIHolder = styled.div<{ isClickable: boolean; isSelected: boolean }>`
   display: flex;
   gap: 8px;
 
-  color: ${(props) => (props.isSelected ? BASE_GREY_1 : BASE_GREY_3)};
-  font-size: ${fontSize.navigation};
-  ${hoverTransition()};
+  color: ${(props) =>
+    props.isSelected ? props.theme.colors.layout.bodyText : props.theme.colors.layout.supportingText};
+
+  ${theme.transitions.hover()}
 
   ${(props) =>
     props.isClickable &&
     css`
       &:hover {
-        color: ${BASE_GREY_1};
+        color: ${theme.colors.layout.bodyText};
       }
     `}
 `;

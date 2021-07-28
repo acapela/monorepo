@@ -9,6 +9,7 @@ export const defaultTheme: ThemeColorScheme = {
     softLine: colors.BASE_GREY_5,
     strongLine: colors.BASE_GREY_4,
     bodyText: colors.BASE_GREY_1,
+    supportingText: colors.BASE_GREY_3,
     headingText: colors.BASE_GREY_1,
   },
   interactive: {
