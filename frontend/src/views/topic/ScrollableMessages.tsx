@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode, useCallback, useRef } from "react";
 import styled from "styled-components";
 import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
-import { getDidUserJustInteract } from "~shared/interaction/isUserInteracting";
+import { assertDefined } from "~shared/assert";
+import { useEventListener } from "~shared/hooks/useEventListener";
 
 interface Props {
   children: ReactNode;
@@ -10,21 +11,18 @@ interface Props {
 
 export const ScrollableMessages = styled(({ children, className }: Props) => {
   const holderRef = useRef<HTMLDivElement>(null);
+  const isScrolledToBottom = useRef(true);
+
+  const handleScroll = useCallback(() => {
+    const parent = assertDefined(holderRef.current, "Event can't have been called on deleted element");
+    isScrolledToBottom.current = parent.scrollTop == parent.scrollHeight - parent.clientHeight;
+  }, []);
+  useEventListener(holderRef.current, "scroll", handleScroll);
 
   return (
     <UIHolder className={className} ref={holderRef}>
       <UIInner>
-        <ScrollToBottomMonitor
-          parentRef={holderRef}
-          getShouldScroll={() => {
-            if (getDidUserJustInteract()) {
-              return false;
-            }
-
-            return true;
-          }}
-        />
-
+        <ScrollToBottomMonitor parentRef={holderRef} getShouldScroll={() => isScrolledToBottom.current} />
         {children}
       </UIInner>
     </UIHolder>
