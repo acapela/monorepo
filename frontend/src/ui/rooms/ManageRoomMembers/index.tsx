@@ -12,7 +12,8 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconPlus } from "~ui/icons";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { removeRoomInvitation } from "~frontend/gql/roomInvitations";
+import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
+import { addToast } from "~ui/toasts/data";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -51,6 +52,20 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
 
+  const handleInviteByEmail = (email: string) => {
+    const reservedEmails = new Set([
+      ...members.map(({ email }) => email),
+      ...room.invitations.map(({ email }) => email),
+    ]);
+
+    if (reservedEmails.has(email)) {
+      addToast({ type: "info", content: `The person with this email already invited` });
+      return;
+    }
+
+    createRoomInvitation({ roomId: room.id, email });
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -63,6 +78,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
             onRemoveUser={handleLeave}
             invitations={room.invitations}
             onRemoveInvitation={(id) => removeRoomInvitation({ id })}
+            onInviteByEmail={handleInviteByEmail}
           />
         )}
       </AnimatePresence>
