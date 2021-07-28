@@ -8,10 +8,74 @@ type EntitiesEventsMapBase = Record<string, unknown>;
 
 type OperationType = "INSERT" | "UPDATE" | "DELETE" | "MANUAL";
 
-type OperationTypeHandler<T> = (item: T, userId: string | null) => void;
+type CommonHasuraEventData = {
+  userId: string | null;
+};
+
+export type CrateHasuraEvent<T> = {
+  type: "create";
+  item: T;
+  itemBefore: null;
+} & CommonHasuraEventData;
+
+export type DeleteHasuraEvent<T> = {
+  type: "delete";
+  item: T;
+  itemBefore: null;
+} & CommonHasuraEventData;
+
+export type UpdateHasuraEvent<T> = {
+  type: "update";
+  item: T;
+  itemBefore: T;
+} & CommonHasuraEventData;
+
+export type HasuraEvent<T> = CrateHasuraEvent<T> | DeleteHasuraEvent<T> | UpdateHasuraEvent<T>;
+
+type OperationTypeHandler<T> = (event: HasuraEvent<T>) => void;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SingleTriggerHandlers = Map<OperationType, OperationTypeHandler<any>[]>;
+
+function getUserIdFromRawHasuraEvent<T>(rawEvent: RawHasuraEvent<T>) {
+  return rawEvent.event.session_variables?.["x-hasura-user-id"] ?? null;
+}
+
+function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEvent<T> | null {
+  const item = rawEvent.event.data.new;
+  const itemBefore = rawEvent.event.data.old ?? null;
+
+  const eventType = rawEvent.event.op;
+
+  if (eventType === "INSERT") {
+    return {
+      type: "create",
+      item: item!,
+      itemBefore: null,
+      userId: getUserIdFromRawHasuraEvent(rawEvent),
+    };
+  }
+
+  if (eventType === "UPDATE") {
+    return {
+      type: "update",
+      item: item!,
+      itemBefore: itemBefore!,
+      userId: getUserIdFromRawHasuraEvent(rawEvent),
+    };
+  }
+
+  if (eventType === "DELETE") {
+    return {
+      type: "delete",
+      item: itemBefore!,
+      itemBefore: null,
+      userId: getUserIdFromRawHasuraEvent(rawEvent),
+    };
+  }
+
+  return null;
+}
 
 export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
   const triggerHandlersMap = new Map<string, SingleTriggerHandlers>();
@@ -38,20 +102,26 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     }
   }
 
-  async function handleHasuraEvent(event: HasuraEvent<unknown>, userId: string | null) {
+  async function handleHasuraEvent<T>(event: RawHasuraEvent<T>, userId: string | null) {
     const triggerName = event.trigger.name;
     const operationType = event.event.op;
 
     const operationTypeHandlers = getTriggerOperationTypeHandlers(triggerName, operationType);
 
+    const normalizedEvent = normalizeHasuraEvent(event);
+
+    if (!normalizedEvent) {
+      logger.warn(`Failed to normalize hasura event`, { event });
+      return;
+    }
+
     for (const handler of operationTypeHandlers) {
-      const data = operationType === "DELETE" ? event.event.data.old : event.event.data.new;
-      await handler(data, userId);
+      await handler(normalizedEvent);
     }
   }
 
   async function requestHandler(req: Request, res: Response) {
-    const hasuraEvent = req.body as HasuraEvent<unknown>;
+    const hasuraEvent = req.body as RawHasuraEvent<unknown>;
     const userId = hasuraEvent.event.session_variables?.["x-hasura-user-id"] ?? null;
 
     logger.info("Handling event", {
@@ -81,7 +151,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
   };
 }
 
-export type HasuraEvent<DataT> = InsertEvent<DataT> | UpdateEvent<DataT> | DeleteEvent<DataT> | ManualEvent<DataT>;
+export type RawHasuraEvent<DataT> = InsertEvent<DataT> | UpdateEvent<DataT> | DeleteEvent<DataT> | ManualEvent<DataT>;
 
 export type InsertEvent<DataT> = BaseHasuraEvent<"INSERT", null, DataT>;
 export type UpdateEvent<DataT> = BaseHasuraEvent<"UPDATE", DataT, DataT>;
