@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
@@ -14,6 +15,8 @@ import { IconPlus } from "~ui/icons";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
 import { addToast } from "~ui/toasts/data";
+import { WarningModal } from "~frontend/utils/warningModal";
+import { Button } from "~ui/buttons/Button";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -52,24 +55,46 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
 
-  const handleInviteByEmail = (email: string) => {
+  const [requestedEmail, setRequestedEmail] = useState<string | null>(null);
+
+  const closeInviteWarning = () => setRequestedEmail(null);
+
+  const handleInviteByEmail = () => {
     const reservedEmails = new Set([
       ...members.map(({ email }) => email),
       ...room.invitations.map(({ email }) => email),
     ]);
 
-    if (reservedEmails.has(email)) {
+    if (reservedEmails.has(requestedEmail)) {
       addToast({ type: "info", content: `The person with this email already invited` });
       return;
     }
 
-    createRoomInvitation({ roomId: room.id, email });
+    if (!requestedEmail) return;
+    createRoomInvitation({ roomId: room.id, email: requestedEmail });
+
+    closeInviteWarning();
   };
 
   return (
     <>
       <AnimatePresence>
-        {isPickingUser && (
+        {requestedEmail && (
+          <WarningModal
+            warning="Just a heads-up..."
+            title="Adding new team member"
+            description="Inviting new team member to a room also adds them to your team. This means they will be able to see any open spaces or rooms within the app. Are you sure you want to add them?"
+            onCloseRequest={closeInviteWarning}
+          >
+            <UIWarningOptions>
+              <Button kind="outlined" onClick={closeInviteWarning}>
+                Will do it later...
+              </Button>
+              <Button onClick={handleInviteByEmail}>Yes, please add</Button>
+            </UIWarningOptions>
+          </WarningModal>
+        )}
+        {isPickingUser && !requestedEmail && (
           <MembersManagerModal
             title={"Invite your team to this room"}
             currentUsers={members}
@@ -78,7 +103,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
             onRemoveUser={handleLeave}
             invitations={room.invitations}
             onRemoveInvitation={(id) => removeRoomInvitation({ id })}
-            onInviteByEmail={handleInviteByEmail}
+            onInviteByEmail={setRequestedEmail}
           />
         )}
       </AnimatePresence>
@@ -129,4 +154,9 @@ const UIActions = styled.div`
   flex: 1;
   display: flex;
   justify-content: flex-end;
+`;
+
+const UIWarningOptions = styled.div`
+  display: flex;
+  gap: 32px;
 `;
