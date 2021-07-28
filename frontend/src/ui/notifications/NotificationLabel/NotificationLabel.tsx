@@ -16,11 +16,11 @@ interface Props {
 
 interface NotificationTypeComponentProps<T extends NotificationType> {
   notification: NotificationInfoFragment;
-  data: NotificationTypesMap[T];
+  payload: NotificationTypesMap[T];
 }
 
 function MentionNotificationLabel({
-  data: { mentionedByUserId, topicId },
+  payload: { mentionedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicMention">) {
   const [topic] = useSingleTopicQuery({ id: topicId });
@@ -49,7 +49,7 @@ function MentionNotificationLabel({
 export function NotificationLabel({ notification }: Props) {
   const notificationData = notification.data as AnyNotificationData;
   if (isNotificationDataOfType(notificationData, "topicMention")) {
-    return <MentionNotificationLabel notification={notification} data={notificationData.payload} />;
+    return <MentionNotificationLabel notification={notification} payload={notificationData.payload} />;
   }
 
   return null;
