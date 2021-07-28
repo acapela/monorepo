@@ -1,17 +1,16 @@
 import styled, { css } from "styled-components";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { WHITE, BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
-import { getColorHoverVariant, hoverTransition } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 export const CardBase = styled.div<{ isClickable?: boolean }>`
   padding: 24px 20px;
-  background: ${WHITE};
-  border: 1px solid ${BACKGROUND_ACCENT_WEAK};
+  background: ${theme.colors.layout.foreground};
+  border: 1px solid ${theme.colors.layout.softLine};
   box-sizing: border-box;
-  ${borderRadius.card}
-  ${shadow.card}
 
-  ${hoverTransition()}
+  ${theme.borderRadius.card}
+  ${theme.shadow.card}
+
+  ${theme.transitions.hover()}
 
   ${(props) => {
     if (!props.isClickable) return;
@@ -19,7 +18,7 @@ export const CardBase = styled.div<{ isClickable?: boolean }>`
     return css`
       cursor: pointer;
       &:hover {
-        background-color: ${getColorHoverVariant(WHITE, 0.2)};
+        background-color: ${theme.colors.interactive.selected};
       }
     `;
   }}
