@@ -1,9 +1,9 @@
 import { HTMLMotionProps, motion } from "framer-motion";
 import { ForwardedRef, forwardRef, ReactNode } from "react";
-import styled, { css, FlattenSimpleInterpolation } from "styled-components";
-import { shadow } from "~ui/baseStyles";
+import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
+import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
 import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
 
 export interface ButtonDisabledInfo {
@@ -74,87 +74,6 @@ export const Button = styled(
 )``;
 
 const UIIconHolder = styled.div``;
-
-export const smallSizeButtonStyle = css`
-  font-size: 12px;
-  padding: 10px 8px;
-  gap: 4px;
-`;
-
-const buttonSizeSpecificStyle: Partial<Record<ButtonSize, FlattenSimpleInterpolation>> = {
-  small: smallSizeButtonStyle,
-  medium: css`
-    font-size: 14px;
-    padding: 12px;
-    gap: 8px;
-
-    ${UIIconHolder} {
-      /* specific font size to match the design */
-      font-size: 1.14;
-    }
-  `,
-  large: css`
-    font-size: 16px;
-    padding: 18px 16px;
-    gap: 8px;
-
-    ${UIIconHolder} {
-      /* specific font size to match the design */
-      font-size: 1.25;
-    }
-  `,
-};
-
-export const activeTransparentButtonStyles = css`
-  color: ${theme.colors.layout.bodyText};
-  background: ${theme.colors.interactive.selected};
-
-  svg {
-    color: ${theme.colors.interactive.active};
-  }
-`;
-
-const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
-  primary: css`
-    ${theme.colors.actions.primary.all()}
-    ${shadow.button}
-  `,
-  secondary: css`
-    border-style: solid;
-    border-width: 1.5px;
-
-    ${theme.colors.actions.secondary.all()}
-    ${shadow.button}
-  `,
-  tertiary: css`
-    ${theme.colors.actions.tertiary.all()}
-    ${shadow.button}
-  `,
-
-  // TODO: Remove most transparent buttons and create a new component for remaining non-button components
-  transparent: css`
-    ${theme.font.inter.normal.build}
-
-    background: transparent;
-    color: ${theme.colors.layout.supportingText};
-
-    svg {
-      color: ${theme.colors.layout.supportingText};
-    }
-
-    &:hover {
-      color: ${theme.colors.layout.bodyText};
-      background: ${theme.colors.interactive.selected};
-      svg {
-        color: ${theme.colors.layout.bodyText};
-      }
-    }
-
-    &:active {
-      ${activeTransparentButtonStyles};
-    }
-  `,
-};
 
 export const UIButton = styled(motion.button)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
   display: inline-flex;
