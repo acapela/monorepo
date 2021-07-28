@@ -1,17 +1,15 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { hoverTransition } from "~ui/transitions";
-import { TextBody12, TextBody14 } from "~ui/typo";
-import { BASE_GREY_1, BASE_GREY_2, BASE_GREY_7, BASE_GREY_4 } from "~ui/theme/colors/base";
-import { IconSearch } from "~ui/icons";
-import { SearchBar } from "~frontend/ui/search/SearchBar";
+import { theme } from "~ui/theme";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { useShortcut } from "~ui/keyboard/useShortcut";
+import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
-import { Popover } from "~ui/popovers/Popover";
 import { PopPresenceAnimator } from "~ui/animations";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { IconSearch } from "~ui/icons";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { Popover } from "~ui/popovers/Popover";
+import { TextBody14 } from "~ui/typo";
 
 export const TopBarSearchBar = (): JSX.Element => {
   // All of apple computers use "Mac".
@@ -69,17 +67,11 @@ const UIHolder = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  color: ${BASE_GREY_4};
-  background: ${BASE_GREY_7};
+  ${theme.colors.actions.tertiary.all()}
 
-  border-radius: 64px;
+  ${theme.borderRadius.circle}
 
-  &:hover {
-    background: ${BASE_GREY_4};
-    color: ${BASE_GREY_2};
-  }
-
-  ${hoverTransition()}
+  ${theme.transitions.hover()}
 `;
 
 const UIPlaceholder = styled.div`
@@ -92,15 +84,14 @@ const UIPlaceholder = styled.div`
 const UISearchIcon = styled(IconSearch)`
   font-size: 1rem;
   line-height: 1.25rem;
-  color: ${BASE_GREY_1};
 `;
 
-const UIShortcutIndicator = styled(TextBody12)`
-  color: ${BASE_GREY_1};
+const UIShortcutIndicator = styled.div`
+  ${theme.font.body12.getStyles}
 `;
 
 const UISearchContainer = styled(PopPresenceAnimator)`
   width: 600px;
-  ${borderRadius.input}
-  ${shadow.card}
+  ${theme.borderRadius.input}
+  ${theme.shadow.card}
 `;
