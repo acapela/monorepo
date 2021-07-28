@@ -1,7 +1,7 @@
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 import { motion } from "framer-motion";
 import { typedKeys } from "~shared/object";
-import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/theme/colors/base";
+import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1, WARNING_COLOR } from "~ui/theme/colors/base";
 
 /**
  * TODO: Those are not used yet. Goal is to replace current `ui/colors` with those.
@@ -142,7 +142,7 @@ const typographyCommonStyles = css`
   letter-spacing: -0.02%;
 `;
 
-type KindType = "regular" | "secondary" | "primary";
+type KindType = "regular" | "secondary" | "primary" | "warning";
 
 const kindStyles: Record<KindType, FlattenSimpleInterpolation> = {
   regular: css`
@@ -154,12 +154,16 @@ const kindStyles: Record<KindType, FlattenSimpleInterpolation> = {
   primary: css`
     color: ${PRIMARY_PINK_1};
   `,
+  warning: css`
+    color: ${WARNING_COLOR};
+  `,
 };
 
 type KindProp = VariantProp<KindType>;
 
 function getKindStyle(props: KindProp) {
-  const activeKindVariant = getActiveVariant<KindType>(props, ["regular", "secondary", "primary"]) ?? "regular";
+  const activeKindVariant =
+    getActiveVariant<KindType>(props, ["regular", "secondary", "primary", "warning"]) ?? "regular";
 
   return kindStyles[activeKindVariant];
 }
