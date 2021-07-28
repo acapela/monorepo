@@ -22,6 +22,7 @@ export interface Font {
   semibold: Font;
 
   withExceptionalSize: (fontSize: string, obligatoryComment: string) => Font;
+  withExceptionalLineHeight: (lineHeight: string, obligatoryComment: string) => Font;
 
   build: () => FlattenSimpleInterpolation;
 }
@@ -156,6 +157,16 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       ]);
     },
 
+    withExceptionalLineHeight(lineHeight: string, obligatoryComment: string) {
+      noop(obligatoryComment);
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          line-height: ${lineHeight};
+        `,
+      ]);
+    },
+
     get medium() {
       return createFontStyles([
         ...parentStyles,
@@ -180,6 +191,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
   };
 
   markAsNotTerminal(builder.withExceptionalSize);
+  markAsNotTerminal(builder.withExceptionalLineHeight);
 
   return builder;
 }

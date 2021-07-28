@@ -11,6 +11,7 @@ export const defaultTheme: ThemeColorScheme = {
     bodyText: colors.BASE_GREY_1,
     supportingText: colors.BASE_GREY_3,
     headingText: colors.BASE_GREY_1,
+    link: colors.PRIMARY_PINK_3,
   },
   interactive: {
     notification: colors.PRIMARY_PINK_1,

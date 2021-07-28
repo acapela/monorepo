@@ -24,6 +24,7 @@ export interface ThemeColorScheme {
     bodyText: string;
     supportingText: string;
     headingText: string;
+    link: string;
   };
   interactive: {
     notification: string;
