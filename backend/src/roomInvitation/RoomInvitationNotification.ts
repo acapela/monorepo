@@ -16,10 +16,11 @@ export class RoomInvitationNotification implements Notification {
 
   getContent(): string {
     const link = getInvitationUrl(this.params.inviteCode);
-    return `Hey!<br >
-${this.params.inviterName} has invited you to collaborate on ${this.params.roomName} using acapela, a tool for asynchronous collaboration.
-Follow this link to join the discussion: <a href="${link}">${link}</a>
-`;
+    return [
+      "Hey!",
+      `${this.params.inviterName} has invited you to collaborate on ${this.params.roomName} room on Acapela.`,
+      `Follow this link to sign up and join the discussion: <a href="${link}">${link}</a>`,
+    ].join("<br/>");
   }
 
   getSubject(): string {
