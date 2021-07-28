@@ -15,7 +15,7 @@ export const defaultTheme: ThemeColorScheme = {
   interactive: {
     notification: colors.PRIMARY_PINK_1,
     active: colors.PRIMARY_PINK_1,
-    inactive: colors.BASE_GREY_7,
+    inactive: colors.BASE_GREY_4,
     selected: colors.BASE_GREY_7,
     actions: {
       primary: {
