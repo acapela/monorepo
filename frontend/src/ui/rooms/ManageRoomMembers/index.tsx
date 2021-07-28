@@ -60,20 +60,27 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const closeInviteWarning = () => setRequestedEmail(null);
 
   const handleInviteByEmail = () => {
+    const email = requestedEmail;
+    if (!email) return;
+
+    closeInviteWarning();
+
     const reservedEmails = new Set([
       ...members.map(({ email }) => email),
       ...room.invitations.map(({ email }) => email),
     ]);
 
-    if (reservedEmails.has(requestedEmail)) {
-      addToast({ type: "info", content: `The person with this email already invited` });
+    if (reservedEmails.has(email)) {
+      addToast({ type: "info", content: "The person with this email already invited" });
       return;
     }
 
-    if (!requestedEmail) return;
-    createRoomInvitation({ roomId: room.id, email: requestedEmail });
+    if (!amIMember) {
+      addToast({ type: "error", content: "Join the room to invite a new member" });
+      return;
+    }
 
-    closeInviteWarning();
+    createRoomInvitation({ roomId: room.id, email });
   };
 
   return (
