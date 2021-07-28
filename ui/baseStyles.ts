@@ -14,6 +14,9 @@ export const shadow = {
   small: createShadowCss(1),
   medium: createShadowCss(2),
   large: createShadowCss(4),
+  topBar: css`
+    box-shadow: 0px 1px 0px rgba(43, 42, 53, 0.04);
+  `,
   card: css`
     box-shadow: 0px 3px 0px rgba(43, 42, 53, 0.04);
   `,

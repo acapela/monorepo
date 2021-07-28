@@ -11,7 +11,7 @@ import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
-import { BASE_GREY_7, WHITE } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 interface Props {
   children?: ReactNode;
@@ -96,8 +96,8 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
 
   align-items: center;
   padding: 12px 24px;
-  background: ${WHITE};
-  box-shadow: 0px 1px 0px #ededed;
+  background: ${theme.colors.layout.foreground};
+  box-shadow: ${theme.shadow.topBar};
 `;
 
 const UIBreadcrumbsHolder = styled.div`
@@ -138,5 +138,5 @@ const UIMainContent = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background: ${BASE_GREY_7};
+  background: ${theme.colors.layout.background};
 `;
