@@ -6,6 +6,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { EditorMentionData } from "~shared/types/editor";
 import { createNotificationData } from "~shared/notifications/types";
+import { uniqBy } from "lodash";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {
@@ -40,7 +41,13 @@ function createMessageMentionNotifications(message: Message) {
 
   const createNotificationPromises: Array<Promise<Notification>> = [];
 
-  for (const mentionNode of mentionNodes) {
+  /**
+   * Avoid situation where multiple mentions of same user in the same message would result in multiple notifications
+   * being created.
+   */
+  const userUniqueMentionNodes = uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
+
+  for (const mentionNode of userUniqueMentionNodes) {
     const mentionedUserId = mentionNode.attrs.data.userId;
     const notificationData = createNotificationData("topicMention", {
       topicId: message.topic_id,
