@@ -1,11 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { IconNotionLogo } from "~ui/icons";
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
+import { IconNotionLogo } from "~ui/icons";
+import { theme } from "~ui/theme";
 import { TextBody } from "~ui/typo";
 import { getNotionPreviewText } from "./getNotionPreviewText";
-import { BACKGROUND_ACCENT_WEAK, BACKGROUND_ACCENT } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
 
 export const notionPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => {
@@ -42,15 +41,12 @@ const UICard = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  border-radius: 8px;
-  background: ${BACKGROUND_ACCENT_WEAK};
-  ${hoverTransition()};
 
   svg {
     font-size: 2em;
   }
 
-  :hover {
-    background: ${BACKGROUND_ACCENT};
-  }
+  ${theme.transitions.hover()};
+  ${theme.borderRadius.card};
+  ${theme.colors.actions.tertiary.all()}
 `;
