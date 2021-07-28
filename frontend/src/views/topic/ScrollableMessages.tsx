@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
 import { assertDefined } from "~shared/assert";
 import { useEventListener } from "~shared/hooks/useEventListener";
+import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { select } from "~shared/sharedState";
 
 interface Props {
   children: ReactNode;
@@ -19,10 +21,14 @@ export const ScrollableMessages = styled(({ children, className }: Props) => {
   }, []);
   useEventListener(holderRef.current, "scroll", handleScroll);
 
+  const topicContext = useTopicStoreContext();
+  const isInEditMode = select(() => !!topicContext.editedMessageId);
+
+  const getShouldScroll = useCallback(() => isScrolledToBottom.current && !isInEditMode, [isInEditMode]);
   return (
     <UIHolder className={className} ref={holderRef}>
       <UIInner>
-        <ScrollToBottomMonitor parentRef={holderRef} getShouldScroll={() => isScrolledToBottom.current} />
+        <ScrollToBottomMonitor parentRef={holderRef} getShouldScroll={getShouldScroll} />
         {children}
       </UIInner>
     </UIHolder>

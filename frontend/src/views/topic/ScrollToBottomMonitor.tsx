@@ -27,14 +27,17 @@ function scrollToBottom(element: HTMLElement, behavior: ScrollBehavior = "smooth
 export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
   const monitorRef = useRef<HTMLDivElement>(null);
 
-  const performScrollToBottom = useCallback((behavior: ScrollBehavior) => {
-    const parentNode = parentRef.current;
-    if (!parentNode || !getShouldScroll()) {
-      return;
-    }
+  const performScrollToBottom = useCallback(
+    (behavior: ScrollBehavior) => {
+      const parentNode = parentRef.current;
+      if (!parentNode || !getShouldScroll()) {
+        return;
+      }
 
-    scrollToBottom(parentNode, behavior);
-  }, []);
+      scrollToBottom(parentNode, behavior);
+    },
+    [getShouldScroll]
+  );
 
   useResizeCallback(monitorRef, () => performScrollToBottom("auto"));
   useResizeCallback(parentRef, () => performScrollToBottom("auto"));
