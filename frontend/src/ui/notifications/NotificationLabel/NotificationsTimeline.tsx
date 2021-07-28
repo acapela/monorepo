@@ -1,5 +1,4 @@
 import { startOfDay } from "date-fns";
-import { sortBy } from "lodash";
 import styled from "styled-components";
 import { NotificationInfoFragment } from "~gql";
 import { relativeFormatDate } from "~shared/dates/format";
@@ -9,9 +8,14 @@ import { NotificationLabel } from "./NotificationLabel";
 import { ErrorBoundary } from "~ui/ErrorBoundary";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconNotificationIndicator } from "~ui/icons";
+import { sortByDate } from "~shared/dates/utils";
 
 interface Props {
   notifications: NotificationInfoFragment[];
+}
+
+function sortNotificationsByDate(notifications: NotificationInfoFragment[]) {
+  return sortByDate(notifications, (notification) => new Date(notification.created_at), "newer-first");
 }
 
 export function NotificationsTimeline({ notifications }: Props) {
@@ -29,15 +33,13 @@ export function NotificationsTimeline({ notifications }: Props) {
           <UINotificationsDayGroup key={dayNotificationsGroup.date.getTime()}>
             <CategoryNameLabel>{relativeFormatDate(dayNotificationsGroup.date)}</CategoryNameLabel>
             <UINotificationsList>
-              {sortBy(dayNotificationsGroup.items, (notification) => -new Date(notification.created_at).getTime()).map(
-                (notification) => {
-                  return (
-                    <ErrorBoundary errorFallback={null}>
-                      <NotificationLabel key={notification.id} notification={notification} />
-                    </ErrorBoundary>
-                  );
-                }
-              )}
+              {sortNotificationsByDate(dayNotificationsGroup.items).map((notification) => {
+                return (
+                  <ErrorBoundary errorFallback={null}>
+                    <NotificationLabel key={notification.id} notification={notification} />
+                  </ErrorBoundary>
+                );
+              })}
             </UINotificationsList>
           </UINotificationsDayGroup>
         );
