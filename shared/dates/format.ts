@@ -3,6 +3,17 @@ import { upperFirst } from "lodash";
 
 export function relativeFormatDate(date: Date): string {
   if (isBeforeThisWeek(date)) {
+    return niceFormatDate(date);
+  }
+  // "Today"/"Yesterday" instead of "today"/ "yesterday"
+  const relativeDateWithTime = upperFirst(formatRelative(date, new Date()));
+
+  // TODO: This is very naive method of removing the time. date-fns currently does not support relative date-only format
+  return relativeDateWithTime.replace(/ at .*/, "");
+}
+
+export function relativeFormatDateTime(date: Date): string {
+  if (isBeforeThisWeek(date)) {
     return niceFormatDateTime(date);
   }
   // "Today"/"Yesterday" instead of "today"/ "yesterday"

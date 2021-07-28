@@ -10,7 +10,7 @@ import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { makePromiseVoidable } from "~shared/promises";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { RichEditorContent } from "~richEditor/content/types";
+import { RichEditorNode } from "~richEditor/content/types";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 
 interface Props {
@@ -29,7 +29,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     })
   );
 
-  const [content, setContent] = useState<RichEditorContent>(message.content);
+  const [content, setContent] = useState<RichEditorNode>(message.content);
 
   useShortcut("Escape", onCancelRequest);
 

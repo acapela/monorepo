@@ -10,7 +10,7 @@ import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { Message_Type_Enum } from "~gql";
-import { RichEditorContent } from "~richEditor/content/types";
+import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
@@ -24,13 +24,13 @@ interface Props {
 
 interface SubmitMessageParams {
   type: Message_Type_Enum;
-  content: RichEditorContent;
+  content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
 }
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const [value, setValue] = useState<RichEditorContent>(getEmptyRichContent);
+  const [value, setValue] = useState<RichEditorNode>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
   const editorRef = useRef<Editor>(null);

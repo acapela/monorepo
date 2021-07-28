@@ -5,13 +5,14 @@ import { AuthenticationError } from "~backend/src/errors/errorTypes";
 import { handleTeamInvitationCreated } from "~backend/src/teamInvitation/events";
 import { handleRoomUpdates } from "~backend/src/rooms/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
-import { prepareMessagePlainTextData, handleMentionCreated } from "~backend/src/messages/events";
+import { prepareMessagePlainTextData, handleMessageCreated } from "~backend/src/messages/events";
 import { handleSpaceUpdates } from "~backend/src/spaces/events";
 import { handleTopicCreated } from "~backend/src/topics/events";
 import { handleUserCreated } from "~backend/src/users/events";
 import { handleRoomParticipantCreated } from "~backend/src/roomInvitation/events";
 import { handleAttachmentUpdates } from "~backend/src/attachments/events";
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
+import { handleNotificationCreated } from "~backend/src/notifications/events";
 
 export const router = Router();
 
@@ -25,9 +26,9 @@ hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomParticipantCreated);
 // Create plain text version of each message so it can be used by search views.
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], prepareMessagePlainTextData);
-// mentions are part of the message object
-hasuraEvents.addHandler("message_updates", ["INSERT"], handleMentionCreated);
+hasuraEvents.addHandler("message_updates", ["INSERT"], handleMessageCreated);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
+hasuraEvents.addHandler("notification_updates", ["INSERT"], handleNotificationCreated);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
