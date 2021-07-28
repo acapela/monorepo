@@ -550,7 +550,15 @@
   select_permissions:
     - role: user
       permission:
-        columns: []
+        columns:
+          - id
+          - email
+          - used_at
+          - token
+          - created_at
+          - inviting_user_id
+          - used_by_user_id
+          - room_id
         filter:
           room:
             members:
