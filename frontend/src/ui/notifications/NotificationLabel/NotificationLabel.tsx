@@ -1,5 +1,5 @@
 import { NotificationInfoFragment } from "~gql";
-import { routes } from "~frontend/../routes";
+import { routes } from "~frontend/routes";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";
 import {
@@ -49,7 +49,7 @@ function MentionNotificationLabel({
 export function NotificationLabel({ notification }: Props) {
   const notificationData = notification.data as AnyNotificationData;
   if (isNotificationDataOfType(notificationData, "topicMention")) {
-    return <MentionNotificationLabel notification={notification} data={notificationData.data} />;
+    return <MentionNotificationLabel notification={notification} data={notificationData.payload} />;
   }
 
   return null;

@@ -25,18 +25,18 @@ export type NotificationType = keyof NotificationTypesMap;
 
 export type NotificationData<Type extends NotificationType> = {
   type: Type;
-  data: NotificationTypesMap[Type];
+  payload: NotificationTypesMap[Type];
 };
 
 export type AnyNotificationData = NotificationData<NotificationType>;
 
 export function createNotificationData<Type extends NotificationType>(
   type: Type,
-  data: NotificationTypesMap[Type]
+  payload: NotificationTypesMap[Type]
 ): NotificationData<Type> {
   return {
     type,
-    data,
+    payload,
   };
 }
 
