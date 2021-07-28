@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { NOTIFICATION_COLOR } from "~ui/colors";
+import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconActivity } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { useUnreadNotifications } from "~frontend/gql/notifications";

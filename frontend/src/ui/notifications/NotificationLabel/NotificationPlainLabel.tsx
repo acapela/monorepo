@@ -9,7 +9,7 @@ import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHov
 import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/colors";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconCheck, IconNotificationIndicator } from "~ui/icons";
 import { hoverTransition } from "~ui/transitions";
 import { TextBody14, TextBody } from "~ui/typo";
