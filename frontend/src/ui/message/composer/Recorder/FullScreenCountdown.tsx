@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useInterval } from "react-use";
-
 import styled from "styled-components";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { BodyPortal } from "~ui/BodyPortal";
+import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { theme } from "~ui/theme";
 
 interface CountdownParams {
   seconds: number;
@@ -13,8 +12,6 @@ interface CountdownParams {
 
 export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
   const [seconds, setSeconds] = useState(startFrom);
-
-  useShortcut("Escape", onCancelled);
 
   useInterval(() => {
     const newSeconds = seconds - 1;
@@ -27,37 +24,14 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
   }, 1000);
 
   return (
-    <BodyPortal>
-      <UIBackDrop />
-      <UIModal>
-        <UICounter>{seconds}</UICounter>
-      </UIModal>
-    </BodyPortal>
+    <ScreenCover isTransparent={false} onCloseRequest={onCancelled}>
+      <UICounter>{seconds}</UICounter>
+    </ScreenCover>
   );
 };
 
-const UIBackDrop = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #000;
-  width: 100vw;
-  height: 100vh;
-  opacity: 0.6;
-`;
-
-const UIModal = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-`;
-
 const UICounter = styled.div`
-  font-size: 6rem;
-  color: #fff;
+  color: ${theme.colors.interactive.actions.primary.regular.text};
+
+  ${theme.font.spezia.withExceptionalSize("6rem", "This needs to be very large and centered").build}
 `;
