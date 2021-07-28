@@ -3,8 +3,10 @@ import {
   CreateRoomInvitationMutation,
   CreateRoomInvitationMutationVariables,
   RoomInvitationBasicInfoFragment as RoomInvitationBasicInfoFragmentType,
+  RoomInvitationsQuery,
+  RoomInvitationsQueryVariables,
 } from "~gql";
-import { createMutation, createFragment } from "./utils";
+import { createMutation, createFragment, createQuery } from "./utils";
 import { addToast } from "~ui/toasts/data";
 
 const RoomInvitationBasicInfoFragment = createFragment<RoomInvitationBasicInfoFragmentType>(
@@ -23,6 +25,7 @@ export const [useCreateRoomInvitationMutation, { mutate: createRoomInvitation }]
 >(
   () => gql`
     ${RoomInvitationBasicInfoFragment()}
+
     mutation CreateRoomInvitation($roomId: uuid!, $email: String!) {
       insert_room_invitation_one(object: { room_id: $roomId, email: $email }) {
         ...RoomInvitationBasicInfo
@@ -34,4 +37,16 @@ export const [useCreateRoomInvitationMutation, { mutate: createRoomInvitation }]
       addToast({ type: "info", content: `New room member was invited` });
     },
   }
+);
+
+export const [useRoomInvitationsQuery] = createQuery<RoomInvitationsQuery, RoomInvitationsQueryVariables>(
+  () => gql`
+    ${RoomInvitationBasicInfoFragment()}
+
+    query RoomInvitations($roomId: uuid!) {
+      invitations: room_invitation(where: { room_id: { _eq: $roomId } }, order_by: [{ created_at: desc }]) {
+        ...RoomInvitationBasicInfo
+      }
+    }
+  `
 );

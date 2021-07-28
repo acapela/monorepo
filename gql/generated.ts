@@ -8961,6 +8961,19 @@ export type RemoveMessageReactionMutation = (
   )> }
 );
 
+export type RoomInvitationsQueryVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type RoomInvitationsQuery = (
+  { __typename?: 'query_root' }
+  & { invitations: Array<(
+    { __typename?: 'room_invitation' }
+    & RoomInvitationBasicInfoFragment
+  )> }
+);
+
 export type PrivateRoomInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'is_private'>

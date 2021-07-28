@@ -12,6 +12,7 @@ import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconPlus } from "~ui/icons";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
+import { useRoomInvitationsQuery } from "~frontend/gql/roomInvitations";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -50,6 +51,8 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
 
+  const [invitations = []] = useRoomInvitationsQuery({ roomId: room.id });
+
   return (
     <>
       <AnimatePresence>
@@ -60,6 +63,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
             onCloseRequest={closeUserPicker}
             onAddUser={handleJoin}
             onRemoveUser={handleLeave}
+            invitations={invitations}
           />
         )}
       </AnimatePresence>
