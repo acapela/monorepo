@@ -7,6 +7,7 @@ import { zIndex } from "~ui/zIndex";
 import { variantToStyles } from "./actions/styleBuilder";
 import { getColorTheme, ThemeColorSchemeName } from "./colors";
 import { font } from "./font";
+import { getIsTerminal } from "./proxy/nonTerminal";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
@@ -62,10 +63,24 @@ export const theme = new DeepProxy(defaultTheme, {
     if (isPlainObject(value)) {
       // Creates a nested DeepProxy
       // Calling nest with the value allows DeepProxy to build the `path` (👀 this.path) to nested props
+
       return this.nest(value);
     }
 
     if (isFunction(value)) {
+      /* 
+      There's functions inside the theme tree that are used inside chainable/builder patterns.
+      These functions should return a chainable/builder object instead of being proxied.
+
+      Since these are exceptional, they should be marked as non terminal.
+      Now: `style.font.withExceptionalSize("123px").spezia.build` still works
+      */
+      if (!getIsTerminal(value)) {
+        return (...args: unknown[]) => {
+          return value.call(target, ...args);
+        };
+      }
+
       /* 
       First function returned is the outer layer of the utility function that's being called. 
       We use this to grab the arguments from that util and pass them as a closure to the equivalent theme function.
@@ -76,7 +91,7 @@ export const theme = new DeepProxy(defaultTheme, {
       return (...args: unknown[]) =>
         (props: { theme: Theme }) => {
           const fn = get(props.theme, [...this.path, propertyName]);
-          return fn.call(null, ...args);
+          return fn.call(target, ...args);
         };
     }
 
