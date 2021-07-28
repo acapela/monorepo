@@ -1,4 +1,4 @@
-import { db, Message, Notification } from "~db";
+import { db, Message, Notification, PrismaPromise } from "~db";
 import { Message_Type_Enum } from "~gql";
 import log from "~shared/logger";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
@@ -31,7 +31,7 @@ function getMentionNodesFromMessage(message: Message) {
   return mentionNodes;
 }
 
-function createMessageMentionNotifications(message: Message) {
+async function createMessageMentionNotifications(message: Message) {
   const mentionNodes = getMentionNodesFromMessage(message);
 
   if (mentionNodes.length === 0) {
@@ -39,7 +39,7 @@ function createMessageMentionNotifications(message: Message) {
     return;
   }
 
-  const createNotificationPromises: Array<Promise<Notification>> = [];
+  const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
 
   /**
    * Avoid situation where multiple mentions of same user in the same message would result in multiple notifications
@@ -68,7 +68,7 @@ function createMessageMentionNotifications(message: Message) {
     createNotificationPromises.push(createNotificationPromise);
   }
 
-  return Promise.all(createNotificationPromises);
+  return await db.$transaction(createNotificationPromises);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
