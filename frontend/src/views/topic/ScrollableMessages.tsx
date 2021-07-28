@@ -2,9 +2,9 @@ import React, { ReactNode, useCallback, useRef } from "react";
 import styled from "styled-components";
 import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
 import { assertDefined } from "~shared/assert";
-import { useEventListener } from "~shared/hooks/useEventListener";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { select } from "~shared/sharedState";
+import { useElementEvent } from "~shared/domEvents";
 
 interface Props {
   children: ReactNode;
@@ -19,7 +19,7 @@ export const ScrollableMessages = styled(({ children, className }: Props) => {
     const parent = assertDefined(holderRef.current, "Event can't have been called on deleted element");
     isScrolledToBottom.current = parent.scrollTop == parent.scrollHeight - parent.clientHeight;
   }, []);
-  useEventListener(holderRef.current, "scroll", handleScroll);
+  useElementEvent(holderRef, "scroll", handleScroll);
 
   const topicContext = useTopicStoreContext();
   const isInEditMode = select(() => !!topicContext.editedMessageId);
