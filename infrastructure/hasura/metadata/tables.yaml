@@ -252,6 +252,7 @@
             - type
             - created_at
             - id
+            - replied_to_message_id
             - topic_id
             - transcription_id
             - user_id
@@ -942,6 +943,7 @@
             - inviting_user_id
             - team_id
             - token
+            - used_by_user_id
       retry_conf:
         num_retries: 0
         interval_sec: 10
@@ -997,8 +999,14 @@
     - name: team_member_updates
       definition:
         enable_manual: false
+        insert:
+          columns: "*"
         delete:
           columns: "*"
+        update:
+          columns:
+            - team_id
+            - user_id
       retry_conf:
         num_retries: 0
         interval_sec: 10
@@ -1141,9 +1149,12 @@
           columns: "*"
         update:
           columns:
+            - closing_summary
             - index
             - name
             - slug
+            - closed_at
+            - closed_by_user_id
             - id
             - room_id
       retry_conf:

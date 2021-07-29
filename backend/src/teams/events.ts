@@ -1,9 +1,10 @@
 import { Team } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
+import { HasuraEvent } from "../hasura";
 import { addTeamMember, getHasTeamMember } from "./helpers";
 
-export async function handleTeamUpdates(team: Team, userId: string | null) {
+export async function handleTeamUpdates({ userId, item: team }: HasuraEvent<Team>) {
   const { owner_id: ownerId, id: teamId } = team;
   if (userId !== ownerId) {
     logger.error("User id of action caller does not match room creator", {
