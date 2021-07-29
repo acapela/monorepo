@@ -2,8 +2,6 @@ import { RefObject, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useIsomorphicLayoutEffect } from "react-use";
-import { assertDefined } from "~shared/assert";
-import { useEventListener } from "~shared/hooks/useEventListener";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
