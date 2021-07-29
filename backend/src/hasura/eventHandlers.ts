@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import logger from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
 import { convertMaybeArrayToArray } from "~shared/array";
-import { HasuraSessionVariables } from "./session";
-import { RawHasuraEvent, HasuraEvent, normalizeHasuraEvent } from "./eventUtils";
+import { RawHasuraEvent, HasuraEvent, normalizeHasuraEvent, getUserIdFromRawHasuraEvent } from "./eventUtils";
 
 type EntitiesEventsMapBase = Record<string, unknown>;
 
@@ -39,7 +38,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     }
   }
 
-  async function handleHasuraEvent<T>(event: RawHasuraEvent<T>, userId: string | null) {
+  async function handleHasuraEvent<T>(event: RawHasuraEvent<T>) {
     const triggerName = event.trigger.name;
     const operationType = event.event.op;
 
@@ -59,7 +58,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
 
   async function requestHandler(req: Request, res: Response) {
     const hasuraEvent = req.body as RawHasuraEvent<unknown>;
-    const userId = hasuraEvent.event.session_variables?.["x-hasura-user-id"] ?? null;
+    const userId = getUserIdFromRawHasuraEvent(hasuraEvent);
 
     logger.info("Handling event", {
       eventId: hasuraEvent.id,
@@ -67,7 +66,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
       userId,
     });
 
-    await handleHasuraEvent(hasuraEvent, userId);
+    await handleHasuraEvent(hasuraEvent);
 
     logger.info("Handled event", {
       eventId: hasuraEvent.id,

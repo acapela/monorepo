@@ -39,6 +39,7 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
   if (eventType === "INSERT") {
     return {
       type: "create",
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       item: item!,
       itemBefore: null,
       userId: getUserIdFromRawHasuraEvent(rawEvent),
@@ -48,7 +49,9 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
   if (eventType === "UPDATE") {
     return {
       type: "update",
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       item: item!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       itemBefore: itemBefore!,
       userId: getUserIdFromRawHasuraEvent(rawEvent),
     };
@@ -57,6 +60,7 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
   if (eventType === "DELETE") {
     return {
       type: "delete",
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       item: itemBefore!,
       itemBefore: null,
       userId: getUserIdFromRawHasuraEvent(rawEvent),
