@@ -1,7 +1,33 @@
 import { db, Topic } from "~db";
+import { HasuraEvent } from "../hasura";
+import { createNotification } from "../notifications/entity";
 
-export async function handleTopicCreated(topic: Topic) {
-  await inheritTopicMembersFromParentRoom(topic);
+export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
+  if (event.type === "create") {
+    await inheritTopicMembersFromParentRoom(event.item);
+  }
+
+  if (event.type === "update") {
+    const wasJustClosed = !event.item.closed_at && event.itemBefore.closed_at;
+
+    if (wasJustClosed && event.userId) {
+      await createTopicClosedNotifications(event.item, event.userId);
+    }
+  }
+}
+
+async function createTopicClosedNotifications(topic: Topic, closedByUserId: string) {
+  const topicMembers = await db.topic_member.findMany({ where: { topic_id: topic.id } });
+
+  const createNotificationRequests = topicMembers.map((topicMember) => {
+    return createNotification({
+      type: "topicClosed",
+      userId: topicMember.user_id,
+      payload: { topicId: topic.id, closedByUserId },
+    });
+  });
+
+  return db.$transaction(createNotificationRequests);
 }
 
 async function inheritTopicMembersFromParentRoom(topic: Topic) {
