@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn --prefer-offline
       - run: yarn run lint
 
   frontend:
@@ -49,7 +49,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn --prefer-offline
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn workspace ~db generate
@@ -97,7 +97,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn --prefer-offline
       - name: Migrate postgres using hasura migrations
         run: |
           yarn hasura:migrations
@@ -125,7 +125,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn --prefer-offline
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
