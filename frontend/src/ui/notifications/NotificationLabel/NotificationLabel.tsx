@@ -58,7 +58,6 @@ function MentionNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      date={new Date(notification.created_at)}
       titleNode={
         <>
           <strong>{mentioningUser.name}</strong> mentioned you in the topic <strong>{topic.name}</strong>
@@ -84,7 +83,6 @@ function TopicClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      date={new Date(notification.created_at)}
       titleNode={
         <>
           <strong>{closingUser.name}</strong> closed the topic <strong>{topic.name}</strong>
@@ -107,7 +105,6 @@ function AddedToTopicClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      date={new Date(notification.created_at)}
       titleNode={
         <>
           <strong>{addedByUser.name}</strong> added you to the topic <strong>{topic.name}</strong>
@@ -133,7 +130,6 @@ function RoomClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      date={new Date(notification.created_at)}
       titleNode={
         <>
           <strong>{closingUser.name}</strong> closed the room <strong>{room.name}</strong>
@@ -156,7 +152,6 @@ function AddedToRoomClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      date={new Date(notification.created_at)}
       titleNode={
         <>
           <strong>{addingUser.name}</strong> added you to the room <strong>{room.name}</strong>

@@ -19,13 +19,19 @@ import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 interface Props {
   userId: string;
-  date: Date;
+  date?: Date;
   titleNode: ReactNode;
   onClick?: () => void;
   notification: NotificationInfoFragment;
 }
 
-export function NotificationPlainLabel({ userId, date, titleNode, onClick, notification }: Props) {
+export function NotificationPlainLabel({
+  userId,
+  titleNode,
+  onClick,
+  notification,
+  date = new Date(notification.created_at),
+}: Props) {
   const id = notification.id;
   const holderRef = useRef<HTMLDivElement>(null);
   const user = useCurrentTeamMember(userId);
