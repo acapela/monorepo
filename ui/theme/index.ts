@@ -1,21 +1,40 @@
 import { get, isFunction, isPlainObject } from "lodash";
 import DeepProxy from "proxy-deep";
+import { FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { spacer } from "~ui/spacer";
 import { hoverTransition } from "~ui/transitions";
 import { zIndex } from "~ui/zIndex";
-import { variantToStyles } from "./actions/styleBuilder";
-import { getColorTheme, ThemeColorSchemeName } from "./colors";
-import { font } from "./font";
+import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
+import { getColorTheme, ThemeColorScheme, ThemeColorSchemeName } from "./colors";
+import { Font, font } from "./font";
 import { getIsTerminal } from "./proxy/nonTerminal";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
-export const defaultTheme = getTheme("default");
+// Using explicit interface instead of a `defaultTheme as const` in order to prevent circular reference
+// errors when extending the styled.DefaultTheme
+export interface Theme {
+  colors: ExtendedThemeColors;
+  shadow: typeof shadow;
+  font: Font;
+  borderRadius: typeof borderRadius;
+  zIndex: typeof zIndex;
+  transitions: Record<string, () => FlattenSimpleInterpolation>;
+  spacer: typeof spacer;
+}
 
-type Theme = typeof defaultTheme;
+type ExtendedThemeColors = ThemeColorScheme & { actions: Record<Variant, ActionStateInterpolations> };
 
-export function getTheme(colorScheme: ThemeColorSchemeName) {
+// Allows `${props => props.theme...}` to be typed properly
+declare module "styled-components" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DefaultTheme extends Theme {}
+}
+
+export const defaultTheme: Theme = getTheme("default");
+
+export function getTheme(colorScheme: ThemeColorSchemeName): Theme {
   const themeColors = getColorTheme(colorScheme);
   const themeColorsForActions = themeColors.interactive.actions;
 
