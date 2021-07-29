@@ -34,6 +34,9 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
     handleSubmit();
+
+    // Don't pass enter to editor as it would insert new line
+    return true;
   });
 
   async function handleSubmit() {
