@@ -128,6 +128,7 @@ function RoomClosedNotificationLabel({
   const [room] = useSingleRoomQuery({ id: roomId });
   const closingUser = useCurrentTeamMember(closedByUserId);
 
+  // TODO: Sentry - add info in case of incorrect data
   if (!room || !closingUser) return null;
 
   return (

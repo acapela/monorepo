@@ -54,26 +54,19 @@ async function sendAddedToRoomEmailNotification(notification: Notification, data
     findRoomById(roomId),
   ]);
 
-  if (!addedUser) {
-    throw new UnprocessableEntityError(`added user ${notification.user_id} does not exist`);
-  }
-  if (!inviter) {
-    throw new UnprocessableEntityError(`inviter ${addedByUserId} does not exist`);
-  }
-  if (!room) {
-    throw new UnprocessableEntityError(`room ${roomId} does not exist`);
-  }
-  if (!addedUser.email) {
-    throw new UnprocessableEntityError(`invalid user entry: ${notification.user_id} (no email address)`);
-  }
-  if (!room.space_id) {
-    throw new UnprocessableEntityError(`invalid room entry: ${roomId}`);
-  }
+  assert(addedUser, new UnprocessableEntityError(`added user ${notification.user_id} does not exist`));
+  assert(inviter, new UnprocessableEntityError(`inviter ${addedByUserId} does not exist`));
+  assert(room, new UnprocessableEntityError(`room ${roomId} does not exist`));
+  assert(
+    addedUser.email,
+    new UnprocessableEntityError(`invalid user entry: ${notification.user_id} (no email address)`)
+  );
+  assert(room.space_id, new UnprocessableEntityError(`invalid room entry: ${roomId}`));
 
   const sendableNotification = new RoomAddedNotification({
     recipientEmail: addedUser.email,
     inviterName: getNormalizedUserName(inviter),
-    roomName: room.name || "an acapela discussion",
+    roomName: room.name,
     spaceId: room.space_id,
     roomId: room.id,
   });

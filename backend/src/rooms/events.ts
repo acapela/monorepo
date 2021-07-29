@@ -27,16 +27,17 @@ async function createRoomClosedNotifications(room: Room, closedByUserId: string)
   const roomMembers = await db.room_member.findMany({ where: { room_id: room.id } });
 
   const notificationCreateRequests = roomMembers
+    // Don't send notification to user who closed the room.
+    .filter((roomMember) => roomMember.user_id !== closedByUserId)
     .map((roomMember) => {
       // Don't send notification to user who closed the room.
-      if (roomMember.user_id === closedByUserId) return null;
+
       return createNotification({
         type: "roomClosed",
         userId: roomMember.user_id,
         payload: { roomId: room.id, closedByUserId },
       });
-    })
-    .filter(isNotNullish);
+    });
 
   return db.$transaction(notificationCreateRequests);
 }

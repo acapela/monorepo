@@ -41,11 +41,10 @@ function getNewMentionNodesFromMessage(message: Message, messageBefore: Message 
 
   const mentionNodesBefore = getMentionNodesFromMessage(messageBefore);
 
-  const newMentionNodes = mentionNodesNow.filter((mentionNodeNow) => {
-    return !mentionNodesBefore.some((mentionNodeBefore) => {
-      return mentionNodeBefore.attrs.data.userId === mentionNodeNow.attrs.data.userId;
-    });
-  });
+  const mentionedUserIdsBefore = new Set(mentionNodesBefore.map((n) => n.attrs.data.userId));
+  const newMentionNodes = mentionNodesNow.filter(
+    (mentionNodeNow) => !mentionedUserIdsBefore.has(mentionNodeNow.attrs.data.userId)
+  );
 
   return newMentionNodes;
 }
