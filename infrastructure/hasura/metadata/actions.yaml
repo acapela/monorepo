@@ -27,6 +27,16 @@ actions:
     permissions:
       - role: public
       - role: user
+  - name: room_invitation_view
+    definition:
+      kind: ""
+      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
+      headers:
+        - value: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+          name: Authorization
+    permissions:
+      - role: public
+      - role: user
   - name: upgrade_current_user
     definition:
       kind: synchronous
@@ -52,4 +62,5 @@ custom_types:
     - name: UploadUrlResponse
     - name: DownloadUrlResponse
     - name: LookupTeamNameResponse
+    - name: RoomInvitationViewResponse
   scalars: []

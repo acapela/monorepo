@@ -1333,6 +1333,13 @@
       using:
         foreign_key_constraint_on: current_team_id
   array_relationships:
+    - name: created_room_invitations
+      using:
+        foreign_key_constraint_on:
+          column: inviting_user_id
+          table:
+            schema: public
+            name: room_invitation
     - name: created_rooms
       using:
         foreign_key_constraint_on:
