@@ -1,7 +1,8 @@
 import { db, User } from "~db";
+import { HasuraEvent } from "../hasura";
 import { acceptTeamInvitation } from "../teamInvitation/acceptInvite";
 
-export async function handleUserCreated(user: User) {
+export async function handleUserCreated({ item: user }: HasuraEvent<User>) {
   await acceptAllNewUserInvitations(user);
 }
 
