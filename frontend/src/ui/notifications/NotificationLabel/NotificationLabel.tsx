@@ -89,6 +89,9 @@ function TopicClosedNotificationLabel({
         </>
       }
       userId={closedByUserId}
+      onClick={() => {
+        routes.spaceRoomTopic.push({ topicId, spaceId: topic.room.space_id, roomId: topic.room.id });
+      }}
     />
   );
 }
@@ -136,6 +139,9 @@ function RoomClosedNotificationLabel({
         </>
       }
       userId={closedByUserId}
+      onClick={() => {
+        routes.spaceRoom.push({ spaceId: room.space_id, roomId: room.id });
+      }}
     />
   );
 }
