@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import styled, { css } from "styled-components";
 import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
@@ -69,11 +70,25 @@ export const SortableTopicsList = ({
 
                 return (
                   <Draggable key={topic.id} draggableId={topic.id} index={index} isDragDisabled={isDisabled}>
-                    {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => (
-                      <UIDraggableTopic ref={innerRef} {...draggableProps} {...dragHandleProps} isDragging={isDragging}>
-                        <TopicMenuItem topic={topic} isActive={isActive} />
-                      </UIDraggableTopic>
-                    )}
+                    {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => {
+                      const result = (
+                        <>
+                          <UIDraggableTopic
+                            ref={innerRef}
+                            {...draggableProps}
+                            {...dragHandleProps}
+                            isDragging={isDragging}
+                          >
+                            <TopicMenuItem topic={topic} isActive={isActive} />
+                          </UIDraggableTopic>
+                        </>
+                      );
+
+                      if (isDragging) {
+                        return ReactDOM.createPortal(result, document.body);
+                      }
+                      return result;
+                    }}
                   </Draggable>
                 );
               })}
