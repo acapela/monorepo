@@ -6,7 +6,8 @@ import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
-import { lookupTeamName } from "~frontend/gql/team";
+import { lookupTeamName } from "~frontend/gql/teams";
+import { useRoomInvitationViewQuery } from "~frontend/gql/roomInvitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();
@@ -14,7 +15,12 @@ export default function InvitePage() {
 
   assert(inviteCode, "Invite code required");
 
-  const [inviteInfo] = lookupTeamName({ token: inviteCode });
+  const [teamInvitationInfo, { loading: teamInvitationInfoLoading }] = lookupTeamName({ token: inviteCode });
+  const [roomInvitationInfo, { loading: roomInvitationInfoLoading }] = useRoomInvitationViewQuery({
+    token: inviteCode,
+  });
+  const invitationInfo = teamInvitationInfo || roomInvitationInfo;
+  const isInvitationInfoLoading = teamInvitationInfoLoading || roomInvitationInfoLoading;
 
   useInvitationAcceptedCallback(inviteCode, () => {
     // We use nav with full reload as changing the team updated 'currentTeamId' which is part of json web token data.
@@ -23,28 +29,35 @@ export default function InvitePage() {
     window.location.pathname = "/";
   });
 
-  return (
-    <WindowView>
-      {!inviteInfo && "Invalid invite code!"}
-      {/* If there is no user - ask to log in */}
-      {!user && inviteInfo && (
-        <UIHolder>
-          <>
-            You have been invited by {inviteInfo.inviter_name} to join the "{inviteInfo.team_name}" team.
-            <div>
-              <LoginOptionsView />
-            </div>
-          </>
-        </UIHolder>
-      )}
-      {/* If there is user, show loading indicator. It might be a bit confusing: We show loading because we're waiting
-       * to be sure invitation is accepted. It will get accepted automatically and then `useInvitationAcceptedCallback`
-       * will redirect user to homepage.
-       * It means the flow will be > user logs in > sees loading > is redirected to home page as a member of the team.
-       */}
-      {user && "Loading..."}
-    </WindowView>
-  );
+  const renderContent = () => {
+    /* If there is user, show loading indicator. It might be a bit confusing: We show loading because we're waiting
+     * to be sure invitation is accepted. It will get accepted automatically and then `useInvitationAcceptedCallback`
+     * will redirect user to homepage.
+     * It means the flow will be > user logs in > sees loading > is redirected to home page as a member of the team.
+     */
+    if (isInvitationInfoLoading || user) {
+      return "Loading...";
+    }
+
+    if (!invitationInfo) {
+      return "Invalid invite code!";
+    }
+
+    /* If there is no user - ask to log in */
+    if (!user) {
+      <UIHolder>
+        You have been invited by {invitationInfo.inviter_name} to join the{" "}
+        {teamInvitationInfo ? `"${teamInvitationInfo.team_name}" team` : `"${roomInvitationInfo?.room_name}" room`}.
+        <div>
+          <LoginOptionsView />
+        </div>
+      </UIHolder>;
+    }
+
+    return null;
+  };
+
+  return <WindowView>{renderContent()}</WindowView>;
 }
 
 function useInvitationAcceptedCallback(token: string, callback: () => void) {

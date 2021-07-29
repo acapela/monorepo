@@ -5,8 +5,10 @@ import {
   RoomInvitationBasicInfoFragment as RoomInvitationBasicInfoFragmentType,
   RemoveRoomInvitationMutation,
   RemoveRoomInvitationMutationVariables,
+  RoomInvitationViewQuery,
+  RoomInvitationViewQueryVariables,
 } from "~gql";
-import { createMutation, createFragment } from "./utils";
+import { createMutation, createFragment, createQuery } from "./utils";
 import { addToast } from "~ui/toasts/data";
 import { RoomDetailedInfoFragment } from "./rooms";
 
@@ -70,4 +72,15 @@ export const [useRemoveRoomInvitation, { mutate: removeRoomInvitation }] = creat
       addToast({ type: "info", content: `Room invitation was removed` });
     },
   }
+);
+
+export const [useRoomInvitationViewQuery] = createQuery<RoomInvitationViewQuery, RoomInvitationViewQueryVariables>(
+  () => gql`
+    query RoomInvitationView($token: String!) {
+      invitation: room_invitation_view(token: $token) {
+        room_name
+        inviter_name
+      }
+    }
+  `
 );
