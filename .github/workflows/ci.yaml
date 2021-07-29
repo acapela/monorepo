@@ -26,7 +26,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
+      - run: yarn workspace ~db generate
       - run: yarn run lint
+      - name: "Tar node_modules"
+        run: |
+          find . -name 'node_modules' -type d -prune -exec tar -rf node_modules.tar {} \;
+      - name: "Upload node_modules"
+        uses: actions/upload-artifact@v2
+        with:
+          name: node_modules_cache
+          path: node_modules.tar
+          retention-days: 1
 
   frontend:
     name: Frontend
@@ -40,19 +50,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: Download node_modules
+        uses: actions/download-artifact@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+          name: node_modules_cache
+      - run: tar -xf node_modules.tar && rm node_modules.tar
       - name: Setup dotenv
         run: cp .env.sample .env
-      - run: yarn workspace ~db generate
       - run: yarn run frontend:test
       - run: yarn run frontend:build
 
@@ -88,23 +92,17 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: Download node_modules
+        uses: actions/download-artifact@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+          name: node_modules_cache
+      - run: tar -xf node_modules.tar && rm node_modules.tar
       - name: Migrate postgres using hasura migrations
         run: |
           yarn hasura:migrations
           yarn hasura:seeds
       - name: Setup dotenv
         run: cp .env.sample .env
-      - run: yarn workspace ~db generate
       - run: yarn run backend:test
 
   release:
@@ -116,16 +114,11 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: Download node_modules
+        uses: actions/download-artifact@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+          name: node_modules_cache
+      - run: tar -xf node_modules.tar && rm node_modules.tar
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel

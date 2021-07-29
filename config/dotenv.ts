@@ -132,6 +132,7 @@ function loadRootDotEnv(): void {
   }
 
   dotenv.config({ path: dotEnvPath });
+  console.info(`.env file loaded: ${dotEnvPath}`);
 }
 
 const appType = assertDefined(process.env.APP, "APP environment variable must always be set");
