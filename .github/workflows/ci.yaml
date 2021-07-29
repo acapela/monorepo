@@ -31,12 +31,15 @@ jobs:
       - name: "Tar node_modules"
         run: |
           find . -name 'node_modules' -type d -prune -exec tar -rf node_modules.tar {} \;
-      - name: "Upload node_modules"
-        uses: actions/upload-artifact@v2
+      - uses: docker/login-action@v1
         with:
-          name: node_modules_cache
-          path: node_modules.tar
-          retention-days: 1
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Pushing node_modules"
+        run: |
+          echo "{}" > manifest-config.json
+          oras push ghcr.io/weareacapela/node-modules:$GITHUB_SHA --manifest-config ./manifest-config.json ./node_modules.tar
 
   frontend:
     name: Frontend
@@ -50,11 +53,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Download node_modules
-        uses: actions/download-artifact@v2
+      - uses: docker/login-action@v1
         with:
-          name: node_modules_cache
-      - run: tar -xf node_modules.tar && rm node_modules.tar
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          tar -xf node_modules.tar && rm node_modules.tar
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn run frontend:test
@@ -92,11 +98,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Download node_modules
-        uses: actions/download-artifact@v2
+      - uses: docker/login-action@v1
         with:
-          name: node_modules_cache
-      - run: tar -xf node_modules.tar && rm node_modules.tar
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          tar -xf node_modules.tar && rm node_modules.tar
       - name: Migrate postgres using hasura migrations
         run: |
           yarn hasura:migrations
@@ -114,11 +123,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Download node_modules
-        uses: actions/download-artifact@v2
+      - uses: docker/login-action@v1
         with:
-          name: node_modules_cache
-      - run: tar -xf node_modules.tar && rm node_modules.tar
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          tar -xf node_modules.tar && rm node_modules.tar
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
