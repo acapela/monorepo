@@ -10,7 +10,7 @@ import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
 import { getLastElementFromArray } from "~shared/array";
 import { generateId } from "~shared/id";
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
@@ -20,6 +20,7 @@ import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
+import { VStack } from "~ui/Stack";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -96,19 +97,21 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
           <CardBase>
             <TopicsList key={room.id} room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
-          </CardBase>
 
-          <UIFlyingCloseRoomToggle>
-            <Button
-              onClick={handleCreateNewTopic}
-              isDisabled={
-                !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
-              }
-              icon={<IconPlusSquare />}
-            >
-              New Topic
-            </Button>
-          </UIFlyingCloseRoomToggle>
+            <VStack alignItems="center" justifyContent="start">
+              <UINewTopicButton
+                kind="secondary"
+                onClick={handleCreateNewTopic}
+                isDisabled={
+                  !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
+                }
+                icon={<IconPlusSquare />}
+                iconPosition="start"
+              >
+                New Topic
+              </UINewTopicButton>
+            </VStack>
+          </CardBase>
         </UIRoomInfo>
 
         <UIContentHolder>{children}</UIContentHolder>
@@ -140,8 +143,8 @@ const UIContentHolder = styled.div`
   border: 1px solid #f8f8f8;
   box-sizing: border-box;
   box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  ${borderRadius.card};
-  padding: 2rem;
+  ${theme.borderRadius.card};
+  padding: 32px;
   min-height: 0;
   min-width: 0;
 `;
@@ -161,7 +164,7 @@ const UIRoomTitle = styled.div`
     `}
 `;
 
-const UIFlyingCloseRoomToggle = styled.div`
-  display: flex;
-  justify-content: center;
+const UINewTopicButton = styled(Button)`
+  margin-top: 10px;
+  padding: 10px 50px;
 `;
