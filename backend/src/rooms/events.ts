@@ -1,5 +1,6 @@
 import { db, Room } from "~db";
 import logger from "~shared/logger";
+import { isNotNullish } from "~shared/nullish";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { addRoomParticipant, getIfParticipantExists } from "./rooms";
@@ -25,13 +26,17 @@ async function ensureOwnerIsRoomMember(room: Room) {
 async function createRoomClosedNotifications(room: Room, closedByUserId: string) {
   const roomMembers = await db.room_member.findMany({ where: { room_id: room.id } });
 
-  const notificationCreateRequests = roomMembers.map((roomMember) => {
-    return createNotification({
-      type: "roomClosed",
-      userId: roomMember.user_id,
-      payload: { roomId: room.id, closedByUserId },
-    });
-  });
+  const notificationCreateRequests = roomMembers
+    .map((roomMember) => {
+      // Don't send notification to user who closed the room.
+      if (roomMember.user_id === closedByUserId) return null;
+      return createNotification({
+        type: "roomClosed",
+        userId: roomMember.user_id,
+        payload: { roomId: room.id, closedByUserId },
+      });
+    })
+    .filter(isNotNullish);
 
   return db.$transaction(notificationCreateRequests);
 }
