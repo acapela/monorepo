@@ -29,8 +29,8 @@ export const [useCreateRoomInvitationMutation, { mutate: createRoomInvitation }]
   () => gql`
     ${RoomInvitationBasicInfoFragment()}
 
-    mutation CreateRoomInvitation($roomId: uuid!, $email: String!) {
-      insert_room_invitation_one(object: { room_id: $roomId, email: $email }) {
+    mutation CreateRoomInvitation($roomId: uuid!, $teamId: uuid!, $email: String!) {
+      insert_room_invitation_one(object: { room_id: $roomId, team_id: $teamId, email: $email }) {
         ...RoomInvitationBasicInfo
       }
     }

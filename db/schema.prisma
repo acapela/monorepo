@@ -128,6 +128,7 @@ model team {
   name                            String
   owner_id                        String            @db.Uuid
   user_team_owner_idTouser        user              @relation("team_owner_idTouser", fields: [owner_id], references: [id])
+  room_invitation                 room_invitation[]
   space                           space[]
   team_invitation                 team_invitation[]
   team_member                     team_member[]
@@ -266,4 +267,18 @@ model room_invites {
   user       user      @relation(fields: [inviter_id], references: [id])
   room       room      @relation(fields: [room_id], references: [id])
   @@unique([room_id, email], name: "room_invites_room_id_email_key")
+model room_invitation {
+  id                                          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                       String
+  used_at                                     DateTime? @db.Date
+  token                                       String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at                                  DateTime  @default(now()) @db.Timestamptz(6)
+  inviting_user_id                            String    @db.Uuid
+  used_by_user_id                             String?   @db.Uuid
+  room_id                                     String    @db.Uuid
+  team_id                                     String    @db.Uuid
+  user_room_invitation_inviting_user_idTouser user      @relation("room_invitation_inviting_user_idTouser", fields: [inviting_user_id], references: [id])
+  room                                        room      @relation(fields: [room_id], references: [id])
+  team                                        team      @relation(fields: [team_id], references: [id])
+  user_room_invitation_used_by_user_idTouser  user?     @relation("room_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
 }

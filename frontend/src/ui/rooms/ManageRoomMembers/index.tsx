@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId, useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
@@ -24,6 +24,7 @@ interface Props {
 }
 
 export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
+  const teamId = useAssertCurrentTeamId();
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
   const amIMember = isCurrentUserRoomMember(room);
@@ -80,7 +81,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
       return;
     }
 
-    createRoomInvitation({ roomId: room.id, email });
+    createRoomInvitation({ roomId: room.id, teamId, email });
   };
 
   return (

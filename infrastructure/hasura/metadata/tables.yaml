@@ -530,6 +530,9 @@
     - name: room
       using:
         foreign_key_constraint_on: room_id
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
     - name: used_by_user
       using:
         foreign_key_constraint_on: used_by_user_id
@@ -546,19 +549,21 @@
         columns:
           - email
           - room_id
+          - team_id
         backend_only: false
   select_permissions:
     - role: user
       permission:
         columns:
-          - id
-          - email
-          - used_at
-          - token
           - created_at
+          - email
+          - id
           - inviting_user_id
-          - used_by_user_id
           - room_id
+          - team_id
+          - token
+          - used_at
+          - used_by_user_id
         filter:
           room:
             members:
