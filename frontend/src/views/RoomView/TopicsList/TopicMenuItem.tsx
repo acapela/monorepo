@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
-import { select } from "~frontend/../../shared/sharedState";
+import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { routes } from "~frontend/routes";

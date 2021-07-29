@@ -58,6 +58,7 @@ export const Button = styled(
         ref={ref as ForwardedRef<any>}
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
+        disabled={isDisabledBoolean}
         isWide={isWide}
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}

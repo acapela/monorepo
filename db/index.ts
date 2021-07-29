@@ -21,6 +21,8 @@ export type {
   space_member as SpaceMember,
   team_member as TeamMember,
   whitelist as Whitelist,
+  notification as Notification,
+  PrismaPromise,
 } from "@prisma/client";
 
 const DB_VARS = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];

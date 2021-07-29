@@ -1,13 +1,18 @@
-import { RichEditorContent } from "~richEditor/content/types";
+import { RichEditorNode, RichEditorNodeWithAttributes } from "~richEditor/content/types";
 
-export function getNodesFromContentByType(node: RichEditorContent, type: string): RichEditorContent[] {
-  let res: RichEditorContent[] = [];
-  if (node.type === type) res = [node];
-
-  if (!node.content) return res;
-
-  for (const n of node.content) {
-    res = res.concat(getNodesFromContentByType(n, type));
+export function getNodesFromContentByType<AttributesType = unknown>(
+  node: RichEditorNode,
+  type: string
+): RichEditorNodeWithAttributes<AttributesType>[] {
+  let nodesOfRequestedType: RichEditorNodeWithAttributes<AttributesType>[] = [];
+  if (node.type === type) {
+    nodesOfRequestedType.push(node as RichEditorNodeWithAttributes<AttributesType>);
   }
-  return res;
+
+  if (!node.content) return nodesOfRequestedType;
+
+  for (const childNode of node.content) {
+    nodesOfRequestedType = nodesOfRequestedType.concat(getNodesFromContentByType<AttributesType>(childNode, type));
+  }
+  return nodesOfRequestedType;
 }
