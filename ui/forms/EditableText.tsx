@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
 import { createDocumentEvent, useElementEvent } from "~shared/domEvents";
-import { useDoubleClick } from "~shared/hooks/useDoubleClick";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
@@ -10,20 +9,17 @@ interface Props {
   value: string;
   onValueSubmit: (newValue: string) => void;
   onEditModeChangeRequest: (isInEditMode: boolean) => void;
-  allowDoubleClickEditRequest?: boolean;
   focusSelectMode?: FocusSelectMode;
   className?: string;
 }
 
 type FocusSelectMode = "cursor-at-end" | "select";
 
-export const EditableText = styled(function EditableText({
+export function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
   onEditModeChangeRequest,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allowDoubleClickEditRequest = true,
   focusSelectMode = "cursor-at-end",
   className,
 }: Props) {
@@ -75,10 +71,6 @@ export const EditableText = styled(function EditableText({
     };
   }, [isInEditMode]);
 
-  useDoubleClick(ref, () => {
-    onEditModeChangeRequest(true);
-  });
-
   useElementEvent(
     ref,
     "click",
@@ -121,10 +113,8 @@ export const EditableText = styled(function EditableText({
     { isEnabled: isInEditMode }
   );
 
-  return (
-    <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>
-  );
-})``;
+  return <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode} />;
+}
 
 const UIHolder = styled.span<{ isInEditMode: boolean }>`
   /* 

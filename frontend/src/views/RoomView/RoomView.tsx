@@ -57,7 +57,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                     onValueSubmit={handleRoomNameChange}
                     isInEditMode={isEditingRoomName}
                     onEditModeChangeRequest={setIsEditingRoomName}
-                    allowDoubleClickEditRequest
                   />
 
                   {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
