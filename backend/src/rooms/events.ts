@@ -1,6 +1,5 @@
 import { db, Room } from "~db";
 import logger from "~shared/logger";
-import { isNotNullish } from "~shared/nullish";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { addRoomParticipant, getIfParticipantExists } from "./rooms";
