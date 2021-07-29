@@ -1,16 +1,13 @@
-import { useEffect, useRef } from "react";
-import { RefObject } from "react";
+import { RefObject, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useIsomorphicLayoutEffect } from "react-use";
+import { assertDefined } from "~shared/assert";
+import { useEventListener } from "~shared/hooks/useEventListener";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
-  scrollToBottomKey?: string;
-  scrollInitially?: boolean;
-  isDisabled?: boolean;
-  getShouldScroll?: () => boolean;
+  getShouldScroll: () => boolean;
 }
 
 function scrollToBottom(element: HTMLElement, behavior: ScrollBehavior = "smooth") {
@@ -23,44 +20,30 @@ function scrollToBottom(element: HTMLElement, behavior: ScrollBehavior = "smooth
 }
 
 /**
- * Time after initial mount when we'll scroll without animations.
- */
-
-/**
  * This component will manage keeping it's parent scrolled to bottom on content size changes.
  *
  * It's useful for cases like messages feed.
  */
-export function ScrollToBottomMonitor({
-  parentRef,
-  scrollToBottomKey,
-  scrollInitially = true,
-  isDisabled = false,
-  getShouldScroll,
-}: Props) {
+export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
   const monitorRef = useRef<HTMLDivElement>(null);
 
-  function performScrollToBottom(behavior: ScrollBehavior) {
-    if (getShouldScroll && !getShouldScroll()) {
-      return;
-    }
+  const performScrollToBottom = useCallback(
+    (behavior: ScrollBehavior) => {
+      const parentNode = parentRef.current;
+      if (!parentNode || !getShouldScroll()) {
+        return;
+      }
 
-    if (isDisabled) return;
-
-    const parentNode = parentRef.current;
-
-    if (!parentNode) return;
-
-    scrollToBottom(parentNode, behavior);
-  }
+      scrollToBottom(parentNode, behavior);
+    },
+    [getShouldScroll]
+  );
 
   useResizeCallback(monitorRef, () => performScrollToBottom("auto"));
   useResizeCallback(parentRef, () => performScrollToBottom("auto"));
 
   // On mount try to scroll down without animation
   useIsomorphicLayoutEffect(() => {
-    if (!scrollInitially) return;
-
     performScrollToBottom("auto");
   }, []);
 
@@ -78,8 +61,6 @@ export function ScrollToBottomMonitor({
       }
     }
   });
-
-  useDependencyChangeEffect(() => performScrollToBottom("smooth"), [scrollToBottomKey]);
 
   return <UIContentSizeCaptureFlyer ref={monitorRef} />;
 }

@@ -1,4 +1,4 @@
-import { db, Room, RoomParticipants } from "~db";
+import { db, Room, RoomMember } from "~db";
 
 export async function findRoomById(roomId: string): Promise<Room | null> {
   return await db.room.findUnique({
@@ -6,7 +6,7 @@ export async function findRoomById(roomId: string): Promise<Room | null> {
   });
 }
 
-export async function addRoomParticipant(roomId: string, participantId: string): Promise<RoomParticipants> {
+export async function addRoomParticipant(roomId: string, participantId: string): Promise<RoomMember> {
   return await db.room_member.create({
     data: {
       room_id: roomId,

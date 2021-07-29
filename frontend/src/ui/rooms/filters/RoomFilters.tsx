@@ -69,7 +69,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
       <UIHolder className={className}>
         <FiltersList filters={filters} onFilterRemoveRequest={removeFilter} />
         <Button
-          kind="outlined"
+          kind="secondary"
           key="add-filter"
           ref={buttonRef}
           icon={<IconChevronDown />}

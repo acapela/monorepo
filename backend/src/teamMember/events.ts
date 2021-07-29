@@ -1,6 +1,7 @@
 import { db, TeamMember } from "~db";
+import { HasuraEvent } from "../hasura";
 
-export async function handleTeamMemberDeleted(teamMember: TeamMember) {
+export async function handleTeamMemberDeleted({ item: teamMember }: HasuraEvent<TeamMember>) {
   const { team_id: teamId, user_id: userId } = teamMember;
 
   await db.$transaction([

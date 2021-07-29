@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { formatNumberWithMaxValue } from "~shared/numbers";
-import { borderRadius, fontSize } from "~ui/baseStyles";
-import { NOTIFICATION_COLOR, STRONG_LINE_COLOR } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 interface Props {
   className?: string;
@@ -28,10 +27,10 @@ const UIHolder = styled.div<{ isHighlighted: boolean }>`
   height: 1.25rem;
   min-width: 1.25rem;
 
-  background: ${(props) => (props.isHighlighted ? NOTIFICATION_COLOR : STRONG_LINE_COLOR)};
+  background: ${(props) =>
+    props.isHighlighted ? props.theme.colors.interactive.notification : props.theme.colors.interactive.inactive};
 
   color: #fff;
-  ${borderRadius.label}
-  font-size: ${fontSize.label};
-  font-weight: bold;
+  ${theme.borderRadius.label}
+  ${theme.font.body14.semibold.build}
 `;

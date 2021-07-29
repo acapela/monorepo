@@ -1,20 +1,38 @@
-import { get, isFunction, isPlainObject } from "lodash";
-import DeepProxy from "proxy-deep";
+import { FlattenSimpleInterpolation } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { spacer } from "~ui/spacer";
 import { hoverTransition } from "~ui/transitions";
 import { zIndex } from "~ui/zIndex";
-import { variantToStyles } from "./actions/styleBuilder";
-import { getColorTheme, ThemeColorSchemeName } from "./colors";
-import { font } from "./font";
+import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
+import { getColorTheme, ThemeColorScheme, ThemeColorSchemeName } from "./colors";
+import { Font, font } from "./font";
+import { buildThemeProxy } from "./proxy";
 
 export type Variant = "primary" | "secondary" | "tertiary";
 
-export const defaultTheme = getTheme("default");
+// Using explicit interface instead of a `defaultTheme as const` in order to prevent circular reference
+// errors when extending the styled.DefaultTheme
+export interface Theme {
+  colors: ExtendedThemeColors;
+  shadow: typeof shadow;
+  font: Font;
+  borderRadius: typeof borderRadius;
+  zIndex: typeof zIndex;
+  transitions: Record<string, () => FlattenSimpleInterpolation>;
+  spacer: typeof spacer;
+}
 
-type Theme = typeof defaultTheme;
+type ExtendedThemeColors = ThemeColorScheme & { actions: Record<Variant, ActionStateInterpolations> };
 
-export function getTheme(colorScheme: ThemeColorSchemeName) {
+// Allows `${props => props.theme...}` to be typed properly
+declare module "styled-components" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DefaultTheme extends Theme {}
+}
+
+export const defaultTheme: Theme = getTheme("default");
+
+export function getTheme(colorScheme: ThemeColorSchemeName): Theme {
   const themeColors = getColorTheme(colorScheme);
   const themeColorsForActions = themeColors.interactive.actions;
 
@@ -38,50 +56,5 @@ export function getTheme(colorScheme: ThemeColorSchemeName) {
   } as const;
 }
 
-/*
- * Creates an access layer that allows us to easily use the theme provided to the styled-components context.
- * It looks for all of the leafs in a provided object of type Theme and proxies them to a function that returns the value
- * as found in the styled-components context.
- *
- * Before:
- * const UIComponent = styled.div`
- *   background: ${props => props.theme.colors.status.error};
- * `;
- *
- * After:
- * const UIComponent = styled.div`
- *   // `theme.colors.status.error` returns `props => props.theme.colors.status.error`
- *   background: ${theme.colors.status.error};
- * `;
- *
- */
-export const theme = new DeepProxy(defaultTheme, {
-  get(target, propertyName, receiver) {
-    const value = Reflect.get(target, propertyName, receiver);
-
-    if (isPlainObject(value)) {
-      // Creates a nested DeepProxy
-      // Calling nest with the value allows DeepProxy to build the `path` (👀 this.path) to nested props
-      return this.nest(value);
-    }
-
-    if (isFunction(value)) {
-      /* 
-      First function returned is the outer layer of the utility function that's being called. 
-      We use this to grab the arguments from that util and pass them as a closure to the equivalent theme function.
-
-      This way:
-      `style.utilityFunction(1,2,3)` becomes `props => props.theme.utilityFunction(1,2,3)`
-      */
-      return (...args: unknown[]) =>
-        (props: { theme: Theme }) => {
-          const fn = get(props.theme, [...this.path, propertyName]);
-          return fn.call(null, ...args);
-        };
-    }
-
-    return (props: { theme: Theme }) => {
-      return get(props.theme, [...this.path, propertyName]);
-    };
-  },
-});
+// 👀 buildThemeProxy for docs on how to use
+export const theme = buildThemeProxy(defaultTheme);

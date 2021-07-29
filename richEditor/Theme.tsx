@@ -1,15 +1,12 @@
 import { css } from "styled-components";
-import { fontSize } from "~ui/baseStyles";
-import { ACTIVE_COLOR } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 export const richEditorContentCss = css`
   .ProseMirror {
     outline: none;
   }
 
-  font-size: ${fontSize.messageText};
-
-  line-height: 1.25;
+  ${theme.font.body14.withExceptionalLineHeight("1.25", "This line-height is different from the standard").build}
 
   ol {
     list-style-type: decimal;
@@ -40,16 +37,16 @@ export const richEditorContentCss = css`
 
   code,
   pre {
-    font-family: monospace;
+    ${theme.font.speziaMono.build}
   }
 
   a {
     text-decoration: underline;
-    color: ${ACTIVE_COLOR};
+    color: ${theme.colors.layout.link};
   }
 
   blockquote {
-    border-left: 2px solid #888;
+    border-left: 2px solid ${theme.colors.layout.strongLine};
     padding: 0.5rem 0 0.5rem 0.5rem;
   }
 

@@ -29,7 +29,8 @@ interface Props {
 
 export function RoomView(props: Props) {
   return (
-    <RoomStoreContext>
+    // Re-create context if re-rendered for a different room
+    <RoomStoreContext key={props.room.id}>
       <RoomViewDisplayer {...props} />
     </RoomStoreContext>
   );
@@ -94,7 +95,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
           </CollapsePanel>
 
           <CardBase>
-            <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
+            <TopicsList key={room.id} room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </CardBase>
 
           <UIFlyingCloseRoomToggle>

@@ -1,9 +1,9 @@
-import React, { Ref, ReactNode } from "react";
-import { AttachmentDetailedInfoFragment } from "~gql";
+import { motion } from "framer-motion";
+import React, { ReactNode, Ref } from "react";
 import styled from "styled-components";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { motion } from "framer-motion";
-import { borderRadius } from "~ui/baseStyles";
+import { AttachmentDetailedInfoFragment } from "~gql";
+import { theme } from "~ui/theme";
 
 export const ATTACHMENT_PREVIEW_HEIGHT_PX = 120;
 
@@ -81,7 +81,7 @@ const ImageWrapper = styled.img`
   min-width: 0;
   min-height: 0;
   user-select: none;
-  ${borderRadius.item}
+  ${theme.borderRadius.item}
 
   /* Safari fix - make sure image always keeps its aspect ratio. */
   object-fit: scale-down;

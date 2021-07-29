@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BASE_GREY_5 } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 
 export const UISelectGridContainer = styled.div`
   display: flex;
@@ -8,6 +8,6 @@ export const UISelectGridContainer = styled.div`
 
   width: 100%;
   padding: 8px;
-  border: 1px solid ${BASE_GREY_5};
-  border-radius: 8px;
+  border: 1px solid ${theme.colors.layout.softLine};
+  ${theme.borderRadius.menu}
 `;

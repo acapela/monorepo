@@ -1,13 +1,12 @@
 import { ButtonHTMLAttributes } from "react";
 import styled from "styled-components";
-import { BACKGROUND_ACCENT_WEAK } from "~ui/theme/colors/base";
-import { getButtonColorStyles } from "~ui/transitions";
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   tooltipLabel?: string;
 }
 
+// TODO: Move to Circle Button
 export const RecordButton = styled(function RecordButton({ tooltipLabel, ...otherProps }: Props) {
   return <UIButton data-tooltip={tooltipLabel} {...otherProps} />;
 })``;
@@ -20,7 +19,8 @@ export const UIButton = styled.button`
   width: 1.75em;
   height: 1.75em;
 
-  ${getButtonColorStyles(BACKGROUND_ACCENT_WEAK)}
-  ${borderRadius.circle}
+  ${theme.borderRadius.circle}
+  ${theme.colors.actions.tertiary.all()}
+
   cursor: pointer;
 `;

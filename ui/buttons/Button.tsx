@@ -1,22 +1,9 @@
-import { HTMLMotionProps } from "framer-motion";
+import { HTMLMotionProps, motion } from "framer-motion";
 import { ForwardedRef, forwardRef, ReactNode } from "react";
-import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+import styled, { css } from "styled-components";
 import { disabledOpacityCss } from "~ui/disabled";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { hoverTransition } from "~ui/transitions";
-import {
-  BASE_GREY_1,
-  BASE_GREY_2,
-  BASE_GREY_3,
-  BASE_GREY_4,
-  BASE_GREY_6,
-  BUTTON_BACKGROUND_COLOR,
-  BUTTON_BACKGROUND_ACTIVE_COLOR,
-  WHITE,
-  PRIMARY_PINK_1,
-  BASE_GREY_5,
-} from "~ui/theme/colors/base";
-import { TextBody } from "~ui/typo";
+import { theme } from "~ui/theme";
+import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
 import { ButtonIconPosition, ButtonKind, ButtonSize } from "./types";
 
 export interface ButtonDisabledInfo {
@@ -69,15 +56,12 @@ export const Button = styled(
       <UIButton
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as ForwardedRef<any>}
-        as="button"
         isLoading={isLoading}
         isDisabled={isDisabledBoolean}
         disabled={isDisabledBoolean}
         isWide={isWide}
         isClickable={isClickable}
         data-tooltip={getTooltipLabel()}
-        spezia
-        medium
         size={size}
         kind={kind}
         {...finalProps}
@@ -92,139 +76,19 @@ export const Button = styled(
 
 const UIIconHolder = styled.div``;
 
-export const smallSizeButtonStyle = css`
-  font-size: 12px;
-  padding: 10px 8px;
-  gap: 4px;
-`;
-
-const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
-  small: smallSizeButtonStyle,
-  medium: css`
-    font-size: 14px;
-    padding: 12px;
-    gap: 8px;
-
-    ${UIIconHolder} {
-      // specific font size to match the design
-      font-size: 1.14;
-    }
-  `,
-  large: css`
-    font-size: 16px;
-    padding: 18px 16px;
-    gap: 8px;
-
-    ${UIIconHolder} {
-      // specific font size to match the design
-      font-size: 1.25;
-    }
-  `,
-};
-
-const buttonKindSpecificStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
-  primary: css`
-    background: ${BUTTON_BACKGROUND_COLOR};
-    color: ${WHITE};
-    ${shadow.button}
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_4};
-    }
-  `,
-  secondary: css`
-    background: ${BASE_GREY_6};
-    color: ${BASE_GREY_1};
-    border: 1.5px solid transparent;
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_2};
-    }
-  `,
-  outlined: css`
-    background: ${WHITE};
-    color: ${BASE_GREY_1};
-    border: 1px solid ${BASE_GREY_4};
-    ${shadow.button}
-
-    ${UIIconHolder} {
-      color: ${PRIMARY_PINK_1};
-    }
-  `,
-  transparent: css`
-    background: transparent;
-    color: ${BASE_GREY_3};
-
-    ${UIIconHolder} {
-      color: ${BASE_GREY_3};
-    }
-  `,
-};
-
-export const activeTransparentButtonStyles = css`
-  color: ${BASE_GREY_2};
-  background: ${BASE_GREY_6};
-  ${UIIconHolder} {
-    color: ${PRIMARY_PINK_1};
-  }
-`;
-
-const buttonKindSpecificInteractionStyle: Record<ButtonKind, FlattenSimpleInterpolation> = {
-  primary: css`
-    &:hover {
-      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
-    }
-    &:active {
-      background: ${BUTTON_BACKGROUND_ACTIVE_COLOR};
-    }
-  `,
-  secondary: css`
-    &:hover {
-      background: ${BASE_GREY_4};
-    }
-    &:active {
-      background: ${BASE_GREY_5};
-      border-color: ${PRIMARY_PINK_1};
-    }
-  `,
-  outlined: css`
-    &:hover {
-      background: ${BASE_GREY_6};
-    }
-    &:active {
-      background: ${BASE_GREY_6};
-    }
-  `,
-  transparent: css`
-    &:hover {
-      color: ${BASE_GREY_2};
-      background: ${BASE_GREY_6};
-    }
-    &:active {
-      ${activeTransparentButtonStyles};
-    }
-
-    &:hover ${UIIconHolder} {
-      color: ${PRIMARY_PINK_1};
-    }
-  `,
-};
-
-export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
+export const UIButton = styled(motion.button)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  font: inherit;
-  font-weight: 400;
   white-space: nowrap;
-  line-height: 1.2;
+
+  ${theme.font.body.spezia.medium.withExceptionalLineHeight("1.2", "Line height for buttons").build}
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
-  ${hoverTransition()}
+  ${theme.transitions.hover()}
 
-  ${borderRadius.circle}
+  ${theme.borderRadius.circle}
 
   ${(props) => (props.isDisabled || props.isLoading) && disabledOpacityCss};
   ${(props) =>
@@ -235,7 +99,6 @@ export const UIButton = styled(TextBody)<Props & { isClickable: boolean; size: B
 
   ${({ size }) => buttonSizeSpecificStyle[size]}
   ${({ kind }) => buttonKindSpecificStyle[kind]}
-  ${({ isClickable, kind }) => isClickable && buttonKindSpecificInteractionStyle[kind]}
 `;
 
 const UIContentHolder = styled.div`

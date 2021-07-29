@@ -1,11 +1,11 @@
 import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
-import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
-import { borderRadius, shadow } from "~ui/baseStyles";
 import { BodyPortal } from "~ui/BodyPortal";
+import { Button } from "~ui/buttons/Button";
 import { Popover } from "~ui/popovers/Popover";
+import { HStack } from "~ui/Stack";
+import { theme } from "~ui/theme";
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
@@ -76,29 +76,31 @@ export const RecorderControls = styled(
 
 const UIHolder = styled.div`
   ${VideoPreview} {
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
   }
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const UIControls = styled(HStack)`
-  background: #f8f8f8;
-  padding: 0.5rem;
-  ${borderRadius.modal}
   user-select: none;
-  ${shadow.modal}
+  padding: 8px;
+
+  background: ${theme.colors.layout.foreground};
+  ${theme.borderRadius.modal}
+  ${theme.shadow.modal}
 `;
 
 const UIElapsedTime = styled.span`
-  margin: 0 0.5rem;
+  margin: 0 8px;
   min-width: 48px;
   text-align: left;
-  font-weight: 400;
-  line-height: 1.125rem;
-  color: #292829;
 `;
 
 const UICornerOfScreen = styled.div`
   position: fixed;
-  bottom: 2rem;
-  left: 2rem;
+  bottom: 32px;
+  left: 32px;
 `;
