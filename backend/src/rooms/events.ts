@@ -1,16 +1,13 @@
-import { Room } from "~db";
+import { db, Room } from "~db";
 import logger from "~shared/logger";
-import { UnprocessableEntityError } from "../errors/errorTypes";
+import { HasuraEvent } from "../hasura";
+import { createNotification } from "../notifications/entity";
 import { addRoomParticipant, getIfParticipantExists } from "./rooms";
 
-export async function handleRoomUpdates(room: Room, userId: string | null) {
+async function ensureOwnerIsRoomMember(room: Room) {
   const { creator_id: creatorId, id: roomId } = room;
 
-  if (!userId) return;
-
-  checkUserIdMatchesCreatorId(userId, creatorId);
-
-  const creatorIsAlreadyParticipant = await getIfParticipantExists(roomId, userId);
+  const creatorIsAlreadyParticipant = await getIfParticipantExists(roomId, creatorId);
   if (!creatorIsAlreadyParticipant) {
     logger.info("Adding creator as participant to room", {
       roomId: room.id,
@@ -25,12 +22,26 @@ export async function handleRoomUpdates(room: Room, userId: string | null) {
   }
 }
 
-function checkUserIdMatchesCreatorId(userId: string, creatorId: string): void {
-  if (userId !== creatorId) {
-    logger.error("User id of action caller does not match room creator", {
-      creatorId,
-      userId,
+async function createRoomClosedNotifications(room: Room, closedByUserId: string) {
+  const roomMembers = await db.room_member.findMany({ where: { room_id: room.id } });
+
+  const notificationCreateRequests = roomMembers.map((roomMember) => {
+    return createNotification({
+      type: "roomClosed",
+      userId: roomMember.user_id,
+      payload: { roomId: room.id, closedByUserId },
     });
-    throw new UnprocessableEntityError(`User id of action caller: ${userId} does not match room creator: ${creatorId}`);
+  });
+
+  return db.$transaction(notificationCreateRequests);
+}
+
+export async function handleRoomUpdates({ item: room, itemBefore: roomBefore, userId }: HasuraEvent<Room>) {
+  await ensureOwnerIsRoomMember(room);
+
+  const wasRoomJustClosed = room.finished_at && roomBefore && !roomBefore.finished_at;
+
+  if (wasRoomJustClosed && userId) {
+    await createRoomClosedNotifications(room, userId);
   }
 }
