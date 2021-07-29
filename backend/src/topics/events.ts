@@ -1,5 +1,4 @@
 import { db, Topic } from "~db";
-import { isNotNullish } from "~shared/nullish";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 
@@ -21,17 +20,15 @@ async function createTopicClosedNotifications(topic: Topic, closedByUserId: stri
   const topicMembers = await db.topic_member.findMany({ where: { topic_id: topic.id } });
 
   const createNotificationRequests = topicMembers
+    // Don't send notification to user who closed the topic
+    .filter((topicMembers) => topicMembers.user_id !== closedByUserId)
     .map((topicMember) => {
-      // Don't send notification to user who closed the topic
-      if (topicMember.user_id === closedByUserId) return null;
-
       return createNotification({
         type: "topicClosed",
         userId: topicMember.user_id,
         payload: { topicId: topic.id, closedByUserId },
       });
-    })
-    .filter(isNotNullish);
+    });
 
   return db.$transaction(createNotificationRequests);
 }
