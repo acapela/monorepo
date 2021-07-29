@@ -5,8 +5,9 @@ import { convertMessageContentToPlainText } from "~richEditor/content/plainText"
 import { RichEditorNode } from "~richEditor/content/types";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { EditorMentionData } from "~shared/types/editor";
-import { createNotificationData } from "~shared/notifications/types";
 import { uniqBy } from "lodash";
+import { HasuraEvent } from "../hasura";
+import { createNotification } from "../notifications/entity";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {
@@ -28,11 +29,29 @@ function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
   const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
 
-  return mentionNodes;
+  return uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
 }
 
-async function createMessageMentionNotifications(message: Message) {
-  const mentionNodes = getMentionNodesFromMessage(message);
+function getNewMentionNodesFromMessage(message: Message, messageBefore: Message | null) {
+  const mentionNodesNow = getMentionNodesFromMessage(message);
+
+  if (!messageBefore) {
+    return mentionNodesNow;
+  }
+
+  const mentionNodesBefore = getMentionNodesFromMessage(messageBefore);
+
+  const newMentionNodes = mentionNodesNow.filter((mentionNodeNow) => {
+    return !mentionNodesBefore.some((mentionNodeBefore) => {
+      return mentionNodeBefore.attrs.data.userId === mentionNodeNow.attrs.data.userId;
+    });
+  });
+
+  return newMentionNodes;
+}
+
+async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
+  const mentionNodes = getNewMentionNodesFromMessage(message, messageBefore);
 
   if (mentionNodes.length === 0) {
     // no mentions in message
@@ -49,10 +68,6 @@ async function createMessageMentionNotifications(message: Message) {
 
   for (const mentionNode of userUniqueMentionNodes) {
     const mentionedUserId = mentionNode.attrs.data.userId;
-    const notificationData = createNotificationData("topicMention", {
-      topicId: message.topic_id,
-      mentionedByUserId: message.user_id,
-    });
 
     const isUserMentioningSelf = mentionedUserId === message.user_id;
 
@@ -61,8 +76,10 @@ async function createMessageMentionNotifications(message: Message) {
       continue;
     }
 
-    const createNotificationPromise = db.notification.create({
-      data: { data: notificationData, user_id: mentionNode.attrs.data.userId },
+    const createNotificationPromise = createNotification({
+      type: "topicMention",
+      payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
+      userId: mentionNode.attrs.data.userId,
     });
 
     createNotificationPromises.push(createNotificationPromise);
@@ -72,9 +89,12 @@ async function createMessageMentionNotifications(message: Message) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function handleMessageCreated(message: Message, _userId: string | null) {
+export async function handleMessageChanges(event: HasuraEvent<Message>) {
+  if (event.type === "delete") return;
+
   await Promise.all([
+    prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
-    createMessageMentionNotifications(message),
+    createMessageMentionNotifications(event.item, event.itemBefore),
   ]);
 }
