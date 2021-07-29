@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import styled, { css } from "styled-components";
-import { ACTION_ACTIVE_COLOR } from "~ui/transitions";
 import { TopicDetailedInfoFragment } from "~gql";
 import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
+import { setColorOpacity } from "~shared/colors";
 
 interface Props {
   topics: TopicDetailedInfoFragment[];
@@ -105,8 +105,8 @@ const UIDraggableTopic = styled(UITopic)<{ isDragging: boolean }>`
   ${({ isDragging }) =>
     isDragging
       ? css`
-          background: ${ACTION_ACTIVE_COLOR};
-          ${borderRadius.item}
+          background: ${(props) => setColorOpacity(props.theme.colors.interactive.selected, 0.8)};
+          ${theme.borderRadius.item}
         `
       : ""}
 `;

@@ -8,13 +8,13 @@ import { routes } from "~frontend/routes";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { borderRadius } from "~ui/baseStyles";
-import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 import { EditableText } from "~ui/forms/EditableText";
 import { IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { ACTION_ACTIVE_COLOR, hoverActionCss } from "~ui/transitions";
+import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { setColorOpacity } from "~shared/colors";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -95,14 +95,14 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   width: 100%;
   align-items: center;
 
-  ${borderRadius.button}
+  ${theme.borderRadius.button}
 
   ${hoverActionCss}
   
   ${(props) => {
     if (props.isActive) {
       return css`
-        background: ${ACTION_ACTIVE_COLOR};
+        background: ${(props) => setColorOpacity(props.theme.colors.interactive.selected, 0.8)};
       `;
     }
   }}
@@ -151,7 +151,7 @@ const UIUnreadMessagesNotification = styled.div`
 
   height: 8px;
   width: 8px;
-  ${borderRadius.item}
+  ${theme.borderRadius.item}
 
-  background-color: ${NOTIFICATION_COLOR};
+  background-color: ${theme.colors.interactive.notification};
 `;
