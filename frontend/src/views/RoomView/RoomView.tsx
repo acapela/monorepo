@@ -1,17 +1,12 @@
 import { useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import { IconPlusSquare } from "~ui/icons";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
-import { getLastElementFromArray } from "~shared/array";
-import { generateId } from "~shared/id";
 import { theme } from "~ui/theme";
-import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
@@ -20,7 +15,6 @@ import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
-import { VStack } from "~ui/Stack";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -46,17 +40,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
   async function handleRoomNameChange(newName: string) {
     await updateRoom({ roomId: room.id, input: { name: newName } });
-  }
-
-  async function handleCreateNewTopic() {
-    const currentLastIndex = getLastElementFromArray(room.topics)?.index;
-    await startCreateNewTopicFlow({
-      name: "New topic",
-      slug: `new-topic-${generateId(5)}`,
-      roomId: room.id,
-      navigateAfterCreation: true,
-      currentLastIndex,
-    });
   }
 
   return (
@@ -97,20 +80,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
           <CardBase>
             <TopicsList key={room.id} room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
-
-            <VStack alignItems="center" justifyContent="start">
-              <UINewTopicButton
-                kind="secondary"
-                onClick={handleCreateNewTopic}
-                isDisabled={
-                  !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
-                }
-                icon={<IconPlusSquare />}
-                iconPosition="start"
-              >
-                New Topic
-              </UINewTopicButton>
-            </VStack>
           </CardBase>
         </UIRoomInfo>
 
@@ -162,9 +131,4 @@ const UIRoomTitle = styled.div`
     css`
       cursor: pointer;
     `}
-`;
-
-const UINewTopicButton = styled(Button)`
-  margin-top: 10px;
-  padding: 10px 50px;
 `;
