@@ -52,6 +52,7 @@ jobs:
       - run: yarn install
       - name: Setup dotenv
         run: cp .env.sample .env
+      - run: yarn generate
       - run: yarn run frontend:test
       - run: yarn run frontend:build
 
@@ -103,6 +104,7 @@ jobs:
           yarn hasura:seeds
       - name: Setup dotenv
         run: cp .env.sample .env
+      - run: yarn generate
       - run: yarn run backend:test
 
   release:
