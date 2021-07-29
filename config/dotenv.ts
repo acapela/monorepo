@@ -134,11 +134,11 @@ function loadRootDotEnv(): void {
   dotenv.config({ path: dotEnvPath });
 }
 
-assertDefined(process.env.APP, "APP environment variable must always be set");
+const appType = assertDefined(process.env.APP, "APP environment variable must always be set");
 
 loadRootDotEnv();
 
-// assertEnvVarsLoaded(requiredEnvVarNames);
+assertEnvVarsLoaded(requiredEnvVarNames);
 
-// if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
-// if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
+if (appType === "frontend") assertEnvVarsLoaded(requiredEnvVarNamesFrontend);
+if (appType === "backend") assertEnvVarsLoaded(requiredEnvVarNamesBackend);
