@@ -42,6 +42,7 @@ export function NotificationLabel({ notification }: Props) {
     return <AddedToRoomClosedNotificationLabel notification={notification} payload={notificationData.payload} />;
   }
 
+  // TODO: Should we somehow warn about this, especially in production?
   return null;
 }
 
@@ -57,7 +58,6 @@ function MentionNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      id={notification.id}
       date={new Date(notification.created_at)}
       titleNode={
         <>
@@ -84,7 +84,6 @@ function TopicClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      id={notification.id}
       date={new Date(notification.created_at)}
       titleNode={
         <>
@@ -108,7 +107,6 @@ function AddedToTopicClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      id={notification.id}
       date={new Date(notification.created_at)}
       titleNode={
         <>
@@ -135,7 +133,6 @@ function RoomClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      id={notification.id}
       date={new Date(notification.created_at)}
       titleNode={
         <>
@@ -159,7 +156,6 @@ function AddedToRoomClosedNotificationLabel({
   return (
     <NotificationPlainLabel
       notification={notification}
-      id={notification.id}
       date={new Date(notification.created_at)}
       titleNode={
         <>

@@ -21,12 +21,12 @@ interface Props {
   userId: string;
   date: Date;
   titleNode: ReactNode;
-  id: string;
   onClick?: () => void;
   notification: NotificationInfoFragment;
 }
 
-export function NotificationPlainLabel({ userId, date, titleNode, id, onClick, notification }: Props) {
+export function NotificationPlainLabel({ userId, date, titleNode, onClick, notification }: Props) {
+  const id = notification.id;
   const holderRef = useRef<HTMLDivElement>(null);
   const user = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
