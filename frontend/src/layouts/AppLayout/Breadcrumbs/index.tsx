@@ -5,9 +5,8 @@ import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { IconSpaces, IconBox } from "~ui/icons";
-import { ONYX_LIGHTEST } from "~ui/theme/colors/base";
-import { fontSize } from "~ui/baseStyles";
 import { routes } from "~frontend/routes";
+import { theme } from "~ui/theme";
 
 export const Breadcrumbs = () => {
   const breadcrumbsProps: BreadcrumbProps[] = [
@@ -57,9 +56,7 @@ export const Breadcrumbs = () => {
 const UIHolder = styled.div`
   display: flex;
   gap: 20px;
+  ${theme.font.withExceptionalSize("0.9375rem", "Design system uses navigation font at 15px").build}
 `;
 
-const UIDivider = styled.div`
-  font-size: ${fontSize.navigation};
-  color: ${ONYX_LIGHTEST};
-`;
+const UIDivider = styled.div``;

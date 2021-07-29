@@ -1,7 +1,8 @@
 import { css, FlattenSimpleInterpolation } from "styled-components";
-import { ThemeTarget } from "./themeTarget";
+import { markAsNotTerminal } from "~ui/theme/proxy/nonTerminal";
+import { noop } from "lodash";
 
-export interface Font extends ThemeTarget {
+export interface Font {
   spezia: Font;
   speziaExtended: Font;
   speziaMono: Font;
@@ -17,8 +18,14 @@ export interface Font extends ThemeTarget {
   body14: Font;
   body12: Font;
 
+  normal: Font;
   medium: Font;
   semibold: Font;
+
+  withExceptionalSize: (fontSize: string, obligatoryComment: string) => Font;
+  withExceptionalLineHeight: (lineHeight: string, obligatoryComment: string) => Font;
+
+  build: () => FlattenSimpleInterpolation;
 }
 
 const BACKUP_FONT_FAMILIES = `"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif"`;
@@ -36,7 +43,7 @@ const bodyBaseStyles = css`
 `;
 
 export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Font {
-  return {
+  const builder = {
     get spezia() {
       return createFontStyles([
         ...parentStyles,
@@ -141,6 +148,35 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       ]);
     },
 
+    withExceptionalSize(fontSize: string, obligatoryComment: string) {
+      noop(obligatoryComment);
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          font-size: ${fontSize};
+        `,
+      ]);
+    },
+
+    withExceptionalLineHeight(lineHeight: string, obligatoryComment: string) {
+      noop(obligatoryComment);
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          line-height: ${lineHeight};
+        `,
+      ]);
+    },
+
+    get normal() {
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          font-weight: normal;
+        `,
+      ]);
+    },
+
     get medium() {
       return createFontStyles([
         ...parentStyles,
@@ -157,12 +193,17 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
         `,
       ]);
     },
-    getStyles() {
+    build() {
       return css`
         ${parentStyles}
       `;
     },
   };
+
+  markAsNotTerminal(builder.withExceptionalSize);
+  markAsNotTerminal(builder.withExceptionalLineHeight);
+
+  return builder;
 }
 
 export function font(): Font {

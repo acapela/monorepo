@@ -15,5 +15,5 @@ export function OptionsButton({ onClick, tooltip = "Show options..." }: Props) {
 }
 
 export function CircleOptionsButton({ onClick, tooltip = "Show options..." }: Props) {
-  return <CircleIconButton kind="secondary" onClick={onClick} tooltip={tooltip} icon={<IconMoreHoriz />} />;
+  return <CircleIconButton kind="tertiary" onClick={onClick} tooltip={tooltip} icon={<IconMoreHoriz />} />;
 }

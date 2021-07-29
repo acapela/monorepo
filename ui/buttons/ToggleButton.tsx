@@ -1,9 +1,7 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { BASE_GREY_1, BASE_GREY_4, PRIMARY_PINK_1, WHITE, BASE_GREY_6, BASE_GREY_7 } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
-import { smallSizeButtonStyle } from "./Button";
+import { theme } from "~ui/theme";
+import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
 
 interface Props {
   isActive: boolean;
@@ -24,16 +22,13 @@ export const ToggleButton = ({ isActive, onClick, children, icon, tooltip }: Pro
 
 const UIIconHolder = styled.div``;
 
-const inactiveButtonStyles = css`
-  background: ${WHITE};
-  border-color: ${BASE_GREY_4};
+const activeButtonStyles = css`
+  ${theme.colors.actions.secondary.active()}
 `;
 
-const activeButtonStyles = css`
-  background: ${BASE_GREY_7};
-  border-color: ${PRIMARY_PINK_1};
-  ${UIIconHolder} {
-    color: ${PRIMARY_PINK_1};
+const forceIconColorToBeTextColor = css`
+  svg {
+    color: ${theme.colors.interactive.actions.secondary.regular.text};
   }
 `;
 
@@ -41,22 +36,14 @@ export const UIButton = styled.button<{ isActive: boolean }>`
   display: flex;
   align-items: center;
 
-  ${smallSizeButtonStyle}
-
-  color: ${BASE_GREY_1};
-  ${shadow.button}
-  ${borderRadius.circle}
-  border: 1px solid;
+  ${buttonSizeSpecificStyle.small}
+  ${buttonKindSpecificStyle.secondary}
+  ${theme.font.spezia.semibold.build}
+  
   cursor: pointer;
-  font-weight: 500;
 
-  ${({ isActive }) => (isActive ? activeButtonStyles : inactiveButtonStyles)}
+  ${({ isActive }) => (isActive ? activeButtonStyles : forceIconColorToBeTextColor)}
 
-  ${hoverTransition()}
-  &:hover {
-    background: ${BASE_GREY_6};
-  }
-  &:active {
-    background: ${BASE_GREY_6};
-  }
+  ${theme.borderRadius.circle}
+  ${theme.transitions.hover()}
 `;

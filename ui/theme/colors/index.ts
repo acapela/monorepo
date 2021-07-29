@@ -22,7 +22,9 @@ export interface ThemeColorScheme {
     softLine: string;
     strongLine: string;
     bodyText: string;
+    supportingText: string;
     headingText: string;
+    link: string;
   };
   interactive: {
     notification: string;

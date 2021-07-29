@@ -9,12 +9,14 @@ export const defaultTheme: ThemeColorScheme = {
     softLine: colors.BASE_GREY_5,
     strongLine: colors.BASE_GREY_4,
     bodyText: colors.BASE_GREY_1,
+    supportingText: colors.BASE_GREY_3,
     headingText: colors.BASE_GREY_1,
+    link: colors.PRIMARY_PINK_3,
   },
   interactive: {
     notification: colors.PRIMARY_PINK_1,
     active: colors.PRIMARY_PINK_1,
-    inactive: colors.BASE_GREY_7,
+    inactive: colors.BASE_GREY_4,
     selected: colors.BASE_GREY_7,
     actions: {
       primary: {

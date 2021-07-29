@@ -1,8 +1,7 @@
 import React from "react";
 import styled, { css } from "styled-components";
-import { HIGHLIGHT_COLOR } from "~ui/theme/colors/base";
 import { Transcription } from "~gql";
-import { borderRadius } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 
 export interface Word {
   text: string;
@@ -54,19 +53,18 @@ export const MessageTranscription = styled(PureMessageTranscription)`
 const UIWord = styled.span<{ isActive: boolean }>`
   display: inline-block;
   cursor: default;
-  padding: 0.1rem 0.3rem;
+  padding: 2px 4px;
   border: 1px solid transparent;
-  ${borderRadius.label}
+
+  ${theme.borderRadius.label}
 
   &:hover {
-    border-color: #e94057;
-    background-color: #fff;
+    ${theme.colors.actions.tertiary.hover()}
   }
 
-  ${({ isActive }) =>
+  ${({ isActive, theme }) =>
     isActive &&
     css`
-      border-color: ${HIGHLIGHT_COLOR};
-      background-color: #fff;
+      ${theme.colors.actions.tertiary.active()}
     `}
 `;
