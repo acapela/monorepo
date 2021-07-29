@@ -32,8 +32,8 @@ actions:
       kind: ""
       handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
       headers:
-        - value: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-          name: Authorization
+        - name: Authorization
+          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
     permissions:
       - role: public
       - role: user
