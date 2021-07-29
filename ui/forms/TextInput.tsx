@@ -1,8 +1,9 @@
 import { HTMLMotionProps, motion } from "framer-motion";
-import { ChangeEvent, forwardRef, ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
 import styled from "styled-components";
 import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { FieldWithLabel } from "./FieldWithLabel";
 
 export interface TextInputProps extends HTMLMotionProps<"input"> {
@@ -11,7 +12,7 @@ export interface TextInputProps extends HTMLMotionProps<"input"> {
   icon?: ReactNode;
 }
 
-export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(props, ref) {
+export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(function TextInput(props, ref) {
   const inputRef = useSharedRef<HTMLInputElement | null>(null, [ref]);
   const { onChangeText, errorMessage, placeholder, icon, ...regularProps } = props;
 

@@ -1,11 +1,12 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
-import { forwardRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
 import { IconChevronDown } from "~ui/icons";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 export interface Props {
   pushLabel?: boolean;
@@ -17,8 +18,7 @@ export interface Props {
   onClick?: () => void;
   indicateDropdown?: boolean;
 }
-
-export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
   { pushLabel, icon, label, children, onClick, indicateDropdown },
   forwardedRef
 ) {
