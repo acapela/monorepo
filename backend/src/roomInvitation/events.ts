@@ -28,7 +28,7 @@ export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEv
   });
 }
 
-export async function handleRoomInvitationCreated(invite: RoomInvitation, userId: string | null) {
+export async function handleRoomInvitationCreated({ item: invite, userId }: HasuraEvent<RoomInvitation>) {
   const { room_id: roomId, inviting_user_id: invitingUserId } = invite;
 
   if (userId !== invitingUserId) {
