@@ -43,18 +43,15 @@ export default function InvitePage() {
       return "Invalid invite code!";
     }
 
-    /* If there is no user - ask to log in */
-    if (!user) {
+    return (
       <UIHolder>
         You have been invited by {invitationInfo.inviter_name} to join the{" "}
         {teamInvitationInfo ? `"${teamInvitationInfo.team_name}" team` : `"${roomInvitationInfo?.room_name}" room`}.
         <div>
           <LoginOptionsView />
         </div>
-      </UIHolder>;
-    }
-
-    return null;
+      </UIHolder>
+    );
   };
 
   return <WindowView>{renderContent()}</WindowView>;
@@ -85,4 +82,9 @@ function useInvitationAcceptedCallback(token: string, callback: () => void) {
   }, [isSuccessfullyAccepted, callback]);
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+`;
