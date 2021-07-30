@@ -15,7 +15,7 @@ interface Props {
 
 type FocusSelectMode = "cursor-at-end" | "select";
 
-export function EditableText({
+export const EditableText = styled(function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
@@ -114,7 +114,7 @@ export function EditableText({
   );
 
   return <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode} />;
-}
+})``;
 
 const UIHolder = styled.span<{ isInEditMode: boolean }>`
   /* 
