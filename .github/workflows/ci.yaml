@@ -53,6 +53,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: ./frontend/.next/
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/next.config.js', 'yarn.lock') }}
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -123,6 +127,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: ./frontend/.next/
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/next.config.js', 'yarn.lock') }}
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
