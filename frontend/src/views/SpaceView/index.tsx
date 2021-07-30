@@ -8,7 +8,7 @@ import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { useMemo } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { RoomsListGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
+import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
 import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { IconPlusSquare } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
@@ -81,7 +81,7 @@ export function SpaceView({ spaceId }: Props) {
         </CenteredContentWithSides>
 
         <UIRooms>
-          <RoomsListGroupedByMembership query={roomQuery} />
+          <RoomsGroupedByMembership query={roomQuery} />
         </UIRooms>
       </UIContainer>
     </>
