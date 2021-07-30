@@ -139,6 +139,9 @@ jobs:
       - run: |
           oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
           tar -xf node_modules.tar && rm node_modules.tar
+          echo "cleanup cache..."
+          echo "{}" > manifest-config.json
+          oras push ghcr.io/weareacapela/node-modules:$GITHUB_SHA --manifest-config ./manifest-config.json ./manifest-config.json
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
