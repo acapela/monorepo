@@ -1,6 +1,6 @@
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import styled from "styled-components";
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
@@ -17,6 +17,7 @@ import { richEditorContentCss } from "./Theme";
 import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 import { useUpdate } from "react-use";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";
@@ -93,7 +94,7 @@ function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
   return editor.chain().focus(lastSelectablePosition);
 }
 
-export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEditor(
+export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function RichEditor(
   {
     value = getEmptyRichContent(),
     onChange,
