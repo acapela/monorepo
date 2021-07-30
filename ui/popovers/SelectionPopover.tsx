@@ -135,7 +135,7 @@ const UIHolder = styled.div<{ enableTransitions: boolean }>`
 
   ${(props) =>
     props.enableTransitions &&
-    css`
+    css<{}>`
       transition: 0.2s transform;
     `}
 `;

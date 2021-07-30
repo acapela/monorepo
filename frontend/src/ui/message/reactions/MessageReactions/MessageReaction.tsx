@@ -67,10 +67,10 @@ const UIReactionButton = styled.button<{ isSelected: boolean }>`
 
   ${(p) =>
     p.isSelected
-      ? css`
+      ? css<{}>`
           background: ${BACKGROUND_ACCENT_WEAK};
         `
-      : css`
+      : css<{}>`
           background: ${WHITE};
           border: 1px solid ${BACKGROUND_ACCENT};
         `}

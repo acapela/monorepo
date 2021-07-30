@@ -148,7 +148,7 @@ const UITitle = styled(TextH3)`
   margin-bottom: 16px;
 `;
 
-const UIList = styled.div`
+const UIList = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 16px;

@@ -58,7 +58,7 @@ export function EmojiPicker({ onPicked, className }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: relative;
 
   .emoji-mart {

@@ -30,13 +30,13 @@ export interface Font {
 
 const BACKUP_FONT_FAMILIES = `"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif"`;
 
-const headingBaseStyles = css`
+const headingBaseStyles = css<{}>`
   line-height: 1.2;
   letter-spacing: -2%;
   font-weight: 500;
 `;
 
-const bodyBaseStyles = css`
+const bodyBaseStyles = css<{}>`
   line-height: 1.5;
   font-weight: normal;
   letter-spacing: 0;
@@ -47,7 +47,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get spezia() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-family: "Spezia", ${BACKUP_FONT_FAMILIES};
         `,
       ]);
@@ -55,7 +55,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get speziaExtended() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-family: "Spezia Extended", ${BACKUP_FONT_FAMILIES};
         `,
       ]);
@@ -63,7 +63,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get speziaMono() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           letter-spacing: -2%;
           font-family: "Spezia Mono", ${BACKUP_FONT_FAMILIES};
         `,
@@ -72,7 +72,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get inter() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-family: "Inter", ${BACKUP_FONT_FAMILIES};
         `,
       ]);
@@ -82,7 +82,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         headingBaseStyles,
-        css`
+        css<{}>`
           font-size: 2.5rem;
         `,
       ]);
@@ -91,7 +91,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         headingBaseStyles,
-        css`
+        css<{}>`
           font-size: 2rem;
         `,
       ]);
@@ -100,7 +100,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         headingBaseStyles,
-        css`
+        css<{}>`
           font-size: 1.5rem;
         `,
       ]);
@@ -109,7 +109,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         headingBaseStyles,
-        css`
+        css<{}>`
           font-size: 1.25rem;
         `,
       ]);
@@ -118,7 +118,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         headingBaseStyles,
-        css`
+        css<{}>`
           font-size: 1.125rem;
         `,
       ]);
@@ -133,7 +133,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         bodyBaseStyles,
-        css`
+        css<{}>`
           font-size: 0.875rem;
         `,
       ]);
@@ -142,7 +142,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       return createFontStyles([
         ...parentStyles,
         bodyBaseStyles,
-        css`
+        css<{}>`
           font-size: 0.75rem;
         `,
       ]);
@@ -152,7 +152,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       noop(obligatoryComment);
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-size: ${fontSize};
         `,
       ]);
@@ -162,7 +162,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
       noop(obligatoryComment);
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           line-height: ${lineHeight};
         `,
       ]);
@@ -171,7 +171,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get normal() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-weight: normal;
         `,
       ]);
@@ -180,7 +180,7 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get medium() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-weight: bold;
         `,
       ]);
@@ -188,13 +188,13 @@ export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Fo
     get semibold() {
       return createFontStyles([
         ...parentStyles,
-        css`
+        css<{}>`
           font-weight: 500;
         `,
       ]);
     },
     build() {
-      return css`
+      return css<{}>`
         ${parentStyles}
       `;
     },

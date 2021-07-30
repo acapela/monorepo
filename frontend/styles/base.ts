@@ -3,7 +3,7 @@ import { normalize } from "styled-normalize";
 import { reset } from "styled-reset";
 
 /* Additional normalization styles */
-export const base = css`
+export const base = css<{}>`
   ${normalize};
   ${reset};
 

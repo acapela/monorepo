@@ -53,7 +53,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -70,7 +70,7 @@ const UIHolder = styled.div`
   min-height: 16px;
 `;
 
-const UIFlyingOverlay = styled.div`
+const UIFlyingOverlay = styled.div<{}>`
   position: absolute;
   top: 0;
   left: 0;
@@ -81,7 +81,7 @@ const UIFlyingOverlay = styled.div`
   pointer-events: none;
 `;
 
-const UIIconHolder = styled.div`
+const UIIconHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   padding: 16px;
@@ -89,12 +89,12 @@ const UIIconHolder = styled.div`
   font-size: 20px;
 `;
 
-const UIPlaceholdersHolder = styled.div`
+const UIPlaceholdersHolder = styled.div<{}>`
   display: flex;
   max-width: 100%;
 `;
 
-const sharedPlaceholderStyles = css`
+const sharedPlaceholderStyles = css<{}>`
   will-change: transform;
   white-space: nowrap;
   max-width: 100%;
@@ -121,7 +121,7 @@ const UIFocusedPlaceholder = styled(motion.div)`
   box-shadow: 0 0 0px 6px #fff;
 `;
 
-const UIContentHolder = styled.div`
+const UIContentHolder = styled.div<{}>`
   position: relative;
   flex-grow: 1;
   min-width: 0;

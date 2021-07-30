@@ -10,7 +10,7 @@ export function getSpaceColors(spaceId: string) {
 }
 
 export function getSpaceBackgroundGradientStyle(spaceId: string) {
-  return css`
+  return css<{}>`
     background-image: linear-gradient(to right bottom, ${getSpaceColors(spaceId).join(",")});
   `;
 }

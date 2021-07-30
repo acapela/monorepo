@@ -35,7 +35,7 @@ export const VideoPreview = styled(PureVideoPreview)`
 
   ${({ flip }) =>
     flip &&
-    css`
+    css<{}>`
       transform: rotateY(180deg);
     `}
 `;

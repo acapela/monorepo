@@ -30,7 +30,7 @@ const UIHolder = styled(UIDropdownPanelBody)`
   }
 `;
 
-const UINotifications = styled.div`
+const UINotifications = styled.div<{}>`
   margin-top: 16px;
   max-height: 40vh;
   overflow-y: auto;

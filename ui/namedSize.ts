@@ -14,7 +14,7 @@ export function getNamedSizeValue(sizeName: NamedSize) {
 
 export function getNamedSizeSquareStyles(sizeName: NamedSize) {
   const sizeValue = getNamedSizeValue(sizeName);
-  return css`
+  return css<{}>`
     width: ${sizeValue}px;
     height: ${sizeValue}px;
   `;

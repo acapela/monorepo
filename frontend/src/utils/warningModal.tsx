@@ -41,7 +41,7 @@ export const WarningModal = ({
   );
 };
 
-const UIContentWrapper = styled.div`
+const UIContentWrapper = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,7 +51,7 @@ const UIContentWrapper = styled.div`
   max-width: 480px;
 `;
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   padding: 0 48px;
 `;
 

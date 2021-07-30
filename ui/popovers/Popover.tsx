@@ -88,7 +88,7 @@ export const Popover = styled(
   }
 )``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: fixed;
   position: relative;
   will-change: transform;

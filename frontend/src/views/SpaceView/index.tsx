@@ -102,7 +102,7 @@ const UIFilters = styled(RoomFilters)`
   justify-content: flex-end;
 `;
 
-const UIRooms = styled.div`
+const UIRooms = styled.div<{}>`
   margin-top: 32px;
 
   display: flex;

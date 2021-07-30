@@ -119,7 +119,7 @@ const UISearchResultLink = styled.a<{ isHighlighted: boolean }>`
 
   ${(props) =>
     props.isHighlighted &&
-    css`
+    css<{}>`
       border: 1px solid ${PRIMARY_PINK_1};
       background-color: ${PRIMARY_PINK_1_TRANSPARENT};
     `}

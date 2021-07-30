@@ -53,7 +53,7 @@ export const TimePicker = ({ value, onChange }: Props) => {
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   ${TextBody} {
     font-weight: bold;
   }

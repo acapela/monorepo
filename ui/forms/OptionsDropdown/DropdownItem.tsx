@@ -77,7 +77,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
 
   ${(props) =>
     props.isHighlighted &&
-    css`
+    css<{}>`
       border: 1px solid ${PRIMARY_PINK_1};
       background-color: ${setColorOpacity(PRIMARY_PINK_1, 0.05)};
     `}

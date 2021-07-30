@@ -57,19 +57,19 @@ export function RoomSummaryView({ room }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 60px;
   overflow-y: auto;
   height: 100%;
 `;
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   ${TextBody} {
     line-height: 2rem;
   }
 `;
 
-const UITopicSummaries = styled.div`
+const UITopicSummaries = styled.div<{}>`
   display: grid;
   gap: 16px;
   padding: 40px 0;

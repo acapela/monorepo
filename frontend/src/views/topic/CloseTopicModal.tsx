@@ -56,7 +56,7 @@ export const CloseTopicModal = ({ onDismissRequest, onTopicClosed, loading }: Pr
   );
 };
 
-const UIBody = styled.div`
+const UIBody = styled.div<{}>`
   width: 480px;
   padding: 8px 24px;
   align-items: center;
@@ -67,7 +67,7 @@ const UITitle = styled(TextH3)`
   padding-bottom: 16px;
 `;
 
-const UIBodyText = styled.div`
+const UIBodyText = styled.div<{}>`
   font-weight: 400;
   line-height: 1.5;
   padding-bottom: 32px;

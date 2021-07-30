@@ -128,21 +128,21 @@ export function MultipleOptionsDropdown<I>({
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: relative;
   min-width: 0;
   display: flex;
   flex-grow: 1;
 `;
 
-const UIMenuOpener = styled.div`
+const UIMenuOpener = styled.div<{}>`
   padding: 12px 0;
   display: flex;
 `;
 
-const UIDropdownHolder = styled.div``;
+const UIDropdownHolder = styled.div<{}>``;
 
-const UISelectedItemsPreview = styled.div`
+const UISelectedItemsPreview = styled.div<{}>`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;

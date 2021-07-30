@@ -35,11 +35,11 @@ export function NotificationsOpener() {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: relative;
 `;
 
-const UIUnreadNotificationsIndicator = styled.div`
+const UIUnreadNotificationsIndicator = styled.div<{}>`
   height: 8px;
   width: 8px;
   ${borderRadius.circle}

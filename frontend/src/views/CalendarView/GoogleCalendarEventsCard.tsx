@@ -95,7 +95,7 @@ const UIHolder = styled(CardBase)`
   }
 `;
 
-const UIInfo = styled.div`
+const UIInfo = styled.div<{}>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -108,8 +108,8 @@ const UIName = styled(TextH4)`
   font-weight: bold;
 `;
 
-const UIMeta = styled.div`
+const UIMeta = styled.div<{}>`
   padding-top: 16px;
 `;
 
-const UIActions = styled.div``;
+const UIActions = styled.div<{}>``;

@@ -21,7 +21,7 @@ export function WeekDaysNames() {
   );
 }
 
-const UIDays = styled.div`
+const UIDays = styled.div<{}>`
   display: flex;
   justify-content: space-around;
   flex: 1;

@@ -61,4 +61,4 @@ export function SpacesView() {
   );
 }
 
-const UISpaces = styled.div``;
+const UISpaces = styled.div<{}>``;

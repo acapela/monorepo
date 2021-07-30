@@ -101,7 +101,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   
   ${(props) => {
     if (props.isActive) {
-      return css`
+      return css<{}>`
         background: ${ACTION_ACTIVE_COLOR};
       `;
     }
@@ -109,7 +109,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
 
   ${(props) => {
     if (props.isClosed) {
-      return css`
+      return css<{}>`
         text-decoration: line-through;
         opacity: 0.5;
       `;
@@ -122,7 +122,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }
 `;
 
-const UIManageTopicWrapper = styled.div`
+const UIManageTopicWrapper = styled.div<{}>`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
@@ -132,7 +132,7 @@ const UIManageTopicWrapper = styled.div`
   }
 `;
 
-const UIFlyingTooltipWrapper = styled.div`
+const UIFlyingTooltipWrapper = styled.div<{}>`
   width: 100%;
   position: relative;
   display: flex;
@@ -145,7 +145,7 @@ const UIFlyingTooltipWrapper = styled.div`
   }
 `;
 
-const UIUnreadMessagesNotification = styled.div`
+const UIUnreadMessagesNotification = styled.div<{}>`
   position: absolute;
   left: 8px;
 

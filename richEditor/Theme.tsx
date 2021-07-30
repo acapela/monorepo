@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import { theme } from "~ui/theme";
 
-export const richEditorContentCss = css`
+export const richEditorContentCss = css<{}>`
   .ProseMirror {
     outline: none;
   }

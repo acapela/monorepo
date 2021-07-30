@@ -37,7 +37,7 @@ const Stack = styled.div<Props>`
   flex-wrap: ${(p) => p.wrap || "initial"};
   ${(p) =>
     p.fullWidth &&
-    css`
+    css<{}>`
       width: 100%;
     `}
 `;

@@ -108,7 +108,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
   );
 };
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;
 
 const UIButtons = styled(HStack)`
   margin-top: 8px;

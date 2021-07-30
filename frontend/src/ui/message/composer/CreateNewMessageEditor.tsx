@@ -151,7 +151,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
   );
 });
 
-const UIEditorContainer = styled.div`
+const UIEditorContainer = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;

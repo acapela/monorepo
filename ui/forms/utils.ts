@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 
-export const baseInputStyles = css`
+export const baseInputStyles = css<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;

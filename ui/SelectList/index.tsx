@@ -42,7 +42,7 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   min-width: 15rem;

@@ -79,7 +79,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
 
   ${(props) =>
     props.isClickable &&
-    css`
+    css<{}>`
       cursor: pointer;
       ${hoverTransition()};
       &:hover {
@@ -90,7 +90,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
 
   ${(props) =>
     props.isDisabled &&
-    css`
+    css<{}>`
       opacity: 0.3;
       pointer-events: none;
     `}
@@ -100,7 +100,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
   ${borderRadius.item}
 `;
 
-const UIItemIcon = styled.div`
+const UIItemIcon = styled.div<{}>`
   font-size: 1.5em;
   margin-right: 12px;
 `;

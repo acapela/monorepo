@@ -74,7 +74,7 @@ export const RecorderControls = styled(
   }
 )``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   ${VideoPreview} {
     margin-bottom: 16px;
   }
@@ -99,7 +99,7 @@ const UIElapsedTime = styled.span`
   text-align: left;
 `;
 
-const UICornerOfScreen = styled.div`
+const UICornerOfScreen = styled.div<{}>`
   position: fixed;
   bottom: 32px;
   left: 32px;

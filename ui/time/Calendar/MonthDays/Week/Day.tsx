@@ -40,20 +40,20 @@ export function Day({ dayDate, onSelect, currentMonthDate, isSelected }: Props) 
   );
 }
 
-const UIDay = styled.div`
+const UIDay = styled.div<{}>`
   display: flex;
   justify-content: center;
   align-items: center;
   flex: 1;
 `;
 
-const UISquareWrapper = styled.div`
+const UISquareWrapper = styled.div<{}>`
   padding-bottom: 100%;
   width: 100%;
   position: relative;
 `;
 
-const absoluteStretchCss = css`
+const absoluteStretchCss = css<{}>`
   position: absolute;
   top: 0;
   right: 0;
@@ -61,7 +61,7 @@ const absoluteStretchCss = css`
   bottom: 0;
 `;
 
-const UISquareContent = styled.div`
+const UISquareContent = styled.div<{}>`
   ${absoluteStretchCss};
   display: flex;
   justify-content: stretch;
@@ -86,7 +86,7 @@ const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
   && {
     ${(props) => {
       if (props.isDisabled) {
-        return css`
+        return css<{}>`
           opacity: 0.4;
         `;
       }
@@ -96,7 +96,7 @@ const UIDayButton = styled(Button)<{ isToday: boolean; isSelected: boolean }>`
       }
 
       if (props.isToday) {
-        return css`
+        return css<{}>`
           color: ${ACTIVE_COLOR};
         `;
       }
