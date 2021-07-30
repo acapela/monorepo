@@ -8986,6 +8986,7 @@ export type RoomInvitationBasicInfoFragment = (
 
 export type CreateRoomInvitationMutationVariables = Exact<{
   roomId: Scalars['uuid'];
+  teamId: Scalars['uuid'];
   email: Scalars['String'];
 }>;
 
@@ -9472,19 +9473,6 @@ export type RemoveTeamInvitationMutation = (
   & { delete_team_invitation_by_pk?: Maybe<(
     { __typename?: 'team_invitation' }
     & Pick<Team_Invitation, 'team_id'>
-  )> }
-);
-
-export type TeamInvitationQueryVariables = Exact<{
-  tokenId: Scalars['uuid'];
-}>;
-
-
-export type TeamInvitationQuery = (
-  { __typename?: 'query_root' }
-  & { team_invitation: Array<(
-    { __typename?: 'team_invitation' }
-    & Pick<Team_Invitation, 'id' | 'team_id' | 'token' | 'used_by_user_id'>
   )> }
 );
 
