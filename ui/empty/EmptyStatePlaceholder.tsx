@@ -32,7 +32,7 @@ const UIHolder = styled.div`
   text-align: center;
   align-items: center;
 
-  background-color: ${theme.colors.layout.background};
+  background-color: ${theme.colors.layout.background()};
   ${theme.borderRadius.card}
 `;
 

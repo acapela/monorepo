@@ -42,11 +42,11 @@ export const richEditorContentCss = css`
 
   a {
     text-decoration: underline;
-    color: ${theme.colors.layout.link};
+    color: ${theme.colors.layout.link()};
   }
 
   blockquote {
-    border-left: 2px solid ${theme.colors.layout.strongLine};
+    border-left: 2px solid ${theme.colors.layout.strongLine()};
     padding: 0.5rem 0 0.5rem 0.5rem;
   }
 

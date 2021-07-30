@@ -38,7 +38,7 @@ const UIHolder = styled.div<{ isClickable: boolean; isSelected: boolean }>`
   gap: 8px;
 
   color: ${(props) =>
-    props.isSelected ? props.theme.colors.layout.bodyText : props.theme.colors.layout.supportingText};
+    props.isSelected ? props.theme.colors.layout.bodyText() : props.theme.colors.layout.supportingText()};
 
   ${theme.transitions.hover()}
 
@@ -46,7 +46,7 @@ const UIHolder = styled.div<{ isClickable: boolean; isSelected: boolean }>`
     props.isClickable &&
     css`
       &:hover {
-        color: ${theme.colors.layout.bodyText};
+        color: ${theme.colors.layout.bodyText()};
       }
     `}
 `;
