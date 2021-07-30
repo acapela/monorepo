@@ -4,10 +4,11 @@ import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
+import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 import { IconChevronDown } from "~ui/icons";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
+type CursorType = "action" | "input";
 export interface Props {
   pushLabel?: boolean;
   hasError?: boolean;
@@ -17,16 +18,17 @@ export interface Props {
   label?: string;
   onClick?: () => void;
   indicateDropdown?: boolean;
+  cursorType?: CursorType;
 }
 export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, icon, label, children, onClick, indicateDropdown },
+  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input" },
   forwardedRef
 ) {
   const id = useId();
 
   return (
     <AnimateSharedLayout>
-      <UIHolder onClick={onClick} ref={forwardedRef}>
+      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -53,7 +55,7 @@ export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function Fi
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{ cursorType: CursorType }>`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -68,6 +70,10 @@ const UIHolder = styled.div`
 
   outline: none;
   min-height: 16px;
+
+  /* TODO: add theme.colors.forms and replace it with this */
+  background-color: ${WHITE};
+  cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
 `;
 
 const UIFlyingOverlay = styled.div`

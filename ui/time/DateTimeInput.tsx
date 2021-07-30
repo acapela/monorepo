@@ -32,7 +32,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
     <>
       <AnimatePresence>
         {isPickerOpen && (
-          <Popover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
+          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
             <DateTimePicker onSubmit={handleSubmit} initialValue={value} />
           </Popover>
         )}
@@ -45,6 +45,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         pushLabel={hasValue}
         icon={<IconCalendar />}
         indicateDropdown
+        cursorType="action"
       >
         <UIHolder isReadonly={isReadonly} onFocus={openPicker} onClick={openPicker}>
           <TextBody>{format(value, "dd.MM.yyyy, p")}</TextBody>
