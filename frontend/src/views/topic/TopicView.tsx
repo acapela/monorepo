@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { useLastSeenMessageMutation, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
+import { updateLastSeenMessage, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
 import { useTopic } from "~frontend/topics/useTopic";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
@@ -24,33 +24,28 @@ interface Props {
 }
 
 function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]) {
-  const [updateLastSeenMessage] = useLastSeenMessageMutation();
-
   /**
    * Let's mark last message as read each time we have new messages.
    */
-  useAsyncLayoutEffect(
-    async (getIsCancelled) => {
-      if (!messages) return;
+  useAsyncLayoutEffect(async () => {
+    if (!messages) return;
 
-      const lastMessage = messages[messages.length - 1];
+    const lastMessage = messages[messages.length - 1];
 
-      if (!lastMessage) return;
+    if (!lastMessage) return;
 
-      /**
-       * Let's make sure we're never marking message from 'optimistic' response (because it is not in the DB yet so it
-       * would result in DB error).
-       */
-      await waitForAllRunningMutationsToFinish();
+    /**
+     * Let's make sure we're never marking message from 'optimistic' response (because it is not in the DB yet so it
+     * would result in DB error).
+     */
+    await waitForAllRunningMutationsToFinish();
 
-      if (getIsCancelled()) return;
+    // Component might be unmounted at this point, but we still want to mark seen message as read.
 
-      // There are no mutations in progress now so we can safely mark new message as read as mutation creating it already
-      // finished running
-      updateLastSeenMessage({ topicId, messageId: lastMessage.id });
-    },
-    [messages]
-  );
+    // There are no mutations in progress now so we can safely mark new message as read as mutation creating it already
+    // finished running
+    updateLastSeenMessage({ topicId, messageId: lastMessage.id });
+  }, [messages]);
 }
 
 export const TopicView = ({ topicId }: Props) => {

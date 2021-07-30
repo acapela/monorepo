@@ -14,7 +14,7 @@ import {
 import { getUUID } from "~shared/uuid";
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
-import { topicMessagesQueryManager } from "./topics";
+import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
@@ -140,6 +140,10 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
         }
         current.messages.push(message);
       });
+    },
+    onActualResponse: (message, variables) => {
+      // Each time user sends a new message, automatically mark it as read
+      updateLastSeenMessage({ messageId: message.id, topicId: variables.topicId });
     },
   }
 );
