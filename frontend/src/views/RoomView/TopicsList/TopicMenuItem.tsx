@@ -102,7 +102,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   ${(props) => {
     if (props.isActive) {
       return css`
-        background: ${(props) => setColorOpacity(props.theme.colors.interactive.selected, 0.8)};
+        background: ${theme.colors.interactive.selected};
       `;
     }
   }}
