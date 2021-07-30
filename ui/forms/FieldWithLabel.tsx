@@ -18,7 +18,7 @@ export interface Props {
   onClick?: () => void;
   indicateDropdown?: boolean;
 }
-namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
   { pushLabel, icon, label, children, onClick, indicateDropdown },
   forwardedRef
 ) {
