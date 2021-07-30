@@ -4,4 +4,3 @@
 .env.test
 .git
 .npmrc
-node_modules
