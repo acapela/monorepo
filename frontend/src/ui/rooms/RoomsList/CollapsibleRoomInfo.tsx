@@ -21,6 +21,7 @@ import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { UICardListItem } from "./shared";
 import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
+import { createLastItemIndex } from "~frontend/rooms/order";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -50,6 +51,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
         placement: "bottom-start",
       },
       navigateAfterCreation: true,
+      index: createLastItemIndex(topics[topics.length - 1]?.index),
     });
   }
 

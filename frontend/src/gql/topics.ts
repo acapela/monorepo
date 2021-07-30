@@ -116,6 +116,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
     onOptimisticOrActualResponse(topic, variables) {
       RoomDetailedInfoFragment.update(variables.input.room_id!, (data) => {
         data.topics.push(topic);
+        data.topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
       });
     },
   }

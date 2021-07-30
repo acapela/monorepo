@@ -16,9 +16,9 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
-import { getLastElementFromArray } from "~shared/array";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { generateId } from "~shared/id";
+import { getIndexBetweenItems } from "~frontend/rooms/order";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -37,13 +37,21 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const amIMember = isCurrentUserRoomMember(room);
 
   async function handleCreateNewTopic() {
-    const currentLastIndex = getLastElementFromArray(room.topics)?.index;
+    let beforeListPosition = topics.findIndex((t) => t.id == activeTopicId);
+    if (beforeListPosition == -1) {
+      beforeListPosition = room.topics.length - 1;
+    }
+    const beforeTopic = room.topics[beforeListPosition];
+
+    const beforeLexIndex = beforeTopic ? beforeTopic.index : "";
+    const afterLexIndex = room.topics[beforeListPosition + 1]?.index ?? "";
+
     await startCreateNewTopicFlow({
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
       roomId: room.id,
       navigateAfterCreation: true,
-      currentLastIndex,
+      index: getIndexBetweenItems(beforeLexIndex, afterLexIndex),
     });
   }
 
