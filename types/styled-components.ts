@@ -6,6 +6,21 @@
  *
  * Brief comparing shows that eg. auto imports and type checks are at least a few times faster with those optimizations.
  *
+ * This types were created from @types/styled-components 4.0.3 (not latest) as a lot of performance issues were mentioned after
+ * this version. I was not investigating exactly why.
+ *
+ * I updated 4.0.3 to eg. support functional components (not only class components). Beside I still trimmed it a lot (especially dynamic generics for theme
+ * - replaced with theme-level, 'global' and static theme interface).
+ *
+ * For the most part, I tried to make it compatible with existing typings.
+ *
+ * I also cleaned it up a bit, improved internal naming while trying to understand the typings and simplified types where possible.
+ *
+ * I also added bunch of comments making it easier to follow.
+ *
+ * Note: we might try to release it to github, I imagine a lot of teams are struggling with that, so we can gain some stars and
+ * traction for the product.
+ *
  * Limitations:
  *
  * 1. There is no theme `generic` type. There is one 'global' `StyledTheme` type that can be modified and it is used
@@ -44,6 +59,24 @@
  * const <P {...props} />
  *
  * `P` now has 'p' props and ref properly typed.
+ *
+ * 3. Props type is not inferred from passed functions arguments:
+ *
+ * eg.
+ *
+ * const foo = css`
+ *   ${(props: Props) => props.foo} <-- TS error like `Props are not matching XYZ`
+ * `
+ *
+ * in such case, use this instead
+ *
+ * const foo = css<Props>`
+ *   ${(props) => props.foo} <-- TS error like `Props are not matching XYZ`
+ * `
+ *
+ * It has to be explicit saying 'what props will we support inside callbacks' next to `css<HERE>`, but it seems to save
+ * TS lots of work as well as it does not have to traverse all provided callbacks to 'pick' all props types and make sure
+ * they're all compatible.
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
