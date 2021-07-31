@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+import styled, { css, StylesPart } from "styled-components";
 import { theme } from "~ui/theme";
 import { ButtonKind, ButtonSize } from "./types";
 
@@ -46,7 +46,7 @@ export const CircleIconButton = styled(function CircleIconButton({
   );
 })``;
 
-const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = {
+const buttonSizeSpecificStyle: Record<ButtonSize, StylesPart> = {
   small: css<{}>`
     font-size: 24px;
   `,
@@ -61,7 +61,7 @@ const buttonSizeSpecificStyle: Record<ButtonSize, FlattenSimpleInterpolation> = 
   `,
 };
 
-const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
+const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css<{}>`
     ${theme.colors.actions.primary.all()}
     border: 1px solid transparent;

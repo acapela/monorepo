@@ -1,4 +1,4 @@
-import { FlattenSimpleInterpolation } from "styled-components";
+import { StylesPart } from "styled-components";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { spacer } from "~ui/spacer";
 import { hoverTransition } from "~ui/transitions";
@@ -18,7 +18,7 @@ export interface Theme {
   font: Font;
   borderRadius: typeof borderRadius;
   zIndex: typeof zIndex;
-  transitions: Record<string, () => FlattenSimpleInterpolation>;
+  transitions: Record<string, () => StylesPart>;
   spacer: typeof spacer;
 }
 
@@ -27,7 +27,7 @@ type ExtendedThemeColors = ThemeColorScheme & { actions: Record<Variant, ActionS
 // Allows `${props => props.theme...}` to be typed properly
 declare module "styled-components" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface DefaultTheme extends Theme {}
+  export interface StyledTheme extends Theme {}
 }
 
 export const defaultTheme: Theme = getTheme("default");
