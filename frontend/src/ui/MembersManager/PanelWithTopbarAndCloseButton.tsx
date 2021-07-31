@@ -25,13 +25,13 @@ export const PanelWithTopbarAndCloseButton = ({ title, children, onClose }: Prop
   );
 };
 
-const UIHeader = styled.div<{}>`
+const UIHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;

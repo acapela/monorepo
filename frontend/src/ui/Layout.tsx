@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { Logo } from "./Logo";
 
-const UISidebar = styled.div<{}>`
+const UISidebar = styled.div`
   padding: 60px;
   min-height: 100vh;
   background-color: #fbfbfb;
@@ -16,12 +16,12 @@ const UISidebarLogoWrapper = styled.a`
   margin-bottom: 4rem;
 `;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   min-height: 100vh;
 `;
 
-const UIMainContent = styled.div<{}>`
+const UIMainContent = styled.div`
   padding: 120px 60px 60px 90px;
   flex-grow: 1;
   max-height: 100vh;

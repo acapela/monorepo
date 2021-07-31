@@ -93,11 +93,11 @@ export const MessageAttachment = styled(
   }
 )``;
 
-const UILoadingPlaceholder = styled.div<{}>`
+const UILoadingPlaceholder = styled.div`
   height: 100%;
 `;
 
-const UIInlineAttachmentHolder = styled.div<{}>`
+const UIInlineAttachmentHolder = styled.div`
   display: flex;
   position: relative;
   ${theme.borderRadius.item}

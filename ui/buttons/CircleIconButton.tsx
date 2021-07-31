@@ -47,34 +47,34 @@ export const CircleIconButton = styled(function CircleIconButton({
 })``;
 
 const buttonSizeSpecificStyle: Record<ButtonSize, StylesPart> = {
-  small: css<{}>`
+  small: css`
     font-size: 24px;
   `,
-  medium: css<{}>`
+  medium: css`
     font-size: 30px;
   `,
-  large: css<{}>`
+  large: css`
     font-size: 36px;
   `,
-  inherit: css<{}>`
+  inherit: css`
     font-size: inherit;
   `,
 };
 
 const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
-  primary: css<{}>`
+  primary: css`
     ${theme.colors.actions.primary.all()}
     border: 1px solid transparent;
   `,
-  secondary: css<{}>`
+  secondary: css`
     ${theme.colors.actions.secondary.all()}
     border: 1px solid transparent;
   `,
-  tertiary: css<{}>`
+  tertiary: css`
     ${theme.colors.actions.tertiary.all()}
     border: 1px solid transparent;
   `,
-  transparent: css<{}>`
+  transparent: css`
     background: transparent;
 
     &:hover,
@@ -110,7 +110,7 @@ export const UIButton = styled.button<{
 
   ${(props) =>
     !props.isDisabled &&
-    css<{}>`
+    css`
       cursor: pointer;
     `};
 `;

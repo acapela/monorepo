@@ -19,13 +19,13 @@ export function EmptyStatePlaceholder({ title, description, icon = <IconSelectio
   );
 }
 
-const UIIcon = styled.div<{}>`
+const UIIcon = styled.div`
   font-size: 32px;
   margin-bottom: 16px;
   opacity: 0.4;
 `;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -36,12 +36,12 @@ const UIHolder = styled.div<{}>`
   ${theme.borderRadius.card}
 `;
 
-const UITitle = styled.div<{}>`
+const UITitle = styled.div`
   ${theme.font.h3.build}
   opacity: 0.8;
 `;
 
-const UIBody = styled.div<{}>`
+const UIBody = styled.div`
   ${theme.font.body.spezia.build}
   opacity: 0.8;
 `;

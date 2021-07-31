@@ -46,13 +46,13 @@ export function SpacesList() {
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   ${TextH3} {
     margin-bottom: 2rem;
   }
 `;
 
-const UISpacesGroup = styled.div<{}>`
+const UISpacesGroup = styled.div`
   margin-bottom: 48px;
 
   ${TextBody14} {
@@ -60,7 +60,7 @@ const UISpacesGroup = styled.div<{}>`
   }
 `;
 
-const UISpaces = styled.div<{}>`
+const UISpaces = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 3rem;

@@ -63,7 +63,7 @@ export const CurrentTeamMembersManager = () => {
   );
 };
 
-const UIItemHolder = styled.div<{}>`
+const UIItemHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

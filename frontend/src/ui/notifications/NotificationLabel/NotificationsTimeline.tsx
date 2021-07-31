@@ -48,19 +48,19 @@ export function NotificationsTimeline({ notifications }: Props) {
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   gap: 48px;
 `;
 
-const UINotificationsDayGroup = styled.div<{}>`
+const UINotificationsDayGroup = styled.div`
   ${CategoryNameLabel} {
     margin-bottom: 10px;
   }
 `;
 
-const UINotificationsList = styled.div<{}>`
+const UINotificationsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;

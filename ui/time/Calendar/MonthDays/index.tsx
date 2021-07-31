@@ -74,12 +74,12 @@ export function MonthDays({ date, selectedDayDate, onDaySelected }: Props) {
  *
  * Thus 100% / 7 / 2 - 1ch expressed as negative margin is calc(-100% / 7 / 2 + 1ch)
  */
-const sideAlignOffset = css<{}>`
+const sideAlignOffset = css`
   margin-left: calc(-100% / 7 / 2 + 1ch);
   margin-right: calc(-100% / 7 / 2 + 1ch);
 `;
 
-const UIMonth = styled.div<{}>`
+const UIMonth = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;

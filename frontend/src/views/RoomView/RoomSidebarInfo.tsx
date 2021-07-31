@@ -37,7 +37,7 @@ export function RoomSidebarInfo({ room }: Props) {
   );
 }
 
-const UIRoomInfo = styled.div<{}>`
+const UIRoomInfo = styled.div`
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, auto);
@@ -46,14 +46,14 @@ const UIRoomInfo = styled.div<{}>`
   overflow-y: hidden;
 `;
 
-const UIManageSections = styled.div<{}>`
+const UIManageSections = styled.div`
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;
   gap: 16px;
 `;
 
-const UIManageSection = styled.div<{}>`
+const UIManageSection = styled.div`
   display: grid;
   grid-template-columns: minmax(0, auto);
   align-content: start;

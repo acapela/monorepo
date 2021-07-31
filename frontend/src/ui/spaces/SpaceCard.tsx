@@ -67,7 +67,7 @@ const UIHolder = styled(CardBase)`
   min-width: 0;
 `;
 
-const UIInfo = styled.div<{}>`
+const UIInfo = styled.div`
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -78,4 +78,4 @@ const UIInfo = styled.div<{}>`
   }
 `;
 
-const UIMembers = styled.div<{}>``;
+const UIMembers = styled.div``;

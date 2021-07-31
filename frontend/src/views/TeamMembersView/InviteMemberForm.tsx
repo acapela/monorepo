@@ -49,7 +49,7 @@ export const InviteMemberForm = () => {
   );
 };
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;

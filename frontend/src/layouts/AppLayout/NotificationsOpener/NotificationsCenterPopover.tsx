@@ -4,6 +4,7 @@ import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
 import { TextH3 } from "~ui/typo";
 import { useNotifications } from "~frontend/gql/notifications";
 import { NotificationsTimeline } from "~frontend/ui/notifications/NotificationLabel/NotificationsTimeline";
+import { theme } from "~frontend/../../ui/theme";
 
 export function NotificationsCenterPopover() {
   const holderRef = useRef<HTMLDivElement>(null);
@@ -30,7 +31,7 @@ const UIHolder = styled(UIDropdownPanelBody)`
   }
 `;
 
-const UINotifications = styled.div<{}>`
+const UINotifications = styled.div`
   margin-top: 16px;
   max-height: 40vh;
   overflow-y: auto;

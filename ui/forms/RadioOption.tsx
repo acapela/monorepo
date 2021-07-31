@@ -20,7 +20,7 @@ const Container = styled.label<{ selected: boolean }>`
 
   ${({ selected }) =>
     selected &&
-    css<{}>`
+    css`
       background: #f4f4f4;
     `}
 

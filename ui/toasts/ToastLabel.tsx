@@ -54,7 +54,7 @@ const UIHolder = styled(PresenceAnimator)<{ type: ToastType }>`
   ${shadow.modal};
 `;
 
-const UIContent = styled.div<{}>`
+const UIContent = styled.div`
   margin-right: 24px;
   flex: 1;
 `;

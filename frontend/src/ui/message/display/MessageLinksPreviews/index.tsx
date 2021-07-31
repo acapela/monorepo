@@ -31,7 +31,7 @@ export const MessageLinksPreviews = ({ message }: Props) => {
   return <UIHolder>{linksPreviews}</UIHolder>;
 };
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;

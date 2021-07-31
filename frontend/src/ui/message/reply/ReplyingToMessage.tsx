@@ -44,7 +44,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
   );
 };
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   position: relative;
   border-radius: 0 8px 8px 0px;
@@ -52,7 +52,7 @@ const UIHolder = styled.div<{}>`
   cursor: pointer;
 `;
 
-const UIBorder = styled.div<{}>`
+const UIBorder = styled.div`
   width: 2px;
   ${borderRadius.circle};
   background-image: linear-gradient(
@@ -63,11 +63,11 @@ const UIBorder = styled.div<{}>`
   );
 `;
 
-const UIContent = styled.div<{}>`
+const UIContent = styled.div`
   padding: 20px;
 `;
 
-const UIMessageContent = styled.div<{}>`
+const UIMessageContent = styled.div`
   display: grid;
   grid-auto-columns: minmax(0, auto);
   gap: 16px;

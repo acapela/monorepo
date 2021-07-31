@@ -57,7 +57,7 @@ export const PopoverMenuTrigger = styled(
   }
 )``;
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div``;
 
 const UIPopoverMenu = styled(PopoverMenu)`
   z-index: ${zIndex.Popover};

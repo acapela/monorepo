@@ -146,13 +146,13 @@ const UIHolder = styled.span<{ isInEditMode: boolean }>`
   display: block;
   ${(props) => {
     if (props.isInEditMode) {
-      return css<{}>`
+      return css`
         outline: none;
         cursor: text;
       `;
     }
 
-    return css<{}>`
+    return css`
       user-select: none;
     `;
   }}

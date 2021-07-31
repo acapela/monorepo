@@ -20,7 +20,7 @@ export const MessageReactions = ({ message }: Props) => {
   return <UIReactions>{messageReactions}</UIReactions>;
 };
 
-const UIReactions = styled.div<{}>`
+const UIReactions = styled.div`
   display: flex;
   gap: 8px;
   flex-wrap: wrap;

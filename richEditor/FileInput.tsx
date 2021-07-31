@@ -32,7 +32,7 @@ export function FileInput({ children, onFileSelected }: Props) {
   );
 }
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div``;
 
 const UIFileInput = styled.input`
   display: none;

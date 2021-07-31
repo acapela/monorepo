@@ -33,7 +33,7 @@ const UIMenuIcon = styled.div<{ forceVisible: boolean }>`
   ${(props) => {
     if (props.forceVisible) return;
 
-    return css<{}>`
+    return css`
       /* Make me visible only if my direct parent is hovered */
       * > & {
         opacity: 0;

@@ -53,10 +53,10 @@ export const Breadcrumbs = () => {
   );
 };
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   gap: 20px;
   ${theme.font.withExceptionalSize("0.9375rem", "Design system uses navigation font at 15px").build}
 `;
 
-const UIDivider = styled.div<{}>``;
+const UIDivider = styled.div``;

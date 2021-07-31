@@ -20,13 +20,13 @@ export const ToggleButton = ({ isActive, onClick, children, icon, tooltip }: Pro
   );
 };
 
-const UIIconHolder = styled.div<{}>``;
+const UIIconHolder = styled.div``;
 
-const activeButtonStyles = css<{}>`
+const activeButtonStyles = css`
   ${theme.colors.actions.secondary.active()}
 `;
 
-const forceIconColorToBeTextColor = css<{}>`
+const forceIconColorToBeTextColor = css`
   svg {
     color: ${theme.colors.interactive.actions.secondary.regular.text};
   }

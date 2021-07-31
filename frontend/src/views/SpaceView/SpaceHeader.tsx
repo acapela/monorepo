@@ -16,7 +16,7 @@ export const SpaceHeader = styled(function SpaceHeader({ space, className }: Pro
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

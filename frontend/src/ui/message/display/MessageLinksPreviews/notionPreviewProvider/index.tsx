@@ -36,7 +36,7 @@ export const notionPreviewProvider: MessageEmbedPreviewConfig = {
   },
 };
 
-const UICard = styled.div<{}>`
+const UICard = styled.div`
   padding: 12px;
   display: flex;
   align-items: center;

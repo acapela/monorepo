@@ -89,7 +89,7 @@ export const SortableTopicsList = ({
 const UIDraggableTopic = styled(UITopic)<{ isDragging: boolean }>`
   ${({ isDragging }) =>
     isDragging
-      ? css<{}>`
+      ? css`
           background: ${ACTION_ACTIVE_COLOR};
           ${borderRadius.item}
         `

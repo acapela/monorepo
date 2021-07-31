@@ -27,7 +27,7 @@ export const TopicClosureBanner = ({ className, isParentRoomOpen }: Props) => {
   );
 };
 
-const UIBanner = styled.div<{}>`
+const UIBanner = styled.div`
   padding: 16px;
   max-width: 600px;
 
@@ -36,7 +36,7 @@ const UIBanner = styled.div<{}>`
   border: 1px solid hsla(300, 2%, 92%, 1);
 `;
 
-const UIClosingInfo = styled.div<{}>`
+const UIClosingInfo = styled.div`
   font-weight: 400;
   line-height: 1.5;
 `;

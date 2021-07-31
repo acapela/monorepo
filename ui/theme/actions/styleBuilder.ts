@@ -12,27 +12,27 @@ export interface ActionStateInterpolations {
 export function variantToStyles(colorsForVariant: VariantStates): ActionStateInterpolations {
   const result: ActionStateInterpolations = {
     regular() {
-      return css<{}>`
+      return css`
         ${stateToStyles(colorsForVariant.regular)}
       `;
     },
     hover() {
-      return css<{}>`
+      return css`
         ${stateToStyles(colorsForVariant.hover)}
       `;
     },
     disabled() {
-      return css<{}>`
+      return css`
         ${stateToStyles(colorsForVariant.disabled)}
       `;
     },
     active() {
-      return css<{}>`
+      return css`
         ${stateToStyles(colorsForVariant.active)}
       `;
     },
     all() {
-      return css<{}>`
+      return css`
         ${result.regular()}
 
         &:hover {
@@ -55,26 +55,26 @@ export function variantToStyles(colorsForVariant: VariantStates): ActionStateInt
 
 function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): StaticInterpolation {
   if (!colorsForState) {
-    return css<{}>``;
+    return css``;
   }
 
   const { text, background, icon, border } = colorsForState;
 
-  return css<{}>`
+  return css`
     ${text
-      ? css<{}>`
+      ? css`
           color: ${text};
         `
       : ""}
 
     ${background
-      ? css<{}>`
+      ? css`
           background-color: ${background};
         `
       : ""}
     
     ${icon
-      ? css<{}>`
+      ? css`
           svg {
             color: ${icon};
           }
@@ -82,7 +82,7 @@ function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): StaticInte
       : ""}
 
     ${border
-      ? css<{}>`
+      ? css`
           border-color: ${border};
         `
       : ""}

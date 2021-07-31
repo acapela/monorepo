@@ -136,7 +136,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
   }
 );
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: grid;
   align-items: center;
   gap: 60px;
@@ -144,20 +144,20 @@ const UIHolder = styled.div<{}>`
   max-width: 520px;
 `;
 
-const UIFormFields = styled.div<{}>`
+const UIFormFields = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
 `;
 
-const UIBottomArea = styled.div<{}>`
+const UIBottomArea = styled.div`
   display: grid;
   grid-template-rows: 20px auto;
   gap: 10px;
   justify-items: center;
 `;
 
-const UIButtons = styled.div<{}>`
+const UIButtons = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 124px);
   gap: 20px;

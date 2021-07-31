@@ -10,4 +10,4 @@ export function CircleIcon({ className, icon }: Props) {
   return <UIHolder className={className}>{icon}</UIHolder>;
 }
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div``;

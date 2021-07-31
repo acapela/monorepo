@@ -37,7 +37,7 @@ export function Week({ weekDate, onDaySelected, selectedDayDate, currentMonthDat
   );
 }
 
-const UIWeek = styled.div<{}>`
+const UIWeek = styled.div`
   display: flex;
   justify-content: space-between;
   flex: 1;

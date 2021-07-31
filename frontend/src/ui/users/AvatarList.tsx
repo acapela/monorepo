@@ -41,7 +41,7 @@ export const AvatarList = styled(function AvatarList({ users, className, maxVisi
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   min-width: 0;
 

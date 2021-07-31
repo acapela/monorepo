@@ -72,7 +72,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,7 +84,7 @@ const UITitle = styled(TextH3)<{ isClosed: boolean }>`
 
   ${(props) => {
     if (props.isClosed) {
-      return css<{}>`
+      return css`
         text-decoration: line-through;
         color: hsla(211, 12%, 62%, 1);
       `;
@@ -92,7 +92,7 @@ const UITitle = styled(TextH3)<{ isClosed: boolean }>`
   }}
 `;
 
-const UIActions = styled.div<{}>`
+const UIActions = styled.div`
   display: flex;
   right: 0;
   position: absolute;

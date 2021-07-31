@@ -125,10 +125,10 @@ export const TextMeta12 = styled(motion.p)<TypographyProps>`
  * TODO: Those are exported from figma and not used yet.
  */
 export const shadows = {
-  card: css<{}>`
+  card: css`
     box-shadow: 0px 3px 16px rgba(43, 42, 53, 0.07);
   `,
-  frame: css<{}>`
+  frame: css`
     box-shadow: 0px 12px 68px rgba(0, 0, 0, 0.05);
   `,
 };
@@ -138,7 +138,7 @@ export const shadows = {
  */
 const BACKUP_FONTS = `"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif"`;
 
-const typographyCommonStyles = css<{}>`
+const typographyCommonStyles = css`
   line-height: 1.2;
   letter-spacing: -0.02%;
 `;
@@ -146,13 +146,13 @@ const typographyCommonStyles = css<{}>`
 type KindType = "regular" | "secondary" | "primary";
 
 const kindStyles: Record<KindType, StylesPart> = {
-  regular: css<{}>`
+  regular: css`
     color: ${BASE_GREY_1};
   `,
-  secondary: css<{}>`
+  secondary: css`
     color: ${BASE_GREY_3};
   `,
-  primary: css<{}>`
+  primary: css`
     color: ${PRIMARY_PINK_1};
   `,
 };
@@ -168,16 +168,16 @@ function getKindStyle(props: KindProp) {
 type FamilyType = "inter" | "spezia" | "speziaMono" | "speziaExtended";
 
 const fontFamilyStyles: Record<FamilyType, StylesPart> = {
-  spezia: css<{}>`
+  spezia: css`
     font-family: "Spezia", ${BACKUP_FONTS};
   `,
-  speziaExtended: css<{}>`
+  speziaExtended: css`
     font-family: "Spezia Extended", ${BACKUP_FONTS};
   `,
-  speziaMono: css<{}>`
+  speziaMono: css`
     font-family: "Spezia Mono", ${BACKUP_FONTS};
   `,
-  inter: css<{}>`
+  inter: css`
     font-family: "Inter", ${BACKUP_FONTS};
   `,
 };
@@ -196,13 +196,13 @@ type WeightType = "regular" | "medium" | "semibold";
 type WeightProp = VariantProp<WeightType>;
 
 const fontWeightStyles: Record<WeightType, StylesPart> = {
-  regular: css<{}>`
+  regular: css`
     font-weight: normal;
   `,
-  medium: css<{}>`
+  medium: css`
     font-weight: bold;
   `,
-  semibold: css<{}>`
+  semibold: css`
     font-weight: 500;
   `,
 };
@@ -215,10 +215,10 @@ function getFontWeightStyle(props: WeightProp) {
 
 const importanceStyles: Record<ImportanceType, StylesPart> = {
   // TODO: Those might get replaced by colors instead of opacity.
-  secondary: css<{}>`
+  secondary: css`
     opacity: 0.6;
   `,
-  tertiary: css<{}>`
+  tertiary: css`
     opacity: 0.4;
   `,
 };
@@ -255,7 +255,7 @@ const typographyStyles = css<TypographyProps>`
     const importance = getImportanceStyles(props);
     const kind = getKindStyle(props);
 
-    return css<{}>`
+    return css`
       ${family};
       ${weight};
       ${importance};

@@ -1,3 +1,3 @@
 import styled from "styled-components";
 
-export const NoticeLabel = styled.div<{}>``;
+export const NoticeLabel = styled.div``;

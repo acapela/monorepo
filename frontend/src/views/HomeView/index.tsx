@@ -33,7 +33,7 @@ export function HomeView() {
 
 const UIHolder = styled(SpacedAppLayoutContainer)``;
 
-const UIContent = styled.div<{}>`
+const UIContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;

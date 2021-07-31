@@ -87,7 +87,7 @@ const ImageWrapper = styled.img`
   object-fit: scale-down;
 `;
 
-const PlayableMediaWrapper = styled.div<{}>`
+const PlayableMediaWrapper = styled.div`
   max-height: 100%;
 
   audio,

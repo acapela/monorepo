@@ -35,7 +35,7 @@ const UILink = styled.a<{ isActive: boolean }>`
 
   ${(props) =>
     props.isActive &&
-    css<{}>`
+    css`
       background-color: #efefef;
     `}
 `;

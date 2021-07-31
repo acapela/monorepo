@@ -3,12 +3,12 @@ import { theme } from "~ui/theme";
 import { ButtonSize, ButtonKind } from "./types";
 
 export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = {
-  small: css<{}>`
+  small: css`
     font-size: 12px;
     padding: 10px 8px;
     gap: 4px;
   `,
-  medium: css<{}>`
+  medium: css`
     font-size: 14px;
     padding: 12px;
     gap: 8px;
@@ -18,7 +18,7 @@ export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = 
       font-size: 1.14;
     }
   `,
-  large: css<{}>`
+  large: css`
     font-size: 16px;
     padding: 18px 16px;
     gap: 8px;
@@ -30,7 +30,7 @@ export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = 
   `,
 };
 
-export const activeTransparentButtonStyles = css<{}>`
+export const activeTransparentButtonStyles = css`
   color: ${theme.colors.layout.bodyText};
   background: ${theme.colors.interactive.selected};
 
@@ -40,24 +40,24 @@ export const activeTransparentButtonStyles = css<{}>`
 `;
 
 export const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
-  primary: css<{}>`
+  primary: css`
     ${theme.colors.actions.primary.all()}
     ${theme.shadow.button}
   `,
-  secondary: css<{}>`
+  secondary: css`
     border-style: solid;
     border-width: 1.5px;
 
     ${theme.colors.actions.secondary.all()}
     ${theme.shadow.button}
   `,
-  tertiary: css<{}>`
+  tertiary: css`
     ${theme.colors.actions.tertiary.all()}
     ${theme.shadow.button}
   `,
 
   // TODO: Remove most transparent buttons and create a new component for remaining non-button components
-  transparent: css<{}>`
+  transparent: css`
     ${theme.font.inter.normal.build}
 
     background: transparent;

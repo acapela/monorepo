@@ -49,13 +49,13 @@ export function UserPickerModal({ currentUsers, onCloseRequest, onAddUser, onRem
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 20px;
 `;
 
-const UIItemHolder = styled.div<{}>`
+const UIItemHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -39,7 +39,7 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
   );
 };
 
-const UIContent = styled.div<{}>`
+const UIContent = styled.div`
   color: hsla(0, 0%, 100%, 60%);
   text-align: center;
   word-break: break-word;
@@ -49,6 +49,6 @@ const UIReacted = styled.span`
   color: ${WHITE};
 `;
 
-const UIEmojiName = styled.div<{}>`
+const UIEmojiName = styled.div`
   word-break: break-all;
 `;

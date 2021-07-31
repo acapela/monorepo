@@ -16,18 +16,18 @@ export function CenteredContentWithSides({ children, leftNode, rightNode }: Prop
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
 `;
 
-const UILeft = styled.div<{}>``;
-const UIRight = styled.div<{}>`
+const UILeft = styled.div``;
+const UIRight = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
 
-const UIMain = styled.div<{}>`
+const UIMain = styled.div`
   display: flex;
   justify-content: center;
 `;

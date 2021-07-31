@@ -89,7 +89,7 @@ export const openUIPrompt = createPromiseUI<PromptInput, PromptResult>(
   }
 );
 
-const UIContentWrapper = styled.div<{}>`
+const UIContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
 

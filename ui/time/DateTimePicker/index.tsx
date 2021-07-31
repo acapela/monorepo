@@ -67,19 +67,19 @@ const UIDateTimePickerForm = styled(PopPresenceAnimator)`
   padding: 12px;
 `;
 
-const UIPickers = styled.div<{}>`
+const UIPickers = styled.div`
   display: grid;
   grid-template-columns: minmax(320px, 1fr) auto;
   gap: 10px;
 `;
 
-const UITimePickerWrapper = styled.div<{}>`
+const UITimePickerWrapper = styled.div`
   padding: 16px;
   border-left: 1px solid ${BACKGROUND_ACCENT};
   overflow: auto;
   max-height: 300px;
 `;
 
-const UICalendarHolder = styled.div<{}>`
+const UICalendarHolder = styled.div`
   padding: 16px;
 `;

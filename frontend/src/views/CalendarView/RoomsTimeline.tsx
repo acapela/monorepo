@@ -33,7 +33,7 @@ export function RoomsTimeline({ startDate }: Props) {
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   ${RoomsTimelineSingleDay} {
     margin-bottom: 64px;
   }

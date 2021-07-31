@@ -21,8 +21,8 @@ export const RoomsList = styled(function RoomsList({ className, rooms }: Props) 
   );
 })``;
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div``;
 
-const UISingleRoomRecentTopics = styled.div<{}>`
+const UISingleRoomRecentTopics = styled.div`
   margin-bottom: 16px;
 `;

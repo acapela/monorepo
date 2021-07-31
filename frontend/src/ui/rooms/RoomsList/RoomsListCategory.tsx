@@ -44,9 +44,9 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
   );
 })``;
 
-const UIGroupHolder = styled.div<{}>``;
+const UIGroupHolder = styled.div``;
 
-const UIHeader = styled.div<{}>`
+const UIHeader = styled.div`
   display: flex;
   margin-bottom: 16px;
 
@@ -55,7 +55,7 @@ const UIHeader = styled.div<{}>`
   }
 `;
 
-const UIClosedRoomsFilter = styled.div<{}>`
+const UIClosedRoomsFilter = styled.div`
   display: flex;
 
   ${CategoryNameLabel} {

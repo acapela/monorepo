@@ -35,12 +35,12 @@ export const ScrollableMessages = styled(({ children, className }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   overflow-y: scroll;
   /* Avoid scrollbar handle to fly over messages */
   padding-right: 20px;
 `;
 
-const UIInner = styled.div<{}>`
+const UIInner = styled.div`
   position: relative;
 `;

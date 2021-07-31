@@ -16,7 +16,7 @@ export function WindowView({ children }: Props) {
   );
 }
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,7 +24,7 @@ const UIHolder = styled.div<{}>`
   flex-direction: column;
 `;
 
-const UIWindow = styled.div<{}>`
+const UIWindow = styled.div`
   background: #ffffff;
   ${shadow.modal};
   ${borderRadius.modal}

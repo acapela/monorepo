@@ -5,7 +5,7 @@ import { BLACK } from "./theme/colors/base";
 function createShadowCss(size: number, opacity = 0.2): StylesPart {
   const shadowColor = setColorOpacity(BLACK, opacity);
 
-  return css<{}>`
+  return css`
     box-shadow: 0 0 ${size}rem ${shadowColor};
   `;
 }
@@ -14,54 +14,54 @@ export const shadow = {
   small: createShadowCss(1),
   medium: createShadowCss(2),
   large: createShadowCss(4),
-  topBar: css<{}>`
+  topBar: css`
     box-shadow: 0px 1px 0px rgba(43, 42, 53, 0.04);
   `,
-  card: css<{}>`
+  card: css`
     box-shadow: 0px 3px 0px rgba(43, 42, 53, 0.04);
   `,
-  cardItem: css<{}>`
+  cardItem: css`
     box-shadow: 0px 2px 3px rgba(43, 42, 53, 0.03);
   `,
-  modal: css<{}>`
+  modal: css`
     box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 64.8148px 46.8519px rgba(0, 0, 0, 0.0531481),
       0px 38.5185px 25.4815px rgba(0, 0, 0, 0.0425185), 0px 20px 13px rgba(0, 0, 0, 0.035),
       0px 8.14815px 6.51852px rgba(0, 0, 0, 0.0274815), 0px 1.85185px 3.14815px rgba(0, 0, 0, 0.0168519);
   `,
-  popover: css<{}>`
+  popover: css`
     box-shadow: 0px 3px 16px rgba(43, 42, 53, 0.07);
   `,
-  button: css<{}>`
+  button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
 } as const;
 
 export const borderRadius = {
-  menu: css<{}>`
+  menu: css`
     border-radius: 8px;
   `,
-  card: css<{}>`
+  card: css`
     border-radius: 16px;
   `,
-  modal: css<{}>`
+  modal: css`
     border-radius: 16px;
   `,
-  label: css<{}>`
+  label: css`
     border-radius: 6px;
   `,
-  input: css<{}>`
+  input: css`
     border-radius: 12px;
   `,
-  item: css<{}>`
+  item: css`
     border-radius: 5px;
   `,
-  circle: css<{}>`
+  circle: css`
     border-radius: 1000px;
   `,
-  button: css<{}>`
+  button: css`
     border-radius: 12px;
   `,
-  tag: css<{}>`
+  tag: css`
     border-radius: 8px;
   `,
 } as const;

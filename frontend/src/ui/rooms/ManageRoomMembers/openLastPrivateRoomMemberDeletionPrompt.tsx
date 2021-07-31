@@ -59,7 +59,7 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
   }
 );
 
-const UIActionButtons = styled.div<{}>`
+const UIActionButtons = styled.div`
   padding-top: 16px;
   display: flex;
   flex-direction: column;

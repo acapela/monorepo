@@ -82,7 +82,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
   );
 });
 
-const UIAttachmentsPreviews = styled.div<{}>`
+const UIAttachmentsPreviews = styled.div`
   height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
   display: flex;
 `;

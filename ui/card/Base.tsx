@@ -15,7 +15,7 @@ export const CardBase = styled.div<{ isClickable?: boolean }>`
   ${(props) => {
     if (!props.isClickable) return;
 
-    return css<{}>`
+    return css`
       cursor: pointer;
       &:hover {
         background-color: ${theme.colors.interactive.selected};

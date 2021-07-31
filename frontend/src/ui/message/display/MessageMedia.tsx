@@ -38,7 +38,7 @@ const UIAttachments = styled.div<{ nonInteractive: boolean }>`
 
   ${(props) =>
     props.nonInteractive &&
-    css<{}>`
+    css`
       pointer-events: none;
       height: 60px;
     `}

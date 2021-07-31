@@ -24,7 +24,7 @@ export function ToastsRenderer() {
   );
 }
 
-const UIFlyer = styled.div<{}>`
+const UIFlyer = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
@@ -37,7 +37,7 @@ const UIFlyer = styled.div<{}>`
   pointer-events: none;
 `;
 
-const UIToastsHolder = styled.div<{}>`
+const UIToastsHolder = styled.div`
   max-width: 360px;
   display: flex;
   flex-direction: column-reverse;

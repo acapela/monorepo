@@ -24,6 +24,6 @@ export const MessageText = styled(({ message, className }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div`
   ${richEditorContentCss};
 `;
