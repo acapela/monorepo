@@ -32,6 +32,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
     });
   } catch (error) {
     isHttpError(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const anyError = error as any;
     const status = anyError.status || 400;
     res.status(status).json({
