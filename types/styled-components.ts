@@ -85,26 +85,6 @@ declare module "styled-components" {
   import * as React from "react";
 
   /**
-   * Module root
-   */
-
-  export interface StyledComponentsModule {
-    default: Styled;
-
-    css: CssFunction;
-    keyframes(strings: TemplateStringsArray, ...interpolations: StaticInterpolation[]): Keyframes;
-
-    createGlobalStyle<P = {}>(
-      strings: TemplateStringsArray,
-      ...interpolations: Array<Interpolation<P>>
-    ): GlobalStyleComponent<P>;
-
-    ThemeProvider: ThemeProviderComponent;
-  }
-
-  export default styled;
-
-  /**
    * styled
    */
 
@@ -125,6 +105,7 @@ declare module "styled-components" {
   }
 
   const styled: Styled;
+  export default styled;
 
   /**
    * Styled component eg Foo = styled.div``
