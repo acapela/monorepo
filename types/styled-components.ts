@@ -4,7 +4,7 @@
  * This is considerably trimmed down original version with a lot of features we don't really need removed in order to
  * considerably increase TSServer performance.
  *
- * Brief comparsion shows that eg. auto imports and type chacks are at least a few times faster with those optimizations.
+ * Brief comparing shows that eg. auto imports and type checks are at least a few times faster with those optimizations.
  *
  * Limitations:
  *
@@ -45,6 +45,8 @@
  *
  * `P` now has 'p' props and ref properly typed.
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module "styled-components" {
   import * as React from "react";

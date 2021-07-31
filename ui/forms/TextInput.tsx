@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { theme } from "~ui/theme";
 import { FieldWithLabel } from "./FieldWithLabel";
 
 export interface TextInputProps extends HTMLMotionProps<"input"> {

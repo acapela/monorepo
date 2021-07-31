@@ -6,7 +6,6 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { FieldWithLabel } from "~ui/forms/FieldWithLabel";
 import { IconCalendar } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { theme } from "~ui/theme";
 import { TextBody } from "~ui/typo";
 import { DateTimePicker } from "./DateTimePicker";
 
