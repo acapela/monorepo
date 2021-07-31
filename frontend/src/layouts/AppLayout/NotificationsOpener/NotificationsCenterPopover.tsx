@@ -4,7 +4,6 @@ import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
 import { TextH3 } from "~ui/typo";
 import { useNotifications } from "~frontend/gql/notifications";
 import { NotificationsTimeline } from "~frontend/ui/notifications/NotificationLabel/NotificationsTimeline";
-import { theme } from "~frontend/../../ui/theme";
 
 export function NotificationsCenterPopover() {
   const holderRef = useRef<HTMLDivElement>(null);
