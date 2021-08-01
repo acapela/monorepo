@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { theme } from "~ui/theme";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
@@ -20,7 +19,7 @@ import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots, IconPlus
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
-import { UICardListItem } from "./shared";
+import { theme } from "~ui/theme";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -104,23 +103,31 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 return <TopicCard key={topic.id} topic={topic} />;
               })}
             </UITopics>
-            {topicsNotShownCount > 0 && (
-              <UIShowRemainingTopics onClick={() => setShownTopicsLimit(TOPICS_SHOWN_WITHOUT_LIMIT)}>
-                <IconChevronDown /> Show remaining {topicsNotShownCount > 1 ? `${topicsNotShownCount} topics` : "topic"}
-                ...
-              </UIShowRemainingTopics>
-            )}
-            {isAbleToAddTopic && (
-              <UIAddTopicButton
-                kind="secondary"
-                ref={buttonRef}
-                onClick={handleCreateTopic}
-                icon={<IconPlusSquare />}
-                iconPosition="start"
-              >
-                New topic
-              </UIAddTopicButton>
-            )}
+
+            <UITopicListActions>
+              {isAbleToAddTopic && (
+                <UIAddTopicButton
+                  kind="secondary"
+                  ref={buttonRef}
+                  onClick={handleCreateTopic}
+                  icon={<IconPlusSquare />}
+                  iconPosition="start"
+                >
+                  New topic
+                </UIAddTopicButton>
+              )}
+
+              {topicsNotShownCount > 0 && (
+                <UIToggleShowMoreTopics
+                  kind="secondary"
+                  icon={<IconChevronDown />}
+                  iconPosition="end"
+                  onClick={() => setShownTopicsLimit(TOPICS_SHOWN_WITHOUT_LIMIT)}
+                >
+                  View all topics ({topicsNotShownCount})
+                </UIToggleShowMoreTopics>
+              )}
+            </UITopicListActions>
           </UICollapsedItems>
         )}
       </UIIndentBody>
@@ -182,18 +189,16 @@ const UITopics = styled.div`
   flex: 1;
 `;
 
-const UIShowRemainingTopics = styled(UICardListItem)`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  margin-top: 16px;
-
-  & > svg {
-    font-size: 1.5rem;
-  }
-`;
-
-const UIAddTopicButton = styled(Button)`
+const UITopicListActions = styled.div`
   margin-top: 24px;
+
+  display: inline-flex;
+  justify-content: space-between;
+
+  align-items: center;
+  width: 100%;
 `;
+
+const UIAddTopicButton = styled(Button)``;
+
+const UIToggleShowMoreTopics = styled(Button)``;
