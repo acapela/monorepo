@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
+import { groupByFilter } from "~frontend/../../shared/groupByFilter";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
+import { TopicDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
-import { TopicDetailedInfoFragment } from "~gql";
+import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
 import { TopicCard } from "./TopicCard";
 import { useExpandableListToggle } from "./useExpandableListToggle";
-import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
 
 interface Props {
   roomId: string;
@@ -17,13 +19,27 @@ interface Props {
 const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
 export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topics, isAbleToAddTopic, roomId }: Props) {
+  const detailedRoomMessagesCount = useDetailedRoomMessagesCount(roomId);
+
+  const orderedTopics = useMemo(() => {
+    const [closedTopics, openTopics] = groupByFilter(topics, (topic) => !!topic.closed_at);
+
+    const [unreadTopics, readTopics] = groupByFilter(
+      openTopics,
+      (openTopic) =>
+        detailedRoomMessagesCount[openTopic.id] !== undefined && detailedRoomMessagesCount[openTopic.id] > 0
+    );
+
+    return [...unreadTopics, ...readTopics, ...closedTopics];
+  }, [detailedRoomMessagesCount, topics]);
+
   const {
     result: shownTopics,
     isExpandable: isTopicsListExpandable,
     isExpanded: isTopicsListExpanded,
     toggle: toggleExpandTopicList,
     itemsNotShown: topicsNotShownCount,
-  } = useExpandableListToggle({ originalList: topics, minimizedLimit: MINIMIZED_TOPICS_SHOWN_LIMIT });
+  } = useExpandableListToggle({ originalList: orderedTopics, minimizedLimit: MINIMIZED_TOPICS_SHOWN_LIMIT });
 
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({

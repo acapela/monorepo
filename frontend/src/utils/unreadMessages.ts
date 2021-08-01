@@ -1,16 +1,14 @@
 import { gql } from "@apollo/client";
 import { memoize } from "lodash";
-import { useEffect, useState } from "react";
-import { createCleanupObject } from "~shared/cleanup";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { createQuery } from "~frontend/gql/utils";
 import {
   RoomBasicInfoFragment,
+  TopicDetailedInfoFragment,
   UnreadMessageFragmentFragment,
   UserUnreadMessagesQuery,
   UserUnreadMessagesQueryVariables,
 } from "~gql";
-import { useSpaceRoomsQuery } from "~frontend/gql/rooms";
-import { createQuery } from "~frontend/gql/utils";
 import { createChannel } from "~shared/channel";
 import { onDocumentReady } from "~shared/document";
 
@@ -127,50 +125,23 @@ export function useRoomUnreadMessagesCount(roomId: string) {
   return getRoomUnreadMessagesChannel(user.id, roomId).useLastValue() ?? 0;
 }
 
-/**
- * TODO: It might possibly be solved at SQL view level. Now it is a proxy hook that just adds up count of all rooms in
- * a space.
- */
-export function useSpaceUnreadMessagesCount(spaceId: string) {
-  const [count, setCount] = useState(0);
+type DetailedRoomMessages = Record<TopicDetailedInfoFragment["id"], number>;
+
+export function useDetailedRoomMessagesCount(roomId: string): DetailedRoomMessages {
   const user = useAssertCurrentUser();
 
-  // Get all rooms of a space so we can add up theirs unread counts
-  const [rooms = []] = useSpaceRoomsQuery({ spaceId });
+  const allMessages = getUserUnreadMessagesChannel(user.id).useLastValue() ?? [];
 
-  const roomIds: string[] = rooms.map((room) => room.id);
+  const detailedRoomMessages: UnreadRoomMessage = {};
 
-  useEffect(() => {
-    function getSpaceUnreadCount() {
-      const roomsUnreadCounts = roomIds.map((roomId) => {
-        return getRoomUnreadMessagesChannel(user.id, roomId).getLastValue() ?? 0;
-      });
-
-      return addArrayOfNumbers(roomsUnreadCounts);
+  allMessages.forEach((message) => {
+    if (!message.roomId || !message.topicId || message.roomId !== roomId) {
+      return;
     }
+    detailedRoomMessages[message.topicId] = message.unreadMessages ?? 0;
+  });
 
-    function updateCurrentCount() {
-      setCount(getSpaceUnreadCount());
-    }
-
-    const cleanup = createCleanupObject();
-
-    roomIds.forEach((roomId) => {
-      const stopListeningForRoomUnreadsChanges = getRoomUnreadMessagesChannel(user.id, roomId).subscribe(
-        updateCurrentCount
-      );
-
-      cleanup.enqueue(stopListeningForRoomUnreadsChanges);
-    });
-
-    return cleanup.clean;
-  }, [
-    // React useEffect deps list require constant length of deps list, therefore we join all the ids.
-    roomIds.join("-"),
-    user.id,
-  ]);
-
-  return count;
+  return detailedRoomMessages;
 }
 
 export type UnreadRoomMessage = Record<RoomBasicInfoFragment["id"], number>;
@@ -195,14 +166,4 @@ export function useTeamRoomsMessagesCount(): UnreadRoomMessage {
   });
 
   return roomsMessages;
-}
-
-function addArrayOfNumbers(numbers: number[]) {
-  let count = 0;
-
-  for (const number of numbers) {
-    count += number;
-  }
-
-  return count;
 }
