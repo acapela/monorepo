@@ -20,9 +20,11 @@ export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ clas
 
   return (
     <UIHolder className={className}>
-      {joinedRooms.length > 0 && <RoomsListCategory categoryName="Joined Rooms" rooms={joinedRooms} showClosedToggle />}
+      {joinedRooms.length > 0 && (
+        <RoomsListCategory key="joined-rooms" categoryName="Joined Rooms" rooms={joinedRooms} showClosedToggle />
+      )}
       {notJoinedRooms.length > 0 && (
-        <RoomsListCategory categoryName="Other Rooms" rooms={notJoinedRooms} showClosedToggle />
+        <RoomsListCategory key="other-rooms" categoryName="Other Rooms" rooms={notJoinedRooms} showClosedToggle />
       )}
     </UIHolder>
   );
