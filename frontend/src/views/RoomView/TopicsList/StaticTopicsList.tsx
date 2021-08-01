@@ -12,7 +12,7 @@ export const StaticTopicsList = ({ topics, activeTopicId }: Props) => (
   <UIScrollContainer>
     <UITopicsList>
       {topics.map((topic) => (
-        <UITopic key={topic.id} isDragging={false}>
+        <UITopic key={topic.id}>
           <TopicMenuItem topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled={true} />
         </UITopic>
       ))}

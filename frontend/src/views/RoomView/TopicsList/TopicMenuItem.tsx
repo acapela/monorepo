@@ -1,5 +1,7 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
@@ -14,75 +16,99 @@ import { IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
-import { setColorOpacity } from "~shared/colors";
 
-interface Props {
+type Props = {
   topic: TopicDetailedInfoFragment;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
-}
+  rootProps?: React.HTMLAttributes<unknown>;
+};
 
 const TopicLink = routes.spaceRoomTopic.Link;
 
+export function SortableTopicMenuItem({
+  isDisabled,
+  ...props
+}: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: props.topic.id,
+    disabled: isDisabled,
+  });
+
+  const transformWithoutX = transform ? { ...transform, x: 0 } : null;
+
+  const style = {
+    transform: CSS.Transform.toString(transformWithoutX),
+    transition,
+  };
+
+  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
+}
+
 export const TopicMenuItem = styled(
-  observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
-    const roomContext = useRoomStoreContext();
-    const unreadCount = useTopicUnreadMessagesCount(topic.id);
-    const hasUnreadMessaged = !isActive && unreadCount > 0;
+  observer(
+    React.forwardRef<HTMLElement, Props>(function TopicMenuItem(
+      { topic, isActive, className, isEditingDisabled, rootProps },
+      ref
+    ) {
+      const roomContext = useRoomStoreContext();
+      const unreadCount = useTopicUnreadMessagesCount(topic.id);
+      const hasUnreadMessaged = !isActive && unreadCount > 0;
 
-    const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
-    const anchorRef = useRef<HTMLAnchorElement | null>(null);
+      const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
+      const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-    const isNewTopic = select(() => roomContext.newTopicId === topic.id);
-    const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
+      const isNewTopic = select(() => roomContext.newTopicId === topic.id);
+      const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-    function handleNewTopicName(newName: string) {
-      updateTopic({ topicId: topic.id, input: { name: newName } });
+      function handleNewTopicName(newName: string) {
+        updateTopic({ topicId: topic.id, input: { name: newName } });
 
-      roomContext.editingNameTopicId = null;
+        roomContext.editingNameTopicId = null;
 
-      if (isNewTopic) {
-        roomContext.newTopicId = null;
+        if (isNewTopic) {
+          roomContext.newTopicId = null;
+        }
       }
-    }
 
-    return (
-      <>
-        <UIFlyingTooltipWrapper>
-          <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
-            <UIHolder
-              ref={anchorRef}
-              className={className}
-              isActive={isActive}
-              isClosed={!!topic.closed_at}
-              onMouseEnter={showDragIcon}
-              onMouseLeave={hideDragIcon}
-            >
-              {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-              <EditableText
-                value={topic.name ?? ""}
-                isInEditMode={isInEditMode}
-                focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
-                onValueSubmit={handleNewTopicName}
-              />
-            </UIHolder>
-          </TopicLink>
-          {!isEditingDisabled && (
-            <UIManageTopicWrapper>
-              <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
-            </UIManageTopicWrapper>
+      return (
+        <>
+          <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
+            <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
+              <UIHolder
+                ref={anchorRef}
+                className={className}
+                isActive={isActive}
+                isClosed={!!topic.closed_at}
+                onMouseEnter={showDragIcon}
+                onMouseLeave={hideDragIcon}
+              >
+                {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+                <EditableText
+                  value={topic.name ?? ""}
+                  isInEditMode={isInEditMode}
+                  focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+                  onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
+                  onValueSubmit={handleNewTopicName}
+                />
+              </UIHolder>
+            </TopicLink>
+            {!isEditingDisabled && (
+              <UIManageTopicWrapper>
+                <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+              </UIManageTopicWrapper>
+            )}
+          </UIFlyingTooltipWrapper>
+          {isShowingDragIcon && !isEditingDisabled && (
+            <Popover anchorRef={anchorRef} placement={"left"}>
+              <IconDragAndDrop />
+            </Popover>
           )}
-        </UIFlyingTooltipWrapper>
-        {isShowingDragIcon && !isEditingDisabled && (
-          <Popover anchorRef={anchorRef} placement={"left"}>
-            <IconDragAndDrop />
-          </Popover>
-        )}
-      </>
-    );
-  })
+        </>
+      );
+    })
+  )
 )``;
 
 const PADDING = "12px";

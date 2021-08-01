@@ -8,9 +8,7 @@ export const UIScrollContainer = styled.div`
 
 export const UITopicsList = styled.div``;
 
-export const UITopic = styled.div<{ isDragging: boolean }>`
-  position: relative;
-
+export const UITopic = styled.div`
   margin-bottom: 8px;
 
   ${TopicMenuItem} {

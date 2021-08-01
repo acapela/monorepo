@@ -1,12 +1,19 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
-import styled, { css } from "styled-components";
+import React, { useMemo, useState } from "react";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { TopicDetailedInfoFragment } from "~gql";
-import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
-import { TopicMenuItem } from "./TopicMenuItem";
-import { theme } from "~ui/theme";
-import { setColorOpacity } from "~shared/colors";
+
+import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
+import { SortableTopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
   topics: TopicDetailedInfoFragment[];
@@ -29,84 +36,64 @@ export const SortableTopicsList = ({
   onMoveToEnd: moveToEnd,
   onMoveBetween: moveBetween,
 }: Props) => {
-  function handleDrag({ destination, source }: DropResult) {
-    // Dropped outside of droppable area
-    if (!destination) {
-      return;
+  const [draggedTopicId, setDraggedId] = useState<string | null>(null);
+  const draggedTopicIndex = useMemo(() => topics.findIndex((topic) => topic.id == draggedTopicId), [draggedTopicId]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragStart({ active }: DragStartEvent) {
+    setDraggedId(active.id);
+  }
+
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    if (over && active.id !== over.id) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const overIndex = topics.findIndex((topic) => topic.id == over.id)!;
+      if (overIndex === 0) {
+        moveToStart(topics[draggedTopicIndex]);
+        return;
+      }
+
+      if (overIndex === topics.length - 1) {
+        moveToEnd(topics[draggedTopicIndex]);
+        return;
+      }
+
+      // overTopic indexes differ depending if the draggedTopic comes before/after item
+      const { start, end } =
+        overIndex > draggedTopicIndex
+          ? { start: overIndex, end: overIndex + 1 }
+          : { start: overIndex - 1, end: overIndex };
+
+      moveBetween(topics[draggedTopicIndex], topics[start], topics[end]);
     }
 
-    // Dropped in same position
-    if (destination.index === source.index) {
-      return;
-    }
-
-    if (destination.index === 0) {
-      moveToStart(topics[source.index]);
-      return;
-    }
-
-    if (destination.index === topics.length - 1) {
-      moveToEnd(topics[source.index]);
-      return;
-    }
-
-    // destination indexes differ depending if the source comes before/after item
-    const { start, end } =
-      destination.index > source.index
-        ? { start: destination.index, end: destination.index + 1 }
-        : { start: destination.index - 1, end: destination.index };
-
-    moveBetween(topics[source.index], topics[start], topics[end]);
+    setDraggedId(null);
   }
 
   return (
     <UIScrollContainer>
-      <DragDropContext onDragEnd={handleDrag}>
-        <Droppable droppableId={"droppable-id-static"}>
-          {({ droppableProps, innerRef, placeholder: droppablePlaceholder }) => (
-            <UITopicsList {...droppableProps} ref={innerRef}>
-              {topics.map((topic, index) => {
-                const isActive = activeTopicId === topic.id;
-
-                return (
-                  <Draggable key={topic.id} draggableId={topic.id} index={index} isDragDisabled={isDisabled}>
-                    {({ draggableProps, dragHandleProps, innerRef }, { isDragging }) => {
-                      const result = (
-                        <>
-                          <UIDraggableTopic
-                            ref={innerRef}
-                            {...draggableProps}
-                            {...dragHandleProps}
-                            isDragging={isDragging}
-                          >
-                            <TopicMenuItem topic={topic} isActive={isActive} />
-                          </UIDraggableTopic>
-                        </>
-                      );
-
-                      if (isDragging) {
-                        return ReactDOM.createPortal(result, document.body);
-                      }
-                      return result;
-                    }}
-                  </Draggable>
-                );
-              })}
-              {droppablePlaceholder}
-            </UITopicsList>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <UITopicsList>
+          <SortableContext items={topics.map((topic) => topic.id)} strategy={verticalListSortingStrategy}>
+            {topics.map((topic) => (
+              <UITopic key={topic.id}>
+                <SortableTopicMenuItem isDisabled={isDisabled} topic={topic} isActive={activeTopicId === topic.id} />
+              </UITopic>
+            ))}
+          </SortableContext>
+        </UITopicsList>
+      </DndContext>
     </UIScrollContainer>
   );
 };
-
-const UIDraggableTopic = styled(UITopic)<{ isDragging: boolean }>`
-  ${({ isDragging }) =>
-    isDragging
-      ? css`
-          background: ${(props) => setColorOpacity(props.theme.colors.interactive.selected, 0.8)};
-          ${theme.borderRadius.item}
-        `
-      : ""}
-`;

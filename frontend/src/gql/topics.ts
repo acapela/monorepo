@@ -274,6 +274,11 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
         input.slug = slugify(input.name);
       }
     },
+    onOptimisticOrActualResponse(topic) {
+      RoomDetailedInfoFragment.update(topic.room.id, (data) => {
+        data.topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
+      });
+    },
   }
 );
 
