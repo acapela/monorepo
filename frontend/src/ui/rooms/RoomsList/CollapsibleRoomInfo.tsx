@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import { theme } from "~ui/theme";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
@@ -12,15 +13,14 @@ import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
+import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 import { CardBase } from "~ui/card/Base";
-import { TextH4 } from "~ui/typo";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots, IconPlusSquare } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { UICardListItem } from "./shared";
-import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -68,13 +68,13 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
             }}
           >
-            <TextH4 medium spezia>
+            <UIRoomName>
               {room.name}{" "}
               {room.source_google_calendar_event_id && (
                 <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
               )}
               {room.is_private && <PrivateTag />}
-            </TextH4>
+            </UIRoomName>
 
             <UIRoomMetaData>
               <ValueDescriptor
@@ -133,6 +133,7 @@ const UIHolder = styled(CardBase)``;
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 `;
+
 const UIIndentBody = styled.div`
   flex: 1;
 `;
@@ -142,6 +143,10 @@ const UIHead = styled.div`
   align-items: center;
 `;
 
+const UIRoomName = styled.div`
+  ${theme.font.h4.spezia.medium.build}
+`;
+
 const UIHeadPrimary = styled.div`
   display: flex;
   flex-direction: column;
@@ -149,7 +154,7 @@ const UIHeadPrimary = styled.div`
   flex: 1;
   cursor: pointer;
 
-  ${TextH4} {
+  ${UIRoomName} {
     display: flex;
     align-items: center;
     gap: 8px;
