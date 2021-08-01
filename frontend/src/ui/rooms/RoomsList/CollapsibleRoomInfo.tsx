@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
@@ -15,11 +15,19 @@ import { Button } from "~ui/buttons/Button";
 import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 import { CardBase } from "~ui/card/Base";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconBox, IconCalendarDates, IconChevronDown, IconComment2Dots, IconPlusSquare } from "~ui/icons";
+import {
+  IconBox,
+  IconCalendarDates,
+  IconChevronDown,
+  IconChevronUp,
+  IconComment2Dots,
+  IconPlusSquare,
+} from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { theme } from "~ui/theme";
+import { useExpandableListToggle } from "./useExpandableListToggle";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -27,8 +35,7 @@ interface Props {
   className?: string;
 }
 
-const INITIAL_TOPICS_SHOWN_LIMIT = 3;
-const TOPICS_SHOWN_WITHOUT_LIMIT = Number.POSITIVE_INFINITY;
+const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   // TODO: optimize !!
@@ -36,7 +43,13 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
-  const [shownTopicsLimit, setShownTopicsLimit] = useState(INITIAL_TOPICS_SHOWN_LIMIT);
+  const {
+    result: shownTopics,
+    isExpandable: isTopicsListExpandable,
+    isExpanded: isTopicsListExpanded,
+    toggle: toggleExpandTopicList,
+    itemsNotShown: topicsNotShownCount,
+  } = useExpandableListToggle({ originalList: topics, minimizedLimit: MINIMIZED_TOPICS_SHOWN_LIMIT });
 
   const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
 
@@ -48,7 +61,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   }
 
   const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
-  const topicsNotShownCount = topics.length - shownTopicsLimit;
 
   return (
     <UIHolder className={className}>
@@ -93,8 +105,8 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
         {isOpen && (
           <UICollapsedItems>
             <UITopics>
-              {topics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
-              {topics.slice(0, shownTopicsLimit).map((topic) => {
+              {shownTopics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
+              {shownTopics.map((topic) => {
                 return <TopicCard key={topic.id} topic={topic} />;
               })}
             </UITopics>
@@ -111,15 +123,30 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 </UIAddTopicButton>
               )}
 
-              {topicsNotShownCount > 0 && (
-                <UIToggleShowMoreTopics
-                  kind="secondary"
-                  icon={<IconChevronDown />}
-                  iconPosition="end"
-                  onClick={() => setShownTopicsLimit(TOPICS_SHOWN_WITHOUT_LIMIT)}
-                >
-                  View all topics ({topicsNotShownCount})
-                </UIToggleShowMoreTopics>
+              {isTopicsListExpandable && (
+                <>
+                  {!isTopicsListExpanded && (
+                    <UIToggleShowMoreTopics
+                      kind="secondary"
+                      icon={<IconChevronDown />}
+                      iconPosition="end"
+                      onClick={toggleExpandTopicList}
+                    >
+                      View all topics ({topicsNotShownCount})
+                    </UIToggleShowMoreTopics>
+                  )}
+
+                  {isTopicsListExpanded && (
+                    <UIToggleShowMoreTopics
+                      kind="secondary"
+                      icon={<IconChevronUp />}
+                      iconPosition="end"
+                      onClick={toggleExpandTopicList}
+                    >
+                      Minimize
+                    </UIToggleShowMoreTopics>
+                  )}
+                </>
               )}
             </UITopicListActions>
           </UICollapsedItems>
