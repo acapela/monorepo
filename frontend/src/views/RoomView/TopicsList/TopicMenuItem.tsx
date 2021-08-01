@@ -12,10 +12,12 @@ import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { theme } from "~ui/theme";
 import { EditableText } from "~ui/forms/EditableText";
-import { IconDragAndDrop } from "~ui/icons";
+import { IconCross, IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { useTopic } from "~frontend/topics/useTopic";
 
 type Props = {
   topic: TopicDetailedInfoFragment;
@@ -53,6 +55,7 @@ export const TopicMenuItem = styled(
       ref
     ) {
       const roomContext = useRoomStoreContext();
+      const { deleteTopic } = useTopic(topic);
       const unreadCount = useTopicUnreadMessagesCount(topic.id);
       const hasUnreadMessaged = !isActive && unreadCount > 0;
 
@@ -61,6 +64,8 @@ export const TopicMenuItem = styled(
 
       const isNewTopic = select(() => roomContext.newTopicId === topic.id);
       const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
+
+      const manageWrapperRef = useRef<HTMLElement | null>(null);
 
       function handleNewTopicName(newName: string) {
         updateTopic({ topicId: topic.id, input: { name: newName } });
@@ -91,12 +96,25 @@ export const TopicMenuItem = styled(
                   focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
                   onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
                   onValueSubmit={handleNewTopicName}
+                  checkPreventClickAway={(event) =>
+                    Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
+                  }
                 />
               </UIHolder>
             </TopicLink>
             {!isEditingDisabled && (
-              <UIManageTopicWrapper>
-                <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+              <UIManageTopicWrapper ref={manageWrapperRef}>
+                {isNewTopic ? (
+                  <CircleIconButton
+                    size="small"
+                    icon={<IconCross />}
+                    onClick={() => {
+                      deleteTopic();
+                    }}
+                  />
+                ) : (
+                  <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+                )}
               </UIManageTopicWrapper>
             )}
           </UIFlyingTooltipWrapper>
@@ -124,7 +142,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   ${theme.borderRadius.button}
 
   ${hoverActionCss}
-  
+
   ${(props) => {
     if (props.isActive) {
       return css`

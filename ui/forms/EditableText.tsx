@@ -11,6 +11,7 @@ interface Props {
   onEditModeChangeRequest: (isInEditMode: boolean) => void;
   focusSelectMode?: FocusSelectMode;
   className?: string;
+  checkPreventClickAway?: (event: Event) => boolean;
 }
 
 type FocusSelectMode = "cursor-at-end" | "select";
@@ -22,6 +23,7 @@ export const EditableText = styled(function EditableText({
   onEditModeChangeRequest,
   focusSelectMode = "cursor-at-end",
   className,
+  checkPreventClickAway,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -97,8 +99,8 @@ export const EditableText = styled(function EditableText({
     return true;
   }
 
-  useClickAway(ref, () => {
-    if (!isInEditMode) return;
+  useClickAway(ref, (event) => {
+    if (checkPreventClickAway?.(event) || !isInEditMode) return;
     handleSubmit();
   });
 
