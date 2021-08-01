@@ -9,6 +9,8 @@ export const UIScrollContainer = styled.div`
 export const UITopicsList = styled.div``;
 
 export const UITopic = styled.div`
+  position: relative;
+
   margin-bottom: 8px;
 
   ${TopicMenuItem} {

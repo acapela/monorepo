@@ -4,12 +4,11 @@ import {
   DndContext,
   DragEndEvent,
   DragStartEvent,
-  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { TopicDetailedInfoFragment } from "~gql";
 
 import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
@@ -39,12 +38,7 @@ export const SortableTopicsList = ({
   const [draggedTopicId, setDraggedId] = useState<string | null>(null);
   const draggedTopicIndex = useMemo(() => topics.findIndex((topic) => topic.id == draggedTopicId), [draggedTopicId]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const sensors = useSensors(useSensor(PointerSensor));
 
   function handleDragStart({ active }: DragStartEvent) {
     setDraggedId(active.id);
