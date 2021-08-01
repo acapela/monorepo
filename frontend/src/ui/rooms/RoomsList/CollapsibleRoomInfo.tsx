@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
@@ -35,7 +35,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const [shownTopicsLimit, setShownTopicsLimit] = useState(INITIAL_TOPICS_SHOWN_LIMIT);
 
@@ -44,10 +43,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
       roomId: room.id,
-      modalAnchor: {
-        ref: buttonRef,
-        placement: "bottom-start",
-      },
       navigateAfterCreation: true,
     });
   }
@@ -108,7 +103,6 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               {isAbleToAddTopic && (
                 <UIAddTopicButton
                   kind="secondary"
-                  ref={buttonRef}
                   onClick={handleCreateTopic}
                   icon={<IconPlusSquare />}
                   iconPosition="start"
