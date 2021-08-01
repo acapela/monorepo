@@ -3,7 +3,12 @@ import { memoize } from "lodash";
 import { useEffect, useState } from "react";
 import { createCleanupObject } from "~shared/cleanup";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { UnreadMessageFragmentFragment, UserUnreadMessagesQuery, UserUnreadMessagesQueryVariables } from "~gql";
+import {
+  RoomBasicInfoFragment,
+  UnreadMessageFragmentFragment,
+  UserUnreadMessagesQuery,
+  UserUnreadMessagesQueryVariables,
+} from "~gql";
 import { useSpaceRoomsQuery } from "~frontend/gql/rooms";
 import { createQuery } from "~frontend/gql/utils";
 import { createChannel } from "~shared/channel";
@@ -166,6 +171,30 @@ export function useSpaceUnreadMessagesCount(spaceId: string) {
   ]);
 
   return count;
+}
+
+export type UnreadRoomMessage = Record<RoomBasicInfoFragment["id"], number>;
+
+export function useTeamRoomsMessagesCount(): UnreadRoomMessage {
+  const user = useAssertCurrentUser();
+
+  const allMessages = getUserUnreadMessagesChannel(user.id).useLastValue() ?? [];
+
+  const roomsMessages: UnreadRoomMessage = {};
+
+  allMessages.forEach((message) => {
+    if (!message.roomId) {
+      return;
+    }
+
+    if (!roomsMessages[message.roomId]) {
+      roomsMessages[message.roomId] = 0;
+    }
+
+    roomsMessages[message.roomId] += message.unreadMessages ?? 0;
+  });
+
+  return roomsMessages;
 }
 
 function addArrayOfNumbers(numbers: number[]) {
