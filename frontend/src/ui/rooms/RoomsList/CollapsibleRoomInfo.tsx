@@ -3,31 +3,20 @@ import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
-import { TopicCard } from "~frontend/ui/rooms/RoomsList/TopicCard";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { Button } from "~ui/buttons/Button";
 import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 import { CardBase } from "~ui/card/Base";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import {
-  IconBox,
-  IconCalendarDates,
-  IconChevronDown,
-  IconChevronUp,
-  IconComment2Dots,
-  IconPlusSquare,
-} from "~ui/icons";
+import { IconBox, IconCalendarDates, IconComment2Dots } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { theme } from "~ui/theme";
-import { useExpandableListToggle } from "./useExpandableListToggle";
+import { ExpandableTopicsList } from "./ExpandableTopicsList";
 
 interface Props {
   room: RoomBasicInfoFragment;
@@ -35,30 +24,13 @@ interface Props {
   className?: string;
 }
 
-const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
-
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
   // TODO: optimize !!
   const [space] = useSingleSpaceQuery({ id: room.space_id });
 
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
-  const {
-    result: shownTopics,
-    isExpandable: isTopicsListExpandable,
-    isExpanded: isTopicsListExpanded,
-    toggle: toggleExpandTopicList,
-    itemsNotShown: topicsNotShownCount,
-  } = useExpandableListToggle({ originalList: topics, minimizedLimit: MINIMIZED_TOPICS_SHOWN_LIMIT });
-
   const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
-
-  async function handleCreateTopic() {
-    await startCreateNewTopicFlow({
-      roomId: room.id,
-      navigateAfterCreation: true,
-    });
-  }
 
   const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
 
@@ -104,51 +76,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
         </UIHead>
         {isOpen && (
           <UICollapsedItems>
-            <UITopics>
-              {shownTopics.length === 0 && <EmptyStatePlaceholder description="No topics in this room" />}
-              {shownTopics.map((topic) => {
-                return <TopicCard key={topic.id} topic={topic} />;
-              })}
-            </UITopics>
-
-            <UITopicListActions>
-              {isAbleToAddTopic && (
-                <UIAddTopicButton
-                  kind="secondary"
-                  onClick={handleCreateTopic}
-                  icon={<IconPlusSquare />}
-                  iconPosition="start"
-                >
-                  New topic
-                </UIAddTopicButton>
-              )}
-
-              {isTopicsListExpandable && (
-                <>
-                  {!isTopicsListExpanded && (
-                    <UIToggleShowMoreTopics
-                      kind="secondary"
-                      icon={<IconChevronDown />}
-                      iconPosition="end"
-                      onClick={toggleExpandTopicList}
-                    >
-                      View all topics ({topicsNotShownCount})
-                    </UIToggleShowMoreTopics>
-                  )}
-
-                  {isTopicsListExpanded && (
-                    <UIToggleShowMoreTopics
-                      kind="secondary"
-                      icon={<IconChevronUp />}
-                      iconPosition="end"
-                      onClick={toggleExpandTopicList}
-                    >
-                      Minimize
-                    </UIToggleShowMoreTopics>
-                  )}
-                </>
-              )}
-            </UITopicListActions>
+            <ExpandableTopicsList topics={topics} roomId={room.id} isAbleToAddTopic={isAbleToAddTopic} />
           </UICollapsedItems>
         )}
       </UIIndentBody>
@@ -199,27 +127,3 @@ const UIRoomMetaData = styled.div`
 const UICollapsedItems = styled.div`
   margin-top: 32px;
 `;
-
-const UITopics = styled.div`
-  ${TopicCard} {
-    &:not(:last-child) {
-      margin-bottom: 16px;
-    }
-  }
-
-  flex: 1;
-`;
-
-const UITopicListActions = styled.div`
-  margin-top: 24px;
-
-  display: inline-flex;
-  justify-content: space-between;
-
-  align-items: center;
-  width: 100%;
-`;
-
-const UIAddTopicButton = styled(Button)``;
-
-const UIToggleShowMoreTopics = styled(Button)``;
