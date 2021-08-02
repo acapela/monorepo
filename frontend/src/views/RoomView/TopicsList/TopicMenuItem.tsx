@@ -39,6 +39,7 @@ export function SortableTopicMenuItem({
   });
 
   const style = {
+    // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
     transform: CSS.Transform.toString(transform),
     transition,
   };
