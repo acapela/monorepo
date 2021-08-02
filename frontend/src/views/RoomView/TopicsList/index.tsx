@@ -142,6 +142,6 @@ const UIHeader = styled.div`
 const UINoTopicsMessage = styled.div``;
 
 const UINewTopicButton = styled(Button)`
-  margin-top: 10px;
-  padding: 10px 50px;
+  margin-top: 8px;
+  padding: 8px 48px;
 `;
