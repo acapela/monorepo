@@ -8,6 +8,6 @@ export const UISelectGridContainer = styled.div<{}>`
 
   width: 100%;
   padding: 8px;
-  border: 1px solid ${theme.colors.layout.softLine};
+  border: 1px solid ${theme.colors.layout.softLine()};
   ${theme.borderRadius.menu}
 `;

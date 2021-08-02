@@ -10,19 +10,15 @@ interface Props {
 export const RoomsList = styled(function RoomsList({ className, rooms }: Props) {
   return (
     <UIHolder className={className}>
-      {rooms.map((room) => {
-        return (
-          <UISingleRoomRecentTopics key={room.id}>
-            <CollapsibleRoomInfo room={room} topics={room.topics} />
-          </UISingleRoomRecentTopics>
-        );
-      })}
+      {rooms.map((room) => (
+        <UICollapsibleRoomInfo key={room.id} room={room} topics={room.topics} />
+      ))}
     </UIHolder>
   );
 })``;
 
 const UIHolder = styled.div<{}>``;
 
-const UISingleRoomRecentTopics = styled.div<{}>`
+const UICollapsibleRoomInfo = styled(CollapsibleRoomInfo)<{}>`
   margin-bottom: 16px;
 `;

@@ -7,9 +7,9 @@ on:
         required: true
         default: "staging"
       app:
-        description: "the application that should be deployed"
+        description: "the application that should be deployed (frontend, backend, all)"
         required: true
-        default: "api"
+        default: "all"
       version:
         description: "the version that should be deployed"
         required: true

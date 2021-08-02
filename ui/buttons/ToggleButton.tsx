@@ -28,7 +28,7 @@ const activeButtonStyles = css`
 
 const forceIconColorToBeTextColor = css`
   svg {
-    color: ${theme.colors.interactive.actions.secondary.regular.text};
+    color: ${theme.colors.interactive.actions.secondary.regular.text()};
   }
 `;
 
