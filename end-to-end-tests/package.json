@@ -1,0 +1,11 @@
+{
+  "name": "end-to-end-tests",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.13.0"
+  },
+  "scripts": {
+    "test": "playwright test"
+  }
+}
