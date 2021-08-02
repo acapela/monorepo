@@ -18,13 +18,26 @@ import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { generateId } from "~shared/id";
-import { getIndexBetweenItems } from "~frontend/rooms/order";
+import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { select } from "~shared/sharedState";
 
 interface Props {
   room: RoomDetailedInfoFragment;
   activeTopicId: string | null;
   isRoomOpen: boolean;
+}
+
+function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopicId: string | null) {
+  const activeTopicNumIndex = topics.findIndex((t) => t.id == activeTopicId);
+  if (activeTopicNumIndex == -1) {
+    return createLastItemIndex(topics[topics.length - 1]?.index ?? "");
+  }
+  const activeTopicIndex = topics[activeTopicNumIndex].index;
+  const nextTopic = topics[activeTopicNumIndex + 1];
+  if (!nextTopic) {
+    return getIndexBetweenCurrentAndLast(activeTopicIndex);
+  }
+  return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
 
 export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
@@ -40,21 +53,12 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   async function handleCreateNewTopic() {
-    let beforeListPosition = topics.findIndex((t) => t.id == activeTopicId);
-    if (beforeListPosition == -1) {
-      beforeListPosition = room.topics.length - 1;
-    }
-    const beforeTopic = room.topics[beforeListPosition];
-
-    const beforeLexIndex = beforeTopic ? beforeTopic.index : "";
-    const afterLexIndex = room.topics[beforeListPosition + 1]?.index ?? "";
-
     await startCreateNewTopicFlow({
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
       roomId: room.id,
       navigateAfterCreation: true,
-      index: getIndexBetweenItems(beforeLexIndex, afterLexIndex),
+      index: getNewTopicIndex(topics, activeTopicId),
     });
   }
 
