@@ -33,7 +33,7 @@ export const PrimaryItemTitle = styled.div`
 
 export const CategoryNameLabel = styled.div`
   ${theme.font.body14.speziaMono.build}
-  color: ${theme.colors.layout.supportingText};
+  color: ${theme.colors.layout.supportingText()};
   /* TODO: move to a functional theme method. */
   opacity: 0.6;
 `;
