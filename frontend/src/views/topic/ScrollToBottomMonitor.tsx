@@ -32,14 +32,19 @@ export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
         return;
       }
 
+      const scrollToBottomOfParent = () => {
+        scrollToBottom(parentNode, behavior);
+      };
+
       if (navigator.userAgent.includes("AppleWebKit")) {
         // Safari schedules ~some sync work which stops bottom scrolling from working
         // This little hack, while not nice, does make it work
+        // TODO: look for real fix if it turns out there is unforeseen negative consequences
         setTimeout(() => {
-          scrollToBottom(parentNode, behavior);
+          scrollToBottomOfParent();
         });
       } else {
-        scrollToBottom(parentNode, behavior);
+        scrollToBottomOfParent();
       }
     },
     [getShouldScroll]
