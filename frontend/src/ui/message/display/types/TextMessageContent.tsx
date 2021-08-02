@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-export const MessageText = styled(({ message, className }: Props) => {
+export const MessageText = styled<Props>(({ message, className }) => {
   if (isRichEditorContentEmpty(message.content)) return null;
 
   return (
@@ -24,6 +24,6 @@ export const MessageText = styled(({ message, className }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   ${richEditorContentCss};
 `;

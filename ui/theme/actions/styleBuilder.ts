@@ -1,12 +1,12 @@
-import { css, FlattenSimpleInterpolation, SimpleInterpolation } from "styled-components";
+import { css, StylesPart, StaticInterpolation } from "styled-components";
 import { ColorTargetOptions, VariantStates } from "../colors";
 
 export interface ActionStateInterpolations {
-  regular: () => FlattenSimpleInterpolation;
-  hover: () => FlattenSimpleInterpolation;
-  disabled: () => FlattenSimpleInterpolation;
-  active: () => FlattenSimpleInterpolation;
-  all: () => FlattenSimpleInterpolation;
+  regular: () => StylesPart;
+  hover: () => StylesPart;
+  disabled: () => StylesPart;
+  active: () => StylesPart;
+  all: () => StylesPart;
 }
 
 export function variantToStyles(colorsForVariant: VariantStates): ActionStateInterpolations {
@@ -53,7 +53,7 @@ export function variantToStyles(colorsForVariant: VariantStates): ActionStateInt
   return result;
 }
 
-function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): SimpleInterpolation {
+function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): StaticInterpolation {
   if (!colorsForState) {
     return css``;
   }

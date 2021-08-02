@@ -32,6 +32,12 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
   const [content, setContent] = useState<RichEditorNode>(message.content);
 
   useShortcut("Escape", onCancelRequest);
+  useShortcut("Enter", () => {
+    handleSubmit();
+
+    // Don't pass enter to editor as it would insert new line
+    return true;
+  });
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {
@@ -87,6 +93,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
             return existingAttachment.uuid !== attachmentId;
           });
         }}
+        autofocusKey={message.id}
         hideEditorSubmitButton
       />
       <UIButtons gap={8} justifyContent="end">
@@ -101,8 +108,8 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
   );
 };
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;
 
-const UIButtons = styled(HStack)`
+const UIButtons = styled(HStack)<{}>`
   margin-top: 8px;
 `;

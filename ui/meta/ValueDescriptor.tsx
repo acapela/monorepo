@@ -18,20 +18,20 @@ export const ValueDescriptor = ({ keyNode: key, value, isIconKey = false }: Prop
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 `;
 
-const UIHolderKey = styled.div`
+const UIHolderKey = styled.div<{}>`
   line-height: 1.25;
 `;
 
-const UIHolderIconKey = styled.div`
+const UIHolderIconKey = styled.div<{}>`
   line-height: 1.25;
   font-size: 1.25rem;
 `;
 
-const UIHolderValue = styled.div``;
+const UIHolderValue = styled.div<{}>``;

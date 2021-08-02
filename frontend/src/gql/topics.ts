@@ -219,7 +219,7 @@ export const [useRemoveTopicMemberMutation] = createMutation<
   }
 );
 
-export const [useLastSeenMessageMutation] = createMutation<
+export const [useLastSeenMessageMutation, { mutate: updateLastSeenMessage }] = createMutation<
   UpdateLastSeenMessageMutationVariables,
   UpdateLastSeenMessageMutationVariables
 >(

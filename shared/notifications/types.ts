@@ -23,9 +23,11 @@ export interface NotificationTypesMap {
 
 export type NotificationType = keyof NotificationTypesMap;
 
+export type NotificationPayload<Type extends NotificationType> = NotificationTypesMap[Type];
+
 export type NotificationData<Type extends NotificationType> = {
   type: Type;
-  payload: NotificationTypesMap[Type];
+  payload: NotificationPayload<Type>;
 };
 
 export type AnyNotificationData = NotificationData<NotificationType>;

@@ -1,6 +1,6 @@
-import { Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
+import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import styled from "styled-components";
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
@@ -17,6 +17,7 @@ import { richEditorContentCss } from "./Theme";
 import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
 import { useUpdate } from "react-use";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";
@@ -43,7 +44,57 @@ export interface RichEditorProps {
   onEditorReady?: (editor: Editor) => void;
 }
 
-export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEditor(
+/**
+ * This is a bit tricky.
+ *
+ * It seems like this function should not be needed and editor.chain().focus('end') should be enough.
+ *
+ * Turns out 'end' focus puts cursor at content.size position, which is 'after' selectable area which I don't fully understand.
+ *
+ * Example:
+ * Creating some complex content (eg bullet lists) you might do 2 things:
+ * - call content.size and also manually (by mouse or keyboard) put cursor at the end of visible content and then measure
+ * cursor position.
+ *
+ * Turns out those are different numbers. content.size is always bigger. I think it is a bug in tiptap as looking at
+ * focus('end') implementation it is exactly what happens (pseudo code: focusAt(content.size)).
+ *
+ * This leads to bunch of weird behaviors eg. if you have 1 line content, focus('end') and then press backspace twice,
+ * it'll first select entire content and then remove your entire content.
+ *
+ * So long story short - this function will get last cursor position that is able to resolve to actual node.
+ */
+function getLastSelectableCursorPosition(editor: Editor) {
+  // Let's get content size and start from there looking for first 'selectable' cursor position
+  const contentSize = editor.state.doc.content.size;
+
+  let cursorPosition = contentSize;
+
+  // Start looking until will reach 'start' position.
+  while (cursorPosition > 1) {
+    // Let's check if there is an actual node at this cursor position
+    const node = editor.state.doc.nodeAt(cursorPosition);
+
+    // If there is - set position of cursor 'just after' this node.
+    if (node) {
+      return cursorPosition + 1;
+    }
+
+    // Keep looking
+    cursorPosition--;
+  }
+
+  // We've reached 'start' position so let's return it.
+  return 1;
+}
+
+function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
+  const lastSelectablePosition = getLastSelectableCursorPosition(editor);
+
+  return editor.chain().focus(lastSelectablePosition);
+}
+
+export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function RichEditor(
   {
     value = getEmptyRichContent(),
     onChange,
@@ -70,6 +121,10 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
       })
   );
   const forceUpdate = useUpdate();
+
+  function getFocusAtEndCommand() {
+    return getFocusEditorAtEndCommand(editor);
+  }
 
   useEffect(() => {
     editor.on("transaction", forceUpdate);
@@ -119,7 +174,7 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
     if (!editor || !autofocusKey) return;
 
     return createTimeout(() => {
-      editor.chain?.().focus("end").run();
+      getFocusAtEndCommand().run();
     }, 0);
   }, [autofocusKey, editor]);
 
@@ -151,7 +206,7 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
 
     if (!didChange) return;
 
-    editor?.chain().focus().setContent(value).run();
+    getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
   /**
@@ -171,7 +226,7 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
       return true;
     },
     {
-      isEnabled: isFocused,
+      isEnabled: isFocused && submitMode === "enable",
     }
   );
 
@@ -199,7 +254,7 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
        * TLDR: only focusing the editor was enough - tiptap did capture keyboard event in such case and did properly
        * insert pressed key into the content.
        */
-      editor?.chain().focus("end").run();
+      getFocusAtEndCommand().run();
       return true;
     },
     { isEnabled: !isFocused && !isDisabled }
@@ -258,12 +313,12 @@ export const RichEditor = forwardRef<Editor, RichEditorProps>(function RichEdito
   );
 });
 
-const UIEditorHolder = styled.div`
+const UIEditorHolder = styled.div<{}>`
   flex-grow: 1;
   ${richEditorContentCss};
 `;
 
-const UIEditorContent = styled.div`
+const UIEditorContent = styled.div<{}>`
   padding: 16px;
   display: flex;
 
@@ -276,7 +331,7 @@ const UIEditorContent = styled.div`
   cursor: text;
 `;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   width: 100%;
   min-width: 500px;
   border: 1px solid #ccc;

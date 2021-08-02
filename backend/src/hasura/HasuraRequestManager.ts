@@ -24,7 +24,7 @@ const apiUrl = assertDefined(process.env.HASURA_API_URL, "HASURA_API_URL env var
 const apiSecret = assertDefined(process.env.HASURA_API_SECRET, "HASURA_API_SECRET env variable is required");
 const apiRole = assertDefined(process.env.HASURA_API_ADMIN_ROLE, "HASURA_API_ADMIN_ROLE env variable is required");
 
-export default abstract class Hasura {
+export abstract class HasuraRequestManager {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
   static async authenticatedRequest(
@@ -59,7 +59,7 @@ export default abstract class Hasura {
     include_in_metadata: boolean;
     headers?: Array<HasuraHeader>;
   }): Promise<AxiosResponse<ScheduleRequestResponse>> {
-    return Hasura.authenticatedRequest({
+    return HasuraRequestManager.authenticatedRequest({
       type: "create_cron_trigger",
       args: job,
     });
@@ -70,7 +70,7 @@ export default abstract class Hasura {
    * @param name - name of the job to be deleted
    */
   static deleteJob(name: string): Promise<AxiosResponse<DeleteJobResponse>> {
-    return Hasura.authenticatedRequest({
+    return HasuraRequestManager.authenticatedRequest({
       type: "delete_cron_trigger",
       args: { name },
     });

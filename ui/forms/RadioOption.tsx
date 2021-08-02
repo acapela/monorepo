@@ -17,6 +17,7 @@ const Container = styled.label<{ selected: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  white-space: nowrap;
 
   ${({ selected }) =>
     selected &&
@@ -47,7 +48,7 @@ export const RadioOption = ({ value, children, selected, onSelect, name }: Props
   };
 
   return (
-    <Container onFocus={onSelect} selected={selected}>
+    <Container onFocus={onSelect} onClick={onSelect} selected={selected}>
       <input type="radio" name={name} checked={selected} value={value} onChange={handleChange} />
       {children}
     </Container>

@@ -1,9 +1,10 @@
 import { Space } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
+import { HasuraEvent } from "../hasura";
 import { addSpaceMember, getSpaceHasMember } from "./helpers";
 
-export async function handleSpaceUpdates(space: Space, userId: string | null) {
+export async function handleSpaceUpdates({ item: space, userId }: HasuraEvent<Space>) {
   const { creator_id: creatorId, id: spaceId } = space;
   if (userId !== creatorId) {
     logger.error("User id of action caller does not match room creator", {

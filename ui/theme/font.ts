@@ -1,4 +1,4 @@
-import { css, FlattenSimpleInterpolation } from "styled-components";
+import { css, StylesPart } from "styled-components";
 import { markAsNotTerminal } from "~ui/theme/proxy/nonTerminal";
 import { noop } from "lodash";
 
@@ -25,7 +25,7 @@ export interface Font {
   withExceptionalSize: (fontSize: string, obligatoryComment: string) => Font;
   withExceptionalLineHeight: (lineHeight: string, obligatoryComment: string) => Font;
 
-  build: () => FlattenSimpleInterpolation;
+  build: () => StylesPart;
 }
 
 const BACKUP_FONT_FAMILIES = `"Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Arial", "sans-serif"`;
@@ -42,7 +42,7 @@ const bodyBaseStyles = css`
   letter-spacing: 0;
 `;
 
-export function createFontStyles(parentStyles: FlattenSimpleInterpolation[]): Font {
+export function createFontStyles(parentStyles: StylesPart[]): Font {
   const builder = {
     get spezia() {
       return createFontStyles([

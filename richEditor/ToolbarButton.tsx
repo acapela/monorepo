@@ -1,9 +1,10 @@
-import { forwardRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { PRIMARY_COLOR, WHITE } from "~ui/theme/colors/base";
 import { disabledCss } from "~ui/disabled";
 import { getButtonColorStyles } from "~ui/transitions";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 interface Props {
   icon: ReactNode;
@@ -14,7 +15,7 @@ interface Props {
   tooltipLabel?: string;
 }
 
-export const ToolbarButton = forwardRef<HTMLButtonElement, Props>(function ToolbarButton(
+export const ToolbarButton = namedForwardRef<HTMLButtonElement, Props>(function ToolbarButton(
   { icon, isHighlighted = false, isDisabled = false, onClick, tooltipLabel }: Props,
   ref
 ) {

@@ -50,7 +50,7 @@ function DateHeader({ date }: { date: Date }) {
   return <UIDateHeader>{niceFormatDate(date, { showWeekDay: "long" })}</UIDateHeader>;
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
 
@@ -59,7 +59,7 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIDateHeader = styled.div`
+const UIDateHeader = styled.div<{}>`
   font-size: ${fontSize.label};
   text-align: center;
   font-weight: bold;

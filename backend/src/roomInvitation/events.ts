@@ -1,12 +1,15 @@
-import { RoomParticipants } from "~db";
+import { RoomMember } from "~db";
+import { RoomInvitation } from "~db";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { HasuraEvent } from "../hasura";
+import { createNotification } from "../notifications/entity";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
-import { RoomAddedNotification } from "~backend/src/roomInvitation/RoomAddedNotification";
 import { sendNotification } from "~backend/src/notifications/sendNotification";
 import logger from "~shared/logger";
+import { RoomInvitationNotification } from "./RoomInvitationNotification";
 
-export async function handleRoomParticipantCreated(invite: RoomParticipants, userId: string | null) {
+export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEvent<RoomMember>) {
   const { room_id: roomId, user_id: addedUserId } = invite;
 
   if (userId === addedUserId) {
@@ -18,41 +21,39 @@ export async function handleRoomParticipantCreated(invite: RoomParticipants, use
     throw new UnprocessableEntityError("user id missing");
   }
 
-  const [addedUser, inviter, room] = await Promise.all([
-    findUserById(addedUserId),
-    findUserById(userId),
-    findRoomById(roomId),
-  ]);
+  await createNotification({
+    type: "addedToRoom",
+    userId: addedUserId,
+    payload: { addedByUserId: userId, roomId: roomId },
+  });
+}
 
-  if (!addedUser) {
-    throw new UnprocessableEntityError(`added user ${addedUserId} does not exist`);
-  }
-  if (!inviter) {
-    throw new UnprocessableEntityError(`inviter ${userId} does not exist`);
-  }
-  if (!room) {
-    throw new UnprocessableEntityError(`room ${roomId} does not exist`);
-  }
-  if (!addedUser.email) {
-    throw new UnprocessableEntityError(`invalid user entry: ${addedUserId}`);
-  }
-  if (!room.space_id) {
-    throw new UnprocessableEntityError(`invalid room entry: ${roomId}`);
+export async function handleRoomInvitationCreated({ item: invite, userId }: HasuraEvent<RoomInvitation>) {
+  const { room_id: roomId, inviting_user_id: invitingUserId } = invite;
+
+  if (userId !== invitingUserId) {
+    throw new UnprocessableEntityError(
+      `Inviter id: ${invitingUserId} does not match user making the modification: ${userId}`
+    );
   }
 
-  const notification = new RoomAddedNotification({
-    recipientEmail: addedUser.email,
+  const [room, inviter] = await Promise.all([findRoomById(roomId), findUserById(invitingUserId)]);
+
+  if (!room || !inviter) {
+    throw new UnprocessableEntityError(`Room ${roomId} or inviter ${invitingUserId} does not exist`);
+  }
+
+  const notification = new RoomInvitationNotification({
+    recipientEmail: invite.email,
+    roomName: room.name,
     inviterName: getNormalizedUserName(inviter),
-    roomName: room.name || "an acapela discussion",
-    spaceId: room.space_id,
-    roomId: room.id,
+    inviteCode: invite.token,
   });
 
   await sendNotification(notification);
 
-  logger.info("Sent room added notification", {
-    roomId,
+  logger.info("Sent invite notification", {
     userId,
-    addedUserId,
+    roomId,
   });
 }

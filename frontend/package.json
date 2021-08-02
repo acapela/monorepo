@@ -33,6 +33,7 @@
     "@sentry/node": "^6.8.0",
     "apollo3-cache-persist": "^0.10.0",
     "date-fns": "^2.22.0",
+    "esbuild-loader": "^2.13.1",
     "escape-html": "^1.0.3",
     "express-http-proxy": "^1.6.2",
     "focus-visible": "^5.2.0",
@@ -66,7 +67,6 @@
     "@types/mudder": "1.0.0",
     "@types/next-auth": "^3.15.0",
     "@types/react-dom": "^17.0.9",
-    "@types/styled-components": "5.1.11",
     "@types/validator": "^13.6.3",
     "autoprefixer": "^10.3.0",
     "babel-jest": "^27.0.6",
@@ -78,7 +78,7 @@
     "postcss": "^8.3.0",
     "postcss-focus-visible": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
-    "typescript": "4.3.5",
+    "typescript": "*",
     "whatwg-fetch": "^3.6.2"
   }
 }

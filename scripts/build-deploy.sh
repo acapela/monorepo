@@ -13,8 +13,9 @@ version=$1
 
 for app in backend frontend; do
   echo "[$app]: trigger deploy"
-  for stage in staging production; do
-    echo "[$app]: deploying to $version to $stage"
-    ./scripts/deploy.sh -s $stage -a $app -v $version
-  done
+  #for stage in staging production; do
+  stage=staging
+  echo "[$app]: deploying to $version to $stage"
+  ./scripts/deploy.sh -s $stage -a $app -v $version
+  #done
 done

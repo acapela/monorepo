@@ -1,12 +1,14 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
-import { forwardRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { useId } from "~shared/id";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
+import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 import { IconChevronDown } from "~ui/icons";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
+type CursorType = "action" | "input";
 export interface Props {
   pushLabel?: boolean;
   hasError?: boolean;
@@ -16,17 +18,17 @@ export interface Props {
   label?: string;
   onClick?: () => void;
   indicateDropdown?: boolean;
+  cursorType?: CursorType;
 }
-
-export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWithLabel(
-  { pushLabel, icon, label, children, onClick, indicateDropdown },
+export const FieldWithLabel = namedForwardRef<HTMLDivElement, Props>(function FieldWithLabel(
+  { pushLabel, icon, label, children, onClick, indicateDropdown, cursorType = "input" },
   forwardedRef
 ) {
   const id = useId();
 
   return (
     <AnimateSharedLayout>
-      <UIHolder onClick={onClick} ref={forwardedRef}>
+      <UIHolder onClick={onClick} ref={forwardedRef} cursorType={cursorType}>
         {icon && <UIIconHolder>{icon}</UIIconHolder>}
         <UIContentHolder>
           <UIFlyingOverlay>
@@ -53,7 +55,7 @@ export const FieldWithLabel = forwardRef<HTMLDivElement, Props>(function FieldWi
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{ cursorType: CursorType }>`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -68,9 +70,13 @@ const UIHolder = styled.div`
 
   outline: none;
   min-height: 16px;
+
+  /* TODO: add theme.colors.forms and replace it with this */
+  background-color: ${WHITE};
+  cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
 `;
 
-const UIFlyingOverlay = styled.div`
+const UIFlyingOverlay = styled.div<{}>`
   position: absolute;
   top: 0;
   left: 0;
@@ -81,7 +87,7 @@ const UIFlyingOverlay = styled.div`
   pointer-events: none;
 `;
 
-const UIIconHolder = styled.div`
+const UIIconHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   padding: 16px;
@@ -89,7 +95,7 @@ const UIIconHolder = styled.div`
   font-size: 20px;
 `;
 
-const UIPlaceholdersHolder = styled.div`
+const UIPlaceholdersHolder = styled.div<{}>`
   display: flex;
   max-width: 100%;
 `;
@@ -104,13 +110,13 @@ const sharedPlaceholderStyles = css`
   color: ${SECONDARY_TEXT_COLOR};
 `;
 
-const UIPlaceholder = styled(motion.div)`
+const UIPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   display: flex;
   align-items: center;
   align-self: center;
 `;
-const UIFocusedPlaceholder = styled(motion.div)`
+const UIFocusedPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   align-self: flex-start;
   font-size: 12px;
@@ -121,14 +127,14 @@ const UIFocusedPlaceholder = styled(motion.div)`
   box-shadow: 0 0 0px 6px #fff;
 `;
 
-const UIContentHolder = styled.div`
+const UIContentHolder = styled.div<{}>`
   position: relative;
   flex-grow: 1;
   min-width: 0;
   display: flex;
 `;
 
-const UIDropdownIcon = styled(IconChevronDown)`
+const UIDropdownIcon = styled(IconChevronDown)<{}>`
   font-size: 1.5rem;
   opacity: 0.6;
   align-self: center;

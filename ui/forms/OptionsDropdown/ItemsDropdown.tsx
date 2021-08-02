@@ -72,7 +72,7 @@ export function ItemsDropdown<I>({
   );
 }
 
-const UIMenu = styled(PopPresenceAnimator)`
+const UIMenu = styled(PopPresenceAnimator)<{}>`
   overflow-y: auto;
   border: 1px solid ${BACKGROUND_ACCENT};
   width: 100%;

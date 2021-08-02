@@ -1,8 +1,8 @@
-import { FlattenSimpleInterpolation, css } from "styled-components";
+import { StylesPart, css } from "styled-components";
 import { theme } from "~ui/theme";
 import { ButtonSize, ButtonKind } from "./types";
 
-export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, FlattenSimpleInterpolation>> = {
+export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = {
   small: css`
     font-size: 12px;
     padding: 10px 8px;
@@ -39,7 +39,7 @@ export const activeTransparentButtonStyles = css`
   }
 `;
 
-export const buttonKindSpecificStyle: Partial<Record<ButtonKind, FlattenSimpleInterpolation>> = {
+export const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = {
   primary: css`
     ${theme.colors.actions.primary.all()}
     ${theme.shadow.button}

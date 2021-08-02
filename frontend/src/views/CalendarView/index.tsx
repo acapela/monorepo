@@ -15,7 +15,7 @@ export function CalendarView() {
   );
 }
 
-const UIHolder = styled(SpacedAppLayoutContainer)`
+const UIHolder = styled(SpacedAppLayoutContainer)<{}>`
   display: grid;
   grid-template-columns: minmax(0, 280px) 1fr;
   grid-gap: 64px;

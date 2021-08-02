@@ -1,19 +1,22 @@
 import { TeamInvitation } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
+import { HasuraEvent } from "../hasura";
 import { sendNotification } from "../notifications/sendNotification";
 import { findTeamById } from "../teams/helpers";
 import { findUserById, getNormalizedUserName } from "../users/users";
 import { TeamInvitationNotification } from "./InviteNotification";
 
-export async function handleTeamInvitationCreated(invite: TeamInvitation, userId: string | null) {
-  const { team_id: teamId, inviting_user_id: invitingUserId } = invite;
+export async function handleTeamInvitationCreated({ item: invite, userId }: HasuraEvent<TeamInvitation>) {
+  const { team_id: teamId, inviting_user_id: invitingUserId, used_at } = invite;
 
   if (userId !== invitingUserId) {
     throw new UnprocessableEntityError(
       `Inviter id: ${invitingUserId} does not match user making the modification: ${userId}`
     );
   }
+
+  if (used_at) return;
 
   const [team, inviter] = await Promise.all([findTeamById(teamId), findUserById(invitingUserId)]);
 

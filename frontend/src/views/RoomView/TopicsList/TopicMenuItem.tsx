@@ -47,7 +47,7 @@ export function SortableTopicMenuItem({
   return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
 }
 
-export const TopicMenuItem = styled(
+export const TopicMenuItem = styled<Props>(
   observer(
     React.forwardRef<HTMLElement, Props>(function TopicMenuItem(
       { topic, isActive, className, isEditingDisabled, rootProps },
@@ -176,7 +176,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }
 `;
 
-const UIManageTopicWrapper = styled.div`
+const UIManageTopicWrapper = styled.div<{}>`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
@@ -186,7 +186,7 @@ const UIManageTopicWrapper = styled.div`
   }
 `;
 
-const UIFlyingTooltipWrapper = styled.div`
+const UIFlyingTooltipWrapper = styled.div<{}>`
   width: 100%;
   position: relative;
   display: flex;
@@ -199,7 +199,7 @@ const UIFlyingTooltipWrapper = styled.div`
   }
 `;
 
-const UIUnreadMessagesNotification = styled.div`
+const UIUnreadMessagesNotification = styled.div<{}>`
   position: absolute;
   left: 8px;
 

@@ -18,8 +18,8 @@ interface Props {
   tooltip?: string;
 }
 
-export const PopoverMenuTrigger = styled(
-  ({ children: triggerElement, options, placement = "bottom-start", className, onOpen, onClose, tooltip }: Props) => {
+export const PopoverMenuTrigger = styled<Props>(
+  ({ children: triggerElement, options, placement = "bottom-start", className, onOpen, onClose, tooltip }) => {
     const anchorRef = useRef<HTMLDivElement>(null);
     const [isOpen, { unset: closePopover, toggle: togglePopover }] = useBoolean(false);
 
@@ -57,8 +57,8 @@ export const PopoverMenuTrigger = styled(
   }
 )``;
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;
 
-const UIPopoverMenu = styled(PopoverMenu)`
+const UIPopoverMenu = styled(PopoverMenu)<{}>`
   z-index: ${zIndex.Popover};
 `;

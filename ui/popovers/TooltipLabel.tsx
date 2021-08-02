@@ -12,7 +12,7 @@ export interface TooltipLabelProps {
   placement?: PopoverPlacement;
 }
 
-export const TooltipLabel = styled(({ anchorRef, label, isDisabled, placement = "top" }: TooltipLabelProps) => {
+export const TooltipLabel = styled<TooltipLabelProps>(({ anchorRef, label, isDisabled, placement = "top" }) => {
   return (
     <Popover anchorRef={anchorRef} isDisabled={isDisabled} placement={placement}>
       <UITooltip presenceStyles={POP_PRESENCE_STYLES}>{label}</UITooltip>
@@ -20,7 +20,7 @@ export const TooltipLabel = styled(({ anchorRef, label, isDisabled, placement = 
   );
 })``;
 
-const UITooltip = styled(PresenceAnimator)`
+const UITooltip = styled(PresenceAnimator)<{}>`
   font-size: ${fontSize.label};
   font-weight: bold;
   background-color: ${colors.tooltip.background};

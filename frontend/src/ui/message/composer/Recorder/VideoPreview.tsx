@@ -24,7 +24,7 @@ const PureVideoPreview = ({ stream, className }: VideoPreviewParams) => {
   return <video className={className} ref={videoRef} autoPlay preload="true" />;
 };
 
-export const VideoPreview = styled(PureVideoPreview)`
+export const VideoPreview = styled(PureVideoPreview)<{}>`
   width: 180px;
   height: 180px;
 

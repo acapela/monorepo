@@ -21,7 +21,7 @@ export function WeekDaysNames() {
   );
 }
 
-const UIDays = styled.div`
+const UIDays = styled.div<{}>`
   display: flex;
   justify-content: space-around;
   flex: 1;
@@ -29,7 +29,7 @@ const UIDays = styled.div`
   margin-bottom: 4%;
 `;
 
-const UILabel = styled(TextBody12)`
+const UILabel = styled(TextBody12)<{}>`
   font-weight: 450;
   text-transform: uppercase;
   user-select: none;

@@ -1,5 +1,5 @@
 import { ChainedCommands } from "@tiptap/react";
-import { Children, forwardRef } from "react";
+import { Children } from "react";
 import styled from "styled-components";
 import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import {
@@ -18,6 +18,7 @@ import { useRichEditorContext } from "./context";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
 import { ToolbarButton } from "./ToolbarButton";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 interface Props {
   onFilesSelected?: (files: File[]) => void;
@@ -28,7 +29,7 @@ interface Props {
 
 export type RichEditorSubmitMode = "hide" | "disable" | "enable";
 
-export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
+export const Toolbar = namedForwardRef<HTMLDivElement, Props>(function Toolbar(
   { onFilesSelected, onSubmit, onEmojiSelected, submitMode },
   ref
 ) {
@@ -147,7 +148,7 @@ export const Toolbar = forwardRef<HTMLDivElement, Props>(function Toolbar(
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 16px;
   display: flex;
   align-items: center;
@@ -170,11 +171,11 @@ const UIHolder = styled.div`
   }
 `;
 
-const UISection = styled.div`
+const UISection = styled.div<{}>`
   display: grid;
   grid-gap: 0.5rem;
   grid-template-columns: repeat(${(props) => Children.toArray(props.children).length}, 1fr);
   min-width: 0;
 `;
 
-const UIToolButton = styled.button``;
+const UIToolButton = styled.button<{}>``;

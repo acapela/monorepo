@@ -23,7 +23,7 @@ export const InvitationPendingIndicator = ({ email }: Props) => {
   );
 };
 
-const UIIconHolder = styled.div`
+const UIIconHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: center;

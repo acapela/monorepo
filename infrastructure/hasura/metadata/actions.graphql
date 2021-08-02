@@ -17,6 +17,12 @@ type Query {
   ): LookupTeamNameResponse
 }
 
+type Query {
+  room_invitation_view (
+    token: String!
+  ): RoomInvitationViewResponse
+}
+
 type Mutation {
   upgrade_current_user : UpgradeUserResponse
 }
@@ -36,6 +42,11 @@ type DownloadUrlResponse {
 
 type LookupTeamNameResponse {
   team_name : String!
+  inviter_name : String!
+}
+
+type RoomInvitationViewResponse {
+  room_name : String!
   inviter_name : String!
 }
 

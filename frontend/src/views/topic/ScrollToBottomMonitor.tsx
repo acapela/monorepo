@@ -2,8 +2,6 @@ import { RefObject, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useIsomorphicLayoutEffect } from "react-use";
-import { assertDefined } from "~shared/assert";
-import { useEventListener } from "~shared/hooks/useEventListener";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
@@ -65,7 +63,7 @@ export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
   return <UIContentSizeCaptureFlyer ref={monitorRef} />;
 }
 
-const UIContentSizeCaptureFlyer = styled.div`
+const UIContentSizeCaptureFlyer = styled.div<{}>`
   position: absolute;
   top: 0;
   bottom: 0;

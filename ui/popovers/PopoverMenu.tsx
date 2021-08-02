@@ -26,8 +26,8 @@ export interface PopoverMenuOption {
   onSelect?: () => void;
 }
 
-export const PopoverMenu = styled(
-  ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }: Props) => {
+export const PopoverMenu = styled<Props>(
+  ({ options, placement = "bottom-start", className, anchorRef, onCloseRequest, onItemSelected }) => {
     useClickAway(anchorRef, () => onCloseRequest?.());
 
     return (
@@ -59,7 +59,7 @@ export const PopoverMenu = styled(
   }
 )``;
 
-export const UIPopoverMenuModal = styled(UIDropdownPanelBody)`
+export const UIPopoverMenuModal = styled(UIDropdownPanelBody)<{}>`
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -100,7 +100,7 @@ const UIMenuItem = styled.li<{ isDestructive: boolean; isDisabled: boolean; isCl
   ${borderRadius.item}
 `;
 
-const UIItemIcon = styled.div`
+const UIItemIcon = styled.div<{}>`
   font-size: 1.5em;
   margin-right: 12px;
 `;
