@@ -29,8 +29,8 @@ interface Props extends MotionProps {
   className?: string;
 }
 
-export const Message = styled(
-  observer(({ message, className, isReadonly }: Props) => {
+export const Message = styled<Props>(
+  observer(({ message, className, isReadonly }) => {
     const user = useCurrentUser();
     const [deleteMessage] = useDeleteTextMessageMutation();
 
@@ -132,17 +132,17 @@ export const Message = styled(
   })
 )``;
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;
 
-const UITools = styled.div`
+const UITools = styled.div<{}>`
   display: flex;
   gap: 8px;
 `;
 
-const UIMessageContent = styled.div`
+const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
   gap: 16px;
 `;
 
-const UIMessageBody = styled.div``;
+const UIMessageBody = styled.div<{}>``;

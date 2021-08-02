@@ -76,7 +76,7 @@ const UIHolder = styled.div<{ cursorType: CursorType }>`
   cursor: ${(props) => (props.cursorType === "input" ? "text" : "pointer")};
 `;
 
-const UIFlyingOverlay = styled.div`
+const UIFlyingOverlay = styled.div<{}>`
   position: absolute;
   top: 0;
   left: 0;
@@ -87,7 +87,7 @@ const UIFlyingOverlay = styled.div`
   pointer-events: none;
 `;
 
-const UIIconHolder = styled.div`
+const UIIconHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   padding: 16px;
@@ -95,7 +95,7 @@ const UIIconHolder = styled.div`
   font-size: 20px;
 `;
 
-const UIPlaceholdersHolder = styled.div`
+const UIPlaceholdersHolder = styled.div<{}>`
   display: flex;
   max-width: 100%;
 `;
@@ -110,13 +110,13 @@ const sharedPlaceholderStyles = css`
   color: ${SECONDARY_TEXT_COLOR};
 `;
 
-const UIPlaceholder = styled(motion.div)`
+const UIPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   display: flex;
   align-items: center;
   align-self: center;
 `;
-const UIFocusedPlaceholder = styled(motion.div)`
+const UIFocusedPlaceholder = styled(motion.div)<{}>`
   ${sharedPlaceholderStyles}
   align-self: flex-start;
   font-size: 12px;
@@ -127,14 +127,14 @@ const UIFocusedPlaceholder = styled(motion.div)`
   box-shadow: 0 0 0px 6px #fff;
 `;
 
-const UIContentHolder = styled.div`
+const UIContentHolder = styled.div<{}>`
   position: relative;
   flex-grow: 1;
   min-width: 0;
   display: flex;
 `;
 
-const UIDropdownIcon = styled(IconChevronDown)`
+const UIDropdownIcon = styled(IconChevronDown)<{}>`
   font-size: 1.5rem;
   opacity: 0.6;
   align-self: center;

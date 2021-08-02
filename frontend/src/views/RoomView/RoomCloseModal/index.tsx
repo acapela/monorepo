@@ -80,7 +80,7 @@ export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCl
   }
 );
 
-const UIContentWrapper = styled.div`
+const UIContentWrapper = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -93,11 +93,11 @@ const UIContentWrapper = styled.div`
   padding: 0 52px 24px 52px;
 `;
 
-const UITopicClosingInfo = styled(TextBody)`
+const UITopicClosingInfo = styled(TextBody)<{}>`
   color: hsla(0, 0%, 71%, 1);
 `;
 
-const UIOpenTopicsColumns = styled.div`
+const UIOpenTopicsColumns = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -107,10 +107,10 @@ const UIOpenTopicsColumns = styled.div`
   margin: 24px 0;
 `;
 
-const UIOpenTopicsColumn = styled.div`
+const UIOpenTopicsColumn = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 16px;
 `;
 
-const UIOpenTopicItem = styled.div``;
+const UIOpenTopicItem = styled.div<{}>``;

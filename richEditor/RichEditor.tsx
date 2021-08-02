@@ -313,12 +313,12 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
   );
 });
 
-const UIEditorHolder = styled.div`
+const UIEditorHolder = styled.div<{}>`
   flex-grow: 1;
   ${richEditorContentCss};
 `;
 
-const UIEditorContent = styled.div`
+const UIEditorContent = styled.div<{}>`
   padding: 16px;
   display: flex;
 
@@ -331,7 +331,7 @@ const UIEditorContent = styled.div`
   cursor: text;
 `;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   width: 100%;
   min-width: 500px;
   border: 1px solid #ccc;

@@ -8,7 +8,7 @@ import { TextBody14, TextH2, TextH3 } from "./typography";
  *
  */
 
-export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true }))`
+export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true }))<{}>`
   color: ${PRIMARY_PINK_1};
   letter-spacing: 0.4em;
 

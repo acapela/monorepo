@@ -10,7 +10,7 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
-export const UserAvatar = styled(({ user, className, size = "regular", disableNameTooltip }: Props) => {
+export const UserAvatar = styled<Props>(({ user, className, size = "regular", disableNameTooltip }) => {
   return (
     <Avatar
       name={user?.name}

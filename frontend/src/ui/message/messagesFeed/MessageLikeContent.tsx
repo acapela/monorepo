@@ -16,7 +16,7 @@ interface Props {
   className?: string;
 }
 
-export const MessageLikeContent = styled(({ user, date, children, tools, className }: Props) => {
+export const MessageLikeContent = styled<Props>(({ user, date, children, tools, className }) => {
   const holderRef = useRef<HTMLDivElement>(null);
   const currentUser = useCurrentUser();
 
@@ -54,6 +54,6 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 `;
 
-const UITools = styled(motion.div)`
+const UITools = styled(motion.div)<{}>`
   margin-top: 0.25rem;
 `;

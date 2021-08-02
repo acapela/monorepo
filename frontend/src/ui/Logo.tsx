@@ -22,7 +22,7 @@ export const Logo = (props: HTMLAttributes<SVGSVGElement>) => (
   </LogoSvg>
 );
 
-export const SmallLogo = styled((props: HTMLAttributes<SVGSVGElement>) => {
+export const SmallLogo = styled<HTMLAttributes<SVGSVGElement>>((props) => {
   return (
     <LogoSvg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
@@ -49,6 +49,6 @@ export const SmallLogo = styled((props: HTMLAttributes<SVGSVGElement>) => {
   );
 })``;
 
-const LogoSvg = styled.svg`
+const LogoSvg = styled.svg<{}>`
   height: 1em;
 `;

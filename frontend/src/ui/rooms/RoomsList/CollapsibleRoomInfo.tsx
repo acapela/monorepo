@@ -128,21 +128,21 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   );
 })``;
 
-const UIHolder = styled(CardBase)``;
+const UIHolder = styled(CardBase)<{}>``;
 
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 `;
-const UIIndentBody = styled.div`
+const UIIndentBody = styled.div<{}>`
   flex: 1;
 `;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
 `;
 
-const UIHeadPrimary = styled.div`
+const UIHeadPrimary = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -156,18 +156,18 @@ const UIHeadPrimary = styled.div`
   }
 `;
 
-const UIRoomMetaData = styled.div`
+const UIRoomMetaData = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 24px;
   padding-top: 16px;
 `;
 
-const UICollapsedItems = styled.div`
+const UICollapsedItems = styled.div<{}>`
   margin-top: 32px;
 `;
 
-const UITopics = styled.div`
+const UITopics = styled.div<{}>`
   ${TopicCard} {
     &:not(:last-child) {
       margin-bottom: 16px;
@@ -177,7 +177,7 @@ const UITopics = styled.div`
   flex: 1;
 `;
 
-const UIShowRemainingTopics = styled(UICardListItem)`
+const UIShowRemainingTopics = styled(UICardListItem)<{}>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -189,6 +189,6 @@ const UIShowRemainingTopics = styled(UICardListItem)`
   }
 `;
 
-const UIAddTopicButton = styled(Button)`
+const UIAddTopicButton = styled(Button)<{}>`
   margin-top: 24px;
 `;

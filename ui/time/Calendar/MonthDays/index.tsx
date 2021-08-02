@@ -79,7 +79,7 @@ const sideAlignOffset = css`
   margin-right: calc(-100% / 7 / 2 + 1ch);
 `;
 
-const UIMonth = styled.div`
+const UIMonth = styled.div<{}>`
   display: flex;
   flex-direction: column;
   justify-content: space-around;

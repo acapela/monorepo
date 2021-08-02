@@ -39,7 +39,7 @@ export const TextInput = namedForwardRef<HTMLInputElement, TextInputProps>(funct
   );
 });
 
-const TextInputElem = styled(motion.input)`
+const TextInputElem = styled(motion.input)<{}>`
   padding: 16px 16px 16px 0;
   width: 100%;
   border: none;

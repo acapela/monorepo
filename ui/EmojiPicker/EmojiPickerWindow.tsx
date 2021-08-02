@@ -39,7 +39,7 @@ export function EmojiPickerWindow({ onCloseRequest, ...pickerProps }: Props) {
   );
 }
 
-const UIHolder = styled(PresenceAnimator)`
+const UIHolder = styled(PresenceAnimator)<{}>`
   .emoji-mart {
     font: inherit;
   }

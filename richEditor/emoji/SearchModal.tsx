@@ -72,12 +72,12 @@ export function EmojiSearchModal({ keywordChannel, onEmojiSelected }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
 `;
 
-const UIEmoji = styled.div`
+const UIEmoji = styled.div<{}>`
   margin-right: 0.5rem;
 `;

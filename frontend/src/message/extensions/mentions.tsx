@@ -48,11 +48,11 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
   pickerComponent: Picker,
 });
 
-const UIMention = styled.a`
+const UIMention = styled.a<{}>`
   cursor: default;
 `;
 
-const UISelectItem = styled.div`
+const UISelectItem = styled.div<{}>`
   display: flex;
   align-items: center;
   ${UserAvatar} {

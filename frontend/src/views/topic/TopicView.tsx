@@ -91,7 +91,7 @@ export const TopicView = ({ topicId }: Props) => {
   );
 };
 
-const TopicRoot = styled(DropFileContext)`
+const TopicRoot = styled(DropFileContext)<{}>`
   position: relative;
   display: flex;
   flex-direction: column;

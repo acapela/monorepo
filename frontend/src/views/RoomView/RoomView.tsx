@@ -117,7 +117,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: grid;
   grid-template-columns: 400px 1fr;
   width: 100%;
@@ -125,7 +125,7 @@ const UIHolder = styled.div`
   min-height: 0;
 `;
 
-const UIRoomInfo = styled.div`
+const UIRoomInfo = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -134,7 +134,7 @@ const UIRoomInfo = styled.div`
   overflow-y: auto;
 `;
 
-const UIContentHolder = styled.div`
+const UIContentHolder = styled.div<{}>`
   flex-grow: 1;
   background: #ffffff;
   border: 1px solid #f8f8f8;
@@ -146,13 +146,13 @@ const UIContentHolder = styled.div`
   min-width: 0;
 `;
 
-const UIRoomHead = styled(TextH4)`
+const UIRoomHead = styled(TextH4)<{}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-const UIRoomTitle = styled.div`
+const UIRoomTitle = styled.div<{}>`
   padding-right: 16px;
   ${(props) =>
     props.onClick &&
@@ -161,7 +161,7 @@ const UIRoomTitle = styled.div`
     `}
 `;
 
-const UIFlyingCloseRoomToggle = styled.div`
+const UIFlyingCloseRoomToggle = styled.div<{}>`
   display: flex;
   justify-content: center;
 `;

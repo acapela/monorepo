@@ -3,7 +3,7 @@ import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { BASE_GREY_5, WHITE } from "~ui/theme/colors/base";
 
-export const UIDropdownPanelBody = styled(PopPresenceAnimator)`
+export const UIDropdownPanelBody = styled(PopPresenceAnimator)<{}>`
   padding: 8px;
   display: flex;
   flex-direction: column;

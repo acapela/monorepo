@@ -40,8 +40,8 @@ const UILink = styled.a<{ isActive: boolean }>`
     `}
 `;
 
-const UIIcon = styled(IconCalendar)`
+const UIIcon = styled(IconCalendar)<{}>`
   margin-right: 0.5rem;
 `;
 
-const UILabel = styled.span``;
+const UILabel = styled.span<{}>``;

@@ -55,7 +55,7 @@ export default function InvitePage() {
   return <WindowView>{renderContent()}</WindowView>;
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   flex-direction: column;

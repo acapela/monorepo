@@ -41,7 +41,7 @@ export const TopicSummary = ({ topic }: Props) => {
   );
 };
 
-const UITopicSummary = styled.div`
+const UITopicSummary = styled.div<{}>`
   display: grid;
   gap: 8px;
 
@@ -58,7 +58,7 @@ const UITopicSummary = styled.div`
   line-height: 1.5;
 `;
 
-const UITopicSummaryMetadata = styled.div`
+const UITopicSummaryMetadata = styled.div<{}>`
   display: flex;
   align-items: center;
 
@@ -68,12 +68,12 @@ const UITopicSummaryMetadata = styled.div`
   }
 `;
 
-const UIClosingMember = styled.span`
+const UIClosingMember = styled.span<{}>`
   padding: 0 4px;
   font-weight: 600;
 `;
 
-const UITopicSummaryContent = styled(TextArea)`
+const UITopicSummaryContent = styled(TextArea)<{}>`
   &&& {
     padding: 0;
     border: 0;
