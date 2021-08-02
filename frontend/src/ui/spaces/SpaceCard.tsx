@@ -60,14 +60,14 @@ export function SpaceCard({ space }: Props) {
   );
 }
 
-const UIHolder = styled(CardBase)`
+const UIHolder = styled(CardBase)<{}>`
   cursor: pointer;
   position: relative;
   /* Don't over-stretch inside grid/flex if has wide content */
   min-width: 0;
 `;
 
-const UIInfo = styled.div`
+const UIInfo = styled.div<{}>`
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -78,4 +78,4 @@ const UIInfo = styled.div`
   }
 `;
 
-const UIMembers = styled.div``;
+const UIMembers = styled.div<{}>``;

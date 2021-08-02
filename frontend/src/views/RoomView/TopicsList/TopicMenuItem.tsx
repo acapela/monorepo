@@ -25,8 +25,8 @@ interface Props {
 
 const TopicLink = routes.spaceRoomTopic.Link;
 
-export const TopicMenuItem = styled(
-  observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }: Props) {
+export const TopicMenuItem = styled<Props>(
+  observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }) {
     const roomContext = useRoomStoreContext();
     const unreadCount = useTopicUnreadMessagesCount(topic.id);
     const hasUnreadMessaged = !isActive && unreadCount > 0;
@@ -122,7 +122,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }
 `;
 
-const UIManageTopicWrapper = styled.div`
+const UIManageTopicWrapper = styled.div<{}>`
   position: absolute;
   right: ${PADDING};
   z-index: 1;
@@ -132,7 +132,7 @@ const UIManageTopicWrapper = styled.div`
   }
 `;
 
-const UIFlyingTooltipWrapper = styled.div`
+const UIFlyingTooltipWrapper = styled.div<{}>`
   width: 100%;
   position: relative;
   display: flex;
@@ -145,7 +145,7 @@ const UIFlyingTooltipWrapper = styled.div`
   }
 `;
 
-const UIUnreadMessagesNotification = styled.div`
+const UIUnreadMessagesNotification = styled.div<{}>`
   position: absolute;
   left: 8px;
 

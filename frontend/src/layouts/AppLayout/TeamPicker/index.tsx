@@ -56,12 +56,12 @@ export function TeamPickerView() {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 2rem;
 `;
 
-const UITeams = styled.div`
+const UITeams = styled.div<{}>`
   margin: 3rem 0;
 `;
 
-const UITeam = styled.div``;
+const UITeam = styled.div<{}>``;

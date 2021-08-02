@@ -1,7 +1,7 @@
-import styled, { css, FlattenSimpleInterpolation } from "styled-components";
+import styled, { css, StylesPart } from "styled-components";
 import { motion } from "framer-motion";
 import { typedKeys } from "~shared/object";
-import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1 } from "~ui/theme/colors/base";
+import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1, WARNING_COLOR } from "~ui/theme/colors/base";
 
 /**
  * TODO: Those are not used yet. Goal is to replace current `ui/colors` with those.
@@ -142,9 +142,9 @@ const typographyCommonStyles = css`
   letter-spacing: -0.02%;
 `;
 
-type KindType = "regular" | "secondary" | "primary";
+type KindType = "regular" | "secondary" | "primary" | "warning";
 
-const kindStyles: Record<KindType, FlattenSimpleInterpolation> = {
+const kindStyles: Record<KindType, StylesPart> = {
   regular: css`
     color: ${BASE_GREY_1};
   `,
@@ -154,19 +154,23 @@ const kindStyles: Record<KindType, FlattenSimpleInterpolation> = {
   primary: css`
     color: ${PRIMARY_PINK_1};
   `,
+  warning: css`
+    color: ${WARNING_COLOR};
+  `,
 };
 
 type KindProp = VariantProp<KindType>;
 
 function getKindStyle(props: KindProp) {
-  const activeKindVariant = getActiveVariant<KindType>(props, ["regular", "secondary", "primary"]) ?? "regular";
+  const activeKindVariant =
+    getActiveVariant<KindType>(props, ["regular", "secondary", "primary", "warning"]) ?? "regular";
 
   return kindStyles[activeKindVariant];
 }
 
 type FamilyType = "inter" | "spezia" | "speziaMono" | "speziaExtended";
 
-const fontFamilyStyles: Record<FamilyType, FlattenSimpleInterpolation> = {
+const fontFamilyStyles: Record<FamilyType, StylesPart> = {
   spezia: css`
     font-family: "Spezia", ${BACKUP_FONTS};
   `,
@@ -194,7 +198,7 @@ type WeightType = "regular" | "medium" | "semibold";
 
 type WeightProp = VariantProp<WeightType>;
 
-const fontWeightStyles: Record<WeightType, FlattenSimpleInterpolation> = {
+const fontWeightStyles: Record<WeightType, StylesPart> = {
   regular: css`
     font-weight: normal;
   `,
@@ -212,7 +216,7 @@ function getFontWeightStyle(props: WeightProp) {
   return fontWeightStyles[activeWeightVariant];
 }
 
-const importanceStyles: Record<ImportanceType, FlattenSimpleInterpolation> = {
+const importanceStyles: Record<ImportanceType, StylesPart> = {
   // TODO: Those might get replaced by colors instead of opacity.
   secondary: css`
     opacity: 0.6;
@@ -247,7 +251,7 @@ type VariantProp<N extends string> = { [key in N]?: boolean };
 
 type TypographyProps = WeightProp & FamilyProp & ImportanceProp & KindProp;
 
-const typographyStyles = css`
+const typographyStyles = css<TypographyProps>`
   ${(props: TypographyProps) => {
     const family = getFontFamilyStyle(props);
     const weight = getFontWeightStyle(props);

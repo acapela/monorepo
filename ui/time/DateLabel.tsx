@@ -18,4 +18,4 @@ export const TimeLabelWithDateTooltip = styled(function TimeLabelWithDateTooltip
   );
 })``;
 
-const UIHolder = styled.span``;
+const UIHolder = styled.span<{}>``;

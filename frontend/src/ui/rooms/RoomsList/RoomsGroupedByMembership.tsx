@@ -10,7 +10,7 @@ interface Props {
   query: RoomsQueryVariables;
 }
 
-export const RoomsListGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
+export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
   const [rooms = []] = useRoomsQuery(query);
   const user = useAssertCurrentUser();
 
@@ -22,13 +22,13 @@ export const RoomsListGroupedByMembership = styled(function FilteredRoomsList({ 
     <UIHolder className={className}>
       {joinedRooms.length > 0 && <RoomsListCategory categoryName="Joined Rooms" rooms={joinedRooms} showClosedToggle />}
       {notJoinedRooms.length > 0 && (
-        <RoomsListCategory categoryName="Joined Rooms" rooms={notJoinedRooms} showClosedToggle />
+        <RoomsListCategory categoryName="Other Rooms" rooms={notJoinedRooms} showClosedToggle />
       )}
     </UIHolder>
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 64px;

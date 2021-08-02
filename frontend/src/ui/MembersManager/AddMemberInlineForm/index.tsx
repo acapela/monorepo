@@ -13,13 +13,17 @@ import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { Avatar } from "~frontend/ui/users/Avatar";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
+import isEmail from "validator/lib/isEmail";
 
 interface Props {
   users: UserBasicInfoFragment[];
-  onSelect: (userId: string) => void;
+  onAddMember: (userId: string) => void;
+  onInviteByEmail?: (email: string) => void;
 }
 
-export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
+export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Props) => {
+  const canInviteByEmail = Boolean(onInviteByEmail);
+
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
   const [inputValue, setInputValue] = useState("");
@@ -30,7 +34,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   const comboboxRef = useRef<HTMLDivElement | null>(null);
 
   const selectedUser = users.find(({ email }) => inputValue === email);
-  const isSubmitEnabled = Boolean(selectedUser);
+  const isSubmitEnabled = Boolean(selectedUser) || (canInviteByEmail && isEmail(inputValue));
 
   useEffect(() => {
     if (selectedUser) {
@@ -41,11 +45,13 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   }, [selectedUser, inputValue]);
 
   const handleSubmit = () => {
-    if (!selectedUser) return;
-
     setInputValue("");
 
-    onSelect(selectedUser.id);
+    if (selectedUser) {
+      onAddMember(selectedUser.id);
+    } else if (onInviteByEmail) {
+      onInviteByEmail(inputValue);
+    }
   };
 
   useShortcut(
@@ -68,7 +74,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
         <RoundedTextInput
           icon={<IconSearch />}
           onFocus={openMenu}
-          placeholder="Search with name or email"
+          placeholder={canInviteByEmail ? "Search or enter email" : "Search with name or email"}
           value={inputValue}
           onChangeText={setInputValue}
         />
@@ -100,7 +106,7 @@ export const AddMemberInlineForm = ({ users, onSelect }: Props) => {
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
@@ -110,6 +116,6 @@ const UIDropdownHolder = styled.div<{ width: number }>`
   width: ${({ width }) => width}px;
 `;
 
-const UICombobox = styled.div`
+const UICombobox = styled.div<{}>`
   position: relative;
 `;

@@ -17,7 +17,7 @@ export function injectProps<C extends ComponentType<any>>(Component: C, injected
   Reflect.get(ComponentWithInjectedProps, "displayName", Component.displayName);
 
   if (Reflect.get(Component, "styledComponentId")) {
-    return styled(ComponentWithInjectedProps)`` as unknown as C;
+    return styled(ComponentWithInjectedProps)<{}>`` as unknown as C;
   }
 
   return ComponentWithInjectedProps as C;

@@ -32,16 +32,8 @@ function useElapsedTime() {
   return `${minutesStr}:${secondsStr}`;
 }
 
-export const RecorderControls = styled(
-  ({
-    className,
-    handlerRef,
-    onStop,
-    onCancel,
-    previewStream,
-    flipVideoPreview = false,
-    showInCorner,
-  }: RecorderControlsProps) => {
+export const RecorderControls = styled<RecorderControlsProps>(
+  ({ className, handlerRef, onStop, onCancel, previewStream, flipVideoPreview = false, showInCorner }) => {
     const elapsedTime = useElapsedTime();
 
     const controlsNode = (
@@ -74,7 +66,7 @@ export const RecorderControls = styled(
   }
 )``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   ${VideoPreview} {
     margin-bottom: 16px;
   }
@@ -84,7 +76,7 @@ const UIHolder = styled.div`
   align-items: center;
 `;
 
-const UIControls = styled(HStack)`
+const UIControls = styled(HStack)<{}>`
   user-select: none;
   padding: 8px;
 
@@ -93,13 +85,13 @@ const UIControls = styled(HStack)`
   ${theme.shadow.modal}
 `;
 
-const UIElapsedTime = styled.span`
+const UIElapsedTime = styled.span<{}>`
   margin: 0 8px;
   min-width: 48px;
   text-align: left;
 `;
 
-const UICornerOfScreen = styled.div`
+const UICornerOfScreen = styled.div<{}>`
   position: fixed;
   bottom: 32px;
   left: 32px;

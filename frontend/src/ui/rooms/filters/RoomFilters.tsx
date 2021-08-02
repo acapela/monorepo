@@ -120,7 +120,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   column-gap: 8px;
   height: 52px;

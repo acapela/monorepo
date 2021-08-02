@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useTeamInvitationByTokenQuery } from "~frontend/gql/teams";
 import { routes } from "~frontend/routes";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
-import { lookupTeamName } from "~frontend/gql/invitations";
+import { lookupTeamName } from "~frontend/gql/teams";
+import { useRoomInvitationViewQuery } from "~frontend/gql/roomInvitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();
@@ -14,62 +14,50 @@ export default function InvitePage() {
 
   assert(inviteCode, "Invite code required");
 
-  const [inviteInfo] = lookupTeamName({ token: inviteCode });
-
-  useInvitationAcceptedCallback(inviteCode, () => {
-    // We use nav with full reload as changing the team updated 'currentTeamId' which is part of json web token data.
-    // Having full refresh we're sure it'll be up-to-date
-    // TODO: Add some subscription listening to `currentTeamId` changes that will update JWT / reload automatically.
-    window.location.pathname = "/";
-  });
-
-  return (
-    <WindowView>
-      {!inviteInfo && "Invalid invite code!"}
-      {/* If there is no user - ask to log in */}
-      {!user && inviteInfo && (
-        <UIHolder>
-          <>
-            You have been invited by {inviteInfo.inviter_name} to join the "{inviteInfo.team_name}" team.
-            <div>
-              <LoginOptionsView />
-            </div>
-          </>
-        </UIHolder>
-      )}
-      {/* If there is user, show loading indicator. It might be a bit confusing: We show loading because we're waiting
-       * to be sure invitation is accepted. It will get accepted automatically and then `useInvitationAcceptedCallback`
-       * will redirect user to homepage.
-       * It means the flow will be > user logs in > sees loading > is redirected to home page as a member of the team.
-       */}
-      {user && "Loading..."}
-    </WindowView>
-  );
-}
-
-function useInvitationAcceptedCallback(token: string, callback: () => void) {
-  const user = useCurrentUser();
-
-  const [teamInvitations] = useTeamInvitationByTokenQuery({ tokenId: token });
-
-  const invitation = teamInvitations?.[0] ?? null;
-
-  function getIsAccepted() {
-    if (!user) return false;
-    if (!invitation) return false;
-
-    return invitation.used_by_user_id === user.id && invitation.token === token;
-  }
-
-  const isSuccessfullyAccepted = getIsAccepted();
-
   useEffect(() => {
-    if (!isSuccessfullyAccepted) {
-      return;
+    if (user) {
+      window.location.pathname = "/";
+    }
+  }, [user]);
+
+  const [teamInvitationInfo, { loading: teamInvitationInfoLoading }] = lookupTeamName({ token: inviteCode });
+  const [roomInvitationInfo, { loading: roomInvitationInfoLoading }] = useRoomInvitationViewQuery({
+    token: inviteCode,
+  });
+  const invitationInfo = teamInvitationInfo || roomInvitationInfo;
+  const isInvitationInfoLoading = teamInvitationInfoLoading || roomInvitationInfoLoading;
+
+  const renderContent = () => {
+    /* If there is user, show loading indicator. It might be a bit confusing: We show loading because we're waiting
+     * to be sure invitation is accepted. It will get accepted automatically and then `useInvitationAcceptedCallback`
+     * will redirect user to homepage.
+     * It means the flow will be > user logs in > sees loading > is redirected to home page as a member of the team.
+     */
+    if (isInvitationInfoLoading || user) {
+      return "Loading...";
     }
 
-    callback();
-  }, [isSuccessfullyAccepted, callback]);
+    if (!invitationInfo) {
+      return "Invalid invite code!";
+    }
+
+    return (
+      <UIHolder>
+        You have been invited by {invitationInfo.inviter_name} to join the{" "}
+        {teamInvitationInfo ? `"${teamInvitationInfo.team_name}" team` : `"${roomInvitationInfo?.room_name}" room`}.
+        <div>
+          <LoginOptionsView />
+        </div>
+      </UIHolder>
+    );
+  };
+
+  return <WindowView>{renderContent()}</WindowView>;
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+`;

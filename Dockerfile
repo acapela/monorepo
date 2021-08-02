@@ -13,11 +13,7 @@ ENV SENTRY_RELEASE=${SENTRY_RELEASE:-dev}
 
 COPY ./ ./
 
-RUN yarn install
-
-# generate prisma client
-RUN yarn workspace ~db generate
-RUN yarn run build
+RUN yarn build
 
 ENV BACKEND_PORT=1337
 EXPOSE 1337

@@ -17,7 +17,7 @@ export const OptionLabel = styled(function OptionLabel({ label, icon, className 
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex: 1;
   align-items: center;
@@ -33,7 +33,7 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIIcon = styled.div`
+const UIIcon = styled.div<{}>`
   margin-right: 8px;
   font-size: 24px;
 `;

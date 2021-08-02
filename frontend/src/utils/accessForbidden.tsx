@@ -32,6 +32,6 @@ export const openForbiddenAccessModal = createPromiseUI<PromptInput, PromptResul
   );
 });
 
-const UICloseButton = styled(Button)`
+const UICloseButton = styled(Button)<{}>`
   padding-top: 8px;
 `;

@@ -8,7 +8,7 @@ import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
 import { useMemo } from "react";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { RoomsListGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
+import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
 import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { IconPlusSquare } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
@@ -81,14 +81,14 @@ export function SpaceView({ spaceId }: Props) {
         </CenteredContentWithSides>
 
         <UIRooms>
-          <RoomsListGroupedByMembership query={roomQuery} />
+          <RoomsGroupedByMembership query={roomQuery} />
         </UIRooms>
       </UIContainer>
     </>
   );
 }
 
-const UIContainer = styled(SpacedAppLayoutContainer)`
+const UIContainer = styled(SpacedAppLayoutContainer)<{}>`
   position: relative;
 
   ${SpaceHeader} {
@@ -97,12 +97,12 @@ const UIContainer = styled(SpacedAppLayoutContainer)`
   }
 `;
 
-const UIFilters = styled(RoomFilters)`
+const UIFilters = styled(RoomFilters)<{}>`
   display: flex;
   justify-content: flex-end;
 `;
 
-const UIRooms = styled.div`
+const UIRooms = styled.div<{}>`
   margin-top: 32px;
 
   display: flex;
@@ -110,4 +110,4 @@ const UIRooms = styled.div`
   gap: 8px;
 `;
 
-const UIFlyingCreateRoomButton = styled(Button)``;
+const UIFlyingCreateRoomButton = styled(Button)<{}>``;

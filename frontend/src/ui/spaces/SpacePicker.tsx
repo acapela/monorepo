@@ -58,6 +58,6 @@ export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
   );
 };
 
-const SpaceDropdownIcon = styled(SpaceGradientIcon)`
+const SpaceDropdownIcon = styled(SpaceGradientIcon)<{}>`
   font-size: 24px;
 `;

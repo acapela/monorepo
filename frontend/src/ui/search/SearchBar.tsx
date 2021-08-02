@@ -5,8 +5,8 @@ import { borderRadius } from "~ui/baseStyles";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { SearchResults } from "./SearchResults";
-import { forwardRef } from "react";
 import { WHITE } from "~ui/theme/colors/base";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 interface Props {
   className?: string;
@@ -14,7 +14,7 @@ interface Props {
 
 const DEBOUNCE_DELAY_MS = 400;
 
-const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }, ref) => {
+const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, ref) => {
   const [value, setValue] = useState("");
   const [searchTerm, setSearchTerm] = useState(value);
   const [searchResults = []] = useFullTextSearchQuery({ term: searchTerm });
@@ -35,7 +35,7 @@ const PureSearchBar = forwardRef<HTMLInputElement, Props>(({ className }, ref) =
   );
 });
 
-export const SearchBar = styled(PureSearchBar)`
+export const SearchBar = styled(PureSearchBar)<{}>`
   position: relative;
   background: ${WHITE};
 

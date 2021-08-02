@@ -9,12 +9,12 @@ import { getIsTerminal } from "./nonTerminal";
  * as found in the styled-components context.
  *
  * Before:
- * const UIComponent = styled.div`
+ * const UIComponent = styled.div<{}>`
  *   background: ${props => props.theme.colors.status.error};
  * `;
  *
  * After:
- * const UIComponent = styled.div`
+ * const UIComponent = styled.div<{}>`
  *   // `theme.colors.status.error` returns `props => props.theme.colors.status.error`
  *   background: ${theme.colors.status.error};
  * `;

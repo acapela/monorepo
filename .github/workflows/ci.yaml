@@ -25,8 +25,21 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
+      - run: yarn --prefer-offline
+      - run: yarn workspace ~db generate
       - run: yarn run lint
+      - name: "Tar node_modules"
+        run: |
+          find . -name 'node_modules' -type d -prune -exec tar -rf node_modules.tar {} \;
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Pushing node_modules"
+        run: |
+          echo "{}" > manifest-config.json
+          oras push ghcr.io/weareacapela/node-modules:$GITHUB_SHA --manifest-config ./manifest-config.json ./node_modules.tar
 
   frontend:
     name: Frontend
@@ -40,16 +53,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - uses: docker/login-action@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          tar -xf node_modules.tar && rm node_modules.tar
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn run frontend:test
@@ -87,16 +98,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - uses: docker/login-action@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          tar -xf node_modules.tar && rm node_modules.tar
       - name: Migrate postgres using hasura migrations
         run: |
           yarn hasura:migrations
@@ -114,16 +123,19 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - uses: docker/login-action@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA | tee oras.log
+          tar -xf node_modules.tar && rm node_modules.tar
+          echo "cleanup cache..."
+          ./scripts/cleanup-ghcr.sh
+          rm oras.log
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel

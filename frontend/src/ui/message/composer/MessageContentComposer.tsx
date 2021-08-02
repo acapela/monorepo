@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import styled from "styled-components";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
@@ -7,6 +7,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
 import { messageComposerExtensions } from "~frontend/message/extensions";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 interface Props {
   autofocusKey?: string;
@@ -22,7 +23,7 @@ interface Props {
   onEditorReady?: (editor: Editor) => void;
 }
 
-export const MessageContentEditor = forwardRef<Editor, Props>(function MessageContentEditor(
+export const MessageContentEditor = namedForwardRef<Editor, Props>(function MessageContentEditor(
   {
     autofocusKey,
     onSubmit,
@@ -81,7 +82,7 @@ export const MessageContentEditor = forwardRef<Editor, Props>(function MessageCo
   );
 });
 
-const UIAttachmentsPreviews = styled.div`
+const UIAttachmentsPreviews = styled.div<{}>`
   height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
   display: flex;
 `;

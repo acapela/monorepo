@@ -71,7 +71,7 @@ export function Modal({ head, hasCloseButton = true, children, onCloseRequest, a
   );
 }
 
-const UIModal = styled(PopPresenceAnimator)`
+const UIModal = styled(PopPresenceAnimator)<{}>`
   min-width: 368px;
 
   background: #ffffff;
@@ -82,16 +82,16 @@ const UIModal = styled(PopPresenceAnimator)`
   ${borderRadius.modal};
 `;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   flex: 1;
 `;
 
-const UIBody = styled.div`
+const UIBody = styled.div<{}>`
   align-items: center;
   padding: 24px;
 `;
 
-const UIToolbar = styled.div`
+const UIToolbar = styled.div<{}>`
   display: flex;
   padding: 24px 24px 0;
   margin-bottom: 32px;

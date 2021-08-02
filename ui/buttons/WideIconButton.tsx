@@ -1,5 +1,6 @@
-import { forwardRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import styled from "styled-components";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { theme } from "~ui/theme";
 import { buttonKindSpecificStyle } from "./sharedStyles";
 import { ButtonKind } from "./types";
@@ -11,7 +12,7 @@ interface Props {
   tooltip?: string;
 }
 
-export const WideIconButton = forwardRef<HTMLButtonElement, Props>(function WideIconButton(
+export const WideIconButton = namedForwardRef<HTMLButtonElement, Props>(function WideIconButton(
   { icon, kind = "primary", onClick, tooltip }: Props,
   ref
 ) {

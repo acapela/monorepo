@@ -24,14 +24,14 @@ export const MessageMetaData = ({ user, date, children }: Props) => {
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: grid;
   align-items: center;
   grid-template-columns: auto minmax(360px, 700px);
   gap: 8px 12px;
 `;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   font-weight: bold;
   font-size: ${fontSize.label};
   display: flex;

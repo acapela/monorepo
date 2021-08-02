@@ -30,8 +30,7 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
   );
 };
 
-const UICounter = styled.div`
+const UICounter = styled.div<{}>`
   color: ${theme.colors.interactive.actions.primary.regular.text()};
-
   ${theme.font.spezia.withExceptionalSize("6rem", "This needs to be very large and centered").build}
 `;

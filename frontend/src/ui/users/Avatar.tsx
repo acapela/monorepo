@@ -16,7 +16,7 @@ interface Props {
 
 export type AvatarSize = NamedSize | "inherit";
 
-export const Avatar = styled(({ url, name, className, size = "regular", disableNameTooltip }: Props) => {
+export const Avatar = styled<Props>(({ url, name, className, size = "regular", disableNameTooltip }) => {
   const [failedToLoad, setFailedToLoad] = useState(false);
 
   if (!url || failedToLoad) {
@@ -59,7 +59,7 @@ const UIHolder = styled.div<{ size: AvatarSize }>`
   }
 `;
 
-const UINameLabel = styled.span`
+const UINameLabel = styled.span<{}>`
   font-size: 0.5em;
 `;
 

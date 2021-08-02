@@ -11,7 +11,7 @@ export const RecordButton = styled(function RecordButton({ tooltipLabel, ...othe
   return <UIButton data-tooltip={tooltipLabel} {...otherProps} />;
 })``;
 
-export const UIButton = styled.button`
+export const UIButton = styled.button<{}>`
   display: flex;
   align-items: center;
   justify-content: center;

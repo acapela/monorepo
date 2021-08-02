@@ -1,7 +1,7 @@
 import { HTMLMotionProps, motion, Target as MotionAnimations } from "framer-motion";
-import { forwardRef } from "react";
 import styled from "styled-components";
 import { objectMap } from "~shared/object";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { POP_ANIMATION_CONFIG } from "./animations";
 
 interface Props extends HTMLMotionProps<"div"> {
@@ -14,7 +14,7 @@ export type PresenceStyles = {
   [key in keyof MotionAnimations]: MakePresenceTuple<MotionAnimations[key]>;
 };
 
-export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function PresenceAnimator(
+export const PresenceAnimator = namedForwardRef<HTMLDivElement, Props>(function PresenceAnimator(
   { presenceStyles, transition, ...motionProps }: Props,
   ref
 ) {
@@ -32,17 +32,7 @@ export const PresenceAnimator = forwardRef<HTMLDivElement, Props>(function Prese
   );
 });
 
-/**
- * React `forwardRef` does not pick provided function name so component is annonymous. This could result in next.js
- * fast refresh being confused an warning about it.
- *
- * TODO: Maybe we should create `namedForwardRef` that would do this automatically. I think, tho, that it would be a bit
- * confusing to devs 'why do you use custom forwardRef function?'
- *
- */
-PresenceAnimator.displayName = "PresenceAnimator";
-
-const UIHolder = styled(motion.div)`
+const UIHolder = styled(motion.div)<{}>`
   position: relative;
   will-change: transform, opacity;
   /* Add initial transform before framer motion adds it via styles */
