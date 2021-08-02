@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
 import { useRoomsQuery } from "~frontend/gql/rooms";
+import { useSSRRoomsMessagesCount } from "~frontend/utils/unreadMessages";
+import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { useTeamRoomsMessagesCount } from "~frontend/utils/unreadMessages";
 
 interface Props {
   className?: string;
@@ -13,7 +13,7 @@ interface Props {
 export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, query }: Props) {
   const [rooms = []] = useRoomsQuery(query);
 
-  const roomUnreadMessages = useTeamRoomsMessagesCount();
+  const roomUnreadMessages = useSSRRoomsMessagesCount();
 
   const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomDetailedInfoFragment>(
     rooms,

@@ -46,7 +46,7 @@ function getTopicUnreadMessagesCount(unreadData: UnreadMessageFragmentFragment[]
   return topicUnreadData?.unreadMessages ?? 0;
 }
 
-const [, { subscribe: subscribeToUnreadMessages }] = createQuery<
+export const [useAllUnreadMessages, { subscribe: subscribeToUnreadMessages, read: getUnreadMessages }] = createQuery<
   UserUnreadMessagesQuery,
   UserUnreadMessagesQueryVariables
 >(
@@ -132,7 +132,7 @@ export function useDetailedRoomMessagesCount(roomId: string): DetailedRoomMessag
 
   const allMessages = getUserUnreadMessagesChannel(user.id).useLastValue() ?? [];
 
-  const detailedRoomMessages: UnreadRoomMessage = {};
+  const detailedRoomMessages: UnreadRoomMessages = {};
 
   allMessages.forEach((message) => {
     if (!message.roomId || !message.topicId || message.roomId !== roomId) {
@@ -144,14 +144,10 @@ export function useDetailedRoomMessagesCount(roomId: string): DetailedRoomMessag
   return detailedRoomMessages;
 }
 
-export type UnreadRoomMessage = Record<RoomBasicInfoFragment["id"], number>;
+export type UnreadRoomMessages = Record<RoomBasicInfoFragment["id"], number>;
 
-export function useTeamRoomsMessagesCount(): UnreadRoomMessage {
-  const user = useAssertCurrentUser();
-
-  const allMessages = getUserUnreadMessagesChannel(user.id).useLastValue() ?? [];
-
-  const roomsMessages: UnreadRoomMessage = {};
+export function extractTeamRoomMessages(allMessages: UnreadMessageFragmentFragment[]): UnreadRoomMessages {
+  const roomsMessages: UnreadRoomMessages = {};
 
   allMessages.forEach((message) => {
     if (!message.roomId) {
@@ -166,4 +162,31 @@ export function useTeamRoomsMessagesCount(): UnreadRoomMessage {
   });
 
   return roomsMessages;
+}
+
+/**
+ * Unread notifications would usually be a client-side only feature as it's very heavily using subscriptions.
+ *
+ * In order to have components render unread notifications on server side rendering, we'll need to use
+ * the hooks that'll be cached and then hydrated in the apollo client.
+ *
+ * This hook below will fallback to our central subscription once it sees that it has some values.
+ */
+export function useSSRRoomsMessagesCount(): UnreadRoomMessages {
+  const user = useAssertCurrentUser();
+
+  // Attempt to get from central subscription
+  const messagesFromCentralSubscription = getUserUnreadMessagesChannel(user.id).useLastValue() ?? null;
+
+  // This allows use to render the unread messages on page load
+  const [serverSideRenderedMessages = []] = useAllUnreadMessages(
+    { userId: user.id },
+    { skip: messagesFromCentralSubscription !== null }
+  );
+
+  if (messagesFromCentralSubscription) {
+    return extractTeamRoomMessages(messagesFromCentralSubscription);
+  } else {
+    return extractTeamRoomMessages(serverSideRenderedMessages);
+  }
 }
