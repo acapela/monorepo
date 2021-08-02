@@ -38,10 +38,8 @@ export function SortableTopicMenuItem({
     disabled: isDisabled,
   });
 
-  const transformWithoutX = transform ? { ...transform, x: 0 } : null;
-
   const style = {
-    transform: CSS.Transform.toString(transformWithoutX),
+    transform: CSS.Transform.toString(transform),
     transition,
   };
 

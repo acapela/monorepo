@@ -9,6 +9,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { TopicDetailedInfoFragment } from "~gql";
 
 import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
@@ -74,6 +75,7 @@ export const SortableTopicsList = ({
     <UIScrollContainer>
       <DndContext
         sensors={sensors}
+        modifiers={[restrictToFirstScrollableAncestor]}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
