@@ -24,13 +24,12 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
   const orderedTopics = useMemo(() => {
     const [closedTopics, openTopics] = groupByFilter(topics, (topic) => !!topic.closed_at);
 
-    const [unreadTopics, readTopics] = groupByFilter(
+    const [unreadOpenTopics, readOpenTopics] = groupByFilter(
       openTopics,
-      (openTopic) =>
-        detailedRoomMessagesCount[openTopic.id] !== undefined && detailedRoomMessagesCount[openTopic.id] > 0
+      (openTopic) => detailedRoomMessagesCount[openTopic.id] > 0
     );
 
-    return [...unreadTopics, ...readTopics, ...closedTopics];
+    return [...unreadOpenTopics, ...readOpenTopics, ...closedTopics];
   }, [detailedRoomMessagesCount, topics]);
 
   const {
