@@ -8,9 +8,6 @@ const withTranspileModules = require("next-transpile-modules");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
-const { ESBuildMinifyPlugin } = require("esbuild-loader");
-
-const ENV_VARIABLES_PATH = path.resolve(__dirname, "..", ".env");
 
 /**
  * Let's tell next.js to compile TypeScript files from other packages of monorepo.
@@ -41,84 +38,67 @@ const createTsPackagesPlugin = () => {
   ]);
 };
 
-function getEnvVariables(envFilePath) {
-  if (!fs.existsSync(envFilePath)) {
-    console.warn(`Not able to load .env file path provided in next.config.js envVariables plugin`);
-    return {};
+/**
+ * This plugin allows passing variables from .env file into server/client runtime using process.env.VAR_NAME.
+ *
+ * By default next.js is handling it, but it requires .env file to be present in the root folder of
+ * next project.
+ *
+ * As we're using monorepo and sharing env vars between frontend and backend, I've created plugin
+ * that does the same thing, but allows passing path to .env file (in our case it sits at monorepo root)
+ */
+const envVariables = (nextConfig = {}) => {
+  function isEmpty(input) {
+    return input === null || input === undefined;
   }
 
-  const fileStats = fs.statSync(envFilePath);
-
-  if (!fileStats.isFile()) {
-    console.warn(`.env file path provided in next.config.js is not a file.`);
-    return {};
-  }
-
-  // Read and parse .env file from provided path
-  const envFileRawContent = fs.readFileSync(envFilePath);
-  const allEnvVariablesMap = dotenv.parse(envFileRawContent);
-
-  return allEnvVariablesMap;
-}
-
-function filterClientSideEnvVars(allEnvVariablesMap) {
-  const allEnvVariableNames = Object.keys(allEnvVariablesMap);
-  const clientSideEnvVarNames = allEnvVariableNames.filter((varName) => varName.startsWith("NEXT_PUBLIC_"));
-
-  const clientSideEvnVarsMap = {};
-
-  clientSideEnvVarNames.forEach((envVarName) => {
-    clientSideEvnVarsMap[envVarName] = allEnvVariablesMap[envVarName];
-  });
-
-  return clientSideEvnVarsMap;
-}
-
-function getEsBuildEnvVarsDefine(envVariablesMap) {
-  const defineVariablesMap = {};
-
-  Object.keys(envVariablesMap).forEach((variableName) => {
-    defineVariablesMap[`process.env.${variableName}`] = JSON.stringify(envVariablesMap[variableName]);
-  });
-
-  return defineVariablesMap;
-}
-
-const esbuildMode = (nextConfig = {}) => {
   return Object.assign({}, nextConfig, {
     webpack: (config, options) => {
+      if (typeof nextConfig.webpack === "function") {
+        return nextConfig.webpack(config, options);
+      }
+      // This function is called twice, once for server side and once for client side webpack.
       const isServer = options.isServer;
+      const envFilePath = options.config.envFilePath;
 
-      const terserIndex = config.optimization.minimizer.findIndex(
-        (minimizer) => minimizer.constructor.name === "TerserPlugin"
-      );
-      if (terserIndex > -1) {
-        config.optimization.minimizer.splice(terserIndex, 1, new ESBuildMinifyPlugin(options));
+      if (!fs.existsSync(envFilePath)) {
+        console.warn(`Not able to load .env file path provided in next.config.js envVariables plugin`);
+        return config;
       }
 
-      const jsLoader = config.module.rules.find((rule) => rule.test && rule.test.test(".tsx"));
+      const fileStats = fs.statSync(envFilePath);
 
-      // config.module.rules.forEach(console.log);
-
-      const allEnvVariables = getEnvVariables(ENV_VARIABLES_PATH);
-
-      const avaliableEnvVariables = isServer ? allEnvVariables : filterClientSideEnvVars(allEnvVariables);
-
-      if (jsLoader) {
-        jsLoader.use.loader = "esbuild-loader";
-        jsLoader.use.options = {
-          // Specify `tsx` if you're using TypeSCript
-          loader: "tsx",
-          target: "es2017",
-          define: getEsBuildEnvVarsDefine(avaliableEnvVariables),
-        };
+      if (!fileStats.isFile()) {
+        console.warn(`.env file path provided in next.config.js is not a file.`);
+        return config;
       }
 
-      config.plugins.push(
-        new options.webpack.ProvidePlugin({
-          React: "react",
-        })
-      );
+      // Read and parse .env file from provided path
+      const envFileRawContent = fs.readFileSync(envFilePath);
+      const allEnvVariablesMap = dotenv.parse(envFileRawContent);
+
+      // Prepare list of var names.
+      // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be avaliable. (this follows official docs)
+      const allEnvVariableNames = Object.keys(allEnvVariablesMap);
+      const clientSideEnvVarNames = allEnvVariableNames.filter((varName) => varName.startsWith("NEXT_PUBLIC_"));
+
+      // Populate node process env variables from parsed file so webpack plugin will 'see' those vars.
+      allEnvVariableNames.forEach((varName) => {
+        if (isEmpty(process.env[varName])) {
+          process.env[varName] = allEnvVariablesMap[varName];
+        }
+      });
+
+      const webpack = require("webpack");
+
+      // Depending on client/server side, allow proper set of vars to be accessable.
+      if (isServer) {
+        config.plugins.push(new webpack.EnvironmentPlugin(allEnvVariableNames));
+
+        return config;
+      }
+
+      config.plugins.push(new webpack.EnvironmentPlugin(clientSideEnvVarNames));
 
       return config;
     },
@@ -128,12 +108,17 @@ const esbuildMode = (nextConfig = {}) => {
 module.exports = withPlugins(
   [
     //
-    [esbuildMode, {}],
-    //
     [
       withBundleAnalyzer,
       {
         enabled: process.env.ANALYZE === "true",
+      },
+    ],
+    //
+    [
+      envVariables,
+      {
+        envFilePath: path.resolve(__dirname, "..", ".env"),
       },
     ],
     //
