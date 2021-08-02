@@ -10,12 +10,4 @@ fi
 version=$1
 
 ./scripts/build-and-push.sh $version
-
-for app in backend frontend; do
-  echo "[$app]: trigger deploy"
-  #for stage in staging production; do
-  stage=staging
-  echo "[$app]: deploying to $version to $stage"
-  ./scripts/deploy.sh -s $stage -a $app -v $version
-  #done
-done
+./scripts/deploy.sh -s staging -a all -v $version
