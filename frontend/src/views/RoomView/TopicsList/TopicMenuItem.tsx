@@ -156,7 +156,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   ${(props) => {
     if (props.isActive) {
       return css`
-        background: ${theme.colors.interactive.selected};
+        background: ${theme.colors.interactive.selected()};
       `;
     }
   }}
@@ -207,5 +207,5 @@ const UIUnreadMessagesNotification = styled.div<{}>`
   width: 8px;
   ${theme.borderRadius.item}
 
-  background-color: ${theme.colors.interactive.notification};
+  background-color: ${theme.colors.interactive.notification()};
 `;
