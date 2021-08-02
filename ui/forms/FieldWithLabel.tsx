@@ -7,7 +7,6 @@ import { borderRadius } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 import { IconChevronDown } from "~ui/icons";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { theme } from "~ui/theme";
 
 type CursorType = "action" | "input";
 export interface Props {
