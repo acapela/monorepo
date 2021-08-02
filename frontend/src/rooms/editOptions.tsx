@@ -27,6 +27,8 @@ export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: M
 }
 
 export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
+  routes.space.prefetch({ spaceId: room.space_id });
+
   const didConfirm = await openConfirmPrompt({
     title: `Remove room`,
     description: (

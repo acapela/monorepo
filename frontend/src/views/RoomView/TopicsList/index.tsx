@@ -14,6 +14,7 @@ import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
+import { RouteLink } from "~frontend/routes/RouteLink";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -65,11 +66,11 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
             Topics
           </TextH6>
           {!isRoomOpen && (
-            <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
+            <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
               <Button size="small" kind="secondary" ref={buttonRef}>
                 Room summary
               </Button>
-            </routes.spaceRoomSummary.Link>
+            </RouteLink>
           )}
         </UIHeader>
       }

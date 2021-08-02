@@ -16,6 +16,8 @@ import { TextBody14, TextBody } from "~ui/typo";
 import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
 
 interface Props {
   userId: string;
@@ -25,15 +27,12 @@ interface Props {
   notification: NotificationInfoFragment;
 }
 
-export function NotificationPlainLabel({
-  userId,
-  titleNode,
-  onClick,
-  notification,
-  date = new Date(notification.created_at),
-}: Props) {
+export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(function NotificationPlainLabel(
+  { userId, titleNode, onClick, notification, date = new Date(notification.created_at) },
+  ref
+) {
+  const holderRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   const id = notification.id;
-  const holderRef = useRef<HTMLDivElement>(null);
   const user = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
 
@@ -88,7 +87,7 @@ export function NotificationPlainLabel({
       </UIStatus>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

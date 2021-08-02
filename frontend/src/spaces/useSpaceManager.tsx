@@ -64,6 +64,7 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
   }
 
   async function remove() {
+    routes.spaces.prefetch({});
     const didConfirm = await openConfirmPrompt({
       title: `Remove space`,
       description: (

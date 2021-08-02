@@ -10,6 +10,7 @@ import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconPlusSquare, IconSelection } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { PageHeader } from "~frontend/layouts/AppLayout/PageHeader";
+import { getUUID } from "~shared/uuid";
 
 export function SpacesView() {
   const teamId = useAssertCurrentTeamId();
@@ -17,6 +18,8 @@ export function SpacesView() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   async function handleCreateSpace() {
+    const spaceId = getUUID();
+    routes.space.prefetch({ spaceId });
     const spaceName = await openUIPrompt({
       title: "New space name",
       placeholder: "eg. Design team",
@@ -31,13 +34,7 @@ export function SpacesView() {
 
     if (!spaceName?.trim()) return;
 
-    const [space] = await createSpace({ input: { name: spaceName, team_id: teamId } });
-
-    const spaceId = space?.id;
-
-    if (!spaceId) {
-      return;
-    }
+    createSpace({ input: { name: spaceName, team_id: teamId, id: spaceId } });
 
     routes.space.push({ spaceId });
   }

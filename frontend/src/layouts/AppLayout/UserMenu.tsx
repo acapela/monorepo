@@ -13,6 +13,9 @@ export function UserMenu() {
     <UIHolder>
       <UserAvatar user={user} size="regular" disableNameTooltip />
       <PopoverMenuTrigger
+        onOpen={() => {
+          routes.team.prefetch({});
+        }}
         options={[
           {
             label: "Manage team",
