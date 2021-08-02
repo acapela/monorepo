@@ -67,6 +67,11 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
           ...UserBasicInfo
         }
       }
+
+      space {
+        id
+        name
+      }
     }
   `
 );

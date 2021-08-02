@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/routes";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
@@ -25,9 +24,6 @@ interface Props {
 }
 
 export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
-  // TODO: optimize !!
-  const [space] = useSingleSpaceQuery({ id: room.space_id });
-
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
   const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
@@ -69,7 +65,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                 isIconKey
                 value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
               />
-              {space && <ValueDescriptor keyNode={<IconBox />} isIconKey value={space.name} />}
+              {<ValueDescriptor keyNode={<IconBox />} isIconKey value={room.space.name} />}
               <AvatarList users={room.members.map((membership) => membership.user)} />
             </UIRoomMetaData>
           </UIHeadPrimary>
