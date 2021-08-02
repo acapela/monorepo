@@ -1,9 +1,9 @@
 import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { theme } from "~frontend/../../ui/theme";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { TextH3, TextBody14 } from "~ui/typo";
 
 interface Props {
   warning?: string;
@@ -30,12 +30,10 @@ export const WarningModal = ({
     <Modal anchor={anchor} onCloseRequest={onCloseRequest} hasCloseButton={hasCloseButton}>
       <UIContentWrapper>
         <UIHeader>
-          <TextH3 warning medium>
-            {warning}
-          </TextH3>
-          <UIWarningTitle medium>{title}</UIWarningTitle>
+          <UITitle>{warning}</UITitle>
+          <UISubtitle>{title}</UISubtitle>
         </UIHeader>
-        {description && <TextBody14 secondary>{description}</TextBody14>}
+        {description && <UIDescription>{description}</UIDescription>}
         {children}
       </UIContentWrapper>
     </Modal>
@@ -56,4 +54,16 @@ const UIHeader = styled.div`
   padding: 0 48px;
 `;
 
-const UIWarningTitle = styled(TextH3)``;
+const UITitle = styled.p`
+  ${theme.font.h3.medium.build};
+  color: ${theme.colors.status.warning};
+`;
+
+const UISubtitle = styled.p`
+  ${theme.font.h3.medium.build};
+`;
+
+const UIDescription = styled.p`
+  ${theme.font.body14.build};
+  color: ${theme.colors.layout.supportingText};
+`;
