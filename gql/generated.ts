@@ -37,22 +37,16 @@ export interface DownloadUrlResponse {
   downloadUrl: Scalars['String'];
 }
 
-export interface InviteAcceptCommand {
-  code: Scalars['String'];
-}
-
-export interface InviteAcceptResponse {
-  __typename?: 'InviteAcceptResponse';
-  invite?: Maybe<Room_Invites>;
-  invite_id: Scalars['ID'];
-  team?: Maybe<Team>;
-  team_id: Scalars['ID'];
-}
-
 export interface LookupTeamNameResponse {
   __typename?: 'LookupTeamNameResponse';
   inviter_name: Scalars['String'];
   team_name: Scalars['String'];
+}
+
+export interface RoomInvitationViewResponse {
+  __typename?: 'RoomInvitationViewResponse';
+  inviter_name: Scalars['String'];
+  room_name: Scalars['String'];
 }
 
 /** expression to compare columns of type String. All fields are combined with logical 'AND'. */
@@ -1793,8 +1787,6 @@ export type Message_Update_Column =
 /** mutation root */
 export interface Mutation_Root {
   __typename?: 'mutation_root';
-  /** perform the action: "accept_invite" */
-  accept_invite?: Maybe<InviteAcceptResponse>;
   /** delete data from the table: "account" */
   delete_account?: Maybe<Account_Mutation_Response>;
   /** delete single row from the table: "account" */
@@ -1833,10 +1825,10 @@ export interface Mutation_Root {
   delete_room?: Maybe<Room_Mutation_Response>;
   /** delete single row from the table: "room" */
   delete_room_by_pk?: Maybe<Room>;
-  /** delete data from the table: "room_invites" */
-  delete_room_invites?: Maybe<Room_Invites_Mutation_Response>;
-  /** delete single row from the table: "room_invites" */
-  delete_room_invites_by_pk?: Maybe<Room_Invites>;
+  /** delete data from the table: "room_invitation" */
+  delete_room_invitation?: Maybe<Room_Invitation_Mutation_Response>;
+  /** delete single row from the table: "room_invitation" */
+  delete_room_invitation_by_pk?: Maybe<Room_Invitation>;
   /** delete data from the table: "room_member" */
   delete_room_member?: Maybe<Room_Member_Mutation_Response>;
   /** delete single row from the table: "room_member" */
@@ -1923,10 +1915,10 @@ export interface Mutation_Root {
   insert_notification_one?: Maybe<Notification>;
   /** insert data into the table: "room" */
   insert_room?: Maybe<Room_Mutation_Response>;
-  /** insert data into the table: "room_invites" */
-  insert_room_invites?: Maybe<Room_Invites_Mutation_Response>;
-  /** insert a single row into the table: "room_invites" */
-  insert_room_invites_one?: Maybe<Room_Invites>;
+  /** insert data into the table: "room_invitation" */
+  insert_room_invitation?: Maybe<Room_Invitation_Mutation_Response>;
+  /** insert a single row into the table: "room_invitation" */
+  insert_room_invitation_one?: Maybe<Room_Invitation>;
   /** insert data into the table: "room_member" */
   insert_room_member?: Maybe<Room_Member_Mutation_Response>;
   /** insert a single row into the table: "room_member" */
@@ -2015,10 +2007,10 @@ export interface Mutation_Root {
   update_room?: Maybe<Room_Mutation_Response>;
   /** update single row of the table: "room" */
   update_room_by_pk?: Maybe<Room>;
-  /** update data of the table: "room_invites" */
-  update_room_invites?: Maybe<Room_Invites_Mutation_Response>;
-  /** update single row of the table: "room_invites" */
-  update_room_invites_by_pk?: Maybe<Room_Invites>;
+  /** update data of the table: "room_invitation" */
+  update_room_invitation?: Maybe<Room_Invitation_Mutation_Response>;
+  /** update single row of the table: "room_invitation" */
+  update_room_invitation_by_pk?: Maybe<Room_Invitation>;
   /** update data of the table: "room_member" */
   update_room_member?: Maybe<Room_Member_Mutation_Response>;
   /** update single row of the table: "room_member" */
@@ -2069,12 +2061,6 @@ export interface Mutation_Root {
   update_whitelist_by_pk?: Maybe<Whitelist>;
   /** perform the action: "upgrade_current_user" */
   upgrade_current_user?: Maybe<UpgradeUserResponse>;
-}
-
-
-/** mutation root */
-export interface Mutation_RootAccept_InviteArgs {
-  token: Scalars['String'];
 }
 
 
@@ -2196,13 +2182,13 @@ export interface Mutation_RootDelete_Room_By_PkArgs {
 
 
 /** mutation root */
-export interface Mutation_RootDelete_Room_InvitesArgs {
-  where: Room_Invites_Bool_Exp;
+export interface Mutation_RootDelete_Room_InvitationArgs {
+  where: Room_Invitation_Bool_Exp;
 }
 
 
 /** mutation root */
-export interface Mutation_RootDelete_Room_Invites_By_PkArgs {
+export interface Mutation_RootDelete_Room_Invitation_By_PkArgs {
   id: Scalars['uuid'];
 }
 
@@ -2487,16 +2473,16 @@ export interface Mutation_RootInsert_RoomArgs {
 
 
 /** mutation root */
-export interface Mutation_RootInsert_Room_InvitesArgs {
-  objects: Array<Room_Invites_Insert_Input>;
-  on_conflict?: Maybe<Room_Invites_On_Conflict>;
+export interface Mutation_RootInsert_Room_InvitationArgs {
+  objects: Array<Room_Invitation_Insert_Input>;
+  on_conflict?: Maybe<Room_Invitation_On_Conflict>;
 }
 
 
 /** mutation root */
-export interface Mutation_RootInsert_Room_Invites_OneArgs {
-  object: Room_Invites_Insert_Input;
-  on_conflict?: Maybe<Room_Invites_On_Conflict>;
+export interface Mutation_RootInsert_Room_Invitation_OneArgs {
+  object: Room_Invitation_Insert_Input;
+  on_conflict?: Maybe<Room_Invitation_On_Conflict>;
 }
 
 
@@ -2829,16 +2815,16 @@ export interface Mutation_RootUpdate_Room_By_PkArgs {
 
 
 /** mutation root */
-export interface Mutation_RootUpdate_Room_InvitesArgs {
-  _set?: Maybe<Room_Invites_Set_Input>;
-  where: Room_Invites_Bool_Exp;
+export interface Mutation_RootUpdate_Room_InvitationArgs {
+  _set?: Maybe<Room_Invitation_Set_Input>;
+  where: Room_Invitation_Bool_Exp;
 }
 
 
 /** mutation root */
-export interface Mutation_RootUpdate_Room_Invites_By_PkArgs {
-  _set?: Maybe<Room_Invites_Set_Input>;
-  pk_columns: Room_Invites_Pk_Columns_Input;
+export interface Mutation_RootUpdate_Room_Invitation_By_PkArgs {
+  _set?: Maybe<Room_Invitation_Set_Input>;
+  pk_columns: Room_Invitation_Pk_Columns_Input;
 }
 
 
@@ -3326,12 +3312,14 @@ export interface Query_Root {
   room_aggregate: Room_Aggregate;
   /** fetch data from the table: "room" using primary key columns */
   room_by_pk?: Maybe<Room>;
-  /** fetch data from the table: "room_invites" */
-  room_invites: Array<Room_Invites>;
-  /** fetch aggregated fields from the table: "room_invites" */
-  room_invites_aggregate: Room_Invites_Aggregate;
-  /** fetch data from the table: "room_invites" using primary key columns */
-  room_invites_by_pk?: Maybe<Room_Invites>;
+  /** fetch data from the table: "room_invitation" */
+  room_invitation: Array<Room_Invitation>;
+  /** fetch aggregated fields from the table: "room_invitation" */
+  room_invitation_aggregate: Room_Invitation_Aggregate;
+  /** fetch data from the table: "room_invitation" using primary key columns */
+  room_invitation_by_pk?: Maybe<Room_Invitation>;
+  /** perform the action: "room_invitation_view" */
+  room_invitation_view?: Maybe<RoomInvitationViewResponse>;
   /** fetch data from the table: "room_last_posted_message" */
   room_last_posted_message: Array<Room_Last_Posted_Message>;
   /** fetch aggregated fields from the table: "room_last_posted_message" */
@@ -3704,28 +3692,34 @@ export interface Query_RootRoom_By_PkArgs {
 
 
 /** query root */
-export interface Query_RootRoom_InvitesArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
+export interface Query_RootRoom_InvitationArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
 /** query root */
-export interface Query_RootRoom_Invites_AggregateArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
+export interface Query_RootRoom_Invitation_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
 /** query root */
-export interface Query_RootRoom_Invites_By_PkArgs {
+export interface Query_RootRoom_Invitation_By_PkArgs {
   id: Scalars['uuid'];
+}
+
+
+/** query root */
+export interface Query_RootRoom_Invitation_ViewArgs {
+  token: Scalars['String'];
 }
 
 
@@ -4158,6 +4152,10 @@ export interface Room {
   deadline: Scalars['timestamptz'];
   finished_at?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
+  /** An array relationship */
+  invitations: Array<Room_Invitation>;
+  /** An aggregated array relationship */
+  invitations_aggregate: Room_Invitation_Aggregate;
   is_private: Scalars['Boolean'];
   /** An object relationship */
   last_posted_message?: Maybe<Room_Last_Posted_Message>;
@@ -4167,10 +4165,6 @@ export interface Room {
   members_aggregate: Room_Member_Aggregate;
   name: Scalars['String'];
   notification_job_id?: Maybe<Scalars['String']>;
-  /** An array relationship */
-  room_invites: Array<Room_Invites>;
-  /** An aggregated array relationship */
-  room_invites_aggregate: Room_Invites_Aggregate;
   slug: Scalars['String'];
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   /** An object relationship */
@@ -4181,6 +4175,26 @@ export interface Room {
   topics: Array<Topic>;
   /** An aggregated array relationship */
   topics_aggregate: Topic_Aggregate;
+}
+
+
+/** columns and relationships of "room" */
+export interface RoomInvitationsArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
+}
+
+
+/** columns and relationships of "room" */
+export interface RoomInvitations_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
@@ -4201,26 +4215,6 @@ export interface RoomMembers_AggregateArgs {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Room_Member_Order_By>>;
   where?: Maybe<Room_Member_Bool_Exp>;
-}
-
-
-/** columns and relationships of "room" */
-export interface RoomRoom_InvitesArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
-}
-
-
-/** columns and relationships of "room" */
-export interface RoomRoom_Invites_AggregateArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
 }
 
 
@@ -4289,12 +4283,12 @@ export interface Room_Bool_Exp {
   deadline?: Maybe<Timestamptz_Comparison_Exp>;
   finished_at?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
+  invitations?: Maybe<Room_Invitation_Bool_Exp>;
   is_private?: Maybe<Boolean_Comparison_Exp>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
   members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   notification_job_id?: Maybe<String_Comparison_Exp>;
-  room_invites?: Maybe<Room_Invites_Bool_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
   source_google_calendar_event_id?: Maybe<String_Comparison_Exp>;
   space?: Maybe<Space_Bool_Exp>;
@@ -4318,11 +4312,11 @@ export interface Room_Insert_Input {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  invitations?: Maybe<Room_Invitation_Arr_Rel_Insert_Input>;
   is_private?: Maybe<Scalars['Boolean']>;
   members?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
-  room_invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space?: Maybe<Space_Obj_Rel_Insert_Input>;
@@ -4331,185 +4325,202 @@ export interface Room_Insert_Input {
   topics?: Maybe<Topic_Arr_Rel_Insert_Input>;
 }
 
-/** columns and relationships of "room_invites" */
-export interface Room_Invites {
-  __typename?: 'room_invites';
-  code: Scalars['uuid'];
+/** columns and relationships of "room_invitation" */
+export interface Room_Invitation {
+  __typename?: 'room_invitation';
   created_at: Scalars['timestamptz'];
   email: Scalars['String'];
   id: Scalars['uuid'];
   /** An object relationship */
-  inviter: User;
-  inviter_id: Scalars['uuid'];
+  inviting_user: User;
+  inviting_user_id: Scalars['uuid'];
   /** An object relationship */
   room: Room;
   room_id: Scalars['uuid'];
-  used_at?: Maybe<Scalars['timestamptz']>;
+  team_id: Scalars['uuid'];
+  token: Scalars['uuid'];
+  used_at?: Maybe<Scalars['date']>;
+  /** An object relationship */
+  used_by_user?: Maybe<User>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 }
 
-/** aggregated selection of "room_invites" */
-export interface Room_Invites_Aggregate {
-  __typename?: 'room_invites_aggregate';
-  aggregate?: Maybe<Room_Invites_Aggregate_Fields>;
-  nodes: Array<Room_Invites>;
+/** aggregated selection of "room_invitation" */
+export interface Room_Invitation_Aggregate {
+  __typename?: 'room_invitation_aggregate';
+  aggregate?: Maybe<Room_Invitation_Aggregate_Fields>;
+  nodes: Array<Room_Invitation>;
 }
 
-/** aggregate fields of "room_invites" */
-export interface Room_Invites_Aggregate_Fields {
-  __typename?: 'room_invites_aggregate_fields';
+/** aggregate fields of "room_invitation" */
+export interface Room_Invitation_Aggregate_Fields {
+  __typename?: 'room_invitation_aggregate_fields';
   count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Room_Invites_Max_Fields>;
-  min?: Maybe<Room_Invites_Min_Fields>;
+  max?: Maybe<Room_Invitation_Max_Fields>;
+  min?: Maybe<Room_Invitation_Min_Fields>;
 }
 
 
-/** aggregate fields of "room_invites" */
-export interface Room_Invites_Aggregate_FieldsCountArgs {
-  columns?: Maybe<Array<Room_Invites_Select_Column>>;
+/** aggregate fields of "room_invitation" */
+export interface Room_Invitation_Aggregate_FieldsCountArgs {
+  columns?: Maybe<Array<Room_Invitation_Select_Column>>;
   distinct?: Maybe<Scalars['Boolean']>;
 }
 
-/** order by aggregate values of table "room_invites" */
-export interface Room_Invites_Aggregate_Order_By {
+/** order by aggregate values of table "room_invitation" */
+export interface Room_Invitation_Aggregate_Order_By {
   count?: Maybe<Order_By>;
-  max?: Maybe<Room_Invites_Max_Order_By>;
-  min?: Maybe<Room_Invites_Min_Order_By>;
+  max?: Maybe<Room_Invitation_Max_Order_By>;
+  min?: Maybe<Room_Invitation_Min_Order_By>;
 }
 
-/** input type for inserting array relation for remote table "room_invites" */
-export interface Room_Invites_Arr_Rel_Insert_Input {
-  data: Array<Room_Invites_Insert_Input>;
-  on_conflict?: Maybe<Room_Invites_On_Conflict>;
+/** input type for inserting array relation for remote table "room_invitation" */
+export interface Room_Invitation_Arr_Rel_Insert_Input {
+  data: Array<Room_Invitation_Insert_Input>;
+  on_conflict?: Maybe<Room_Invitation_On_Conflict>;
 }
 
-/** Boolean expression to filter rows from the table "room_invites". All fields are combined with a logical 'AND'. */
-export interface Room_Invites_Bool_Exp {
-  _and?: Maybe<Array<Maybe<Room_Invites_Bool_Exp>>>;
-  _not?: Maybe<Room_Invites_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Room_Invites_Bool_Exp>>>;
-  code?: Maybe<Uuid_Comparison_Exp>;
+/** Boolean expression to filter rows from the table "room_invitation". All fields are combined with a logical 'AND'. */
+export interface Room_Invitation_Bool_Exp {
+  _and?: Maybe<Array<Maybe<Room_Invitation_Bool_Exp>>>;
+  _not?: Maybe<Room_Invitation_Bool_Exp>;
+  _or?: Maybe<Array<Maybe<Room_Invitation_Bool_Exp>>>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
   email?: Maybe<String_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
-  inviter?: Maybe<User_Bool_Exp>;
-  inviter_id?: Maybe<Uuid_Comparison_Exp>;
+  inviting_user?: Maybe<User_Bool_Exp>;
+  inviting_user_id?: Maybe<Uuid_Comparison_Exp>;
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
-  used_at?: Maybe<Timestamptz_Comparison_Exp>;
+  team_id?: Maybe<Uuid_Comparison_Exp>;
+  token?: Maybe<Uuid_Comparison_Exp>;
+  used_at?: Maybe<Date_Comparison_Exp>;
+  used_by_user?: Maybe<User_Bool_Exp>;
+  used_by_user_id?: Maybe<Uuid_Comparison_Exp>;
 }
 
-/** unique or primary key constraints on table "room_invites" */
-export type Room_Invites_Constraint =
+/** unique or primary key constraints on table "room_invitation" */
+export type Room_Invitation_Constraint =
   /** unique or primary key constraint */
-  | 'room_invites_code_key'
+  | 'room_invitation_pkey'
   /** unique or primary key constraint */
-  | 'room_invites_pkey'
-  /** unique or primary key constraint */
-  | 'room_invites_room_id_email_key';
+  | 'room_invitation_token_key';
 
-/** input type for inserting data into table "room_invites" */
-export interface Room_Invites_Insert_Input {
-  code?: Maybe<Scalars['uuid']>;
+/** input type for inserting data into table "room_invitation" */
+export interface Room_Invitation_Insert_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
-  inviter?: Maybe<User_Obj_Rel_Insert_Input>;
-  inviter_id?: Maybe<Scalars['uuid']>;
+  inviting_user?: Maybe<User_Obj_Rel_Insert_Input>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
-  used_at?: Maybe<Scalars['timestamptz']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+  used_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 }
 
 /** aggregate max on columns */
-export interface Room_Invites_Max_Fields {
-  __typename?: 'room_invites_max_fields';
-  code?: Maybe<Scalars['uuid']>;
+export interface Room_Invitation_Max_Fields {
+  __typename?: 'room_invitation_max_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
-  inviter_id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
-  used_at?: Maybe<Scalars['timestamptz']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 }
 
-/** order by max() on columns of table "room_invites" */
-export interface Room_Invites_Max_Order_By {
-  code?: Maybe<Order_By>;
+/** order by max() on columns of table "room_invitation" */
+export interface Room_Invitation_Max_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  inviter_id?: Maybe<Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 }
 
 /** aggregate min on columns */
-export interface Room_Invites_Min_Fields {
-  __typename?: 'room_invites_min_fields';
-  code?: Maybe<Scalars['uuid']>;
+export interface Room_Invitation_Min_Fields {
+  __typename?: 'room_invitation_min_fields';
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
-  inviter_id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
-  used_at?: Maybe<Scalars['timestamptz']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 }
 
-/** order by min() on columns of table "room_invites" */
-export interface Room_Invites_Min_Order_By {
-  code?: Maybe<Order_By>;
+/** order by min() on columns of table "room_invitation" */
+export interface Room_Invitation_Min_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  inviter_id?: Maybe<Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 }
 
-/** response of any mutation on the table "room_invites" */
-export interface Room_Invites_Mutation_Response {
-  __typename?: 'room_invites_mutation_response';
+/** response of any mutation on the table "room_invitation" */
+export interface Room_Invitation_Mutation_Response {
+  __typename?: 'room_invitation_mutation_response';
   /** number of affected rows by the mutation */
   affected_rows: Scalars['Int'];
   /** data of the affected rows by the mutation */
-  returning: Array<Room_Invites>;
+  returning: Array<Room_Invitation>;
 }
 
-/** input type for inserting object relation for remote table "room_invites" */
-export interface Room_Invites_Obj_Rel_Insert_Input {
-  data: Room_Invites_Insert_Input;
-  on_conflict?: Maybe<Room_Invites_On_Conflict>;
+/** input type for inserting object relation for remote table "room_invitation" */
+export interface Room_Invitation_Obj_Rel_Insert_Input {
+  data: Room_Invitation_Insert_Input;
+  on_conflict?: Maybe<Room_Invitation_On_Conflict>;
 }
 
-/** on conflict condition type for table "room_invites" */
-export interface Room_Invites_On_Conflict {
-  constraint: Room_Invites_Constraint;
-  update_columns: Array<Room_Invites_Update_Column>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
+/** on conflict condition type for table "room_invitation" */
+export interface Room_Invitation_On_Conflict {
+  constraint: Room_Invitation_Constraint;
+  update_columns: Array<Room_Invitation_Update_Column>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
-/** ordering options when selecting data from "room_invites" */
-export interface Room_Invites_Order_By {
-  code?: Maybe<Order_By>;
+/** ordering options when selecting data from "room_invitation" */
+export interface Room_Invitation_Order_By {
   created_at?: Maybe<Order_By>;
   email?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  inviter?: Maybe<User_Order_By>;
-  inviter_id?: Maybe<Order_By>;
+  inviting_user?: Maybe<User_Order_By>;
+  inviting_user_id?: Maybe<Order_By>;
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
+  team_id?: Maybe<Order_By>;
+  token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
+  used_by_user?: Maybe<User_Order_By>;
+  used_by_user_id?: Maybe<Order_By>;
 }
 
-/** primary key columns input for table: "room_invites" */
-export interface Room_Invites_Pk_Columns_Input {
+/** primary key columns input for table: "room_invitation" */
+export interface Room_Invitation_Pk_Columns_Input {
   id: Scalars['uuid'];
 }
 
-/** select columns of table "room_invites" */
-export type Room_Invites_Select_Column =
-  /** column name */
-  | 'code'
+/** select columns of table "room_invitation" */
+export type Room_Invitation_Select_Column =
   /** column name */
   | 'created_at'
   /** column name */
@@ -4517,27 +4528,33 @@ export type Room_Invites_Select_Column =
   /** column name */
   | 'id'
   /** column name */
-  | 'inviter_id'
+  | 'inviting_user_id'
   /** column name */
   | 'room_id'
   /** column name */
-  | 'used_at';
+  | 'team_id'
+  /** column name */
+  | 'token'
+  /** column name */
+  | 'used_at'
+  /** column name */
+  | 'used_by_user_id';
 
-/** input type for updating data in table "room_invites" */
-export interface Room_Invites_Set_Input {
-  code?: Maybe<Scalars['uuid']>;
+/** input type for updating data in table "room_invitation" */
+export interface Room_Invitation_Set_Input {
   created_at?: Maybe<Scalars['timestamptz']>;
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['uuid']>;
-  inviter_id?: Maybe<Scalars['uuid']>;
+  inviting_user_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
-  used_at?: Maybe<Scalars['timestamptz']>;
+  team_id?: Maybe<Scalars['uuid']>;
+  token?: Maybe<Scalars['uuid']>;
+  used_at?: Maybe<Scalars['date']>;
+  used_by_user_id?: Maybe<Scalars['uuid']>;
 }
 
-/** update columns of table "room_invites" */
-export type Room_Invites_Update_Column =
-  /** column name */
-  | 'code'
+/** update columns of table "room_invitation" */
+export type Room_Invitation_Update_Column =
   /** column name */
   | 'created_at'
   /** column name */
@@ -4545,11 +4562,17 @@ export type Room_Invites_Update_Column =
   /** column name */
   | 'id'
   /** column name */
-  | 'inviter_id'
+  | 'inviting_user_id'
   /** column name */
   | 'room_id'
   /** column name */
-  | 'used_at';
+  | 'team_id'
+  /** column name */
+  | 'token'
+  /** column name */
+  | 'used_at'
+  /** column name */
+  | 'used_by_user_id';
 
 /** columns and relationships of "room_last_posted_message" */
 export interface Room_Last_Posted_Message {
@@ -4885,12 +4908,12 @@ export interface Room_Order_By {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  invitations_aggregate?: Maybe<Room_Invitation_Aggregate_Order_By>;
   is_private?: Maybe<Order_By>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Order_By>;
   members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
-  room_invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space?: Maybe<Space_Order_By>;
@@ -5447,12 +5470,14 @@ export interface Subscription_Root {
   room_aggregate: Room_Aggregate;
   /** fetch data from the table: "room" using primary key columns */
   room_by_pk?: Maybe<Room>;
-  /** fetch data from the table: "room_invites" */
-  room_invites: Array<Room_Invites>;
-  /** fetch aggregated fields from the table: "room_invites" */
-  room_invites_aggregate: Room_Invites_Aggregate;
-  /** fetch data from the table: "room_invites" using primary key columns */
-  room_invites_by_pk?: Maybe<Room_Invites>;
+  /** fetch data from the table: "room_invitation" */
+  room_invitation: Array<Room_Invitation>;
+  /** fetch aggregated fields from the table: "room_invitation" */
+  room_invitation_aggregate: Room_Invitation_Aggregate;
+  /** fetch data from the table: "room_invitation" using primary key columns */
+  room_invitation_by_pk?: Maybe<Room_Invitation>;
+  /** perform the action: "room_invitation_view" */
+  room_invitation_view?: Maybe<RoomInvitationViewResponse>;
   /** fetch data from the table: "room_last_posted_message" */
   room_last_posted_message: Array<Room_Last_Posted_Message>;
   /** fetch aggregated fields from the table: "room_last_posted_message" */
@@ -5825,28 +5850,34 @@ export interface Subscription_RootRoom_By_PkArgs {
 
 
 /** subscription root */
-export interface Subscription_RootRoom_InvitesArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
+export interface Subscription_RootRoom_InvitationArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
 /** subscription root */
-export interface Subscription_RootRoom_Invites_AggregateArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
+export interface Subscription_RootRoom_Invitation_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
 /** subscription root */
-export interface Subscription_RootRoom_Invites_By_PkArgs {
+export interface Subscription_RootRoom_Invitation_By_PkArgs {
   id: Scalars['uuid'];
+}
+
+
+/** subscription root */
+export interface Subscription_RootRoom_Invitation_ViewArgs {
+  token: Scalars['String'];
 }
 
 
@@ -8037,6 +8068,10 @@ export interface User {
   avatar_url?: Maybe<Scalars['String']>;
   created_at: Scalars['timestamptz'];
   /** An array relationship */
+  created_room_invitations: Array<Room_Invitation>;
+  /** An aggregated array relationship */
+  created_room_invitations_aggregate: Room_Invitation_Aggregate;
+  /** An array relationship */
   created_rooms: Array<Room>;
   /** An aggregated array relationship */
   created_rooms_aggregate: Room_Aggregate;
@@ -8050,10 +8085,6 @@ export interface User {
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id: Scalars['uuid'];
-  /** An array relationship */
-  invites: Array<Room_Invites>;
-  /** An aggregated array relationship */
-  invites_aggregate: Room_Invites_Aggregate;
   /** An array relationship */
   messages: Array<Message>;
   /** An aggregated array relationship */
@@ -8083,6 +8114,26 @@ export interface User {
   topic_memberships: Array<Topic_Member>;
   /** An aggregated array relationship */
   topic_memberships_aggregate: Topic_Member_Aggregate;
+}
+
+
+/** columns and relationships of "user" */
+export interface UserCreated_Room_InvitationsArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
+}
+
+
+/** columns and relationships of "user" */
+export interface UserCreated_Room_Invitations_AggregateArgs {
+  distinct_on?: Maybe<Array<Room_Invitation_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Room_Invitation_Order_By>>;
+  where?: Maybe<Room_Invitation_Bool_Exp>;
 }
 
 
@@ -8123,26 +8174,6 @@ export interface UserCreated_Team_Invitations_AggregateArgs {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Team_Invitation_Order_By>>;
   where?: Maybe<Team_Invitation_Bool_Exp>;
-}
-
-
-/** columns and relationships of "user" */
-export interface UserInvitesArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
-}
-
-
-/** columns and relationships of "user" */
-export interface UserInvites_AggregateArgs {
-  distinct_on?: Maybe<Array<Room_Invites_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Room_Invites_Order_By>>;
-  where?: Maybe<Room_Invites_Bool_Exp>;
 }
 
 
@@ -8327,6 +8358,7 @@ export interface User_Bool_Exp {
   _or?: Maybe<Array<Maybe<User_Bool_Exp>>>;
   avatar_url?: Maybe<String_Comparison_Exp>;
   created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  created_room_invitations?: Maybe<Room_Invitation_Bool_Exp>;
   created_rooms?: Maybe<Room_Bool_Exp>;
   created_team_invitations?: Maybe<Team_Invitation_Bool_Exp>;
   current_team?: Maybe<Team_Bool_Exp>;
@@ -8334,7 +8366,6 @@ export interface User_Bool_Exp {
   email?: Maybe<String_Comparison_Exp>;
   email_verified?: Maybe<Timestamptz_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
-  invites?: Maybe<Room_Invites_Bool_Exp>;
   messages?: Maybe<Message_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   notifications?: Maybe<Notification_Bool_Exp>;
@@ -8356,6 +8387,7 @@ export type User_Constraint =
 export interface User_Insert_Input {
   avatar_url?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
+  created_room_invitations?: Maybe<Room_Invitation_Arr_Rel_Insert_Input>;
   created_rooms?: Maybe<Room_Arr_Rel_Insert_Input>;
   created_team_invitations?: Maybe<Team_Invitation_Arr_Rel_Insert_Input>;
   current_team?: Maybe<Team_Obj_Rel_Insert_Input>;
@@ -8363,7 +8395,6 @@ export interface User_Insert_Input {
   email?: Maybe<Scalars['String']>;
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
-  invites?: Maybe<Room_Invites_Arr_Rel_Insert_Input>;
   messages?: Maybe<Message_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notifications?: Maybe<Notification_Arr_Rel_Insert_Input>;
@@ -8446,6 +8477,7 @@ export interface User_On_Conflict {
 export interface User_Order_By {
   avatar_url?: Maybe<Order_By>;
   created_at?: Maybe<Order_By>;
+  created_room_invitations_aggregate?: Maybe<Room_Invitation_Aggregate_Order_By>;
   created_rooms_aggregate?: Maybe<Room_Aggregate_Order_By>;
   created_team_invitations_aggregate?: Maybe<Team_Invitation_Aggregate_Order_By>;
   current_team?: Maybe<Team_Order_By>;
@@ -8453,7 +8485,6 @@ export interface User_Order_By {
   email?: Maybe<Order_By>;
   email_verified?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
-  invites_aggregate?: Maybe<Room_Invites_Aggregate_Order_By>;
   messages_aggregate?: Maybe<Message_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   notifications_aggregate?: Maybe<Notification_Aggregate_Order_By>;
@@ -8766,19 +8797,6 @@ export type AttachmentQuery = (
   )> }
 );
 
-export type LookupTeamNameQueryVariables = Exact<{
-  token: Scalars['String'];
-}>;
-
-
-export type LookupTeamNameQuery = (
-  { __typename?: 'query_root' }
-  & { invite?: Maybe<(
-    { __typename?: 'LookupTeamNameResponse' }
-    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name'>
-  )> }
-);
-
 export type MessageBasicInfoFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content' | 'type'>
@@ -8961,6 +8979,52 @@ export type RemoveMessageReactionMutation = (
   )> }
 );
 
+export type RoomInvitationBasicInfoFragment = (
+  { __typename?: 'room_invitation' }
+  & Pick<Room_Invitation, 'email' | 'id' | 'used_at'>
+);
+
+export type CreateRoomInvitationMutationVariables = Exact<{
+  roomId: Scalars['uuid'];
+  teamId: Scalars['uuid'];
+  email: Scalars['String'];
+}>;
+
+
+export type CreateRoomInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_room_invitation_one?: Maybe<(
+    { __typename?: 'room_invitation' }
+    & RoomInvitationBasicInfoFragment
+  )> }
+);
+
+export type RemoveRoomInvitationMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type RemoveRoomInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_room_invitation_by_pk?: Maybe<(
+    { __typename?: 'room_invitation' }
+    & Pick<Room_Invitation, 'room_id'>
+  )> }
+);
+
+export type RoomInvitationViewQueryVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type RoomInvitationViewQuery = (
+  { __typename?: 'query_root' }
+  & { invitation?: Maybe<(
+    { __typename?: 'RoomInvitationViewResponse' }
+    & Pick<RoomInvitationViewResponse, 'room_name' | 'inviter_name'>
+  )> }
+);
+
 export type PrivateRoomInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'name' | 'is_private'>
@@ -8984,6 +9048,9 @@ export type RoomDetailedInfoFragment = (
   & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
+  )>, invitations: Array<(
+    { __typename?: 'room_invitation' }
+    & RoomInvitationBasicInfoFragment
   )> }
   & RoomBasicInfoFragment
 );
@@ -9409,19 +9476,6 @@ export type RemoveTeamInvitationMutation = (
   )> }
 );
 
-export type TeamInvitationQueryVariables = Exact<{
-  tokenId: Scalars['uuid'];
-}>;
-
-
-export type TeamInvitationQuery = (
-  { __typename?: 'query_root' }
-  & { team_invitation: Array<(
-    { __typename?: 'team_invitation' }
-    & Pick<Team_Invitation, 'id' | 'team_id' | 'token' | 'used_by_user_id'>
-  )> }
-);
-
 export type RemoveTeamMemberMutationVariables = Exact<{
   teamId: Scalars['uuid'];
   userId: Scalars['uuid'];
@@ -9433,6 +9487,19 @@ export type RemoveTeamMemberMutation = (
   & { delete_team_member_by_pk?: Maybe<(
     { __typename?: 'team_member' }
     & Pick<Team_Member, 'user_id'>
+  )> }
+);
+
+export type LookupTeamNameQueryVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type LookupTeamNameQuery = (
+  { __typename?: 'query_root' }
+  & { invite?: Maybe<(
+    { __typename?: 'LookupTeamNameResponse' }
+    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name'>
   )> }
 );
 
@@ -9656,17 +9723,15 @@ export type DownloadUrlResponseKeySpecifier = ('downloadUrl' | DownloadUrlRespon
 export type DownloadUrlResponseFieldPolicy = {
 	downloadUrl?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type InviteAcceptResponseKeySpecifier = ('invite' | 'invite_id' | 'team' | 'team_id' | InviteAcceptResponseKeySpecifier)[];
-export type InviteAcceptResponseFieldPolicy = {
-	invite?: FieldPolicy<any> | FieldReadFunction<any>,
-	invite_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	team?: FieldPolicy<any> | FieldReadFunction<any>,
-	team_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type LookupTeamNameResponseKeySpecifier = ('inviter_name' | 'team_name' | LookupTeamNameResponseKeySpecifier)[];
 export type LookupTeamNameResponseFieldPolicy = {
 	inviter_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RoomInvitationViewResponseKeySpecifier = ('inviter_name' | 'room_name' | RoomInvitationViewResponseKeySpecifier)[];
+export type RoomInvitationViewResponseFieldPolicy = {
+	inviter_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type UpgradeUserResponseKeySpecifier = ('user' | 'user_id' | UpgradeUserResponseKeySpecifier)[];
 export type UpgradeUserResponseFieldPolicy = {
@@ -10027,9 +10092,8 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('accept_invite' | 'delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invites' | 'delete_room_invites_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invites' | 'insert_room_invites_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invites' | 'update_room_invites_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_full_text_search' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_full_text_search' | 'insert_full_text_search_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_full_text_search' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
-	accept_invite?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10049,8 +10113,8 @@ export type mutation_rootFieldPolicy = {
 	delete_notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_room_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10094,8 +10158,8 @@ export type mutation_rootFieldPolicy = {
 	insert_notification?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_notification_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	insert_room_invites_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_room_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_room_invitation_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_room_one?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10140,8 +10204,8 @@ export type mutation_rootFieldPolicy = {
 	update_notification_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	update_room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_room_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_space?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10210,7 +10274,7 @@ export type notification_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10244,9 +10308,10 @@ export type query_rootFieldPolicy = {
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_view?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_last_posted_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10294,7 +10359,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'is_private' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'room_invites' | 'room_invites_aggregate' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10302,14 +10367,14 @@ export type roomFieldPolicy = {
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
+	invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	is_private?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	members?: FieldPolicy<any> | FieldReadFunction<any>,
 	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10329,51 +10394,58 @@ export type room_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invitesKeySpecifier = ('code' | 'created_at' | 'email' | 'id' | 'inviter' | 'inviter_id' | 'room' | 'room_id' | 'used_at' | room_invitesKeySpecifier)[];
-export type room_invitesFieldPolicy = {
-	code?: FieldPolicy<any> | FieldReadFunction<any>,
+export type room_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'room' | 'room_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user' | 'used_by_user_id' | room_invitationKeySpecifier)[];
+export type room_invitationFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	inviter?: FieldPolicy<any> | FieldReadFunction<any>,
-	inviter_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_by_user?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invites_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_invites_aggregateKeySpecifier)[];
-export type room_invites_aggregateFieldPolicy = {
+export type room_invitation_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_invitation_aggregateKeySpecifier)[];
+export type room_invitation_aggregateFieldPolicy = {
 	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	nodes?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invites_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_invites_aggregate_fieldsKeySpecifier)[];
-export type room_invites_aggregate_fieldsFieldPolicy = {
+export type room_invitation_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_invitation_aggregate_fieldsKeySpecifier)[];
+export type room_invitation_aggregate_fieldsFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invites_max_fieldsKeySpecifier = ('code' | 'created_at' | 'email' | 'id' | 'inviter_id' | 'room_id' | 'used_at' | room_invites_max_fieldsKeySpecifier)[];
-export type room_invites_max_fieldsFieldPolicy = {
-	code?: FieldPolicy<any> | FieldReadFunction<any>,
+export type room_invitation_max_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'room_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user_id' | room_invitation_max_fieldsKeySpecifier)[];
+export type room_invitation_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	inviter_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invites_min_fieldsKeySpecifier = ('code' | 'created_at' | 'email' | 'id' | 'inviter_id' | 'room_id' | 'used_at' | room_invites_min_fieldsKeySpecifier)[];
-export type room_invites_min_fieldsFieldPolicy = {
-	code?: FieldPolicy<any> | FieldReadFunction<any>,
+export type room_invitation_min_fieldsKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user_id' | 'room_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user_id' | room_invitation_min_fieldsKeySpecifier)[];
+export type room_invitation_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	inviter_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	used_at?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	used_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invites_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | room_invites_mutation_responseKeySpecifier)[];
-export type room_invites_mutation_responseFieldPolicy = {
+export type room_invitation_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | room_invitation_mutation_responseKeySpecifier)[];
+export type room_invitation_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -10549,7 +10621,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invites' | 'room_invites_aggregate' | 'room_invites_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'full_text_search' | 'full_text_search_aggregate' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'search_full_text' | 'search_full_text_aggregate' | 'search_full_text_topic' | 'search_full_text_topic_aggregate' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10583,9 +10655,10 @@ export type subscription_rootFieldPolicy = {
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	room_invites_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	room_invitation_view?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_last_posted_message_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_member?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11015,10 +11088,12 @@ export type unread_messages_variance_fieldsKeySpecifier = ('unread_messages' | u
 export type unread_messages_variance_fieldsFieldPolicy = {
 	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'invites' | 'invites_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'notifications' | 'notifications_aggregate' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
+export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_room_invitations' | 'created_room_invitations_aggregate' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'messages' | 'messages_aggregate' | 'name' | 'notifications' | 'notifications_aggregate' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_room_invitations?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_room_invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_team_invitations?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11028,8 +11103,6 @@ export type userFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	invites?: FieldPolicy<any> | FieldReadFunction<any>,
-	invites_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages?: FieldPolicy<any> | FieldReadFunction<any>,
 	messages_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11119,13 +11192,13 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | DownloadUrlResponseKeySpecifier | (() => undefined | DownloadUrlResponseKeySpecifier),
 		fields?: DownloadUrlResponseFieldPolicy,
 	},
-	InviteAcceptResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | InviteAcceptResponseKeySpecifier | (() => undefined | InviteAcceptResponseKeySpecifier),
-		fields?: InviteAcceptResponseFieldPolicy,
-	},
 	LookupTeamNameResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupTeamNameResponseKeySpecifier | (() => undefined | LookupTeamNameResponseKeySpecifier),
 		fields?: LookupTeamNameResponseFieldPolicy,
+	},
+	RoomInvitationViewResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RoomInvitationViewResponseKeySpecifier | (() => undefined | RoomInvitationViewResponseKeySpecifier),
+		fields?: RoomInvitationViewResponseFieldPolicy,
 	},
 	UpgradeUserResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UpgradeUserResponseKeySpecifier | (() => undefined | UpgradeUserResponseKeySpecifier),
@@ -11371,29 +11444,29 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | room_aggregate_fieldsKeySpecifier | (() => undefined | room_aggregate_fieldsKeySpecifier),
 		fields?: room_aggregate_fieldsFieldPolicy,
 	},
-	room_invites?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invitesKeySpecifier | (() => undefined | room_invitesKeySpecifier),
-		fields?: room_invitesFieldPolicy,
+	room_invitation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitationKeySpecifier | (() => undefined | room_invitationKeySpecifier),
+		fields?: room_invitationFieldPolicy,
 	},
-	room_invites_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invites_aggregateKeySpecifier | (() => undefined | room_invites_aggregateKeySpecifier),
-		fields?: room_invites_aggregateFieldPolicy,
+	room_invitation_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitation_aggregateKeySpecifier | (() => undefined | room_invitation_aggregateKeySpecifier),
+		fields?: room_invitation_aggregateFieldPolicy,
 	},
-	room_invites_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invites_aggregate_fieldsKeySpecifier | (() => undefined | room_invites_aggregate_fieldsKeySpecifier),
-		fields?: room_invites_aggregate_fieldsFieldPolicy,
+	room_invitation_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitation_aggregate_fieldsKeySpecifier | (() => undefined | room_invitation_aggregate_fieldsKeySpecifier),
+		fields?: room_invitation_aggregate_fieldsFieldPolicy,
 	},
-	room_invites_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invites_max_fieldsKeySpecifier | (() => undefined | room_invites_max_fieldsKeySpecifier),
-		fields?: room_invites_max_fieldsFieldPolicy,
+	room_invitation_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitation_max_fieldsKeySpecifier | (() => undefined | room_invitation_max_fieldsKeySpecifier),
+		fields?: room_invitation_max_fieldsFieldPolicy,
 	},
-	room_invites_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invites_min_fieldsKeySpecifier | (() => undefined | room_invites_min_fieldsKeySpecifier),
-		fields?: room_invites_min_fieldsFieldPolicy,
+	room_invitation_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitation_min_fieldsKeySpecifier | (() => undefined | room_invitation_min_fieldsKeySpecifier),
+		fields?: room_invitation_min_fieldsFieldPolicy,
 	},
-	room_invites_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | room_invites_mutation_responseKeySpecifier | (() => undefined | room_invites_mutation_responseKeySpecifier),
-		fields?: room_invites_mutation_responseFieldPolicy,
+	room_invitation_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_invitation_mutation_responseKeySpecifier | (() => undefined | room_invitation_mutation_responseKeySpecifier),
+		fields?: room_invitation_mutation_responseFieldPolicy,
 	},
 	room_last_posted_message?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_last_posted_messageKeySpecifier | (() => undefined | room_last_posted_messageKeySpecifier),

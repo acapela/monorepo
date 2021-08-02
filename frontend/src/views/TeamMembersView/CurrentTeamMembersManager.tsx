@@ -4,7 +4,7 @@ import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { InviteMemberForm } from "./InviteMemberForm";
-import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
+import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 

@@ -57,4 +57,5 @@ const UIHolder = styled(PresenceAnimator)<{ type: ToastType }>`
 const UIContent = styled.div<{}>`
   margin-right: 24px;
   flex: 1;
+  text-align: center;
 `;

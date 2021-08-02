@@ -8,13 +8,15 @@ import { findUserById, getNormalizedUserName } from "../users/users";
 import { TeamInvitationNotification } from "./InviteNotification";
 
 export async function handleTeamInvitationCreated({ item: invite, userId }: HasuraEvent<TeamInvitation>) {
-  const { team_id: teamId, inviting_user_id: invitingUserId } = invite;
+  const { team_id: teamId, inviting_user_id: invitingUserId, used_at } = invite;
 
   if (userId !== invitingUserId) {
     throw new UnprocessableEntityError(
       `Inviter id: ${invitingUserId} does not match user making the modification: ${userId}`
     );
   }
+
+  if (used_at) return;
 
   const [team, inviter] = await Promise.all([findTeamById(teamId), findUserById(invitingUserId)]);
 

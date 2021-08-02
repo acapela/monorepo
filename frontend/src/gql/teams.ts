@@ -8,8 +8,6 @@ import {
   TeamDetailsQueryVariables,
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables,
-  TeamInvitationQuery,
-  TeamInvitationQueryVariables,
   TeamBasicInfoQuery,
   TeamBasicInfoQueryVariables,
   TeamBasicInfoFragment as TeamBasicInfoFragmentType,
@@ -20,6 +18,8 @@ import {
   RemoveTeamInvitationMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
+  LookupTeamNameQuery,
+  LookupTeamNameQueryVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -200,19 +200,6 @@ export const [useRemoveTeamInvitation, { mutate: removeTeamInvitation }] = creat
   }
 );
 
-export const [useTeamInvitationByTokenQuery] = createQuery<TeamInvitationQuery, TeamInvitationQueryVariables>(
-  () => gql`
-    query TeamInvitation($tokenId: uuid!) {
-      team_invitation(where: { token: { _eq: $tokenId } }) {
-        id
-        team_id
-        token
-        used_by_user_id
-      }
-    }
-  `
-);
-
 export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutation<
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables
@@ -244,4 +231,15 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
       addToast({ type: "info", content: `Team member was removed` });
     },
   }
+);
+
+export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQueryVariables>(
+  () => gql`
+    query LookupTeamName($token: String!) {
+      invite: lookup_team_name(token: $token) {
+        team_name
+        inviter_name
+      }
+    }
+  `
 );
