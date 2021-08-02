@@ -33,7 +33,6 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
 import { getUUID } from "~shared/uuid";
-import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { slugify } from "~shared/slugify";
 import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
@@ -115,7 +114,7 @@ export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQ
   `
 );
 
-export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
+export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 
@@ -205,6 +204,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           id: input.id!,
           members: [],
           topics: [],
+          invitations: [],
           is_private: input.is_private ?? false,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: input.name!,
@@ -300,18 +300,23 @@ export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
     }
   `,
   {
-    optimisticResponse(vars) {
-      const { name, slug, summary, deadline, finished_at } = removeUndefinedFromObject(vars.input);
-      const inputToReplace = removeUndefinedFromObject({ name, slug, summary, deadline, finished_at });
+    optimisticResponse({ input, roomId }) {
+      const existingData = RoomDetailedInfoFragment.assertRead(roomId);
 
-      const existingData = RoomDetailedInfoFragment.assertRead(vars.roomId);
       return {
         __typename: "mutation_root",
         room: {
           __typename: "room",
           ...existingData,
-          ...inputToReplace,
-          deadline: deadline ?? existingData.deadline,
+          deadline: input.deadline ?? existingData.deadline,
+          is_private: input.is_private ?? existingData.is_private,
+          name: input.name ?? existingData.name,
+          summary: input.summary !== undefined ? input.summary : existingData.summary,
+          finished_at: input.finished_at !== undefined ? input.finished_at : existingData.finished_at,
+          source_google_calendar_event_id:
+            input.source_google_calendar_event_id !== undefined
+              ? input.source_google_calendar_event_id
+              : existingData.source_google_calendar_event_id,
         },
       };
     },
@@ -338,10 +343,8 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
       };
     },
     onOptimisticOrActualResponse(removedRoom) {
-      if (!removedRoom.space_id) return;
-      SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
-        space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
-      });
+      console.log("delete room callback");
+      RoomDetailedInfoFragment.removeFromCache(removedRoom.id);
     },
   }
 );
@@ -356,5 +359,24 @@ export const [useCloseOpenTopicsMutation] = createMutation<CloseOpenTopicsMutati
         affected_rows
       }
     }
-  `
+  `,
+  {
+    onOptimisticOrActualResponse(data, vars) {
+      const room = RoomDetailedInfoFragment.read(vars.roomId);
+
+      if (!room) return;
+
+      const user = vars.closedByUserId ? UserBasicInfoFragment.read(vars.closedByUserId) : null;
+
+      room.topics.forEach((topic) => {
+        TopicDetailedInfoFragment.update(topic.id, (topic) => {
+          if (topic.closed_by_user?.id !== vars.closedByUserId) {
+            topic.closed_by_user = user;
+          }
+
+          topic.closed_at = vars.closedAt;
+        });
+      });
+    },
+  }
 );

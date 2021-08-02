@@ -177,5 +177,19 @@ export const [useDeleteTextMessageMutation] = createMutation<
         }
       }
     }
-  `
+  `,
+  {
+    optimisticResponse(variables) {
+      return {
+        __typename: "mutation_root",
+        delete_message: {
+          __typename: "message_mutation_response",
+          message: [{ __typename: "message", id: variables.id }],
+        },
+      };
+    },
+    onOptimisticOrActualResponse(_data, variables) {
+      MessageDetailedInfoFragment.removeFromCache(variables.id);
+    },
+  }
 );

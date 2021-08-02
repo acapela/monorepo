@@ -2,8 +2,10 @@ import { DocumentNode } from "@apollo/client";
 import { FragmentDefinitionNode } from "graphql";
 import produceWithImmer, { Draft } from "immer";
 import { memoize } from "lodash";
+import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { assert } from "~shared/assert";
-import { getCurrentApolloClientHandler } from "./proxy";
+import { getCurrentApolloClientCache } from "./proxy";
+import { markItemAsRemoved } from "./removeItems";
 
 /**
  * This creates type-safe wrapper around graphql fragment wrapper.
@@ -102,6 +104,28 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
   }
 
   /**
+   * Will entirely remove object of given type with given id from the cache.
+   *
+   * It means it'll also be removed from all the arrays or queries that referenced this item
+   * Note: it is actually not instantly removed, but filtered by Apollo automatically (good read - https://www.apollographql.com/docs/react/caching/garbage-collection/#dangling-references)
+   */
+  function removeFromCache(idValue: string) {
+    const fullId = getFragmentId(idValue);
+
+    const client = getCurrentApolloClientCache();
+    getRenderedApolloClient().cache.evict({ id: fullId, broadcast: true });
+    markItemAsRemoved(fullId);
+
+    console.log("removing", { fullId });
+
+    const f = client.evict({ id: fullId, broadcast: true });
+    const b = client.evict({ id: idValue, broadcast: true });
+    client.gc();
+
+    console.log({ f, b });
+  }
+
+  /**
    * Will create fragment-like data new object as a clone of already cached data with some modifications applied.
    *
    * Useful for passing full object data with slight modifications to eg. optimistic updates.
@@ -128,7 +152,7 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
   function read(id: string) {
     const fullId = getFragmentId(id);
 
-    const client = getCurrentApolloClientHandler();
+    const client = getCurrentApolloClientCache();
     return client.readFragment<Data>({ id: fullId, fragment: getFragment(), fragmentName: getPrimaryFragmentName() });
   }
 
@@ -152,7 +176,7 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
    */
   function write(id: string, data: Data) {
     const fullId = getFragmentId(id);
-    const client = getCurrentApolloClientHandler();
+    const client = getCurrentApolloClientCache();
 
     return client.writeFragment<Data>({
       id: fullId,
@@ -188,6 +212,7 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
   getFragmentDefinition.assertRead = assertRead;
   getFragmentDefinition.getFragmentId = getFragmentId;
   getFragmentDefinition.produce = produce;
+  getFragmentDefinition.removeFromCache = removeFromCache;
 
   return getFragmentDefinition;
 }

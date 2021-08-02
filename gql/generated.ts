@@ -4337,6 +4337,8 @@ export interface Room_Invitation {
   /** An object relationship */
   room: Room;
   room_id: Scalars['uuid'];
+  /** An object relationship */
+  team: Team;
   team_id: Scalars['uuid'];
   token: Scalars['uuid'];
   used_at?: Maybe<Scalars['date']>;
@@ -4392,6 +4394,7 @@ export interface Room_Invitation_Bool_Exp {
   inviting_user_id?: Maybe<Uuid_Comparison_Exp>;
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
+  team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
   token?: Maybe<Uuid_Comparison_Exp>;
   used_at?: Maybe<Date_Comparison_Exp>;
@@ -4415,6 +4418,7 @@ export interface Room_Invitation_Insert_Input {
   inviting_user_id?: Maybe<Scalars['uuid']>;
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
   token?: Maybe<Scalars['uuid']>;
   used_at?: Maybe<Scalars['date']>;
@@ -4507,6 +4511,7 @@ export interface Room_Invitation_Order_By {
   inviting_user_id?: Maybe<Order_By>;
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
+  team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
   token?: Maybe<Order_By>;
   used_at?: Maybe<Order_By>;
@@ -10394,7 +10399,7 @@ export type room_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'room' | 'room_id' | 'team_id' | 'token' | 'used_at' | 'used_by_user' | 'used_by_user_id' | room_invitationKeySpecifier)[];
+export type room_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'room' | 'room_id' | 'team' | 'team_id' | 'token' | 'used_at' | 'used_by_user' | 'used_by_user_id' | room_invitationKeySpecifier)[];
 export type room_invitationFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10403,6 +10408,7 @@ export type room_invitationFieldPolicy = {
 	inviting_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	used_at?: FieldPolicy<any> | FieldReadFunction<any>,

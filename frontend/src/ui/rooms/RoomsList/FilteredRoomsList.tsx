@@ -11,7 +11,8 @@ interface Props {
 }
 
 export const RoomsListGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
-  const [rooms = []] = useRoomsQuery(query);
+  const [rooms = []] = useRoomsQuery(query, { debug: "filtered rooms list" });
+
   const user = useAssertCurrentUser();
 
   const [joinedRooms, notJoinedRooms] = groupByFilter<RoomDetailedInfoFragment>(rooms, (room) => {

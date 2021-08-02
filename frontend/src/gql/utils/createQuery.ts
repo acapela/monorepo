@@ -3,24 +3,30 @@ import {
   QueryHookOptions,
   QueryOptions,
   SubscriptionHookOptions,
+  useApolloClient,
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
 import produce, { Draft } from "immer";
 import { memoize } from "lodash";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { VoidableIfEmpty } from "~shared/types";
 import { reportQueryUsage } from "./hydration";
 import { unwrapQueryData } from "./unwrapQueryData";
-import { getCurrentApolloClientHandler } from "./proxy";
+import { getCurrentApolloClientCache } from "./proxy";
 import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
 import { waitForAllRunningMutationsToFinish } from "./createMutation";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+import { ensureNoRemovedItemInCache } from "./removeItems";
 
 type QueryDefinitionOptions = RequestWithRole;
 
 type QueryExecutionOptions = Omit<QueryOptions, "query" | "variables">;
+
+interface SharedHookOptions {
+  debug?: string;
+}
 
 export function createQuery<Data, Variables>(
   query: () => DocumentNode,
@@ -52,7 +58,11 @@ export function createQuery<Data, Variables>(
     return [unwrapQueryData(data), rest] as const;
   }
 
-  function useAsSubscription(variables: VoidableVariables, options?: SubscriptionHookOptions<Data, Variables>) {
+  function useAsSubscription(
+    variables: VoidableVariables,
+    options?: SubscriptionHookOptions<Data, Variables> & SharedHookOptions
+  ) {
+    const apolloClient = useApolloClient();
     const [queryData] = useQuery(variables, options);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...{
@@ -125,10 +135,29 @@ export function createQuery<Data, Variables>(
 
         if (getIsCancelled()) return;
 
-        write(variables as Variables, subscriptionResult.data);
+        if (options?.debug) {
+          console.info(`subscription effect ${options.debug}`, subscriptionResult.data);
+        }
+
+        write(
+          variables as Variables,
+          subscriptionResult.data,
+          // We only want to update the cache for next time useQuery will be used, not to re-render other components now.
+          false
+        );
       },
       [subscriptionResult.data]
     );
+
+    const client = useApolloClient();
+
+    useEffect(() => {
+      ensureNoRemovedItemInCache(client.cache);
+    }, [data]);
+
+    if (options?.debug) {
+      console.info(`${options.debug}`, { data, queryData, subscriptionData: subscriptionResult.data });
+    }
 
     return [data, subscriptionResult] as const;
   }
@@ -137,7 +166,7 @@ export function createQuery<Data, Variables>(
   useAsSubscription.requestPrefetch = requestPrefetch;
 
   function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
-    const client = getCurrentApolloClientHandler();
+    const client = getCurrentApolloClientCache();
     const currentData = client.readQuery<Data, Variables>({ query: getQuery(), variables });
 
     if (currentData === null) {
@@ -153,12 +182,20 @@ export function createQuery<Data, Variables>(
     client.writeQuery({ query: getQuery(), variables, data: newData });
   }
 
-  function write(variables: Variables, data: Data) {
-    getCurrentApolloClientHandler().writeQuery<Data, Variables>({ query: getQuery(), variables, data });
+  function write(variables: Variables, data: Data, broadcast?: boolean) {
+    getCurrentApolloClientCache().writeQuery<Data, Variables>({ query: getQuery(), variables, data, broadcast });
   }
 
   function read(variables: Variables) {
-    return getCurrentApolloClientHandler().readQuery<Data, Variables>({ query: getQuery(), variables });
+    console.log(getCurrentApolloClientCache());
+    return getCurrentApolloClientCache().readQuery<Data, Variables>({ query: getQuery(), variables });
+  }
+
+  function readAll() {
+    getCurrentApolloClientCache();
+    return getCurrentApolloClientCache().readQuery<Data, Variables>({ query: getQuery() });
+
+    getCurrentApolloClientCache();
   }
 
   async function fetch(variables: Variables, options?: QueryExecutionOptions) {

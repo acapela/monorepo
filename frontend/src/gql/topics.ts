@@ -273,6 +273,30 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
         input.slug = slugify(input.name);
       }
     },
+    optimisticResponse({ input, topicId }) {
+      const existingData = TopicDetailedInfoFragment.assertRead(topicId);
+
+      function closedByUser() {
+        if (input.closed_by_user_id) {
+          return UserBasicInfoFragment.assertRead(input.closed_by_user_id);
+        }
+
+        return existingData.closed_by_user;
+      }
+
+      return {
+        __typename: "mutation_root",
+        topic: {
+          __typename: "topic",
+          ...existingData,
+          name: input.name ?? existingData.name,
+          slug: input.slug ?? existingData.slug,
+          closed_at: input.closed_at !== undefined ? input.closed_at : existingData.closed_at,
+          closed_by_user: closedByUser(),
+          index: input.index ?? existingData.index,
+        },
+      };
+    },
   }
 );
 
@@ -292,11 +316,8 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
       return { __typename: "mutation_root", topic };
     },
     onOptimisticOrActualResponse(removedTopic) {
-      RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {
-        room.topics = room.topics.filter((topic) => topic.id !== removedTopic.id);
-      });
+      TopicDetailedInfoFragment.removeFromCache(removedTopic.id);
     },
-
     onActualResponse() {
       addToast({ type: "info", content: `Topic was removed` });
     },
