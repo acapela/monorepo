@@ -16,7 +16,8 @@
       "db",
       "tooling",
       "richEditor",
-      "gql"
+      "gql",
+      "end-to-end-tests"
     ]
   },
   "scripts": {
