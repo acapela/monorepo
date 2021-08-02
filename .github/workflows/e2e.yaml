@@ -24,8 +24,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn install
-      - run: yarn generate
+      - run: yarn --prefer-offline
+      - run: npx playwright install
+      - run: yarn workspace ~db generate
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
@@ -41,7 +42,8 @@ jobs:
         run: |
           yarn workspace ~frontend next:build
           yarn workspace ~frontend start:ci
-      - name: Test
+      - name: Test Connection
         run: |
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
+      - run: yarn e2e-tests test
