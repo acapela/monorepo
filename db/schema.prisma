@@ -74,21 +74,21 @@ model message_type {
 }
 
 model room {
-  id                              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  creator_id                      String         @db.Uuid
+  id                              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  creator_id                      String            @db.Uuid
   name                            String
-  created_at                      DateTime       @default(now()) @db.Timestamptz(6)
-  deadline                        DateTime       @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
+  created_at                      DateTime          @default(now()) @db.Timestamptz(6)
+  deadline                        DateTime          @default(dbgenerated("date_trunc('hour'::text, (now() + '7 days'::interval))")) @db.Timestamptz(6)
   notification_job_id             String?
   summary                         String?
-  finished_at                     DateTime?      @db.Timestamptz(6)
-  space_id                        String         @db.Uuid
+  finished_at                     DateTime?         @db.Timestamptz(6)
+  space_id                        String            @db.Uuid
   slug                            String
   source_google_calendar_event_id String?
-  is_private                      Boolean        @default(false)
-  user                            user           @relation(fields: [creator_id], references: [id])
-  space                           space          @relation(fields: [space_id], references: [id])
-  room_invites                    room_invites[]
+  is_private                      Boolean           @default(false)
+  user                            user              @relation(fields: [creator_id], references: [id])
+  space                           space             @relation(fields: [space_id], references: [id])
+  room_invitation                 room_invitation[]
   room_member                     room_member[]
   topic                           topic[]
 
@@ -133,6 +133,7 @@ model team {
   name                            String
   owner_id                        String            @db.Uuid
   user_team_owner_idTouser        user              @relation("team_owner_idTouser", fields: [owner_id], references: [id])
+  room_invitation                 room_invitation[]
   space                           space[]
   team_invitation                 team_invitation[]
   team_member                     team_member[]
@@ -205,28 +206,29 @@ model transcription_status {
 }
 
 model user {
-  id                                                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email                                                 String?             @unique
-  name                                                  String?
-  avatar_url                                            String?
-  created_at                                            DateTime            @default(now()) @db.Timestamptz(6)
-  email_verified                                        DateTime?           @db.Timestamptz(6)
-  current_team_id                                       String?             @db.Uuid
-  team_teamTouser_current_team_id                       team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
-  account                                               account[]
-  last_seen_message                                     last_seen_message[]
-  message                                               message[]
-  message_reaction                                      message_reaction[]
-  notification                                          notification[]
-  room                                                  room[]
-  room_invites                                          room_invites[]
-  room_member                                           room_member[]
-  space_member                                          space_member[]
-  team_team_owner_idTouser                              team[]              @relation("team_owner_idTouser")
-  team_invitation                                       team_invitation[]
-  team_invitation_team_invitation_used_by_user_idTouser team_invitation[]   @relation("team_invitation_used_by_user_idTouser")
-  team_member                                           team_member[]
-  topic_member                                          topic_member[]
+  id                                                     String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                                  String?             @unique
+  name                                                   String?
+  avatar_url                                             String?
+  created_at                                             DateTime            @default(now()) @db.Timestamptz(6)
+  email_verified                                         DateTime?           @db.Timestamptz(6)
+  current_team_id                                        String?             @db.Uuid
+  team_teamTouser_current_team_id                        team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
+  account                                                account[]
+  last_seen_message                                      last_seen_message[]
+  message                                                message[]
+  message_reaction                                       message_reaction[]
+  notification                                           notification[]
+  room                                                   room[]
+  room_invitation_room_invitation_inviting_user_idTouser room_invitation[]   @relation("room_invitation_inviting_user_idTouser")
+  room_invitation_room_invitation_used_by_user_idTouser  room_invitation[]   @relation("room_invitation_used_by_user_idTouser")
+  room_member                                            room_member[]
+  space_member                                           space_member[]
+  team_team_owner_idTouser                               team[]              @relation("team_owner_idTouser")
+  team_invitation                                        team_invitation[]
+  team_invitation_team_invitation_used_by_user_idTouser  team_invitation[]   @relation("team_invitation_used_by_user_idTouser")
+  team_member                                            team_member[]
+  topic_member                                           topic_member[]
 }
 
 model verification_requests {
@@ -264,16 +266,18 @@ model notification {
   user       user      @relation(fields: [user_id], references: [id])
 }
 
-model room_invites {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  room_id    String    @db.Uuid
-  inviter_id String    @db.Uuid
-  code       String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email      String
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
-  used_at    DateTime? @db.Timestamptz(6)
-  user       user      @relation(fields: [inviter_id], references: [id])
-  room       room      @relation(fields: [room_id], references: [id])
-
-  @@unique([room_id, email], name: "room_invites_room_id_email_key")
+model room_invitation {
+  id                                          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                       String
+  used_at                                     DateTime? @db.Date
+  token                                       String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at                                  DateTime  @default(now()) @db.Timestamptz(6)
+  inviting_user_id                            String    @db.Uuid
+  used_by_user_id                             String?   @db.Uuid
+  room_id                                     String    @db.Uuid
+  team_id                                     String    @db.Uuid
+  user_room_invitation_inviting_user_idTouser user      @relation("room_invitation_inviting_user_idTouser", fields: [inviting_user_id], references: [id])
+  room                                        room      @relation(fields: [room_id], references: [id])
+  team                                        team      @relation(fields: [team_id], references: [id])
+  user_room_invitation_used_by_user_idTouser  user?     @relation("room_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
 }
