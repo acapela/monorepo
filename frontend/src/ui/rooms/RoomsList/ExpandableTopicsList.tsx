@@ -9,6 +9,7 @@ import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
 import { TopicCard } from "./TopicCard";
 import { useExpandableListToggle } from "./useExpandableListToggle";
+import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
 
 interface Props {
   roomId: string;
@@ -44,6 +45,7 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
     await startCreateNewTopicFlow({
       roomId: roomId,
       navigateAfterCreation: true,
+      index: getIndexBetweenCurrentAndLast(topics[topics.length - 1]?.index ?? ""),
     });
   }
 

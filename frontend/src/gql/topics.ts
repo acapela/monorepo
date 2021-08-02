@@ -30,6 +30,10 @@ import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 
+function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
+  topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
+}
+
 export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
   () => gql`
     ${UserBasicInfoFragment()}
@@ -116,6 +120,7 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
     onOptimisticOrActualResponse(topic, variables) {
       RoomDetailedInfoFragment.update(variables.input.room_id!, (data) => {
         data.topics.push(topic);
+        optimisticallySortTopics(data.topics);
       });
     },
   }
@@ -272,6 +277,11 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
       if (input.name && !input.slug) {
         input.slug = slugify(input.name);
       }
+    },
+    onOptimisticOrActualResponse(topic) {
+      RoomDetailedInfoFragment.update(topic.room.id, (data) => {
+        optimisticallySortTopics(data.topics);
+      });
     },
   }
 );
