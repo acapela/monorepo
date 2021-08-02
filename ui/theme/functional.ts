@@ -1,14 +1,14 @@
 import styled from "styled-components";
-import { injectProps } from "~shared/components/injectProps";
+import { theme } from "~ui/theme";
 import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
-import { TextBody14, TextH2, TextH3 } from "./typography";
 
 /**
  * The goal of this module is to create functional text styles that are used in multiple similar use cases.
- *
  */
 
-export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true }))<{}>`
+export const EntityKindLabel = styled.div<{}>`
+  ${theme.font.body14.speziaMono.build}
+
   color: ${PRIMARY_PINK_1};
   letter-spacing: 0.4em;
 
@@ -23,8 +23,17 @@ export const EntityKindLabel = styled(injectProps(TextBody14, { speziaMono: true
   }
 `;
 
-export const HeroItemTitle = injectProps(TextH2, { speziaExtended: true });
+export const HeroItemTitle = styled.div`
+  ${theme.font.h2.speziaExtended.build}
+`;
 
-export const PrimaryItemTitle = injectProps(TextH3, { speziaExtended: true });
+export const PrimaryItemTitle = styled.div`
+  ${theme.font.h3.speziaExtended.build}
+`;
 
-export const CategoryNameLabel = injectProps(TextBody14, { speziaMono: true, secondary: true });
+export const CategoryNameLabel = styled.div`
+  ${theme.font.body14.speziaMono.build}
+  color: ${theme.colors.layout.supportingText};
+  /* TODO: move to a functional theme method. */
+  opacity: 0.6;
+`;
