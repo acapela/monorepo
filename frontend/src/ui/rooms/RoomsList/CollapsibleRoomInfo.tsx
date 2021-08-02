@@ -11,7 +11,6 @@ import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 import { CardBase } from "~ui/card/Base";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { IconBox, IconCalendarDates, IconComment2Dots } from "~ui/icons";
 import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
@@ -75,12 +74,11 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
             </UIRoomMetaData>
           </UIHeadPrimary>
         </UIHead>
-
-        <UICollapsedItems isOpen={isOpen}>
-          <ClientSideOnly>
+        {isOpen && (
+          <UICollapsedItems>
             <ExpandableTopicsList topics={topics} roomId={room.id} isAbleToAddTopic={isAbleToAddTopic} />
-          </ClientSideOnly>
-        </UICollapsedItems>
+          </UICollapsedItems>
+        )}
       </UIIndentBody>
     </UIHolder>
   );
@@ -125,7 +123,6 @@ const UIRoomMetaData = styled.div<{}>`
   padding-top: 16px;
 `;
 
-const UICollapsedItems = styled.div<{ isOpen: boolean }>`
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+const UICollapsedItems = styled.div<{}>`
   margin-top: 32px;
 `;
