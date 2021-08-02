@@ -72,14 +72,14 @@ export const MembersManager = styled(function MembersManager({
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   margin-top: 4px;
   display: flex;
   align-items: center;
   width: 100%;
 `;
 
-const UIMembers = styled.div`
+const UIMembers = styled.div<{}>`
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4px;
@@ -88,7 +88,7 @@ const UIMembers = styled.div`
   cursor: pointer;
 `;
 
-const UIActions = styled.div`
+const UIActions = styled.div<{}>`
   flex: 1;
   display: flex;
   justify-content: flex-end;

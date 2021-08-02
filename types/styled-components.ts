@@ -45,7 +45,7 @@
  *
  * so for example
  *
- * const Div = styled.div``;
+ * const Div = styled.div<{}>``;
  *
  * <Div as="p" {...props} />
  *
@@ -53,7 +53,7 @@
  *
  * Solution to this is using `withComponent`:
  *
- * const Div = styled.div``;
+ * const Div = styled.div<{}>``;
  * const P = Div.withComponent('p');
  *
  * const <P {...props} />
@@ -108,7 +108,7 @@ declare module "styled-components" {
   export default styled;
 
   /**
-   * Styled component eg Foo = styled.div``
+   * Styled component eg Foo = styled.div<{}>``
    */
 
   export interface ThemeProps {
@@ -236,7 +236,7 @@ declare module "styled-components" {
     | InterpolationStaticValue
     | ReadonlyArray<InterpolationStaticValue | ReadonlyArray<InterpolationStaticValue>>;
 
-  // Styled component interpolation is for creating selectors using other styled components. eg styled.div`& ${OtherComponent} { color: red }`
+  // Styled component interpolation is for creating selectors using other styled components. eg styled.div<{}>`& ${OtherComponent} { color: red }`
   // We're doing some TS magic here to allow TS to distinguish functional styled components (technically functions) from functions inside style definition (and to infer the props if needed).
   type StyledComponentInterpolation = Pick<AnyStyledComponent, keyof AnyStyledComponent>;
 

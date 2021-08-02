@@ -31,7 +31,7 @@ export const Breadcrumb = ({ href, icon, title, isSelected = false }: Props) => 
   return breadcrumbElement;
 };
 
-const UITitle = styled.div``;
+const UITitle = styled.div<{}>``;
 
 const UIHolder = styled.div<{ isClickable: boolean; isSelected: boolean }>`
   display: flex;

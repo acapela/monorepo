@@ -2,7 +2,7 @@ import { ChangeEventHandler, InputHTMLAttributes, RefObject, useCallback, useRef
 import styled from "styled-components";
 import { borderRadius } from "./baseStyles";
 
-export const Field = styled.input`
+export const Field = styled.input<{}>`
   font: inherit;
   width: 100%;
   font-weight: 500;

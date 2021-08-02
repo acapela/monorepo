@@ -72,4 +72,4 @@ function useInvitationAcceptedCallback(token: string, callback: () => void) {
   }, [isSuccessfullyAccepted, callback]);
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;

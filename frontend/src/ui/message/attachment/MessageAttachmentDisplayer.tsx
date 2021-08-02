@@ -15,8 +15,8 @@ interface AttachmentProps {
   onClick?: () => void;
 }
 
-export const MessageAttachmentDisplayer = styled(
-  ({ mediaRef, attachment, className, attachmentUrl, onClick }: AttachmentProps) => {
+export const MessageAttachmentDisplayer = styled<AttachmentProps>(
+  ({ mediaRef, attachment, className, attachmentUrl, onClick }) => {
     const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
     function renderAttachment(): ReactNode {
@@ -67,13 +67,13 @@ export const MessageAttachmentDisplayer = styled(
   }
 )``;
 
-const UIHolder = styled(motion.div)`
+const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;
   min-width: 0;
   display: flex;
 `;
 
-const ImageWrapper = styled.img`
+const ImageWrapper = styled.img<{}>`
   max-height: 100%;
   /* Allow parent to control max-height so it can be used both for fullscreen and inline displaying. */
   max-height: inherit;
@@ -87,7 +87,7 @@ const ImageWrapper = styled.img`
   object-fit: scale-down;
 `;
 
-const PlayableMediaWrapper = styled.div`
+const PlayableMediaWrapper = styled.div<{}>`
   max-height: 100%;
 
   audio,

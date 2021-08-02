@@ -76,7 +76,7 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -102,17 +102,17 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
   box-shadow: ${theme.shadow.topBar};
 `;
 
-const UIBreadcrumbsHolder = styled.div`
+const UIBreadcrumbsHolder = styled.div<{}>`
   flex: 1;
   justify-self: flex-start;
 `;
 
-const UIPrimaryNavigation = styled.div`
+const UIPrimaryNavigation = styled.div<{}>`
   align-self: center;
   justify-self: center;
 `;
 
-const UILogo = styled.a`
+const UILogo = styled.a<{}>`
   display: block;
   font-size: 1.5rem;
   margin-right: 32px;
@@ -122,7 +122,7 @@ const UILogo = styled.a`
   }
 `;
 
-const UITopbarTools = styled.div`
+const UITopbarTools = styled.div<{}>`
   margin-left: 32px;
 
   display: flex;
@@ -133,7 +133,7 @@ const UITopbarTools = styled.div`
   gap: 24px;
 `;
 
-const UIMainContent = styled.div`
+const UIMainContent = styled.div<{}>`
   padding-bottom: 0;
   min-height: 0;
   overflow-y: auto;

@@ -22,8 +22,8 @@ interface AttachmentProps {
   className?: string;
 }
 
-export const MessageAttachment = styled(
-  ({ attachment, selectedMediaTime, onMediaTimeUpdate, className, onAttachmentRemoveRequest }: AttachmentProps) => {
+export const MessageAttachment = styled<AttachmentProps>(
+  ({ attachment, selectedMediaTime, onMediaTimeUpdate, className, onAttachmentRemoveRequest }) => {
     const mediaRef = useRef<HTMLVideoElement>(null);
     const user = useCurrentUser();
     const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
@@ -93,11 +93,11 @@ export const MessageAttachment = styled(
   }
 )``;
 
-const UILoadingPlaceholder = styled.div`
+const UILoadingPlaceholder = styled.div<{}>`
   height: 100%;
 `;
 
-const UIInlineAttachmentHolder = styled.div`
+const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;
   position: relative;
   ${theme.borderRadius.item}

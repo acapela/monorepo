@@ -17,6 +17,6 @@ export const SearchInput = styled(
   })
 )``;
 
-const Input = styled(TextInput)`
+const Input = styled(TextInput)<{}>`
   padding-left: 2.25rem;
 `;

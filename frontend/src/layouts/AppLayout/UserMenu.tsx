@@ -34,7 +34,7 @@ export function UserMenu() {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;

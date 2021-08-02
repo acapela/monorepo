@@ -35,7 +35,7 @@ const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, r
   );
 });
 
-export const SearchBar = styled(PureSearchBar)`
+export const SearchBar = styled(PureSearchBar)<{}>`
   position: relative;
   background: ${WHITE};
 

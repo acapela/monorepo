@@ -11,7 +11,7 @@ export const PrimaryNavigation = () => (
   </UINav>
 );
 
-const UINav = styled.nav`
+const UINav = styled.nav<{}>`
   display: flex;
   gap: 8px;
 `;

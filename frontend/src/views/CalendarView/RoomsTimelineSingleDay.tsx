@@ -142,13 +142,13 @@ export const RoomsTimelineSingleDay = styled(function RoomsTimelineSingleDay({
   );
 })``;
 
-const UIHolder = styled(motion.div)``;
+const UIHolder = styled(motion.div)<{}>``;
 
-const UITitle = styled(TextH3)`
+const UITitle = styled(TextH3)<{}>`
   margin-bottom: 16px;
 `;
 
-const UIList = styled.div`
+const UIList = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 16px;

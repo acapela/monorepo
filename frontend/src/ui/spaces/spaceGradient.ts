@@ -19,7 +19,7 @@ export const SpaceGradient = styled.div<{ spaceId: string }>`
   ${(props) => getSpaceBackgroundGradientStyle(props.spaceId)}
 `;
 
-export const SpaceGradientIcon = styled(SpaceGradient)`
+export const SpaceGradientIcon = styled(SpaceGradient)<{}>`
   height: 1em;
   width: 1em;
   ${borderRadius.label}

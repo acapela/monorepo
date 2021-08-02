@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-export const TopicSummaryMessage = styled(({ className, topic }: Props) => {
+export const TopicSummaryMessage = styled<Props>(({ className, topic }) => {
   const closeInfo = getTopicCloseInfo(topic);
 
   if (!closeInfo) {
@@ -37,7 +37,7 @@ export const TopicSummaryMessage = styled(({ className, topic }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 10px;
 
   background: #f0faf5;
@@ -45,11 +45,11 @@ const UIHolder = styled.div`
   ${borderRadius.card}
 `;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   font-weight: bold;
 `;
 
-const UISummary = styled.div`
+const UISummary = styled.div<{}>`
   margin-top: 16px;
 
   ${Badge} {

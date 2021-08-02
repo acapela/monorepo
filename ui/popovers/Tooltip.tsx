@@ -24,7 +24,7 @@ createWindowEvent(
   { capture: true }
 );
 
-export const Tooltip = styled((props: TooltipLabelProps) => {
+export const Tooltip = styled<TooltipLabelProps>((props) => {
   const id = useId();
 
   const isActive = activeTooltipIdChannel.useLastValueSelector<boolean>((activeTooltipId) => activeTooltipId === id);

@@ -36,7 +36,7 @@ export const openConfirmPrompt = createPromiseUI<PromptInput, PromptResult>(
   }
 );
 
-const UIContentWrapper = styled.div`
+const UIContentWrapper = styled.div<{}>`
   display: flex;
   justify-content: space-between;
   margin-top: 16px;

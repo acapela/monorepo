@@ -31,4 +31,4 @@ export const openNotFoundModal = createPromiseUI<PromptInput, PromptResult>(({ p
   );
 });
 
-const UICloseButton = styled(Button)``;
+const UICloseButton = styled(Button)<{}>``;

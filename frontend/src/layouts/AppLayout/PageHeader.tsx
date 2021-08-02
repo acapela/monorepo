@@ -18,7 +18,7 @@ export function PageHeader({ title, actionsNode }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   margin-bottom: 40px;
@@ -28,4 +28,4 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIActions = styled.div``;
+const UIActions = styled.div<{}>``;

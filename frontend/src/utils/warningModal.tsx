@@ -41,7 +41,7 @@ export const WarningModal = ({
   );
 };
 
-const UIContentWrapper = styled.div`
+const UIContentWrapper = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,17 +51,17 @@ const UIContentWrapper = styled.div`
   max-width: 480px;
 `;
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   padding: 0 48px;
 `;
 
-const UIWarningHeader = styled(TextH2)`
+const UIWarningHeader = styled(TextH2)<{}>`
   padding-bottom: 8px;
   color: ${WARNING_COLOR};
 `;
 
-const UIWarningTitle = styled(TextH2)``;
+const UIWarningTitle = styled(TextH2)<{}>``;
 
-const UIForbiddenAccessDescription = styled.p`
+const UIForbiddenAccessDescription = styled.p<{}>`
   line-height: 1.5;
 `;

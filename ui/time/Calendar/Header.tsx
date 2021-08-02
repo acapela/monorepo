@@ -58,14 +58,14 @@ export function Header({ currentMonthDate, onMonthChange }: Props) {
   );
 }
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;
   flex: 1;
 `;
 
-const UIDateTitle = styled(TextH6)`
+const UIDateTitle = styled(TextH6)<{}>`
   flex: 17;
   display: inline-block;
 `;

@@ -22,10 +22,10 @@ export const MainLayout = ({ children }: PropsWithChildren<unknown>) => {
   );
 };
 
-const UINavItems = styled.nav`
+const UINavItems = styled.nav<{}>`
   margin-bottom: 2rem;
 `;
 
-const SpacedNavLink = styled(NavLink)`
+const SpacedNavLink = styled(NavLink)<{}>`
   margin-bottom: 1rem;
 `;

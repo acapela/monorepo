@@ -194,7 +194,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   );
 };
 
-export const Recorder = styled(PureRecorder)`
+export const Recorder = styled(PureRecorder)<{}>`
   display: flex;
   flex-direction: row;
 

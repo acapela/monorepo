@@ -43,7 +43,7 @@ export function SpaceTools({ space }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 16px;

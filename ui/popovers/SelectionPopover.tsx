@@ -51,8 +51,8 @@ const selectionVirtualElement: VirtualElement = {
 /**
  * Popover that will follow user selection. Useful for cases like text-editors.
  */
-export const SelectionPopover = styled(
-  ({ className, children, placement = "auto", ignoreMouseSelectionChange }: PopoverProps) => {
+export const SelectionPopover = styled<PopoverProps>(
+  ({ className, children, placement = "auto", ignoreMouseSelectionChange }) => {
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
     const [enableTransitions, setEnableTransitions] = useState(false);
 
