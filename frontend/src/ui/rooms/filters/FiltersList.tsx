@@ -24,7 +24,7 @@ export function FiltersList({ filters, onFilterRemoveRequest }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   column-gap: 8px;
 

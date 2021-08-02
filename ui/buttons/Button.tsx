@@ -75,7 +75,7 @@ export const Button = styled(
   })
 )``;
 
-const UIIconHolder = styled.div``;
+const UIIconHolder = styled.div<{}>``;
 
 export const UIButton = styled(motion.button)<Props & { isClickable: boolean; size: ButtonSize; kind: ButtonKind }>`
   display: inline-flex;
@@ -102,7 +102,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
   ${({ kind }) => buttonKindSpecificStyle[kind]}
 `;
 
-const UIContentHolder = styled.div`
+const UIContentHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: center;

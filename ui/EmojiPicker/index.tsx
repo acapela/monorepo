@@ -58,7 +58,7 @@ export function EmojiPicker({ onPicked, className }: Props) {
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: relative;
 
   .emoji-mart {
@@ -74,13 +74,13 @@ const UIHolder = styled.div`
   }
 `;
 
-const UIOpenIcon = styled(IconEmotionHappy)`
+const UIOpenIcon = styled(IconEmotionHappy)<{}>`
   font-size: 2rem;
   cursor: pointer;
   border-radius: 100px;
 `;
 
-const UIPopupHolder = styled(PresenceAnimator)`
+const UIPopupHolder = styled(PresenceAnimator)<{}>`
   position: absolute;
   bottom: 100%;
   margin-bottom: 10px;

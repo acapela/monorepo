@@ -106,7 +106,7 @@ export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Pro
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
@@ -116,6 +116,6 @@ const UIDropdownHolder = styled.div<{ width: number }>`
   width: ${({ width }) => width}px;
 `;
 
-const UICombobox = styled.div`
+const UICombobox = styled.div<{}>`
   position: relative;
 `;

@@ -24,7 +24,7 @@ interface PopoverProps {
   enableScreenCover?: boolean;
 }
 
-export const Popover = styled(
+export const Popover = styled<PopoverProps>(
   ({
     className,
     anchorRef,
@@ -34,7 +34,7 @@ export const Popover = styled(
     distance = 5,
     placement = "auto",
     enableScreenCover = false,
-  }: PopoverProps) => {
+  }) => {
     const anchorElement = useRefValue(anchorRef);
 
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -88,7 +88,7 @@ export const Popover = styled(
   }
 )``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   position: fixed;
   position: relative;
   will-change: transform;

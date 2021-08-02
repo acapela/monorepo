@@ -77,7 +77,7 @@ const PureSearchResults = ({ className, searchTerm, results }: Props) => {
   );
 };
 
-export const SearchResults = styled(PureSearchResults)`
+export const SearchResults = styled(PureSearchResults)<{}>`
   padding: 16px 16px;
   background-color: #fff;
   border: 1px solid ${BASE_GREY_5};
@@ -85,9 +85,9 @@ export const SearchResults = styled(PureSearchResults)`
   ${borderRadius.modal}
 `;
 
-const UINoResults = styled.span``;
+const UINoResults = styled.span<{}>``;
 
-const UISearchResultRow = styled.li`
+const UISearchResultRow = styled.li<{}>`
   & ~ & {
     margin-top: 4px;
   }
@@ -125,14 +125,14 @@ const UISearchResultLink = styled.a<{ isHighlighted: boolean }>`
     `}
 `;
 
-const UISearchResultMatch = styled.span``;
+const UISearchResultMatch = styled.span<{}>``;
 
-const UISearchResultMatchHighlight = styled.span`
+const UISearchResultMatchHighlight = styled.span<{}>`
   background-color: ${PRIMARY_PINK_1};
   color: white;
 `;
 
-const UISearchResultBreadcrumb = styled.span`
+const UISearchResultBreadcrumb = styled.span<{}>`
   flex-shrink: 0;
   font-size: 0.8rem;
 `;

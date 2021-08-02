@@ -92,15 +92,15 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   overflow-y: hidden;
   margin-top: 16px;
 `;
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
-const UINoTopicsMessage = styled.div``;
+const UINoTopicsMessage = styled.div<{}>``;

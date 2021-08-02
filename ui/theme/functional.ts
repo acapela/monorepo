@@ -6,7 +6,7 @@ import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
  * The goal of this module is to create functional text styles that are used in multiple similar use cases.
  */
 
-export const EntityKindLabel = styled.div`
+export const EntityKindLabel = styled.div<{}>`
   ${theme.font.body14.speziaMono.build}
 
   color: ${PRIMARY_PINK_1};

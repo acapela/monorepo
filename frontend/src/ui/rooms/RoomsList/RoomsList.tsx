@@ -17,8 +17,8 @@ export const RoomsList = styled(function RoomsList({ className, rooms }: Props) 
   );
 })``;
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div<{}>``;
 
-const UICollapsibleRoomInfo = styled(CollapsibleRoomInfo)`
+const UICollapsibleRoomInfo = styled(CollapsibleRoomInfo)<{}>`
   margin-bottom: 16px;
 `;

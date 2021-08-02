@@ -28,7 +28,7 @@ export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ clas
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
   gap: 64px;

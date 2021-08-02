@@ -46,7 +46,7 @@ const PureMessageTranscription = ({ transcription, actualMediaTime, onSeek, clas
   return <div className={className}>{`Transcription ${transcription.status}`}</div>;
 };
 
-export const MessageTranscription = styled(PureMessageTranscription)`
+export const MessageTranscription = styled(PureMessageTranscription)<{}>`
   margin-top: 1rem;
 `;
 

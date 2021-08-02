@@ -77,9 +77,9 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
   );
 })``;
 
-const UIHolder = styled(UICardListItem)``;
+const UIHolder = styled(UICardListItem)<{}>``;
 
-const UIInfo = styled.div`
+const UIInfo = styled.div<{}>`
   display: grid;
 `;
 
@@ -94,7 +94,7 @@ const UITopicTitle = styled(TextH6)<{ isClosed: boolean }>`
   }}
 `;
 
-const UIUnreadMessagesNotification = styled.div`
+const UIUnreadMessagesNotification = styled.div<{}>`
   position: absolute;
   left: 16px;
   top: calc(50% - 8px);
@@ -106,7 +106,7 @@ const UIUnreadMessagesNotification = styled.div`
   background-color: ${NOTIFICATION_COLOR};
 `;
 
-const UILastMessage = styled.div`
+const UILastMessage = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -114,9 +114,9 @@ const UILastMessage = styled.div`
   padding-top: 8px;
 `;
 
-const UILastMessageSender = styled(UserAvatar)``;
+const UILastMessageSender = styled(UserAvatar)<{}>``;
 
-const UILastMessageContent = styled.div`
+const UILastMessageContent = styled.div<{}>`
   display: grid;
   opacity: 0.5;
   line-height: 1.5rem;

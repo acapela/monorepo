@@ -148,7 +148,7 @@ export const Toolbar = namedForwardRef<HTMLDivElement, Props>(function Toolbar(
   );
 });
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 16px;
   display: flex;
   align-items: center;
@@ -171,11 +171,11 @@ const UIHolder = styled.div`
   }
 `;
 
-const UISection = styled.div`
+const UISection = styled.div<{}>`
   display: grid;
   grid-gap: 0.5rem;
   grid-template-columns: repeat(${(props) => Children.toArray(props.children).length}, 1fr);
   min-width: 0;
 `;
 
-const UIToolButton = styled.button``;
+const UIToolButton = styled.button<{}>``;

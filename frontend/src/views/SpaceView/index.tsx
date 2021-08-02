@@ -88,7 +88,7 @@ export function SpaceView({ spaceId }: Props) {
   );
 }
 
-const UIContainer = styled(SpacedAppLayoutContainer)`
+const UIContainer = styled(SpacedAppLayoutContainer)<{}>`
   position: relative;
 
   ${SpaceHeader} {
@@ -97,12 +97,12 @@ const UIContainer = styled(SpacedAppLayoutContainer)`
   }
 `;
 
-const UIFilters = styled(RoomFilters)`
+const UIFilters = styled(RoomFilters)<{}>`
   display: flex;
   justify-content: flex-end;
 `;
 
-const UIRooms = styled.div`
+const UIRooms = styled.div<{}>`
   margin-top: 32px;
 
   display: flex;
@@ -110,4 +110,4 @@ const UIRooms = styled.div`
   gap: 8px;
 `;
 
-const UIFlyingCreateRoomButton = styled(Button)``;
+const UIFlyingCreateRoomButton = styled(Button)<{}>``;

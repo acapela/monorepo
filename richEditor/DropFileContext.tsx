@@ -88,7 +88,7 @@ export function useFileDroppedInContext(callback?: (files: File[]) => void, opti
   }, [dropFileContext, callback, options?.isDisabled]);
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   &.${DROP_INDICATOR_CLASSNAME} {
     outline: 2px solid #559bf9;
   }

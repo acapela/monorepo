@@ -1,8 +1,8 @@
-import { css, FlattenSimpleInterpolation } from "styled-components";
+import { css, StylesPart } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
 import { BLACK } from "./theme/colors/base";
 
-function createShadowCss(size: number, opacity = 0.2): FlattenSimpleInterpolation {
+function createShadowCss(size: number, opacity = 0.2): StylesPart {
   const shadowColor = setColorOpacity(BLACK, opacity);
 
   return css`

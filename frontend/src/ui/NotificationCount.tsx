@@ -7,7 +7,7 @@ interface Props {
   value: number;
 }
 
-export const NotificationCount = styled(({ className, value }: Props) => {
+export const NotificationCount = styled<Props>(({ className, value }) => {
   return (
     <UIHolder isHighlighted={value > 0} className={className}>
       {formatNumberWithMaxValue(value, 9)}

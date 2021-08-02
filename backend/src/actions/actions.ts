@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import logger from "~shared/logger";
 import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError, UnprocessableEntityError } from "../errors/errorTypes";
+import { AuthenticationError, isHttpError, UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraSessionVariables } from "../hasura/session";
 import { ActionHandler, handlers } from "./actionHandlers";
 
@@ -31,15 +31,18 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
       userId,
     });
   } catch (error) {
-    const status = error.status || 400;
+    isHttpError(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const anyError = error as any;
+    const status = anyError.status || 400;
     res.status(status).json({
-      message: error.message || "Something went wrong",
+      message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
     logger.info("Failed handling action", {
       actionName: hasuraAction.action.name,
       userId,
-      failureReason: error.message,
+      failureReason: anyError.message,
       status: status,
     });
   }

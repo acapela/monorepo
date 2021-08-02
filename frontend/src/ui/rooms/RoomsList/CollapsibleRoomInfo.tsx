@@ -86,26 +86,25 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
   );
 })``;
 
-const UIHolder = styled(CardBase)``;
+const UIHolder = styled(CardBase)<{}>``;
 
 const UICollapseHolder = styled.div<{ isOpened: boolean }>`
   padding-right: 16px;
 `;
-
-const UIIndentBody = styled.div`
+const UIIndentBody = styled.div<{}>`
   flex: 1;
 `;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
 `;
 
-const UIRoomName = styled.div`
+const UIRoomName = styled.div<{}>`
   ${theme.font.h4.spezia.medium.build}
 `;
 
-const UIHeadPrimary = styled.div`
+const UIHeadPrimary = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -119,7 +118,7 @@ const UIHeadPrimary = styled.div`
   }
 `;
 
-const UIRoomMetaData = styled.div`
+const UIRoomMetaData = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 24px;

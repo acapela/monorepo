@@ -40,7 +40,7 @@ export const WarningModal = ({
   );
 };
 
-const UIContentWrapper = styled.div`
+const UIContentWrapper = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -50,20 +50,20 @@ const UIContentWrapper = styled.div`
   max-width: 480px;
 `;
 
-const UIHeader = styled.div`
+const UIHeader = styled.div<{}>`
   padding: 0 48px;
 `;
 
-const UITitle = styled.p`
+const UITitle = styled.p<{}>`
   ${theme.font.h3.medium.build};
   color: ${theme.colors.status.warning};
 `;
 
-const UISubtitle = styled.p`
+const UISubtitle = styled.p<{}>`
   ${theme.font.h3.medium.build};
 `;
 
-const UIDescription = styled.p`
+const UIDescription = styled.p<{}>`
   ${theme.font.body14.build};
   color: ${theme.colors.layout.supportingText};
 `;

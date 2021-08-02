@@ -11,7 +11,7 @@ interface Props {
   className?: string;
 }
 
-export const ScrollableMessages = styled(({ children, className }: Props) => {
+export const ScrollableMessages = styled<Props>(({ children, className }) => {
   const holderRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = useRef(true);
 
@@ -35,12 +35,12 @@ export const ScrollableMessages = styled(({ children, className }: Props) => {
   );
 })``;
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   overflow-y: scroll;
   /* Avoid scrollbar handle to fly over messages */
   padding-right: 20px;
 `;
 
-const UIInner = styled.div`
+const UIInner = styled.div<{}>`
   position: relative;
 `;

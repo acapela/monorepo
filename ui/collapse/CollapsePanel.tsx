@@ -69,24 +69,24 @@ export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerN
   );
 }
 
-const UIHolder = styled(motion.div)``;
+const UIHolder = styled(motion.div)<{}>``;
 
-const UIHead = styled.div`
+const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
 
   cursor: pointer;
 `;
 
-const UIToggleIcon = styled.div`
+const UIToggleIcon = styled.div<{}>`
   margin-right: 16px;
 `;
 
-const UIHeadContent = styled.div`
+const UIHeadContent = styled.div<{}>`
   flex: 1;
   min-width: 0;
 `;
 
-const UIContent = styled(PopPresenceAnimator)`
+const UIContent = styled(PopPresenceAnimator)<{}>`
   margin-top: 4px;
 `;

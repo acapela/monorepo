@@ -31,9 +31,9 @@ export function HomeView() {
   );
 }
 
-const UIHolder = styled(SpacedAppLayoutContainer)``;
+const UIHolder = styled(SpacedAppLayoutContainer)<{}>``;
 
-const UIContent = styled.div`
+const UIContent = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -44,7 +44,7 @@ const UIContent = styled.div`
   }
 `;
 
-const FlyingCreateRoomButton = styled(CreateRoomButton)`
+const FlyingCreateRoomButton = styled(CreateRoomButton)<{}>`
   position: absolute;
   bottom: 24px;
   right: 24px;

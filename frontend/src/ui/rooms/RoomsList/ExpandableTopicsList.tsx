@@ -92,7 +92,7 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
   );
 })``;
 
-const UITopics = styled.div`
+const UITopics = styled.div<{}>`
   ${TopicCard} {
     &:not(:last-child) {
       margin-bottom: 16px;
@@ -102,7 +102,7 @@ const UITopics = styled.div`
   flex: 1;
 `;
 
-const UITopicListActions = styled.div`
+const UITopicListActions = styled.div<{}>`
   margin-top: 24px;
 
   display: inline-flex;
@@ -112,6 +112,6 @@ const UITopicListActions = styled.div`
   width: 100%;
 `;
 
-const UIAddTopicButton = styled(Button)``;
+const UIAddTopicButton = styled(Button)<{}>``;
 
-const UIToggleShowMoreTopics = styled(Button)``;
+const UIToggleShowMoreTopics = styled(Button)<{}>``;

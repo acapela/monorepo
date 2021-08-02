@@ -1,10 +1,10 @@
-import { FlattenSimpleInterpolation } from "styled-components";
+import { StylesPart } from "styled-components";
 
 export type ThemeTarget = {
-  getStyles(): FlattenSimpleInterpolation;
+  getStyles(): StylesPart;
 };
 
-export function createThemeTarget(styles: FlattenSimpleInterpolation): ThemeTarget {
+export function createThemeTarget(styles: StylesPart): ThemeTarget {
   return {
     getStyles() {
       return styles;

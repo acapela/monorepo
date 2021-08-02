@@ -56,7 +56,7 @@ export const TopBarSearchBar = (): JSX.Element => {
   );
 };
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   padding: 14px;
 
   height: 32px;
@@ -74,23 +74,23 @@ const UIHolder = styled.div`
   ${theme.transitions.hover()}
 `;
 
-const UIPlaceholder = styled.div`
+const UIPlaceholder = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
 `;
 
-const UISearchIcon = styled(IconSearch)`
+const UISearchIcon = styled(IconSearch)<{}>`
   font-size: 1rem;
   line-height: 1.25rem;
 `;
 
-const UIShortcutIndicator = styled.div`
+const UIShortcutIndicator = styled.div<{}>`
   ${theme.font.body12.build}
 `;
 
-const UISearchContainer = styled(PopPresenceAnimator)`
+const UISearchContainer = styled(PopPresenceAnimator)<{}>`
   width: 600px;
   ${theme.borderRadius.input}
   ${theme.shadow.card}

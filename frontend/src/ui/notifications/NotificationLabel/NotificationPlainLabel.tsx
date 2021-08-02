@@ -90,7 +90,7 @@ export function NotificationPlainLabel({
   );
 }
 
-const UIHolder = styled.div`
+const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 12px;
@@ -107,7 +107,7 @@ const UIHolder = styled.div`
   ${hoverTransition()}
 `;
 
-const UIContent = styled.div`
+const UIContent = styled.div<{}>`
   flex-grow: 1;
   min-width: 0;
   strong {
@@ -115,19 +115,19 @@ const UIContent = styled.div`
   }
 `;
 
-const UITitle = styled(TextBody14)``;
+const UITitle = styled(TextBody14)<{}>``;
 
-const UIDate = styled(TextBody)`
+const UIDate = styled(TextBody)<{}>`
   font-size: 10px;
 `;
 
-const UIStatus = styled.div`
+const UIStatus = styled.div<{}>`
   min-width: 32px;
   display: flex;
   justify-content: center;
 `;
 
-const UIUnreadIndicator = styled.div`
+const UIUnreadIndicator = styled.div<{}>`
   background-color: ${NOTIFICATION_COLOR};
   height: 8px;
   width: 8px;

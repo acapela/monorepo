@@ -26,7 +26,7 @@ export function Calendar({ date, onDateChange }: Props) {
   );
 }
 
-const UICalendar = styled.div`
+const UICalendar = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -34,10 +34,10 @@ const UICalendar = styled.div`
   flex: 1;
 `;
 
-const SmallSpacing = styled.div`
+const SmallSpacing = styled.div<{}>`
   margin-bottom: 10px;
 `;
 
-const UICalendarContainer = styled.div`
+const UICalendarContainer = styled.div<{}>`
   flex: 1;
 `;
