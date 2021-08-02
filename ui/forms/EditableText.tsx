@@ -9,7 +9,8 @@ interface Props {
   isInEditMode: boolean;
   value: string;
   onValueSubmit: (newValue: string) => void;
-  onEditModeChangeRequest: (isInEditMode: boolean) => void;
+  onEditModeRequest: () => void;
+  onExitEditModeChangeRequest: () => void;
   allowDoubleClickEditRequest?: boolean;
   focusSelectMode?: FocusSelectMode;
   className?: string;
@@ -21,7 +22,8 @@ export const EditableText = styled(function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
-  onEditModeChangeRequest,
+  onEditModeRequest,
+  onExitEditModeChangeRequest,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   allowDoubleClickEditRequest = true,
   focusSelectMode = "cursor-at-end",
@@ -66,7 +68,7 @@ export const EditableText = styled(function EditableText({
     );
 
     return () => {
-      cleanupWatchingOtherElementsFocus();
+      cleanupWatchingOtherElementsFocus?.();
       // If we exit edit mode and other element was trying to focus, give focus back to it.
 
       if (otherElementTryingToFocusWhileInEditMode) {
@@ -76,7 +78,7 @@ export const EditableText = styled(function EditableText({
   }, [isInEditMode]);
 
   useDoubleClick(ref, () => {
-    onEditModeChangeRequest(true);
+    onEditModeRequest();
   });
 
   useElementEvent(
@@ -84,6 +86,9 @@ export const EditableText = styled(function EditableText({
     "click",
     (event) => {
       event.stopPropagation();
+      // We prevent default as well as clicked element can eg. be <a> with 'href'. If we don't prevent default, it could
+      // cause page full refresh navigation.
+      event.preventDefault();
     },
     { isEnabled: isInEditMode, capture: true }
   );
@@ -96,7 +101,7 @@ export const EditableText = styled(function EditableText({
   function handleSubmit() {
     if (!ref.current) return;
     const currentValue = ref.current.innerText;
-    onEditModeChangeRequest(false);
+    onExitEditModeChangeRequest();
 
     if (currentValue === value) return true;
 
@@ -116,7 +121,7 @@ export const EditableText = styled(function EditableText({
     () => {
       if (!ref.current) return;
       ref.current.innerText = value;
-      onEditModeChangeRequest(false);
+      onExitEditModeChangeRequest();
     },
     { isEnabled: isInEditMode }
   );
