@@ -64,6 +64,14 @@ if [[ "${APP_VERSION}" == "latest" ]]; then
   echo "found release: $APP_VERSION"
 fi
 
+# all means we want to deploy api and frontend
+if [[ "${APP_NAME}" == "all" ]]; then
+  echo "deploying frontend and api..."
+  ./scripts/deploy.sh -s $STAGE -a frontend -v $APP_VERSION
+  ./scripts/deploy.sh -s $STAGE -a api -v $APP_VERSION
+  exit
+fi
+
 kubernetes_dir="infrastructure/kubernetes/"
 
 app_dir="${kubernetes_dir}${APP_NAME}/${STAGE}"
