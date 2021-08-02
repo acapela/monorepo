@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
@@ -77,10 +77,21 @@ export const TopicMenuItem = styled(
         }
       }
 
+      // We need to disable the Link while editing, so that selection does not trigger navigation
+      const NameWrap = useCallback(
+        (props: { children: React.ReactNode }) =>
+          isInEditMode ? (
+            <React.Fragment {...props} />
+          ) : (
+            <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }} {...props} />
+          ),
+        [isInEditMode]
+      );
+
       return (
         <>
           <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
-            <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
+            <NameWrap>
               <UIHolder
                 ref={anchorRef}
                 className={className}
@@ -101,7 +112,7 @@ export const TopicMenuItem = styled(
                   }
                 />
               </UIHolder>
-            </TopicLink>
+            </NameWrap>
             {!isEditingDisabled && (
               <UIManageTopicWrapper ref={manageWrapperRef}>
                 {isNewTopic ? (

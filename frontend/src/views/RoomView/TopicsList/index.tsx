@@ -19,6 +19,7 @@ import { VStack } from "~ui/Stack";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { generateId } from "~shared/id";
 import { getIndexBetweenItems } from "~frontend/rooms/order";
+import { select } from "~shared/sharedState";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -35,6 +36,8 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
   const { topics, moveBetween, moveToStart, moveToEnd, isReordering } = useRoomTopicList(room.id);
   const amIMember = isCurrentUserRoomMember(room);
+
+  const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   async function handleCreateNewTopic() {
     let beforeListPosition = topics.findIndex((t) => t.id == activeTopicId);
@@ -103,7 +106,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <LazyTopicsList
             topics={topics}
             activeTopicId={activeTopicId}
-            isDisabled={isExecutingBulkReorder || isReordering}
+            isDisabled={isEditingAnyMessage || isExecutingBulkReorder || isReordering}
             onMoveBetween={moveBetween}
             onMoveToStart={moveToStart}
             onMoveToEnd={moveToEnd}
