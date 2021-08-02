@@ -171,6 +171,8 @@ export function extractTeamRoomMessages(allMessages: UnreadMessageFragmentFragme
  * the hooks that'll be cached and then hydrated in the apollo client.
  *
  * This hook below will fallback to our central subscription once it sees that it has some values.
+ *
+ * @returns Record<RoomBasicInfoFragment["id"], unreadMessageCount>
  */
 export function useSSRRoomsMessagesCount(): UnreadRoomMessages {
   const user = useAssertCurrentUser();
