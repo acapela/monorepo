@@ -15,6 +15,7 @@ import { IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { ACTION_ACTIVE_COLOR, hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { RouteLink } from "~frontend/../routes/RouteLink";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -22,8 +23,6 @@ interface Props {
   className?: string;
   isEditingDisabled?: boolean;
 }
-
-const TopicLink = routes.spaceRoomTopic.Link;
 
 export const TopicMenuItem = styled<Props>(
   observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }) {
@@ -50,7 +49,10 @@ export const TopicMenuItem = styled<Props>(
     return (
       <>
         <UIFlyingTooltipWrapper>
-          <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
+          <RouteLink
+            route={routes.spaceRoomTopic}
+            params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}
+          >
             <UIHolder
               ref={anchorRef}
               className={className}
@@ -64,11 +66,18 @@ export const TopicMenuItem = styled<Props>(
                 value={topic.name ?? ""}
                 isInEditMode={isInEditMode}
                 focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
+                onEditModeRequest={() => {
+                  roomContext.editingNameTopicId = topic.id;
+                }}
+                onExitEditModeChangeRequest={() => {
+                  if (roomContext.editingNameTopicId === topic.id) {
+                    roomContext.editingNameTopicId = null;
+                  }
+                }}
                 onValueSubmit={handleNewTopicName}
               />
             </UIHolder>
-          </TopicLink>
+          </RouteLink>
           {!isEditingDisabled && (
             <UIManageTopicWrapper>
               <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
