@@ -2,10 +2,10 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { setColorOpacity } from "~shared/colors";
 import { handleWithStopPropagation } from "~shared/events";
-import { borderRadius } from "~ui/baseStyles";
 import { PRIMARY_PINK_1 } from "~ui/theme/colors/base";
 import { IconCheck } from "~ui/icons";
 import { OptionLabel } from "./OptionLabel";
+import { theme } from "~ui/theme";
 
 interface Props {
   label: string;
@@ -48,16 +48,20 @@ export const DropdownItem = styled(function DropdownItem({
 })``;
 
 const UIOption = styled.div<{ isHighlighted: boolean }>`
-  display: flex;
-  align-items: center;
   padding: 0 16px;
   height: 42px;
+
+  display: flex;
+  align-items: center;
+
   display: flex;
   align-items: center;
   cursor: pointer;
-  ${borderRadius.item};
-  border: 1px solid transparent;
+
+  border: 1px solid;
+
   transition: 0.15s all;
+  ${theme.borderRadius.item};
 
   svg {
     font-size: 24px;

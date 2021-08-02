@@ -1,80 +1,81 @@
 import { ThemeColorScheme } from ".";
 import { setColorOpacity } from "~shared/colors";
 import * as colors from "./base";
+import { createColor } from "./createColor";
 
 export const defaultTheme: ThemeColorScheme = {
   layout: {
-    background: colors.BASE_GREY_7,
-    foreground: colors.WHITE,
-    softLine: colors.BASE_GREY_5,
-    strongLine: colors.BASE_GREY_4,
-    bodyText: colors.BASE_GREY_1,
-    supportingText: colors.BASE_GREY_3,
-    headingText: colors.BASE_GREY_1,
-    link: colors.PRIMARY_PINK_3,
+    background: createColor(colors.BASE_GREY_7),
+    foreground: createColor(colors.WHITE),
+    softLine: createColor(colors.BASE_GREY_5),
+    strongLine: createColor(colors.BASE_GREY_4),
+    bodyText: createColor(colors.BASE_GREY_1),
+    supportingText: createColor(colors.BASE_GREY_3),
+    headingText: createColor(colors.BASE_GREY_1),
+    link: createColor(colors.PRIMARY_PINK_3),
   },
   interactive: {
-    notification: colors.PRIMARY_PINK_1,
-    active: colors.PRIMARY_PINK_1,
-    inactive: colors.BASE_GREY_4,
-    selected: colors.BASE_GREY_7,
+    notification: createColor(colors.PRIMARY_PINK_1),
+    active: createColor(colors.PRIMARY_PINK_1),
+    inactive: createColor(colors.BASE_GREY_4),
+    selected: createColor(colors.BASE_GREY_7),
     actions: {
       primary: {
         regular: {
-          background: colors.PRIMARY_PURPLE_1,
-          text: colors.WHITE,
-          icon: colors.BASE_GREY_4,
+          background: createColor(colors.PRIMARY_PURPLE_1),
+          text: createColor(colors.WHITE),
+          icon: createColor(colors.BASE_GREY_4),
         },
         hover: {
-          background: colors.PRIMARY_PURPLE_2,
+          background: createColor(colors.PRIMARY_PURPLE_2),
         },
         disabled: {
-          background: setColorOpacity(colors.PRIMARY_PURPLE_1, 0.25),
+          background: createColor(setColorOpacity(colors.PRIMARY_PURPLE_1, 0.25)),
         },
       },
       secondary: {
         regular: {
-          background: colors.WHITE,
-          text: colors.BASE_GREY_1,
-          icon: colors.PRIMARY_PINK_1,
-          border: colors.BASE_GREY_4,
+          background: createColor(colors.WHITE),
+          text: createColor(colors.BASE_GREY_1),
+          icon: createColor(colors.PRIMARY_PINK_1),
+          border: createColor(colors.BASE_GREY_4),
         },
         hover: {
-          background: colors.BASE_GREY_6,
+          background: createColor(colors.BASE_GREY_6),
         },
         disabled: {
-          icon: colors.BASE_GREY_4,
-          text: colors.BASE_GREY_4,
-          background: setColorOpacity(colors.BASE_GREY_7, 0.5),
-          border: colors.BASE_GREY_5,
+          icon: createColor(colors.BASE_GREY_4),
+          text: createColor(colors.BASE_GREY_4),
+          background: createColor(setColorOpacity(colors.BASE_GREY_7, 0.5)),
+          border: createColor(colors.BASE_GREY_5),
         },
         active: {
-          border: colors.PRIMARY_PINK_1,
+          border: createColor(colors.PRIMARY_PINK_1),
         },
       },
       tertiary: {
         regular: {
-          background: colors.BASE_GREY_6,
-          text: colors.BASE_GREY_1,
-          icon: colors.BASE_GREY_1,
+          background: createColor(colors.BASE_GREY_6),
+          text: createColor(colors.BASE_GREY_1),
+          icon: createColor(colors.BASE_GREY_1),
         },
         hover: {
-          background: colors.BASE_GREY_4,
+          background: createColor(colors.BASE_GREY_4),
         },
         disabled: {
-          icon: colors.BASE_GREY_4,
-          text: colors.BASE_GREY_4,
-          background: setColorOpacity(colors.BASE_GREY_7, 0.5),
+          icon: createColor(colors.BASE_GREY_4),
+          text: createColor(colors.BASE_GREY_4),
+          background: createColor(setColorOpacity(colors.BASE_GREY_7, 0.5)),
         },
         active: {
-          border: colors.PRIMARY_PINK_1,
+          border: createColor(colors.PRIMARY_PINK_1),
         },
       },
     },
   },
   status: {
-    error: colors.SUPPORT_RED,
-    warning: colors.SECONDARY_ORANGE_2,
-    success: colors.SUPPORT_GREEN,
+    error: createColor(colors.SUPPORT_RED),
+    warning: createColor(colors.SECONDARY_ORANGE_2),
+    success: createColor(colors.SUPPORT_GREEN),
   },
 };

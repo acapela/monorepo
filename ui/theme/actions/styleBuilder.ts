@@ -63,27 +63,27 @@ function stateToStyles(colorsForState?: Partial<ColorTargetOptions>): StaticInte
   return css`
     ${text
       ? css`
-          color: ${text};
+          color: ${text()};
         `
       : ""}
 
     ${background
       ? css`
-          background-color: ${background};
+          background-color: ${background()};
         `
       : ""}
     
     ${icon
       ? css`
           svg {
-            color: ${icon};
+            color: ${icon()};
           }
         `
       : ""}
 
     ${border
       ? css`
-          border-color: ${border};
+          border-color: ${border()};
         `
       : ""}
   `;

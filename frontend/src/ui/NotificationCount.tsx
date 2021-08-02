@@ -28,7 +28,7 @@ const UIHolder = styled.div<{ isHighlighted: boolean }>`
   min-width: 1.25rem;
 
   background: ${(props) =>
-    props.isHighlighted ? props.theme.colors.interactive.notification : props.theme.colors.interactive.inactive};
+    props.isHighlighted ? props.theme.colors.interactive.notification() : props.theme.colors.interactive.inactive()};
 
   color: #fff;
   ${theme.borderRadius.label}
