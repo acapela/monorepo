@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
@@ -64,8 +64,8 @@ export const TopicMenuItem = styled<Props>(
 
       const manageWrapperRef = useRef<HTMLElement | null>(null);
 
-      function handleNewTopicName(newName: string) {
-        updateTopic({ topicId: topic.id, input: { name: newName } });
+      async function handleNewTopicName(newName: string) {
+        await updateTopic({ topicId: topic.id, input: { name: newName } });
 
         roomContext.editingNameTopicId = null;
 
