@@ -9221,20 +9221,6 @@ export type CloseOpenTopicsMutation = (
   )> }
 );
 
-export type SearchResultFragment = (
-  { __typename?: 'full_text_search' }
-  & Pick<Full_Text_Search, 'transcript'>
-  & { topicId: Full_Text_Search['topic_id'], topicName: Full_Text_Search['topic_name'], messageId: Full_Text_Search['message_id'], messageContent: Full_Text_Search['message_content'], attachmentName: Full_Text_Search['attachment_name'] }
-  & { room?: Maybe<(
-    { __typename?: 'room' }
-    & Pick<Room, 'id' | 'name'>
-    & { space: (
-      { __typename?: 'space' }
-      & Pick<Space, 'id' | 'name'>
-    ) }
-  )> }
-);
-
 export type SearchResultsQueryVariables = Exact<{
   term: Scalars['String'];
 }>;
@@ -9242,9 +9228,42 @@ export type SearchResultsQueryVariables = Exact<{
 
 export type SearchResultsQuery = (
   { __typename?: 'query_root' }
-  & { results: Array<(
-    { __typename?: 'full_text_search' }
-    & SearchResultFragment
+  & { spaces: Array<(
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  )>, rooms: Array<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'name'>
+    & { space: (
+      { __typename?: 'space' }
+      & Pick<Space, 'id' | 'name'>
+    ) }
+  )>, topics: Array<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name'>
+    & { room: (
+      { __typename?: 'room' }
+      & Pick<Room, 'id' | 'name'>
+      & { space: (
+        { __typename?: 'space' }
+        & Pick<Space, 'id' | 'name'>
+      ) }
+    ) }
+  )>, messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'content_text'>
+    & { topic: (
+      { __typename?: 'topic' }
+      & Pick<Topic, 'id' | 'name'>
+      & { room: (
+        { __typename?: 'room' }
+        & Pick<Room, 'id' | 'name'>
+        & { space: (
+          { __typename?: 'space' }
+          & Pick<Space, 'id' | 'name'>
+        ) }
+      ) }
+    ) }
   )> }
 );
 
