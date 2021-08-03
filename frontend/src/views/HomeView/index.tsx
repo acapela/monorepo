@@ -9,7 +9,7 @@ import {
 } from "~frontend/ui/rooms/filters/factories";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
 import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
-import { CreateRoomButton } from "./CreateRoomButton";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
 
 const openRoomFilter = createOpenRoomFilter(true);
 const sortByLatestActivity = createSortByLatestActivityFilter();
@@ -26,7 +26,7 @@ export function HomeView() {
       <UIContent>
         <RoomsGroupedByActivities query={roomQuery} />
       </UIContent>
-      <FlyingCreateRoomButton />
+      <FlyingCreateRoomButton size="large" />
     </UIHolder>
   );
 }

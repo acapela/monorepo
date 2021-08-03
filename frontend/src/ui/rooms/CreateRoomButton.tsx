@@ -7,11 +7,9 @@ import { IconPlusSquare } from "~ui/icons/default";
 import styled from "styled-components";
 import { getUUID } from "~shared/uuid";
 
-interface Props {
-  className?: string;
-}
+type Props = React.ComponentProps<typeof Button>;
 
-export const CreateRoomButton = styled(function CreateRoomButton({ className }: Props) {
+export const CreateRoomButton = styled(function CreateRoomButton(props: Props) {
   async function handleCreate() {
     const createRoomInput = await openRoomInputPrompt({});
 
@@ -36,7 +34,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className }: 
 
   return (
     <>
-      <Button className={className} iconPosition="start" icon={<IconPlusSquare />} onClick={handleCreate} size="large">
+      <Button {...props} iconPosition="start" icon={<IconPlusSquare />} onClick={handleCreate}>
         New Room
       </Button>
     </>
