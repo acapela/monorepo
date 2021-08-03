@@ -59,10 +59,9 @@ export function buildThemeProxy(baseTheme: Theme) {
             try {
               return fn.call(target, ...args);
             } catch (e) {
+              const pathJoinedByDots = fullPath.join(".");
               throw new Error(
-                `[Theme] Failed to run utility function "theme.${fullPath.join(
-                  "."
-                )}". Possible solution: Add a function call. Example: \`\${theme.${fullPath.join(".")}()}\``
+                `[Theme] Failed to run utility function "theme.${pathJoinedByDots}". Possible solution: Add a function call, e.g. \`\${theme.${pathJoinedByDots}()}\``
               );
             }
           };
