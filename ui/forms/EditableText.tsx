@@ -21,7 +21,6 @@ export const EditableText = styled(function EditableText({
   isInEditMode,
   value,
   onValueSubmit,
-  onEditModeRequest,
   onExitEditModeChangeRequest,
   focusSelectMode = "cursor-at-end",
   className,
