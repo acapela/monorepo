@@ -34,8 +34,8 @@ export async function handleTeamInvitationCreated({ item: invite, userId }: Hasu
 
   const notification = new TeamInvitationNotification({
     recipientEmail: email,
-    invitationToJoin: roomInvitation ? "room" : "team",
-    destinationName: roomInvitation?.room?.name || team.name,
+    roomName: roomInvitation?.room?.name,
+    teamName: team.name,
     inviterName: getNormalizedUserName(inviter),
     inviteCode: invite.token,
   });
