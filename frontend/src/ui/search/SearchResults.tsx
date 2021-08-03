@@ -1,77 +1,123 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
 import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/theme/colors/base";
-import { SearchResultFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { zIndex } from "~ui/zIndex";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { PopPresenceAnimator } from "~ui/animations";
+import { SearchResultsQuery } from "~gql";
+import { routes } from "~frontend/router";
+import { assert } from "~shared/assert";
 
 interface Props {
   className?: string;
-  searchTerm: string;
-  results: SearchResultFragment[];
+  term: string;
+  results: SearchResultsQuery;
 }
 
-function composeTopicLink({ room, topicId }: SearchResultFragment): string {
-  return `/space/${room?.space?.id}/${room?.id}/${topicId}`;
+type ResultItem = (
+  | SearchResultsQuery["spaces"]
+  | SearchResultsQuery["rooms"]
+  | SearchResultsQuery["topics"]
+  | SearchResultsQuery["messages"]
+)[0];
+
+function assertTypename(typename: ResultItem["__typename"]): asserts typename {
+  assert(typename, "__typename should always be set by apollo");
 }
 
-function composeResultBreadcrumb({ room, topicName }: SearchResultFragment): string {
-  const spaceName = room?.space?.name;
-  const roomName = room?.name;
+function getItemURL(result: ResultItem): string {
+  assertTypename(result.__typename);
+  switch (result.__typename) {
+    case "space":
+      return routes.space.getUrlWithParams({ spaceId: result.id });
 
-  return `${spaceName}/${roomName}/${topicName}`;
-}
+    case "room":
+      return routes.spaceRoom.getUrlWithParams({ spaceId: result.space.id, roomId: result.id });
 
-function renderResultMatchString(result: SearchResultFragment, searchTerm: string) {
-  const searchTermToMatch = searchTerm.toLowerCase();
+    case "topic": {
+      const { room } = result;
+      return routes.spaceRoomTopic.getUrlWithParams({
+        spaceId: room.space.id,
+        roomId: room.id,
+        topicId: result.id,
+      });
+    }
 
-  const matchIndicesMap = new Map([
-    [result.messageContent, result.messageContent?.toLowerCase().indexOf(searchTermToMatch) ?? -1],
-    [result.topicName, result.topicName?.toLowerCase().indexOf(searchTermToMatch) ?? -1],
-    [result.attachmentName, result.attachmentName?.toLowerCase().indexOf(searchTermToMatch) ?? -1],
-    [result.transcript, result.transcript?.toLowerCase().indexOf(searchTermToMatch) ?? -1],
-  ]);
-
-  for (const [prop, index] of matchIndicesMap.entries()) {
-    if (index > -1) {
-      return (
-        <>
-          {prop?.substring(Math.max(0, index - 20), index)}
-          <UISearchResultMatchHighlight>
-            {prop?.substring(index, index + searchTerm.length)}
-          </UISearchResultMatchHighlight>
-          {prop?.substring(index + searchTerm.length, index + 10)}
-        </>
-      );
+    case "message": {
+      const {
+        topic: { room, id: topicId },
+      } = result;
+      return routes.spaceRoomTopic.getUrlWithParams({ spaceId: room.space.id, roomId: room.id, topicId });
     }
   }
 }
 
+function composeBreadcrumb(result: ResultItem): string[] {
+  assertTypename(result.__typename);
+  switch (result.__typename) {
+    case "space":
+      return [result.name];
+
+    case "room":
+      return [result.space.name, result.name];
+
+    case "topic": {
+      const { room } = result;
+      return [room.space.name, room.name, result.name];
+    }
+
+    case "message": {
+      const {
+        topic: { room, ...topic },
+      } = result;
+      return [room.space.name, room.name, topic.name];
+    }
+  }
+}
+
+function SearchResultBreadcrumb({ result }: { result: ResultItem }) {
+  return <UISearchResultBreadcrumb>{composeBreadcrumb(result).join("/")}</UISearchResultBreadcrumb>;
+}
+
+function SearchResultMatch({ result, term }: { result: ResultItem; term: string }) {
+  const content = "content_text" in result ? result.content_text : "name" in result ? result.name : "";
+  const index = content?.toLowerCase().indexOf(term.toLowerCase()) ?? -1;
+  return index == -1 ? null : (
+    <UISearchResultMatch>
+      {content?.substring(Math.max(0, index - 20), index)}
+      <UISearchResultMatchHighlight>{content?.substring(index, index + term.length)}</UISearchResultMatchHighlight>
+      {content?.substring(index + term.length, index + 10)}
+    </UISearchResultMatch>
+  );
+}
+
 // TODO: Attempt to use ItemsDropdown when we have a clearer idea of where search is going to move
-const PureSearchResults = ({ className, searchTerm, results }: Props) => {
-  const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(results, {
+const PureSearchResults = ({ className, term, results }: Props) => {
+  const allItems = [...results.spaces, ...results.rooms, ...results.topics, ...results.messages];
+  const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(allItems, {
     enableKeyboard: true,
   });
-
   return (
     <ul className={className}>
       <PopPresenceAnimator>
-        {!results.length && <UINoResults>No results</UINoResults>}
-        {results.map((result, idx) => (
-          <UISearchResultRow key={idx}>
-            <Link href={composeTopicLink(result)} passHref>
-              <UISearchResultLink
-                onMouseEnter={() => setHighlightedItem(result)}
-                isHighlighted={result === highlightedItem}
-              >
-                <UISearchResultMatch>{renderResultMatchString(result, searchTerm)}</UISearchResultMatch>
-                <UISearchResultBreadcrumb>{composeResultBreadcrumb(result)}</UISearchResultBreadcrumb>
-              </UISearchResultLink>
-            </Link>
-          </UISearchResultRow>
-        ))}
+        {allItems.length == 0 ? (
+          <UINoResults>No results</UINoResults>
+        ) : (
+          allItems.map((result) => (
+            <UISearchResultRow key={result.id}>
+              <Link href={getItemURL(result)} passHref>
+                <UISearchResultLink
+                  onMouseEnter={() => setHighlightedItem(result)}
+                  isHighlighted={result === highlightedItem}
+                >
+                  <SearchResultMatch {...{ result, term }} />
+                  <SearchResultBreadcrumb {...{ result }} />
+                </UISearchResultLink>
+              </Link>
+            </UISearchResultRow>
+          ))
+        )}
       </PopPresenceAnimator>
     </ul>
   );
