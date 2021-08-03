@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { routes } from "~frontend/router";
+import { routes, RouteLink } from "~frontend/router";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
 import { TextH6 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -10,7 +10,6 @@ import { useTopic } from "~frontend/topics/useTopic";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UICardListItem } from "./shared";
 import { convertRichEditorContentToHtml } from "~richEditor/content/html";
-import { RouteLink } from "~frontend/router/RouteLink";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

@@ -8,8 +8,7 @@ import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { RouteLink } from "~frontend/router/RouteLink";
-import { routes } from "~frontend/router";
+import { RouteLink, routes } from "~frontend/router";
 
 interface Props {
   space: SpaceBasicInfoFragment;

@@ -1,5 +1,5 @@
 import { NotificationInfoFragment } from "~gql";
-import { routes } from "~frontend/router";
+import { routes, RouteLink } from "~frontend/router";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";
 import {
@@ -10,7 +10,6 @@ import {
 } from "~shared/notifications/types";
 import { NotificationPlainLabel } from "./NotificationPlainLabel";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { RouteLink } from "~frontend/router/RouteLink";
 
 interface Props {
   notification: NotificationInfoFragment;

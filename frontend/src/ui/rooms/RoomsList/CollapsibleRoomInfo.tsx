@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { routes } from "~frontend/router";
+import { routes, RouteLink } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
@@ -15,7 +15,6 @@ import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { theme } from "~ui/theme";
 import { ExpandableTopicsList } from "./ExpandableTopicsList";
-import { RouteLink } from "~frontend/router/RouteLink";
 
 interface Props {
   room: RoomBasicInfoFragment;
