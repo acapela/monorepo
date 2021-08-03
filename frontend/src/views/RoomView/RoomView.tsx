@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import styled, { css } from "styled-components";
 import { IconPlusSquare } from "~ui/icons";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
