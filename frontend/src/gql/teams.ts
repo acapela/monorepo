@@ -62,7 +62,7 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
       spaces {
         ...SpaceBasicInfo
       }
-      invitations {
+      invitations(where: { used_at: { _is_null: true } }) {
         ...TeamInvitationBasicInfo
       }
       memberships {
