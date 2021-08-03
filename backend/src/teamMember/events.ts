@@ -43,5 +43,19 @@ export async function handleTeamMemberDeleted({ item: teamMember }: HasuraEvent<
         },
       },
     }),
+
+    // remove user invitations
+    db.room_invitation.deleteMany({
+      where: {
+        used_by_user_id: userId,
+        team_id: teamId,
+      },
+    }),
+    db.team_invitation.deleteMany({
+      where: {
+        used_by_user_id: userId,
+        team_id: teamId,
+      },
+    }),
   ]);
 }
