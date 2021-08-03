@@ -8,6 +8,7 @@ import {
   UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { UserTokenData } from "~frontend/../../shared/types/jwtAuth";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
@@ -51,4 +52,14 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   const [teamMembers = []] = useTeamMembersQuery({ teamId: teamId });
 
   return teamMembers;
+}
+
+export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData): UserBasicInfoFragmentType {
+  return {
+    id: userTokenData.id,
+    __typename: "user",
+    avatar_url: userTokenData.picture,
+    email: userTokenData.email,
+    name: userTokenData.name,
+  };
 }

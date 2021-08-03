@@ -29,6 +29,7 @@ import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
+import { getUpdatedDataWithInput } from "./utils/updateWithInput";
 
 function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
   topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
@@ -280,7 +281,8 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
     },
     optimisticResponse({ topicId, input }) {
       const topic = TopicDetailedInfoFragment.assertRead(topicId);
-      return { __typename: "mutation_root", topic: input.name ? { ...topic, name: input.name } : topic };
+      const newData = getUpdatedDataWithInput(topic, input);
+      return { __typename: "mutation_root", topic: newData };
     },
     onOptimisticOrActualResponse(topic) {
       RoomDetailedInfoFragment.update(topic.room.id, (data) => {

@@ -29,6 +29,7 @@ import { TeamDetailedInfoFragment } from "./teams";
 import { assert } from "~shared/assert";
 import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
+import { getUpdatedDataWithInput } from "./utils/updateWithInput";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -195,16 +196,12 @@ export const [useEditSpaceMutation] = createMutation<EditSpaceMutation, EditSpac
       }
     },
     optimisticResponse({ spaceId, input }) {
-      const updatedSpace = SpaceDetailedInfoFragment.produce(spaceId, (space) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        space.name = input.name!;
-      });
-
-      assert(updatedSpace, "Cannot create optimistic update for edit space");
+      const space = SpaceDetailedInfoFragment.assertRead(spaceId);
+      const newData = getUpdatedDataWithInput(space, input);
 
       return {
         __typename: "mutation_root",
-        space: updatedSpace,
+        space: newData,
       };
     },
   }
