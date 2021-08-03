@@ -28,7 +28,7 @@ import {
   SinglePrivateRoomQuery,
   SinglePrivateRoomQueryVariables,
 } from "~gql";
-import { SpaceDetailedInfoFragment } from "./spaces";
+import { SpaceBasicInfoFragment, SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createMutation, createQuery, createFragment } from "./utils";
@@ -37,6 +37,8 @@ import { removeUndefinedFromObject } from "~shared/object";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { slugify } from "~shared/slugify";
 import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
+import { getHomeViewRoomsQueryWhere } from "~frontend/views/HomeView";
+import { readUserDataFromCookie } from "~frontend/authentication/cookie";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -121,7 +123,7 @@ export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQ
   `
 );
 
-export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
+export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 
@@ -201,6 +203,9 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       });
     },
     optimisticResponse({ input }) {
+      const spaceId = input.space_id!;
+
+      const spaceInfo = SpaceBasicInfoFragment.assertRead(spaceId);
       return {
         __typename: "mutation_root",
         room: {
@@ -217,7 +222,12 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: input.name!,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          space_id: input.space_id!,
+          space_id: spaceId,
+          space: {
+            __typename: "space",
+            id: spaceInfo.id,
+            name: spaceInfo.name,
+          },
           finished_at: null,
           source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
           summary: input.summary ?? null,
@@ -349,6 +359,16 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
       if (!removedRoom.space_id) return;
       SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
         space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
+      });
+
+      const user = readUserDataFromCookie();
+
+      if (!user) return;
+
+      const homeViewQuery = getHomeViewRoomsQueryWhere(user.id);
+
+      roomsQueryManager.update({ where: homeViewQuery }, (result) => {
+        result.rooms = result.rooms.filter((room) => room.id !== removedRoom.id);
       });
     },
   }

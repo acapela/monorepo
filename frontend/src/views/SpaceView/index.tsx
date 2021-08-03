@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { useIsCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
