@@ -80,7 +80,7 @@ const UIControls = styled(HStack)<{}>`
   user-select: none;
   padding: 8px;
 
-  background: ${theme.colors.layout.foreground};
+  background: ${theme.colors.layout.foreground()};
   ${theme.borderRadius.modal}
   ${theme.shadow.modal}
 `;

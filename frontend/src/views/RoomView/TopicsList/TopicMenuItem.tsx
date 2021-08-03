@@ -1,5 +1,7 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
@@ -8,88 +10,140 @@ import { routes } from "~frontend/routes";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { borderRadius } from "~ui/baseStyles";
-import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
+import { theme } from "~ui/theme";
 import { EditableText } from "~ui/forms/EditableText";
-import { IconDragAndDrop } from "~ui/icons";
+import { IconCross, IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { ACTION_ACTIVE_COLOR, hoverActionCss } from "~ui/transitions";
+import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { useTopic } from "~frontend/topics/useTopic";
 
-interface Props {
+type Props = {
   topic: TopicDetailedInfoFragment;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
-}
+  rootProps?: React.HTMLAttributes<unknown>;
+};
 
 const TopicLink = routes.spaceRoomTopic.Link;
 
+export function SortableTopicMenuItem({
+  isDisabled,
+  ...props
+}: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: props.topic.id,
+    disabled: isDisabled,
+  });
+
+  const style = {
+    // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
+}
+
 export const TopicMenuItem = styled<Props>(
-  observer(function TopicMenuItem({ topic, isActive, className, isEditingDisabled }) {
-    const roomContext = useRoomStoreContext();
-    const unreadCount = useTopicUnreadMessagesCount(topic.id);
-    const hasUnreadMessaged = !isActive && unreadCount > 0;
+  observer(
+    React.forwardRef<HTMLElement, Props>(function TopicMenuItem(
+      { topic, isActive, className, isEditingDisabled, rootProps },
+      ref
+    ) {
+      const roomContext = useRoomStoreContext();
+      const { deleteTopic } = useTopic(topic);
+      const unreadCount = useTopicUnreadMessagesCount(topic.id);
+      const hasUnreadMessaged = !isActive && unreadCount > 0;
 
-    const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
-    const anchorRef = useRef<HTMLAnchorElement | null>(null);
+      const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
+      const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-    const isNewTopic = select(() => roomContext.newTopicId === topic.id);
-    const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
+      const isNewTopic = select(() => roomContext.newTopicId === topic.id);
+      const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-    function handleNewTopicName(newName: string) {
-      updateTopic({ topicId: topic.id, input: { name: newName } });
+      const manageWrapperRef = useRef<HTMLElement | null>(null);
 
-      roomContext.editingNameTopicId = null;
+      function handleNewTopicName(newName: string) {
+        updateTopic({ topicId: topic.id, input: { name: newName } });
 
-      if (isNewTopic) {
-        roomContext.newTopicId = null;
+        roomContext.editingNameTopicId = null;
+
+        if (isNewTopic) {
+          roomContext.newTopicId = null;
+        }
       }
-    }
 
-    return (
-      <>
-        <UIFlyingTooltipWrapper>
-          <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}>
-            <UIHolder
-              ref={anchorRef}
-              className={className}
-              isActive={isActive}
-              isClosed={!!topic.closed_at}
-              onMouseEnter={showDragIcon}
-              onMouseLeave={hideDragIcon}
-            >
-              {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-              <EditableText
-                value={topic.name ?? ""}
-                isInEditMode={isInEditMode}
-                focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                onEditModeRequest={() => {
-                  roomContext.editingNameTopicId = topic.id;
-                }}
-                onExitEditModeChangeRequest={() => {
-                  if (roomContext.editingNameTopicId === topic.id) {
-                    roomContext.editingNameTopicId = null;
+      // We need to disable the Link while editing, so that selection does not trigger navigation
+      const NameWrap = useCallback(
+        (props: { children: React.ReactNode }) =>
+          isInEditMode ? (
+            <React.Fragment {...props} />
+          ) : (
+            <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }} {...props} />
+          ),
+        [isInEditMode]
+      );
+
+      return (
+        <>
+          <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
+            <NameWrap>
+              <UIHolder
+                ref={anchorRef}
+                className={className}
+                isActive={isActive}
+                isClosed={!!topic.closed_at}
+                onMouseEnter={showDragIcon}
+                onMouseLeave={hideDragIcon}
+              >
+                {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+                <EditableText
+                  value={topic.name ?? ""}
+                  isInEditMode={isInEditMode}
+                  focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+                  onEditModeRequest={() => {
+                    roomContext.editingNameTopicId = topic.id;
+                  }}
+                  onExitEditModeChangeRequest={() => {
+                    if (roomContext.editingNameTopicId === topic.id) {
+                      roomContext.editingNameTopicId = null;
+                    }
+                  }}
+                  onValueSubmit={handleNewTopicName}
+                  checkPreventClickAway={(event) =>
+                    Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
                   }
-                }}
-                onValueSubmit={handleNewTopicName}
-              />
-            </UIHolder>
-          </TopicLink>
-          {!isEditingDisabled && (
-            <UIManageTopicWrapper>
-              <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
-            </UIManageTopicWrapper>
+                />
+              </UIHolder>
+            </NameWrap>
+            {!isEditingDisabled && (
+              <UIManageTopicWrapper ref={manageWrapperRef}>
+                {isNewTopic ? (
+                  <CircleIconButton
+                    size="small"
+                    icon={<IconCross />}
+                    onClick={() => {
+                      deleteTopic();
+                    }}
+                  />
+                ) : (
+                  <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+                )}
+              </UIManageTopicWrapper>
+            )}
+          </UIFlyingTooltipWrapper>
+          {isShowingDragIcon && !isEditingDisabled && (
+            <Popover anchorRef={anchorRef} placement={"left"}>
+              <IconDragAndDrop />
+            </Popover>
           )}
-        </UIFlyingTooltipWrapper>
-        {isShowingDragIcon && !isEditingDisabled && (
-          <Popover anchorRef={anchorRef} placement={"left"}>
-            <IconDragAndDrop />
-          </Popover>
-        )}
-      </>
-    );
-  })
+        </>
+      );
+    })
+  )
 )``;
 
 const PADDING = "12px";
@@ -102,14 +156,14 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   width: 100%;
   align-items: center;
 
-  ${borderRadius.button}
+  ${theme.borderRadius.button}
 
   ${hoverActionCss}
-  
+
   ${(props) => {
     if (props.isActive) {
       return css`
-        background: ${ACTION_ACTIVE_COLOR};
+        background: ${theme.colors.interactive.selected()};
       `;
     }
   }}
@@ -158,7 +212,7 @@ const UIUnreadMessagesNotification = styled.div<{}>`
 
   height: 8px;
   width: 8px;
-  ${borderRadius.item}
+  ${theme.borderRadius.item}
 
-  background-color: ${NOTIFICATION_COLOR};
+  background-color: ${theme.colors.interactive.notification()};
 `;

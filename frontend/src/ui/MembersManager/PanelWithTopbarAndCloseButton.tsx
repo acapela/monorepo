@@ -37,7 +37,7 @@ const UIHolder = styled.div<{}>`
   gap: 32px;
   padding: 24px;
 
-  background: ${theme.colors.layout.foreground};
+  background: ${theme.colors.layout.foreground()};
   ${theme.borderRadius.modal};
   ${theme.shadow.popover}
 

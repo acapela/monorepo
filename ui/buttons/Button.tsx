@@ -83,7 +83,7 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
   justify-content: center;
   white-space: nowrap;
 
-  ${theme.font.body.spezia.medium.withExceptionalLineHeight("1.2", "Line height for buttons").build}
+  ${theme.font.body.spezia.normal.withExceptionalLineHeight("1.2", "Line height for buttons").build}
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 

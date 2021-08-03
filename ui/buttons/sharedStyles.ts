@@ -31,11 +31,11 @@ export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = 
 };
 
 export const activeTransparentButtonStyles = css`
-  color: ${theme.colors.layout.bodyText};
-  background: ${theme.colors.interactive.selected};
+  color: ${theme.colors.layout.bodyText()};
+  background: ${theme.colors.interactive.selected()};
 
   svg {
-    color: ${theme.colors.interactive.active};
+    color: ${theme.colors.interactive.active()};
   }
 `;
 
@@ -61,17 +61,17 @@ export const buttonKindSpecificStyle: Partial<Record<ButtonKind, StylesPart>> = 
     ${theme.font.inter.normal.build}
 
     background: transparent;
-    color: ${theme.colors.layout.supportingText};
+    color: ${theme.colors.layout.supportingText()};
 
     svg {
-      color: ${theme.colors.layout.supportingText};
+      color: ${theme.colors.layout.supportingText()};
     }
 
     &:hover {
-      color: ${theme.colors.layout.bodyText};
-      background: ${theme.colors.interactive.selected};
+      color: ${theme.colors.layout.bodyText()};
+      background: ${theme.colors.interactive.selected()};
       svg {
-        color: ${theme.colors.layout.bodyText};
+        color: ${theme.colors.layout.bodyText()};
       }
     }
 

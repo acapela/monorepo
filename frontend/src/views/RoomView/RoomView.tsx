@@ -1,17 +1,12 @@
 import { useRef } from "react";
 import styled, { css } from "styled-components";
-import { IconPlusSquare } from "~ui/icons";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
-import { getLastElementFromArray } from "~shared/array";
-import { generateId } from "~shared/id";
-import { borderRadius } from "~ui/baseStyles";
-import { Button } from "~ui/buttons/Button";
+import { theme } from "~ui/theme";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
@@ -48,17 +43,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
     await updateRoom({ roomId: room.id, input: { name: newName } });
   }
 
-  async function handleCreateNewTopic() {
-    const currentLastIndex = getLastElementFromArray(room.topics)?.index;
-    await startCreateNewTopicFlow({
-      name: "New topic",
-      slug: `new-topic-${generateId(5)}`,
-      roomId: room.id,
-      navigateAfterCreation: true,
-      currentLastIndex,
-    });
-  }
-
   return (
     <>
       <PageMeta title={room.name} />
@@ -75,7 +59,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                     isInEditMode={isEditingRoomName}
                     onEditModeRequest={enterNameEditMode}
                     onExitEditModeChangeRequest={exitNameEditMode}
-                    allowDoubleClickEditRequest
                   />
 
                   {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
@@ -99,18 +82,6 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
           <CardBase>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </CardBase>
-
-          <UIFlyingCloseRoomToggle>
-            <Button
-              onClick={handleCreateNewTopic}
-              isDisabled={
-                !amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }
-              }
-              icon={<IconPlusSquare />}
-            >
-              New Topic
-            </Button>
-          </UIFlyingCloseRoomToggle>
         </UIRoomInfo>
 
         <UIContentHolder>{children}</UIContentHolder>
@@ -142,8 +113,8 @@ const UIContentHolder = styled.div<{}>`
   border: 1px solid #f8f8f8;
   box-sizing: border-box;
   box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  ${borderRadius.card};
-  padding: 2rem;
+  ${theme.borderRadius.card};
+  padding: 32px;
   min-height: 0;
   min-width: 0;
 `;
@@ -161,9 +132,4 @@ const UIRoomTitle = styled.div<{}>`
     css`
       cursor: pointer;
     `}
-`;
-
-const UIFlyingCloseRoomToggle = styled.div<{}>`
-  display: flex;
-  justify-content: center;
 `;

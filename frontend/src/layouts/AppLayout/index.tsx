@@ -98,7 +98,7 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
 
   align-items: center;
   padding: 12px 24px;
-  background: ${theme.colors.layout.foreground};
+  background: ${theme.colors.layout.foreground()};
   box-shadow: ${theme.shadow.topBar};
 `;
 
@@ -140,5 +140,5 @@ const UIMainContent = styled.div<{}>`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  background: ${theme.colors.layout.background};
+  background: ${theme.colors.layout.background()};
 `;

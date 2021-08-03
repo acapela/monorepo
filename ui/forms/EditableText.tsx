@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useClickAway, useIsomorphicLayoutEffect } from "react-use";
 import styled, { css } from "styled-components";
 import { createDocumentEvent, useElementEvent } from "~shared/domEvents";
-import { useDoubleClick } from "~shared/hooks/useDoubleClick";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
@@ -11,9 +10,9 @@ interface Props {
   onValueSubmit: (newValue: string) => void;
   onEditModeRequest: () => void;
   onExitEditModeChangeRequest: () => void;
-  allowDoubleClickEditRequest?: boolean;
   focusSelectMode?: FocusSelectMode;
   className?: string;
+  checkPreventClickAway?: (event: Event) => boolean;
 }
 
 type FocusSelectMode = "cursor-at-end" | "select";
@@ -24,10 +23,9 @@ export const EditableText = styled(function EditableText({
   onValueSubmit,
   onEditModeRequest,
   onExitEditModeChangeRequest,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allowDoubleClickEditRequest = true,
   focusSelectMode = "cursor-at-end",
   className,
+  checkPreventClickAway,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -77,10 +75,6 @@ export const EditableText = styled(function EditableText({
     };
   }, [isInEditMode]);
 
-  useDoubleClick(ref, () => {
-    onEditModeRequest();
-  });
-
   useElementEvent(
     ref,
     "click",
@@ -110,8 +104,8 @@ export const EditableText = styled(function EditableText({
     return true;
   }
 
-  useClickAway(ref, () => {
-    if (!isInEditMode) return;
+  useClickAway(ref, (event) => {
+    if (checkPreventClickAway?.(event) || !isInEditMode) return;
     handleSubmit();
   });
 
@@ -126,9 +120,7 @@ export const EditableText = styled(function EditableText({
     { isEnabled: isInEditMode }
   );
 
-  return (
-    <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode}></UIHolder>
-  );
+  return <UIHolder className={className} isInEditMode={isInEditMode} ref={ref} contentEditable={isInEditMode} />;
 })``;
 
 const UIHolder = styled.span<{ isInEditMode: boolean }>`

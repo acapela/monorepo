@@ -1,30 +1,30 @@
 import { useMemo } from "react";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useRoomsQuery } from "~frontend/gql/rooms";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { createOpenRoomFilter, createUserFilter } from "~frontend/ui/rooms/filters/factories";
+import {
+  createOpenRoomFilter,
+  createUserFilter,
+  createSortByLatestActivityFilter,
+} from "~frontend/ui/rooms/filters/factories";
 import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { RoomsListGroupedByMembership, RoomsList } from "~frontend/ui/rooms/RoomsList";
+import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
 import { CreateRoomButton } from "./CreateRoomButton";
 
 const openRoomFilter = createOpenRoomFilter(true);
+const sortByLatestActivity = createSortByLatestActivityFilter();
 
 export function HomeView() {
   const user = useAssertCurrentUser();
 
   const currentUserFilter = useMemo(() => createUserFilter(user), [user]);
 
-  const [roomQuery, setFilters] = useRoomFilterVariables([openRoomFilter]);
-
-  const [rooms = []] = useRoomsQuery(roomQuery);
+  const [roomQuery] = useRoomFilterVariables([openRoomFilter, currentUserFilter, sortByLatestActivity]);
 
   return (
     <UIHolder isNarrow>
       <UIContent>
-        <RoomFilters onFiltersChange={setFilters} initialFilters={[currentUserFilter]} />
-        <RoomsList rooms={rooms} />
+        <RoomsGroupedByActivities query={roomQuery} />
       </UIContent>
       <FlyingCreateRoomButton />
     </UIHolder>
@@ -38,13 +38,8 @@ const UIContent = styled.div<{}>`
   flex-direction: column;
   align-items: stretch;
 
-  ${RoomFilters} {
-    margin-bottom: 32px;
-    align-self: center;
-  }
-
-  ${RoomsListGroupedByMembership} {
-    margin-bottom: 32px;
+  ${RoomsGroupedByActivities} {
+    margin-top: 40px;
     width: 100%;
   }
 `;
