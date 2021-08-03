@@ -3,7 +3,8 @@ import { Notification } from "../notifications/Notification";
 export interface InviteNotificationParams {
   recipientEmail: string;
   inviterName: string;
-  roomName: string;
+  invitationToJoin: "room" | "team";
+  destinationName: string;
   inviteCode: string;
 }
 
@@ -15,15 +16,20 @@ export class TeamInvitationNotification implements Notification {
   constructor(private params: InviteNotificationParams) {}
 
   getContent(): string {
-    const link = getInvitationUrl(this.params.inviteCode);
-    return `Hey!<br >
-${this.params.inviterName} has invited you to collaborate on ${this.params.roomName} using acapela, a tool for asynchronous collaboration.
-Follow this link to join the discussion: <a href="${link}">${link}</a>
-`;
+    const { inviterName, destinationName, invitationToJoin, inviteCode } = this.params;
+    const link = getInvitationUrl(inviteCode);
+
+    return [
+      "Hey!",
+      `${inviterName} has invited you to ${
+        invitationToJoin === "room" ? `collaborate on ${destinationName} room` : `join ${destinationName} team`
+      } on Acapela.`,
+      `Follow this link to sign up and join the discussion: <a href="${link}">${link}</a>`,
+    ].join("<br/>");
   }
 
   getSubject(): string {
-    return `${this.params.inviterName} has invited you to collaborate on ${this.params.roomName}`;
+    return `${this.params.inviterName} has invited you to collaborate on ${this.params.destinationName}`;
   }
 
   getRecipientEmail(): string {

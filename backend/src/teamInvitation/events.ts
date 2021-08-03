@@ -1,4 +1,4 @@
-import { TeamInvitation } from "~db";
+import { db, TeamInvitation } from "~db";
 import logger from "~shared/logger";
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
@@ -8,7 +8,7 @@ import { findUserById, getNormalizedUserName } from "../users/users";
 import { TeamInvitationNotification } from "./InviteNotification";
 
 export async function handleTeamInvitationCreated({ item: invite, userId }: HasuraEvent<TeamInvitation>) {
-  const { team_id: teamId, inviting_user_id: invitingUserId, used_at } = invite;
+  const { team_id: teamId, inviting_user_id: invitingUserId, email } = invite;
 
   if (userId !== invitingUserId) {
     throw new UnprocessableEntityError(
@@ -16,17 +16,26 @@ export async function handleTeamInvitationCreated({ item: invite, userId }: Hasu
     );
   }
 
-  if (used_at) return;
-
   const [team, inviter] = await Promise.all([findTeamById(teamId), findUserById(invitingUserId)]);
 
   if (!team || !inviter) {
     throw new UnprocessableEntityError(`Team ${teamId} or inviter ${invitingUserId} does not exist`);
   }
 
+  const roomInvitation = await db.room_invitation.findFirst({
+    where: {
+      email,
+      team_id: teamId,
+    },
+    include: {
+      room: true,
+    },
+  });
+
   const notification = new TeamInvitationNotification({
-    recipientEmail: invite.email,
-    roomName: team.name || "an acapela discussion",
+    recipientEmail: email,
+    invitationToJoin: roomInvitation ? "room" : "team",
+    destinationName: roomInvitation?.room?.name || team.name,
     inviterName: getNormalizedUserName(inviter),
     inviteCode: invite.token,
   });
