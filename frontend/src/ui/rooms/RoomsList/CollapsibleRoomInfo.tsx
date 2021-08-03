@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { routes } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -21,17 +19,18 @@ import { RouteLink } from "~frontend/router/RouteLink";
 
 interface Props {
   room: RoomBasicInfoFragment;
+  unreadMessages: number;
   topics: TopicDetailedInfoFragment[];
   className?: string;
 }
 
-export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
-  // TODO: optimize !!
-  const [space] = useSingleSpaceQuery({ id: room.space_id });
-
+export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
+  room,
+  topics,
+  className,
+  unreadMessages,
+}: Props) {
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
-
-  const unreadNotificationsCount = useRoomUnreadMessagesCount(room.id);
 
   const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
 
@@ -53,10 +52,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
               </UIRoomName>
 
               <UIRoomMetaData>
-                <ValueDescriptor
-                  keyNode={<NotificationCount value={unreadNotificationsCount} />}
-                  value={"New Messages"}
-                />
+                <ValueDescriptor keyNode={<NotificationCount value={unreadMessages} />} value={"New Messages"} />
                 <ValueDescriptor
                   keyNode={<IconComment2Dots />}
                   isIconKey
@@ -67,7 +63,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, t
                   isIconKey
                   value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
                 />
-                {space && <ValueDescriptor keyNode={<IconBox />} isIconKey value={space.name} />}
+                {<ValueDescriptor keyNode={<IconBox />} isIconKey value={room.space.name} />}
                 <AvatarList users={room.members.map((membership) => membership.user)} />
               </UIRoomMetaData>
             </UIHeadPrimary>

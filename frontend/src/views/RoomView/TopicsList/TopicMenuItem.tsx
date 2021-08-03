@@ -104,7 +104,14 @@ export const TopicMenuItem = styled<Props>(
                   value={topic.name ?? ""}
                   isInEditMode={isInEditMode}
                   focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                  onEditModeChangeRequest={() => (roomContext.editingNameTopicId = topic.id)}
+                  onEditModeRequest={() => {
+                    roomContext.editingNameTopicId = topic.id;
+                  }}
+                  onExitEditModeChangeRequest={() => {
+                    if (roomContext.editingNameTopicId === topic.id) {
+                      roomContext.editingNameTopicId = null;
+                    }
+                  }}
                   onValueSubmit={handleNewTopicName}
                   checkPreventClickAway={(event) =>
                     Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
