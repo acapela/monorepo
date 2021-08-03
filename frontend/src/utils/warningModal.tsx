@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { theme } from "~frontend/../../ui/theme";
+import { theme } from "~ui/theme";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
@@ -56,7 +56,7 @@ const UIHeader = styled.div<{}>`
 
 const UITitle = styled.p<{}>`
   ${theme.font.h3.medium.build};
-  color: ${theme.colors.status.warning};
+  color: ${theme.colors.status.warning()};
 `;
 
 const UISubtitle = styled.p<{}>`
@@ -65,5 +65,5 @@ const UISubtitle = styled.p<{}>`
 
 const UIDescription = styled.p<{}>`
   ${theme.font.body14.build};
-  color: ${theme.colors.layout.supportingText};
+  color: ${theme.colors.layout.supportingText()};
 `;

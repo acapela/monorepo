@@ -10,13 +10,13 @@ import { getIsTerminal } from "./nonTerminal";
  *
  * Before:
  * const UIComponent = styled.div<{}>`
- *   background: ${props => props.theme.colors.status.error};
+ *   background: ${props => props.theme.colors.status.error()};
  * `;
  *
  * After:
  * const UIComponent = styled.div<{}>`
- *   // `theme.colors.status.error` returns `props => props.theme.colors.status.error`
- *   background: ${theme.colors.status.error};
+ *   // `theme.colors.status.error()` returns `props => props.theme.colors.status.error()`
+ *   background: ${theme.colors.status.error()};
  * `;
  *
  */

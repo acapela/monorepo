@@ -152,6 +152,8 @@ model team_invitation {
   user                                       user      @relation(fields: [inviting_user_id], references: [id])
   team                                       team      @relation(fields: [team_id], references: [id])
   user_team_invitation_used_by_user_idTouser user?     @relation("team_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
+
+  @@unique([team_id, email], name: "team_invitation_team_id_email_key")
 }
 
 model team_member {
@@ -280,4 +282,6 @@ model room_invitation {
   room                                        room      @relation(fields: [room_id], references: [id])
   team                                        team      @relation(fields: [team_id], references: [id])
   user_room_invitation_used_by_user_idTouser  user?     @relation("room_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
+
+  @@unique([team_id, email], name: "room_invitation_team_id_email_key")
 }

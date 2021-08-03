@@ -1,6 +1,7 @@
 import { db, User } from "~db";
-import { HasuraEvent } from "../hasura";
+import { HasuraEvent } from "~backend/src/hasura";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { addTeamMember } from "~backend/src/teams/helpers";
 
 export async function handleUserCreated({ item: user }: HasuraEvent<User>) {
   await acceptAllNewUserInvitations(user);
@@ -26,21 +27,6 @@ async function acceptAllNewUserInvitations(user: User) {
 
   const usedInvitationAt = new Date();
 
-  // If a user has a room invitation and no team invitation - create one
-  if (roomInvitations.length > 0 && teamInvitations.length < 1) {
-    const [{ inviting_user_id }] = roomInvitations;
-
-    await db.team_invitation.create({
-      data: {
-        email: userEmail,
-        team_id: teamId,
-        inviting_user_id,
-        used_at: usedInvitationAt,
-        used_by_user_id: user.id,
-      },
-    });
-  }
-
   const updateInvitationBody = {
     where: {
       email: userEmail,
@@ -59,4 +45,6 @@ async function acceptAllNewUserInvitations(user: User) {
 
   // If user is accepting team invite - set it as current team for this user
   await db.user.update({ where: { id: user.id }, data: { current_team_id: teamId } });
+
+  await addTeamMember(teamId, user.id);
 }
