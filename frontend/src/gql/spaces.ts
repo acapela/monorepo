@@ -22,11 +22,9 @@ import {
 } from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
-
 import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { TeamDetailedInfoFragment } from "./teams";
-import { assert } from "~shared/assert";
 import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
