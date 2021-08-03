@@ -18,7 +18,7 @@ import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
 import { waitForAllRunningMutationsToFinish } from "./createMutation";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { ensureNoRemovedItemInCache } from "./removeItems";
+import { ensureNoRemovedItemInCache, removeRemovedItemsFromData } from "./removeItems";
 
 type QueryDefinitionOptions = RequestWithRole;
 
@@ -62,7 +62,6 @@ export function createQuery<Data, Variables>(
     variables: VoidableVariables,
     options?: SubscriptionHookOptions<Data, Variables> & SharedHookOptions
   ) {
-    const apolloClient = useApolloClient();
     const [queryData] = useQuery(variables, options);
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...{
@@ -149,17 +148,11 @@ export function createQuery<Data, Variables>(
       [subscriptionResult.data]
     );
 
-    const client = useApolloClient();
-
-    useEffect(() => {
-      ensureNoRemovedItemInCache(client.cache);
-    }, [data]);
-
     if (options?.debug) {
       console.info(`${options.debug}`, { data, queryData, subscriptionData: subscriptionResult.data });
     }
 
-    return [data, subscriptionResult] as const;
+    return [removeRemovedItemsFromData(data), subscriptionResult] as const;
   }
 
   useAsSubscription.query = useQuery;

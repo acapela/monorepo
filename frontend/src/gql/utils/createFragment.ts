@@ -114,7 +114,7 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
 
     const client = getCurrentApolloClientCache();
     getRenderedApolloClient().cache.evict({ id: fullId, broadcast: true });
-    markItemAsRemoved(fullId);
+    markItemAsRemoved(idValue);
 
     console.log("removing", { fullId });
 

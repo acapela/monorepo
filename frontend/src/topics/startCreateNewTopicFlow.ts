@@ -4,7 +4,7 @@ import { createLastItemIndex } from "~frontend/rooms/order";
 import { routes } from "~frontend/routes";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { getUUID } from "~frontend/shared/uuid";
+import { getUUID } from "~shared/uuid";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 
 interface CreateTopicInput {

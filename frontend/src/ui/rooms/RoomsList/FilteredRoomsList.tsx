@@ -11,6 +11,7 @@ interface Props {
 }
 
 export const RoomsListGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
+  console.log("rooms starts here");
   const [rooms = []] = useRoomsQuery(query, { debug: "filtered rooms list" });
 
   const user = useAssertCurrentUser();
