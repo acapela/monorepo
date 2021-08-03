@@ -6442,6 +6442,7 @@ type room {
     where: room_invitation_bool_exp
   ): room_invitation_aggregate!
   is_private: Boolean!
+  last_activity_at: timestamptz
 
   """
   An object relationship
@@ -6629,6 +6630,7 @@ input room_bool_exp {
   id: uuid_comparison_exp
   invitations: room_invitation_bool_exp
   is_private: Boolean_comparison_exp
+  last_activity_at: timestamptz_comparison_exp
   last_posted_message: room_last_posted_message_bool_exp
   members: room_member_bool_exp
   name: String_comparison_exp
@@ -6668,6 +6670,7 @@ input room_insert_input {
   id: uuid
   invitations: room_invitation_arr_rel_insert_input
   is_private: Boolean
+  last_activity_at: timestamptz
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
@@ -6698,6 +6701,11 @@ type room_invitation {
   """
   room: room!
   room_id: uuid!
+
+  """
+  An object relationship
+  """
+  team: team!
   team_id: uuid!
   token: uuid!
   used_at: date
@@ -6757,6 +6765,7 @@ input room_invitation_bool_exp {
   inviting_user_id: uuid_comparison_exp
   room: room_bool_exp
   room_id: uuid_comparison_exp
+  team: team_bool_exp
   team_id: uuid_comparison_exp
   token: uuid_comparison_exp
   used_at: date_comparison_exp
@@ -6790,6 +6799,7 @@ input room_invitation_insert_input {
   inviting_user_id: uuid
   room: room_obj_rel_insert_input
   room_id: uuid
+  team: team_obj_rel_insert_input
   team_id: uuid
   token: uuid
   used_at: date
@@ -6900,6 +6910,7 @@ input room_invitation_order_by {
   inviting_user_id: order_by
   room: room_order_by
   room_id: order_by
+  team: team_order_by
   team_id: order_by
   token: order_by
   used_at: order_by
@@ -7145,6 +7156,7 @@ type room_max_fields {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7162,6 +7174,7 @@ input room_max_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
   slug: order_by
@@ -7388,6 +7401,7 @@ type room_min_fields {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7405,6 +7419,7 @@ input room_min_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
   slug: order_by
@@ -7457,6 +7472,7 @@ input room_order_by {
   id: order_by
   invitations_aggregate: room_invitation_aggregate_order_by
   is_private: order_by
+  last_activity_at: order_by
   last_posted_message: room_last_posted_message_order_by
   members_aggregate: room_member_aggregate_order_by
   name: order_by
@@ -7513,6 +7529,11 @@ enum room_select_column {
   """
   column name
   """
+  last_activity_at
+
+  """
+  column name
+  """
   name
 
   """
@@ -7551,6 +7572,7 @@ input room_set_input {
   finished_at: timestamptz
   id: uuid
   is_private: Boolean
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7592,6 +7614,11 @@ enum room_update_column {
   column name
   """
   is_private
+
+  """
+  column name
+  """
+  last_activity_at
 
   """
   column name

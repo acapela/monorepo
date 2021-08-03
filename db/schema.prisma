@@ -86,6 +86,7 @@ model room {
   slug                            String
   source_google_calendar_event_id String?
   is_private                      Boolean           @default(false)
+  last_activity_at                DateTime?         @db.Timestamptz(6)
   user                            user              @relation(fields: [creator_id], references: [id])
   space                           space             @relation(fields: [space_id], references: [id])
   room_invitation                 room_invitation[]

@@ -61,6 +61,7 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       summary
       finished_at
       source_google_calendar_event_id
+      last_activity_at
 
       members {
         user {
@@ -205,6 +206,8 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           id: input.id!,
           members: [],
           topics: [],
+          last_activity_at: null,
+          invitations: [],
           is_private: input.is_private ?? false,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: input.name!,
