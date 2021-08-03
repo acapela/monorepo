@@ -1,6 +1,11 @@
 import { isPlainObject } from "lodash";
 
-export function fillParamsInUrl<Params>(route: string, params: Params) {
+/**
+ * Will prepare full working url from next path and record of params.
+ *
+ * eg fillParamsInUrl('/[foo]/[bar]', {foo: '1', bar: '2'}) will return `/1/2`
+ */
+export function fillParamsInUrl<Params>(route: string, params: Params): string {
   let hrefWithParams = route;
 
   if (!params) {
