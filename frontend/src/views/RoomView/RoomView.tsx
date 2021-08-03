@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import styled, { css } from "styled-components";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
@@ -15,6 +15,7 @@ import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
+import { useBoolean } from "~shared/hooks/useBoolean";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -33,7 +34,7 @@ export function RoomView(props: Props) {
 
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
-  const [isEditingRoomName, setIsEditingRoomName] = useState(false);
+  const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
   const amIMember = isCurrentUserRoomMember(room ?? undefined);
 
   const isRoomOpen = !room.finished_at;
@@ -56,7 +57,8 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                     value={room.name ?? ""}
                     onValueSubmit={handleRoomNameChange}
                     isInEditMode={isEditingRoomName}
-                    onEditModeChangeRequest={setIsEditingRoomName}
+                    onEditModeRequest={enterNameEditMode}
+                    onExitEditModeChangeRequest={exitNameEditMode}
                   />
 
                   {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
@@ -65,7 +67,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                 {amIMember && (
                   <PopoverMenuTrigger
                     options={getRoomManagePopoverOptions(room, {
-                      onEditRoomNameRequest: () => setIsEditingRoomName(true),
+                      onEditRoomNameRequest: () => enterNameEditMode(),
                     })}
                   >
                     <CircleOptionsButton />
@@ -78,7 +80,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
           </CollapsePanel>
 
           <CardBase>
-            <TopicsList key={room.id} room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
+            <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </CardBase>
         </UIRoomInfo>
 
