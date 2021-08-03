@@ -1,16 +1,22 @@
-import { runInAction } from "mobx";
-import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
-import { routes } from "~frontend/routes";
+import { runInAction } from "mobx";
+import { observer } from "mobx-react";
+import { IconPlusSquare } from "~ui/icons";
+import { VStack } from "~ui/Stack";
+import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { generateId } from "~shared/id";
+import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
+import { select } from "~shared/sharedState";
 import { RoomDetailedInfoFragment } from "~gql";
 import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { TextH6 } from "~ui/typo";
+import { routes } from "~frontend/routes";
+import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList } from "./StaticTopicsList";
 
@@ -18,6 +24,19 @@ interface Props {
   room: RoomDetailedInfoFragment;
   activeTopicId: string | null;
   isRoomOpen: boolean;
+}
+
+function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopicId: string | null) {
+  const activeTopicNumIndex = topics.findIndex((t) => t.id == activeTopicId);
+  if (activeTopicNumIndex == -1) {
+    return createLastItemIndex(topics[topics.length - 1]?.index ?? "");
+  }
+  const activeTopicIndex = topics[activeTopicNumIndex].index;
+  const nextTopic = topics[activeTopicNumIndex + 1];
+  if (!nextTopic) {
+    return getIndexBetweenCurrentAndLast(activeTopicIndex);
+  }
+  return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
 
 export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
@@ -28,6 +47,18 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
 
   const { topics, moveBetween, moveToStart, moveToEnd, isReordering } = useRoomTopicList(room.id);
   const amIMember = isCurrentUserRoomMember(room);
+
+  const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
+
+  async function handleCreateNewTopic() {
+    await startCreateNewTopicFlow({
+      name: "New topic",
+      slug: `new-topic-${generateId(5)}`,
+      roomId: room.id,
+      navigateAfterCreation: true,
+      index: getNewTopicIndex(topics, activeTopicId),
+    });
+  }
 
   useNewItemInArrayEffect(
     topics,
@@ -65,7 +96,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <LazyTopicsList
             topics={topics}
             activeTopicId={activeTopicId}
-            isDisabled={isReordering}
+            isDisabled={isEditingAnyMessage || isReordering}
             onMoveBetween={moveBetween}
             onMoveToStart={moveToStart}
             onMoveToEnd={moveToEnd}
@@ -73,6 +104,18 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
         )}
         {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
         {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
+
+        <VStack alignItems="center" justifyContent="start">
+          <UINewTopicButton
+            kind="secondary"
+            onClick={handleCreateNewTopic}
+            isDisabled={!amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }}
+            icon={<IconPlusSquare />}
+            iconPosition="start"
+          >
+            New Topic
+          </UINewTopicButton>
+        </VStack>
       </UIHolder>
     </CollapsePanel>
   );
@@ -90,3 +133,8 @@ const UIHeader = styled.div<{}>`
 `;
 
 const UINoTopicsMessage = styled.div<{}>``;
+
+const UINewTopicButton = styled(Button)`
+  margin-top: 8px;
+  padding: 8px 48px;
+`;
