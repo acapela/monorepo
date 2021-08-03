@@ -6698,6 +6698,11 @@ type room_invitation {
   """
   room: room!
   room_id: uuid!
+
+  """
+  An object relationship
+  """
+  team: team!
   team_id: uuid!
   token: uuid!
   used_at: date
@@ -6757,6 +6762,7 @@ input room_invitation_bool_exp {
   inviting_user_id: uuid_comparison_exp
   room: room_bool_exp
   room_id: uuid_comparison_exp
+  team: team_bool_exp
   team_id: uuid_comparison_exp
   token: uuid_comparison_exp
   used_at: date_comparison_exp
@@ -6790,6 +6796,7 @@ input room_invitation_insert_input {
   inviting_user_id: uuid
   room: room_obj_rel_insert_input
   room_id: uuid
+  team: team_obj_rel_insert_input
   team_id: uuid
   token: uuid
   used_at: date
@@ -6900,6 +6907,7 @@ input room_invitation_order_by {
   inviting_user_id: order_by
   room: room_order_by
   room_id: order_by
+  team: team_order_by
   team_id: order_by
   token: order_by
   used_at: order_by

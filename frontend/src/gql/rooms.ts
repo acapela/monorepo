@@ -85,7 +85,7 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
         ...TopicDetailedInfo
       }
 
-      invitations {
+      invitations(where: { used_at: { _is_null: true } }) {
         ...RoomInvitationBasicInfo
       }
     }
