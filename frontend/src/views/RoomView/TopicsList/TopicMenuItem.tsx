@@ -201,6 +201,10 @@ const UIFlyingTooltipWrapper = styled.div<{}>`
   display: flex;
   align-items: center;
 
+  :focus {
+    outline: none;
+  }
+
   @media (hover) {
     &:hover ${UIManageTopicWrapper} {
       opacity: 1;
