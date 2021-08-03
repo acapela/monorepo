@@ -27,6 +27,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className }: 
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
+        members: { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) },
       },
     });
 
