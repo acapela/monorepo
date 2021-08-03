@@ -6,7 +6,7 @@ import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
-import { RoomCriteria } from "./filter";
+import { getUsersFromRoomCriteriaList, RoomCriteria } from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
@@ -91,7 +91,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
             <ParticipantsPickerMenu
               anchorRef={buttonRef}
               onCloseRequest={() => setStage("off")}
-              selectedUsers={getSelectedUsersFromTopicFilters(filters)}
+              selectedUsers={getUsersFromRoomCriteriaList(filters)}
               onUserSelected={(user) => {
                 setStage("off");
                 handleAddFilter(createUserFilter(user));

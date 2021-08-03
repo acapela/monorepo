@@ -2,9 +2,10 @@ import React from "react";
 import { IconFilter } from "~ui/icons";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
-import { RoomCriteria } from "./filter";
+import { RoomCriteria, UserRoomCriteria } from "./filter";
+import { isNotNullish } from "~frontend/../../shared/nullish";
 
-export function createUserFilter(user: UserBasicInfoFragment): RoomCriteria {
+export function createUserFilter(user: UserBasicInfoFragment): UserRoomCriteria {
   return {
     key: `user-${user.id}`,
     label: user.name ?? "Unknown user",
@@ -12,6 +13,7 @@ export function createUserFilter(user: UserBasicInfoFragment): RoomCriteria {
     filter(room) {
       return room.members.some((member) => member.user.id === user.id);
     },
+    user,
   };
 }
 
