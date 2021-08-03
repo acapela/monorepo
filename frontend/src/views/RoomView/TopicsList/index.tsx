@@ -45,7 +45,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const spaceId = room.space_id;
   const roomContext = useRoomStoreContext();
 
-  const { topics, moveBetween, moveToStart, moveToEnd, isReordering } = useRoomTopicList(room.id);
+  const { topics, moveBetween, moveToStart, moveToEnd } = useRoomTopicList(room.id);
   const amIMember = isCurrentUserRoomMember(room);
 
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
@@ -96,7 +96,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <LazyTopicsList
             topics={topics}
             activeTopicId={activeTopicId}
-            isDisabled={isEditingAnyMessage || isReordering}
+            isDisabled={isEditingAnyMessage}
             onMoveBetween={moveBetween}
             onMoveToStart={moveToStart}
             onMoveToEnd={moveToEnd}
