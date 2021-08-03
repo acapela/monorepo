@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { MouseEvent, ReactNode } from "react";
 import styled from "styled-components";
 import { NotificationInfoFragment } from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
@@ -22,7 +22,7 @@ interface Props {
   userId: string;
   date?: Date;
   titleNode: ReactNode;
-  onClick?: () => void;
+  onClick?: (event: event) => void;
   notification: NotificationInfoFragment;
 }
 
@@ -37,9 +37,9 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
 
   const isHovered = useIsElementOrChildHovered(holderRef);
 
-  function handleClick() {
+  function handleClick(event: MouseEvent) {
     markAsRead();
-    onClick?.();
+    onClick?.(event);
   }
 
   function markAsRead() {
