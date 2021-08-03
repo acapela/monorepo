@@ -50,7 +50,7 @@ export async function handleRoomInvitationCreated({ item: invite, userId }: Hasu
   });
 }
 
-export const handleRoomInviationDeleted = async ({ item: invite }: HasuraEvent<RoomInvitation>) => {
+export const handleRoomInvitationDeleted = async ({ item: invite }: HasuraEvent<RoomInvitation>) => {
   const { team_id: teamId, email } = invite;
 
   await db.team_invitation.deleteMany({
