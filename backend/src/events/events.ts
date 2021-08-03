@@ -9,11 +9,7 @@ import { handleMessageChanges } from "~backend/src/messages/events";
 import { handleSpaceUpdates } from "~backend/src/spaces/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserCreated } from "~backend/src/users/events";
-import {
-  handleRoomMemberCreated,
-  handleRoomInvitationCreated,
-  handleRoomInvitationDeleted,
-} from "~backend/src/roomInvitation/events";
+import { handleRoomMemberCreated, handleRoomInvitationCreated } from "~backend/src/roomInvitation/events";
 import { handleAttachmentUpdates } from "~backend/src/attachments/events";
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleNotificationCreated } from "~backend/src/notifications/events";
@@ -26,7 +22,6 @@ hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates)
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("team_invitation_updates", "DELETE", handleTeamInvitationDeleted);
 hasuraEvents.addHandler("room_invitation_updates", "INSERT", handleRoomInvitationCreated);
-hasuraEvents.addHandler("room_invitation_updates", "DELETE", handleRoomInvitationDeleted);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
 hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);

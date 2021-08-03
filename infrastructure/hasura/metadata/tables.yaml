@@ -583,8 +583,6 @@
         enable_manual: false
         insert:
           columns: "*"
-        delete:
-          columns: "*"
       retry_conf:
         num_retries: 0
         interval_sec: 10
