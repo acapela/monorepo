@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const express = require("express");
+const http = require("http");
 const next = require("next");
-const proxy = require("express-http-proxy");
+const expressProxy = require("express-http-proxy");
 const dotenv = require("dotenv");
 const path = require("path");
 const Sentry = require("@sentry/node");
+const httpProxy = require("http-proxy");
 
 const stage = process.env.STAGE;
 if (["staging", "production"].includes(stage)) {
@@ -33,20 +35,32 @@ function proxyReqPathResolverWithPrefix(prefix) {
   prefix = prefix || "/";
   return (req) => {
     const parts = req.url.split("?");
-    const newRoute = prefix + req.params[0] + (parts.length == 2 ? "?" + parts[1] : "");
+    const newRoute = prefix + req.params[0] + (parts.length === 2 ? "?" + parts[1] : "");
     return newRoute;
   };
 }
 
 const config = {
-  apiEndpoint: process.env.BACKEND_HOST || "https://api-staging.acape.la",
-  hasuraEndpoint: process.env.HASURA_HOST || "https://backend-staging.acape.la",
+  apiEndpoint: process.env.BACKEND_HOST || "http://api",
+  hasuraEndpoint: process.env.HASURA_HOST || "http://hasura",
+  hasuraWsEndpoint: process.env.HASURA_WEBSOCKET_PROXY_ENDPOINT || "ws://hasura",
 };
 
 async function start() {
   console.info("Starting server...");
   console.info(config);
+
   const app = express();
+  const server = http.createServer(app);
+
+  const wsProxy = httpProxy.createProxyServer({
+    target: config.hasuraWsEndpoint,
+    ws: true,
+  });
+  server.on("upgrade", function (req, socket, head) {
+    console.info("WebSocket proxy request:", req.url);
+    wsProxy.ws(req, socket, head);
+  });
 
   app.use(Sentry.Handlers.requestHandler());
 
@@ -54,11 +68,11 @@ async function start() {
 
   app.use(
     "/graphql/?*",
-    proxy(config.hasuraEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/v1/graphql/") })
+    expressProxy(config.hasuraEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/v1/graphql/") })
   );
   app.use(
     "/api/backend/?*",
-    proxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/api/") })
+    expressProxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/api/") })
   );
 
   app.all("*", (req, res) => handle(req, res));
@@ -66,7 +80,7 @@ async function start() {
   app.use(Sentry.Handlers.errorHandler());
 
   const port = process.env.FRONTEND_PORT || 3000;
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.info(`Server started ${port} prod=${production}`);
   });
 }
