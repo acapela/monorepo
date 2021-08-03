@@ -17,6 +17,7 @@ import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomIn
 import { addToast } from "~ui/toasts/data";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
+import { useCurrentTeamDetails } from "~frontend/gql/teams";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -25,6 +26,7 @@ interface Props {
 
 export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const teamId = useAssertCurrentTeamId();
+  const [team] = useCurrentTeamDetails();
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
   const amIMember = isCurrentUserRoomMember(room);
@@ -56,9 +58,14 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
 
+  const [shouldShowWarning, setShouldShowWarning] = useState(false);
+
   const [requestedEmail, setRequestedEmail] = useState<string | null>(null);
 
-  const closeInviteWarning = () => setRequestedEmail(null);
+  const closeInviteWarning = () => {
+    setShouldShowWarning(false);
+    setRequestedEmail(null);
+  };
 
   const handleInviteByEmail = () => {
     const email = requestedEmail;
@@ -84,10 +91,21 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     createRoomInvitation({ roomId: room.id, teamId, email });
   };
 
+  const handleInviteByEmailRequest = (requestedEmail: string) => {
+    setRequestedEmail(requestedEmail);
+
+    const teamInvitationsEmails = new Set(team?.invitations.map(({ email }) => email));
+    if (teamInvitationsEmails.has(requestedEmail)) {
+      handleInviteByEmail();
+    } else {
+      setShouldShowWarning(true);
+    }
+  };
+
   return (
     <>
       <AnimatePresence>
-        {requestedEmail && (
+        {shouldShowWarning && (
           <WarningModal
             warning="Just a heads-up..."
             title="Adding new team member"
@@ -111,7 +129,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
             onRemoveUser={handleLeave}
             invitations={room.invitations}
             onRemoveInvitation={(id) => removeRoomInvitation({ id })}
-            onInviteByEmail={setRequestedEmail}
+            onInviteByEmail={handleInviteByEmailRequest}
           />
         )}
       </AnimatePresence>
