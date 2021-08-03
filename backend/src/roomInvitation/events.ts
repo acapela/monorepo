@@ -41,13 +41,19 @@ export async function handleRoomInvitationCreated({ item: invite, userId }: Hasu
   }
 
   // if someone gets invited to a room, he automatically gets invited to the team also
-  await db.team_invitation.create({
-    data: {
-      email,
-      team_id: teamId,
-      inviting_user_id: invitingUserId,
-    },
+  const teamInvitation = {
+    email,
+    team_id: teamId,
+    inviting_user_id: invitingUserId,
+  };
+  const existingTeamInvitation = await db.team_invitation.findFirst({
+    where: teamInvitation,
   });
+  if (!existingTeamInvitation) {
+    await db.team_invitation.create({
+      data: teamInvitation,
+    });
+  }
 }
 
 export const handleRoomInvitationDeleted = async ({ item: invite }: HasuraEvent<RoomInvitation>) => {
