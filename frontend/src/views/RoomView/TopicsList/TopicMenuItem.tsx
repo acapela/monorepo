@@ -64,8 +64,8 @@ export const TopicMenuItem = styled<Props>(
 
       const manageWrapperRef = useRef<HTMLElement | null>(null);
 
-      async function handleNewTopicName(newName: string) {
-        await updateTopic({ topicId: topic.id, input: { name: newName } });
+      function handleNewTopicName(newName: string) {
+        updateTopic({ topicId: topic.id, input: { name: newName } });
 
         roomContext.editingNameTopicId = null;
 

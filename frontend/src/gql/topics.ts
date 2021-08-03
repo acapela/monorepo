@@ -278,6 +278,10 @@ export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
         input.slug = slugify(input.name);
       }
     },
+    optimisticResponse({ topicId, input }) {
+      const topic = TopicDetailedInfoFragment.assertRead(topicId);
+      return { __typename: "mutation_root", topic: input.name ? { ...topic, name: input.name } : topic };
+    },
     onOptimisticOrActualResponse(topic) {
       RoomDetailedInfoFragment.update(topic.room.id, (data) => {
         optimisticallySortTopics(data.topics);
