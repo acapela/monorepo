@@ -1,18 +1,15 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
-import { useRoomsQuery } from "~frontend/gql/rooms";
+import { useTeamRoomsMessagesCount } from "~frontend/utils/unreadMessages";
+import { RoomDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { useTeamRoomsMessagesCount } from "~frontend/utils/unreadMessages";
 
 interface Props {
   className?: string;
-  query: RoomsQueryVariables;
+  rooms: RoomDetailedInfoFragment[];
 }
 
-export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, query }: Props) {
-  const [rooms = []] = useRoomsQuery(query);
-
+export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, rooms }: Props) {
   const roomUnreadMessages = useTeamRoomsMessagesCount();
 
   const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomDetailedInfoFragment>(

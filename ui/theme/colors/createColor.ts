@@ -44,6 +44,10 @@ export type ColorGetter = (modifier?: (mods: Record<string, Modifier>) => Array<
 export function createColor(color: Color): ColorGetter {
   return function (modifierHandler?: (mods: Record<string, Modifier>) => Array<(color: Color) => Color>): Color {
     if (modifierHandler) {
+      if (typeof modifierHandler !== "function") {
+        console.warn(`Color modifier handler is not a function`, { modifierHandler });
+        return color;
+      }
       return modifierHandler(modifiers).reduce((resultingColor, nextModifier) => nextModifier(resultingColor), color);
     }
     return color;

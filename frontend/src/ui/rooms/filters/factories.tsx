@@ -2,68 +2,63 @@ import React from "react";
 import { IconFilter } from "~ui/icons";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
-import { BasicFilter, UserFilter } from "./filter";
+import { RoomCriteria } from "./filter";
 
-export function createUserFilter(user: UserBasicInfoFragment): UserFilter {
+export function createUserFilter(user: UserBasicInfoFragment): RoomCriteria {
   return {
     key: `user-${user.id}`,
-    type: "user",
-    user,
     label: user.name ?? "Unknown user",
     icon: <UserAvatar user={user} size="small" />,
-    whereApplier(where) {
-      if (!where._and) where._and = [];
-      where._and.push({ members: { user_id: { _eq: user.id } } });
+    filter(room) {
+      return room.members.some((member) => member.user.id === user.id);
     },
   };
 }
 
-export function createSortByLatestActivityFilter(): BasicFilter {
+export function createSortByLatestActivityFilter(): RoomCriteria {
   return {
     key: "latest-activity",
     label: "Sort by latest activity",
     icon: <IconFilter />,
-    orderGetter() {
-      return {
-        last_posted_message: {
-          last_posted_message_time: "desc",
-        },
-      };
+    sorter(room) {
+      if (!room.last_activity_at) {
+        return null;
+      }
+
+      return new Date(room.last_activity_at);
     },
   };
 }
 
-export function createSortByDueDateFilter(): BasicFilter {
+export function createSortByDueDateFilter(): RoomCriteria {
   return {
     key: "due-date",
     label: "Sort by due date",
     icon: <IconFilter />,
-    orderGetter() {
-      return { deadline: "asc" };
+    sorter(room) {
+      if (!room.deadline) return null;
+
+      return new Date(room.deadline);
     },
   };
 }
 
-export function createOpenRoomFilter(isOpen: boolean): BasicFilter {
+export function createOpenRoomFilter(requestIsOpen: boolean): RoomCriteria {
   return {
     key: "open-room-filter",
-    whereApplier(where) {
-      if (!where.finished_at) where.finished_at = {};
-      where.finished_at = {
-        _is_null: isOpen,
-      };
+    filter(room) {
+      const isOpen = !!room.finished_at;
+
+      return isOpen === requestIsOpen;
     },
   };
 }
 
-export function createSpaceFilter(spaceId: string): BasicFilter {
+export function createSpaceFilter(spaceId: string): RoomCriteria {
   return {
     key: "space-filter",
-    whereApplier(where) {
-      if (!where.space_id) where.space_id = {};
-      where.space_id = {
-        _eq: spaceId,
-      };
+    filter(room) {
+      return room.space_id === spaceId;
     },
   };
 }

@@ -4,14 +4,14 @@ import { useRoomsQuery } from "~frontend/gql/rooms";
 import { groupByFilter } from "~shared/groupByFilter";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomsListCategory } from "./RoomsListCategory";
+import { RoomCriteria } from "../filters/filter";
 
 interface Props {
   className?: string;
-  query: RoomsQueryVariables;
+  rooms: RoomDetailedInfoFragment[];
 }
 
-export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ className, query }: Props) {
-  const [rooms = []] = useRoomsQuery(query);
+export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ className, rooms }: Props) {
   const user = useAssertCurrentUser();
 
   const [joinedRooms, notJoinedRooms] = groupByFilter<RoomDetailedInfoFragment>(rooms, (room) => {

@@ -2,36 +2,20 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { getIsUserFilter, RoomFilter } from "./filter";
-
 import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
+import { RoomCriteria } from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
-  initialFilters?: RoomFilter[];
-  onFiltersChange: (filters: RoomFilter[]) => void;
+  initialFilters?: RoomCriteria[];
+  onFiltersChange: (filters: RoomCriteria[]) => void;
   className?: string;
-}
-
-function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
-  const selectedMembers: UserBasicInfoFragment[] = [];
-
-  for (const filter of filters) {
-    if (!getIsUserFilter(filter)) {
-      continue;
-    }
-
-    selectedMembers.push(filter.user);
-  }
-
-  return selectedMembers;
 }
 
 export const RoomFilters = styled(function RecentTopicFilters({
@@ -39,13 +23,13 @@ export const RoomFilters = styled(function RecentTopicFilters({
   className,
   initialFilters = [],
 }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>(initialFilters);
+  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomCriteria>(initialFilters);
 
-  function removeFilter(filterToRemove: RoomFilter) {
+  function removeFilter(filterToRemove: RoomCriteria) {
     applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
   }
 
-  function handleAddFilter(filterToAdd: RoomFilter) {
+  function handleAddFilter(filterToAdd: RoomCriteria) {
     if (hasFilter(filterToAdd)) {
       return;
     }
@@ -53,7 +37,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
     addFilter(filterToAdd);
   }
 
-  function hasFilter(filterToCheck: RoomFilter) {
+  function hasFilter(filterToCheck: RoomCriteria) {
     return filters.some((existingFilter) => existingFilter.key === filterToCheck.key);
   }
 
