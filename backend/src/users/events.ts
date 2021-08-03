@@ -44,4 +44,11 @@ async function acceptAllNewUserInvitations(user: User) {
 
   // If user is accepting team invite - set it as current team for this user
   await db.user.update({ where: { id: user.id }, data: { current_team_id: teamId } });
+
+  await db.team_member.create({
+    data: {
+      team_id: teamId,
+      user_id: user.id,
+    },
+  });
 }
