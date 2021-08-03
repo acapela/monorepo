@@ -54,8 +54,17 @@ export function buildThemeProxy(baseTheme: Theme) {
           */
         return (...args: unknown[]) =>
           (props: { theme: Theme }) => {
-            const fn = get(props.theme, [...this.path, propertyName]);
-            return fn.call(target, ...args);
+            const fullPath = [...this.path, propertyName];
+            const fn = get(props.theme, fullPath);
+            try {
+              return fn.call(target, ...args);
+            } catch (e) {
+              throw new Error(
+                `[Theme] Failed to run utility function "theme.${fullPath.join(
+                  "."
+                )}". Possible solution: Add a function call. Example: \`\${theme.${fullPath.join(".")}()}\``
+              );
+            }
           };
       }
 
