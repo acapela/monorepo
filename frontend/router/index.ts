@@ -17,7 +17,7 @@ export const routes = {
     roomId: "string",
     topicId: "string",
   }),
-  invitePage: createRoute("/invite/[inviteCode]", { inviteCode: "string" }),
+  invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 
 export function useIsAnyRouteActive(paths: Array<string>) {
