@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
-import { useRoomsQuery } from "~frontend/gql/rooms";
-import { groupByFilter } from "~shared/groupByFilter";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RoomDetailedInfoFragment } from "~gql";
+import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { RoomCriteria } from "../filters/filter";
+import { RoomWithActivities, useRoomsWithActivities } from "./useRoomsWithActivities";
 
 interface Props {
   className?: string;
@@ -14,7 +13,9 @@ interface Props {
 export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ className, rooms }: Props) {
   const user = useAssertCurrentUser();
 
-  const [joinedRooms, notJoinedRooms] = groupByFilter<RoomDetailedInfoFragment>(rooms, (room) => {
+  const roomsWithActivities = useRoomsWithActivities(rooms);
+
+  const [joinedRooms, notJoinedRooms] = groupByFilter<RoomWithActivities>(roomsWithActivities, ({ room }) => {
     return room.members.some((member) => member.user.id === user.id);
   });
 

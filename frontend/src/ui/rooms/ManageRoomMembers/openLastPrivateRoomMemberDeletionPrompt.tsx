@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { deleteRoom } from "~frontend/gql/rooms";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { WarningModal } from "~frontend/utils/warningModal";

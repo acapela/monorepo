@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { useTeamRoomsMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
+import { RoomWithActivities, useRoomsWithActivities } from "./useRoomsWithActivities";
 
 interface Props {
   className?: string;
@@ -10,11 +10,11 @@ interface Props {
 }
 
 export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, rooms }: Props) {
-  const roomUnreadMessages = useTeamRoomsMessagesCount();
+  const roomsWithActivities = useRoomsWithActivities(rooms);
 
-  const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomDetailedInfoFragment>(
-    rooms,
-    (room) => roomUnreadMessages[room.id] > 0
+  const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomWithActivities>(
+    roomsWithActivities,
+    (room) => room.unreadMessages > 0
   );
 
   return (

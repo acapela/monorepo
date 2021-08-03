@@ -44,7 +44,7 @@ const UIContent = styled.div<{}>`
   align-items: stretch;
 
   ${RoomsGroupedByActivities} {
-    margin-top: 40px;
+    margin: 40px 0;
     width: 100%;
   }
 `;

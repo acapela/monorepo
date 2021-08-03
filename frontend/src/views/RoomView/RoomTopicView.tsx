@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { TopicView } from "../topic/TopicView";
 import { RoomView } from "./RoomView";
 import { RoomDetailedInfoFragment } from "~gql";

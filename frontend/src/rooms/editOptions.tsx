@@ -7,7 +7,7 @@ import { openUIPrompt } from "~frontend/utils/prompt";
 import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock } from "~ui/icons";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -27,6 +27,8 @@ export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: M
 }
 
 export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
+  routes.space.prefetch({ spaceId: room.space_id });
+
   const didConfirm = await openConfirmPrompt({
     title: `Remove room`,
     description: (
@@ -39,9 +41,9 @@ export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
 
   if (!didConfirm) return;
 
-  await routes.space.push({ spaceId: room.space_id });
-
   await deleteRoom({ roomId: room.id });
+
+  await routes.space.push({ spaceId: room.space_id });
 }
 
 type isRoomOpen = boolean;
