@@ -60,6 +60,7 @@
     "Userback",
     "acapela",
     "autoLinks",
+    "buildinfo",
     "displayer",
     "gmail",
     "godaddy",
@@ -67,11 +68,11 @@
     "immer",
     "nextauth",
     "pino",
+    "preconnect",
+    "prefetch",
     "sendgrid",
     "sonix",
     "spezia",
-    "timestamptz",
-    "preconnect",
-    "buildinfo"
+    "timestamptz"
   ]
 }

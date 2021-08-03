@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import styled from "styled-components";
 import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -9,6 +8,8 @@ import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
+import { RouteLink } from "~frontend/router/RouteLink";
+import { routes } from "~frontend/router";
 
 interface Props {
   space: SpaceBasicInfoFragment;
@@ -17,16 +18,11 @@ interface Props {
 export function SpaceCard({ space }: Props) {
   const { editNameWithModal, isCurrentUserMember, join, leave, remove } = useSpaceManager(space);
 
-  const router = useRouter();
   const user = useAssertCurrentUser();
 
-  function handleOpen() {
-    router.push(`space/${space.id}`);
-  }
-
   return (
-    <>
-      <UIHolder isClickable onClick={handleOpen}>
+    <RouteLink route={routes.space} params={{ spaceId: space.id }}>
+      <UIHolder>
         {isCurrentUserMember && (
           <CornerOptionsMenu
             options={[
@@ -56,7 +52,7 @@ export function SpaceCard({ space }: Props) {
           </UIMembers>
         </UIInfo>
       </UIHolder>
-    </>
+    </RouteLink>
   );
 }
 

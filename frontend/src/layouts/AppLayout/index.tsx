@@ -2,7 +2,7 @@ import Link from "next/link";
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { routes, useIsAnyRouteActive } from "~frontend/routes";
+import { routes, useIsAnyRouteActive } from "~frontend/router";
 import { SmallLogo } from "~frontend/ui/Logo";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";

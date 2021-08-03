@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
@@ -20,6 +20,7 @@ import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlo
 import { generateId } from "~shared/id";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { select } from "~shared/sharedState";
+import { RouteLink } from "~frontend/router/RouteLink";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -96,11 +97,11 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
             Topics
           </TextH6>
           {!isRoomOpen && (
-            <routes.spaceRoomSummary.Link params={{ roomId, spaceId }}>
+            <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
               <Button size="small" kind="secondary" ref={buttonRef}>
                 Room summary
               </Button>
-            </routes.spaceRoomSummary.Link>
+            </RouteLink>
           )}
         </UIHeader>
       }

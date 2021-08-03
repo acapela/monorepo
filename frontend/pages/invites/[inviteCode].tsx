@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
@@ -10,7 +10,7 @@ import { useRoomInvitationViewQuery } from "~frontend/gql/roomInvitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();
-  const { inviteCode } = routes.invitePage.useParams().route;
+  const { inviteCode } = routes.invitePage.useAssertParams().route;
 
   assert(inviteCode, "Invite code required");
 

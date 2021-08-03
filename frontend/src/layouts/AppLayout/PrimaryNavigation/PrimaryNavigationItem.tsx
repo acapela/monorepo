@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import { useIsRoutePathActive } from "~frontend/routes";
+import { useIsRoutePathActive } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { activeTransparentButtonStyles } from "~ui/buttons/sharedStyles";
 

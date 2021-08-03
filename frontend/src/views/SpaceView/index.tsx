@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useCreateRoomMutation } from "~frontend/gql/rooms";
 import { useIsCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { Button } from "~ui/buttons/Button";
 import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
