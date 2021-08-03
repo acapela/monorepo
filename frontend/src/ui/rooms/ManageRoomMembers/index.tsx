@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
@@ -60,15 +60,15 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const [shouldShowWarning, setShouldShowWarning] = useState(false);
 
-  const [requestedEmail, setRequestedEmail] = useState<string | null>(null);
+  const requestedEmail = useRef<string | null>(null);
 
   const closeInviteWarning = () => {
     setShouldShowWarning(false);
-    setRequestedEmail(null);
+    requestedEmail.current = null;
   };
 
   const handleInviteByEmail = () => {
-    const email = requestedEmail;
+    const email = requestedEmail.current;
     if (!email) return;
 
     closeInviteWarning();
@@ -91,11 +91,11 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     createRoomInvitation({ roomId: room.id, teamId, email });
   };
 
-  const handleInviteByEmailRequest = (requestedEmail: string) => {
-    setRequestedEmail(requestedEmail);
+  const handleInviteByEmailRequest = (email: string) => {
+    requestedEmail.current = email;
 
     const teamInvitationsEmails = new Set(team?.invitations.map(({ email }) => email));
-    if (teamInvitationsEmails.has(requestedEmail)) {
+    if (teamInvitationsEmails.has(email)) {
       handleInviteByEmail();
     } else {
       setShouldShowWarning(true);
@@ -120,7 +120,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
             </UIWarningOptions>
           </WarningModal>
         )}
-        {isPickingUser && !requestedEmail && (
+        {isPickingUser && !shouldShowWarning && (
           <MembersManagerModal
             title={"Invite your team to this room"}
             currentUsers={members}
