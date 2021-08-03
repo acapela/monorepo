@@ -1,8 +1,10 @@
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { createTopic } from "~frontend/gql/topics";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { getUUID } from "~shared/uuid";
+import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 
 interface CreateTopicInput {
   roomId: string;
@@ -37,8 +39,11 @@ export async function startCreateNewTopicFlow({
     return;
   }
 
-  const [topic] = await createTopic({
+  const topicId = getUUID();
+
+  const createTopicPromise = createTopic({
     input: {
+      id: topicId,
       name: topicName,
       slug,
       index,
@@ -46,12 +51,16 @@ export async function startCreateNewTopicFlow({
     },
   });
 
-  if (!topic) {
-    return;
+  const room = RoomBasicInfoFragment.read(roomId);
+
+  if (navigateAfterCreation && room) {
+    routes.spaceRoomTopic.push({ topicId, spaceId: room.space_id, roomId: room.id });
   }
 
-  if (navigateAfterCreation) {
-    routes.spaceRoomTopic.push({ topicId: topic.id, spaceId: topic.room.space_id, roomId: topic.room.id });
+  const [topic] = await createTopicPromise;
+
+  if (!topic) {
+    return;
   }
 
   return topic;

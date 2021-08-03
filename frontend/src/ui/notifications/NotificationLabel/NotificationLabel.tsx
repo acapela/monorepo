@@ -1,5 +1,5 @@
 import { NotificationInfoFragment } from "~gql";
-import { routes } from "~frontend/routes";
+import { routes, RouteLink } from "~frontend/router";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";
 import {
@@ -56,18 +56,17 @@ function MentionNotificationLabel({
   if (!topic || !mentioningUser) return null;
 
   return (
-    <NotificationPlainLabel
-      notification={notification}
-      titleNode={
-        <>
-          <strong>{mentioningUser.name}</strong> mentioned you in the topic <strong>{topic.name}</strong>
-        </>
-      }
-      userId={mentionedByUserId}
-      onClick={() => {
-        routes.spaceRoomTopic.push({ topicId, spaceId: topic.room.space_id, roomId: topic.room.id });
-      }}
-    />
+    <RouteLink route={routes.spaceRoomTopic} params={{ topicId, spaceId: topic.room.space_id, roomId: topic.room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{mentioningUser.name}</strong> mentioned you in the topic <strong>{topic.name}</strong>
+          </>
+        }
+        userId={mentionedByUserId}
+      />
+    </RouteLink>
   );
 }
 
@@ -81,18 +80,17 @@ function TopicClosedNotificationLabel({
   if (!topic || !closingUser) return null;
 
   return (
-    <NotificationPlainLabel
-      notification={notification}
-      titleNode={
-        <>
-          <strong>{closingUser.name}</strong> closed the topic <strong>{topic.name}</strong>
-        </>
-      }
-      userId={closedByUserId}
-      onClick={() => {
-        routes.spaceRoomTopic.push({ topicId, spaceId: topic.room.space_id, roomId: topic.room.id });
-      }}
-    />
+    <RouteLink route={routes.spaceRoomTopic} params={{ topicId, spaceId: topic.room.space_id, roomId: topic.room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{closingUser.name}</strong> closed the topic <strong>{topic.name}</strong>
+          </>
+        }
+        userId={closedByUserId}
+      />
+    </RouteLink>
   );
 }
 
@@ -106,18 +104,17 @@ function AddedToTopicClosedNotificationLabel({
   if (!topic || !addedByUser) return null;
 
   return (
-    <NotificationPlainLabel
-      notification={notification}
-      titleNode={
-        <>
-          <strong>{addedByUser.name}</strong> added you to the topic <strong>{topic.name}</strong>
-        </>
-      }
-      userId={addedByUser.id}
-      onClick={() => {
-        routes.spaceRoomTopic.push({ topicId, spaceId: topic.room.space_id, roomId: topic.room.id });
-      }}
-    />
+    <RouteLink route={routes.spaceRoomTopic} params={{ topicId, spaceId: topic.room.space_id, roomId: topic.room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{addedByUser.name}</strong> added you to the topic <strong>{topic.name}</strong>
+          </>
+        }
+        userId={addedByUser.id}
+      />
+    </RouteLink>
   );
 }
 
@@ -132,18 +129,17 @@ function RoomClosedNotificationLabel({
   if (!room || !closingUser) return null;
 
   return (
-    <NotificationPlainLabel
-      notification={notification}
-      titleNode={
-        <>
-          <strong>{closingUser.name}</strong> closed the room <strong>{room.name}</strong>
-        </>
-      }
-      userId={closedByUserId}
-      onClick={() => {
-        routes.spaceRoom.push({ spaceId: room.space_id, roomId: room.id });
-      }}
-    />
+    <RouteLink route={routes.spaceRoom} params={{ spaceId: room.space_id, roomId: room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{closingUser.name}</strong> closed the room <strong>{room.name}</strong>
+          </>
+        }
+        userId={closedByUserId}
+      />
+    </RouteLink>
   );
 }
 
@@ -157,17 +153,16 @@ function AddedToRoomClosedNotificationLabel({
   if (!room || !addingUser) return null;
 
   return (
-    <NotificationPlainLabel
-      notification={notification}
-      titleNode={
-        <>
-          <strong>{addingUser.name}</strong> added you to the room <strong>{room.name}</strong>
-        </>
-      }
-      userId={addedByUserId}
-      onClick={() => {
-        routes.spaceRoom.push({ spaceId: room.space_id, roomId: room.id });
-      }}
-    />
+    <RouteLink route={routes.spaceRoom} params={{ spaceId: room.space_id, roomId: room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{addingUser.name}</strong> added you to the room <strong>{room.name}</strong>
+          </>
+        }
+        userId={addedByUserId}
+      />
+    </RouteLink>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { routes } from "~frontend/routes";
+import { routes, RouteLink } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
@@ -40,35 +40,33 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
           <UICollapseHolder isOpened={isOpen}>
             <CollapseToggleButton isOpened={isOpen} onToggle={toggleIsOpen} />
           </UICollapseHolder>
-          <UIHeadPrimary
-            onClick={() => {
-              routes.spaceRoom.push({ roomId: room.id, spaceId: room.space_id });
-            }}
-          >
-            <UIRoomName>
-              {room.name}{" "}
-              {room.source_google_calendar_event_id && (
-                <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
-              )}
-              {room.is_private && <PrivateTag />}
-            </UIRoomName>
+          <RouteLink route={routes.spaceRoom} params={{ roomId: room.id, spaceId: room.space_id }}>
+            <UIHeadPrimary>
+              <UIRoomName>
+                {room.name}{" "}
+                {room.source_google_calendar_event_id && (
+                  <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
+                )}
+                {room.is_private && <PrivateTag />}
+              </UIRoomName>
 
-            <UIRoomMetaData>
-              <ValueDescriptor keyNode={<NotificationCount value={unreadMessages} />} value={"New Messages"} />
-              <ValueDescriptor
-                keyNode={<IconComment2Dots />}
-                isIconKey
-                value={`${topics.length} Topic${topics.length > 1 ? "s" : ""}`}
-              />
-              <ValueDescriptor
-                keyNode={<IconCalendarDates />}
-                isIconKey
-                value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
-              />
-              {<ValueDescriptor keyNode={<IconBox />} isIconKey value={room.space.name} />}
-              <AvatarList users={room.members.map((membership) => membership.user)} />
-            </UIRoomMetaData>
-          </UIHeadPrimary>
+              <UIRoomMetaData>
+                <ValueDescriptor keyNode={<NotificationCount value={unreadMessages} />} value={"New Messages"} />
+                <ValueDescriptor
+                  keyNode={<IconComment2Dots />}
+                  isIconKey
+                  value={`${topics.length} Topic${topics.length > 1 ? "s" : ""}`}
+                />
+                <ValueDescriptor
+                  keyNode={<IconCalendarDates />}
+                  isIconKey
+                  value={niceFormatDate(new Date(room.deadline), { showWeekDay: "short" })}
+                />
+                {<ValueDescriptor keyNode={<IconBox />} isIconKey value={room.space.name} />}
+                <AvatarList users={room.members.map((membership) => membership.user)} />
+              </UIRoomMetaData>
+            </UIHeadPrimary>
+          </RouteLink>
         </UIHead>
         {isOpen && (
           <UICollapsedItems>

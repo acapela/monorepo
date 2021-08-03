@@ -1,5 +1,5 @@
 import React from "react";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { RoomPage } from "~frontend/rooms/RoomPage";
 
 export function RoomOrTopicPage() {

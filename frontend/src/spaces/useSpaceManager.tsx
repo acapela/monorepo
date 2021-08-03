@@ -1,7 +1,7 @@
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconSelection } from "~ui/icons";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
   useEditSpaceMutation,
@@ -64,6 +64,7 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
   }
 
   async function remove() {
+    routes.spaces.prefetch({});
     const didConfirm = await openConfirmPrompt({
       title: `Remove space`,
       description: (

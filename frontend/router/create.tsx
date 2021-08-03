@@ -1,37 +1,10 @@
 import { pick } from "lodash";
-import NextLink from "next/link";
 import router, { NextRouter, useRouter } from "next/router";
+import { assertDefined } from "~shared/assert";
 
-import { ComponentType } from "react";
-import { ReactNode } from "react";
 import { groupByFilter } from "~shared/groupByFilter";
-
-type RouteParamValueType = "string" | "number";
-
-type RouteParamType = RouteParamValueType | [RouteParamValueType];
-
-type RouteParamsDefinition = Record<string, RouteParamType>;
-
-type InferRouteParamValueType<V extends RouteParamValueType> = V extends "string"
-  ? string
-  : V extends "number"
-  ? number
-  : never;
-
-type InferRouteParamType<T extends RouteParamType> = T extends RouteParamValueType
-  ? InferRouteParamValueType<T>
-  : T extends [RouteParamValueType]
-  ? Array<InferRouteParamValueType<T[0]>>
-  : never;
-
-type InferParamsFromDefinition<D extends RouteParamsDefinition> = {
-  [key in keyof D]: InferRouteParamType<D[key]>;
-};
-
-interface LinkProps<RouteParams> {
-  params: RouteParams;
-  children: ReactNode;
-}
+import { InferParamsFromDefinition, RouteParamsDefinition } from "./params";
+import { fillParamsInUrl } from "./utils";
 
 interface UrlParams<RouteParams> {
   route: RouteParams;
@@ -40,13 +13,14 @@ interface UrlParams<RouteParams> {
 
 export interface Route<RouteParams> {
   path: string;
-  useParams(): UrlParams<RouteParams>;
+  useParams(): UrlParams<RouteParams> | null;
+  useAssertParams(): UrlParams<RouteParams>;
   push(params: RouteParams): Promise<boolean>;
+  prefetch(params: RouteParams): Promise<void>;
   replace(params: RouteParams, queryParams?: Record<string, string>): Promise<boolean>;
   useIsActive(): boolean;
   getIsActive(): boolean;
   isMatchingRoute(routeToCheck: string): boolean;
-  Link: ComponentType<LinkProps<RouteParams>>;
   getUrlWithParams(params: RouteParams): string;
 }
 
@@ -59,8 +33,12 @@ export function createRoute<D extends RouteParamsDefinition>(
   const requiredRouteKeys = Object.keys(definition);
   const isRouteKey = (paramKey: string) => requiredRouteKeys.includes(paramKey);
 
-  function useParams(): UrlParams<RouteParams> {
+  function useParams(): UrlParams<RouteParams> | null {
     const router = useRouter();
+
+    if (router.pathname !== path) {
+      return null;
+    }
 
     const allParams = router.query;
 
@@ -76,6 +54,16 @@ export function createRoute<D extends RouteParamsDefinition>(
       route: pick(allParams, routeKeys),
       query: pick(allParams, queryKeys),
     } as UrlParams<RouteParams>;
+  }
+
+  function useAssertParams(): UrlParams<RouteParams> {
+    const router = useRouter();
+    const params = useParams();
+
+    return assertDefined(
+      params,
+      `Cannot use useAssertParams for different route than current one (requested for: ${path}, current: ${router.pathname})`
+    );
   }
 
   function useIsActive() {
@@ -102,23 +90,13 @@ export function createRoute<D extends RouteParamsDefinition>(
     return router.push({ pathname: path, query: { ...params, ...additionalParams } });
   }
 
+  async function prefetch(params: RouteParams) {
+    const hrefWithParams = fillParamsInUrl(path, params);
+    await router.prefetch(hrefWithParams);
+  }
+
   function replace(params: RouteParams, additionalParams?: Record<string, string>): Promise<boolean> {
     return router.replace({ pathname: path, query: { ...params, ...additionalParams } });
-  }
-
-  interface LinkProps {
-    params: RouteParams;
-    children: ReactNode;
-  }
-
-  function Link({ params, children }: LinkProps) {
-    const hrefWithParams = fillParamsInUrl(path, params);
-
-    return (
-      <NextLink href={hrefWithParams} passHref>
-        {children}
-      </NextLink>
-    );
   }
 
   function getUrlWithParams(params: RouteParams) {
@@ -128,30 +106,15 @@ export function createRoute<D extends RouteParamsDefinition>(
   return {
     path,
     useParams,
+    useAssertParams,
     push,
     replace,
     useIsActive,
     getIsActive,
     isMatchingRoute,
-    Link,
+    prefetch,
     getUrlWithParams,
   };
 }
 
 export type AnyRoute = ReturnType<typeof createRoute>;
-
-function fillParamsInUrl<Params extends Record<string, unknown>>(href: string, params: Params) {
-  let hrefWithParams = href;
-
-  if (!params) {
-    return hrefWithParams;
-  }
-
-  Object.keys(params).forEach((paramName) => {
-    const paramValue = params[paramName];
-
-    hrefWithParams = hrefWithParams.replace(`[${paramName}]`, paramValue as string);
-  });
-
-  return hrefWithParams;
-}

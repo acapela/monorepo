@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { routes } from "~frontend/routes";
+import { routes, RouteLink } from "~frontend/router";
 import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
 import { TextH6 } from "~ui/typo";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -45,35 +45,36 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   const lastMessage = lastMessageWrapped.length > 0 ? lastMessageWrapped[0] : null;
 
-  function handleOpen() {
-    routes.spaceRoomTopic.push({ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id });
-  }
-
   return (
-    <UIHolder onClick={handleOpen} className={className}>
-      <UIInfo>
-        {unreadCount > 0 && <UIUnreadMessagesNotification />}
-        <UITopicTitle isClosed={isClosed} spezia medium>
-          {topic.name}
-        </UITopicTitle>
-        {isLastMessageLoading && (
-          <UILastMessage>
-            <UILastMessageContent>Loading...</UILastMessageContent>
-          </UILastMessage>
-        )}
-        {lastMessage && !isLastMessageLoading && (
-          <UILastMessage>
-            <UILastMessageSender size="inherit" user={lastMessage.user} />
-            <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
-          </UILastMessage>
-        )}
-        {!lastMessage && !isLastMessageLoading && (
-          <UILastMessage>
-            <UILastMessageContent>No messages in topic</UILastMessageContent>
-          </UILastMessage>
-        )}
-      </UIInfo>
-    </UIHolder>
+    <RouteLink
+      route={routes.spaceRoomTopic}
+      params={{ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id }}
+    >
+      <UIHolder className={className}>
+        <UIInfo>
+          {unreadCount > 0 && <UIUnreadMessagesNotification />}
+          <UITopicTitle isClosed={isClosed} spezia medium>
+            {topic.name}
+          </UITopicTitle>
+          {isLastMessageLoading && (
+            <UILastMessage>
+              <UILastMessageContent>Loading...</UILastMessageContent>
+            </UILastMessage>
+          )}
+          {lastMessage && !isLastMessageLoading && (
+            <UILastMessage>
+              <UILastMessageSender size="inherit" user={lastMessage.user} />
+              <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
+            </UILastMessage>
+          )}
+          {!lastMessage && !isLastMessageLoading && (
+            <UILastMessage>
+              <UILastMessageContent>No messages in topic</UILastMessageContent>
+            </UILastMessage>
+          )}
+        </UIInfo>
+      </UIHolder>
+    </RouteLink>
   );
 })``;
 

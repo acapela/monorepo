@@ -4,7 +4,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
@@ -13,6 +13,9 @@ export function UserMenu() {
     <UIHolder>
       <UserAvatar user={user} size="regular" disableNameTooltip />
       <PopoverMenuTrigger
+        onOpen={() => {
+          routes.team.prefetch({});
+        }}
         options={[
           {
             label: "Manage team",

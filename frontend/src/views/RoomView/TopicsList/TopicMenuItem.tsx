@@ -6,7 +6,7 @@ import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { routes } from "~frontend/routes";
+import { routes, RouteLink } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -26,8 +26,6 @@ type Props = {
   isEditingDisabled?: boolean;
   rootProps?: React.HTMLAttributes<unknown>;
 };
-
-const TopicLink = routes.spaceRoomTopic.Link;
 
 export function SortableTopicMenuItem({
   isDisabled,
@@ -78,11 +76,15 @@ export const TopicMenuItem = styled<Props>(
 
       // We need to disable the Link while editing, so that selection does not trigger navigation
       const NameWrap = useCallback(
-        (props: { children: React.ReactNode }) =>
+        (props: { children: React.ReactChild }) =>
           isInEditMode ? (
             <React.Fragment {...props} />
           ) : (
-            <TopicLink params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }} {...props} />
+            <RouteLink
+              route={routes.spaceRoomTopic}
+              params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}
+              {...props}
+            />
           ),
         [isInEditMode]
       );

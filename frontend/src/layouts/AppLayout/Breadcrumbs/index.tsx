@@ -5,7 +5,7 @@ import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { IconSpaces, IconBox } from "~ui/icons";
-import { routes } from "~frontend/routes";
+import { routes } from "~frontend/router";
 import { theme } from "~ui/theme";
 
 export const Breadcrumbs = () => {
