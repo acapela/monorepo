@@ -94,7 +94,7 @@ function SearchResultMatch({ result, term }: { result: ResultItem; term: string 
 
 // TODO: Attempt to use ItemsDropdown when we have a clearer idea of where search is going to move
 const PureSearchResults = ({ className, term, results }: Props) => {
-  const allItems = [...results.spaces, ...results.rooms, ...results.topics, ...results.messages];
+  const allItems = [...results.spaces, ...results.rooms, ...results.topics, ...results.messages].slice(0, 10);
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(allItems, {
     enableKeyboard: true,
   });

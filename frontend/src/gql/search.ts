@@ -5,11 +5,11 @@ import { SearchResultsQuery, SearchResultsQueryVariables } from "~gql";
 export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
   () => gql`
     query SearchResults($term: String!) {
-      spaces: space(where: { name: { _ilike: $term } }) {
+      spaces: space(where: { name: { _ilike: $term } }, limit: 10) {
         id
         name
       }
-      rooms: room(where: { name: { _ilike: $term } }) {
+      rooms: room(where: { name: { _ilike: $term } }, limit: 10) {
         id
         name
         space {
@@ -17,7 +17,7 @@ export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchRe
           name
         }
       }
-      topics: topic(where: { name: { _ilike: $term } }) {
+      topics: topic(where: { name: { _ilike: $term } }, limit: 10) {
         id
         name
         room {
@@ -29,7 +29,7 @@ export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchRe
           }
         }
       }
-      messages: message(where: { content_text: { _ilike: $term } }) {
+      messages: message(where: { content_text: { _ilike: $term } }, limit: 10) {
         id
         content_text
         topic {
