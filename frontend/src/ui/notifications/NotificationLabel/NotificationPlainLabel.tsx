@@ -1,5 +1,4 @@
 import { AnimatePresence } from "framer-motion";
-import { useRef } from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 import { NotificationInfoFragment } from "~gql";
