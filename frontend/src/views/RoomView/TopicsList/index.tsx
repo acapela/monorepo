@@ -1,16 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { routes } from "~frontend/routes";
-import { Button } from "~ui/buttons/Button";
-import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
-import { useBulkTopicIndexing } from "~frontend/rooms/useBulkIndexing";
-import { StaticTopicsList } from "./StaticTopicsList";
-import { LazyTopicsList } from "./LazyTopicsList";
+import React, { useRef } from "react";
 import styled from "styled-components";
-import { TextH6 } from "~ui/typo";
-import { RoomDetailedInfoFragment } from "~gql";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { CollapsePanel } from "~ui/collapse/CollapsePanel";
-import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
@@ -20,6 +10,15 @@ import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlo
 import { generateId } from "~shared/id";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { select } from "~shared/sharedState";
+import { RoomDetailedInfoFragment } from "~gql";
+import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
+import { Button } from "~ui/buttons/Button";
+import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { TextH6 } from "~ui/typo";
+import { routes } from "~frontend/routes";
+import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
+import { LazyTopicsList } from "./LazyTopicsList";
+import { StaticTopicsList } from "./StaticTopicsList";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -46,7 +45,6 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const spaceId = room.space_id;
   const roomContext = useRoomStoreContext();
 
-  const [bulkReorder, { loading: isExecutingBulkReorder }] = useBulkTopicIndexing();
   const { topics, moveBetween, moveToStart, moveToEnd, isReordering } = useRoomTopicList(room.id);
   const amIMember = isCurrentUserRoomMember(room);
 
@@ -61,18 +59,6 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
       index: getNewTopicIndex(topics, activeTopicId),
     });
   }
-
-  /**
-   * ## Bulk reordering
-   *
-   * go to hook definition for explanation
-   */
-  useEffect(() => {
-    if (topics && topics.every(({ index }) => !index || index.trim().length === 0)) {
-      const topicIds = topics.map(({ id }) => id);
-      bulkReorder(topicIds);
-    }
-  }, [topics]);
 
   useNewItemInArrayEffect(
     topics,
@@ -110,7 +96,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <LazyTopicsList
             topics={topics}
             activeTopicId={activeTopicId}
-            isDisabled={isEditingAnyMessage || isExecutingBulkReorder || isReordering}
+            isDisabled={isEditingAnyMessage || isReordering}
             onMoveBetween={moveBetween}
             onMoveToStart={moveToStart}
             onMoveToEnd={moveToEnd}

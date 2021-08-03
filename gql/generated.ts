@@ -9044,7 +9044,10 @@ export type RoomBasicInfoFragment = (
       { __typename?: 'user' }
       & UserBasicInfoFragment
     ) }
-  )> }
+  )>, space: (
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  ) }
   & PrivateRoomInfoFragment
 );
 

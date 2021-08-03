@@ -1,13 +1,13 @@
 import styled from "styled-components";
-import { RoomDetailedInfoFragment } from "~gql";
-import { RoomsList } from "./RoomsList";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { Toggle } from "~ui/toggle";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { RoomsList } from "./RoomsList";
+import { RoomWithActivities } from "./useRoomsWithActivities";
 
 interface Props {
   className?: string;
-  rooms: RoomDetailedInfoFragment[];
+  rooms: RoomWithActivities[];
   categoryName: string;
   showClosedToggle?: boolean;
 }
@@ -18,9 +18,9 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
   categoryName,
   showClosedToggle,
 }: Props) {
-  const [isShowingClosedRooms, { set: showClosed, unset: dontShowClosed }] = useBoolean(false);
+  const [isShowingClosedRooms, { set: showOnlyClosed, unset: showOnlyOpen }] = useBoolean(false);
 
-  const roomsToShow = rooms.filter((room) => {
+  const roomsToShow = rooms.filter(({ room }) => {
     if (!isShowingClosedRooms) {
       return room.finished_at === null;
     }
@@ -34,7 +34,7 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
         {showClosedToggle && (
           <UIClosedRoomsFilter>
             <CategoryNameLabel>Closed</CategoryNameLabel>
-            <Toggle size="small" onSet={showClosed} onUnset={dontShowClosed} label="Closed" />
+            <Toggle size="small" onSet={showOnlyClosed} onUnset={showOnlyOpen} />
           </UIClosedRoomsFilter>
         )}
       </UIHeader>
