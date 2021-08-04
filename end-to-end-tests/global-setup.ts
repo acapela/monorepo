@@ -1,3 +1,4 @@
+import "~config";
 import { PrismaClient } from "@prisma/client";
 
 const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@${

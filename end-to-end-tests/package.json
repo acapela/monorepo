@@ -6,6 +6,6 @@
     "@playwright/test": "^1.13.0"
   },
   "scripts": {
-    "test": "playwright test"
+    "test": "APP=e2e playwright test"
   }
 }
