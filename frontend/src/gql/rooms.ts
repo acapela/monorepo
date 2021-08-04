@@ -1,44 +1,44 @@
 import { gql } from "@apollo/client";
-import { addToast } from "~ui/toasts/data";
+import { readUserDataFromCookie } from "~frontend/authentication/cookie";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { getHomeViewRoomsQueryWhere } from "~frontend/views/HomeView";
 import {
-  CreateRoomMutation,
-  CreateRoomMutationVariables,
-  RoomsQuery,
-  RoomsQueryVariables,
-  SingleRoomQuery,
-  SingleRoomQueryVariables,
-  RoomParticipantsQuery,
-  RoomParticipantsQueryVariables,
   AddRoomMemberMutation,
   AddRoomMemberMutationVariables,
-  RemoveRoomMemberMutation,
-  RemoveRoomMemberMutationVariables,
-  DeleteRoomMutation,
-  DeleteRoomMutationVariables,
-  UpdateRoomMutation,
-  UpdateRoomMutationVariables,
   CloseOpenTopicsMutation,
   CloseOpenTopicsMutationVariables,
+  CreateRoomMutation,
+  CreateRoomMutationVariables,
+  DeleteRoomMutation,
+  DeleteRoomMutationVariables,
+  PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
+  RemoveRoomMemberMutation,
+  RemoveRoomMemberMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
-  PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
+  RoomParticipantsQuery,
+  RoomParticipantsQueryVariables,
   RoomsInSpaceQuery,
   RoomsInSpaceQueryVariables,
+  RoomsQuery,
+  RoomsQueryVariables,
   SinglePrivateRoomQuery,
   SinglePrivateRoomQueryVariables,
+  SingleRoomQuery,
+  SingleRoomQueryVariables,
+  UpdateRoomMutation,
+  UpdateRoomMutationVariables,
 } from "~gql";
-import { SpaceBasicInfoFragment, SpaceDetailedInfoFragment } from "./spaces";
+import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
+import { addToast } from "~ui/toasts/data";
+import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
+import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
-import { createMutation, createQuery, createFragment } from "./utils";
-import { getUUID } from "~shared/uuid";
-import { removeUndefinedFromObject } from "~shared/object";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { slugify } from "~shared/slugify";
-import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
-import { getHomeViewRoomsQueryWhere } from "~frontend/views/HomeView";
-import { readUserDataFromCookie } from "~frontend/authentication/cookie";
+import { createFragment, createMutation, createQuery } from "./utils";
+import { getUpdatedDataWithInput } from "./utils/updateWithInput";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -205,7 +205,6 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
     optimisticResponse({ input }) {
       const spaceId = input.space_id!;
 
-      const spaceInfo = SpaceBasicInfoFragment.assertRead(spaceId);
       return {
         __typename: "mutation_root",
         room: {
@@ -215,19 +214,14 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: input.id!,
           members: [],
+          invitations: [],
+          space: SpaceDetailedInfoFragment.assertRead(spaceId),
           topics: [],
           last_activity_at: null,
-          invitations: [],
           is_private: input.is_private ?? false,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: input.name!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           space_id: spaceId,
-          space: {
-            __typename: "space",
-            id: spaceInfo.id,
-            name: spaceInfo.name,
-          },
           finished_at: null,
           source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
           summary: input.summary ?? null,
@@ -319,18 +313,12 @@ export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
   `,
   {
     optimisticResponse(vars) {
-      const { name, slug, summary, deadline, finished_at } = removeUndefinedFromObject(vars.input);
-      const inputToReplace = removeUndefinedFromObject({ name, slug, summary, deadline, finished_at });
-
       const existingData = RoomDetailedInfoFragment.assertRead(vars.roomId);
+      const newData = getUpdatedDataWithInput(existingData, vars.input);
+
       return {
         __typename: "mutation_root",
-        room: {
-          __typename: "room",
-          ...existingData,
-          ...inputToReplace,
-          deadline: deadline ?? existingData.deadline,
-        },
+        room: newData,
       };
     },
   }

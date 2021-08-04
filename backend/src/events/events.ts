@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { hasuraEvents } from "./eventHandlers";
 import { extractAndAssertBearerToken } from "~backend/src/authentication";
 import { AuthenticationError } from "~backend/src/errors/errorTypes";
-import { handleTeamInvitationCreated } from "~backend/src/teamInvitation/events";
+import { handleTeamInvitationCreated, handleTeamInvitationDeleted } from "~backend/src/teamInvitation/events";
 import { handleRoomUpdates } from "~backend/src/rooms/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleMessageChanges } from "~backend/src/messages/events";
@@ -20,6 +20,7 @@ hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates)
 hasuraEvents.addHandler("topic_updates", ["INSERT", "UPDATE"], handleTopicUpdates);
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
+hasuraEvents.addHandler("team_invitation_updates", "DELETE", handleTeamInvitationDeleted);
 hasuraEvents.addHandler("room_invitation_updates", "INSERT", handleRoomInvitationCreated);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);

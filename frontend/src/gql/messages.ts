@@ -15,7 +15,7 @@ import { getUUID } from "~shared/uuid";
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
 import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
-import { UserBasicInfoFragment } from "./user";
+import { convertUserTokenDataToInfoFragment, UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
 export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(
@@ -119,13 +119,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           type: vars.type,
           message_reactions: [],
           transcription: null,
-          user: {
-            id: userData.id,
-            __typename: "user",
-            avatar_url: userData.picture,
-            email: userData.email,
-            name: userData.name,
-          },
+          user: convertUserTokenDataToInfoFragment(userData),
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: vars.id!,
           content: vars.content,
@@ -162,7 +156,19 @@ export const [useUpdateTextMessageMutation, { mutate: updateTextMessage }] = cre
         }
       }
     }
-  `
+  `,
+  {
+    optimisticResponse({ content, id }) {
+      const existing = MessageFeedInfoFragment.assertRead(id);
+      return {
+        __typename: "mutation_root",
+        update_message: {
+          __typename: "message_mutation_response",
+          message: [{ ...existing, content }],
+        },
+      };
+    },
+  }
 );
 
 export const [useDeleteTextMessageMutation] = createMutation<

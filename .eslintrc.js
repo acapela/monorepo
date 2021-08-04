@@ -20,5 +20,6 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
     "@typescript-eslint/ban-types": 0,
+    "@typescript-eslint/ban-ts-comment": ["warn", { "ts-expect-error": false }],
   },
 };

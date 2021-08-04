@@ -44,7 +44,7 @@ export function SpaceCard({ space }: Props) {
         <UIInfo>
           <AvatarList size="medium" users={space.members.map((m) => m.user)} />
           <EntityKindLabel>SPACE</EntityKindLabel>
-          <PrimaryItemTitle>{space.name}</PrimaryItemTitle>
+          <UIPrimaryItemTitle>{space.name}</UIPrimaryItemTitle>
 
           <UIMembers>
             {user && <JoinToggleButton isMember={isCurrentUserMember} onJoin={join} onLeave={leave} />}
@@ -71,6 +71,11 @@ const UIInfo = styled.div<{}>`
   ${AvatarList} {
     margin-bottom: 24px;
   }
+`;
+
+const UIPrimaryItemTitle = styled<{}>(PrimaryItemTitle)`
+  margin-top: 8px;
+  margin-bottom: 16px;
 `;
 
 const UIMembers = styled.div<{}>``;

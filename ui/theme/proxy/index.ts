@@ -10,13 +10,13 @@ import { getIsTerminal } from "./nonTerminal";
  *
  * Before:
  * const UIComponent = styled.div<{}>`
- *   background: ${props => props.theme.colors.status.error};
+ *   background: ${props => props.theme.colors.status.error()};
  * `;
  *
  * After:
  * const UIComponent = styled.div<{}>`
- *   // `theme.colors.status.error` returns `props => props.theme.colors.status.error`
- *   background: ${theme.colors.status.error};
+ *   // `theme.colors.status.error()` returns `props => props.theme.colors.status.error()`
+ *   background: ${theme.colors.status.error()};
  * `;
  *
  */
@@ -54,8 +54,16 @@ export function buildThemeProxy(baseTheme: Theme) {
           */
         return (...args: unknown[]) =>
           (props: { theme: Theme }) => {
-            const fn = get(props.theme, [...this.path, propertyName]);
-            return fn.call(target, ...args);
+            const fullPath = [...this.path, propertyName];
+            const fn = get(props.theme, fullPath);
+            try {
+              return fn.call(target, ...args);
+            } catch (e) {
+              const pathJoinedByDots = fullPath.join(".");
+              throw new Error(
+                `[Theme] Failed to run utility function "theme.${pathJoinedByDots}". Possible solution: Add a function call, e.g. \`\${theme.${pathJoinedByDots}()}\``
+              );
+            }
           };
       }
 
