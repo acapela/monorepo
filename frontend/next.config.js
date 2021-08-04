@@ -135,7 +135,8 @@ module.exports = withPlugins(
       // !! WARN !!
       // Setting this to true will dangerously allow production builds to successfully complete even if
       // your project has ESLint errors.
-      ignoreDuringBuilds: false,
+      // We have lint errors checked at CI level, so it would be waste of time
+      ignoreDuringBuilds: true,
     },
     webpack5: true,
 
