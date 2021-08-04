@@ -26,7 +26,7 @@ export function HomeView() {
       <UIContent>
         <RoomsGroupedByActivities query={roomQuery} />
       </UIContent>
-      <FlyingCreateRoomButton size="large" />
+      <FlyingCreateRoomButton buttonProps={{ size: "large" }} />
     </UIHolder>
   );
 }
