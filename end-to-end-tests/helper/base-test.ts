@@ -1,5 +1,6 @@
 import { test as rootTest } from "@playwright/test";
-import { setupDatabase, TestUser } from "./db";
+import { domain } from "./constants";
+import type { setupDatabase, TestUser } from ".//db";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -9,9 +10,7 @@ export const test = rootTest.extend<{
 }>({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async db({ page }, use) {
-    const { data, cleanup } = await setupDatabase();
-    await use(data);
-    await cleanup();
+    await use(JSON.parse(process.env.TESTING_DB_DATA!));
   },
   async auth({ page }, use) {
     await use({
@@ -20,7 +19,7 @@ export const test = rootTest.extend<{
           {
             name: "next-auth.session-token",
             value: user.jwt,
-            domain: "localhost:3000",
+            domain,
             path: "/",
             sameSite: "Lax",
           },
