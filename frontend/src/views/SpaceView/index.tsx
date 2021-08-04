@@ -6,7 +6,7 @@ import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppL
 import { routes } from "~frontend/router";
 import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
-import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
+import { RoomFiltersPicker } from "~frontend/ui/rooms/filters/RoomFilters";
 import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PageMeta } from "~frontend/utils/PageMeta";
@@ -29,7 +29,7 @@ export function SpaceView({ spaceId }: Props) {
 
   const rooms = space?.rooms ?? [];
 
-  const [filteredRooms, { setCriteria }] = useRoomsCriteria(rooms, [roomsInCurrentSpaceFilter]);
+  const [filteredRooms, { setCriteria, addedCriteria }] = useRoomsCriteria(rooms, [roomsInCurrentSpaceFilter]);
 
   const [createRoom] = useCreateRoomMutation();
 
@@ -79,7 +79,7 @@ export function SpaceView({ spaceId }: Props) {
             </UIFlyingCreateRoomButton>
           }
         >
-          <UIFilters onFiltersChange={setCriteria} />
+          <RoomFiltersPicker onFiltersChange={setCriteria} filters={addedCriteria} />
         </CenteredContentWithSides>
 
         <UIRooms>
@@ -97,11 +97,11 @@ const UIContainer = styled(SpacedAppLayoutContainer)<{}>`
     margin-bottom: 32px;
     margin-top: 32px;
   }
-`;
 
-const UIFilters = styled(RoomFilters)<{}>`
-  display: flex;
-  justify-content: flex-end;
+  ${RoomFiltersPicker} {
+    display: flex;
+    justify-content: flex-end;
+  }
 `;
 
 const UIRooms = styled.div<{}>`

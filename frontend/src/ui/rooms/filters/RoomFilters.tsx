@@ -1,6 +1,5 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useList } from "react-use";
 import styled from "styled-components";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
@@ -13,20 +12,18 @@ import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
-  initialFilters?: RoomCriteria[];
+  filters?: RoomCriteria[];
   onFiltersChange: (filters: RoomCriteria[]) => void;
   className?: string;
 }
 
-export const RoomFilters = styled(function RecentTopicFilters({
+export const RoomFiltersPicker = styled(function RoomFiltersPicker({
   onFiltersChange,
   className,
-  initialFilters = [],
+  filters = [],
 }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomCriteria>(initialFilters);
-
   function removeFilter(filterToRemove: RoomCriteria) {
-    applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
+    onFiltersChange(filters.filter((filter) => filter.key !== filterToRemove.key));
   }
 
   function handleAddFilter(filterToAdd: RoomCriteria) {
@@ -34,7 +31,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
       return;
     }
 
-    addFilter(filterToAdd);
+    onFiltersChange([...filters, filterToAdd]);
   }
 
   function hasFilter(filterToCheck: RoomCriteria) {
