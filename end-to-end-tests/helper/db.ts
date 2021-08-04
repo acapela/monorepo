@@ -1,7 +1,7 @@
 import "~config";
 import { PrismaClient } from "@prisma/client";
 import { sign } from "jsonwebtoken";
-import { space, team, user } from ".prisma/client";
+import { user } from ".prisma/client";
 
 const prismaDatabaseUrl = `postgresql://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@${
   process.env.DB_HOST
@@ -35,7 +35,7 @@ function createJWTForUser(user: user): string {
   );
 }
 
-type TestUser = user & { JWT: string };
+export type TestUser = user & { jwt: string };
 
 async function createUser(email: string, currentTeam: string | null): Promise<TestUser> {
   const dbUser1 = await db.user.create({
@@ -46,19 +46,11 @@ async function createUser(email: string, currentTeam: string | null): Promise<Te
   });
   return {
     ...dbUser1,
-    JWT: createJWTForUser(dbUser1),
+    jwt: createJWTForUser(dbUser1),
   };
 }
 
-export interface Database {
-  user1: TestUser;
-  user2: TestUser;
-  team: team;
-  space: space;
-  cleanup: () => Promise<void>;
-}
-
-export async function setupDatabase(): Promise<Database> {
+export async function setupDatabase() {
   const user1 = await createUser("user-1@acape.la", null);
   const team = await db.team.create({
     data: { owner_id: user1.id, name: PREFIX + "what a team", slug: PREFIX + "team-with-a-slug" },
@@ -82,18 +74,19 @@ export async function setupDatabase(): Promise<Database> {
     },
   });
 
-  const cleanup = async function () {
-    await db.team_member.deleteMany({ where: { team_id: { in: [team.id] } } });
-    await db.user.deleteMany({ where: { id: { in: [user2.id] } } });
-    await db.team.deleteMany({ where: { id: { in: [team.id] } } });
-    await db.user.deleteMany({ where: { id: { in: [user1.id] } } });
-  };
-
   return {
-    user1,
-    user2,
-    space,
-    team,
-    cleanup,
+    data: {
+      user1,
+      user2,
+      space,
+      team,
+    },
+    async cleanup() {
+      await db.team_member.deleteMany({ where: { team_id: { in: [team.id] } } });
+      await db.space.deleteMany({ where: { id: { in: [space.id] } } });
+      await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
+      await db.team.deleteMany({ where: { id: { in: [team.id] } } });
+      await db.user.deleteMany({ where: { id: { in: [user1.id, user2.id] } } });
+    },
   };
 }
