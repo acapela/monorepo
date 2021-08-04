@@ -1,8 +1,5 @@
 import { gql } from "@apollo/client";
-import { ValueUpdater } from "~frontend/../../shared/updateValue";
-import { readUserDataFromCookie } from "~frontend/authentication/cookie";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { getHomeViewRoomsQueryWhere } from "~frontend/views/HomeView";
 import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
   AddRoomMemberMutation,
@@ -209,6 +206,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       });
     },
     optimisticResponse({ input }) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const spaceId = input.space_id!;
 
       return {

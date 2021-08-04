@@ -223,7 +223,5 @@ export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint
 
   renderedApolloClient = client;
 
-  console.log(client.cache);
-
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

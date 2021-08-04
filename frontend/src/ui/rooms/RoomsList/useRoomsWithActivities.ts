@@ -1,14 +1,9 @@
-import { useRoomsQuery } from "~frontend/gql/rooms";
 import { useSSRRoomsMessagesCount } from "~frontend/utils/unreadMessages";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
+import { RoomDetailedInfoFragment } from "~gql";
 
 export interface RoomWithActivities {
   room: RoomDetailedInfoFragment;
   unreadMessages: number;
-}
-
-interface Props {
-  query: RoomsQueryVariables;
 }
 
 export function useRoomsWithActivities(rooms: RoomDetailedInfoFragment[]): RoomWithActivities[] {

@@ -1,9 +1,8 @@
 import React from "react";
-import { IconFilter } from "~ui/icons";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
+import { IconFilter } from "~ui/icons";
 import { RoomCriteria, UserRoomCriteria } from "./filter";
-import { isNotNullish } from "~frontend/../../shared/nullish";
 
 export function createUserFilter(user: UserBasicInfoFragment): UserRoomCriteria {
   return {
