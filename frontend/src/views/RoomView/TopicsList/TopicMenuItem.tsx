@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import React, { RefObject, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";

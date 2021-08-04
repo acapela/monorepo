@@ -4,7 +4,7 @@ import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { routes, RouteLink } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { useRoomUnreadMessagesCount, useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
