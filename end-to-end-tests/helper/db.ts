@@ -82,10 +82,13 @@ export async function setupDatabase() {
       team,
     },
     async cleanup() {
-      await db.team_member.deleteMany({ where: { team_id: { in: [team.id] } } });
-      await db.space.deleteMany({ where: { id: { in: [space.id] } } });
+      const team_id = { in: [team.id] };
+      await db.team_member.deleteMany({ where: { team_id } });
+      await db.room_member.deleteMany({ where: { room: { space: { team_id } } } });
+      await db.room.deleteMany({ where: { space: { team_id } } });
+      await db.space.deleteMany({ where: { team_id } });
       await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
-      await db.team.deleteMany({ where: { id: { in: [team.id] } } });
+      await db.team.deleteMany({ where: { id: team_id } });
       await db.user.deleteMany({ where: { id: { in: [user1.id, user2.id] } } });
     },
   };
