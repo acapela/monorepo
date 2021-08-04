@@ -1,7 +1,9 @@
 import { gql } from "@apollo/client";
+import { ValueUpdater } from "~frontend/../../shared/updateValue";
 import { readUserDataFromCookie } from "~frontend/authentication/cookie";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { getHomeViewRoomsQueryWhere } from "~frontend/views/HomeView";
+import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
   AddRoomMemberMutation,
   AddRoomMemberMutationVariables,
@@ -201,6 +203,10 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
         space.rooms.push(room);
       });
+
+      updateHomeviewQuery((result) => {
+        result.rooms.push(room);
+      });
     },
     optimisticResponse({ input }) {
       const spaceId = input.space_id!;
@@ -349,13 +355,7 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
         space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
       });
 
-      const user = readUserDataFromCookie();
-
-      if (!user) return;
-
-      const homeViewQuery = getHomeViewRoomsQueryWhere(user.id);
-
-      roomsQueryManager.update({ where: homeViewQuery }, (result) => {
+      updateHomeviewQuery((result) => {
         result.rooms = result.rooms.filter((room) => room.id !== removedRoom.id);
       });
     },

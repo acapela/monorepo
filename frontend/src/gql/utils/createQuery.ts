@@ -6,7 +6,6 @@ import {
   useQuery as useRawQuery,
   useSubscription as useRawSubscription,
 } from "@apollo/client";
-import produce, { Draft } from "immer";
 import { memoize } from "lodash";
 import { useRef } from "react";
 import { VoidableIfEmpty } from "~shared/types";
@@ -17,6 +16,7 @@ import { getRenderedApolloClient } from "~frontend/apollo/client";
 import { addRoleToContext, RequestWithRole } from "./withRole";
 import { waitForAllRunningMutationsToFinish } from "./createMutation";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+import { updateValue, ValueUpdater } from "~frontend/../../shared/updateValue";
 
 type QueryDefinitionOptions = RequestWithRole;
 
@@ -136,7 +136,7 @@ export function createQuery<Data, Variables>(
   useAsSubscription.query = useQuery;
   useAsSubscription.requestPrefetch = requestPrefetch;
 
-  function update(variables: Variables, updater: (dataDraft: Draft<Data>) => void) {
+  function update(variables: Variables, updater: ValueUpdater<Data>) {
     const client = getCurrentApolloClientHandler();
     const currentData = client.readQuery<Data, Variables>({ query: getQuery(), variables });
 
@@ -144,11 +144,7 @@ export function createQuery<Data, Variables>(
       return;
     }
 
-    const newData = produce(currentData, (draft) => {
-      updater(draft);
-
-      return draft;
-    });
+    const newData = updateValue(currentData, updater);
 
     client.writeQuery({ query: getQuery(), variables, data: newData });
   }
