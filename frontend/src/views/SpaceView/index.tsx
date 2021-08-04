@@ -37,9 +37,14 @@ export function SpaceView({ spaceId }: Props) {
 
         <CenteredContentWithSides
           rightNode={
-            <CreateRoomButton isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}>
-              New Room
-            </CreateRoomButton>
+            space && (
+              <CreateRoomButton
+                buttonProps={{ isDisabled: !amIMember && { reason: `You have to be space member to add new room` } }}
+                promptProps={{ spaceId: space.id, hideSpaceInput: true }}
+              >
+                New Room
+              </CreateRoomButton>
+            )
           }
         >
           <UIFilters onFiltersChange={setFilters} />
