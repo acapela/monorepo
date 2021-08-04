@@ -24,8 +24,8 @@ export async function getIfParticipantExists(roomId: string, participantId: stri
 }
 
 export async function updateRoomLastActivityDate(roomId: string) {
-  db.room.update({
+  await db.room.update({
     where: { id: roomId },
-    data: { last_activity_at: new Date().toISOString() },
+    data: { last_activity_at: new Date() },
   });
 }
