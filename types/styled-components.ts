@@ -118,11 +118,44 @@ declare module "styled-components" {
   type PropsWithTheme<P> = P & ThemeProps;
 
   export type StyledComponentBuiltInProps = ThemeProps & {
-    as?: keyof BuiltInComponentName;
+    as?: BuiltInComponentName;
+    /**
+     * Important note. We're using HTMLElement ref for any styled component, which is not fully correct!
+     *
+     *
+     * eg styled.div`` has ref of HTMLElement, not HTMLDivElement.
+     * it is not strict type-safeness, but saves a lot of generic lookups required to detect ref type:
+     *
+     * expensive examples:
+     *
+     * const Foo = styled.div``;
+     * const Bar = styled(Foo)``; <-- has to 'capture' ref type from 'parent component', as argument for styled(argument) is very wide, it requires a lot of conditional types.
+     *
+     * further example:
+     *
+     * const Foo = forwardRef<HTMLDivElement, Props>(...);
+     * const Bar = styled(Foo)``; <-- would have to check if passed component matched ForwardRefExoticComponent<Props> and then infer Props['ref'] and pick it (2 level conditional type check).
+     *
+     * And many other examples.
+     *
+     * For that reason I decided to simply use ref of `HTMLElement`, so code like this will be TS-correct:
+     *
+     * const Link = styled.a``;
+     * const ref = useRef<HTMLDivElement>(null);
+     *
+     * <Link ref={ref} /> // <-- !!! this is incorrect, but TS will not complain
+     *
+     * Final note - I'm not sure if its a good way to go. If it bites us, we can make it somehow smart to support use cases we have.
+     */
+    //
+    //
+    ref?: React.Ref<HTMLElement>;
   };
 
+  export type StyledComponentProps<P> = P & StyledComponentBuiltInProps;
+
   export type StyledComponent<BaseProps, AddedProps = {}> = React.ComponentType<
-    BaseProps & AddedProps & StyledComponentBuiltInProps
+    StyledComponentProps<BaseProps & AddedProps>
   > & {
     withComponent<K extends BuiltInComponentName>(tag: K): StyledComponent<BuiltInComponentProps<K>, AddedProps>;
     withComponent<OtherComponentProps = {}>(
@@ -217,6 +250,7 @@ declare module "styled-components" {
     getStyleElement(): Array<React.ReactElement<{}>>;
     interleaveWithNodeStream(readableStream: NodeJS.ReadableStream): NodeJS.ReadableStream;
     instance: StyleSheet;
+    seal(): void;
   }
 
   /**

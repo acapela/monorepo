@@ -1,13 +1,13 @@
 import styled from "styled-components";
+import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { Toggle } from "~ui/toggle";
 import { RoomsList } from "./RoomsList";
-import { RoomWithActivities } from "./useRoomsWithActivities";
 
 interface Props {
   className?: string;
-  rooms: RoomWithActivities[];
+  rooms: RoomDetailedInfoFragment[];
   categoryName: string;
   showClosedToggle?: boolean;
 }
@@ -20,13 +20,14 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
 }: Props) {
   const [isShowingClosedRooms, { set: showOnlyClosed, unset: showOnlyOpen }] = useBoolean(false);
 
-  const roomsToShow = rooms.filter(({ room }) => {
+  const roomsToShow = rooms.filter((room) => {
     if (!isShowingClosedRooms) {
       return room.finished_at === null;
     }
 
     return room.finished_at !== null;
   });
+
   return (
     <UIGroupHolder className={className}>
       <UIHeader>

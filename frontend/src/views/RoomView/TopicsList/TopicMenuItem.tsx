@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
-import React, { useCallback, useRef } from "react";
+import React, { RefObject, useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 import { select } from "~shared/sharedState";
 import { updateTopic } from "~frontend/gql/topics";
@@ -24,7 +24,7 @@ type Props = {
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
-  rootProps?: React.HTMLAttributes<unknown>;
+  rootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
 export function SortableTopicMenuItem({
@@ -39,7 +39,7 @@ export function SortableTopicMenuItem({
   const style = {
     // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition ?? undefined,
   };
 
   return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
@@ -47,7 +47,7 @@ export function SortableTopicMenuItem({
 
 export const TopicMenuItem = styled<Props>(
   observer(
-    React.forwardRef<HTMLElement, Props>(function TopicMenuItem(
+    React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
       { topic, isActive, className, isEditingDisabled, rootProps },
       ref
     ) {
@@ -62,7 +62,7 @@ export const TopicMenuItem = styled<Props>(
       const isNewTopic = select(() => roomContext.newTopicId === topic.id);
       const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-      const manageWrapperRef = useRef<HTMLElement | null>(null);
+      const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
       function handleNewTopicName(newName: string) {
         updateTopic({ topicId: topic.id, input: { name: newName } });
