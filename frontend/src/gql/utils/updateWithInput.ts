@@ -1,7 +1,7 @@
 import produce from "immer";
 import { isPlainObject } from "lodash";
-import { isNullish } from "~frontend/../../shared/nullish";
-import { typedKeys } from "~frontend/../../shared/object";
+import { isNullish } from "~shared/nullish";
+import { typedKeys } from "~shared/object";
 
 type DataInput<D> = Partial<Record<keyof D, unknown>>;
 

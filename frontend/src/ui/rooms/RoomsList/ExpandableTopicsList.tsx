@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
-import { groupByFilter } from "~frontend/../../shared/groupByFilter";
+import { groupByFilter } from "~shared/groupByFilter";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";

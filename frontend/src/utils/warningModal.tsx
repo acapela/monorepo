@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { theme } from "~frontend/../../ui/theme";
+import { theme } from "~ui/theme";
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 

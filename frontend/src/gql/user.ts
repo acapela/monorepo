@@ -8,7 +8,7 @@ import {
   UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import { UserTokenData } from "~frontend/../../shared/types/jwtAuth";
+import { UserTokenData } from "~shared/types/jwtAuth";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
