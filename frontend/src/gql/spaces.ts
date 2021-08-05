@@ -19,11 +19,12 @@ import {
   DeleteSpaceMutationVariables,
   SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
   SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
+  SpaceWithMembersFragment,
 } from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { createFragment, createMutation, createQuery } from "./utils";
+import { createFragment, createMutation, createQuery, withFragments } from "./utils";
 import { TeamDetailedInfoFragment } from "./teams";
 import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
@@ -118,11 +119,26 @@ export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<Single
   `
 );
 
-export function useIsCurrentUserSpaceMember(space?: SpaceBasicInfoFragmentType) {
-  const user = useAssertCurrentUser();
+export const useIsCurrentUserSpaceMember = withFragments(
+  {
+    space: gql`
+      fragment SpaceWithMembers on space {
+        members {
+          space_id
+          user_id
+          user {
+            id
+          }
+        }
+      }
+    `,
+  },
+  function useIsCurrentUserSpaceMember(space?: SpaceWithMembersFragment) {
+    const user = useAssertCurrentUser();
 
-  return space?.members.some((member) => member.user.id === user.id) ?? false;
-}
+    return space?.members.some((member) => member.user.id === user.id) ?? false;
+  }
+);
 
 export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
   CreateSpaceMutation,

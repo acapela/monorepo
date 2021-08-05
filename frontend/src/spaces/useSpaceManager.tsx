@@ -1,4 +1,5 @@
-import { SpaceBasicInfoFragment } from "~gql";
+import { gql } from "@apollo/client";
+import { SpaceManager_SpaceFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconSelection } from "~ui/icons";
 import { routes } from "~frontend/router";
@@ -13,8 +14,21 @@ import {
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
 
-export function useSpaceManager(space: SpaceBasicInfoFragment) {
+const fragments = {
+  space: gql`
+    ${useIsCurrentUserSpaceMember.fragments.space}
+
+    fragment SpaceManager_space on space {
+      id
+      name
+      ...SpaceWithMembers
+    }
+  `,
+};
+
+export const useSpaceManager = withFragments(fragments, function useSpaceManager(space: SpaceManager_SpaceFragment) {
   const spaceId = space.id;
   const user = useAssertCurrentUser();
   const isCurrentUserMember = useIsCurrentUserSpaceMember(space);
@@ -103,4 +117,4 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     removeMember,
     members,
   };
-}
+});
