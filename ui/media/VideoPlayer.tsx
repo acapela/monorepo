@@ -18,8 +18,7 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
   ref
 ) {
   const videoRef = useSharedRef<HTMLVideoElement | null>(null, [ref]);
-  const { time, setTime, duration, setDuration, playbackRate, setPlaybackRate, isPlaying, play, pause } =
-    usePlaybackState(videoRef);
+  const { time, duration, playbackRate, setPlaybackRate, isPlaying, play, pause } = usePlaybackState(videoRef);
 
   return (
     <UIHolder>

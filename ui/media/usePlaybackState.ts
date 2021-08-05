@@ -1,19 +1,9 @@
 import { RefObject, useEffect, useState } from "react";
-import styled from "styled-components";
 import { createCleanupObject } from "~shared/cleanup";
 import { createElementEvent } from "~shared/domEvents";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { createLocalStorageValueManager } from "~shared/localStorage";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { TranscriptData } from "~shared/types/transcript";
-import { PlaybackControls } from "./PlaybackControls";
 import { MediaElement } from "./types";
-
-interface Props {
-  fileUrl: string;
-  transcript?: TranscriptData;
-}
 
 /**
  * Let's remember user settings for playback rate and also automatically set it for all other players
@@ -57,7 +47,6 @@ export function usePlaybackState(ref: RefObject<MediaElement>) {
         setTime(media.currentTime);
       }),
       createElementEvent(media, "loadedmetadata", () => {
-        console.log("elo", media.duration);
         setDuration(media.duration);
       }),
       createElementEvent(media, "play", play),
