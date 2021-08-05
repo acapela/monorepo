@@ -12,16 +12,18 @@ import { ExitTeamButton } from "./ExitTeamButton";
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
 
-  const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
+  if (!team) {
+    return null;
+  }
+
+  const teamMembers = team.memberships.map((membership) => membership.user) ?? [];
   const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
   const handleRemoveTeamMember = (userId: string) => {
-    if (!team?.id) return;
-
     removeTeamMember({ userId, teamId: team.id });
   };
 
-  const invitations = team?.invitations ?? [];
+  const invitations = team.invitations ?? [];
   const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
   const handleRemoveInvitation = (invitationId: string) => {
@@ -29,12 +31,12 @@ export const CurrentTeamMembersManager = () => {
   };
 
   const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+  const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
   return (
     <UIPanel>
       <UIHeader>
-        <UITitle>{team?.name} members</UITitle>
+        <UITitle>{team.name} members</UITitle>
         <ExitTeamButton />
       </UIHeader>
       <InviteMemberForm />
@@ -43,7 +45,7 @@ export const CurrentTeamMembersManager = () => {
           {teamMembers.map((user) => (
             <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
-              {!(user.id === team?.owner_id) && (
+              {!(user.id === team.owner_id) && (
                 <CircleCloseIconButton
                   isDisabled={!isCurrentUserTeamOwner}
                   onClick={() => handleRemoveTeamMember(user.id)}
