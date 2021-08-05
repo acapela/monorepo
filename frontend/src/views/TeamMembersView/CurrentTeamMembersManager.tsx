@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { PanelWithTopbarAndCloseButton } from "~frontend/ui/MembersManager/PanelWithTopbarAndCloseButton";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
@@ -7,6 +6,7 @@ import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { theme } from "~ui/theme";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
@@ -31,7 +31,11 @@ export const CurrentTeamMembersManager = () => {
   const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
   return (
-    <PanelWithTopbarAndCloseButton title="Team members">
+    <UIPanel>
+      <UIHeader>
+        <UITitle>{team?.name} members</UITitle>
+        <UIExit>exit the team</UIExit>
+      </UIHeader>
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
@@ -59,9 +63,51 @@ export const CurrentTeamMembersManager = () => {
           ))}
         </UISelectGridContainer>
       )}
-    </PanelWithTopbarAndCloseButton>
+    </UIPanel>
   );
 };
+
+const UIPanel = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px;
+
+  background: ${theme.colors.layout.foreground()};
+  ${theme.borderRadius.modal};
+  ${theme.shadow.popover}
+
+  width: 534px;
+  @media (max-width: 560px) {
+    width: 100%;
+  }
+`;
+
+const UIHeader = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 4px;
+`;
+
+const UITitle = styled.h3<{}>`
+  ${theme.font.h3.spezia.build()};
+`;
+
+const UIExit = styled.button<{}>`
+  background: transparent;
+  outline: none;
+  padding: 0;
+  cursor: pointer;
+
+  ${theme.font.body12.spezia.build()};
+  color: ${theme.colors.layout.supportingText()};
+  text-decoration: underline;
+  ${theme.transitions.hover()};
+  &:hover {
+    color: ${theme.colors.status.error()};
+  }
+`;
 
 const UIItemHolder = styled.div<{}>`
   display: flex;
