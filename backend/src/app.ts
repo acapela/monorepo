@@ -2,6 +2,7 @@ import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import express, { Application, json } from "express";
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
 import securityMiddleware from "helmet";
+import cookieParser from "cookie-parser";
 import { createServer, Server } from "http";
 import { promisify } from "util";
 import { initializeSecrets } from "~config";
@@ -11,6 +12,7 @@ import { router as authenticationRoutes } from "./authentication";
 import { router as eventRoutes } from "./events/events";
 import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
 import { router as calendarRoutes } from "./calendar/calendar";
+import { router as attachmentsRoutes } from "./attachments/router";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import * as Sentry from "@sentry/node";
 
@@ -31,6 +33,7 @@ function setupMiddleware(app: Application): void {
   app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   app.use(securityMiddleware());
   app.use(logger.middleware);
+  app.use(cookieParser());
   app.use(json());
 }
 
@@ -40,6 +43,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", actionRoutes);
   app.use("/api", transcriptionRoutes);
   app.use("/api", calendarRoutes);
+  app.use(attachmentsRoutes);
 }
 
 function addErrorHandlersToApp(app: Application): void {
