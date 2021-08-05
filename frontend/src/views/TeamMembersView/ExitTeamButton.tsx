@@ -25,7 +25,7 @@ export const ExitTeamButton = () => {
     changeCurrentTeam({ userId: user.id, teamId: null });
   };
 
-  return <UIExitButton onClick={handleClick}>exit the team</UIExitButton>;
+  return <UIExitButton onClick={handleClick}>Switch teams</UIExitButton>;
 };
 
 const UIStatus = styled.p`
