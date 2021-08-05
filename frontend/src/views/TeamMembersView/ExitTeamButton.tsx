@@ -9,14 +9,6 @@ export const ExitTeamButton = () => {
 
   const [changeCurrentTeam, { loading, data }] = useChangeCurrentTeamIdMutation();
 
-  if (loading) {
-    return <UIStatus>wait ...</UIStatus>;
-  }
-
-  const handleClick = () => {
-    changeCurrentTeam({ userId: user.id, teamId: null });
-  };
-
   useEffect(() => {
     if (data) {
       // We rely on the data from the token to determine what is the user's team.
@@ -24,6 +16,14 @@ export const ExitTeamButton = () => {
       window.location.pathname = "/";
     }
   }, [data]);
+
+  if (loading) {
+    return <UIStatus>wait ...</UIStatus>;
+  }
+
+  const handleClick = () => {
+    changeCurrentTeam({ userId: user.id, teamId: null });
+  };
 
   return <UIExitButton onClick={handleClick}>exit the team</UIExitButton>;
 };
