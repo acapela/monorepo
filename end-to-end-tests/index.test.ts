@@ -13,9 +13,8 @@ test("view spaces", async ({ page, db, auth }) => {
 });
 
 test("create a room", async ({ page, db, auth }) => {
-  await auth.login(db.user1);
+  await auth.login(db.user2);
   await page.goto(basePath);
-  await page.click("text=Select this team");
 
   await page.click("text=New Room");
   await page.click("text=Room name", { force: true });
