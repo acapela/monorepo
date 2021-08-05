@@ -9744,6 +9744,15 @@ export type UserBasicInfoFragment = (
   & Pick<User, 'id' | 'name' | 'email' | 'avatar_url'>
 );
 
+export type UserDetailedInfoFragment = (
+  { __typename?: 'user' }
+  & { current_team?: Maybe<(
+    { __typename?: 'team' }
+    & TeamBasicInfoFragment
+  )> }
+  & UserBasicInfoFragment
+);
+
 export type ChangeCurrentTeamIdMutationVariables = Exact<{
   userId: Scalars['uuid'];
   teamId?: Maybe<Scalars['uuid']>;
@@ -9768,6 +9777,19 @@ export type TeamMembersQuery = (
   & { teamMembers: Array<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
+  )> }
+);
+
+export type UserDetailedQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type UserDetailedQuery = (
+  { __typename?: 'query_root' }
+  & { user_by_pk?: Maybe<(
+    { __typename?: 'user' }
+    & UserDetailedInfoFragment
   )> }
 );
 

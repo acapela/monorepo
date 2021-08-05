@@ -6,9 +6,13 @@ import {
   TeamMembersQuery,
   TeamMembersQueryVariables,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
+  UserDetailedInfoFragment as UserDetailedInfoFragmentType,
+  UserDetailedQuery,
+  UserDetailedQueryVariables,
 } from "~gql";
 import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { UserTokenData } from "~shared/types/jwtAuth";
+import { TeamBasicInfoFragment } from "./teams";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
@@ -17,6 +21,20 @@ export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
       name
       email
       avatar_url
+    }
+  `
+);
+
+export const UserDetailedInfoFragment = createFragment<UserDetailedInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    ${TeamBasicInfoFragment()}
+
+    fragment UserDetailedInfo on user {
+      ...UserBasicInfo
+      current_team {
+        ...TeamBasicInfo
+      }
     }
   `
 );
@@ -63,3 +81,15 @@ export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData)
     name: userTokenData.name,
   };
 }
+
+export const [useUserDetailedInfoQuery] = createQuery<UserDetailedQuery, UserDetailedQueryVariables>(
+  () => gql`
+    ${UserDetailedInfoFragment()}
+
+    query UserDetailed($id: uuid!) {
+      user_by_pk(id: $id) {
+        ...UserDetailedInfo
+      }
+    }
+  `
+);

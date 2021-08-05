@@ -30,7 +30,7 @@ import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser"
 import { addToast } from "~ui/toasts/data";
 import { slugify } from "~shared/slugify";
 
-const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
+export const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
   () => gql`
     fragment TeamBasicInfo on team {
       id
