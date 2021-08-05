@@ -1,12 +1,29 @@
+import { gql } from "@apollo/client";
 import React, { Fragment } from "react";
 import styled from "styled-components";
 import { usePathParameter } from "~frontend/utils";
 import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
-import { useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { IconSpaces, IconBox } from "~ui/icons";
 import { routes } from "~frontend/router";
 import { theme } from "~ui/theme";
+import { createQuery } from "~frontend/gql/utils";
+import { BreadcrumbQuery, BreadcrumbQueryVariables } from "~gql";
+import { assert, assertDefined } from "~shared/assert";
+
+const [useBreadcrumbQuery] = createQuery<BreadcrumbQuery, BreadcrumbQueryVariables>(
+  () => gql`
+    query Breadcrumb($spaceId: uuid!, $roomId: uuid) {
+      space: space_by_pk(id: $spaceId) {
+        id
+        name
+      }
+      rooms: room(where: { id: { _eq: $roomId } }) {
+        id
+        name
+      }
+    }
+  `
+);
 
 export const Breadcrumbs = () => {
   const breadcrumbsProps: BreadcrumbProps[] = [
@@ -17,14 +34,18 @@ export const Breadcrumbs = () => {
     },
   ];
 
-  const spaceId = usePathParameter("spaceId");
-  const [space] = useSingleSpaceQuery({ id: spaceId ?? "" }, { skip: !spaceId });
-
+  const spaceId = assertDefined(usePathParameter("spaceId"), "space id is required");
   const roomId = usePathParameter("roomId");
-  const [room] = useSingleRoomQuery({ id: roomId ?? "" }, { skip: !roomId });
-  if (space) {
+  const [result] = useBreadcrumbQuery({ spaceId, roomId });
+
+  if (result) {
+    const {
+      space,
+      rooms: [room],
+    } = result;
+    assert(space, "space needs to have been fetched");
     breadcrumbsProps.push({
-      title: space.name ?? "",
+      title: space.name,
       href: routes.space.getUrlWithParams({ spaceId: space.id }),
       icon: <IconBox />,
     });
