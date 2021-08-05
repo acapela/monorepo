@@ -17,7 +17,7 @@ export const ExitTeamButton = () => {
     }
   }, [data]);
 
-  if (loading) {
+  if (loading || data) {
     return <UIStatus>wait ...</UIStatus>;
   }
 
