@@ -11,11 +11,11 @@ import { MediaElement } from "./types";
 const playbackRateSettingManager = createLocalStorageValueManager("media-playback-rate", 1);
 
 export function usePlaybackState(ref: RefObject<MediaElement>) {
-  const [time, setTime] = useState(0);
+  const [time, setTimeState] = useState(0);
   const playbackRate = playbackRateSettingManager.useValue();
   const setPlaybackRate = playbackRateSettingManager.set;
   const [duration, setDuration] = useState(Infinity);
-  const [isPlaying, { set: play, unset: pause }] = useBoolean(false);
+  const [isPlaying, { set: play, unset: pause, toggle: togglePlay }] = useBoolean(false);
 
   const progress = time / duration;
 
@@ -44,13 +44,14 @@ export function usePlaybackState(ref: RefObject<MediaElement>) {
 
     cleanup.enqueue(
       createElementEvent(media, "timeupdate", () => {
-        setTime(media.currentTime);
+        setDuration(media.duration);
+        setTimeState(media.currentTime);
       }),
       createElementEvent(media, "loadedmetadata", () => {
         setDuration(media.duration);
       }),
       createElementEvent(media, "play", play),
-      createElementEvent(media, "pause", play),
+      createElementEvent(media, "pause", pause),
       createElementEvent(media, "ended", pause),
       createElementEvent(media, "durationchange", () => {
         setDuration(media.duration);
@@ -59,6 +60,11 @@ export function usePlaybackState(ref: RefObject<MediaElement>) {
 
     return cleanup.clean;
   }, [ref]);
+
+  function setTime(time: number) {
+    if (!ref.current) return;
+    ref.current.currentTime = time;
+  }
 
   return {
     time,
@@ -69,6 +75,7 @@ export function usePlaybackState(ref: RefObject<MediaElement>) {
     setPlaybackRate,
     isPlaying,
     play,
+    togglePlay,
     pause,
     progress,
   };

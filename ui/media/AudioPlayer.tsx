@@ -17,7 +17,7 @@ export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function Aud
   ref
 ) {
   const audioRef = useSharedRef<HTMLAudioElement | null>(null, [ref]);
-  const { time, duration, playbackRate, setPlaybackRate, isPlaying, play, pause } = usePlaybackState(audioRef);
+  const { time, duration, playbackRate, setPlaybackRate, isPlaying, play, pause, setTime } = usePlaybackState(audioRef);
 
   return (
     <UIHolder>
@@ -34,11 +34,7 @@ export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function Aud
           playbackRate={playbackRate}
           onPlaybackRateChangeRequest={setPlaybackRate}
           allowedPlaybackRates={defaultAllowedPlaybackRates}
-          onTimeChangeRequest={(time) => {
-            if (audioRef.current) {
-              audioRef.current.currentTime = time;
-            }
-          }}
+          onTimeChangeRequest={setTime}
         />
       </UIControlsHolder>
     </UIHolder>
