@@ -25,6 +25,7 @@ export const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedI
       message {
         id
         user_id
+        type
       }
       transcription {
         status
