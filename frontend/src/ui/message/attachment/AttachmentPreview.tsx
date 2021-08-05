@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useAttachmentQuery, useDownloadUrlQuery } from "~frontend/gql/attachments";
+import { useAttachmentQuery } from "~frontend/gql/attachments";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconTrash } from "~ui/icons";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
@@ -12,13 +12,12 @@ interface Props {
 
 export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
   const [attachment] = useAttachmentQuery({ id });
-  const [attachmentInfo] = useDownloadUrlQuery({ id });
 
   if (!attachment) return null;
 
   return (
     <UIHolder>
-      {!!attachmentInfo && !!onRemoveRequest && (
+      {!!onRemoveRequest && (
         <UIRemoveButtonHolder>
           <WideIconButton
             tooltip="Remove attachment"
@@ -29,9 +28,7 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
         </UIRemoveButtonHolder>
       )}
 
-      {attachmentInfo && (
-        <MessageAttachmentDisplayer attachmentUrl={attachmentInfo.downloadUrl} attachment={attachment} />
-      )}
+      {<MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment} />}
     </UIHolder>
   );
 };

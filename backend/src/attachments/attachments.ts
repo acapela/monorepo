@@ -20,30 +20,12 @@ export const getUploadUrl: ActionHandler<UploadUrlParams, UploadUrlResponse> = {
       data: {
         original_name: fileName,
         mime_type: mimeType,
+        user_id: _userId,
       },
     });
 
     const uploadUrl = await getSignedUploadUrl(uuid, mimeType);
 
     return { uploadUrl, uuid };
-  },
-};
-
-interface DownloadUrlParams {
-  uuid: string;
-}
-
-interface DownloadUrlResponse {
-  downloadUrl: string;
-}
-
-// this should be removed
-export const getDownloadUrl: ActionHandler<DownloadUrlParams, DownloadUrlResponse> = {
-  actionName: "get_download_url",
-
-  async handle(_userId, { uuid }) {
-    return {
-      downloadUrl: `/attachments/${uuid}`,
-    };
   },
 };
