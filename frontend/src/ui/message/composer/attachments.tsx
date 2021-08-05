@@ -7,7 +7,7 @@ interface UploadFileConfig {
 
 export async function uploadFile(file: File, config: UploadFileConfig = {}): Promise<EditorAttachmentInfo> {
   const { name: fileName, type: mimeType } = file;
-  const { uploadUrlInfo } = await uploadUrlQueryManager.fetch({ fileName, mimeType });
+  const { uploadUrlInfo } = await uploadUrlQueryManager.fetch({ fileName, mimeType }, { fetchPolicy: "no-cache" });
 
   if (!uploadUrlInfo) {
     throw new Error("unable to upload file");
