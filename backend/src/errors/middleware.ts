@@ -22,16 +22,12 @@ function getResponseDataFromHttpError(error: HttpError) {
   return responseData;
 }
 
-export function errorHandlerMiddleware(
-  error: Error,
-  _: Request,
-  response: Response,
-  /* eslint-disable */ next: () => void /* eslint-enable */
-): void {
+export function errorHandlerMiddleware(error: Error, req: Request, response: Response): void {
   function handleAsInternalError() {
     logger.error("Server encountered an internal server error", {
       errorMessage: error.message,
       stack: error.stack,
+      url: req.url,
     });
 
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message } as ErrorResponseData);
