@@ -20,6 +20,7 @@ interface Props {
 }
 
 export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function VideoPlayer(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { fileUrl, transcript, autoplay }: Props,
   ref
 ) {

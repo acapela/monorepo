@@ -13,6 +13,7 @@ interface Props {
 }
 
 export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function AudioPlayer(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { fileUrl, transcript, autoplay }: Props,
   ref
 ) {
