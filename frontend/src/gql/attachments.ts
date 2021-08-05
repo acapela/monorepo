@@ -26,6 +26,10 @@ export const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedI
         id
         user_id
       }
+      transcription {
+        status
+        transcript
+      }
     }
   `
 );
