@@ -9330,6 +9330,18 @@ export type SingleSpaceQuery = (
   )> }
 );
 
+export type SpaceWithMembersFragment = (
+  { __typename?: 'space' }
+  & { members: Array<(
+    { __typename?: 'space_member' }
+    & Pick<Space_Member, 'space_id' | 'user_id'>
+    & { user: (
+      { __typename?: 'user' }
+      & Pick<User, 'id'>
+    ) }
+  )> }
+);
+
 export type CreateSpaceMutationVariables = Exact<{
   input: Space_Insert_Input;
 }>;
@@ -9728,6 +9740,53 @@ export type TeamMembersQuery = (
   )> }
 );
 
+export type BreadcrumbQueryVariables = Exact<{
+  spaceId: Scalars['uuid'];
+  roomId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type BreadcrumbQuery = (
+  { __typename?: 'query_root' }
+  & { space?: Maybe<(
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  )>, rooms: Array<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'name'>
+  )> }
+);
+
+export type SpaceManager_SpaceFragment = (
+  { __typename?: 'space' }
+  & Pick<Space, 'id' | 'name'>
+  & SpaceWithMembersFragment
+);
+
+export type SpacePickerQueryVariables = Exact<{
+  teamId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type SpacePickerQuery = (
+  { __typename?: 'query_root' }
+  & { spaces: Array<(
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  )> }
+);
+
+export type AvatarList_UserFragment = (
+  { __typename?: 'user' }
+  & Pick<User, 'id' | 'name'>
+  & UserAvatar_UserFragment
+);
+
+export type UserAvatar_UserFragment = (
+  { __typename?: 'user' }
+  & Pick<User, 'name' | 'avatar_url'>
+);
+
 export type UnreadMessageFragmentFragment = (
   { __typename?: 'unread_messages' }
   & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
@@ -9743,6 +9802,41 @@ export type UserUnreadMessagesQuery = (
   & { messages: Array<(
     { __typename?: 'unread_messages' }
     & UnreadMessageFragmentFragment
+  )> }
+);
+
+export type SpaceCard_SpaceFragment = (
+  { __typename?: 'space' }
+  & Pick<Space, 'id' | 'name'>
+  & { members: Array<(
+    { __typename?: 'space_member' }
+    & Pick<Space_Member, 'space_id' | 'user_id'>
+    & { user: (
+      { __typename?: 'user' }
+      & AvatarList_UserFragment
+    ) }
+  )> }
+  & SpaceWithMembersFragment
+);
+
+export type SpacesListQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type SpacesListQuery = (
+  { __typename?: 'query_root' }
+  & { spaces: Array<(
+    { __typename?: 'space' }
+    & { members: Array<(
+      { __typename?: 'space_member' }
+      & Pick<Space_Member, 'space_id' | 'user_id'>
+      & { user: (
+        { __typename?: 'user' }
+        & Pick<User, 'id'>
+      ) }
+    )> }
+    & SpaceCard_SpaceFragment
   )> }
 );
 
