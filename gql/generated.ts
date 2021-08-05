@@ -9547,6 +9547,19 @@ export type LookupTeamNameQuery = (
   )> }
 );
 
+export type ResendInvitationMutationVariables = Exact<{
+  invitation_id: Scalars['ID'];
+}>;
+
+
+export type ResendInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { resend_invitation?: Maybe<(
+    { __typename?: 'ResendInvitationResponse' }
+    & Pick<ResendInvitationResponse, 'sent_at'>
+  )> }
+);
+
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>

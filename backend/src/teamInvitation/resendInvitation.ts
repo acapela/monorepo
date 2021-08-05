@@ -13,7 +13,7 @@ export interface ResendInvitationResponse {
 }
 
 export const resendInvitation: ActionHandler<ResendInvitationActionInputs, ResendInvitationResponse> = {
-  actionName: "room_invitation_view",
+  actionName: "resend_invitation",
 
   async handle(userId, { invitation_id }) {
     const teamInvitation = await db.team_invitation.findFirst({ where: { id: invitation_id } });

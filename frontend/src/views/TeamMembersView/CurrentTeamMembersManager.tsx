@@ -8,7 +8,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 import { ExitTeamButton } from "./ExitTeamButton";
-import { Button } from "~ui/buttons/Button";
+import { ResendInviteButton } from "./ResendInviteButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
@@ -59,7 +59,7 @@ export const CurrentTeamMembersManager = () => {
             <UIItemHolder key={id}>
               <InvitationPendingIndicator email={email} />
               <UIActionsHolder>
-                <Button size="small">Re-send invite</Button>
+                <ResendInviteButton invitationId={id} />
                 <CircleCloseIconButton
                   isDisabled={!isCurrentUserTeamOwner}
                   onClick={() => handleRemoveInvitation(id)}
