@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { PanelWithTopbarAndCloseButton } from "~frontend/ui/MembersManager/PanelWithTopbarAndCloseButton";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
@@ -7,20 +6,24 @@ import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { theme } from "~ui/theme";
+import { ExitTeamButton } from "./ExitTeamButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
 
-  const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
+  if (!team) {
+    return null;
+  }
+
+  const teamMembers = team.memberships.map((membership) => membership.user) ?? [];
   const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
   const handleRemoveTeamMember = (userId: string) => {
-    if (!team?.id) return;
-
     removeTeamMember({ userId, teamId: team.id });
   };
 
-  const invitations = team?.invitations ?? [];
+  const invitations = team.invitations ?? [];
   const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
   const handleRemoveInvitation = (invitationId: string) => {
@@ -28,17 +31,21 @@ export const CurrentTeamMembersManager = () => {
   };
 
   const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+  const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
 
   return (
-    <PanelWithTopbarAndCloseButton title="Team members">
+    <UIPanel>
+      <UIHeader>
+        <UITitle>{team.name} members</UITitle>
+        <ExitTeamButton />
+      </UIHeader>
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
           {teamMembers.map((user) => (
             <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
-              {!(user.id === team?.owner_id) && (
+              {!(user.id === team.owner_id) && (
                 <CircleCloseIconButton
                   isDisabled={!isCurrentUserTeamOwner}
                   onClick={() => handleRemoveTeamMember(user.id)}
@@ -59,9 +66,36 @@ export const CurrentTeamMembersManager = () => {
           ))}
         </UISelectGridContainer>
       )}
-    </PanelWithTopbarAndCloseButton>
+    </UIPanel>
   );
 };
+
+const UIPanel = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px;
+
+  background: ${theme.colors.layout.foreground()};
+  ${theme.borderRadius.modal};
+  ${theme.shadow.popover}
+
+  width: 534px;
+  @media (max-width: 560px) {
+    width: 100%;
+  }
+`;
+
+const UIHeader = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 4px;
+`;
+
+const UITitle = styled.h3<{}>`
+  ${theme.font.h3.spezia.build()};
+`;
 
 const UIItemHolder = styled.div<{}>`
   display: flex;
