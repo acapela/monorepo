@@ -3100,10 +3100,6 @@ export interface Query_Root {
   transcription_aggregate: Transcription_Aggregate;
   /** fetch data from the table: "transcription" using primary key columns */
   transcription_by_pk?: Maybe<Transcription>;
-  /** fetch data from the table: "transcription_full_text" */
-  transcription_full_text: Array<Transcription_Full_Text>;
-  /** fetch aggregated fields from the table: "transcription_full_text" */
-  transcription_full_text_aggregate: Transcription_Full_Text_Aggregate;
   /** fetch data from the table: "transcription_status" */
   transcription_status: Array<Transcription_Status>;
   /** fetch aggregated fields from the table: "transcription_status" */
@@ -3672,26 +3668,6 @@ export interface Query_RootTranscription_AggregateArgs {
 /** query root */
 export interface Query_RootTranscription_By_PkArgs {
   id: Scalars['uuid'];
-}
-
-
-/** query root */
-export interface Query_RootTranscription_Full_TextArgs {
-  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
-  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-}
-
-
-/** query root */
-export interface Query_RootTranscription_Full_Text_AggregateArgs {
-  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
-  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
 }
 
 
@@ -5192,10 +5168,6 @@ export interface Subscription_Root {
   transcription_aggregate: Transcription_Aggregate;
   /** fetch data from the table: "transcription" using primary key columns */
   transcription_by_pk?: Maybe<Transcription>;
-  /** fetch data from the table: "transcription_full_text" */
-  transcription_full_text: Array<Transcription_Full_Text>;
-  /** fetch aggregated fields from the table: "transcription_full_text" */
-  transcription_full_text_aggregate: Transcription_Full_Text_Aggregate;
   /** fetch data from the table: "transcription_status" */
   transcription_status: Array<Transcription_Status>;
   /** fetch aggregated fields from the table: "transcription_status" */
@@ -5764,26 +5736,6 @@ export interface Subscription_RootTranscription_AggregateArgs {
 /** subscription root */
 export interface Subscription_RootTranscription_By_PkArgs {
   id: Scalars['uuid'];
-}
-
-
-/** subscription root */
-export interface Subscription_RootTranscription_Full_TextArgs {
-  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
-  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
-}
-
-
-/** subscription root */
-export interface Subscription_RootTranscription_Full_Text_AggregateArgs {
-  distinct_on?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Transcription_Full_Text_Order_By>>;
-  where?: Maybe<Transcription_Full_Text_Bool_Exp>;
 }
 
 
@@ -7111,90 +7063,6 @@ export interface Transcription_Delete_Key_Input {
   transcript?: Maybe<Scalars['String']>;
 }
 
-/** columns and relationships of "transcription_full_text" */
-export interface Transcription_Full_Text {
-  __typename?: 'transcription_full_text';
-  transcript?: Maybe<Scalars['String']>;
-  transcription_id?: Maybe<Scalars['uuid']>;
-}
-
-/** aggregated selection of "transcription_full_text" */
-export interface Transcription_Full_Text_Aggregate {
-  __typename?: 'transcription_full_text_aggregate';
-  aggregate?: Maybe<Transcription_Full_Text_Aggregate_Fields>;
-  nodes: Array<Transcription_Full_Text>;
-}
-
-/** aggregate fields of "transcription_full_text" */
-export interface Transcription_Full_Text_Aggregate_Fields {
-  __typename?: 'transcription_full_text_aggregate_fields';
-  count?: Maybe<Scalars['Int']>;
-  max?: Maybe<Transcription_Full_Text_Max_Fields>;
-  min?: Maybe<Transcription_Full_Text_Min_Fields>;
-}
-
-
-/** aggregate fields of "transcription_full_text" */
-export interface Transcription_Full_Text_Aggregate_FieldsCountArgs {
-  columns?: Maybe<Array<Transcription_Full_Text_Select_Column>>;
-  distinct?: Maybe<Scalars['Boolean']>;
-}
-
-/** order by aggregate values of table "transcription_full_text" */
-export interface Transcription_Full_Text_Aggregate_Order_By {
-  count?: Maybe<Order_By>;
-  max?: Maybe<Transcription_Full_Text_Max_Order_By>;
-  min?: Maybe<Transcription_Full_Text_Min_Order_By>;
-}
-
-/** Boolean expression to filter rows from the table "transcription_full_text". All fields are combined with a logical 'AND'. */
-export interface Transcription_Full_Text_Bool_Exp {
-  _and?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
-  _not?: Maybe<Transcription_Full_Text_Bool_Exp>;
-  _or?: Maybe<Array<Maybe<Transcription_Full_Text_Bool_Exp>>>;
-  transcript?: Maybe<String_Comparison_Exp>;
-  transcription_id?: Maybe<Uuid_Comparison_Exp>;
-}
-
-/** aggregate max on columns */
-export interface Transcription_Full_Text_Max_Fields {
-  __typename?: 'transcription_full_text_max_fields';
-  transcript?: Maybe<Scalars['String']>;
-  transcription_id?: Maybe<Scalars['uuid']>;
-}
-
-/** order by max() on columns of table "transcription_full_text" */
-export interface Transcription_Full_Text_Max_Order_By {
-  transcript?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-}
-
-/** aggregate min on columns */
-export interface Transcription_Full_Text_Min_Fields {
-  __typename?: 'transcription_full_text_min_fields';
-  transcript?: Maybe<Scalars['String']>;
-  transcription_id?: Maybe<Scalars['uuid']>;
-}
-
-/** order by min() on columns of table "transcription_full_text" */
-export interface Transcription_Full_Text_Min_Order_By {
-  transcript?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-}
-
-/** ordering options when selecting data from "transcription_full_text" */
-export interface Transcription_Full_Text_Order_By {
-  transcript?: Maybe<Order_By>;
-  transcription_id?: Maybe<Order_By>;
-}
-
-/** select columns of table "transcription_full_text" */
-export type Transcription_Full_Text_Select_Column =
-  /** column name */
-  | 'transcript'
-  /** column name */
-  | 'transcription_id';
-
 /** input type for inserting data into table "transcription" */
 export interface Transcription_Insert_Input {
   attachments?: Maybe<Attachment_Arr_Rel_Insert_Input>;
@@ -8337,7 +8205,7 @@ export type AttachmentDetailedInfoFragment = (
   & { originalName: Attachment['original_name'], mimeType: Attachment['mime_type'] }
   & { message?: Maybe<(
     { __typename?: 'message' }
-    & Pick<Message, 'id' | 'user_id'>
+    & Pick<Message, 'id' | 'user_id' | 'type'>
   )>, transcription?: Maybe<(
     { __typename?: 'transcription' }
     & Pick<Transcription, 'status' | 'transcript'>
@@ -9838,7 +9706,7 @@ export type notification_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9903,8 +9771,6 @@ export type query_rootFieldPolicy = {
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10183,7 +10049,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_full_text' | 'transcription_full_text_aggregate' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_download_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10248,8 +10114,6 @@ export type subscription_rootFieldPolicy = {
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_full_text?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_full_text_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_status_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10500,32 +10364,6 @@ export type transcription_aggregate_fieldsFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type transcription_full_textKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_textKeySpecifier)[];
-export type transcription_full_textFieldPolicy = {
-	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type transcription_full_text_aggregateKeySpecifier = ('aggregate' | 'nodes' | transcription_full_text_aggregateKeySpecifier)[];
-export type transcription_full_text_aggregateFieldPolicy = {
-	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
-	nodes?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type transcription_full_text_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | transcription_full_text_aggregate_fieldsKeySpecifier)[];
-export type transcription_full_text_aggregate_fieldsFieldPolicy = {
-	count?: FieldPolicy<any> | FieldReadFunction<any>,
-	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type transcription_full_text_max_fieldsKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_text_max_fieldsKeySpecifier)[];
-export type transcription_full_text_max_fieldsFieldPolicy = {
-	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type transcription_full_text_min_fieldsKeySpecifier = ('transcript' | 'transcription_id' | transcription_full_text_min_fieldsKeySpecifier)[];
-export type transcription_full_text_min_fieldsFieldPolicy = {
-	transcript?: FieldPolicy<any> | FieldReadFunction<any>,
-	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type transcription_max_fieldsKeySpecifier = ('created_at' | 'id' | 'sonix_media_id' | 'updated_at' | transcription_max_fieldsKeySpecifier)[];
 export type transcription_max_fieldsFieldPolicy = {
@@ -11241,26 +11079,6 @@ export type TypedTypePolicies = TypePolicies & {
 	transcription_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcription_aggregate_fieldsKeySpecifier | (() => undefined | transcription_aggregate_fieldsKeySpecifier),
 		fields?: transcription_aggregate_fieldsFieldPolicy,
-	},
-	transcription_full_text?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | transcription_full_textKeySpecifier | (() => undefined | transcription_full_textKeySpecifier),
-		fields?: transcription_full_textFieldPolicy,
-	},
-	transcription_full_text_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | transcription_full_text_aggregateKeySpecifier | (() => undefined | transcription_full_text_aggregateKeySpecifier),
-		fields?: transcription_full_text_aggregateFieldPolicy,
-	},
-	transcription_full_text_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | transcription_full_text_aggregate_fieldsKeySpecifier | (() => undefined | transcription_full_text_aggregate_fieldsKeySpecifier),
-		fields?: transcription_full_text_aggregate_fieldsFieldPolicy,
-	},
-	transcription_full_text_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | transcription_full_text_max_fieldsKeySpecifier | (() => undefined | transcription_full_text_max_fieldsKeySpecifier),
-		fields?: transcription_full_text_max_fieldsFieldPolicy,
-	},
-	transcription_full_text_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | transcription_full_text_min_fieldsKeySpecifier | (() => undefined | transcription_full_text_min_fieldsKeySpecifier),
-		fields?: transcription_full_text_min_fieldsFieldPolicy,
 	},
 	transcription_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | transcription_max_fieldsKeySpecifier | (() => undefined | transcription_max_fieldsKeySpecifier),
