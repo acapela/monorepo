@@ -1,6 +1,7 @@
-import { AnimateSharedLayout } from "framer-motion";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
@@ -31,15 +32,18 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
       <UIInlineAttachmentHolder onClick={openFullScreen}>
         <ImageWrapper src={attachmentUrl} className={className} />
       </UIInlineAttachmentHolder>
-
-      {isFullscreenOpened && (
-        <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
-          <CornerButtonWrapper>
-            <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
-          </CornerButtonWrapper>
-          <ImageWrapper src={attachmentUrl} className={className} />
-        </ScreenCover>
-      )}
+      <AnimatePresence>
+        {isFullscreenOpened && (
+          <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
+            <CornerButtonWrapper>
+              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
+            </CornerButtonWrapper>
+            <PopPresenceAnimator>
+              <ImageWrapper src={attachmentUrl} className={className} />
+            </PopPresenceAnimator>
+          </ScreenCover>
+        )}
+      </AnimatePresence>
     </AnimateSharedLayout>
   );
 })``;
@@ -50,6 +54,7 @@ const UIInlineAttachmentHolder = styled.div<{}>`
   ${theme.borderRadius.item}
   overflow: hidden;
   max-height: 120px;
+  cursor: pointer;
 `;
 
 const ImageWrapper = styled.img<{}>`
@@ -60,7 +65,8 @@ const ImageWrapper = styled.img<{}>`
   min-width: 0;
   min-height: 0;
   user-select: none;
-  ${theme.borderRadius.item}
+  ${theme.borderRadius.item};
+  will-change: transform, opacity;
 
   /* Safari fix - make sure image always keeps its aspect ratio. */
   object-fit: scale-down;
