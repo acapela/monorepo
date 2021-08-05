@@ -1,6 +1,6 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { db } from "~db";
-import { getSignedDownloadUrl, getSignedUploadUrl } from "./googleStorage";
+import { getSignedUploadUrl } from "./googleStorage";
 
 interface UploadUrlParams {
   fileName: string;
