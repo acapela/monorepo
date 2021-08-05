@@ -17,6 +17,12 @@ type Query {
   ): LookupTeamNameResponse
 }
 
+type Mutation {
+  resend_invitation (
+    invitation_id: ID!
+  ): ResendInvitationResponse
+}
+
 type Query {
   room_invitation_view (
     token: String!
@@ -48,5 +54,9 @@ type LookupTeamNameResponse {
 type RoomInvitationViewResponse {
   room_name : String!
   inviter_name : String!
+}
+
+type ResendInvitationResponse {
+  sent_at : timestamptz
 }
 

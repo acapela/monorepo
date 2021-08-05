@@ -8,6 +8,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 import { ExitTeamButton } from "./ExitTeamButton";
+import { ResendInviteButton } from "./ResendInviteButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
@@ -57,11 +58,14 @@ export const CurrentTeamMembersManager = () => {
           {pendingInvitations.map(({ email, id }) => (
             <UIItemHolder key={id}>
               <InvitationPendingIndicator email={email} />
-              <CircleCloseIconButton
-                isDisabled={!isCurrentUserTeamOwner}
-                onClick={() => handleRemoveInvitation(id)}
-                tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete invitations" : undefined}
-              />
+              <UIActionsHolder>
+                <ResendInviteButton invitationId={id} />
+                <CircleCloseIconButton
+                  isDisabled={!isCurrentUserTeamOwner}
+                  onClick={() => handleRemoveInvitation(id)}
+                  tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete invitations" : undefined}
+                />
+              </UIActionsHolder>
             </UIItemHolder>
           ))}
         </UISelectGridContainer>
@@ -101,6 +105,12 @@ const UIItemHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  gap: 8px;
   padding: 8px;
+`;
+
+const UIActionsHolder = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
