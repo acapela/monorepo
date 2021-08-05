@@ -1,10 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import { MouseEvent } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { handleWithStopPropagation } from "~shared/events";
 import { PopPresenceAnimator } from "~ui/animations";
 import { IconPause, IconPlay } from "~ui/icons";
 import { theme } from "~ui/theme";
+import { ValueRoller } from "./ValueRoller";
+import { motion } from "framer-motion";
 
 interface Props {
   isPlaying: boolean;
@@ -60,27 +62,36 @@ export function PlaybackControls({
       </AnimatePresence>
       <UIProgressBar onClick={handleWithStopPropagation(handleProgressBarMouseEvnet)}>
         <UIProgressInner>
-          <UIProgressBarProgressIndicator progress={progress} />
+          <UIProgressBarProgressIndicator
+            animate={{ width: `${progress * 100}%` }}
+            initial={{ width: `${progress * 100}%` }}
+            transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+          />
         </UIProgressInner>
       </UIProgressBar>
       <UIProgressTextLabel>{renderProgressTime(time, duration)}</UIProgressTextLabel>
+
       {allowedPlaybackRates && (
-        <UIPlaybackRateButtons>
-          {allowedPlaybackRates.map((allowedPlaybackRate) => {
+        <ValueRoller
+          possibleValues={allowedPlaybackRates}
+          activeValue={playbackRate}
+          onValueChange={(playbackRate) => {
+            onPlaybackRateChangeRequest?.(playbackRate);
+          }}
+        >
+          {({ setNextValue, value }) => {
             return (
               <UIPlaybackRateButton
-                isActive={allowedPlaybackRate === playbackRate}
-                key={allowedPlaybackRate}
                 onClick={handleWithStopPropagation(() => {
-                  onPlaybackRateChangeRequest?.(allowedPlaybackRate);
+                  setNextValue();
                 })}
-                data-tooltip={`Set playback speed to ${allowedPlaybackRate}x`}
+                data-tooltip={`Change playback speed`}
               >
-                {allowedPlaybackRate}x
+                {value}x
               </UIPlaybackRateButton>
             );
-          })}
-        </UIPlaybackRateButtons>
+          }}
+        </ValueRoller>
       )}
     </UIHolder>
   );
@@ -103,6 +114,7 @@ const UITogglePlayButton = styled(PopPresenceAnimator)`
   ${theme.borderRadius.circle}
   font-size: 20px;
   min-width: 32px;
+  cursor: pointer;
 `;
 
 const UIProgressBar = styled.div`
@@ -122,12 +134,11 @@ const UIProgressInner = styled.div`
   flex-grow: 1;
 `;
 
-const UIProgressBarProgressIndicator = styled.div<{ progress: number }>`
+const UIProgressBarProgressIndicator = styled(motion.div)`
   height: 3px;
   ${theme.borderRadius.circle};
   background-color: ${theme.colors.actions.primary.regular()};
   position: absolute;
-  width: ${(props) => props.progress * 100}%;
 `;
 
 const UIProgressTextLabel = styled.div`
@@ -136,25 +147,16 @@ const UIProgressTextLabel = styled.div`
   user-select: none;
 `;
 
-const UIPlaybackRateButtons = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const UIPlaybackRateButton = styled.button<{ isActive: boolean }>`
+const UIPlaybackRateButton = styled.button`
   padding: 4px 12px;
-  ${theme.font.body12.semibold.inter.build()};
+  ${theme.font.body12.medium.inter.build()};
   ${theme.colors.actions.tertiary.all}
   ${theme.borderRadius.item};
   ${theme.transitions.hover()}
-
-  ${(props) => {
-    if (props.isActive)
-      return css`
-        ${theme.colors.actions.primary.all}
-      `;
-  }}
+  min-width: 7ch;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
 `;
 
 function convertTimeToMinutesTime(time: number) {
