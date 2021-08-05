@@ -9728,6 +9728,23 @@ export type TeamMembersQuery = (
   )> }
 );
 
+export type BreadcrumbQueryVariables = Exact<{
+  spaceId: Scalars['uuid'];
+  roomId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type BreadcrumbQuery = (
+  { __typename?: 'query_root' }
+  & { space?: Maybe<(
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  )>, rooms: Array<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'name'>
+  )> }
+);
+
 export type SpacePickerQueryVariables = Exact<{
   teamId?: Maybe<Scalars['uuid']>;
 }>;
