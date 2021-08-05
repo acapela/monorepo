@@ -7,6 +7,7 @@ import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/Invitati
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
+import { ExitTeamButton } from "./ExitTeamButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
@@ -34,7 +35,7 @@ export const CurrentTeamMembersManager = () => {
     <UIPanel>
       <UIHeader>
         <UITitle>{team?.name} members</UITitle>
-        <UIExit>exit the team</UIExit>
+        <ExitTeamButton />
       </UIHeader>
       <InviteMemberForm />
       {teamMembers.length > 0 && (
@@ -92,21 +93,6 @@ const UIHeader = styled.div<{}>`
 
 const UITitle = styled.h3<{}>`
   ${theme.font.h3.spezia.build()};
-`;
-
-const UIExit = styled.button<{}>`
-  background: transparent;
-  outline: none;
-  padding: 0;
-  cursor: pointer;
-
-  ${theme.font.body12.spezia.build()};
-  color: ${theme.colors.layout.supportingText()};
-  text-decoration: underline;
-  ${theme.transitions.hover()};
-  &:hover {
-    color: ${theme.colors.status.error()};
-  }
 `;
 
 const UIItemHolder = styled.div<{}>`
