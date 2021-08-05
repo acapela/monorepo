@@ -74,6 +74,10 @@ async function start() {
     "/api/backend/?*",
     expressProxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/api/") })
   );
+  app.use(
+    "/attachments/?*",
+    expressProxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/attachments/") })
+  );
 
   app.all("*", (req, res) => handle(req, res));
 
