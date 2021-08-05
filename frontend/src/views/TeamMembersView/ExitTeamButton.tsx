@@ -18,7 +18,7 @@ export const ExitTeamButton = () => {
   }, [data]);
 
   if (loading || data) {
-    return <UIStatus>wait ...</UIStatus>;
+    return <UIStatus>Loading...</UIStatus>;
   }
 
   const handleClick = () => {
