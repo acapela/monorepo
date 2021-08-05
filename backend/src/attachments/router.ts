@@ -64,19 +64,23 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   }
 
   const message = attachment.message;
+  let accessAllowed = false;
   if (!message) {
-    throw new BadRequestError("attachment not found");
+    if (attachment.user_id !== userId) {
+      throw new BadRequestError("attachment not found");
+    }
+    accessAllowed = true;
   }
 
-  let accessAllowed = false;
-  if (message.topic.room.is_private) {
+  if (message && message.topic.room.is_private) {
     // if the room is private check topic_member, room_member, space_member
     accessAllowed =
       map(message.topic.topic_member, "user_id").includes(userId) ||
       map(message.topic.room.room_member, "user_id").includes(userId) ||
       map(message.topic.room.space.space_member, "user_id").includes(userId);
-  } else {
-    // if the room is private check topic_member or team_member
+  }
+  if (message && !message.topic.room.is_private) {
+    // if the room is not private check topic_member or team_member
     accessAllowed =
       map(message.topic.topic_member, "user_id").includes(userId) ||
       map(message.topic.room.space.team.team_member, "user_id").includes(userId);
