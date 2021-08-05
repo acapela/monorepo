@@ -1,11 +1,7 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { createCleanupObject } from "~frontend/../../shared/cleanup";
-import { createElementEvent } from "~frontend/../../shared/domEvents";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { useSharedRef } from "~frontend/../../shared/hooks/useSharedRef";
-import { namedForwardRef } from "~frontend/../../shared/react/namedForwardRef";
-import { theme } from "~frontend/../../ui/theme";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { theme } from "~ui/theme";
 import { TranscriptData } from "~shared/types/transcript";
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";

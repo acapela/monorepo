@@ -1,11 +1,11 @@
 import { RefObject, useEffect, useState } from "react";
 import styled from "styled-components";
-import { createCleanupObject } from "~frontend/../../shared/cleanup";
-import { createElementEvent } from "~frontend/../../shared/domEvents";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { useSharedRef } from "~frontend/../../shared/hooks/useSharedRef";
-import { createLocalStorageValueManager } from "~frontend/../../shared/localStorage";
-import { namedForwardRef } from "~frontend/../../shared/react/namedForwardRef";
+import { createCleanupObject } from "~shared/cleanup";
+import { createElementEvent } from "~shared/domEvents";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { createLocalStorageValueManager } from "~shared/localStorage";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { TranscriptData } from "~shared/types/transcript";
 import { PlaybackControls } from "./PlaybackControls";
 import { MediaElement } from "./types";

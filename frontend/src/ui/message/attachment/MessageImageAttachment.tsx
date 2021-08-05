@@ -29,7 +29,7 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
   return (
     <AnimateSharedLayout>
       <UIInlineAttachmentHolder onClick={openFullScreen}>
-        <ImageWrapper src={attachmentUrl} />
+        <ImageWrapper src={attachmentUrl} className={className} />
       </UIInlineAttachmentHolder>
 
       {isFullscreenOpened && (
@@ -37,16 +37,12 @@ export const MessageImageAttachment = styled<AttachmentProps>(({ attachmentUrl, 
           <CornerButtonWrapper>
             <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
           </CornerButtonWrapper>
-          <ImageWrapper src={attachmentUrl} />
+          <ImageWrapper src={attachmentUrl} className={className} />
         </ScreenCover>
       )}
     </AnimateSharedLayout>
   );
 })``;
-
-const UILoadingPlaceholder = styled.div<{}>`
-  height: 100%;
-`;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;

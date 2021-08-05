@@ -1,7 +1,6 @@
 import React from "react";
-import { CornerButtonWrapper } from "~frontend/../../ui/buttons/CornerButtonWrapper";
-import { WideIconButton } from "~frontend/../../ui/buttons/WideIconButton";
-import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
+import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconTrash } from "~ui/icons";
 
 interface AttachmentProps {

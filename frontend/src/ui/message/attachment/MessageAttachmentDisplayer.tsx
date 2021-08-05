@@ -9,62 +9,58 @@ import { theme } from "~ui/theme";
 import { MessageImageAttachment } from "./MessageImageAttachment";
 
 interface AttachmentProps {
-  mediaRef?: Ref<HTMLVideoElement>;
   attachment: AttachmentDetailedInfoFragment;
   attachmentUrl: string;
   className?: string;
-  onClick?: () => void;
 }
 
-export const MessageAttachmentDisplayer = styled<AttachmentProps>(
-  ({ mediaRef, attachment, className, attachmentUrl, onClick }) => {
-    const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+export const MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
+  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
-    function renderAttachment(): ReactNode {
-      switch (messageType) {
-        case "VIDEO":
-          return (
-            <PlayableMediaWrapper>
-              <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
-              <VideoPlayer fileUrl={attachmentUrl} />
-            </PlayableMediaWrapper>
-          );
-        case "AUDIO":
-          return (
-            <PlayableMediaWrapper>
-              <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
-              <AudioPlayer fileUrl={attachmentUrl} />
-            </PlayableMediaWrapper>
-          );
-        case "TEXT": {
-          const [type] = attachment.mimeType.split("/");
+  function renderAttachment(): ReactNode {
+    switch (messageType) {
+      case "VIDEO":
+        return (
+          <PlayableMediaWrapper>
+            <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
+            <VideoPlayer fileUrl={attachmentUrl} />
+          </PlayableMediaWrapper>
+        );
+      case "AUDIO":
+        return (
+          <PlayableMediaWrapper>
+            <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
+            <AudioPlayer fileUrl={attachmentUrl} />
+          </PlayableMediaWrapper>
+        );
+      case "TEXT": {
+        const [type] = attachment.mimeType.split("/");
 
-          if (type === "image") {
-            return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
-          }
-
-          return (
-            <a href={attachmentUrl} target="_blank">
-              <span>{attachment.originalName}</span>
-            </a>
-          );
+        if (type === "image") {
+          return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
         }
-      }
 
-      return (
-        <a href={attachmentUrl} target="_blank">
-          <span>{attachment.originalName}</span>
-        </a>
-      );
+        return (
+          <a href={attachmentUrl} target="_blank">
+            <span>{attachment.originalName}</span>
+          </a>
+        );
+      }
     }
 
     return (
-      <UIHolder className={className} onClick={onClick} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
-        {renderAttachment()}
-      </UIHolder>
+      <a href={attachmentUrl} target="_blank">
+        <span>{attachment.originalName}</span>
+      </a>
     );
   }
-)``;
+
+  return (
+    <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
+      {renderAttachment()}
+    </UIHolder>
+  );
+})``;
 
 const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;

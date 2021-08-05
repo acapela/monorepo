@@ -1,10 +1,10 @@
 import { AnimatePresence } from "framer-motion";
 import { MouseEvent } from "react";
 import styled, { css } from "styled-components";
-import { handleWithStopPropagation } from "~frontend/../../shared/events";
-import { PopPresenceAnimator } from "~frontend/../../ui/animations";
-import { IconPause, IconPlay } from "~frontend/../../ui/icons";
-import { theme } from "~frontend/../../ui/theme";
+import { handleWithStopPropagation } from "~shared/events";
+import { PopPresenceAnimator } from "~ui/animations";
+import { IconPause, IconPlay } from "~ui/icons";
+import { theme } from "~ui/theme";
 
 interface Props {
   isPlaying: boolean;
@@ -29,7 +29,6 @@ export function PlaybackControls({
   time,
   onTimeChangeRequest,
 }: Props) {
-  console.log({ time });
   const progress = time / duration;
 
   function handleProgressBarMouseEvnet(event: MouseEvent) {

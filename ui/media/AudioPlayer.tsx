@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { createCleanupObject } from "~frontend/../../shared/cleanup";
-import { createElementEvent } from "~frontend/../../shared/domEvents";
-import { useBoolean } from "~frontend/../../shared/hooks/useBoolean";
-import { useSharedRef } from "~frontend/../../shared/hooks/useSharedRef";
-import { namedForwardRef } from "~frontend/../../shared/react/namedForwardRef";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { TranscriptData } from "~shared/types/transcript";
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";
@@ -21,10 +17,7 @@ export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function Aud
   ref
 ) {
   const audioRef = useSharedRef<HTMLAudioElement | null>(null, [ref]);
-  const { time, setTime, duration, setDuration, playbackRate, setPlaybackRate, isPlaying, play, pause, progress } =
-    usePlaybackState(audioRef);
-
-  console.log({ duration, time, progress });
+  const { time, duration, playbackRate, setPlaybackRate, isPlaying, play, pause } = usePlaybackState(audioRef);
 
   return (
     <UIHolder>
