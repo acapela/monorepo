@@ -9728,6 +9728,19 @@ export type TeamMembersQuery = (
   )> }
 );
 
+export type SpacePickerQueryVariables = Exact<{
+  teamId?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type SpacePickerQuery = (
+  { __typename?: 'query_root' }
+  & { spaces: Array<(
+    { __typename?: 'space' }
+    & Pick<Space, 'id' | 'name'>
+  )> }
+);
+
 export type UnreadMessageFragmentFragment = (
   { __typename?: 'unread_messages' }
   & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
