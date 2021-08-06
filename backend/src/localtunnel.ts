@@ -7,44 +7,51 @@ const backendPort = assertDefined(process.env.BACKEND_PORT, "BACKEND_PORT env va
 
 const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
 
-let tunnelPromise: Promise<Tunnel> | null;
-let tunnel: Tunnel | null = null;
 /**
  * localtunnel creates a tunnel from localhost to a publicly available URL
  * This way it's possible to receive webhooks to the dev environment
  */
 
-export async function getDevPublicTunnel(): Promise<Tunnel> {
+const getDevPublicTunnel = createSelfCleaningCache(async (reset) => {
   if (!isDev()) {
     throw new Error(`Public tunnel is only allowed to be used in dev mode.`);
   }
 
-  if (tunnel) {
-    return tunnel;
-  }
-
-  if (tunnelPromise) {
-    return tunnelPromise;
-  }
-
-  tunnelPromise = localtunnel({
+  const tunnel = await localtunnel({
     subdomain: `acapela-dev-${hostname}`,
     port: parseInt(backendPort, 10),
     allow_invalid_cert: true,
   });
 
-  tunnel = await tunnelPromise;
-  tunnelPromise = null;
-
   tunnel.once("close", () => {
-    tunnel = null;
+    reset();
   });
 
   return tunnel;
-}
+});
 
 export async function getDevPublicTunnelUrl(): Promise<string> {
   const tunnel = await getDevPublicTunnel();
 
   return tunnel.url;
+}
+
+function createSelfCleaningCache<T>(getter: (reset: () => void) => T): () => T {
+  let cachedValue: T | null;
+
+  function reset() {
+    cachedValue = null;
+  }
+
+  function get(): T {
+    if (cachedValue) return cachedValue;
+
+    const newValue = getter(reset);
+
+    cachedValue = newValue;
+
+    return newValue;
+  }
+
+  return get;
 }
