@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
-import { useAssertCurrentTeamId, useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
@@ -18,6 +18,7 @@ import { addToast } from "~ui/toasts/data";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 interface Props {
   room: RoomDetailedInfoFragment;

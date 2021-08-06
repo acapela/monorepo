@@ -10,9 +10,9 @@ import {
   UserDetailedQuery,
   UserDetailedQueryVariables,
 } from "~gql";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { UserTokenData } from "~shared/types/jwtAuth";
 import { TeamBasicInfoFragment } from "./teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`

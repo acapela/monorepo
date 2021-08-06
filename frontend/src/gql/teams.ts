@@ -26,7 +26,7 @@ import {
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { addToast } from "~ui/toasts/data";
 import { slugify } from "~shared/slugify";
 

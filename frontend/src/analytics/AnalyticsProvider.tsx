@@ -5,6 +5,7 @@ import { identifyUser, identifyUserGroup } from "./tracking";
 import { SegmentScript } from "./SegmentScript";
 import { ErrorBoundary } from "~ui/ErrorBoundary";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export function AnalyticsManager() {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
@@ -28,7 +29,8 @@ export function AnalyticsManager() {
     if (!isSegmentLoaded) return;
     if (!currentUser) return;
 
-    const { id, email, name, picture, currentTeamId } = currentUser;
+    const { id, email, name, picture } = currentUser;
+    const currentTeamId = useCurrentTeamId();
 
     identifyUser({
       id,
