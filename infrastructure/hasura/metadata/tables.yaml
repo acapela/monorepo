@@ -1141,6 +1141,9 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+            - room:
+                finished_at:
+                  _is_null: true
         columns:
           - id
           - index
