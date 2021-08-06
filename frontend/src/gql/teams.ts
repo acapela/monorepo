@@ -20,6 +20,8 @@ import {
   RemoveTeamMemberMutationVariables,
   LookupTeamNameQuery,
   LookupTeamNameQueryVariables,
+  ResendInvitationMutation,
+  ResendInvitationMutationVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
@@ -242,4 +244,19 @@ export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQ
       }
     }
   `
+);
+
+export const [useResendInvitation] = createMutation<ResendInvitationMutation, ResendInvitationMutationVariables>(
+  () => gql`
+    mutation ResendInvitation($invitation_id: ID!) {
+      resend_invitation(invitation_id: $invitation_id) {
+        sent_at
+      }
+    }
+  `,
+  {
+    onActualResponse() {
+      addToast({ type: "info", content: `Team invitation was sent` });
+    },
+  }
 );

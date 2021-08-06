@@ -43,6 +43,11 @@ export interface LookupTeamNameResponse {
   team_name: Scalars['String'];
 }
 
+export interface ResendInvitationResponse {
+  __typename?: 'ResendInvitationResponse';
+  sent_at?: Maybe<Scalars['timestamptz']>;
+}
+
 export interface RoomInvitationViewResponse {
   __typename?: 'RoomInvitationViewResponse';
   inviter_name: Scalars['String'];
@@ -1722,6 +1727,8 @@ export interface Mutation_Root {
   insert_whitelist?: Maybe<Whitelist_Mutation_Response>;
   /** insert a single row into the table: "whitelist" */
   insert_whitelist_one?: Maybe<Whitelist>;
+  /** perform the action: "resend_invitation" */
+  resend_invitation?: Maybe<ResendInvitationResponse>;
   /** update data of the table: "account" */
   update_account?: Maybe<Account_Mutation_Response>;
   /** update single row of the table: "account" */
@@ -2391,6 +2398,12 @@ export interface Mutation_RootInsert_WhitelistArgs {
 export interface Mutation_RootInsert_Whitelist_OneArgs {
   object: Whitelist_Insert_Input;
   on_conflict?: Maybe<Whitelist_On_Conflict>;
+}
+
+
+/** mutation root */
+export interface Mutation_RootResend_InvitationArgs {
+  invitation_id: Scalars['ID'];
 }
 
 
@@ -4035,6 +4048,8 @@ export interface Room_Invitation_Bool_Exp {
 export type Room_Invitation_Constraint =
   /** unique or primary key constraint */
   | 'room_invitation_pkey'
+  /** unique or primary key constraint */
+  | 'room_invitation_team_id_email_key'
   /** unique or primary key constraint */
   | 'room_invitation_token_key';
 
@@ -6066,6 +6081,8 @@ export interface Team_Invitation_Bool_Exp {
 export type Team_Invitation_Constraint =
   /** unique or primary key constraint */
   | 'team_invitation_pkey'
+  /** unique or primary key constraint */
+  | 'team_invitation_team_id_email_key'
   /** unique or primary key constraint */
   | 'team_invitation_token_key';
 
@@ -9004,6 +9021,19 @@ export type LookupTeamNameQuery = (
   )> }
 );
 
+export type ResendInvitationMutationVariables = Exact<{
+  invitation_id: Scalars['ID'];
+}>;
+
+
+export type ResendInvitationMutation = (
+  { __typename?: 'mutation_root' }
+  & { resend_invitation?: Maybe<(
+    { __typename?: 'ResendInvitationResponse' }
+    & Pick<ResendInvitationResponse, 'sent_at'>
+  )> }
+);
+
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
@@ -9177,7 +9207,7 @@ export type UserBasicInfoFragment = (
 
 export type ChangeCurrentTeamIdMutationVariables = Exact<{
   userId: Scalars['uuid'];
-  teamId: Scalars['uuid'];
+  teamId?: Maybe<Scalars['uuid']>;
 }>;
 
 
@@ -9228,6 +9258,10 @@ export type LookupTeamNameResponseKeySpecifier = ('inviter_name' | 'team_name' |
 export type LookupTeamNameResponseFieldPolicy = {
 	inviter_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_name?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ResendInvitationResponseKeySpecifier = ('sent_at' | ResendInvitationResponseKeySpecifier)[];
+export type ResendInvitationResponseFieldPolicy = {
+	sent_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type RoomInvitationViewResponseKeySpecifier = ('inviter_name' | 'room_name' | RoomInvitationViewResponseKeySpecifier)[];
 export type RoomInvitationViewResponseFieldPolicy = {
@@ -9528,7 +9562,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9618,6 +9652,7 @@ export type mutation_rootFieldPolicy = {
 	insert_user_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_whitelist_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	resend_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_attachment?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10591,6 +10626,10 @@ export type TypedTypePolicies = TypePolicies & {
 	LookupTeamNameResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | LookupTeamNameResponseKeySpecifier | (() => undefined | LookupTeamNameResponseKeySpecifier),
 		fields?: LookupTeamNameResponseFieldPolicy,
+	},
+	ResendInvitationResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ResendInvitationResponseKeySpecifier | (() => undefined | ResendInvitationResponseKeySpecifier),
+		fields?: ResendInvitationResponseFieldPolicy,
 	},
 	RoomInvitationViewResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RoomInvitationViewResponseKeySpecifier | (() => undefined | RoomInvitationViewResponseKeySpecifier),

@@ -26,7 +26,7 @@ export const [useChangeCurrentTeamIdMutation] = createMutation<
   ChangeCurrentTeamIdMutationVariables
 >(
   () => gql`
-    mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid!) {
+    mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid) {
       update_user_by_pk(pk_columns: { id: $userId }, _set: { current_team_id: $teamId }) {
         id
       }

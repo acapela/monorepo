@@ -28,6 +28,10 @@ type LookupTeamNameResponse {
   team_name: String!
 }
 
+type ResendInvitationResponse {
+  sent_at: timestamptz
+}
+
 type RoomInvitationViewResponse {
   inviter_name: String!
   room_name: String!
@@ -3110,6 +3114,11 @@ type mutation_root {
   ): whitelist
 
   """
+  perform the action: "resend_invitation"
+  """
+  resend_invitation(invitation_id: ID!): ResendInvitationResponse
+
+  """
   update data of the table: "account"
   """
   update_account(
@@ -6169,6 +6178,11 @@ enum room_invitation_constraint {
   unique or primary key constraint
   """
   room_invitation_pkey
+
+  """
+  unique or primary key constraint
+  """
+  room_invitation_team_id_email_key
 
   """
   unique or primary key constraint
@@ -9580,6 +9594,11 @@ enum team_invitation_constraint {
   unique or primary key constraint
   """
   team_invitation_pkey
+
+  """
+  unique or primary key constraint
+  """
+  team_invitation_team_id_email_key
 
   """
   unique or primary key constraint

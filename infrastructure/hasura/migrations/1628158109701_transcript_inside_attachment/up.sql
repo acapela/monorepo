@@ -8,20 +8,20 @@ alter table "public"."attachment"
            references "public"."transcription"
            ("id") on update cascade on delete cascade;
 
-DROP FUNCTION "public"."search_full_text"("pg_catalog"."text");
-
-DROP FUNCTION "public"."search_full_text_topic"("pg_catalog"."text");
-
 ALTER TABLE "public"."message" DROP COLUMN "transcription_id" CASCADE;
 
-DROP TRIGGER "refresh_search" ON "public"."topic";
+DROP FUNCTION IF EXISTS "public"."search_full_text"("pg_catalog"."text");
 
-DROP TRIGGER "refresh_search" ON "public"."attachment";
+DROP FUNCTION IF EXISTS "public"."search_full_text_topic"("pg_catalog"."text");
 
-DROP TRIGGER "refresh_search" ON "public"."room";
+DROP TRIGGER IF EXISTS "refresh_search" ON "public"."topic";
 
-DROP TRIGGER "refresh_search" ON "public"."room_member";
+DROP TRIGGER IF EXISTS "refresh_search" ON "public"."attachment";
 
-DROP TRIGGER "refresh_search" ON "public"."transcription";
+DROP TRIGGER IF EXISTS "refresh_search" ON "public"."room";
 
-DROP VIEW "public"."transcription_full_text";
+DROP TRIGGER IF EXISTS "refresh_search" ON "public"."room_member";
+
+DROP TRIGGER IF EXISTS "refresh_search" ON "public"."transcription";
+
+DROP VIEW IF EXISTS "public"."transcription_full_text";
