@@ -1,0 +1,10 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP TRIGGER refresh_search ON room;
+-- DROP TRIGGER refresh_search ON room_member;
+--
+-- DROP TRIGGER refresh_search ON attachment;
+-- DROP TRIGGER refresh_search ON topic;
+--
+-- DROP TRIGGER refresh_search ON transcription;
+-- DROP TRIGGER refresh_search ON message;

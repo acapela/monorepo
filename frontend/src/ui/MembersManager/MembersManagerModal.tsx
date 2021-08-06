@@ -78,6 +78,7 @@ const UIHolder = styled.div<{}>`
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 20px;
+  max-height: 80vh;
 `;
 
 const UIItemHolder = styled.div<{}>`

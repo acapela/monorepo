@@ -5,8 +5,8 @@ import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppL
 import { createSortByLatestActivityFilter } from "~frontend/ui/rooms/filters/factories";
 import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
 import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
-import { CreateRoomButton } from "./CreateRoomButton";
 import { getHomeViewRoomsQueryWhere } from "./query";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
 
 const sortByLatestActivity = createSortByLatestActivityFilter();
 
@@ -24,7 +24,7 @@ export function HomeView() {
       <UIContent>
         <RoomsGroupedByActivities rooms={filteredRooms} />
       </UIContent>
-      <FlyingCreateRoomButton />
+      <FlyingCreateRoomButton buttonProps={{ size: "large" }} />
     </UIHolder>
   );
 }

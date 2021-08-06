@@ -58,7 +58,7 @@ const UIOption = styled.div<{ isHighlighted: boolean }>`
   align-items: center;
   cursor: pointer;
 
-  border: 1px solid;
+  border: 1px solid transparent;
 
   transition: 0.15s all;
   ${theme.borderRadius.item};

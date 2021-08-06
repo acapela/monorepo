@@ -16,12 +16,12 @@ const DEBOUNCE_DELAY_MS = 400;
 
 const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, ref) => {
   const [value, setValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState(value);
-  const [searchResults = []] = useFullTextSearchQuery({ term: searchTerm });
+  const [term, setTerm] = useState(value);
+  const [results] = useFullTextSearchQuery({ term: `%${term}%` });
 
   useDebounce(
     () => {
-      setSearchTerm(value);
+      setTerm(value);
     },
     DEBOUNCE_DELAY_MS,
     [value]
@@ -30,7 +30,7 @@ const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, r
   return (
     <div className={className} onClick={(event) => event.stopPropagation()}>
       <SearchInput autoFocus ref={ref} value={value} onChangeText={(text) => setValue(text)} />
-      {searchTerm && <SearchResults searchTerm={searchTerm} results={searchResults} />}
+      {term && results && <SearchResults {...{ term, results }} />}
     </div>
   );
 });

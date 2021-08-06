@@ -7,13 +7,15 @@ import { IconPlusSquare } from "~ui/icons/default";
 import styled from "styled-components";
 import { getUUID } from "~shared/uuid";
 
-interface Props {
+type Props = {
   className?: string;
-}
+  buttonProps?: React.ComponentProps<typeof Button>;
+  promptProps?: Parameters<typeof openRoomInputPrompt>[0];
+};
 
-export const CreateRoomButton = styled(function CreateRoomButton({ className }: Props) {
+export const CreateRoomButton = styled(function CreateRoomButton({ className, buttonProps, promptProps }: Props) {
   async function handleCreate() {
-    const createRoomInput = await openRoomInputPrompt({});
+    const createRoomInput = await openRoomInputPrompt(promptProps ?? {});
 
     if (createRoomInput === null) {
       return;
@@ -27,6 +29,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className }: 
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
+        members: { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) },
       },
     });
 
@@ -34,10 +37,14 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className }: 
   }
 
   return (
-    <>
-      <Button className={className} iconPosition="start" icon={<IconPlusSquare />} onClick={handleCreate} size="large">
-        New Room
-      </Button>
-    </>
+    <Button
+      className={className}
+      {...buttonProps}
+      iconPosition="start"
+      icon={<IconPlusSquare />}
+      onClick={handleCreate}
+    >
+      New Room
+    </Button>
   );
 })``;

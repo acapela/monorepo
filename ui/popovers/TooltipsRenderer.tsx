@@ -23,7 +23,7 @@ export function TooltipsRenderer() {
   const tooltipLabel = useDOMAttributeValue(anchorRef, "data-tooltip");
 
   useDocumentEvent(
-    "mouseenter",
+    "pointerenter",
     (event) => {
       // On mouse enter, try to check if it is data-tooltip element, if so - mark it as active tooltip ref.
       const target = event.target as HTMLElement;
@@ -37,7 +37,7 @@ export function TooltipsRenderer() {
   );
 
   useDocumentEvent(
-    "mouseleave",
+    "pointerleave",
     (event) => {
       const target = event.target as HTMLElement;
 
