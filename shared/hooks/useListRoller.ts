@@ -14,6 +14,11 @@ function getNextIndex<T>(items: T[], currentIndex: number) {
   return nextNaturalIndex;
 }
 
+/**
+ * This hook allows 'getting next value' of an array with a simple callback.
+ *
+ * It's useful for UI cases where you go to next option by clicking previous one, eg video playback speed.
+ */
 export function useListRoller<T>({ items, activeItem, onActiveItemChange }: UseListRollerInput<T>) {
   const activeItemIndex = items.indexOf(activeItem);
 
