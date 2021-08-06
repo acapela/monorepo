@@ -109,7 +109,11 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <UINewTopicButton
             kind="secondary"
             onClick={handleCreateNewTopic}
-            isDisabled={!amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }}
+            isDisabled={
+              isRoomOpen
+                ? !amIMember && { reason: "You have to be room member to open a topic" }
+                : { reason: "You can not create topics in closed rooms" }
+            }
             icon={<IconPlusSquare />}
             iconPosition="start"
           >
