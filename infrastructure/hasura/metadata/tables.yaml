@@ -438,6 +438,7 @@
           - finished_at
           - id
           - is_private
+          - last_activity_at
           - name
           - slug
           - source_google_calendar_event_id

@@ -4170,6 +4170,7 @@ export interface Room {
   /** An aggregated array relationship */
   invitations_aggregate: Room_Invitation_Aggregate;
   is_private: Scalars['Boolean'];
+  last_activity_at?: Maybe<Scalars['timestamptz']>;
   /** An object relationship */
   last_posted_message?: Maybe<Room_Last_Posted_Message>;
   /** An array relationship */
@@ -4298,6 +4299,7 @@ export interface Room_Bool_Exp {
   id?: Maybe<Uuid_Comparison_Exp>;
   invitations?: Maybe<Room_Invitation_Bool_Exp>;
   is_private?: Maybe<Boolean_Comparison_Exp>;
+  last_activity_at?: Maybe<Timestamptz_Comparison_Exp>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Bool_Exp>;
   members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
@@ -4327,6 +4329,7 @@ export interface Room_Insert_Input {
   id?: Maybe<Scalars['uuid']>;
   invitations?: Maybe<Room_Invitation_Arr_Rel_Insert_Input>;
   is_private?: Maybe<Scalars['Boolean']>;
+  last_activity_at?: Maybe<Scalars['timestamptz']>;
   members?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
@@ -4690,6 +4693,7 @@ export interface Room_Max_Fields {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
@@ -4705,6 +4709,7 @@ export interface Room_Max_Order_By {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  last_activity_at?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
@@ -4875,6 +4880,7 @@ export interface Room_Min_Fields {
   deadline?: Maybe<Scalars['timestamptz']>;
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
@@ -4890,6 +4896,7 @@ export interface Room_Min_Order_By {
   deadline?: Maybe<Order_By>;
   finished_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
+  last_activity_at?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
@@ -4930,6 +4937,7 @@ export interface Room_Order_By {
   id?: Maybe<Order_By>;
   invitations_aggregate?: Maybe<Room_Invitation_Aggregate_Order_By>;
   is_private?: Maybe<Order_By>;
+  last_activity_at?: Maybe<Order_By>;
   last_posted_message?: Maybe<Room_Last_Posted_Message_Order_By>;
   members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
@@ -4962,6 +4970,8 @@ export type Room_Select_Column =
   /** column name */
   | 'is_private'
   /** column name */
+  | 'last_activity_at'
+  /** column name */
   | 'name'
   /** column name */
   | 'notification_job_id'
@@ -4982,6 +4992,7 @@ export interface Room_Set_Input {
   finished_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   is_private?: Maybe<Scalars['Boolean']>;
+  last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
@@ -5004,6 +5015,8 @@ export type Room_Update_Column =
   | 'id'
   /** column name */
   | 'is_private'
+  /** column name */
+  | 'last_activity_at'
   /** column name */
   | 'name'
   /** column name */
@@ -9054,7 +9067,7 @@ export type PrivateRoomInfoFragment = (
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id'>
+  & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id' | 'last_activity_at'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (
@@ -10421,7 +10434,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10432,6 +10445,7 @@ export type roomFieldPolicy = {
 	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	is_private?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_activity_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	last_posted_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	members?: FieldPolicy<any> | FieldReadFunction<any>,
 	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10539,13 +10553,14 @@ export type room_last_posted_message_min_fieldsFieldPolicy = {
 	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
+export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_activity_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10586,13 +10601,14 @@ export type room_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
+export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
 export type room_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	deadline?: FieldPolicy<any> | FieldReadFunction<any>,
 	finished_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	last_activity_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
