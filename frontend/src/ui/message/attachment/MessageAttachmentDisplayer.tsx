@@ -33,19 +33,12 @@ export const MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment,
             <AudioPlayer fileUrl={attachmentUrl} />
           </PlayableMediaWrapper>
         );
-      case "TEXT": {
-        const [type] = attachment.mimeType.split("/");
+    }
 
-        if (type === "image") {
-          return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
-        }
+    const [attachmentMimeType] = attachment.mimeType.split("/");
 
-        return (
-          <a href={attachmentUrl} target="_blank">
-            <span>{attachment.originalName}</span>
-          </a>
-        );
-      }
+    if (attachmentMimeType === "image") {
+      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
     }
 
     return (

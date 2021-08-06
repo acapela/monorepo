@@ -1,5 +1,5 @@
 import os from "os";
-import localtunnel, { Tunnel } from "localtunnel";
+import localtunnel from "localtunnel";
 import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
