@@ -47,9 +47,32 @@ export const [useChangeCurrentTeamIdMutation] = createMutation<
     mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid) {
       update_user_by_pk(pk_columns: { id: $userId }, _set: { current_team_id: $teamId }) {
         id
+        current_team {
+          id
+          name
+          slug
+        }
       }
     }
   `
+  // {
+  //   optimisticResponse(vars) {
+  //     return {
+  //       __typename: "mutation_root",
+  //       update_user_by_pk: {
+  //         id: vars.userId,
+  //         __typename: "user",
+  //       },
+  //     };
+  //   },
+  //   onOptimisticOrActualResponse(data, vars) {
+  //     if (!data?.current_team) return;
+
+  //     userDetailedInfoQuery.update({ id: vars.userId }, (draft) => {
+  //       draft.user_by_pk?.current_team = data.current_team!;
+  //     });
+  //   },
+  // }
 );
 
 export const [useTeamMembersQuery] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
@@ -82,7 +105,10 @@ export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData)
   };
 }
 
-export const [useUserDetailedInfoQuery] = createQuery<UserDetailedQuery, UserDetailedQueryVariables>(
+export const [useUserDetailedInfoQuery, userDetailedInfoQuery] = createQuery<
+  UserDetailedQuery,
+  UserDetailedQueryVariables
+>(
   () => gql`
     ${UserDetailedInfoFragment()}
 

@@ -10,6 +10,7 @@ import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 export function AnalyticsManager() {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
   const currentUser = useCurrentUser();
+  const teamId = useCurrentTeamId();
 
   function tryToInitialize() {
     if (!window.analytics) {
@@ -30,7 +31,6 @@ export function AnalyticsManager() {
     if (!currentUser) return;
 
     const { id, email, name, picture } = currentUser;
-    const currentTeamId = useCurrentTeamId();
 
     identifyUser({
       id,
@@ -39,14 +39,14 @@ export function AnalyticsManager() {
       avatarUrl: picture ?? undefined,
     });
 
-    if (!currentTeamId) return;
+    if (!teamId) return;
     const updateUserGroup = async () => {
-      const result = await fetchTeamBasicInfoQuery({ teamId: currentTeamId });
+      const result = await fetchTeamBasicInfoQuery({ teamId });
       if (!result.team) return;
-      identifyUserGroup(currentTeamId, { teamName: result.team.name, teamId: currentTeamId });
+      identifyUserGroup(teamId, { teamName: result.team.name, teamId });
     };
     updateUserGroup();
-  }, [currentUser, isSegmentLoaded]);
+  }, [currentUser, isSegmentLoaded, teamId]);
 
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>

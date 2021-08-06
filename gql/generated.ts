@@ -9764,6 +9764,10 @@ export type ChangeCurrentTeamIdMutation = (
   & { update_user_by_pk?: Maybe<(
     { __typename?: 'user' }
     & Pick<User, 'id'>
+    & { current_team?: Maybe<(
+      { __typename?: 'team' }
+      & Pick<Team, 'id' | 'name' | 'slug'>
+    )> }
   )> }
 );
 
