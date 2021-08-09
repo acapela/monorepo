@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
-import { useInterval } from "react-use";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { createTimeout } from "~shared/time";
+import { PopPresenceAnimator } from "~ui/animations";
 import { theme } from "~ui/theme";
 
 interface CountdownParams {
@@ -15,15 +15,15 @@ interface CountdownParams {
 export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
   const [seconds, setSeconds] = useState(startFrom);
 
-  useInterval(() => {
-    const newSeconds = seconds - 1;
-
-    if (newSeconds === 0) {
+  useEffect(() => {
+    if (seconds === 0) {
       onFinished();
-    } else {
-      setSeconds((seconds) => seconds - 1);
     }
-  }, 1000);
+
+    return createTimeout(() => {
+      setSeconds((seconds) => seconds - 1);
+    }, 1000);
+  }, [seconds]);
 
   return (
     <ScreenCover isTransparent={false} onCloseRequest={onCancelled}>
