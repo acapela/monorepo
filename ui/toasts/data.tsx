@@ -4,6 +4,8 @@ import { createTimeout } from "~shared/time";
 
 export type ToastType = "info" | "success" | "error";
 
+export type ToastPlacement = "bottom-center" | "center";
+
 const DEFAULT_TOAST_TIMEOUT = 3000;
 const MAX_TOASTS_COUNT = 5;
 
@@ -16,6 +18,8 @@ interface ToastAction {
 export interface ToastData {
   type: ToastType;
   content: ReactNode;
+  supportingContent?: ReactNode;
+  placement?: ToastPlacement;
   icon?: ReactNode;
   actions?: ToastAction[];
   timeout?: number;
