@@ -21,7 +21,7 @@ import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ThemeProvider } from "styled-components";
 import * as Sentry from "@sentry/nextjs";
 import { getTheme } from "~ui/theme";
-import { TeamProvider } from "~frontend/team/useCurrentTeamId";
+import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
@@ -69,7 +69,7 @@ export default function App({
       <CommonMetadata />
       <AnalyticsManager />
       <SessionProvider session={session}>
-        <TeamProvider>
+        <CurrentTeamIdProvider>
           <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
             <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
               <ThemeProvider theme={getTheme("default")}>
@@ -84,7 +84,7 @@ export default function App({
               </ThemeProvider>
             </ApolloProvider>
           </MotionConfig>
-        </TeamProvider>
+        </CurrentTeamIdProvider>
       </SessionProvider>
     </>
   );
