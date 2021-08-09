@@ -3,9 +3,10 @@ import { TextH3, TextBody14 } from "~ui/typo";
 import { useTeamSpacesQuery } from "~frontend/gql/spaces";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
-import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { groupByFilter } from "~shared/groupByFilter";
 import { CategoryNameLabel } from "~ui/theme/functional";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();

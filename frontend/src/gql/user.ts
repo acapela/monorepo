@@ -6,9 +6,13 @@ import {
   TeamMembersQuery,
   TeamMembersQueryVariables,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
+  UserDetailedInfoFragment as UserDetailedInfoFragmentType,
+  UserDetailedQuery,
+  UserDetailedQueryVariables,
 } from "~gql";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
 import { UserTokenData } from "~shared/types/jwtAuth";
+import { TeamBasicInfoFragment } from "./teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
@@ -21,6 +25,20 @@ export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   `
 );
 
+export const UserDetailedInfoFragment = createFragment<UserDetailedInfoFragmentType>(
+  () => gql`
+    ${UserBasicInfoFragment()}
+    ${TeamBasicInfoFragment()}
+
+    fragment UserDetailedInfo on user {
+      ...UserBasicInfo
+      current_team {
+        ...TeamBasicInfo
+      }
+    }
+  `
+);
+
 export const [useChangeCurrentTeamIdMutation] = createMutation<
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables
@@ -29,6 +47,11 @@ export const [useChangeCurrentTeamIdMutation] = createMutation<
     mutation ChangeCurrentTeamId($userId: uuid!, $teamId: uuid) {
       update_user_by_pk(pk_columns: { id: $userId }, _set: { current_team_id: $teamId }) {
         id
+        current_team {
+          id
+          name
+          slug
+        }
       }
     }
   `
@@ -63,3 +86,18 @@ export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData)
     name: userTokenData.name,
   };
 }
+
+export const [useUserDetailedInfoQuery, userDetailedInfoQuery] = createQuery<
+  UserDetailedQuery,
+  UserDetailedQueryVariables
+>(
+  () => gql`
+    ${UserDetailedInfoFragment()}
+
+    query UserDetailed($id: uuid!) {
+      user_by_pk(id: $id) {
+        ...UserDetailedInfo
+      }
+    }
+  `
+);
