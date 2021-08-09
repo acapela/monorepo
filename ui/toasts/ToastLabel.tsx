@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { ACTIVE_COLOR, DANGER_COLOR, SUCCESS_COLOR } from "~ui/theme/colors/base";
+import { borderRadius } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
 import { ToastData, ToastType } from "./data";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { theme } from "~ui/theme";
 
 interface Props {
   toast: ToastData;
@@ -13,18 +13,11 @@ interface Props {
   className?: string;
 }
 
-function getToastColor(type: ToastType) {
-  switch (type) {
-    case "error":
-      return DANGER_COLOR;
-    case "info":
-      return ACTIVE_COLOR;
-    case "success":
-      return SUCCESS_COLOR;
-  }
-
-  throw new Error("Incorrect toast type");
-}
+const toastColors: Record<ToastType, string> = {
+  error: theme.colors.status.error(),
+  info: theme.colors.status.warning(),
+  success: theme.colors.status.success(),
+};
 
 export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, className }: Props) {
   return (
@@ -32,6 +25,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       layoutId={getObjectKey(toast)}
       presenceStyles={POP_PRESENCE_STYLES}
       type={toast.type}
+      isDetailed={!!toast.supportingContent}
       className={className}
     >
       <UIContent>{toast.content}</UIContent>
@@ -40,22 +34,19 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
   );
 })``;
 
-const UIHolder = styled(PresenceAnimator)<{ type: ToastType }>`
+const UIHolder = styled(PresenceAnimator)<{ type: ToastType; isDetailed: boolean }>`
   width: 100%;
-  padding: 16px 24px;
+  padding: 16px ${({ isDetailed }) => (isDetailed ? 12 : 16)}px;
   ${borderRadius.item}
-  background: ${(props) => getToastColor(props.type)};
-  color: #fff;
-  font-weight: bold;
-  border: 1px solid #f8f8f8;
+  background: ${theme.colors.layout.foreground()};
+  border: 1px solid ${({ type }) => toastColors[type]};
+  ${theme.borderRadius.toast};
   display: flex;
   align-items: center;
 
-  ${shadow.modal};
+  ${theme.shadow.popover};
 `;
 
 const UIContent = styled.div<{}>`
-  margin-right: 24px;
-  flex: 1;
-  text-align: center;
+  ${theme.font.h6.medium.build()}
 `;
