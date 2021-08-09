@@ -126,7 +126,7 @@ export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQ
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    query Rooms($limit: Int = 10, $orderBy: [room_order_by!], $where: room_bool_exp) {
+    query Rooms($limit: Int, $orderBy: [room_order_by!], $where: room_bool_exp) {
       rooms: room(where: $where, limit: $limit, order_by: $orderBy) {
         ...RoomDetailedInfo
       }
