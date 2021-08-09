@@ -8528,7 +8528,7 @@ export type PrivateRoomInfoFragment = (
 
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id'>
+  & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id' | 'last_activity_at'>
   & { members: Array<(
     { __typename?: 'room_member' }
     & { user: (

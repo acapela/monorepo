@@ -1,78 +1,65 @@
-import produce from "immer";
-import { ReactNode, useState } from "react";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
-import {
-  RoomsQueryVariables,
-  Room_Bool_Exp as RoomWhere,
-  Room_Order_By as RoomOrder,
-  UserBasicInfoFragment,
-} from "~gql";
+import { sortBy } from "lodash";
+import { ReactNode } from "react";
+import { isNotNullish } from "~shared/nullish";
+import { RoomDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
+import { useList } from "react-use";
 
-export interface BasicFilter {
+export type RoomCriteria = {
   key: string;
   label?: string;
   icon?: ReactNode;
-  whereApplier?: (draft: RoomWhere) => void;
-  orderGetter?: () => RoomOrder;
-}
+  filter?: (room: RoomDetailedInfoFragment) => boolean;
+  sorter?: (roomA: RoomDetailedInfoFragment) => string | number | Date | null;
+};
 
-export interface UserFilter extends BasicFilter {
-  type: "user";
+export interface UserRoomCriteria extends RoomCriteria {
   user: UserBasicInfoFragment;
 }
 
-export function getIsUserFilter(filter: BasicFilter): filter is UserFilter {
-  return Reflect.get(filter, "type") === "user";
+export function getIsUserRoomCriteria(criteria: RoomCriteria): criteria is UserRoomCriteria {
+  return !!Reflect.get(criteria, "user");
 }
 
-export type RoomFilter = UserFilter | BasicFilter;
-
-const DEFAULT_RECENT_ROOMS_LIMIT = 100;
-
-export function getRoomVariablesFromFilters(teamId: string, filters: RoomFilter[]): RoomsQueryVariables {
-  const orders: RoomOrder[] = [];
-  let where: RoomWhere = {
-    space: {
-      team_id: { _eq: teamId },
-    },
-  };
-
-  for (const filter of filters) {
-    if (filter.orderGetter) {
-      const order = filter.orderGetter();
-      orders.push(order);
-    }
-
-    if (filter.whereApplier) {
-      where = produce(where, (draft) => {
-        filter.whereApplier?.(draft);
-
-        return draft;
-      });
-    }
-  }
-
-  // If there is no other orders, by default let's order by the latest messages.
-  if (!orders.length) {
-    orders.push({
-      last_posted_message: {
-        last_posted_message_time: "desc",
-      },
-    });
-  }
-
-  return {
-    where,
-    orderBy: orders,
-    limit: DEFAULT_RECENT_ROOMS_LIMIT,
-  };
+export function getUsersFromRoomCriteriaList(criteria: RoomCriteria[]): UserBasicInfoFragment[] {
+  return criteria.filter(getIsUserRoomCriteria).map((criteria) => criteria.user);
 }
 
-export function useRoomFilterVariables(forcedFilters?: RoomFilter[]) {
-  const [filters, setFilters] = useState<RoomFilter[]>([]);
-  const teamId = useAssertCurrentTeamId();
+export function filterAndSortRoomsByRoomCriteria(
+  rooms: RoomDetailedInfoFragment[],
+  criteria: RoomCriteria[]
+): RoomDetailedInfoFragment[] {
+  const filteredRooms = rooms.filter((room) => {
+    for (const singleCriteria of criteria) {
+      if (!singleCriteria.filter) continue;
 
-  const variables = getRoomVariablesFromFilters(teamId, [...filters, ...(forcedFilters ?? [])]);
+      if (singleCriteria.filter(room) === false) {
+        return false;
+      }
+    }
+    return true;
+  });
 
-  return [variables, setFilters] as const;
+  const sorters = criteria.map((filter) => filter.sorter).filter(isNotNullish);
+
+  const sortedRooms = sortBy(filteredRooms, ...sorters);
+
+  return sortedRooms;
+}
+
+export function useRoomsCriteria(unfilteredRooms: RoomDetailedInfoFragment[], forcedCriteria: RoomCriteria[] = []) {
+  const [addedCriteria, { push: addCriteria, filter, set: setCriteria }] = useList<RoomCriteria>();
+
+  function removeCriteria(criteria: RoomCriteria) {
+    filter((existingCriteria) => existingCriteria.key !== criteria.key);
+  }
+
+  const filteredRooms = filterAndSortRoomsByRoomCriteria(unfilteredRooms, [...forcedCriteria, ...addedCriteria]);
+
+  const manager = {
+    addedCriteria,
+    setCriteria,
+    addCriteria,
+    removeCriteria,
+  };
+  return [filteredRooms, manager] as const;
 }

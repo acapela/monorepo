@@ -1,8 +1,11 @@
 import { db, Topic } from "~db";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
+import { updateRoomLastActivityDate } from "../rooms/rooms";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
+  await updateRoomLastActivityDate(event.item.room_id);
+
   if (event.type === "create") {
     await inheritTopicMembersFromParentRoom(event.item);
   }
