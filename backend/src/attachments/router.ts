@@ -73,11 +73,10 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   }
 
   if (message && message.topic.room.is_private) {
-    // if the room is private check topic_member, room_member, space_member
+    // if the room is private check topic_member, room_member
     accessAllowed =
       map(message.topic.topic_member, "user_id").includes(userId) ||
-      map(message.topic.room.room_member, "user_id").includes(userId) ||
-      map(message.topic.room.space.space_member, "user_id").includes(userId);
+      map(message.topic.room.room_member, "user_id").includes(userId);
   }
   if (message && !message.topic.room.is_private) {
     // if the room is not private check topic_member or team_member
