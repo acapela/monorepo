@@ -79,7 +79,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     ]);
 
     if (reservedEmails.has(email)) {
-      addToast({ type: "info", content: "The person with this email already invited" });
+      addToast({ type: "success", content: "The person with this email already invited" });
       return;
     }
 

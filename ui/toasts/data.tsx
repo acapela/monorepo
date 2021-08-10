@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 import { createChannel } from "~shared/channel";
 import { createTimeout } from "~shared/time";
+import { IconCalendarArrowRight } from "~ui/icons";
 
-export type ToastType = "info" | "success" | "error";
+export type ToastType = "success" | "error";
 
 export type ToastPlacement = "bottom-center" | "center";
 
@@ -48,6 +49,14 @@ export function addToast(toast: ToastData) {
     removeToast(toast);
   };
 }
+
+addToast({
+  type: "success",
+  content: "Kick Off Activities were cancelled",
+  supportingContent: "Britta cancelled this meeting because all Topics were Closed before the meeting date.",
+  timeout: 10000000,
+  icon: <IconCalendarArrowRight />,
+});
 
 export function removeToast(toast: ToastData) {
   const remainingToasts = getToasts().filter((existingToast) => existingToast !== toast);
