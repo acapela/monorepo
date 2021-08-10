@@ -55,13 +55,15 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       <CircleCloseIconButton size="small" onClick={() => onCloseRequest(toast)} />
       {isDetailed && (
         <>
-          <div />
+          <UIPlaceholder />
           <UISupportingContent>{supportingContent}</UISupportingContent>
         </>
       )}
     </UIHolder>
   );
 })``;
+
+const UIPlaceholder = styled.div<{}>``;
 
 const UIIconHolder = styled.div<{ size: "small" | "medium"; color: string }>`
   font-size: ${({ size }) => (size === "small" ? 1.25 : 1.5)}rem;
