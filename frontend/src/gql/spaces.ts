@@ -265,7 +265,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
       });
     },
     onActualResponse() {
-      addToast({ type: "success", content: `Space member was added` });
+      addToast({ type: "success", title: `Space member was added` });
     },
   }
 );
@@ -297,7 +297,7 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "success", content: `Space member was removed` });
+      addToast({ type: "success", title: `Space member was removed` });
     },
   }
 );

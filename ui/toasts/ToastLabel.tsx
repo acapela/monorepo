@@ -28,8 +28,8 @@ const toastDefaultIcon: Record<ToastType, ReactNode> = {
 };
 
 export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, className }: Props) {
-  const { content, supportingContent, type, icon } = toast;
-  const isDetailed = !!supportingContent;
+  const { title, description, type, icon } = toast;
+  const isDetailed = !!description;
   const iconSize = isDetailed ? "medium" : "small";
 
   return (
@@ -50,12 +50,12 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
           {toastDefaultIcon[type]}
         </UIIconHolder>
       )}
-      <UIContent>{content}</UIContent>
+      <UITitle>{title}</UITitle>
       <CircleCloseIconButton size="small" onClick={() => onCloseRequest(toast)} />
       {isDetailed && (
         <>
           <UIPlaceholder />
-          <UISupportingContent>{supportingContent}</UISupportingContent>
+          <UIDescription>{description}</UIDescription>
         </>
       )}
     </UIHolder>
@@ -84,11 +84,11 @@ const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; type: ToastType
   ${theme.shadow.popover};
 `;
 
-const UIContent = styled.div<{}>`
+const UITitle = styled.div<{}>`
   ${theme.font.h6.medium.build()}
 `;
 
-const UISupportingContent = styled.div<{}>`
+const UIDescription = styled.div<{}>`
   ${theme.font.body14.build()};
   color: ${theme.colors.layout.supportingText()};
 `;

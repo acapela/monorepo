@@ -314,7 +314,7 @@ export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, Dele
     },
 
     onActualResponse() {
-      addToast({ type: "success", content: `Topic was removed` });
+      addToast({ type: "success", title: `Topic was removed` });
     },
   }
 );

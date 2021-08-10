@@ -37,7 +37,7 @@ export const [useCreateRoomInvitationMutation, { mutate: createRoomInvitation }]
   `,
   {
     onActualResponse() {
-      addToast({ type: "success", content: `New room member was invited` });
+      addToast({ type: "success", title: `New room member was invited` });
     },
   }
 );
@@ -69,7 +69,7 @@ export const [useRemoveRoomInvitation, { mutate: removeRoomInvitation }] = creat
       });
     },
     onActualResponse() {
-      addToast({ type: "success", content: `Room invitation was removed` });
+      addToast({ type: "success", title: `Room invitation was removed` });
     },
   }
 );

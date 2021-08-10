@@ -79,12 +79,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     ]);
 
     if (reservedEmails.has(email)) {
-      addToast({ type: "success", content: "The person with this email already invited" });
+      addToast({ type: "success", title: "The person with this email already invited" });
       return;
     }
 
     if (!amIMember) {
-      addToast({ type: "error", content: "Join the room to invite a new member" });
+      addToast({ type: "error", title: "Join the room to invite a new member" });
       return;
     }
 

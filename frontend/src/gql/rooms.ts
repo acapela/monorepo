@@ -269,7 +269,7 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
       });
     },
     onActualResponse() {
-      addToast({ type: "success", content: `Room member was added` });
+      addToast({ type: "success", title: `Room member was added` });
     },
   }
 );
@@ -298,7 +298,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "success", content: `Room member was removed` });
+      addToast({ type: "success", title: `Room member was removed` });
     },
   }
 );

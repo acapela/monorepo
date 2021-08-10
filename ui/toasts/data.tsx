@@ -15,8 +15,8 @@ interface ToastAction {
 
 export interface ToastData {
   type: ToastType;
-  content: ReactNode;
-  supportingContent?: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
   icon?: ReactNode;
   actions?: ToastAction[];
   timeout?: number;
