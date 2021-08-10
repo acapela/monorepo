@@ -30,24 +30,23 @@ const toastDefaultIcon: Record<ToastType, ReactNode> = {
 export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, className }: Props) {
   const { content, supportingContent, type, icon } = toast;
   const isDetailed = !!supportingContent;
-  const color = toastColors[type];
   const iconSize = isDetailed ? "medium" : "small";
 
   return (
     <UIHolder
       layoutId={getObjectKey(toast)}
       presenceStyles={POP_PRESENCE_STYLES}
-      color={color}
+      type={type}
       isDetailed={isDetailed}
       className={className}
     >
       {icon && (
-        <UIIconHolder color={theme.colors.layout.supportingText()} size={iconSize}>
+        <UIIconHolder isColored={false} type={type} size={iconSize}>
           {icon}
         </UIIconHolder>
       )}
       {!icon && (
-        <UIIconHolder color={color} size={iconSize}>
+        <UIIconHolder isColored={true} type={type} size={iconSize}>
           {toastDefaultIcon[type]}
         </UIIconHolder>
       )}
@@ -65,12 +64,12 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
 
 const UIPlaceholder = styled.div<{}>``;
 
-const UIIconHolder = styled.div<{ size: "small" | "medium"; color: string }>`
+const UIIconHolder = styled.div<{ size: "small" | "medium"; type: ToastType; isColored: boolean }>`
   font-size: ${({ size }) => (size === "small" ? 1.25 : 1.5)}rem;
-  color: ${({ color }) => color};
+  color: ${({ type, isColored }) => (isColored ? toastColors[type] : theme.colors.layout.supportingText())};
 `;
 
-const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; color: string }>`
+const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; type: ToastType }>`
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: ${({ isDetailed }) => (isDetailed ? "start" : "center")};
@@ -79,7 +78,7 @@ const UIHolder = styled(PresenceAnimator)<{ isDetailed: boolean; color: string }
   padding: 16px ${({ isDetailed }) => (isDetailed ? 12 : 16)}px;
   ${borderRadius.item}
   background: ${theme.colors.layout.foreground()};
-  border: 1px solid ${({ color }) => color};
+  border: 1px solid ${({ type }) => toastColors[type]};
   ${theme.borderRadius.toast};
 
   ${theme.shadow.popover};
