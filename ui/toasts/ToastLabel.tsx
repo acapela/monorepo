@@ -31,6 +31,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
   const { content, supportingContent, type, icon } = toast;
   const isDetailed = !!supportingContent;
   const color = toastColors[type];
+  const iconSize = isDetailed ? "medium" : "small";
 
   return (
     <UIHolder
@@ -40,9 +41,16 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       isDetailed={isDetailed}
       className={className}
     >
-      <UIIconHolder color={icon ? theme.colors.layout.supportingText() : color} size={isDetailed ? "medium" : "small"}>
-        {icon || toastDefaultIcon[type]}
-      </UIIconHolder>
+      {icon && (
+        <UIIconHolder color={theme.colors.layout.supportingText()} size={iconSize}>
+          {icon}
+        </UIIconHolder>
+      )}
+      {!icon && (
+        <UIIconHolder color={color} size={iconSize}>
+          {toastDefaultIcon[type]}
+        </UIIconHolder>
+      )}
       <UIContent>{content}</UIContent>
       <CircleCloseIconButton size="small" onClick={() => onCloseRequest(toast)} />
       {isDetailed && (
