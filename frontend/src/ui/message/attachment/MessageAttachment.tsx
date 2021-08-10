@@ -22,7 +22,7 @@ interface AttachmentProps {
 }
 
 export const MessageAttachment = styled<AttachmentProps>(
-  ({ attachment, selectedMediaTime, onMediaTimeUpdate, className, onAttachmentRemoveRequest }) => {
+  ({ attachment, selectedMediaTime, onMediaTimeUpdate, onAttachmentRemoveRequest }) => {
     const mediaRef = useRef<HTMLVideoElement>(null);
     const user = useCurrentUser();
     const canEditAttachments = attachment.message?.user_id === user?.id;
@@ -48,10 +48,6 @@ export const MessageAttachment = styled<AttachmentProps>(
       },
       { isEnabled: isFullscreenOpened }
     );
-
-    // if (!attachmentInfo) {
-    //   return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
-    // }
 
     if (!attachment) return null;
 
@@ -90,10 +86,6 @@ export const MessageAttachment = styled<AttachmentProps>(
     );
   }
 )``;
-
-const UILoadingPlaceholder = styled.div<{}>`
-  height: 100%;
-`;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;
