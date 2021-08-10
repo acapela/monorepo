@@ -10,6 +10,7 @@ import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt"
 import { niceFormatDateTime } from "~shared/dates/format";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { TextH4 } from "~ui/typo";
 
 interface Props {
@@ -65,6 +66,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         <UIInfo>
           <UIName spezia medium>
             {event.title}
+            <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
           </UIName>
           {deadline && (
             <UIMeta>
@@ -105,6 +107,9 @@ const UIInfo = styled.div<{}>`
 `;
 
 const UIName = styled(TextH4)<{}>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: bold;
 `;
 
