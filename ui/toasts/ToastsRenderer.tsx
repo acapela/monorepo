@@ -50,6 +50,6 @@ const UIToastsHolder = styled.div<{}>`
   }
 
   @media (max-width: ${TOAST_WIDTH_PX + 40}px) {
-    width: 92%;
+    width: calc(100% - 32px);
   }
 `;
