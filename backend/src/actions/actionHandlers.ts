@@ -2,6 +2,7 @@ import { getUploadUrl, getDownloadUrl } from "~backend/src/attachments/attachmen
 import { lookupTeamName } from "~backend/src/teamInvitation/lookupTeamName";
 import { resendInvitation } from "~backend/src/teamInvitation/resendInvitation";
 import { roomInvitationView } from "~backend/src/roomInvitation/roomInvitationView";
+import { getTeamSlackInstallationURL } from "~backend/src/slack";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;
@@ -15,4 +16,5 @@ export const handlers: ActionHandler<any, any>[] = [
   lookupTeamName,
   resendInvitation,
   roomInvitationView,
+  getTeamSlackInstallationURL,
 ];

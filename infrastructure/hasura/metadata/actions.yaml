@@ -3,6 +3,10 @@ actions:
     definition:
       kind: ""
       handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
+  - name: get_team_slack_installation_url
+    definition:
+      kind: ""
+      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
       headers:
         - name: Authorization
           value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
@@ -57,7 +61,8 @@ actions:
       - role: user
 custom_types:
   enums: []
-  input_objects: []
+  input_objects:
+    - name: GetTeamSlackInstallationURLInput
   objects:
     - name: UpgradeUserResponse
       relationships:
@@ -73,4 +78,5 @@ custom_types:
     - name: LookupTeamNameResponse
     - name: RoomInvitationViewResponse
     - name: ResendInvitationResponse
+    - name: GetTeamSlackInstallationURLOutput
   scalars: []

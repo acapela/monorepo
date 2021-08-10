@@ -5,6 +5,12 @@ type Query {
 }
 
 type Query {
+  get_team_slack_installation_url (
+    input: GetTeamSlackInstallationURLInput!
+  ): GetTeamSlackInstallationURLOutput
+}
+
+type Query {
   get_upload_url (
     fileName: String!
     mimeType: String!
@@ -33,6 +39,11 @@ type Mutation {
   upgrade_current_user : UpgradeUserResponse
 }
 
+input GetTeamSlackInstallationURLInput {
+  redirectURL : String!
+  teamId : uuid!
+}
+
 type UpgradeUserResponse {
   user_id : ID!
 }
@@ -58,5 +69,9 @@ type RoomInvitationViewResponse {
 
 type ResendInvitationResponse {
   sent_at : timestamptz
+}
+
+type GetTeamSlackInstallationURLOutput {
+  url : String!
 }
 

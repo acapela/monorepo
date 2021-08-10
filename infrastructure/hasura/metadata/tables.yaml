@@ -867,6 +867,13 @@
     - name: owner
       using:
         foreign_key_constraint_on: owner_id
+    - name: slack_installation
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            schema: public
+            name: team_slack_installation
   array_relationships:
     - name: invitations
       using:
@@ -889,6 +896,12 @@
           table:
             schema: public
             name: space
+  computed_fields:
+    - name: has_slack_installation
+      definition:
+        function:
+          schema: public
+          name: team_has_slack_installation
   insert_permissions:
     - role: user
       permission:
@@ -907,6 +920,8 @@
           - name
           - owner_id
           - slug
+        computed_fields:
+          - has_slack_installation
         filter:
           _or:
             - owner_id:
@@ -1095,6 +1110,9 @@
       headers:
         - name: Authorization
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+- table:
+    schema: public
+    name: team_slack_installation
 - table:
     schema: public
     name: topic

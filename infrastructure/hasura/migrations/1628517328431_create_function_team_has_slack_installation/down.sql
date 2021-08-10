@@ -1,0 +1,1 @@
+DROP FUNCTION team_has_slack_installation;

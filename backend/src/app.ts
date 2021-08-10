@@ -12,11 +12,14 @@ import { router as eventRoutes } from "./events/events";
 import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
 import { router as calendarRoutes } from "./calendar/calendar";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
+import { setupSlackBoltRoutes } from "./slack";
 import * as Sentry from "@sentry/node";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
   const app = express();
+  // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
+  setupSlackBoltRoutes(app);
   setupMiddleware(app);
   setupRoutes(app);
   addErrorHandlersToApp(app);

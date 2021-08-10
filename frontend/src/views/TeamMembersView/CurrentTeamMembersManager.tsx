@@ -1,17 +1,65 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
+import { assertDefined } from "~shared/assert";
 import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
+import { createMutation, createQuery } from "~frontend/gql/utils";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import {
+  DeleteSlackInstallationMutation,
+  DeleteSlackInstallationMutationVariables,
+  GetSlackInstallationUrlQuery,
+  GetSlackInstallationUrlQueryVariables,
+} from "~gql";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { Button } from "~ui/buttons/Button";
+import { IconMinus, IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
 import { ExitTeamButton } from "./ExitTeamButton";
 import { ResendInviteButton } from "./ResendInviteButton";
+import { addToast } from "~ui/toasts/data";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
+
+const [useGetSlackInstallationURL] = createQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
+  () => gql`
+    query GetSlackInstallationURL($input: GetTeamSlackInstallationURLInput!) {
+      get_team_slack_installation_url(input: $input) {
+        url
+      }
+    }
+  `
+);
+
+const [useDeleteSlackInstallation] = createMutation<
+  DeleteSlackInstallationMutation,
+  DeleteSlackInstallationMutationVariables
+>(
+  () => gql`
+    mutation DeleteSlackInstallation($teamId: uuid!) {
+      delete_single_team_slack_installation(args: { from_team_id: $teamId }) {
+        id
+        has_slack_installation
+      }
+    }
+  `
+);
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
+  const currentUser = useAssertCurrentUser();
+  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+
+  const [deleteSlackInstallation, { loading: isDeleteingSlackInstallation }] = useDeleteSlackInstallation({});
+  const isServer = typeof window == "undefined";
+  const [slackInstallation] = useGetSlackInstallationURL(
+    {
+      input: { teamId: team?.id ?? "", redirectURL: isServer ? "" : location.href },
+    },
+    { skip: isServer || !isCurrentUserTeamOwner || !!team.has_slack_installation }
+  );
 
   if (!team) {
     return null;
@@ -31,15 +79,49 @@ export const CurrentTeamMembersManager = () => {
     removeTeamInvitation({ id: invitationId });
   };
 
-  const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
-
   return (
     <UIPanel>
       <UIHeader>
         <UITitle>{team.name} members</UITitle>
         <ExitTeamButton />
       </UIHeader>
+      {isCurrentUserTeamOwner && (
+        <div>
+          {team.has_slack_installation ? (
+            <Button
+              disabled={isDeleteingSlackInstallation}
+              onClick={async () => {
+                const didConfirm = await openConfirmPrompt({
+                  title: "Disable Slack Integration",
+                  description: "Are you sure you want to disable Slack integration for notifications?",
+                  confirmLabel: "Disable",
+                });
+                if (!didConfirm) {
+                  return;
+                }
+                await deleteSlackInstallation({ teamId: team.id });
+                addToast({ type: "info", content: "Slack installation was disabled" });
+              }}
+              icon={<IconMinus />}
+              iconPosition="start"
+              tooltip="Disable notifications through slack"
+            >
+              Remove Slack integration
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                window.location.href = assertDefined(slackInstallation, "should have slack installation").url;
+              }}
+              icon={<IconPlus />}
+              iconPosition="start"
+              tooltip="Enable your team to receive notifications through Slack"
+            >
+              Add Slack integration
+            </Button>
+          )}
+        </div>
+      )}
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>

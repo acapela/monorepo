@@ -21,6 +21,7 @@
     "@google-cloud/secret-manager": "^3.7.3",
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.8.0",
+    "@slack/bolt": "^3.5.0",
     "express-async-errors": "^3.1.1",
     "googleapis": "^81.0.0",
     "helmet": "^4.6.0",
