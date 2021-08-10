@@ -5,6 +5,7 @@ import { createTimeout } from "~shared/time";
 export type ToastType = "success" | "warning" | "error";
 
 const DEFAULT_TOAST_TIMEOUT = 3000;
+const DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT = 6000;
 const MAX_TOASTS_COUNT = 5;
 
 interface ToastAction {
@@ -30,7 +31,7 @@ function getToasts() {
 
 export function addToast(toast: ToastData) {
   // If no timeout is set, use default value
-  toast = { timeout: DEFAULT_TOAST_TIMEOUT, ...toast };
+  toast.timeout = toast.timeout || (toast.description ? DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT : DEFAULT_TOAST_TIMEOUT);
   const newToasts = [toast, ...getToasts()].slice(0, MAX_TOASTS_COUNT);
 
   toastsChannel.publish(newToasts);

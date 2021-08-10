@@ -39,7 +39,7 @@ export const UserDetailedInfoFragment = createFragment<UserDetailedInfoFragmentT
   `
 );
 
-export const [useChangeCurrentTeamIdMutation] = createMutation<
+export const [useChangeCurrentTeamIdMutation, { mutate: changeCurrentTeamId }] = createMutation<
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables
 >(

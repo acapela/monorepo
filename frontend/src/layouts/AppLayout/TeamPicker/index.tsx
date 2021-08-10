@@ -1,18 +1,21 @@
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useCreateTeamMutation, useTeamsQuery } from "~frontend/gql/teams";
-import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
+import { createTeam, useTeamsQuery } from "~frontend/gql/teams";
+import { changeCurrentTeamId } from "~frontend/gql/user";
 import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { trackEvent } from "~frontend/analytics/tracking";
+import { addToast } from "~frontend/../../ui/toasts/data";
+import { IconEmotionSmile } from "~frontend/../../ui/icons";
 
 export function TeamPickerView() {
   const [teams = []] = useTeamsQuery();
   const user = useAssertCurrentUser();
 
-  const [createTeam] = useCreateTeamMutation();
-  const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
+  async function handleChangeTeam(teamId: string) {
+    await changeCurrentTeamId({ teamId, userId: user.id });
+  }
 
   async function handleCreateNewTeam() {
     const name = await openUIPrompt({
@@ -25,16 +28,21 @@ export function TeamPickerView() {
       return;
     }
 
-    await createTeam({ input: { name } });
+    const [team] = await createTeam({ input: { name } });
+    if (team) {
+      handleChangeTeam(team.id);
+    }
+
+    addToast({
+      type: "success",
+      icon: <IconEmotionSmile />,
+      title: "Welcome to Acapela!",
+      description:
+        "The team has been created successfully and we are happy to have you on board. Now you can invite your team members and start the collaboration!",
+    });
 
     trackEvent("Account Created");
     trackEvent("Trial Started");
-  }
-
-  async function handleChangeTeam(teamId: string) {
-    await changeCurrentTeam({ teamId, userId: user.id });
-
-    location.reload();
   }
 
   return (
