@@ -92,5 +92,6 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
 
   const downloadUrl = await getSignedDownloadUrl(attachmentId, attachment.mime_type);
   logger.info(`serving attachment ${attachmentId}`);
+  res.setHeader("Cache-Control", "private, max-age=3599");
   res.redirect(downloadUrl);
 });
