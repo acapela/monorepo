@@ -1,32 +1,30 @@
-import { useMemo } from "react";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useRoomsQuery } from "~frontend/gql/rooms";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import {
-  createOpenRoomFilter,
-  createUserFilter,
-  createSortByLatestActivityFilter,
-} from "~frontend/ui/rooms/filters/factories";
-import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
+import { createSortByLatestActivityFilter } from "~frontend/ui/rooms/filters/factories";
+import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
 import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
-import { CreateRoomButton } from "./CreateRoomButton";
+import { getHomeViewRoomsQueryWhere } from "./query";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
 
-const openRoomFilter = createOpenRoomFilter(true);
 const sortByLatestActivity = createSortByLatestActivityFilter();
 
 export function HomeView() {
   const user = useAssertCurrentUser();
 
-  const currentUserFilter = useMemo(() => createUserFilter(user), [user]);
+  const [rooms = []] = useRoomsQuery({
+    where: getHomeViewRoomsQueryWhere(user.id),
+  });
 
-  const [roomQuery] = useRoomFilterVariables([openRoomFilter, currentUserFilter, sortByLatestActivity]);
+  const [filteredRooms] = useRoomsCriteria(rooms, [sortByLatestActivity]);
 
   return (
     <UIHolder isNarrow>
       <UIContent>
-        <RoomsGroupedByActivities query={roomQuery} />
+        <RoomsGroupedByActivities rooms={filteredRooms} />
       </UIContent>
-      <FlyingCreateRoomButton />
+      <FlyingCreateRoomButton buttonProps={{ size: "large" }} />
     </UIHolder>
   );
 }

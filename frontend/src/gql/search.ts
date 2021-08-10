@@ -1,21 +1,15 @@
 import { gql } from "@apollo/client";
-import {
-  SearchResultFragment as SearchResultFragmentType,
-  SearchResultsQuery,
-  SearchResultsQueryVariables,
-} from "~gql";
-import { createFragment, createQuery } from "./utils";
+import { createQuery } from "./utils";
+import { SearchResultsQuery, SearchResultsQueryVariables } from "~gql";
 
-const SearchResultFragment = createFragment<SearchResultFragmentType>(
+export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
   () => gql`
-    fragment SearchResult on full_text_search {
-      topicId: topic_id
-      topicName: topic_name
-      messageId: message_id
-      messageContent: message_content
-      attachmentName: attachment_name
-      transcript
-      room {
+    query SearchResults($term: String!) {
+      spaces: space(where: { name: { _ilike: $term } }, limit: 10) {
+        id
+        name
+      }
+      rooms: room(where: { name: { _ilike: $term } }, limit: 10) {
         id
         name
         space {
@@ -23,16 +17,33 @@ const SearchResultFragment = createFragment<SearchResultFragmentType>(
           name
         }
       }
-    }
-  `
-);
-
-export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
-  () => gql`
-    ${SearchResultFragment()}
-    query SearchResults($term: String!) {
-      results: search_full_text_topic(args: { search: $term }) {
-        ...SearchResult
+      topics: topic(where: { name: { _ilike: $term } }, limit: 10) {
+        id
+        name
+        room {
+          id
+          name
+          space {
+            id
+            name
+          }
+        }
+      }
+      messages: message(where: { content_text: { _ilike: $term } }, limit: 10) {
+        id
+        content_text
+        topic {
+          id
+          name
+          room {
+            id
+            name
+            space {
+              id
+              name
+            }
+          }
+        }
       }
     }
   `

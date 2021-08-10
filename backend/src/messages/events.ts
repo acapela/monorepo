@@ -8,6 +8,8 @@ import { EditorMentionData } from "~shared/types/editor";
 import { uniqBy } from "lodash";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
+import { updateRoomLastActivityDate } from "../rooms/rooms";
+import { assert } from "~shared/assert";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {
@@ -91,7 +93,12 @@ async function createMessageMentionNotifications(message: Message, messageBefore
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
   if (event.type === "delete") return;
 
+  const topicInfo = await db.topic.findFirst({ where: { id: event.item.topic_id } });
+
+  assert(topicInfo, "Message has no topic attached");
+
   await Promise.all([
+    updateRoomLastActivityDate(topicInfo.room_id),
     prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
     createMessageMentionNotifications(event.item, event.itemBefore),

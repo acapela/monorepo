@@ -51,15 +51,3 @@ export function useAssertCurrentUser(): UserBasicInfoFragment {
 
   return convertUserAuthToBasicFragment(validatedUser);
 }
-
-export function useCurrentTeamId(): string | null {
-  const user = useCurrentUser();
-
-  return user?.currentTeamId ?? null;
-}
-
-export function useAssertCurrentTeamId(): string {
-  const user = useAssetCurrentUserAuth();
-
-  return assertDefined(user.currentTeamId, "No team id");
-}

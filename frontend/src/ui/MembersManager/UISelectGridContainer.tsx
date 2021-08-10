@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { theme } from "~ui/theme";
 
 export const UISelectGridContainer = styled.div<{}>`
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;

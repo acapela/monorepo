@@ -28,6 +28,10 @@ type LookupTeamNameResponse {
   team_name: String!
 }
 
+type ResendInvitationResponse {
+  sent_at: timestamptz
+}
+
 type RoomInvitationViewResponse {
   inviter_name: String!
   room_name: String!
@@ -429,6 +433,7 @@ type attachment {
   message_id: uuid
   mime_type: String!
   original_name: String!
+  user_id: uuid
 }
 
 """
@@ -478,6 +483,7 @@ input attachment_bool_exp {
   message_id: uuid_comparison_exp
   mime_type: String_comparison_exp
   original_name: String_comparison_exp
+  user_id: uuid_comparison_exp
 }
 
 """
@@ -505,6 +511,7 @@ input attachment_insert_input {
   message_id: uuid
   mime_type: String
   original_name: String
+  user_id: uuid
 }
 
 """
@@ -516,6 +523,7 @@ type attachment_max_fields {
   message_id: uuid
   mime_type: String
   original_name: String
+  user_id: uuid
 }
 
 """
@@ -527,6 +535,7 @@ input attachment_max_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
+  user_id: order_by
 }
 
 """
@@ -538,6 +547,7 @@ type attachment_min_fields {
   message_id: uuid
   mime_type: String
   original_name: String
+  user_id: uuid
 }
 
 """
@@ -549,6 +559,7 @@ input attachment_min_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
+  user_id: order_by
 }
 
 """
@@ -593,6 +604,7 @@ input attachment_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
+  user_id: order_by
 }
 
 """
@@ -630,6 +642,11 @@ enum attachment_select_column {
   column name
   """
   original_name
+
+  """
+  column name
+  """
+  user_id
 }
 
 """
@@ -641,6 +658,7 @@ input attachment_set_input {
   message_id: uuid
   mime_type: String
   original_name: String
+  user_id: uuid
 }
 
 """
@@ -671,6 +689,11 @@ enum attachment_update_column {
   column name
   """
   original_name
+
+  """
+  column name
+  """
+  user_id
 }
 
 scalar bigint
@@ -3447,6 +3470,11 @@ type mutation_root {
   ): whitelist
 
   """
+  perform the action: "resend_invitation"
+  """
+  resend_invitation(invitation_id: ID!): ResendInvitationResponse
+
+  """
   update data of the table: "account"
   """
   update_account(
@@ -4725,11 +4753,6 @@ type query_root {
     """
     where: full_text_search_bool_exp
   ): full_text_search_aggregate!
-
-  """
-  perform the action: "get_download_url"
-  """
-  get_download_url(uuid: uuid!): DownloadUrlResponse
 
   """
   perform the action: "get_upload_url"
@@ -6442,6 +6465,7 @@ type room {
     where: room_invitation_bool_exp
   ): room_invitation_aggregate!
   is_private: Boolean!
+  last_activity_at: timestamptz
 
   """
   An object relationship
@@ -6629,6 +6653,7 @@ input room_bool_exp {
   id: uuid_comparison_exp
   invitations: room_invitation_bool_exp
   is_private: Boolean_comparison_exp
+  last_activity_at: timestamptz_comparison_exp
   last_posted_message: room_last_posted_message_bool_exp
   members: room_member_bool_exp
   name: String_comparison_exp
@@ -6668,6 +6693,7 @@ input room_insert_input {
   id: uuid
   invitations: room_invitation_arr_rel_insert_input
   is_private: Boolean
+  last_activity_at: timestamptz
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
@@ -6778,6 +6804,11 @@ enum room_invitation_constraint {
   unique or primary key constraint
   """
   room_invitation_pkey
+
+  """
+  unique or primary key constraint
+  """
+  room_invitation_team_id_email_key
 
   """
   unique or primary key constraint
@@ -7153,6 +7184,7 @@ type room_max_fields {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7170,6 +7202,7 @@ input room_max_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
   slug: order_by
@@ -7396,6 +7429,7 @@ type room_min_fields {
   deadline: timestamptz
   finished_at: timestamptz
   id: uuid
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7413,6 +7447,7 @@ input room_min_order_by {
   deadline: order_by
   finished_at: order_by
   id: order_by
+  last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
   slug: order_by
@@ -7465,6 +7500,7 @@ input room_order_by {
   id: order_by
   invitations_aggregate: room_invitation_aggregate_order_by
   is_private: order_by
+  last_activity_at: order_by
   last_posted_message: room_last_posted_message_order_by
   members_aggregate: room_member_aggregate_order_by
   name: order_by
@@ -7521,6 +7557,11 @@ enum room_select_column {
   """
   column name
   """
+  last_activity_at
+
+  """
+  column name
+  """
   name
 
   """
@@ -7559,6 +7600,7 @@ input room_set_input {
   finished_at: timestamptz
   id: uuid
   is_private: Boolean
+  last_activity_at: timestamptz
   name: String
   notification_job_id: String
   slug: String
@@ -7600,6 +7642,11 @@ enum room_update_column {
   column name
   """
   is_private
+
+  """
+  column name
+  """
+  last_activity_at
 
   """
   column name
@@ -8428,11 +8475,6 @@ type subscription_root {
     """
     where: full_text_search_bool_exp
   ): full_text_search_aggregate!
-
-  """
-  perform the action: "get_download_url"
-  """
-  get_download_url(uuid: uuid!): DownloadUrlResponse
 
   """
   perform the action: "get_upload_url"
@@ -10441,6 +10483,11 @@ enum team_invitation_constraint {
   unique or primary key constraint
   """
   team_invitation_pkey
+
+  """
+  unique or primary key constraint
+  """
+  team_invitation_team_id_email_key
 
   """
   unique or primary key constraint

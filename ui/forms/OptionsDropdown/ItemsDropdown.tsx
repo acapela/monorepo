@@ -1,12 +1,13 @@
 import React, { ReactNode, useRef } from "react";
-import { useClickAway } from "react-use";
-import styled from "styled-components";
+import { useClickAway, useWindowSize } from "react-use";
+import styled, { css } from "styled-components";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
 import { PopPresenceAnimator } from "~ui/animations";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { DropdownItem } from "./DropdownItem";
+import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 
 interface Props<I> {
   items: I[];
@@ -32,7 +33,11 @@ export function ItemsDropdown<I>({
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(items, {
     enableKeyboard: true,
   });
+
+  const { height: windowHeight } = useWindowSize();
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuBoundingBox = useBoundingBox(menuRef);
+
   const selectedItemsKeys = selectedItems.map(keyGetter);
 
   function getIsItemSelected(item: I) {
@@ -47,8 +52,10 @@ export function ItemsDropdown<I>({
     onCloseRequest?.();
   });
 
+  const maxHeight = windowHeight - menuBoundingBox.top - 20;
+
   return (
-    <UIMenu ref={menuRef}>
+    <UIMenu maxHeight={maxHeight} ref={menuRef}>
       {items.map((item) => {
         const itemKey = keyGetter(item);
         const isSelected = getIsItemSelected(item);
@@ -72,7 +79,12 @@ export function ItemsDropdown<I>({
   );
 }
 
-const UIMenu = styled(PopPresenceAnimator)<{}>`
+const UIMenu = styled(PopPresenceAnimator)<{ maxHeight?: number }>`
+  ${({ maxHeight }) =>
+    maxHeight &&
+    css`
+      max-height: ${maxHeight}px;
+    `}
   overflow-y: auto;
   border: 1px solid ${BACKGROUND_ACCENT};
   width: 100%;

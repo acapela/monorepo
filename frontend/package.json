@@ -10,6 +10,7 @@
     "server:start": "node ./next-server.js",
     "prestart": "berglas exec -- yarn next:build",
     "start": "berglas exec -- node ./next-server.js",
+    "start:ci": "nohup node ./next-server.js & echo $! > frontend.pid",
     "test": "jest",
     "test:watch": "jest --watch"
   },

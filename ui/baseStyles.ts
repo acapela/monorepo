@@ -46,6 +46,9 @@ export const borderRadius = {
   modal: css`
     border-radius: 16px;
   `,
+  toast: css`
+    border-radius: 16px;
+  `,
   label: css`
     border-radius: 6px;
   `,

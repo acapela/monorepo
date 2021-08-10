@@ -205,6 +205,7 @@
       permission:
         columns:
           - content
+          - content_text
           - created_at
           - id
           - is_draft
@@ -437,6 +438,7 @@
           - finished_at
           - id
           - is_private
+          - last_activity_at
           - name
           - slug
           - source_google_calendar_event_id
@@ -1139,6 +1141,9 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+            - room:
+                finished_at:
+                  _is_null: true
         columns:
           - id
           - index

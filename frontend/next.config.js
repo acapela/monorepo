@@ -154,6 +154,10 @@ module.exports = withPlugins(
           source: "/graphql",
           destination: `http://localhost:8080/v1/graphql`,
         },
+        {
+          source: "/attachments/:path*",
+          destination: `http://localhost:1337/attachments/:path*`,
+        },
       ];
     },
   }

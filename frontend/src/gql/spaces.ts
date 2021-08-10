@@ -22,12 +22,13 @@ import {
 } from "~gql";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentTeamId, useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { TeamDetailedInfoFragment } from "./teams";
 import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -265,7 +266,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Space member was added` });
+      addToast({ type: "success", title: `Space member was added` });
     },
   }
 );
@@ -297,7 +298,7 @@ export const [useRemoveSpaceMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Space member was removed` });
+      addToast({ type: "success", title: `Space member was removed` });
     },
   }
 );

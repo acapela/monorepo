@@ -1,41 +1,42 @@
 import { gql } from "@apollo/client";
-import { addToast } from "~ui/toasts/data";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
-  CreateRoomMutation,
-  CreateRoomMutationVariables,
-  RoomsQuery,
-  RoomsQueryVariables,
-  SingleRoomQuery,
-  SingleRoomQueryVariables,
-  RoomParticipantsQuery,
-  RoomParticipantsQueryVariables,
   AddRoomMemberMutation,
   AddRoomMemberMutationVariables,
-  RemoveRoomMemberMutation,
-  RemoveRoomMemberMutationVariables,
-  DeleteRoomMutation,
-  DeleteRoomMutationVariables,
-  UpdateRoomMutation,
-  UpdateRoomMutationVariables,
   CloseOpenTopicsMutation,
   CloseOpenTopicsMutationVariables,
+  CreateRoomMutation,
+  CreateRoomMutationVariables,
+  DeleteRoomMutation,
+  DeleteRoomMutationVariables,
+  PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
+  RemoveRoomMemberMutation,
+  RemoveRoomMemberMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
-  PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
+  RoomParticipantsQuery,
+  RoomParticipantsQueryVariables,
   RoomsInSpaceQuery,
   RoomsInSpaceQueryVariables,
+  RoomsQuery,
+  RoomsQueryVariables,
   SinglePrivateRoomQuery,
   SinglePrivateRoomQueryVariables,
+  SingleRoomQuery,
+  SingleRoomQueryVariables,
+  UpdateRoomMutation,
+  UpdateRoomMutationVariables,
 } from "~gql";
+import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
+import { addToast } from "~ui/toasts/data";
+import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
-import { createMutation, createQuery, createFragment } from "./utils";
-import { getUUID } from "~shared/uuid";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { slugify } from "~shared/slugify";
-import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
+import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
@@ -61,6 +62,7 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       summary
       finished_at
       source_google_calendar_event_id
+      last_activity_at
 
       members {
         user {
@@ -120,11 +122,11 @@ export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQ
   `
 );
 
-export const [useRoomsQuery] = createQuery<RoomsQuery, RoomsQueryVariables>(
+export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    query Rooms($limit: Int = 10, $orderBy: [room_order_by!], $where: room_bool_exp) {
+    query Rooms($limit: Int, $orderBy: [room_order_by!], $where: room_bool_exp) {
       rooms: room(where: $where, limit: $limit, order_by: $orderBy) {
         ...RoomDetailedInfo
       }
@@ -198,10 +200,15 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
         space.rooms.push(room);
       });
+
+      updateHomeviewQuery((result) => {
+        result.rooms.push(room);
+      });
     },
     optimisticResponse({ input }) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const spaceId = input.space_id!;
+
       return {
         __typename: "mutation_root",
         room: {
@@ -214,10 +221,10 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           invitations: [],
           space: SpaceDetailedInfoFragment.assertRead(spaceId),
           topics: [],
+          last_activity_at: null,
           is_private: input.is_private ?? false,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: input.name!,
-
           space_id: spaceId,
           finished_at: null,
           source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
@@ -262,7 +269,7 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was added` });
+      addToast({ type: "success", title: `Room member was added` });
     },
   }
 );
@@ -291,7 +298,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was removed` });
+      addToast({ type: "success", title: `Room member was removed` });
     },
   }
 );
@@ -344,6 +351,10 @@ export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
       if (!removedRoom.space_id) return;
       SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
         space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
+      });
+
+      updateHomeviewQuery((result) => {
+        result.rooms = result.rooms.filter((room) => room.id !== removedRoom.id);
       });
     },
   }

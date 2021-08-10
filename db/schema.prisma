@@ -27,7 +27,9 @@ model attachment {
   original_name String
   mime_type     String
   message_id    String?  @db.Uuid
+  user_id       String?  @db.Uuid
   message       message? @relation(fields: [message_id], references: [id])
+  user          user?    @relation(fields: [user_id], references: [id])
 }
 
 model last_seen_message {
@@ -216,6 +218,7 @@ model user {
   current_team_id                                        String?             @db.Uuid
   team_teamTouser_current_team_id                        team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
   account                                                account[]
+  attachment                                             attachment[]
   last_seen_message                                      last_seen_message[]
   message                                                message[]
   message_reaction                                       message_reaction[]
