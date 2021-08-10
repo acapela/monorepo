@@ -6,8 +6,8 @@ import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { trackEvent } from "~frontend/analytics/tracking";
-import { addToast } from "~frontend/../../ui/toasts/data";
-import { IconEmotionSmile } from "~frontend/../../ui/icons";
+import { addToast } from "~ui/toasts/data";
+import { IconEmotionSmile } from "~ui/icons";
 
 export function TeamPickerView() {
   const [teams = []] = useTeamsQuery();
