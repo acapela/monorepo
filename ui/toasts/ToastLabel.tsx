@@ -7,7 +7,7 @@ import { ToastData, ToastType } from "./data";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 import { ReactNode } from "react";
-import { IconAlertCircle, IconCheckCircle } from "~ui/icons";
+import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "~ui/icons";
 
 interface Props {
   toast: ToastData;
@@ -17,11 +17,13 @@ interface Props {
 
 const toastColors: Record<ToastType, string> = {
   success: theme.colors.status.success(),
+  warning: theme.colors.status.warning(),
   error: theme.colors.status.error(),
 };
 
 const toastDefaultIcon: Record<ToastType, ReactNode> = {
   success: <IconCheckCircle />,
+  warning: <IconAlertTriangle />,
   error: <IconAlertCircle />,
 };
 
@@ -38,10 +40,7 @@ export const ToastLabel = styled(function ToastLabel({ toast, onCloseRequest, cl
       isDetailed={isDetailed}
       className={className}
     >
-      <UIIconHolder
-        color={isDetailed ? theme.colors.layout.supportingText() : color}
-        size={isDetailed ? "medium" : "small"}
-      >
+      <UIIconHolder color={icon ? theme.colors.layout.supportingText() : color} size={isDetailed ? "medium" : "small"}>
         {icon || toastDefaultIcon[type]}
       </UIIconHolder>
       <UIContent>{content}</UIContent>
