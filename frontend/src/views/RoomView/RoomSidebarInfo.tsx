@@ -5,6 +5,7 @@ import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { RoomDetailedInfoFragment } from "~gql";
 import { TextBody12 } from "~ui/typo";
 import { DeadlineManager } from "./DeadlineManager";
+import { RoomOwner } from "./RoomOwner";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -21,9 +22,10 @@ export function RoomSidebarInfo({ room }: Props) {
 
   return (
     <UIRoomInfo>
-      <UIManageSection>
+      <UIMembersSection>
+        <RoomOwner room={room} />
         <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
-      </UIManageSection>
+      </UIMembersSection>
 
       <UIManageSections>
         <UIManageSection>
@@ -36,6 +38,12 @@ export function RoomSidebarInfo({ room }: Props) {
     </UIRoomInfo>
   );
 }
+
+const UIMembersSection = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
 
 const UIRoomInfo = styled.div<{}>`
   position: relative;

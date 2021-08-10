@@ -1,4 +1,5 @@
 import { db, User } from "~db";
+import { getFirstName } from "~shared/getFirstName";
 
 // TODO: Not used?
 export async function updateUser(user: User): Promise<User> {
@@ -48,8 +49,4 @@ export function getNormalizedUserName(user: User): string {
     return user.email;
   }
   return "Your colleague";
-}
-
-export function getFirstName(name: string): string {
-  return name.trim().split(" ")[0];
 }

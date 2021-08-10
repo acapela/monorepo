@@ -9088,7 +9088,10 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & { topics: Array<(
+  & { owner?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )>, invitations: Array<(
