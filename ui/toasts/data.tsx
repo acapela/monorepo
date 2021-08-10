@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { createChannel } from "~shared/channel";
 import { createTimeout } from "~shared/time";
 
-export type ToastType = "info" | "success" | "error";
+export type ToastType = "success" | "warning" | "error";
 
 const DEFAULT_TOAST_TIMEOUT = 3000;
 const MAX_TOASTS_COUNT = 5;
@@ -15,7 +15,8 @@ interface ToastAction {
 
 export interface ToastData {
   type: ToastType;
-  content: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
   icon?: ReactNode;
   actions?: ToastAction[];
   timeout?: number;
