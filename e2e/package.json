@@ -1,5 +1,5 @@
 {
-  "name": "~end-to-end-tests",
+  "name": "~e2e",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {

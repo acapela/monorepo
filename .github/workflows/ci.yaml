@@ -161,12 +161,12 @@ jobs:
         run: |
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
-      - run: yarn e2e-tests test
+      - run: yarn e2e test
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
           name: test-artifacts
-          path: end-to-end-tests/test-results/
+          path: e2e/test-results/
 
   release:
     name: Release
