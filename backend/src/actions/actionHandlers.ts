@@ -9,9 +9,4 @@ export interface ActionHandler<DataT, ResponseT> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handlers: ActionHandler<any, any>[] = [
-  getUploadUrl,
-  lookupTeamName,
-  resendInvitation,
-  roomInvitationView,
-];
+export const handlers: ActionHandler<any, any>[] = [getUploadUrl, lookupTeamName, resendInvitation, roomInvitationView];
