@@ -20,13 +20,19 @@ import { ExpandableTopicsList } from "./ExpandableTopicsList";
 interface Props {
   room: RoomBasicInfoFragment;
   topics: TopicDetailedInfoFragment[];
+  unreadMessages?: number;
   className?: string;
 }
 
-export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({ room, topics, className }: Props) {
+export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
+  room,
+  topics,
+  className,
+  unreadMessages,
+}: Props) {
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
-  const unreadMessagesCount = useRoomUnreadMessagesCount(room.id);
+  const unreadMessagesCount = useRoomUnreadMessagesCount(room.id, { overWriteCount: unreadMessages });
   const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
 
   return (

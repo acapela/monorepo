@@ -20,13 +20,10 @@ export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ clas
   return (
     <UIHolder className={className}>
       {roomsWithNewActivities.length > 0 && (
-        <RoomsListCategory categoryName="Rooms with updates" rooms={roomsWithNewActivities.map((info) => info.room)} />
+        <RoomsListCategory categoryName="Rooms with updates" rooms={roomsWithNewActivities} />
       )}
       {roomsWithAlreadySeenActivities.length > 0 && (
-        <RoomsListCategory
-          categoryName="Already seen"
-          rooms={roomsWithAlreadySeenActivities.map((info) => info.room)}
-        />
+        <RoomsListCategory categoryName="Already seen" rooms={roomsWithAlreadySeenActivities} />
       )}
     </UIHolder>
   );
