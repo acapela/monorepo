@@ -65,8 +65,11 @@ function setupGracefulShutdown(server: Server) {
       });
     },
     healthChecks: {
+      verbatim: true,
       "/healthz": async function () {
-        return true;
+        return {
+          version: process.env.SENTRY_RELEASE || "dev",
+        };
       },
     },
   });
