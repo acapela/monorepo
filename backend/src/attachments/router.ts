@@ -1,8 +1,8 @@
-import { get, map } from "lodash";
+import { get } from "lodash";
 import { Request, Response, Router } from "express";
 import { verify } from "jsonwebtoken";
 import logger from "~shared/logger";
-import { AuthenticationError, BadRequestError } from "../errors/errorTypes";
+import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { db } from "~db";
 import { getSignedDownloadUrl } from "./googleStorage";
 
@@ -21,76 +21,49 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
     throw new BadRequestError("session token missing");
   }
 
-  const session = verify(jwtToken, process.env.AUTH_JWT_TOKEN_SECRET);
+  let session;
+  try {
+    session = verify(jwtToken, process.env.AUTH_JWT_TOKEN_SECRET);
+  } catch (e) {
+    throw new AuthenticationError();
+  }
+
   const userId = get(session, "id");
   if (!userId) {
     throw new BadRequestError("user id missing");
   }
 
-  const attachment = await db.attachment.findUnique({
+  const attachment = await db.attachment.findFirst({
     where: {
       id: attachmentId,
-    },
-    include: {
-      message: {
-        include: {
-          topic: {
-            include: {
+      OR: [
+        {
+          // user created the attachment
+          user_id: userId,
+        },
+        {
+          message: {
+            topic: {
               room: {
-                include: {
-                  space: {
-                    include: {
-                      team: {
-                        include: {
-                          team_member: true,
-                        },
-                      },
-                      space_member: true,
-                    },
-                  },
-                  room_member: true,
-                },
+                OR: [
+                  // public: user is a team_member
+                  { is_private: false, space: { team: { team_member: { some: { user_id: userId } } } } },
+                  // private: user is a room_member
+                  { is_private: true, room_member: { some: { user_id: userId } } },
+                ],
               },
-              topic_member: true,
             },
           },
         },
-      },
+      ],
     },
   });
 
   if (!attachment) {
-    throw new BadRequestError("attachment not found");
-  }
-
-  const message = attachment.message;
-  let accessAllowed = false;
-  if (!message) {
-    if (attachment.user_id !== userId) {
-      throw new BadRequestError("attachment not found");
-    }
-    accessAllowed = true;
-  }
-
-  if (message && message.topic.room.is_private) {
-    // if the room is private check topic_member, room_member
-    accessAllowed =
-      map(message.topic.topic_member, "user_id").includes(userId) ||
-      map(message.topic.room.room_member, "user_id").includes(userId);
-  }
-  if (message && !message.topic.room.is_private) {
-    // if the room is not private check topic_member or team_member
-    accessAllowed =
-      map(message.topic.topic_member, "user_id").includes(userId) ||
-      map(message.topic.room.space.team.team_member, "user_id").includes(userId);
-  }
-
-  if (!accessAllowed) {
-    throw new AuthenticationError("you are not allowed to view this attachment");
+    throw new NotFoundError("attachment not found");
   }
 
   const downloadUrl = await getSignedDownloadUrl(attachmentId, attachment.mime_type);
   logger.info(`serving attachment ${attachmentId}`);
-  res.setHeader("Cache-Control", "private, max-age=3599");
   res.redirect(downloadUrl);
 });
