@@ -88,6 +88,10 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
     fragment RoomDetailedInfo on room {
       ...RoomBasicInfo
 
+      owner {
+        ...UserBasicInfo
+      }
+
       topics(order_by: { index: asc }) {
         ...TopicDetailedInfo
       }

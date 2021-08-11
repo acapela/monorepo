@@ -433,7 +433,6 @@ type attachment {
   message_id: uuid
   mime_type: String!
   original_name: String!
-  user_id: uuid
 }
 
 """
@@ -483,7 +482,6 @@ input attachment_bool_exp {
   message_id: uuid_comparison_exp
   mime_type: String_comparison_exp
   original_name: String_comparison_exp
-  user_id: uuid_comparison_exp
 }
 
 """
@@ -511,7 +509,6 @@ input attachment_insert_input {
   message_id: uuid
   mime_type: String
   original_name: String
-  user_id: uuid
 }
 
 """
@@ -523,7 +520,6 @@ type attachment_max_fields {
   message_id: uuid
   mime_type: String
   original_name: String
-  user_id: uuid
 }
 
 """
@@ -535,7 +531,6 @@ input attachment_max_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
-  user_id: order_by
 }
 
 """
@@ -547,7 +542,6 @@ type attachment_min_fields {
   message_id: uuid
   mime_type: String
   original_name: String
-  user_id: uuid
 }
 
 """
@@ -559,7 +553,6 @@ input attachment_min_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
-  user_id: order_by
 }
 
 """
@@ -604,7 +597,6 @@ input attachment_order_by {
   message_id: order_by
   mime_type: order_by
   original_name: order_by
-  user_id: order_by
 }
 
 """
@@ -642,11 +634,6 @@ enum attachment_select_column {
   column name
   """
   original_name
-
-  """
-  column name
-  """
-  user_id
 }
 
 """
@@ -658,7 +645,6 @@ input attachment_set_input {
   message_id: uuid
   mime_type: String
   original_name: String
-  user_id: uuid
 }
 
 """
@@ -689,11 +675,6 @@ enum attachment_update_column {
   column name
   """
   original_name
-
-  """
-  column name
-  """
-  user_id
 }
 
 scalar bigint
@@ -4755,6 +4736,11 @@ type query_root {
   ): full_text_search_aggregate!
 
   """
+  perform the action: "get_download_url"
+  """
+  get_download_url(uuid: uuid!): DownloadUrlResponse
+
+  """
   perform the action: "get_upload_url"
   """
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
@@ -6533,6 +6519,12 @@ type room {
   ): room_member_aggregate!
   name: String!
   notification_job_id: String
+
+  """
+  An object relationship
+  """
+  owner: user
+  owner_id: uuid
   slug: String!
   source_google_calendar_event_id: String
 
@@ -6658,6 +6650,8 @@ input room_bool_exp {
   members: room_member_bool_exp
   name: String_comparison_exp
   notification_job_id: String_comparison_exp
+  owner: user_bool_exp
+  owner_id: uuid_comparison_exp
   slug: String_comparison_exp
   source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
@@ -6697,6 +6691,8 @@ input room_insert_input {
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
+  owner: user_obj_rel_insert_input
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
@@ -7187,6 +7183,7 @@ type room_max_fields {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -7205,6 +7202,7 @@ input room_max_order_by {
   last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -7432,6 +7430,7 @@ type room_min_fields {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -7450,6 +7449,7 @@ input room_min_order_by {
   last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -7505,6 +7505,8 @@ input room_order_by {
   members_aggregate: room_member_aggregate_order_by
   name: order_by
   notification_job_id: order_by
+  owner: user_order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space: space_order_by
@@ -7572,6 +7574,11 @@ enum room_select_column {
   """
   column name
   """
+  owner_id
+
+  """
+  column name
+  """
   slug
 
   """
@@ -7603,6 +7610,7 @@ input room_set_input {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -7657,6 +7665,11 @@ enum room_update_column {
   column name
   """
   notification_job_id
+
+  """
+  column name
+  """
+  owner_id
 
   """
   column name
@@ -8475,6 +8488,11 @@ type subscription_root {
     """
     where: full_text_search_bool_exp
   ): full_text_search_aggregate!
+
+  """
+  perform the action: "get_download_url"
+  """
+  get_download_url(uuid: uuid!): DownloadUrlResponse
 
   """
   perform the action: "get_upload_url"
