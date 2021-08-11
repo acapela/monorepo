@@ -1,6 +1,6 @@
+import { AnimatePresence } from "framer-motion";
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { theme } from "~ui/theme";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -9,8 +9,7 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { IconSearch } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
-import { TextBody14 } from "~ui/typo";
-import { AnimatePresence } from "framer-motion";
+import { theme } from "~ui/theme";
 
 export const TopBarSearchBar = (): JSX.Element => {
   // All of apple computers use "Mac".
@@ -37,7 +36,7 @@ export const TopBarSearchBar = (): JSX.Element => {
       <UIHolder ref={staticSearchBarRef} onClick={handleSearchBarModalOpen}>
         <UIPlaceholder>
           <UISearchIcon />
-          <TextBody14>Search</TextBody14>
+          <UITextPlaceholder>Search</UITextPlaceholder>
         </UIPlaceholder>
         <ClientSideOnly>
           {isMac && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
@@ -59,6 +58,15 @@ export const TopBarSearchBar = (): JSX.Element => {
   );
 };
 
+const UITextPlaceholder = styled.div<{}>`
+  ${theme.font.body14.build}
+  color: ${theme.colors.layout.supportingText()}
+`;
+
+const UIShortcutIndicator = styled.div<{}>`
+  ${theme.font.body14.build}
+`;
+
 const UIHolder = styled.div<{}>`
   padding: 14px;
 
@@ -69,6 +77,25 @@ const UIHolder = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 1300px) {
+    ${UIShortcutIndicator} {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    padding: 8px;
+    width: 32px;
+
+    ${UITextPlaceholder} {
+      display: none;
+    }
+
+    ${UIShortcutIndicator} {
+      display: none;
+    }
+  }
 
   ${theme.colors.actions.tertiary.all()}
 
@@ -86,11 +113,7 @@ const UIPlaceholder = styled.div<{}>`
 
 const UISearchIcon = styled(IconSearch)<{}>`
   font-size: 1rem;
-  line-height: 1.25rem;
-`;
-
-const UIShortcutIndicator = styled.div<{}>`
-  ${theme.font.body12.build}
+  line-height: 2;
 `;
 
 const UISearchContainer = styled(PopPresenceAnimator)<{}>`
