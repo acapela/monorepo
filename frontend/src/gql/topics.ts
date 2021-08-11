@@ -47,6 +47,9 @@ export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmen
       slug
       closed_at
       closing_summary
+      owner {
+        ...UserBasicInfo
+      }
       closed_by_user {
         ...UserBasicInfo
       }

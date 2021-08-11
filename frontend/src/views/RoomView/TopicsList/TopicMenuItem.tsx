@@ -18,6 +18,7 @@ import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { useTopic } from "~frontend/topics/useTopic";
+import { TopicOwner } from "./TopicOwner";
 
 type Props = {
   topic: TopicDetailedInfoFragment;
@@ -119,6 +120,7 @@ export const TopicMenuItem = styled<Props>(
                     Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
                   }
                 />
+                <TopicOwner topic={topic} />
               </UIHolder>
             </NameWrap>
             {!isEditingDisabled && (
@@ -155,8 +157,9 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   padding: ${PADDING} 24px;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   width: 100%;
-  align-items: center;
 
   ${theme.borderRadius.button}
 

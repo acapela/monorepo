@@ -8549,7 +8549,10 @@ export type PrivateRoomInfoFragment = (
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id' | 'last_activity_at'>
-  & { members: Array<(
+  & { owner?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, members: Array<(
     { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
@@ -8564,10 +8567,7 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & { owner?: Maybe<(
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  )>, topics: Array<(
+  & { topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )>, invitations: Array<(
@@ -9060,7 +9060,10 @@ export type ResendInvitationMutation = (
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
-  & { closed_by_user?: Maybe<(
+  & { owner?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, closed_by_user?: Maybe<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
   )>, room: (
