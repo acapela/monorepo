@@ -16,7 +16,8 @@
       "db",
       "tooling",
       "richEditor",
-      "gql"
+      "gql",
+      "e2e"
     ]
   },
   "scripts": {
@@ -40,6 +41,7 @@
     "db": "yarn workspace ~db",
     "richEditor": "yarn workspace ~richEditor",
     "shared": "yarn workspace ~shared",
+    "e2e": "yarn workspace ~e2e",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "func(){ hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev; }; func",
@@ -48,6 +50,7 @@
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
+    "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
     "hasura:update": "yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta",
     "frontend:gql-types": "tooling gql frontend --watch",
     "lint": "eslint . && prettier --check .",
@@ -57,7 +60,8 @@
     "start:backend": "yarn backend start",
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
-    "generate": "yarn workspace ~db generate && yarn workspace ~gql generate"
+    "generate": "yarn workspace ~db generate && yarn workspace ~gql generate",
+    "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
     "*.{md,yaml,yml,graphql,json}": "prettier --write",
@@ -74,7 +78,8 @@
       "docker:up:detach": "Start docker infrastructure in detached mode",
       "docker:up": "Start docker infrastructure in interactive mode",
       "docker:stop": "Stop docker infrastructure",
-      "hasura:console": "Start hasura dev console"
+      "hasura:console": "Start hasura dev console",
+      "hasura:console:proxy": "Connect to the staging or production hasura console (yarn hasura:console:proxy [production|staging])"
     }
   },
   "dependencies": {

@@ -1,12 +1,13 @@
 import { RefObject, useEffect } from "react";
 import { useBoolean } from "./hooks/useBoolean";
+import { noop } from "lodash";
 
 export function createWindowEvent<K extends keyof WindowEventMap>(
   type: K,
   handler: (event: WindowEventMap[K]) => void,
   options?: AddEventListenerOptions
 ) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") return noop;
 
   window.addEventListener(type, handler, options);
 
@@ -30,7 +31,7 @@ export function createDocumentEvent<K extends keyof DocumentEventMap>(
   handler: (event: DocumentEventMap[K]) => void,
   options?: AddEventListenerOptions
 ) {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined") return noop;
 
   document.addEventListener(type, handler, options);
 

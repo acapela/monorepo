@@ -382,6 +382,9 @@
             name: room_last_posted_message
           column_mapping:
             id: room_id
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
     - name: space
       using:
         foreign_key_constraint_on: space_id
@@ -423,6 +426,7 @@
           - deadline
           - id
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -438,7 +442,9 @@
           - finished_at
           - id
           - is_private
+          - last_activity_at
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -479,6 +485,7 @@
           - finished_at
           - is_private
           - name
+          - owner_id
           - slug
           - summary
         filter:
@@ -1140,6 +1147,9 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+            - room:
+                finished_at:
+                  _is_null: true
         columns:
           - id
           - index

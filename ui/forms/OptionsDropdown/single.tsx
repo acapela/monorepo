@@ -12,7 +12,7 @@ interface Props<I> {
   iconGetter?: (item: I) => ReactNode;
   onChange: (item: I) => void;
   newItem?: {
-    onCreateRequest: (itemName: string) => void;
+    onCreateRequest: () => void;
     label: string;
   };
   placeholder?: string;

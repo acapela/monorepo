@@ -20,15 +20,17 @@ import {
   RemoveTeamMemberMutationVariables,
   LookupTeamNameQuery,
   LookupTeamNameQueryVariables,
+  ResendInvitationMutation,
+  ResendInvitationMutationVariables,
 } from "~gql";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { addToast } from "~ui/toasts/data";
 import { slugify } from "~shared/slugify";
 
-const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
+export const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
   () => gql`
     fragment TeamBasicInfo on team {
       id
@@ -74,7 +76,10 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
   `
 );
 
-export const [useCreateTeamMutation] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
+export const [useCreateTeamMutation, { mutate: createTeam }] = createMutation<
+  CreateTeamMutation,
+  CreateTeamMutationVariables
+>(
   () => gql`
     ${TeamDetailedInfoFragment()}
     mutation CreateTeam($input: team_insert_input!) {
@@ -163,7 +168,7 @@ export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] 
   `,
   {
     onActualResponse() {
-      addToast({ type: "info", content: `New team member was invited` });
+      addToast({ type: "success", title: `New team member was invited` });
     },
   }
 );
@@ -195,7 +200,7 @@ export const [useRemoveTeamInvitation, { mutate: removeTeamInvitation }] = creat
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Team invitation was removed` });
+      addToast({ type: "success", title: `Team invitation was removed` });
     },
   }
 );
@@ -228,7 +233,7 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Team member was removed` });
+      addToast({ type: "success", title: `Team member was removed` });
     },
   }
 );
@@ -242,4 +247,19 @@ export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQ
       }
     }
   `
+);
+
+export const [useResendInvitation] = createMutation<ResendInvitationMutation, ResendInvitationMutationVariables>(
+  () => gql`
+    mutation ResendInvitation($invitation_id: ID!) {
+      resend_invitation(invitation_id: $invitation_id) {
+        sent_at
+      }
+    }
+  `,
+  {
+    onActualResponse() {
+      addToast({ type: "success", title: `Team invitation was sent` });
+    },
+  }
 );

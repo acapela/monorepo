@@ -113,7 +113,7 @@ export function createFragment<Data>(fragmentNodeGetter: () => DocumentNode) {
       return;
     }
 
-    const newData = produceWithImmer(currentData, (draft) => {
+    const newData = produceWithImmer(currentData, (draft: Draft<Data>) => {
       producer(draft);
 
       return draft;

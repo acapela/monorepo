@@ -119,8 +119,12 @@ export function useTopicUnreadMessagesCount(topicId: string) {
   return getTopicUnreadMessagesChannel(user.id, topicId).useLastValue() ?? 0;
 }
 
-export function useRoomUnreadMessagesCount(roomId: string) {
+export function useRoomUnreadMessagesCount(roomId: string, options?: { overWriteCount?: number }) {
   const user = useAssertCurrentUser();
+
+  if (typeof options?.overWriteCount === "number") {
+    return options?.overWriteCount;
+  }
 
   return getRoomUnreadMessagesChannel(user.id, roomId).useLastValue() ?? 0;
 }

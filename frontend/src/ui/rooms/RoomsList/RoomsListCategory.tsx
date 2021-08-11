@@ -27,6 +27,7 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
 
     return room.finished_at !== null;
   });
+
   return (
     <UIGroupHolder className={className}>
       <UIHeader>

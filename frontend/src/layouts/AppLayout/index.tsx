@@ -13,6 +13,7 @@ import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
 import { theme } from "~ui/theme";
 import { NotificationsOpener } from "./NotificationsOpener";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 interface Props {
   children?: ReactNode;
@@ -20,6 +21,8 @@ interface Props {
 
 export const AppLayout = ({ children }: Props): JSX.Element => {
   const user = useCurrentUser();
+
+  const currentTeamId = useCurrentTeamId();
 
   const shouldShowBreadcrumbs = useIsAnyRouteActive([
     routes.space.path,
@@ -36,7 +39,7 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
     );
   }
 
-  if (!user.currentTeamId) {
+  if (!currentTeamId) {
     return (
       <WindowView>
         <TeamPickerView />

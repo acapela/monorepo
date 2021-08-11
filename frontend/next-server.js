@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const axios = require("axios");
 const express = require("express");
 const http = require("http");
 const next = require("next");
@@ -63,8 +64,22 @@ async function start() {
   });
 
   app.use(Sentry.Handlers.requestHandler());
-
-  app.get("/healthz", (req, res) => res.send({ ok: true }));
+  app.get("/healthz", async (req, res) => {
+    const [backendRes, hasuraRes, hasuraVersionRes] = await Promise.all([
+      axios.get(`${config.apiEndpoint}/healthz`),
+      axios.get(`${config.hasuraEndpoint}/healthz`),
+      axios.get(`${config.hasuraEndpoint}/v1/version`),
+    ]);
+    res.send({
+      status: "ok",
+      version: process.env.SENTRY_RELEASE || "dev",
+      backend: backendRes.data,
+      hasura: {
+        status: hasuraRes.data,
+        ...hasuraVersionRes.data,
+      },
+    });
+  });
 
   app.use(
     "/graphql/?*",
@@ -73,6 +88,10 @@ async function start() {
   app.use(
     "/api/backend/?*",
     expressProxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/api/") })
+  );
+  app.use(
+    "/attachments/?*",
+    expressProxy(config.apiEndpoint, { proxyReqPathResolver: proxyReqPathResolverWithPrefix("/attachments/") })
   );
 
   app.all("*", (req, res) => handle(req, res));

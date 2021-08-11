@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { createSpace, useCurrentTeamSpaces } from "~frontend/gql/spaces";
 import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";

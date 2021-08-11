@@ -21,6 +21,7 @@ import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ThemeProvider } from "styled-components";
 import * as Sentry from "@sentry/nextjs";
 import { getTheme } from "~ui/theme";
+import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
@@ -68,20 +69,22 @@ export default function App({
       <CommonMetadata />
       <AnalyticsManager />
       <SessionProvider session={session}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <ThemeProvider theme={getTheme("default")}>
-              <PromiseUIRenderer />
-              <TooltipsRenderer />
-              <ToastsRenderer />
-              <AnimatePresence>
-                <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                  {renderWithPageLayout(Component, pageProps)}
-                </PresenceAnimator>
-              </AnimatePresence>
-            </ThemeProvider>
-          </ApolloProvider>
-        </MotionConfig>
+        <CurrentTeamIdProvider>
+          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+            <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+              <ThemeProvider theme={getTheme("default")}>
+                <PromiseUIRenderer />
+                <TooltipsRenderer />
+                <ToastsRenderer />
+                <AnimatePresence>
+                  <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                    {renderWithPageLayout(Component, pageProps)}
+                  </PresenceAnimator>
+                </AnimatePresence>
+              </ThemeProvider>
+            </ApolloProvider>
+          </MotionConfig>
+        </CurrentTeamIdProvider>
       </SessionProvider>
     </>
   );

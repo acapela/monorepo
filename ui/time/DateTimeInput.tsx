@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { useRef } from "react";
 import styled from "styled-components";
@@ -48,7 +47,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
         cursorType="action"
       >
         <UIHolder isReadonly={isReadonly} onFocus={openPicker} onClick={openPicker}>
-          <TextBody>{format(value, "dd.MM.yyyy, p")}</TextBody>
+          <TextBody>{value.toLocaleString()}</TextBody>
         </UIHolder>
       </FieldWithLabel>
     </>
