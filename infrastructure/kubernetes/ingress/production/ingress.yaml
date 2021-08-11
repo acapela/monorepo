@@ -7,18 +7,6 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "ingress-production"
 spec:
   rules:
-  - host: backend.acape.la
-    http:
-      paths:
-      - backend:
-          serviceName: hasura
-          servicePort: 80
-  - host: api.acape.la
-    http:
-      paths:
-      - backend:
-          serviceName: api
-          servicePort: 80
   - host: app.acape.la
     http:
       paths:
