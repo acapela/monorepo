@@ -182,13 +182,29 @@
     - role: user
       permission:
         check:
-          topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+          _and:
+            - topic:
+                room:
+                  space:
+                    team:
+                      memberships:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+            - _or:
+                - topic:
+                    room:
+                      is_private:
+                        _eq: false
+                - _and:
+                    - topic:
+                        room:
+                          is_private:
+                            _eq: true
+                    - topic:
+                        room:
+                          members:
+                            user_id:
+                              _eq: X-Hasura-User-Id
         set:
           user_id: x-hasura-User-Id
         columns:
