@@ -67,15 +67,12 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
 
     let availableSpace = topBarToolsRef.current.clientWidth;
 
-    const topbarTools = topBarToolsRef.current.children;
-    for (let i = 0; i < topbarTools.length; i++) {
-      if (topbarTools[i] === searchBarRef.current) {
-        continue;
+    const topBarTools = topBarToolsRef.current.children;
+    for (const topBarTool of topBarTools) {
+      if (topBarTool !== searchBarRef.current) {
+        availableSpace -= topBarTool.clientWidth + TOP_BAR_TOOLS_GAP;
       }
-      availableSpace -= topbarTools[i].clientWidth;
     }
-
-    availableSpace -= TOP_BAR_TOOLS_GAP * (topbarTools.length - 1);
 
     setAvailableSpaceForSearchBar(availableSpace);
   }

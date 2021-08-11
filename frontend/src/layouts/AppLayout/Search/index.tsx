@@ -135,7 +135,7 @@ const UIPlaceholder = styled.div<{}>`
 
 const UISearchIcon = styled(IconSearch)<{}>`
   font-size: 1rem;
-  line-height: 2;
+  line-height: 1.25;
 `;
 
 const UISearchContainer = styled(PopPresenceAnimator)<{}>`
