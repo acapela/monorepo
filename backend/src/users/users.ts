@@ -1,5 +1,4 @@
 import { db, User } from "~db";
-import { getFirstName } from "~shared/getFirstName";
 
 // TODO: Not used?
 export async function updateUser(user: User): Promise<User> {
@@ -43,7 +42,7 @@ export async function createUser({
 
 export function getNormalizedUserName(user: User): string {
   if (user.name) {
-    return getFirstName(user.name);
+    return user.name;
   }
   if (user.email) {
     return user.email;
