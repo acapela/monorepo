@@ -50,6 +50,7 @@
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
+    "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
     "hasura:update": "yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta",
     "frontend:gql-types": "tooling gql frontend --watch",
     "lint": "eslint . && prettier --check .",
@@ -77,7 +78,8 @@
       "docker:up:detach": "Start docker infrastructure in detached mode",
       "docker:up": "Start docker infrastructure in interactive mode",
       "docker:stop": "Stop docker infrastructure",
-      "hasura:console": "Start hasura dev console"
+      "hasura:console": "Start hasura dev console",
+      "hasura:console:proxy": "Connect to the staging or production hasura console (yarn hasura:console:proxy [production|staging])"
     }
   },
   "dependencies": {
