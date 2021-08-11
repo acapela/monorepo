@@ -1,26 +1,24 @@
 import styled, { css } from "styled-components";
 import { IconChevronDown } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { TopicDetailedInfoFragment } from "~gql";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
 }
 
 export const TopicOwner = ({ topic }: Props) => {
-  const user = useAssertCurrentUser();
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   if (!topic.owner) return null;
 
-  const isInteractive = [topic.owner.id, topic.room?.owner?.id].includes(user.id);
-
   return (
-    <UIHolder isInteractive={isInteractive}>
+    <UIHolder isInteractive={isTopicManager}>
       <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />
       {topic.owner.name}
-      {isInteractive && <IconChevronDown />}
+      {isTopicManager && <IconChevronDown />}
     </UIHolder>
   );
 };
@@ -41,5 +39,7 @@ const UIHolder = styled.div<{ isInteractive: boolean }>`
             color: ${theme.colors.layout.link()};
           }
         `
-      : css``}
+      : css`
+          pointer-events: none;
+        `}
 `;

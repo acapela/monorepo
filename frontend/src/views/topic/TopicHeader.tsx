@@ -8,6 +8,7 @@ import { useTopic } from "~frontend/topics/useTopic";
 import { AnimatePresence } from "framer-motion";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -15,49 +16,48 @@ interface Props {
 }
 
 export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
+  return <UIHolder className={className}>{topic && <TopicHeaderContent topic={topic} />}</UIHolder>;
+})``;
+
+interface TopicHeaderContentProps {
+  topic: TopicDetailedInfoFragment;
+}
+
+const TopicHeaderContent = ({ topic }: TopicHeaderContentProps) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const isMember = isCurrentUserRoomMember(topic?.room);
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
-  if (!topic) {
-    return <UIHolder className={className}></UIHolder>;
-  }
-
   if (!isParentRoomOpen) {
-    return (
-      <UIHolder className={className}>
-        <UITitle isClosed={isClosed}>{topic.name}</UITitle>
-      </UIHolder>
-    );
+    return <UITitle isClosed={isClosed}>{topic.name}</UITitle>;
   }
 
   return (
     <>
-      <UIHolder className={className}>
-        <UITitle isClosed={isClosed}>{topic.name}</UITitle>
+      <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
-        <UIActions>
-          {isClosed && (
-            <UIToggleCloseButton
-              onClick={openTopic}
-              isLoading={loading}
-              isDisabled={!isMember && { reason: `You have to be room member to reopen topics` }}
-            >
-              Reopen Topic
-            </UIToggleCloseButton>
-          )}
-          {!isClosed && (
-            <UIToggleCloseButton
-              onClick={openClosingTopicModal}
-              isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
-            >
-              Close Topic
-            </UIToggleCloseButton>
-          )}
-          {isMember && <ManageTopic topic={topic} />}
-        </UIActions>
-      </UIHolder>
+      <UIActions>
+        {isClosed && (
+          <UIToggleCloseButton
+            onClick={openTopic}
+            isLoading={loading}
+            isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
+          >
+            Reopen Topic
+          </UIToggleCloseButton>
+        )}
+        {!isClosed && (
+          <UIToggleCloseButton
+            onClick={openClosingTopicModal}
+            isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to close topics` }}
+          >
+            Close Topic
+          </UIToggleCloseButton>
+        )}
+        {isMember && <ManageTopic topic={topic} />}
+      </UIActions>
       <AnimatePresence>
         {isClosingTopic && (
           <CloseTopicModal
@@ -70,7 +70,7 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
       </AnimatePresence>
     </>
   );
-})``;
+};
 
 const UIHolder = styled.div<{}>`
   display: flex;

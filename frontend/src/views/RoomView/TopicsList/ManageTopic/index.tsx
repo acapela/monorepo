@@ -7,6 +7,7 @@ import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -42,24 +43,30 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
     await editName(name);
   }, [topic.name]);
 
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
+
+  const options = [];
+  if (isTopicManager) {
+    options.push(
+      {
+        label: "Rename topic",
+        onSelect: onRenameRequest ?? handleRenameWithModal,
+        icon: <IconEdit />,
+      },
+      {
+        label: "Delete topic",
+        isDestructive: true,
+        onSelect: handleDeleteSelect,
+        icon: <IconTrash />,
+      }
+    );
+  }
+
+  if (options.length < 1) return null;
+
   return (
     <>
-      <PopoverMenuTrigger
-        placement="bottom-start"
-        options={[
-          {
-            label: "Rename topic",
-            onSelect: onRenameRequest ?? handleRenameWithModal,
-            icon: <IconEdit />,
-          },
-          {
-            label: "Delete topic",
-            isDestructive: true,
-            onSelect: handleDeleteSelect,
-            icon: <IconTrash />,
-          },
-        ]}
-      >
+      <PopoverMenuTrigger placement="bottom-start" options={options}>
         <CircleOptionsButton />
       </PopoverMenuTrigger>
     </>
