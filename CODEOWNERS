@@ -2,5 +2,5 @@
 
 /infrastructure/kubernetes @christophwitzko
 /infrastructure/hasura @heikir @Gregoor
-/backend @heikir @christophwitzko @Gregoor @pie6k
+/backend @heikir @christophwitzko @Gregoor @pie6k @omarduarte
 /frontend @heikir @pie6k @RodionChachura @omarduarte @Gregoor
