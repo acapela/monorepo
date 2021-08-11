@@ -114,7 +114,8 @@ export function useReactMediaRecorder({
 
       return true;
     } catch (error) {
-      setError(error.name);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
       return false;
     } finally {
       setStatus("idle");

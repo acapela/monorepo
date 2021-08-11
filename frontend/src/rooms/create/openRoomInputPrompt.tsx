@@ -89,7 +89,8 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             participantsIds: participantIdsWithCurrentUser,
           });
         } catch (err) {
-          if (err.message.includes("Uniqueness violation")) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((err as any)?.message?.includes("Uniqueness violation")) {
             setFormErrorMessage("Room with this name already exists");
           } else {
             throw err;
