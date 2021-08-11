@@ -10,6 +10,7 @@ import { IconSearch } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { TextBody14 } from "~ui/typo";
+import { AnimatePresence } from "framer-motion";
 
 export const TopBarSearchBar = (): JSX.Element => {
   // All of apple computers use "Mac".
@@ -43,15 +44,17 @@ export const TopBarSearchBar = (): JSX.Element => {
           {!isMac && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
         </ClientSideOnly>
       </UIHolder>
-      {isShowingSearchModal && (
-        <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
-          <Popover anchorRef={staticSearchBarRef} placement={"bottom-end"} distance={-32}>
-            <UISearchContainer>
-              <SearchBar />
-            </UISearchContainer>
-          </Popover>
-        </ScreenCover>
-      )}
+      <AnimatePresence>
+        {isShowingSearchModal && (
+          <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
+            <Popover anchorRef={staticSearchBarRef} placement={"bottom-end"} distance={-32}>
+              <UISearchContainer>
+                <SearchBar />
+              </UISearchContainer>
+            </Popover>
+          </ScreenCover>
+        )}
+      </AnimatePresence>
     </>
   );
 };
