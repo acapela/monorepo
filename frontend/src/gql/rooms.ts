@@ -165,8 +165,6 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
   CreateRoomMutationVariables
 >(
   () => gql`
-    ${RoomDetailedInfoFragment()}
-
     mutation CreateRoom($input: room_insert_input!) {
       room: insert_room_one(object: $input) {
         id
