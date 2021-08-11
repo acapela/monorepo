@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: hasura
   namespace: test
-  annotations:
-    cloud.google.com/backend-config: '{"ports": {"80":"hasura"}}'
 spec:
   type: NodePort
   selector:
