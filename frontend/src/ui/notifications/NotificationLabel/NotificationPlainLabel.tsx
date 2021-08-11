@@ -52,7 +52,7 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
 
   return (
     <UIHolder onClick={handleClick} ref={holderRef}>
-      <UserAvatar user={user ?? undefined} />
+      {user && <UserAvatar user={user} />}
       <UIContent>
         <UITitle>{titleNode}</UITitle>
         <UIDate secondary semibold>
