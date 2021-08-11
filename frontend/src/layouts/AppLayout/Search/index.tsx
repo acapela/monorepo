@@ -1,9 +1,10 @@
 import { AnimatePresence } from "framer-motion";
-import React, { useRef } from "react";
-import styled from "styled-components";
+import React, { RefObject } from "react";
+import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { IconSearch } from "~ui/icons";
@@ -11,13 +12,19 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
-export const TopBarSearchBar = (): JSX.Element => {
+interface Props {
+  defaultWidth: number;
+  availableSpace: number;
+}
+
+export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function TopBarSearchBar(
+  { defaultWidth, availableSpace }: Props,
+  staticSearchBarRef
+) {
   // All of apple computers use "Mac".
   // https://stackoverflow.com/a/11752084
   const platform = global.window && window.navigator.platform;
   const isMac = platform && platform.toLowerCase().includes("mac");
-
-  const staticSearchBarRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
 
@@ -33,7 +40,12 @@ export const TopBarSearchBar = (): JSX.Element => {
 
   return (
     <>
-      <UIHolder ref={staticSearchBarRef} onClick={handleSearchBarModalOpen}>
+      <UIHolder
+        defaultWidth={defaultWidth}
+        availableSpace={availableSpace}
+        ref={staticSearchBarRef}
+        onClick={handleSearchBarModalOpen}
+      >
         <UIPlaceholder>
           <UISearchIcon />
           <UITextPlaceholder>Search</UITextPlaceholder>
@@ -46,7 +58,7 @@ export const TopBarSearchBar = (): JSX.Element => {
       <AnimatePresence>
         {isShowingSearchModal && (
           <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
-            <Popover anchorRef={staticSearchBarRef} placement={"bottom-end"} distance={-32}>
+            <Popover anchorRef={staticSearchBarRef as RefObject<HTMLElement>} placement={"bottom-end"} distance={-32}>
               <UISearchContainer>
                 <SearchBar />
               </UISearchContainer>
@@ -56,7 +68,7 @@ export const TopBarSearchBar = (): JSX.Element => {
       </AnimatePresence>
     </>
   );
-};
+});
 
 const UITextPlaceholder = styled.div<{}>`
   ${theme.font.body14.build}
@@ -67,35 +79,45 @@ const UIShortcutIndicator = styled.div<{}>`
   ${theme.font.body14.build}
 `;
 
-const UIHolder = styled.div<{}>`
+const UIHolder = styled.div<{ defaultWidth: number; availableSpace: number }>`
   padding: 14px;
 
   height: 32px;
-  width: 208px;
+  width: ${({ defaultWidth }) => defaultWidth}px;
 
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 
-  @media (max-width: 1300px) {
-    ${UIShortcutIndicator} {
-      display: none;
-    }
-  }
-
-  @media (max-width: 1100px) {
-    padding: 8px;
-    width: 32px;
-
-    ${UITextPlaceholder} {
-      display: none;
+  ${({ availableSpace, defaultWidth }) => {
+    if (availableSpace >= defaultWidth) {
+      return;
     }
 
-    ${UIShortcutIndicator} {
-      display: none;
+    if (availableSpace < 100) {
+      return css`
+        padding: 8px;
+        width: 32px;
+
+        ${UITextPlaceholder} {
+          display: none;
+        }
+
+        ${UIShortcutIndicator} {
+          display: none;
+        }
+      `;
     }
-  }
+
+    if (availableSpace < 150) {
+      return css`
+        ${UIShortcutIndicator} {
+          display: none;
+        }
+      `;
+    }
+  }}
 
   ${theme.colors.actions.tertiary.all()}
 
