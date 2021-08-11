@@ -5,10 +5,10 @@ import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { getUUID } from "~shared/uuid";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface CreateTopicInput {
   roomId: string;
+  ownerId: string;
   modalAnchor?: ModalAnchor;
   navigateAfterCreation?: boolean;
   index: string;
@@ -18,14 +18,13 @@ interface CreateTopicInput {
 
 export async function startCreateNewTopicFlow({
   roomId,
+  ownerId,
   modalAnchor,
   navigateAfterCreation,
   index,
   name,
   slug,
 }: CreateTopicInput) {
-  const user = useAssertCurrentUser();
-
   let topicName: string | null = name ?? null;
 
   if (topicName === null) {
@@ -51,7 +50,7 @@ export async function startCreateNewTopicFlow({
       slug,
       index,
       room_id: roomId,
-      owner_id: user.id,
+      owner_id: ownerId,
     },
   });
 
