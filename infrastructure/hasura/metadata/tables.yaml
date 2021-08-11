@@ -1095,6 +1095,9 @@
             name: user
           column_mapping:
             closed_by_user_id: id
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
     - name: room
       using:
         foreign_key_constraint_on: room_id
@@ -1136,6 +1139,7 @@
           - id
           - index
           - name
+          - owner_id
           - room_id
           - slug
         backend_only: false
@@ -1149,6 +1153,7 @@
           - id
           - index
           - name
+          - owner_id
           - room_id
           - slug
         filter:
@@ -1181,6 +1186,7 @@
           - closing_summary
           - index
           - name
+          - owner_id
           - slug
         filter:
           _and:

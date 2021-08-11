@@ -1,4 +1,13 @@
 actions:
+  - name: get_download_url
+    definition:
+      kind: ""
+      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
+      headers:
+        - name: Authorization
+          value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+    permissions:
+      - role: user
   - name: get_upload_url
     definition:
       kind: ""
