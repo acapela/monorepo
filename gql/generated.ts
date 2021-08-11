@@ -8499,14 +8499,6 @@ export type RoomDetailedInfoFragment = (
   & RoomBasicInfoFragment
 );
 
-export type RoomParticipantBasicInfoFragment = (
-  { __typename?: 'room_member' }
-  & { user: (
-    { __typename?: 'user' }
-    & UserBasicInfoFragment
-  ) }
-);
-
 export type RoomsInSpaceQueryVariables = Exact<{
   spaceId: Scalars['uuid'];
 }>;
@@ -8570,20 +8562,7 @@ export type CreateRoomMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
-    & RoomDetailedInfoFragment
-  )> }
-);
-
-export type RoomParticipantsQueryVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type RoomParticipantsQuery = (
-  { __typename?: 'query_root' }
-  & { members: Array<(
-    { __typename?: 'room_member' }
-    & RoomParticipantBasicInfoFragment
+    & Pick<Room, 'id'>
   )> }
 );
 

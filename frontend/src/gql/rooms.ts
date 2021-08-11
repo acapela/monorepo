@@ -15,9 +15,6 @@ import {
   RemoveRoomMemberMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
-  RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
-  RoomParticipantsQuery,
-  RoomParticipantsQueryVariables,
   RoomsInSpaceQuery,
   RoomsInSpaceQueryVariables,
   RoomsQuery,
@@ -103,17 +100,6 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
   `
 );
 
-const RoomParticipantBasicInfoFragment = createFragment<RoomParticipantBasicInfoFragmentType>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-    fragment RoomParticipantBasicInfo on room_member {
-      user {
-        ...UserBasicInfo
-      }
-    }
-  `
-);
-
 export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQueryVariables>(
   () => gql`
     ${RoomBasicInfoFragment()}
@@ -183,7 +169,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
 
     mutation CreateRoom($input: room_insert_input!) {
       room: insert_room_one(object: $input) {
-        ...RoomDetailedInfo
+        id
       }
     }
   `,
@@ -198,57 +184,18 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
         input.slug = slugify(input.name);
       }
     },
-    onOptimisticOrActualResponse(room, variables) {
-      if (!room || !variables.input.space_id) return;
-
-      SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
-        space.rooms.push(room);
-      });
-
-      updateHomeviewQuery((result) => {
-        result.rooms.push(room);
-      });
-    },
     optimisticResponse({ input }) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const spaceId = input.space_id!;
-
       return {
         __typename: "mutation_root",
         room: {
           __typename: "room",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          deadline: input.deadline!,
+          ...input,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: input.id!,
-          members: [],
-          invitations: [],
-          space: SpaceDetailedInfoFragment.read(spaceId),
-          topics: [],
-          last_activity_at: null,
-          is_private: input.is_private ?? false,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          name: input.name!,
-          space_id: spaceId,
-          finished_at: null,
-          source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
-          summary: input.summary ?? null,
         },
       };
     },
   }
-);
-
-export const [useRoomParticipantsQuery] = createQuery<RoomParticipantsQuery, RoomParticipantsQueryVariables>(
-  () => gql`
-    ${RoomParticipantBasicInfoFragment()}
-
-    query RoomParticipants($roomId: uuid!) {
-      members: room_member(where: { room_id: { _eq: $roomId } }) {
-        ...RoomParticipantBasicInfo
-      }
-    }
-  `
 );
 
 export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, AddRoomMemberMutationVariables>(
