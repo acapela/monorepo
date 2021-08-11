@@ -91,7 +91,7 @@ export async function prefetchRecordedQueries(client: ApolloClient<unknown>, rec
 
         client.writeQuery({ data, query: query.query, variables: query.variables });
       } catch (error) {
-        const message = Reflect.get(error, "message") ?? "Unknown error";
+        const message = Reflect.get(error as object, "message") ?? "Unknown error";
 
         errors.push(`[${queryName}]: ${message}`);
       }

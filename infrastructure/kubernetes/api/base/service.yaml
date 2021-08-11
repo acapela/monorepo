@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: api
   namespace: test
-  annotations:
-    cloud.google.com/backend-config: '{"ports": {"80":"api"}}'
 spec:
   type: NodePort
   selector:

@@ -22,7 +22,7 @@ interface Props {
   userId: string;
   date?: Date;
   titleNode: ReactNode;
-  onClick?: (event: event) => void;
+  onClick?: (event: MouseEvent) => void;
   notification: NotificationInfoFragment;
 }
 

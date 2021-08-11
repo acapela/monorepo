@@ -1,17 +1,17 @@
+import { useMemo } from "react";
 import styled from "styled-components";
 import { useIsCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
-import { RoomFilters } from "~frontend/ui/rooms/filters/RoomFilters";
-import { useMemo } from "react";
-import { useRoomFilterVariables } from "~frontend/ui/rooms/filters/filter";
-import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
-import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { SpaceHeader } from "./SpaceHeader";
-import { CenteredContentWithSides } from "~ui/layout/CenteredContentWithSides";
-import { SpaceTools } from "./SpaceTools";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
+import { createSpaceFilter } from "~frontend/ui/rooms/filters/factories";
+import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
+import { RoomFiltersPicker } from "~frontend/ui/rooms/filters/RoomFilters";
+import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
+import { CenteredContentWithSides } from "~ui/layout/CenteredContentWithSides";
+import { SpaceHeader } from "./SpaceHeader";
+import { SpaceTools } from "./SpaceTools";
 
 interface Props {
   spaceId: string;
@@ -22,7 +22,9 @@ export function SpaceView({ spaceId }: Props) {
   const roomsInCurrentSpaceFilter = useMemo(() => createSpaceFilter(spaceId), [spaceId]);
   const amIMember = useIsCurrentUserSpaceMember(space ?? undefined);
 
-  const [roomQuery, setFilters] = useRoomFilterVariables([roomsInCurrentSpaceFilter]);
+  const rooms = space?.rooms ?? [];
+
+  const [filteredRooms, { setCriteria, addedCriteria }] = useRoomsCriteria(rooms, [roomsInCurrentSpaceFilter]);
 
   const spaceMembers = space?.members.map((member) => member.user) ?? [];
 
@@ -37,16 +39,21 @@ export function SpaceView({ spaceId }: Props) {
 
         <CenteredContentWithSides
           rightNode={
-            <CreateRoomButton isDisabled={!amIMember && { reason: `You have to be space member to add new room` }}>
-              New Room
-            </CreateRoomButton>
+            space && (
+              <CreateRoomButton
+                buttonProps={{ isDisabled: !amIMember && { reason: `You have to be space member to add new room` } }}
+                promptProps={{ spaceId: space.id, hideSpaceInput: true }}
+              >
+                New Room
+              </CreateRoomButton>
+            )
           }
         >
-          <UIFilters onFiltersChange={setFilters} />
+          <RoomFiltersPicker onFiltersChange={setCriteria} filters={addedCriteria} />
         </CenteredContentWithSides>
 
         <UIRooms>
-          <RoomsGroupedByMembership query={roomQuery} />
+          <RoomsGroupedByMembership rooms={filteredRooms} />
         </UIRooms>
       </UIContainer>
     </>
@@ -60,11 +67,11 @@ const UIContainer = styled(SpacedAppLayoutContainer)<{}>`
     margin-bottom: 32px;
     margin-top: 32px;
   }
-`;
 
-const UIFilters = styled(RoomFilters)<{}>`
-  display: flex;
-  justify-content: flex-end;
+  ${RoomFiltersPicker} {
+    display: flex;
+    justify-content: flex-end;
+  }
 `;
 
 const UIRooms = styled.div<{}>`

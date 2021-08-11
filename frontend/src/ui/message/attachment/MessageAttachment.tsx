@@ -2,7 +2,6 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDownloadUrlQuery } from "~frontend/gql/attachments";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -23,10 +22,9 @@ interface AttachmentProps {
 }
 
 export const MessageAttachment = styled<AttachmentProps>(
-  ({ attachment, selectedMediaTime, onMediaTimeUpdate, className, onAttachmentRemoveRequest }) => {
+  ({ attachment, selectedMediaTime, onMediaTimeUpdate, onAttachmentRemoveRequest }) => {
     const mediaRef = useRef<HTMLVideoElement>(null);
     const user = useCurrentUser();
-    const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
     const canEditAttachments = attachment.message?.user_id === user?.id;
     const [isFullscreenOpened, { set: openFullScreen, unset: closeFullscreen }] = useBoolean(false);
 
@@ -51,10 +49,6 @@ export const MessageAttachment = styled<AttachmentProps>(
       { isEnabled: isFullscreenOpened }
     );
 
-    if (!attachmentInfo) {
-      return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
-    }
-
     if (!attachment) return null;
 
     const renderAttachment = () => {
@@ -63,7 +57,7 @@ export const MessageAttachment = styled<AttachmentProps>(
           mediaRef={mediaRef}
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           attachment={attachment!}
-          attachmentUrl={attachmentInfo.downloadUrl}
+          attachmentUrl={`/attachments/${attachment.id}`}
           onClick={openFullScreen}
         />
       );
@@ -92,10 +86,6 @@ export const MessageAttachment = styled<AttachmentProps>(
     );
   }
 )``;
-
-const UILoadingPlaceholder = styled.div<{}>`
-  height: 100%;
-`;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;

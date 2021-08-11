@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
@@ -16,6 +16,7 @@ import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -61,7 +62,13 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                     onExitEditModeChangeRequest={exitNameEditMode}
                   />
 
-                  {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+                  <UIRoomTags>
+                    {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+
+                    {room.source_google_calendar_event_id && (
+                      <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
+                    )}
+                  </UIRoomTags>
                 </UIRoomTitle>
 
                 {amIMember && (
@@ -132,4 +139,11 @@ const UIRoomTitle = styled.div<{}>`
     css`
       cursor: pointer;
     `}
+`;
+
+const UIRoomTags = styled.div<{}>`
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;

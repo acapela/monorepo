@@ -27,7 +27,9 @@ model attachment {
   original_name String
   mime_type     String
   message_id    String?  @db.Uuid
+  user_id       String?  @db.Uuid
   message       message? @relation(fields: [message_id], references: [id])
+  user          user?    @relation(fields: [user_id], references: [id])
 }
 
 model last_seen_message {
@@ -86,6 +88,7 @@ model room {
   slug                            String
   source_google_calendar_event_id String?
   is_private                      Boolean           @default(false)
+  last_activity_at                DateTime?         @db.Timestamptz(6)
   user                            user              @relation(fields: [creator_id], references: [id])
   space                           space             @relation(fields: [space_id], references: [id])
   room_invitation                 room_invitation[]
@@ -152,8 +155,6 @@ model team_invitation {
   user                                       user      @relation(fields: [inviting_user_id], references: [id])
   team                                       team      @relation(fields: [team_id], references: [id])
   user_team_invitation_used_by_user_idTouser user?     @relation("team_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
-
-  @@unique([team_id, email], name: "team_invitation_team_id_email_key")
 }
 
 model team_member {
@@ -217,6 +218,7 @@ model user {
   current_team_id                                        String?             @db.Uuid
   team_teamTouser_current_team_id                        team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
   account                                                account[]
+  attachment                                             attachment[]
   last_seen_message                                      last_seen_message[]
   message                                                message[]
   message_reaction                                       message_reaction[]
@@ -282,6 +284,4 @@ model room_invitation {
   room                                        room      @relation(fields: [room_id], references: [id])
   team                                        team      @relation(fields: [team_id], references: [id])
   user_room_invitation_used_by_user_idTouser  user?     @relation("room_invitation_used_by_user_idTouser", fields: [used_by_user_id], references: [id])
-
-  @@unique([team_id, email], name: "room_invitation_team_id_email_key")
 }

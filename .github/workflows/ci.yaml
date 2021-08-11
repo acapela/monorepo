@@ -53,18 +53,26 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: frontend/.next
+          key: ${{ runner.os }}-next-${{ github.sha }}
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: |
-          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA | tee oras.log
           tar -xf node_modules.tar && rm node_modules.tar
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn run frontend:test
       - run: yarn run frontend:build
+      - run: ./scripts/cleanup-ghcr.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+        if: ${{ failure() }}
 
   backend:
     name: Backend
@@ -104,7 +112,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: |
-          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA | tee oras.log
           tar -xf node_modules.tar && rm node_modules.tar
       - name: Migrate postgres using hasura migrations
         run: |
@@ -113,16 +121,27 @@ jobs:
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn run backend:test
+      - run: ./scripts/cleanup-ghcr.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+        if: ${{ failure() }}
 
-  release:
-    name: Release
+  e2e:
+    name: E2E Tests
     runs-on: ubuntu-latest
     needs: [frontend, backend]
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: frontend/.next
+          key: ${{ runner.os }}-next-${{ github.sha }}
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -131,7 +150,57 @@ jobs:
       - run: |
           oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA | tee oras.log
           tar -xf node_modules.tar && rm node_modules.tar
-          echo "cleanup cache..."
+      - run: npx playwright install
+      - name: Setup dotenv
+        run: cp .env.sample .env
+      - run: docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
+      - name: Run hasura migrations
+        run: |
+          sleep 5
+          yarn hasura:migrations
+          yarn hasura:seeds
+          yarn hasura:meta
+      - name: Start backend
+        run: yarn workspace ~backend start:ci
+      - name: Start frontend
+        run: |
+          yarn workspace ~frontend start:ci
+      - name: Test Connection
+        run: |
+          curl -v localhost:3000/healthz
+          curl -v localhost:1337/healthz
+      - run: yarn e2e test
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: test-artifacts
+          path: e2e/test-results/
+      - run: ./scripts/cleanup-ghcr.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+        if: ${{ failure() }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: e2e
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "15"
+      - uses: actions/cache@v2
+        with:
+          path: frontend/.next
+          key: ${{ runner.os }}-next-${{ github.sha }}
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          oras pull ghcr.io/weareacapela/node-modules:$GITHUB_SHA | tee oras.log
+          tar -xf node_modules.tar && rm node_modules.tar
           ./scripts/cleanup-ghcr.sh
           rm oras.log
         env:
