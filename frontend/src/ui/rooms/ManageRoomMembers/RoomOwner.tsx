@@ -18,5 +18,5 @@ export const RoomOwner = ({ room }: Props) => {
 };
 
 const UIHolder = styled.div`
-  ${theme.shadow.circle};
+  ${theme.shadow.item};
 `;

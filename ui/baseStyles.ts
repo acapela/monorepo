@@ -20,7 +20,7 @@ export const shadow = {
   card: css`
     box-shadow: 0px 3px 0px rgba(43, 42, 53, 0.04);
   `,
-  circle: css`
+  item: css`
     filter: drop-shadow(0px 3px 0px rgba(43, 42, 53, 0.04));
   `,
   cardItem: css`
