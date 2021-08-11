@@ -29,9 +29,15 @@ function getToasts() {
   return toastsChannel.getLastValue() ?? [];
 }
 
+const getFinalTimeout = ({ timeout, description }: ToastData) => {
+  if (timeout) return timeout;
+
+  return description ? DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT : DEFAULT_TOAST_TIMEOUT;
+};
+
 export function addToast(toast: ToastData) {
   // If no timeout is set, use default value
-  toast.timeout = toast.timeout || (toast.description ? DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT : DEFAULT_TOAST_TIMEOUT);
+  toast.timeout = getFinalTimeout(toast);
   const newToasts = [toast, ...getToasts()].slice(0, MAX_TOASTS_COUNT);
 
   toastsChannel.publish(newToasts);
