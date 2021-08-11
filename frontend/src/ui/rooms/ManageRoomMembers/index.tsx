@@ -19,6 +19,7 @@ import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { useCurrentTeamDetails } from "~frontend/gql/teams";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { RoomOwner } from "./RoomOwner";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -103,6 +104,8 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     }
   };
 
+  const membersExceptOwner = members.filter((member) => member.id !== room?.owner?.id);
+
   return (
     <>
       <AnimatePresence>
@@ -135,8 +138,9 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
         )}
       </AnimatePresence>
       <UIHolder>
+        <RoomOwner room={room} />
         <UIMembers onClick={handleWithStopPropagation(openUserPicker)}>
-          {members.length > 0 && <AvatarList users={members} size="inherit" />}
+          {membersExceptOwner.length > 0 && <AvatarList users={membersExceptOwner} size="inherit" />}
           {amIMember && (
             <CircleIconButton
               kind="primary"
@@ -164,6 +168,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 const UIHolder = styled.div`
   margin-top: 4px;
   display: flex;
+  gap: 16px;
   align-items: center;
   width: 100%;
 `;

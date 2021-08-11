@@ -20,6 +20,9 @@ export const shadow = {
   card: css`
     box-shadow: 0px 3px 0px rgba(43, 42, 53, 0.04);
   `,
+  item: css`
+    filter: drop-shadow(0px 3px 0px rgba(43, 42, 53, 0.04));
+  `,
   cardItem: css`
     box-shadow: 0px 2px 3px rgba(43, 42, 53, 0.03);
   `,
