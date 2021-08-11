@@ -223,7 +223,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           id: input.id!,
           members: [],
           invitations: [],
-          space: SpaceDetailedInfoFragment.assertRead(spaceId),
+          space: SpaceDetailedInfoFragment.read(spaceId),
           topics: [],
           last_activity_at: null,
           is_private: input.is_private ?? false,
