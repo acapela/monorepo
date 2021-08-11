@@ -1,1 +1,6 @@
-/infrastructure/kubernetes/ @christophwitzko
+* @heikir @pie6k @RodionChachura @omarduarte @Gregoor
+
+/infrastructure/kubernetes @christophwitzko
+/infrastructure/hasura @Gregoor
+/backend @christophwitzko @Gregoor @pie6k @RodionChachura
+/frontend @pie6k @RodionChachura @omarduarte @Gregoor
