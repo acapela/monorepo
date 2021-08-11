@@ -5,6 +5,7 @@ import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { getUUID } from "~shared/uuid";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface CreateTopicInput {
   roomId: string;
@@ -23,6 +24,8 @@ export async function startCreateNewTopicFlow({
   name,
   slug,
 }: CreateTopicInput) {
+  const user = useAssertCurrentUser();
+
   let topicName: string | null = name ?? null;
 
   if (topicName === null) {
@@ -48,6 +51,7 @@ export async function startCreateNewTopicFlow({
       slug,
       index,
       room_id: roomId,
+      owner_id: user.id,
     },
   });
 
