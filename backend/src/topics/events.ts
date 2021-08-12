@@ -17,15 +17,15 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
       await createTopicClosedNotifications(event.item, event.userId);
     }
 
-    const newOwnerId = event.item.owner_id;
+    const ownerId = event.item.owner_id;
     const assignedByUserId = event.userId;
-    const hasTopicNewOwner = newOwnerId !== event.itemBefore.owner_id;
-    const shouldNotifyAssignee = newOwnerId && hasTopicNewOwner && assignedByUserId && assignedByUserId !== newOwnerId;
+    const hasNewOwner = ownerId !== event.itemBefore.owner_id;
+    const shouldNotifyAssignee = ownerId && hasNewOwner && assignedByUserId && assignedByUserId !== ownerId;
 
     if (shouldNotifyAssignee) {
       await createNotification({
         type: "topicAssigned",
-        userId: newOwnerId,
+        userId: ownerId,
         payload: {
           topicId: event.item.id,
           assignedByUserId,
