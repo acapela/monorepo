@@ -16,6 +16,21 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     if (wasJustClosed && event.userId) {
       await createTopicClosedNotifications(event.item, event.userId);
     }
+
+    const newOwnerId = event.item.owner_id;
+    const assignedByUserId = event.userId;
+    const wasJustReassigned = newOwnerId !== event.itemBefore.owner_id;
+
+    if (newOwnerId && wasJustReassigned && assignedByUserId && assignedByUserId !== newOwnerId) {
+      await createNotification({
+        type: "topicAssigned",
+        userId: newOwnerId,
+        payload: {
+          topicId: event.item.id,
+          assignedByUserId,
+        },
+      });
+    }
   }
 }
 

@@ -179,6 +179,8 @@ model topic {
   closed_at         DateTime?           @db.Timestamp(6)
   closed_by_user_id String?             @db.Uuid
   closing_summary   String?
+  owner_id          String?             @db.Uuid
+  user              user?               @relation(fields: [owner_id], references: [id])
   room              room                @relation(fields: [room_id], references: [id])
   last_seen_message last_seen_message[]
   message           message[]
@@ -237,6 +239,7 @@ model user {
   team_invitation                                        team_invitation[]
   team_invitation_team_invitation_used_by_user_idTouser  team_invitation[]   @relation("team_invitation_used_by_user_idTouser")
   team_member                                            team_member[]
+  topic                                                  topic[]
   topic_member                                           topic_member[]
 }
 
