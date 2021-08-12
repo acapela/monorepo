@@ -5,8 +5,8 @@ import { handleWithStopPropagation } from "~shared/events";
 import { PopPresenceAnimator } from "~ui/animations";
 import { IconPause, IconPlay } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { ValueRoller } from "./ValueRoller";
 import { motion } from "framer-motion";
+import { PlaybackRateButton } from "./PlaybackRateButton";
 
 interface Props {
   isPlaying: boolean;
@@ -33,7 +33,7 @@ export function PlaybackControls({
 }: Props) {
   const progress = time / duration;
 
-  function handleProgressBarMouseEvnet(event: MouseEvent) {
+  function handleProgressBarMouseEvent(event: MouseEvent) {
     const target = event.target as HTMLDivElement;
     const barRect = target.getBoundingClientRect();
 
@@ -50,6 +50,10 @@ export function PlaybackControls({
     <UIHolder>
       <AnimatePresence exitBeforeEnter>
         <UITogglePlayButton
+          /**
+           * This button has mount and un-mount animation as we kinda animate from play to pause icon with fade and slight scale animation.
+           * As this is the same component, however - we have to explicitly say react it should re-mount it instead of updating it, thus the key
+           */
           key={`${isPlaying}`}
           onClick={handleWithStopPropagation(() => {
             if (isPlaying) onPauseRequest?.();
@@ -60,7 +64,7 @@ export function PlaybackControls({
           {!isPlaying && <IconPlay />}
         </UITogglePlayButton>
       </AnimatePresence>
-      <UIProgressBar onClick={handleWithStopPropagation(handleProgressBarMouseEvnet)}>
+      <UIProgressBar onClick={handleWithStopPropagation(handleProgressBarMouseEvent)}>
         <UIProgressInner>
           <UIProgressBarProgressIndicator
             animate={{ width: `${progress * 100}%` }}
@@ -72,26 +76,11 @@ export function PlaybackControls({
       <UIProgressTextLabel>{renderProgressTime(time, duration)}</UIProgressTextLabel>
 
       {allowedPlaybackRates && (
-        <ValueRoller
-          possibleValues={allowedPlaybackRates}
-          activeValue={playbackRate}
-          onValueChange={(playbackRate) => {
-            onPlaybackRateChangeRequest?.(playbackRate);
-          }}
-        >
-          {({ setNextValue, value }) => {
-            return (
-              <UIPlaybackRateButton
-                onClick={handleWithStopPropagation(() => {
-                  setNextValue();
-                })}
-                data-tooltip={`Change playback speed`}
-              >
-                {value}x
-              </UIPlaybackRateButton>
-            );
-          }}
-        </ValueRoller>
+        <PlaybackRateButton
+          onPlaybackRateChangeRequest={onPlaybackRateChangeRequest}
+          playbackRate={playbackRate}
+          allowedPlaybackRates={allowedPlaybackRates}
+        />
       )}
     </UIHolder>
   );
@@ -153,6 +142,7 @@ const UIPlaybackRateButton = styled.button`
   ${theme.colors.actions.tertiary.all}
   ${theme.borderRadius.item};
   ${theme.transitions.hover()}
+  /* We don't want width of this button to flicker when changing between "1x" or "1.5x" (<- they have different width) */
   min-width: 7ch;
   user-select: none;
   text-align: center;
