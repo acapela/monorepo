@@ -1,19 +1,19 @@
-import React, { useState } from "react";
 import * as clipboard from "clipboard-polyfill";
+import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
-import { Button } from "~ui/buttons/Button";
+import { theme } from "~ui/theme";
 import { useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { RoomDetailedInfoFragment } from "~gql";
+import { handleWithStopPropagation } from "~shared/events";
+import { Button } from "~ui/buttons/Button";
 import { TextArea } from "~ui/forms/TextArea";
-import { TextBody, TextH3 } from "~ui/typo";
+import { IconClipboardCheck, IconCopy } from "~ui/icons";
+import { addToast } from "~ui/toasts/data";
+import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
 import { RoomView } from "./RoomView";
 import { formatDate } from "./shared";
 import { TopicSummary } from "./TopicSummary";
-import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
-import { handleWithStopPropagation } from "~shared/events";
-import { addToast } from "~ui/toasts/data";
-import { IconClipboardCheck, IconCopy } from "~ui/icons";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -59,8 +59,8 @@ export function RoomSummaryView({ room }: Props) {
     <RoomView room={room} selectedTopicId={null}>
       <UIHolder>
         <UIHeader>
-          <TextH3>Summary</TextH3>
-          {room && room.finished_at && <TextBody>Created {formatDate(room.finished_at)}</TextBody>}
+          <UITitle>Room Summary</UITitle>
+          {room && room.finished_at && <UIRoomClosingTime>Created {formatDate(room.finished_at)}</UIRoomClosingTime>}
         </UIHeader>
         <UITopicSummaries>
           {room?.topics.map((topic) => (
@@ -87,15 +87,25 @@ export function RoomSummaryView({ room }: Props) {
 }
 
 const UIHolder = styled.div<{}>`
-  padding: 60px;
+  padding: 32px 60px;
   overflow-y: auto;
   height: 100%;
+  background-color: ${theme.colors.layout.foreground()};
+`;
+
+const UITitle = styled.div<{}>`
+  ${theme.font.h4.spezia.build}
+`;
+
+const UIRoomClosingTime = styled.div<{}>`
+  ${theme.font.body12.speziaMono.semibold.build}
+  color: ${theme.colors.layout.supportingText()}
 `;
 
 const UIHeader = styled.div<{}>`
-  ${TextBody} {
-    line-height: 2rem;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const UITopicSummaries = styled.div<{}>`

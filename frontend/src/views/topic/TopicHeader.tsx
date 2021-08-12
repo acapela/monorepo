@@ -8,6 +8,7 @@ import { useTopic } from "~frontend/topics/useTopic";
 import { AnimatePresence } from "framer-motion";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { theme } from "~frontend/../../ui/theme";
 
 interface Props {
   topic?: TopicDetailedInfoFragment | null;
@@ -75,18 +76,20 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
 const UIHolder = styled.div<{}>`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 24px;
 `;
 
 const UITitle = styled(TextH3)<{ isClosed: boolean }>`
-  padding: 0 25%;
-  text-align: center;
+  text-align: start;
+  ${theme.font.h4.spezia.medium.build}
+  align-self: flex-start;
 
   ${(props) => {
     if (props.isClosed) {
       return css`
         text-decoration: line-through;
-        color: hsla(211, 12%, 62%, 1);
+        color: ${theme.colors.layout.supportingText()};
       `;
     }
   }}
@@ -94,11 +97,8 @@ const UITitle = styled(TextH3)<{ isClosed: boolean }>`
 
 const UIActions = styled.div<{}>`
   display: flex;
-  right: 0;
-  position: absolute;
   align-items: center;
+  gap: 16px;
 `;
 
-const UIToggleCloseButton = styled(Button)<{}>`
-  margin-right: 16px;
-`;
+const UIToggleCloseButton = styled(Button)<{}>``;

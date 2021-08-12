@@ -37,6 +37,9 @@ export const shadow = {
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
+  largeFrame: css`
+    box-shadow: 0px 12px 68px rgba(0, 0, 0, 0.05);
+  `,
 } as const;
 
 export const borderRadius = {

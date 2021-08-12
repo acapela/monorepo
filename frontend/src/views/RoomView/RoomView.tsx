@@ -116,12 +116,6 @@ const UIRoomInfo = styled.div<{}>`
 
 const UIContentHolder = styled.div<{}>`
   flex-grow: 1;
-  background: #ffffff;
-  border: 1px solid #f8f8f8;
-  box-sizing: border-box;
-  box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  ${theme.borderRadius.card};
-  padding: 32px;
   min-height: 0;
   min-width: 0;
 `;

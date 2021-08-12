@@ -18,6 +18,8 @@ import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewM
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
+import { theme } from "~ui/theme";
+import { Modifiers } from "~ui/theme/colors/createColor";
 
 interface Props {
   topicId: string;
@@ -63,48 +65,112 @@ export const TopicView = ({ topicId }: Props) => {
   return (
     <TopicStoreContext>
       {hasTopic && (
-        <TopicRoot>
-          {/* We need to render the topic header or else flex bugs out on page reload */}
-          <TopicHeader topic={topic} />
-          <ScrollableMessages>
-            <AnimateSharedLayout>
-              <MessagesFeed isReadonly={!isMember} messages={messages} />
+        <UIHolder>
+          {/* Absolutely placed backdrop will take it's width relative to the width its container */}
+          {/* This works as this nested container holds no padding/margin left or right */}
+          <UIBackdropContainer>
+            <UIBackDrop />
+            <UIMainContainer>
+              {/* We need to render the topic header or else flex bugs out on page reload */}
+              <TopicHeader topic={topic} />
 
-              {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
-            </AnimateSharedLayout>
-            {!messages.length && !topicCloseInfo && (
-              <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
-            )}
-          </ScrollableMessages>
+              <ScrollableMessages>
+                <AnimateSharedLayout>
+                  <MessagesFeed isReadonly={!isMember} messages={messages} />
 
-          {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
-          {!isTopicClosed && (
-            <ClientSideOnly>
-              <UIMessageComposer isDisabled={!isMember}>
-                <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
-              </UIMessageComposer>
-            </ClientSideOnly>
-          )}
-        </TopicRoot>
+                  {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
+                </AnimateSharedLayout>
+
+                {!messages.length && !topicCloseInfo && (
+                  <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+                )}
+
+                {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+              </ScrollableMessages>
+
+              {!isTopicClosed && (
+                <ClientSideOnly>
+                  <UIMessageComposer isDisabled={!isMember}>
+                    <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
+                  </UIMessageComposer>
+                </ClientSideOnly>
+              )}
+            </UIMainContainer>
+          </UIBackdropContainer>
+        </UIHolder>
       )}
     </TopicStoreContext>
   );
 };
 
-const TopicRoot = styled(DropFileContext)<{}>`
+const UIHolder = styled(DropFileContext)<{}>`
+  height: 100%;
+  padding-right: 24px;
+`;
+
+const UIBackdropContainer = styled.div<{}>`
+  position: relative;
+  padding-top: 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+`;
+
+const UIBackDrop = styled.div<{}>`
+  position: absolute;
+  top: 16px;
+
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+
+  height: 60px;
+  width: 94%;
+
+  background-color: ${theme.colors.layout.foreground()};
+  border: 1px solid ${theme.colors.layout.softLine()};
+
+  ${theme.borderRadius.card};
+`;
+
+const UIMainContainer = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
 
+  background: ${theme.colors.layout.foreground((modifiers: Modifiers) => [modifiers.opacity(0.65)])};
+  border: 1px solid ${theme.colors.layout.softLine()};
+  box-sizing: border-box;
+
+  ${theme.borderRadius.card}
+  border-bottom-left-radius: 0%;
+  border-bottom-right-radius: 0%;
+
+  ${theme.shadow.largeFrame}
+
   ${ScrollableMessages} {
     flex: 1 1 100%;
+    padding: 16px 24px;
     width: 100%;
     overflow: auto;
   }
 
   ${TopicHeader} {
-    margin-bottom: 16px;
+    height: 96px;
+
+    background: ${theme.colors.layout.foreground()};
+
+    ${theme.borderRadius.card}
+    border-bottom-left-radius: 0%;
+    border-bottom-right-radius: 0%;
+  }
+
+  ${TopicClosureNote} {
+    margin: 48px auto;
   }
 `;
 
@@ -112,6 +178,8 @@ const UIMessageComposer = styled.div<{ isDisabled: boolean }>`
   flex: 1 0 auto;
   width: 100%;
   margin-top: 1rem;
+  padding: 24px;
+  padding-top: 0px;
 
   ${(props) => props.isDisabled && disabledCss}
 `;
