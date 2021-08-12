@@ -91,6 +91,12 @@ export const TopicView = ({ topicId }: Props) => {
   );
 };
 
+const UITopicHeaderHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const TopicRoot = styled(DropFileContext)<{}>`
   position: relative;
   display: flex;
@@ -103,7 +109,7 @@ const TopicRoot = styled(DropFileContext)<{}>`
     overflow: auto;
   }
 
-  ${TopicHeader} {
+  ${UITopicHeaderHolder} {
     margin-bottom: 16px;
   }
 `;
@@ -114,10 +120,4 @@ const UIMessageComposer = styled.div<{ isDisabled: boolean }>`
   margin-top: 1rem;
 
   ${(props) => props.isDisabled && disabledCss}
-`;
-
-const UITopicHeaderHolder = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
