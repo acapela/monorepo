@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useTopic } from "~frontend/topics/useTopic";
+import { TopicDetailedInfoFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
-import { TextH4 } from "~ui/typo";
-import { TopicDetailedInfoFragment } from "~gql";
-import { useTopic } from "~frontend/topics/useTopic";
-import { formatDate } from "../shared";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
+import { formatDate } from "../shared";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
