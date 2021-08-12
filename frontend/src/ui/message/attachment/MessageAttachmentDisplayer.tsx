@@ -62,7 +62,7 @@ const UIHolder = styled(motion.div)<{}>`
 `;
 
 const PlayableMediaWrapper = styled.div<{ isWide?: boolean }>`
-  width: 100%;
+  width: 120px;
 `;
 
 const UIMediaTypeIndicator = styled.div`
