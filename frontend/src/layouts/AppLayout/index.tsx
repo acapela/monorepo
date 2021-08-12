@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { routes, useIsAnyRouteActive } from "~frontend/router";
@@ -14,15 +14,24 @@ import { UserMenu } from "./UserMenu";
 import { theme } from "~ui/theme";
 import { NotificationsOpener } from "./NotificationsOpener";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 
 interface Props {
   children?: ReactNode;
 }
 
+const DEFAULT_SEARCH_BAR_WIDTH_IN_PX = 208;
+const TOP_BAR_TOOLS_GAP_IN_PX = 24;
+
 export const AppLayout = ({ children }: Props): JSX.Element => {
   const user = useCurrentUser();
 
   const currentTeamId = useCurrentTeamId();
+
+  const topBarToolsRef = useRef<HTMLDivElement | null>(null);
+  const searchBarRef = useRef<HTMLDivElement | null>(null);
+  const [availableSpaceForSearchBarInPx, setAvailableSpaceForSearchBarInPx] =
+    useState<number>(DEFAULT_SEARCH_BAR_WIDTH_IN_PX);
 
   const shouldShowBreadcrumbs = useIsAnyRouteActive([
     routes.space.path,
@@ -47,6 +56,30 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
     );
   }
 
+  useEffect(() => {
+    determineAvailableSpaceForSearchBar();
+  }, []);
+
+  function determineAvailableSpaceForSearchBar() {
+    if (!topBarToolsRef.current || !searchBarRef.current) {
+      setAvailableSpaceForSearchBarInPx(DEFAULT_SEARCH_BAR_WIDTH_IN_PX);
+      return;
+    }
+
+    let availableSpace = topBarToolsRef.current.clientWidth;
+
+    const topBarTools = topBarToolsRef.current.children;
+    for (const topBarTool of topBarTools) {
+      if (topBarTool !== searchBarRef.current) {
+        availableSpace -= topBarTool.clientWidth + TOP_BAR_TOOLS_GAP_IN_PX;
+      }
+    }
+
+    setAvailableSpaceForSearchBarInPx(availableSpace);
+  }
+
+  useResizeCallback(topBarToolsRef, determineAvailableSpaceForSearchBar);
+
   return (
     <>
       <UIHolder>
@@ -67,8 +100,12 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
             </UIPrimaryNavigation>
           )}
 
-          <UITopbarTools>
-            <TopBarSearchBar />
+          <UITopbarTools ref={topBarToolsRef}>
+            <TopBarSearchBar
+              ref={searchBarRef}
+              availableSpaceInPx={availableSpaceForSearchBarInPx}
+              defaultWidthInPx={DEFAULT_SEARCH_BAR_WIDTH_IN_PX}
+            />
             <NotificationsOpener />
             <UserMenu />
           </UITopbarTools>
@@ -133,7 +170,7 @@ const UITopbarTools = styled.div<{}>`
   align-items: center;
   justify-content: flex-end;
 
-  gap: 24px;
+  gap: ${TOP_BAR_TOOLS_GAP_IN_PX}px;
 `;
 
 const UIMainContent = styled.div<{}>`
