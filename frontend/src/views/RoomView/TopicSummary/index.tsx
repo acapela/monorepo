@@ -6,6 +6,8 @@ import { TextH4 } from "~ui/typo";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useTopic } from "~frontend/topics/useTopic";
 import { formatDate } from "../shared";
+import { theme } from "~ui/theme";
+import { Modifiers } from "~ui/theme/colors/createColor";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -26,8 +28,11 @@ export const TopicSummary = ({ topic }: Props) => {
   return (
     <UITopicSummary>
       <UITopicSummaryMetadata>
-        <TextH4 spezia>{topic.name}</TextH4> was closed by{" "}
-        <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
+        <UITopicName>{topic.name}</UITopicName>
+        <UITopicClosingInfo>
+          {" "}
+          was closed by <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
+        </UITopicClosingInfo>
       </UITopicSummaryMetadata>
       <UITopicSummaryContent
         isResizable={true}
@@ -48,10 +53,9 @@ const UITopicSummary = styled.div<{}>`
   min-height: 32px;
   width: 100%;
 
-  padding: 16px;
+  padding: 8px 16px;
 
-  border: 1px solid hsla(300, 2%, 92%, 1);
-  border-left-width: 3px;
+  border-left: 3px solid ${theme.colors.interactive.active((modifiers: Modifiers) => [modifiers.opacity(0.4)])};
 
   font-size: ${fontSize.label};
   font-weight: 400;
@@ -61,16 +65,20 @@ const UITopicSummary = styled.div<{}>`
 const UITopicSummaryMetadata = styled.div<{}>`
   display: flex;
   align-items: center;
+  gap: 4px;
+`;
 
-  ${TextH4} {
-    font-size: 1rem;
-    padding-right: 4px;
-  }
+const UITopicName = styled.span<{}>`
+  ${theme.font.body14.inter.semibold.build}
+`;
+
+const UITopicClosingInfo = styled.span<{}>`
+  color: ${theme.colors.layout.supportingText()};
+  ${theme.font.body12.inter.build};
 `;
 
 const UIClosingMember = styled.span<{}>`
-  padding: 0 4px;
-  font-weight: 600;
+  ${theme.font.medium.build}
 `;
 
 const UITopicSummaryContent = styled(TextArea)<{}>`
