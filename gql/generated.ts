@@ -3805,6 +3805,9 @@ export interface Room {
   members_aggregate: Room_Member_Aggregate;
   name: Scalars['String'];
   notification_job_id?: Maybe<Scalars['String']>;
+  /** An object relationship */
+  owner?: Maybe<User>;
+  owner_id?: Maybe<Scalars['uuid']>;
   slug: Scalars['String'];
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   /** An object relationship */
@@ -3930,6 +3933,8 @@ export interface Room_Bool_Exp {
   members?: Maybe<Room_Member_Bool_Exp>;
   name?: Maybe<String_Comparison_Exp>;
   notification_job_id?: Maybe<String_Comparison_Exp>;
+  owner?: Maybe<User_Bool_Exp>;
+  owner_id?: Maybe<Uuid_Comparison_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
   source_google_calendar_event_id?: Maybe<String_Comparison_Exp>;
   space?: Maybe<Space_Bool_Exp>;
@@ -3959,6 +3964,8 @@ export interface Room_Insert_Input {
   members?: Maybe<Room_Member_Arr_Rel_Insert_Input>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  owner?: Maybe<User_Obj_Rel_Insert_Input>;
+  owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space?: Maybe<Space_Obj_Rel_Insert_Input>;
@@ -4322,6 +4329,7 @@ export interface Room_Max_Fields {
   last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -4338,6 +4346,7 @@ export interface Room_Max_Order_By {
   last_activity_at?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
+  owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
@@ -4509,6 +4518,7 @@ export interface Room_Min_Fields {
   last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -4525,6 +4535,7 @@ export interface Room_Min_Order_By {
   last_activity_at?: Maybe<Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
+  owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
@@ -4568,6 +4579,8 @@ export interface Room_Order_By {
   members_aggregate?: Maybe<Room_Member_Aggregate_Order_By>;
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
+  owner?: Maybe<User_Order_By>;
+  owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space?: Maybe<Space_Order_By>;
@@ -4602,6 +4615,8 @@ export type Room_Select_Column =
   /** column name */
   | 'notification_job_id'
   /** column name */
+  | 'owner_id'
+  /** column name */
   | 'slug'
   /** column name */
   | 'source_google_calendar_event_id'
@@ -4621,6 +4636,7 @@ export interface Room_Set_Input {
   last_activity_at?: Maybe<Scalars['timestamptz']>;
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
+  owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -4647,6 +4663,8 @@ export type Room_Update_Column =
   | 'name'
   /** column name */
   | 'notification_job_id'
+  /** column name */
+  | 'owner_id'
   /** column name */
   | 'slug'
   /** column name */
@@ -8270,19 +8288,6 @@ export type UploadUrlQuery = (
   )> }
 );
 
-export type DownloadUrlQueryVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DownloadUrlQuery = (
-  { __typename?: 'query_root' }
-  & { get_download_url?: Maybe<(
-    { __typename?: 'DownloadUrlResponse' }
-    & Pick<DownloadUrlResponse, 'downloadUrl'>
-  )> }
-);
-
 export type AttachmentQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
@@ -8544,7 +8549,10 @@ export type RoomBasicInfoFragment = (
 
 export type RoomDetailedInfoFragment = (
   { __typename?: 'room' }
-  & { topics: Array<(
+  & { owner?: Maybe<(
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  )>, topics: Array<(
     { __typename?: 'topic' }
     & TopicDetailedInfoFragment
   )>, invitations: Array<(
@@ -9205,6 +9213,15 @@ export type UserBasicInfoFragment = (
   & Pick<User, 'id' | 'name' | 'email' | 'avatar_url'>
 );
 
+export type UserDetailedInfoFragment = (
+  { __typename?: 'user' }
+  & { current_team?: Maybe<(
+    { __typename?: 'team' }
+    & TeamBasicInfoFragment
+  )> }
+  & UserBasicInfoFragment
+);
+
 export type ChangeCurrentTeamIdMutationVariables = Exact<{
   userId: Scalars['uuid'];
   teamId?: Maybe<Scalars['uuid']>;
@@ -9216,6 +9233,10 @@ export type ChangeCurrentTeamIdMutation = (
   & { update_user_by_pk?: Maybe<(
     { __typename?: 'user' }
     & Pick<User, 'id'>
+    & { current_team?: Maybe<(
+      { __typename?: 'team' }
+      & Pick<Team, 'id' | 'name' | 'slug'>
+    )> }
   )> }
 );
 
@@ -9229,6 +9250,19 @@ export type TeamMembersQuery = (
   & { teamMembers: Array<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
+  )> }
+);
+
+export type UserDetailedQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type UserDetailedQuery = (
+  { __typename?: 'query_root' }
+  & { user_by_pk?: Maybe<(
+    { __typename?: 'user' }
+    & UserDetailedInfoFragment
   )> }
 );
 
@@ -9818,7 +9852,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'owner' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9835,6 +9869,8 @@ export type roomFieldPolicy = {
 	members_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9937,7 +9973,7 @@ export type room_last_posted_message_min_fieldsFieldPolicy = {
 	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
+export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9947,6 +9983,7 @@ export type room_max_fieldsFieldPolicy = {
 	last_activity_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9985,7 +10022,7 @@ export type room_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
+export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
 export type room_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9995,6 +10032,7 @@ export type room_min_fieldsFieldPolicy = {
 	last_activity_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,

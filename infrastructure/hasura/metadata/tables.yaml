@@ -150,13 +150,29 @@
     - role: user
       permission:
         check:
-          topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+          _and:
+            - topic:
+                room:
+                  space:
+                    team:
+                      memberships:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+            - _or:
+                - topic:
+                    room:
+                      is_private:
+                        _eq: false
+                - _and:
+                    - topic:
+                        room:
+                          is_private:
+                            _eq: true
+                    - topic:
+                        room:
+                          members:
+                            user_id:
+                              _eq: X-Hasura-User-Id
         set:
           user_id: x-hasura-User-Id
         columns:
@@ -348,6 +364,9 @@
             name: room_last_posted_message
           column_mapping:
             id: room_id
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
     - name: space
       using:
         foreign_key_constraint_on: space_id
@@ -389,6 +408,7 @@
           - deadline
           - id
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -406,6 +426,7 @@
           - is_private
           - last_activity_at
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -446,6 +467,7 @@
           - finished_at
           - is_private
           - name
+          - owner_id
           - slug
           - summary
         filter:

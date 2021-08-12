@@ -4,8 +4,6 @@ import {
   AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
   AttachmentQuery,
   AttachmentQueryVariables,
-  DownloadUrlQuery,
-  DownloadUrlQueryVariables,
   RemoveAttachmentMutation,
   RemoveAttachmentMutationVariables,
   UpdateAttachmentMutation,
@@ -100,16 +98,6 @@ export const [useUploadUrlQuery, uploadUrlQueryManager] = createQuery<UploadUrlQ
       uploadUrlInfo: get_upload_url(fileName: $fileName, mimeType: $mimeType) {
         uploadUrl
         uuid
-      }
-    }
-  `
-);
-
-export const [useDownloadUrlQuery] = createQuery<DownloadUrlQuery, DownloadUrlQueryVariables>(
-  () => gql`
-    query DownloadUrl($id: uuid!) {
-      get_download_url(uuid: $id) {
-        downloadUrl
       }
     }
   `

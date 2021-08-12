@@ -2,7 +2,6 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDownloadUrlQuery } from "~frontend/gql/attachments";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import { theme } from "~ui/theme";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
@@ -16,7 +15,7 @@ interface AttachmentProps {
 
 export const MessageAttachment = styled<AttachmentProps>(({ attachment, className, onAttachmentRemoveRequest }) => {
   const user = useAssertCurrentUser();
-  const [attachmentInfo] = useDownloadUrlQuery({ id: attachment.id });
+
   function getCanEditAttachments() {
     const message = attachment.message;
 
@@ -32,16 +31,12 @@ export const MessageAttachment = styled<AttachmentProps>(({ attachment, classNam
 
   const canEditAttachments = getCanEditAttachments();
 
-  if (!attachmentInfo) {
-    return <UILoadingPlaceholder className={className}></UILoadingPlaceholder>;
-  }
-
   if (!attachment) return null;
 
   return (
     <AnimateSharedLayout>
-      <UIInlineAttachmentHolder>
-        <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={attachmentInfo.downloadUrl} />
+      <UIInlineAttachmentHolder className={className}>
+        <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={`/attachments/${attachment.id}`} />
         <AnimatePresence>
           {canEditAttachments && (
             <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
@@ -51,10 +46,6 @@ export const MessageAttachment = styled<AttachmentProps>(({ attachment, classNam
     </AnimateSharedLayout>
   );
 })``;
-
-const UILoadingPlaceholder = styled.div<{}>`
-  height: 100%;
-`;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   display: flex;

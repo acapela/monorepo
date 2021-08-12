@@ -42,11 +42,7 @@ export function niceFormatDateTime(date: Date, options?: DateFormatOptions): str
 }
 
 export function niceFormatTime(date: Date): string {
-  return format(date, "p");
-}
-
-export function getWeekdayName(date: Date): string {
-  return format(date, "EEEE");
+  return date.toLocaleTimeString(undefined, { timeStyle: "short" });
 }
 
 function isBeforeThisWeek(date: Date): boolean {

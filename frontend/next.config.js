@@ -127,14 +127,15 @@ module.exports = withPlugins(
   {
     typescript: {
       // !! WARN !!
-      // Dangerously allow production builds to successfully complete even if
+      // Setting this to true will dangerously allow production builds to successfully complete even if
       // your project has type errors.
-      // !! WARN !!
-      ignoreBuildErrors: true,
+      ignoreBuildErrors: false,
     },
     eslint: {
-      // Warning: Dangerously allow production builds to successfully complete even if
+      // !! WARN !!
+      // Setting this to true will dangerously allow production builds to successfully complete even if
       // your project has ESLint errors.
+      // We have lint errors checked at CI level, so it would be waste of time
       ignoreDuringBuilds: true,
     },
     webpack5: true,
@@ -152,6 +153,10 @@ module.exports = withPlugins(
         {
           source: "/graphql",
           destination: `http://localhost:8080/v1/graphql`,
+        },
+        {
+          source: "/attachments/:path*",
+          destination: `http://localhost:1337/attachments/:path*`,
         },
       ];
     },

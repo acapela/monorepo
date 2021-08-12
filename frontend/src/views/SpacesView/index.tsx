@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { useCreateSpaceMutation } from "~frontend/gql/spaces";
 import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";

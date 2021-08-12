@@ -1,10 +1,4 @@
 type Query {
-  get_download_url (
-    uuid: uuid!
-  ): DownloadUrlResponse
-}
-
-type Query {
   get_upload_url (
     fileName: String!
     mimeType: String!

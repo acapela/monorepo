@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
-import { useAssertCurrentTeamId, useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
@@ -18,6 +18,8 @@ import { addToast } from "~ui/toasts/data";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { RoomOwner } from "./RoomOwner";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -79,12 +81,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     ]);
 
     if (reservedEmails.has(email)) {
-      addToast({ type: "info", content: "The person with this email already invited" });
+      addToast({ type: "success", title: "The person with this email already invited" });
       return;
     }
 
     if (!amIMember) {
-      addToast({ type: "error", content: "Join the room to invite a new member" });
+      addToast({ type: "error", title: "Join the room to invite a new member" });
       return;
     }
 
@@ -101,6 +103,8 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
       setShouldShowWarning(true);
     }
   };
+
+  const membersExceptOwner = members.filter((member) => member.id !== room?.owner?.id);
 
   return (
     <>
@@ -134,8 +138,9 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
         )}
       </AnimatePresence>
       <UIHolder>
+        <RoomOwner room={room} />
         <UIMembers onClick={handleWithStopPropagation(openUserPicker)}>
-          {members.length > 0 && <AvatarList users={members} size="inherit" />}
+          {membersExceptOwner.length > 0 && <AvatarList users={membersExceptOwner} size="inherit" />}
           {amIMember && (
             <CircleIconButton
               kind="primary"
@@ -163,6 +168,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 const UIHolder = styled.div`
   margin-top: 4px;
   display: flex;
+  gap: 16px;
   align-items: center;
   width: 100%;
 `;

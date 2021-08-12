@@ -88,6 +88,10 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
     fragment RoomDetailedInfo on room {
       ...RoomBasicInfo
 
+      owner {
+        ...UserBasicInfo
+      }
+
       topics(order_by: { index: asc }) {
         ...TopicDetailedInfo
       }
@@ -126,7 +130,7 @@ export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQ
   () => gql`
     ${RoomDetailedInfoFragment()}
 
-    query Rooms($limit: Int = 10, $orderBy: [room_order_by!], $where: room_bool_exp) {
+    query Rooms($limit: Int, $orderBy: [room_order_by!], $where: room_bool_exp) {
       rooms: room(where: $where, limit: $limit, order_by: $orderBy) {
         ...RoomDetailedInfo
       }
@@ -269,7 +273,7 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was added` });
+      addToast({ type: "success", title: `Room member was added` });
     },
   }
 );
@@ -298,7 +302,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was removed` });
+      addToast({ type: "success", title: `Room member was removed` });
     },
   }
 );

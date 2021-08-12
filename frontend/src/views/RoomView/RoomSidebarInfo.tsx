@@ -21,9 +21,7 @@ export function RoomSidebarInfo({ room }: Props) {
 
   return (
     <UIRoomInfo>
-      <UIManageSection>
-        <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
-      </UIManageSection>
+      <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
 
       <UIManageSections>
         <UIManageSection>

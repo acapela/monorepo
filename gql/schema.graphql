@@ -5907,6 +5907,12 @@ type room {
   ): room_member_aggregate!
   name: String!
   notification_job_id: String
+
+  """
+  An object relationship
+  """
+  owner: user
+  owner_id: uuid
   slug: String!
   source_google_calendar_event_id: String
 
@@ -6032,6 +6038,8 @@ input room_bool_exp {
   members: room_member_bool_exp
   name: String_comparison_exp
   notification_job_id: String_comparison_exp
+  owner: user_bool_exp
+  owner_id: uuid_comparison_exp
   slug: String_comparison_exp
   source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
@@ -6071,6 +6079,8 @@ input room_insert_input {
   members: room_member_arr_rel_insert_input
   name: String
   notification_job_id: String
+  owner: user_obj_rel_insert_input
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
@@ -6561,6 +6571,7 @@ type room_max_fields {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -6579,6 +6590,7 @@ input room_max_order_by {
   last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -6806,6 +6818,7 @@ type room_min_fields {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -6824,6 +6837,7 @@ input room_min_order_by {
   last_activity_at: order_by
   name: order_by
   notification_job_id: order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -6879,6 +6893,8 @@ input room_order_by {
   members_aggregate: room_member_aggregate_order_by
   name: order_by
   notification_job_id: order_by
+  owner: user_order_by
+  owner_id: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space: space_order_by
@@ -6946,6 +6962,11 @@ enum room_select_column {
   """
   column name
   """
+  owner_id
+
+  """
+  column name
+  """
   slug
 
   """
@@ -6977,6 +6998,7 @@ input room_set_input {
   last_activity_at: timestamptz
   name: String
   notification_job_id: String
+  owner_id: uuid
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -7031,6 +7053,11 @@ enum room_update_column {
   column name
   """
   notification_job_id
+
+  """
+  column name
+  """
+  owner_id
 
   """
   column name

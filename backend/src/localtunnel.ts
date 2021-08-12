@@ -12,7 +12,7 @@ const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
  * This way it's possible to receive webhooks to the dev environment
  */
 
-const getDevPublicTunnel = createSelfCleaningCache(async (reset) => {
+export const getDevPublicTunnel = createSelfCleaningCache(async (reset) => {
   if (!isDev()) {
     throw new Error(`Public tunnel is only allowed to be used in dev mode.`);
   }
