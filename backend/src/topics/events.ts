@@ -20,8 +20,9 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     const newOwnerId = event.item.owner_id;
     const assignedByUserId = event.userId;
     const hasTopicNewOwner = newOwnerId !== event.itemBefore.owner_id;
+    const shouldNotifyAssignee = newOwnerId && hasTopicNewOwner && assignedByUserId && assignedByUserId !== newOwnerId;
 
-    if (newOwnerId && hasTopicNewOwner && assignedByUserId && assignedByUserId !== newOwnerId) {
+    if (shouldNotifyAssignee) {
       await createNotification({
         type: "topicAssigned",
         userId: newOwnerId,
