@@ -3,6 +3,7 @@ import React, { RefObject } from "react";
 import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
+import { isMac } from "~frontend/utils/platformDetection";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { PopPresenceAnimator } from "~ui/animations";
@@ -21,11 +22,6 @@ export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function T
   { defaultWidthInPx, availableSpaceInPx }: Props,
   staticSearchBarRef
 ) {
-  // All of apple computers use "Mac".
-  // https://stackoverflow.com/a/11752084
-  const platform = global.window && window.navigator.platform;
-  const isMac = platform && platform.toLowerCase().includes("mac");
-
   const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
 
   useShortcut(["Mod", "/"], handleSearchBarModalOpen);
@@ -51,8 +47,8 @@ export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function T
           <UITextPlaceholder>Search</UITextPlaceholder>
         </UIPlaceholder>
         <ClientSideOnly>
-          {isMac && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
-          {!isMac && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
+          {isMac() && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
+          {!isMac() && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
         </ClientSideOnly>
       </UIHolder>
       <AnimatePresence>
