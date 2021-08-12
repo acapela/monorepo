@@ -56,7 +56,8 @@
     "~gql": "0.1.0",
     "~richEditor": "0.1.0",
     "~shared": "0.1.0",
-    "~ui": "0.1.0"
+    "~ui": "0.1.0",
+    "~clientdb": "0.1.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.0.1",

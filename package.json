@@ -17,7 +17,8 @@
       "tooling",
       "richEditor",
       "gql",
-      "e2e"
+      "e2e",
+      "clientdb"
     ]
   },
   "scripts": {
