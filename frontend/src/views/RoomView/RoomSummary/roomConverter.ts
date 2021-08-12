@@ -1,4 +1,4 @@
-import { routes } from "~frontend/../router";
+import { routes } from "~frontend/router";
 import { RoomDetailedInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { formatDate } from "../shared";
 import { convert as convertToPlainText } from "html-to-text";
