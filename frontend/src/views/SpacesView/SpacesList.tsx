@@ -1,14 +1,15 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
-import { TextH3, TextBody14 } from "~ui/typo";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { createQuery } from "~frontend/gql/utils";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/views/SpacesView/SpaceCard";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { SpacesListQuery, SpacesListQueryVariables } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { CategoryNameLabel } from "~ui/theme/functional";
-import { gql } from "@apollo/client";
-import { createQuery } from "~frontend/gql/utils";
-import { SpacesListQuery, SpacesListQueryVariables } from "~gql";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { TextBody14, TextH3 } from "~ui/typo";
 
 const [useSpaceListQuery] = createQuery<SpacesListQuery, SpacesListQueryVariables>(
   () => gql`

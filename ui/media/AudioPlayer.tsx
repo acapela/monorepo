@@ -1,7 +1,9 @@
 import styled from "styled-components";
+
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { TranscriptData } from "~shared/types/transcript";
+
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";
 import { usePlaybackState } from "./usePlaybackState";

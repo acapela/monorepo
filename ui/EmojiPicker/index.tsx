@@ -3,9 +3,11 @@ import { AnimatePresence } from "framer-motion";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
+
 import { namedLazy } from "~shared/namedLazy";
 import { IconEmotionHappy } from "~ui/icons";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+
 import { EmojiMartStyles } from "./styles";
 
 // Emoji picker is quite heavy component due to amount of data. Let's make it lazy component.

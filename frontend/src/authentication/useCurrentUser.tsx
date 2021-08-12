@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/client";
-import { UserBasicInfoFragment } from "~gql";
+
 import { convertUserAuthToBasicFragment } from "~frontend/utils/user";
+import { UserBasicInfoFragment } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { UserTokenData } from "~shared/types/jwtAuth";
 

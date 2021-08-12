@@ -1,23 +1,43 @@
+import { gql } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
-import { MessageReactionTooltip } from "./MessageReactionTooltip";
+import { withFragments } from "~frontend/gql/utils";
+import { MessageReaction_MessageFragment, MessageReaction_Message_ReactionFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
+
+import { MessageReactionTooltip } from "./MessageReactionTooltip";
+
+const fragments = {
+  message: gql`
+    fragment MessageReaction_message on message {
+      id
+    }
+  `,
+  message_reaction: gql`
+    ${MessageReactionTooltip.fragments.message_reaction}
+
+    fragment MessageReaction_message_reaction on message_reaction {
+      user_id
+      ...MessageReactionTooltip_message_reaction
+    }
+  `,
+};
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  message: MessageReaction_MessageFragment;
   emoji: string;
-  reactions: ReactionBasicInfoFragment[];
+  reactions: MessageReaction_Message_ReactionFragment[];
 }
 
-export const MessageReaction = ({ message, emoji, reactions }: Props) => {
+export const MessageReaction = withFragments(fragments, ({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
 
-  const isSelectedByCurrentUser = reactions.some((reaction) => reaction.user.id === user.id);
+  const isSelectedByCurrentUser = reactions.some((reaction) => reaction.user_id === user.id);
 
   const handleClick = () => {
     if (isSelectedByCurrentUser) {
@@ -52,7 +72,7 @@ export const MessageReaction = ({ message, emoji, reactions }: Props) => {
       />
     </>
   );
-};
+});
 
 const UIReactionButton = styled.button<{ isSelected: boolean }>`
   display: flex;

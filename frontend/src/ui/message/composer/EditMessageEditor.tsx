@@ -1,30 +1,47 @@
+import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { MessageDetailedInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
+import { withFragments } from "~frontend/gql/utils";
+import { EditMessageEditor_MessageFragment } from "~gql";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichEditorNode } from "~richEditor/content/types";
+import { makePromiseVoidable } from "~shared/promises";
+import { Button } from "~ui/buttons/Button";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { HStack } from "~ui/Stack";
+
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
-import { makePromiseVoidable } from "~shared/promises";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { RichEditorNode } from "~richEditor/content/types";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { trackEvent } from "~frontend/analytics/tracking";
+
+const fragments = {
+  message: gql`
+    fragment EditMessageEditor_message on message {
+      id
+      content
+      message_attachments {
+        id
+        mime_type
+      }
+    }
+  `,
+};
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  message: EditMessageEditor_MessageFragment;
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
 
-export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) => {
+export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRequest, onSaved }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
     message.message_attachments.map((messageAttachment) => {
       return {
-        mimeType: messageAttachment.mimeType,
+        mimeType: messageAttachment.mime_type,
         uuid: messageAttachment.id,
       };
     })
@@ -107,7 +124,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       </UIButtons>
     </UIHolder>
   );
-};
+});
 
 const UIHolder = styled.div<{}>``;
 

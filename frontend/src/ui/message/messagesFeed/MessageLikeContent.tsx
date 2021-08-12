@@ -1,22 +1,37 @@
+import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { UserBasicInfoFragment } from "~gql";
-import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
+import { withFragments } from "~frontend/gql/utils";
+import { MessageLikeContent_UserFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
+import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
+
 import { MessageMetaData } from "./MessageMetaData";
 
+const fragments = {
+  user: gql`
+    ${MessageMetaData.fragments.user}
+
+    fragment MessageLikeContent_user on user {
+      id
+      ...MessageMetaData_user
+    }
+  `,
+};
+
 interface Props {
-  user: UserBasicInfoFragment;
+  user: MessageLikeContent_UserFragment;
   date: Date;
   children: ReactNode;
   tools?: ReactNode;
   className?: string;
 }
 
-export const MessageLikeContent = styled<Props>(({ user, date, children, tools, className }) => {
+const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className }) => {
   const holderRef = useRef<HTMLDivElement>(null);
   const currentUser = useCurrentUser();
 
@@ -31,6 +46,8 @@ export const MessageLikeContent = styled<Props>(({ user, date, children, tools, 
     </UIAnimatedMessageWrapper>
   );
 })``;
+
+export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
 
 const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   display: flex;

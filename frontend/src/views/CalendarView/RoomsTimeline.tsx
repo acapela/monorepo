@@ -1,6 +1,7 @@
 import { addDays, eachDayOfInterval, isSameDay } from "date-fns";
 import { AnimateSharedLayout } from "framer-motion";
 import styled from "styled-components";
+
 import { RoomsTimelineSingleDay } from "./RoomsTimelineSingleDay";
 
 interface Props {

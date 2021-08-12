@@ -1,8 +1,10 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { singleTopicQueryManager, topicMessagesQueryManager } from "~frontend/gql/topics";
+
+import { AppLayout } from "~frontend/layouts/AppLayout";
 import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
-import { AppLayout } from "../layouts/AppLayout";
+import { RoomPageQuery, RoomPageQueryVariables } from "~gql";
 
 interface Props {
   spaceId: string;
@@ -11,24 +13,38 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { room } = useRoomWithClientErrorRedirects({ spaceId, roomId });
+  const { data, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
+    gql`
+      ${RoomTopicView.fragments.room}
+      ${RoomTopicView.fragments.topic}
 
-  if (topicId) {
-    /**
-     * As we're returning null early in case there is no room, let's manually inform next what queries we want to pre-fetch
-     * to have full data ready on initial render
-     */
-    singleTopicQueryManager.requestPrefetch({ id: topicId });
-    topicMessagesQueryManager.requestPrefetch({ topicId });
-  }
+      query RoomPage($roomId: uuid!, $topicId: uuid, $hasTopicId: Boolean!) {
+        room: room_by_pk(id: $roomId) {
+          id
+          is_private
+          ...RoomTopicView_room
+        }
+        topics: topic(where: { id: { _eq: $topicId } }) @include(if: $hasTopicId) {
+          ...RoomTopicView_topic
+        }
+      }
+    `,
+    { variables: { roomId, topicId: topicId, hasTopicId: !!topicId } }
+  );
 
-  if (!room) {
+  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom: Boolean(data && data.room), loading });
+
+  if (!data) {
     return null; // Left blank on purpose. Won't render for clients.
   }
 
+  const { room, topics } = data;
+  const topic = topics && topics[0];
+
   return (
     <AppLayout>
-      <RoomTopicView room={room} topicId={topicId} />
+      {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+      <RoomTopicView room={room!} topic={topic} />
     </AppLayout>
   );
 };

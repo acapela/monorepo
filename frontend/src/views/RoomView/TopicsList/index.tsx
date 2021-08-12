@@ -1,33 +1,56 @@
+import { gql } from "@apollo/client";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { getUUID } from "~shared/uuid";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
-import { routes, RouteLink } from "~frontend/router";
+import { RouteLink, routes } from "~frontend/router";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
-import { RoomDetailedInfoFragment } from "~gql";
+import { TopicList_RoomFragment } from "~gql";
 import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
+import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
 import { TextH6 } from "~ui/typo";
+
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList } from "./StaticTopicsList";
 
+const fragments = {
+  room: gql`
+    ${isCurrentUserRoomMember.fragments.room}
+    ${LazyTopicsList.fragments.room}
+    ${StaticTopicsList.fragments.room}
+
+    fragment TopicList_room on room {
+      id
+      space_id
+      topics {
+        id
+        index
+      }
+      ...IsCurrentUserRoomMember_room
+      ...LazyTopicList_room
+      ...StaticTopicList_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: TopicList_RoomFragment;
   activeTopicId: string | null;
   isRoomOpen: boolean;
 }
 
-function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopicId: string | null) {
+function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicId: string | null) {
   const activeTopicNumIndex = topics.findIndex((t) => t.id == activeTopicId);
   if (activeTopicNumIndex == -1) {
     return createLastItemIndex(topics[topics.length - 1]?.index ?? "");
@@ -40,15 +63,12 @@ function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopi
   return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
 
-export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const user = useAssertCurrentUser();
-
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const roomId = room.id;
-  const spaceId = room.space_id;
+  const { id: roomId, space_id: spaceId, topics } = room;
   const roomContext = useRoomStoreContext();
 
-  const { topics, moveBetween, moveToStart, moveToEnd } = useRoomTopicList(room.id);
   const amIMember = useIsCurrentUserRoomMember(room);
 
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
@@ -60,7 +80,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
       ownerId: user.id,
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
-      roomId: room.id,
+      roomId,
       navigateAfterCreation: true,
       index: getNewTopicIndex(topics, activeTopicId),
     });
@@ -71,7 +91,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
     });
 
     if (newTopic) {
-      routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
+      routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId, roomId });
     }
   }
 
@@ -95,17 +115,8 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
       }
     >
       <UIHolder>
-        {amIMember && (
-          <LazyTopicsList
-            topics={topics}
-            activeTopicId={activeTopicId}
-            isDisabled={isEditingAnyMessage}
-            onMoveBetween={moveBetween}
-            onMoveToStart={moveToStart}
-            onMoveToEnd={moveToEnd}
-          />
-        )}
-        {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
+        {amIMember && <LazyTopicsList room={room} activeTopicId={activeTopicId} isDisabled={isEditingAnyMessage} />}
+        {!amIMember && <StaticTopicsList room={room} activeTopicId={activeTopicId} />}
         {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
 
         <VStack alignItems="center" justifyContent="start">
@@ -127,6 +138,8 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
     </CollapsePanel>
   );
 });
+
+export const TopicsList = withFragments(fragments, _TopicsList);
 
 const UIHolder = styled.div<{}>`
   overflow-y: hidden;

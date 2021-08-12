@@ -1,7 +1,8 @@
 import styled from "styled-components";
+
 import { fontSize } from "~ui/baseStyles";
-import { DANGER_COLOR } from "~ui/theme/colors/base";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { DANGER_COLOR } from "~ui/theme/colors/base";
 
 interface Props {
   message: string;

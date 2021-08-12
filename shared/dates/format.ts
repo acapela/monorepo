@@ -1,4 +1,4 @@
-import { format, formatRelative, startOfWeek, compareAsc } from "date-fns";
+import { compareAsc, format, formatRelative, startOfWeek } from "date-fns";
 import { upperFirst } from "lodash";
 
 export function relativeFormatDate(date: Date): string {

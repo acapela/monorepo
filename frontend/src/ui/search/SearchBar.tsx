@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { borderRadius } from "~ui/baseStyles";
 import { SearchInput } from "~ui/forms/SearchInput";
 import { WHITE } from "~ui/theme/colors/base";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { trackEvent } from "~frontend/analytics/tracking";
+
 import { SearchResults } from "./SearchResults";
 
 interface Props {

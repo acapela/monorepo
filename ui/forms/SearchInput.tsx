@@ -1,6 +1,8 @@
 import styled from "styled-components";
+
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { IconSearch } from "~ui/icons";
+
 import { TextInput, TextInputProps } from "./TextInput";
 
 interface Props extends TextInputProps {

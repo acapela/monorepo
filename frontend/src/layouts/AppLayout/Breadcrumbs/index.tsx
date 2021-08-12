@@ -1,29 +1,15 @@
-import { gql } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import React, { Fragment } from "react";
 import styled from "styled-components";
-import { usePathParameter } from "~frontend/utils";
-import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
-import { IconSpaces, IconBox } from "~ui/icons";
+
 import { routes } from "~frontend/router";
-import { theme } from "~ui/theme";
-import { createQuery } from "~frontend/gql/utils";
+import { usePathParameter } from "~frontend/utils";
 import { BreadcrumbQuery, BreadcrumbQueryVariables } from "~gql";
 import { assert, assertDefined } from "~shared/assert";
+import { IconBox, IconSpaces } from "~ui/icons";
+import { theme } from "~ui/theme";
 
-const [useBreadcrumbQuery] = createQuery<BreadcrumbQuery, BreadcrumbQueryVariables>(
-  () => gql`
-    query Breadcrumb($spaceId: uuid!, $roomId: uuid) {
-      space: space_by_pk(id: $spaceId) {
-        id
-        name
-      }
-      rooms: room(where: { id: { _eq: $roomId } }) {
-        id
-        name
-      }
-    }
-  `
-);
+import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
 
 export const Breadcrumbs = () => {
   const breadcrumbsProps: BreadcrumbProps[] = [
@@ -36,7 +22,21 @@ export const Breadcrumbs = () => {
 
   const spaceId = assertDefined(usePathParameter("spaceId"), "space id is required");
   const roomId = usePathParameter("roomId");
-  const [result] = useBreadcrumbQuery({ spaceId, roomId });
+  const { data: result } = useSubscription<BreadcrumbQuery, BreadcrumbQueryVariables>(
+    gql`
+      query Breadcrumb($spaceId: uuid!, $roomId: uuid) {
+        space: space_by_pk(id: $spaceId) {
+          id
+          name
+        }
+        rooms: room(where: { id: { _eq: $roomId } }) {
+          id
+          name
+        }
+      }
+    `,
+    { variables: { spaceId, roomId } }
+  );
 
   if (result) {
     const {

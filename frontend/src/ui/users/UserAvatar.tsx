@@ -1,9 +1,11 @@
 import { gql } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
-import { UserAvatar_UserFragment } from "~gql";
-import { Avatar, AvatarSize } from "./Avatar";
+
 import { withFragments } from "~frontend/gql/utils";
+import { UserAvatar_UserFragment } from "~gql";
+
+import { Avatar, AvatarSize } from "./Avatar";
 
 interface Props {
   user: UserAvatar_UserFragment;

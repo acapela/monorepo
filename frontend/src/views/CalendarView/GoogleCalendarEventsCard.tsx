@@ -1,20 +1,21 @@
 import styled from "styled-components";
-import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
-import { JsonValue } from "~shared/types";
-import { CardBase } from "~ui/card/Base";
-import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
-import { hoverTransition } from "~ui/transitions";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createRoom } from "~frontend/gql/rooms";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
+import { routes } from "~frontend/router";
 import { niceFormatDateTime } from "~shared/dates/format";
+import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
+import { JsonValue } from "~shared/types";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
+import { CardBase } from "~ui/card/Base";
+import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
+import { hoverTransition } from "~ui/transitions";
 import { TextH4 } from "~ui/typo";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { routes } from "~frontend/router";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   event: JsonValue<GoogleCalendarEvent>;

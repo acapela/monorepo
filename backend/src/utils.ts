@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { extractAndAssertBearerToken } from "./authentication";
 import { AuthenticationError } from "./errors/errorTypes";
 

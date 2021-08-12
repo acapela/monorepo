@@ -1,7 +1,7 @@
 import { getUploadUrl } from "~backend/src/attachments/attachments";
+import { roomInvitationView } from "~backend/src/roomInvitation/roomInvitationView";
 import { lookupTeamName } from "~backend/src/teamInvitation/lookupTeamName";
 import { resendInvitation } from "~backend/src/teamInvitation/resendInvitation";
-import { roomInvitationView } from "~backend/src/roomInvitation/roomInvitationView";
 
 export interface ActionHandler<DataT, ResponseT> {
   actionName: string;

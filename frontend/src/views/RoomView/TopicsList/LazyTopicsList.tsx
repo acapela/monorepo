@@ -1,46 +1,39 @@
+import { gql } from "@apollo/client";
 import React, { Suspense } from "react";
-import { TopicDetailedInfoFragment } from "~gql";
+
+import { withFragments } from "~frontend/gql/utils";
+import { LazyTopicList_RoomFragment } from "~gql";
 import { namedLazy } from "~shared/namedLazy";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+
 import { StaticTopicsList } from "./StaticTopicsList";
 
 const SortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
 
 interface Props {
-  topics: TopicDetailedInfoFragment[];
+  room: LazyTopicList_RoomFragment;
   activeTopicId: string | null;
   isDisabled?: boolean;
-  onMoveToStart: (toMove: TopicDetailedInfoFragment) => void;
-  onMoveToEnd: (toMove: TopicDetailedInfoFragment) => void;
-  onMoveBetween: (
-    toMove: TopicDetailedInfoFragment,
-    start: TopicDetailedInfoFragment,
-    end: TopicDetailedInfoFragment
-  ) => void;
 }
 
-export const LazyTopicsList = ({
-  topics,
-  activeTopicId,
-  isDisabled,
-  onMoveToStart,
-  onMoveBetween,
-  onMoveToEnd,
-}: Props) => {
-  SortableTopicsList.preload();
+export const LazyTopicsList = withFragments(
+  {
+    room: gql`
+      ${StaticTopicsList.fragments.room}
+      fragment LazyTopicList_room on room {
+        ...StaticTopicList_room
+      }
+    `,
+  },
+  ({ room, activeTopicId, isDisabled }: Props) => {
+    SortableTopicsList.preload();
 
-  return (
-    <ClientSideOnly fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
-      <Suspense fallback={<StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}>
-        <SortableTopicsList
-          topics={topics}
-          activeTopicId={activeTopicId}
-          isDisabled={isDisabled}
-          onMoveToStart={onMoveToStart}
-          onMoveBetween={onMoveBetween}
-          onMoveToEnd={onMoveToEnd}
-        />
-      </Suspense>
-    </ClientSideOnly>
-  );
-};
+    return (
+      <ClientSideOnly fallback={<StaticTopicsList room={room} activeTopicId={activeTopicId} />}>
+        <Suspense fallback={<StaticTopicsList room={room} activeTopicId={activeTopicId} />}>
+          <SortableTopicsList room={room} activeTopicId={activeTopicId} isDisabled={isDisabled} />
+        </Suspense>
+      </ClientSideOnly>
+    );
+  }
+);

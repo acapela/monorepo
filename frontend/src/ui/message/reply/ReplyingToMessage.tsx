@@ -1,22 +1,69 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
-import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageDetailedInfoFragment } from "~gql";
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { ITEM_BACKGROUND_WEAK, SECONDARY_ORANGE_1, PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
-import { borderRadius } from "~ui/baseStyles";
-import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+
+import { withFragments } from "~frontend/gql/utils";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
+import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { ReplyingToMessageQuery, ReplyingToMessageQueryVariables, ReplyingToMessage_MessageFragment } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_1 } from "~ui/theme/colors/base";
 
-interface Props {
-  message: MessageDetailedInfoFragment;
+const fragments = {
+  message: gql`
+    ${MessageMetaData.fragments.user}
+    ${MessageText.fragments.message}
+    ${MessageMedia.fragments.message}
+
+    fragment ReplyingToMessage_message on message {
+      id
+      created_at
+      ...MessageText_message
+      ...MessageMedia_message
+      user {
+        ...MessageMetaData_user
+      }
+    }
+  `,
+};
+
+type Props = (
+  | { message: ReplyingToMessage_MessageFragment }
+  | {
+      messageId: string;
+    }
+) & {
   onRemove?: () => void;
-}
+};
 
-export const ReplyingToMessage = ({ message, onRemove }: Props) => {
+export const ReplyingToMessage = withFragments(fragments, ({ onRemove, ...props }: Props) => {
+  let message = "message" in props ? props.message : null;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const messageId = "messageId" in props ? props.messageId : message!.id;
+  const { data } = useQuery<ReplyingToMessageQuery, ReplyingToMessageQueryVariables>(
+    gql`
+      ${fragments.message}
+
+      query ReplyingToMessage($messageId: uuid!) {
+        message: message_by_pk(id: $messageId) {
+          ...ReplyingToMessage_message
+        }
+      }
+    `,
+    message ? { skip: true } : { variables: { messageId } }
+  );
+  if (!message && data && data.message) {
+    message = data.message;
+  }
+  if (!message) {
+    return null;
+  }
   const handleClick = () => {
-    const messageTextElement = document.getElementById(message.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const messageTextElement = document.getElementById(message!.id);
 
     messageTextElement?.scrollIntoView({
       behavior: "smooth",
@@ -28,7 +75,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
     <UIHolder onClick={handleClick}>
       <UIBorder />
       <UIContent>
-        <MessageMetaData user={message.user} date={new Date(message.createdAt)}>
+        <MessageMetaData user={message.user} date={new Date(message.created_at)}>
           <UIMessageContent>
             <UIMessageText message={message} />
             <MessageMedia nonInteractive message={message} />
@@ -42,7 +89,7 @@ export const ReplyingToMessage = ({ message, onRemove }: Props) => {
       )}
     </UIHolder>
   );
-};
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

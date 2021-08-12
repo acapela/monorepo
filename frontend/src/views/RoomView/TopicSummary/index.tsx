@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useTopic } from "~frontend/topics/useTopic";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { TopicDetailedInfoFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
-import { formatDate } from "../shared";
+
+import { formatDate, useUpdateTopic } from "../shared";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -16,11 +18,12 @@ export const TopicSummary = ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
-  const { loading, updateSummary } = useTopic(topic);
+  const [updateTopic, { loading }] = useUpdateTopic();
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateSummary(summary.trim());
+      updateTopic({ variables: { id: topic.id, input: { summary: summary.trim() } } });
+      trackEvent("Updated Topic Summary", { topicId: topic.id });
     }
   }
 

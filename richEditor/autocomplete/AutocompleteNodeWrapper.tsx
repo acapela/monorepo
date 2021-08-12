@@ -1,5 +1,6 @@
 import { JSONContent, NodeViewWrapper } from "@tiptap/react";
 import { ComponentType } from "react";
+
 import { AutocompleteNodeProps } from "./component";
 
 interface Props<D> {

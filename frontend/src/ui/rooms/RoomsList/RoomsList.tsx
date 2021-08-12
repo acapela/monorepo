@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { CollapsibleRoomInfo } from "./CollapsibleRoomInfo";
 import { RoomWithActivity } from "./useRoomsWithActivity";
 

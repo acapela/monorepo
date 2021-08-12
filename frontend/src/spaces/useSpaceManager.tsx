@@ -1,20 +1,21 @@
 import { gql } from "@apollo/client";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import {
+  deleteSpace,
+  useAddSpaceMemberMutation,
+  useEditSpaceMutation,
+  useIsCurrentUserSpaceMember,
+  useRemoveSpaceMemberMutation,
+} from "~frontend/gql/spaces";
+import { withFragments } from "~frontend/gql/utils";
+import { routes } from "~frontend/router";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceManager_SpaceFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconSelection } from "~ui/icons";
-import { routes } from "~frontend/router";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import {
-  useEditSpaceMutation,
-  useRemoveSpaceMemberMutation,
-  useAddSpaceMemberMutation,
-  useIsCurrentUserSpaceMember,
-  deleteSpace,
-} from "~frontend/gql/spaces";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { withFragments } from "~frontend/gql/utils";
 
 const fragments = {
   space: gql`

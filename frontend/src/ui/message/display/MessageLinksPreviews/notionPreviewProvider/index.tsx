@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
 import { IconNotionLogo } from "~ui/icons";
 import { theme } from "~ui/theme";
 import { TextBody } from "~ui/typo";
+
 import { getNotionPreviewText } from "./getNotionPreviewText";
 
 export const notionPreviewProvider: MessageEmbedPreviewConfig = {

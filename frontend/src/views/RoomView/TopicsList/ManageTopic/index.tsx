@@ -1,21 +1,36 @@
+import { gql } from "@apollo/client";
 import React, { useCallback } from "react";
-import { TopicDetailedInfoFragment } from "~gql";
-import { useTopic } from "~frontend/topics/useTopic";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { openUIPrompt } from "~frontend/utils/prompt";
+import { useUpdateTopic } from "~frontend/views/RoomView/shared";
+import { useDeleteTopic } from "~frontend/views/RoomView/TopicsList/shared";
+import { ManageTopic_TopicFragment } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
+
+const fragments = {
+  topic: gql`
+    fragment ManageTopic_topic on topic {
+      id
+      name
+    }
+  `,
+};
 
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  topic: ManageTopic_TopicFragment;
   onRenameRequest?: () => void;
 }
 
-export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
-  const { deleteTopic, editName } = useTopic(topic);
+export const ManageTopic = withFragments(fragments, ({ topic, onRenameRequest }: Props) => {
+  const [updateTopic] = useUpdateTopic();
+  const [deleteTopic] = useDeleteTopic();
 
   const handleDeleteSelect = useCallback(async () => {
     const isDeleteConfirmed = await openConfirmPrompt({
@@ -24,7 +39,8 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
       confirmLabel: "Delete",
     });
     if (isDeleteConfirmed) {
-      await deleteTopic();
+      await deleteTopic({ variables: { id: topic.id } });
+      trackEvent("Deleted Topic", { topicId: topic.id });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
@@ -41,7 +57,8 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
     if (!name?.trim()) {
       return;
     }
-    await editName(name);
+    await updateTopic({ variables: { id: topic.id, input: { name } } });
+    trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: name, oldTopicName: topic.name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
@@ -73,4 +90,4 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
       </PopoverMenuTrigger>
     </>
   );
-};
+});

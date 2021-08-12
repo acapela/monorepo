@@ -1,21 +1,37 @@
+import { gql } from "@apollo/client";
 import React from "react";
-import { TopicDetailedInfoFragment } from "~gql";
-import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
+
+import { withFragments } from "~frontend/gql/utils";
+import { StaticTopicList_RoomFragment } from "~gql";
+
+import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
-interface Props {
-  topics: TopicDetailedInfoFragment[];
-  activeTopicId: string | null;
-}
+export const StaticTopicsList = withFragments(
+  {
+    room: gql`
+      ${TopicMenuItem.fragments.room}
+      ${TopicMenuItem.fragments.topic}
 
-export const StaticTopicsList = ({ topics, activeTopicId }: Props) => (
-  <UIScrollContainer>
-    <UITopicsList>
-      {topics.map((topic) => (
-        <UITopic key={topic.id}>
-          <TopicMenuItem topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled={true} />
-        </UITopic>
-      ))}
-    </UITopicsList>
-  </UIScrollContainer>
+      fragment StaticTopicList_room on room {
+        topics {
+          id
+          index
+          ...TopicMenuItem_topic
+        }
+        ...TopicMenuItem_room
+      }
+    `,
+  },
+  ({ room, activeTopicId }: { room: StaticTopicList_RoomFragment; activeTopicId: string | null }) => (
+    <UIScrollContainer>
+      <UITopicsList>
+        {room.topics.map((topic) => (
+          <UITopic key={topic.id}>
+            <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
+          </UITopic>
+        ))}
+      </UITopicsList>
+    </UIScrollContainer>
+  )
 );

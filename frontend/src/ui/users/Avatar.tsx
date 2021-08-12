@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Maybe } from "~gql";
+
 import { getInitials } from "~frontend/utils";
+import { Maybe } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { NamedSize, getNamedSizeValue } from "~ui/namedSize";
 import { PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";

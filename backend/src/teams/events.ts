@@ -1,5 +1,6 @@
 import { Team } from "~db";
 import logger from "~shared/logger";
+
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
 import { addTeamMember, getHasTeamMember } from "./helpers";

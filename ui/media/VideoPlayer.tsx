@@ -1,17 +1,19 @@
+import { AnimatePresence } from "framer-motion";
+import { useRef } from "react";
 import styled from "styled-components";
+
+import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { theme } from "~ui/theme";
 import { TranscriptData } from "~shared/types/transcript";
+import { PopPresenceAnimator } from "~ui/animations";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { theme } from "~ui/theme";
+
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";
 import { usePlaybackState } from "./usePlaybackState";
-import { useRef } from "react";
-import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
-import { AnimatePresence } from "framer-motion";
-import { PopPresenceAnimator } from "~ui/animations";
 
 interface Props {
   fileUrl: string;

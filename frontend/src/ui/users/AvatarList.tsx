@@ -1,15 +1,17 @@
 import { gql } from "@apollo/client";
 import React from "react";
-import styled from "styled-components";
-import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
-import { groupByFilter } from "~shared/groupByFilter";
 import { useRef } from "react";
-import { AvatarList_UserFragment } from "~gql";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { UserAvatar } from "./UserAvatar";
-import { CircleLabel } from "~ui/icons/CircleLabel";
-import { formatNumberWithMaxValue } from "~shared/numbers";
+import styled from "styled-components";
+
 import { withFragments } from "~frontend/gql/utils";
+import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
+import { AvatarList_UserFragment } from "~gql";
+import { groupByFilter } from "~shared/groupByFilter";
+import { formatNumberWithMaxValue } from "~shared/numbers";
+import { CircleLabel } from "~ui/icons/CircleLabel";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
+import { UserAvatar } from "./UserAvatar";
 
 interface Props {
   users: AvatarList_UserFragment[];

@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import { IconChevronDown } from "~ui/icons";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { routes } from "~frontend/router";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconChevronDown } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { routes } from "~frontend/router";
-import { trackEvent } from "~frontend/analytics/tracking";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();

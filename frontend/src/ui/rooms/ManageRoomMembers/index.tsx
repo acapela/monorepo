@@ -1,48 +1,107 @@
-import { useState, useRef } from "react";
-import styled from "styled-components";
+import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { useAddRoomMemberMutation, useIsCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useRef, useState } from "react";
+import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { assertDefined } from "~shared/assert";
-import { RoomDetailedInfoFragment } from "~gql";
-import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
+import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { withFragments } from "~frontend/gql/utils";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { MembersManagerModal } from "~frontend/ui/MembersManager/MembersManagerModal";
-import { handleWithStopPropagation } from "~shared/events";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
+import { WarningModal } from "~frontend/utils/warningModal";
+import { ManageRoomMembers_RoomFragment, RemoveRoomMemberMutation, RemoveRoomMemberMutationVariables } from "~gql";
+import { assertDefined } from "~shared/assert";
+import { handleWithStopPropagation } from "~shared/events";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconPlus } from "~ui/icons";
-import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
 import { addToast } from "~ui/toasts/data";
-import { WarningModal } from "~frontend/utils/warningModal";
-import { Button } from "~ui/buttons/Button";
-import { useCurrentTeamDetails } from "~frontend/gql/teams";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+
+import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 import { RoomOwner } from "./RoomOwner";
 
+const fragments = {
+  room: gql`
+    ${isCurrentUserRoomMember.fragments.room}
+    ${openLastPrivateRoomMemberDeletionPrompt.fragments.room}
+    ${MembersManagerModal.fragments.user}
+
+    fragment ManageRoomMembers_room on room {
+      id
+      is_private
+      owner_id
+      members {
+        user {
+          email
+          ...MembersManagerModal_user
+        }
+      }
+      invitations {
+        id
+        email
+      }
+      ...IsCurrentUserRoomMember_room
+      ...PrivateRoomDeletionPrompt_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: ManageRoomMembers_RoomFragment;
   onCurrentUserLeave?: () => void;
 }
 
-export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
+export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUserLeave }: Props) => {
   const teamId = useAssertCurrentTeamId();
   const [team] = useCurrentTeamDetails();
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
   const amIMember = useIsCurrentUserRoomMember(room);
 
-  const [addRoomMember] = useAddRoomMemberMutation();
-  const [removeRoomMember] = useRemoveRoomMemberMutation();
+  const [deleteRoom] = useDeleteRoom();
+  const [addRoomMember] = useMutation(
+    gql`
+      mutation AddRoomMember($roomId: uuid!, $userId: uuid!) {
+        insert_room_member_one(object: { room_id: $roomId, user_id: $userId }) {
+          room_id
+          user_id
+        }
+      }
+    `,
+    {
+      onCompleted() {
+        addToast({ type: "success", title: "Room member was added" });
+      },
+    }
+  );
+
+  const [removeRoomMember] = useMutation<RemoveRoomMemberMutation, RemoveRoomMemberMutationVariables>(
+    gql`
+      mutation RemoveRoomMember($roomId: uuid!, $userId: uuid!) {
+        delete_room_member(where: { room_id: { _eq: $roomId }, user_id: { _eq: $userId } }) {
+          affected_rows
+        }
+      }
+    `,
+    {
+      onCompleted() {
+        addToast({ type: "success", title: "Room member was removed" });
+      },
+    }
+  );
 
   function isLastMemberInRoom() {
     return room.members.length === 1;
   }
 
   async function handleJoin(userId: string) {
-    await addRoomMember({ userId, roomId: room.id });
+    await addRoomMember({ variables: { userId, roomId: room.id } });
     trackEvent("Joined Room", { roomId: room.id, userId });
   }
 
@@ -50,11 +109,16 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     const safeCurrentUser = assertDefined(currentUser, "user required");
 
     if (room.is_private && isLastMemberInRoom()) {
-      await openLastPrivateRoomMemberDeletionPrompt({ room });
+      await openLastPrivateRoomMemberDeletionPrompt({
+        room,
+        onDeleteRoom(variables) {
+          deleteRoom({ variables });
+        },
+      });
       return;
     }
 
-    await removeRoomMember({ userId, roomId: room.id });
+    await removeRoomMember({ variables: { userId, roomId: room.id } });
     if (onCurrentUserLeave && userId === safeCurrentUser.id) {
       onCurrentUserLeave();
     }
@@ -113,7 +177,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     trackEvent("Deleted Room Invitation", { roomId: room.id, invitationId });
   }
 
-  const membersExceptOwner = members.filter((member) => member.id !== room?.owner?.id);
+  const membersExceptOwner = members.filter((member) => member.id !== room.owner_id);
 
   return (
     <>
@@ -172,7 +236,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
       </UIHolder>
     </>
   );
-};
+});
 
 const UIHolder = styled.div`
   margin-top: 4px;

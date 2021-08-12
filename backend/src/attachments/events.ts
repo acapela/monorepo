@@ -1,8 +1,9 @@
+import { initializeAttachmentTranscription } from "~backend/src/transcriptions/transcriptionService";
 import { Attachment, db } from "~db";
 import { Message_Type_Enum } from "~gql";
-import { initializeAttachmentTranscription } from "~backend/src/transcriptions/transcriptionService";
-import { HasuraEvent } from "../hasura";
 import { log } from "~shared/logger";
+
+import { HasuraEvent } from "../hasura";
 
 const MESSAGE_TYPES_TO_BE_PROCESSED: Message_Type_Enum[] = ["AUDIO", "VIDEO"];
 

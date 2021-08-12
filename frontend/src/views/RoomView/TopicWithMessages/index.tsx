@@ -1,36 +1,70 @@
+import { gql, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+
 import { Message as MessageType } from "~db";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { updateLastSeenMessage, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
-import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
+import { updateLastSeenMessage } from "~frontend/gql/topics";
+import { waitForAllRunningMutationsToFinish, withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { useTopic } from "~frontend/topics/useTopic";
+import { isTopicClosed } from "~frontend/topics/utils";
 import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import {
+  TopicMessagesAscSubscription,
+  TopicMessagesAscSubscriptionVariables,
+  TopicWithMessages_RoomFragment,
+  TopicWithMessages_TopicFragment,
+} from "~gql";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
+
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
 
+const fragments = {
+  room: gql`
+    ${TopicHeader.fragments.room}
+
+    fragment TopicWithMessages_room on room {
+      id
+      finished_at
+      ...TopicHeader_room
+    }
+  `,
+  topic: gql`
+    ${TopicHeader.fragments.topic}
+    ${isTopicClosed.fragments.topic}
+    ${TopicSummaryMessage.fragments.topic}
+
+    fragment TopicWithMessages_topic on topic {
+      id
+      ...TopicHeader_topic
+      ...IsTopicClosed_topic
+      ...TopicSummary_topic
+    }
+  `,
+};
+
 interface Props {
-  topicId: string;
+  room: TopicWithMessages_RoomFragment;
+  topic: TopicWithMessages_TopicFragment | null;
 }
 
-function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]) {
+function useMarkTopicAsRead(topicId: string | null, messages: Pick<MessageType, "id">[]) {
   /**
    * Let's mark last message as read each time we have new messages.
    */
   useAsyncLayoutEffect(async () => {
-    if (!messages) return;
+    if (!messages || !topicId) return;
 
     const lastMessage = messages[messages.length - 1];
 
@@ -50,20 +84,38 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
   }, [messages]);
 }
 
-export const TopicView = ({ topicId }: Props) => {
-  const [topic = null] = useSingleTopicQuery({ id: topicId });
+export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
+  const { data } = useSubscription<TopicMessagesAscSubscription, TopicMessagesAscSubscriptionVariables>(
+    gql`
+      ${MessagesFeed.fragments.message}
 
-  const [messages = []] = useTopicMessagesQuery({
-    topicId: topicId,
-  });
+      subscription TopicMessagesAsc(
+        $topicId: uuid!
+        $limit: Int
+        $order: order_by = asc
+        $typeExpression: message_type_enum_comparison_exp = { _is_null: false }
+      ) {
+        messages: message(
+          where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: $typeExpression }
+          order_by: [{ created_at: $order }]
+          limit: $limit
+        ) {
+          ...Message_message
+        }
+      }
+    `,
+    topic ? { variables: { topicId: topic.id } } : { skip: true }
+  );
+  const isMember = useIsCurrentUserRoomMember(room);
 
-  const isMember = useIsCurrentUserRoomMember(topic?.room);
+  useMarkTopicAsRead(topic?.id ?? null, data ? data.messages : []);
 
-  useMarkTopicAsRead(topicId, messages);
+  if (!topic || !data) {
+    return null;
+  }
+  const { messages } = data;
 
-  const { isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
-
-  if (!topic) return null;
+  const isClosed = isTopicClosed(topic);
 
   return (
     <TopicStoreContext>
@@ -74,26 +126,26 @@ export const TopicView = ({ topicId }: Props) => {
           <UIBackDrop />
           <UIMainContainer>
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-            <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
+            <UITopicHeaderHolder>{topic && <TopicHeader room={room} topic={topic} />}</UITopicHeaderHolder>
 
             <ScrollableMessages>
               <AnimateSharedLayout>
                 <MessagesFeed isReadonly={!isMember} messages={messages} />
 
-                {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
+                {topic && isClosed && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>
 
-              {!messages.length && !topicCloseInfo && (
+              {!messages.length && !isClosed && (
                 <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
               )}
 
-              {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+              {isClosed && <TopicClosureNote isParentRoomOpen={!room.finished_at} />}
             </ScrollableMessages>
 
-            {!isTopicClosed && (
+            {!isClosed && (
               <ClientSideOnly>
                 <UIMessageComposer isDisabled={!isMember}>
-                  <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
+                  <CreateNewMessageEditor topicId={topic.id} isDisabled={!isMember} />
                 </UIMessageComposer>
               </ClientSideOnly>
             )}
@@ -102,7 +154,7 @@ export const TopicView = ({ topicId }: Props) => {
       </UIHolder>
     </TopicStoreContext>
   );
-};
+});
 
 const UIHolder = styled(DropFileContext)<{}>`
   height: 100%;

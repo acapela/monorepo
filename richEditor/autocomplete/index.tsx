@@ -1,10 +1,11 @@
-import { Node, mergeAttributes, Editor } from "@tiptap/core";
-import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
+import { Editor, Node, mergeAttributes } from "@tiptap/core";
 import { KeyboardShortcutCommand, ReactNodeViewRenderer, ReactRenderer } from "@tiptap/react";
+import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
 import { ComponentType, FunctionComponent } from "react";
-import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
-import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
+
 import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
+import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
+import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 
 interface AutocompletePluginOptions<D> {
   type: string;

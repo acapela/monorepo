@@ -1,10 +1,12 @@
 import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
+
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { BASE_GREY_1, DANGER_COLOR, PRIMARY_PINK_1_TRANSPARENT, PRIMARY_PINK_2 } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
+
 import { UIDropdownPanelBody } from "./DropdownPanelBody";
 import { Popover, PopoverPlacement } from "./Popover";
 

@@ -1,16 +1,17 @@
-import styled, { css } from "styled-components";
-import { IconChevronDown } from "~ui/icons";
-import { theme } from "~ui/theme";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { TopicDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { useRef } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Popover } from "~ui/popovers/Popover";
-import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { useRef } from "react";
+import styled, { css } from "styled-components";
+
 import { updateTopic } from "~frontend/gql/topics";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
+import { TopicDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { IconChevronDown } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
+import { theme } from "~ui/theme";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

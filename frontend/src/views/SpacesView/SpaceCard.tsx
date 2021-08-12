@@ -1,17 +1,18 @@
 import { gql } from "@apollo/client";
 import styled from "styled-components";
-import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { CardBase } from "~ui/card/Base";
-import { IconEdit, IconTrash } from "~ui/icons";
-import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
+import { useIsCurrentUserSpaceMember } from "~frontend/gql/spaces";
+import { withFragments } from "~frontend/gql/utils";
+import { RouteLink, routes } from "~frontend/router";
+import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { RouteLink, routes } from "~frontend/router";
-import { withFragments } from "~frontend/gql/utils";
 import { SpaceCard_SpaceFragment } from "~gql";
-import { useIsCurrentUserSpaceMember } from "~frontend/gql/spaces";
+import { CardBase } from "~ui/card/Base";
+import { IconEdit, IconTrash } from "~ui/icons";
+import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
 
 const fragments = {
   space: gql`

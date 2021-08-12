@@ -1,22 +1,37 @@
-import { useRef } from "react";
-import { AnimatePresence } from "framer-motion";
+import { gql } from "@apollo/client";
 import { EmojiData } from "emoji-mart";
-import { IconEmotionSmile } from "~ui/icons";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
-import { Popover } from "~ui/popovers/Popover";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
-import { isBaseEmoji } from "~richEditor/EmojiButton";
-import { MessageDetailedInfoFragment } from "~gql";
+import { AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { addMessageReaction } from "~frontend/gql/reactions";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
+import { MakeReactionButton_MessageFragment } from "~gql";
+import { isBaseEmoji } from "~richEditor/EmojiButton";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
+import { IconEmotionSmile } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
+
+const fragments = {
+  message: gql`
+    fragment MakeReactionButton_message on message {
+      id
+      message_reactions {
+        emoji
+        user_id
+      }
+    }
+  `,
+};
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  message: MakeReactionButton_MessageFragment;
 }
 
-export const MakeReactionButton = ({ message }: Props) => {
+export const MakeReactionButton = withFragments(fragments, ({ message }: Props) => {
   const user = useAssertCurrentUser();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -32,7 +47,7 @@ export const MakeReactionButton = ({ message }: Props) => {
     close();
 
     const hasUserAlreadyReacted = message.message_reactions.some(
-      (reaction) => reaction.emoji === emoji.native && reaction.user.id === user.id
+      (reaction) => reaction.emoji === emoji.native && reaction.user_id === user.id
     );
 
     if (hasUserAlreadyReacted) return;
@@ -65,4 +80,4 @@ export const MakeReactionButton = ({ message }: Props) => {
       </AnimatePresence>
     </>
   );
-};
+});

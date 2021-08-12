@@ -1,14 +1,16 @@
 import { startOfDay } from "date-fns";
 import styled from "styled-components";
+
 import { NotificationInfoFragment } from "~gql";
 import { relativeFormatDate } from "~shared/dates/format";
-import { CategoryNameLabel } from "~ui/theme/functional";
 import { groupByDate } from "~shared/dates/groupByDate";
-import { NotificationLabel } from "./NotificationLabel";
-import { ErrorBoundary } from "~ui/ErrorBoundary";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconNotificationIndicator } from "~ui/icons";
 import { sortByDate } from "~shared/dates/utils";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
+import { IconNotificationIndicator } from "~ui/icons";
+import { CategoryNameLabel } from "~ui/theme/functional";
+
+import { NotificationLabel } from "./NotificationLabel";
 
 interface Props {
   notifications: NotificationInfoFragment[];

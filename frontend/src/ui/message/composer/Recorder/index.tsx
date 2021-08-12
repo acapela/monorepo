@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { useRecorderErrors } from "./useRecorderErrors";
-import { AnimatePresence } from "framer-motion";
 
 interface RecorderProps {
   className?: string;

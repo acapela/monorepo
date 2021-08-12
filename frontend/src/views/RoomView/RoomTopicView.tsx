@@ -1,19 +1,47 @@
+import { gql } from "@apollo/client";
 import { useEffect } from "react";
+
+import { withFragments } from "~frontend/gql/utils";
 import { routes } from "~frontend/router";
-import { TopicView } from "../topic/TopicView";
+import { RoomTopicView_RoomFragment, RoomTopicView_TopicFragment } from "~gql";
+
 import { RoomView } from "./RoomView";
-import { RoomDetailedInfoFragment } from "~gql";
+import { TopicWithMessages } from "./TopicWithMessages";
+
+const fragments = {
+  room: gql`
+    ${RoomView.fragments.room}
+    ${TopicWithMessages.fragments.room}
+
+    fragment RoomTopicView_room on room {
+      id
+      space_id
+      topics {
+        id
+      }
+      ...RoomView_room
+    }
+  `,
+  topic: gql`
+    ${TopicWithMessages.fragments.topic}
+
+    fragment RoomTopicView_topic on topic {
+      id
+      ...TopicWithMessages_topic
+    }
+  `,
+};
 
 interface Props {
-  room: RoomDetailedInfoFragment;
-  topicId: string | null;
+  room: RoomTopicView_RoomFragment;
+  topic: RoomTopicView_TopicFragment | null;
 }
 
-export function RoomTopicView({ room, topicId }: Props) {
+export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topic }: Props) {
   const firstTopic = room.topics?.[0] ?? null;
 
   function getSelectedTopicId() {
-    if (topicId) return topicId;
+    if (topic) return topic.id;
 
     return firstTopic?.id ?? null;
   }
@@ -37,7 +65,7 @@ export function RoomTopicView({ room, topicId }: Props) {
       return;
     }
 
-    const topicIdGivenByUrl = topicId;
+    const topicIdGivenByUrl = topic?.id;
     const roomHasTopics = topicsInRoom.length > 0;
     const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
 
@@ -68,11 +96,11 @@ export function RoomTopicView({ room, topicId }: Props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topicId, firstTopic, room?.topics]);
+  }, [topic, firstTopic, room.topics]);
 
   return (
     <RoomView room={room} selectedTopicId={selectedTopicId}>
-      {selectedTopicId && <TopicView key={selectedTopicId} topicId={selectedTopicId} />}
+      {selectedTopicId && <TopicWithMessages key={selectedTopicId} room={room} topic={topic} />}
     </RoomView>
   );
-}
+});

@@ -1,3 +1,5 @@
+import { IncomingMessage } from "http";
+
 import {
   ApolloClient,
   ApolloLink,
@@ -10,20 +12,21 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
 import { GraphQLError } from "graphql";
-import { IncomingMessage } from "http";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
-import { readCurrentToken, TOKEN_COOKIE_NAME } from "~frontend/authentication/cookie";
+
+import { TOKEN_COOKIE_NAME, readCurrentToken } from "~frontend/authentication/cookie";
 import { getApolloInitialState } from "~frontend/gql/utils/hydration";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
+
 import { createDateParseLink } from "./dateStringParseLink";
-import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 

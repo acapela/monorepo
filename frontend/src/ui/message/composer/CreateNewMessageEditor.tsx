@@ -2,7 +2,8 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { select, useAutorun } from "~shared/sharedState";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -13,10 +14,11 @@ import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { select, useAutorun } from "~shared/sharedState";
+
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
-import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   topicId: string;
@@ -40,7 +42,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
   const roomContext = useRoomStoreContext();
 
   const isEditingAnyMessage = select(() => !!topicContext.editedMessageId);
-  const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessage);
+  const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessageId);
 
   function focusEditor() {
     // Don't focus editor if editing some topic name
@@ -64,7 +66,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
   useDependencyChangeEffect(focusEditor, [replyingToMessageId]);
 
   const handleStopReplyingToMessage = () => {
-    topicContext.currentlyReplyingToMessage = null;
+    topicContext.currentlyReplyingToMessageId = null;
   };
 
   async function handleNewFiles(files: File[]) {
@@ -78,7 +80,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
       topicId,
       type,
       content,
-      replied_to_message_id: topicContext.currentlyReplyingToMessage?.id,
+      replied_to_message_id: topicContext.currentlyReplyingToMessageId,
     });
 
     if (message) {
@@ -145,10 +147,10 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
           });
         }}
         additionalContent={
-          topicContext.currentlyReplyingToMessage && (
+          topicContext.currentlyReplyingToMessageId && (
             <ReplyingToMessage
               onRemove={handleStopReplyingToMessage}
-              message={topicContext.currentlyReplyingToMessage}
+              messageId={topicContext.currentlyReplyingToMessageId}
             />
           )
         }

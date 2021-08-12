@@ -1,10 +1,12 @@
 import { StylesPart } from "styled-components";
+
 import { borderRadius, shadow } from "~ui/baseStyles";
 import { spacer } from "~ui/spacer";
 import { hoverTransition } from "~ui/transitions";
 import { zIndex } from "~ui/zIndex";
+
 import { ActionStateInterpolations, variantToStyles } from "./actions/styleBuilder";
-import { getColorTheme, ThemeColorScheme, ThemeColorSchemeName } from "./colors";
+import { ThemeColorScheme, ThemeColorSchemeName, getColorTheme } from "./colors";
 import { Font, font } from "./font";
 import { buildThemeProxy } from "./proxy";
 

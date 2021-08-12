@@ -1,78 +1,90 @@
+import { gql } from "@apollo/client";
 import { useMemo } from "react";
 import styled from "styled-components";
+
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { UserBasicInfoFragment } from "~gql";
-import { AddMemberInlineForm } from "./AddMemberInlineForm";
-import { UISelectGridContainer } from "./UISelectGridContainer";
-import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
-import { PopPresenceAnimator } from "~ui/animations";
+import { withFragments } from "~frontend/gql/utils";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import { MembersManagerModal_UserFragment } from "~gql";
+import { PopPresenceAnimator } from "~ui/animations";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+
+import { AddMemberInlineForm } from "./AddMemberInlineForm";
 import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
+import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
+import { UISelectGridContainer } from "./UISelectGridContainer";
 
 interface Invitation {
   email: string;
   id: string;
 }
 
-interface Props {
-  title: string;
-  currentUsers: UserBasicInfoFragment[];
-  onCloseRequest: () => void;
-  onAddUser: (userId: string) => void;
-  onRemoveUser: (userId: string) => void;
+export const MembersManagerModal = withFragments(
+  {
+    user: gql`
+      fragment MembersManagerModal_user on user {
+        id
+      }
+    `,
+  },
+  function MembersManagerModal({
+    currentUsers,
+    onCloseRequest,
+    onAddUser,
+    onRemoveUser,
+    title,
 
-  onInviteByEmail?: (email: string) => void;
-  invitations?: Invitation[];
-  onRemoveInvitation?: (invitationId: string) => void;
-}
+    onInviteByEmail,
+    invitations = [],
+    onRemoveInvitation,
+  }: {
+    title: string;
+    currentUsers: MembersManagerModal_UserFragment[];
+    onCloseRequest: () => void;
+    onAddUser: (userId: string) => void;
+    onRemoveUser: (userId: string) => void;
 
-export function MembersManagerModal({
-  currentUsers,
-  onCloseRequest,
-  onAddUser,
-  onRemoveUser,
-  title,
-  onInviteByEmail,
-  invitations = [],
-  onRemoveInvitation,
-}: Props) {
-  const teamMembers = useCurrentTeamMembers();
+    onInviteByEmail?: (email: string) => void;
+    invitations?: Invitation[];
+    onRemoveInvitation?: (invitationId: string) => void;
+  }) {
+    const teamMembers = useCurrentTeamMembers();
 
-  const potentialUsers = useMemo(() => {
-    const currentUsersIdsSet = new Set<string>(currentUsers.map(({ id }) => id));
-    return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
-  }, [teamMembers, currentUsers]);
+    const potentialUsers = useMemo(() => {
+      const currentUsersIdsSet = new Set<string>(currentUsers.map(({ id }) => id));
+      return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
+    }, [teamMembers, currentUsers]);
 
-  return (
-    <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
-      <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
-        <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
-          <UIHolder>
-            <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={onInviteByEmail} />
-            {currentUsers.length > 0 && (
-              <UISelectGridContainer>
-                {currentUsers.map((user) => (
-                  <UIItemHolder key={user.id}>
-                    <UserBasicInfo user={user} />
-                    <CircleCloseIconButton onClick={() => onRemoveUser(user.id)} />
-                  </UIItemHolder>
-                ))}
-                {invitations.map(({ email, id }) => (
-                  <UIItemHolder key={id}>
-                    <InvitationPendingIndicator email={email} />
-                    {onRemoveInvitation && <CircleCloseIconButton onClick={() => onRemoveInvitation(id)} />}
-                  </UIItemHolder>
-                ))}
-              </UISelectGridContainer>
-            )}
-          </UIHolder>
-        </PanelWithTopbarAndCloseButton>
-      </PopPresenceAnimator>
-    </ScreenCover>
-  );
-}
+    return (
+      <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
+        <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
+          <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
+            <UIHolder>
+              <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={onInviteByEmail} />
+              {currentUsers.length > 0 && (
+                <UISelectGridContainer>
+                  {currentUsers.map((user) => (
+                    <UIItemHolder key={user.id}>
+                      <UserBasicInfo user={user} />
+                      <CircleCloseIconButton onClick={() => onRemoveUser(user.id)} />
+                    </UIItemHolder>
+                  ))}
+                  {invitations.map(({ email, id }) => (
+                    <UIItemHolder key={id}>
+                      <InvitationPendingIndicator email={email} />
+                      {onRemoveInvitation && <CircleCloseIconButton onClick={() => onRemoveInvitation(id)} />}
+                    </UIItemHolder>
+                  ))}
+                </UISelectGridContainer>
+              )}
+            </UIHolder>
+          </PanelWithTopbarAndCloseButton>
+        </PopPresenceAnimator>
+      </ScreenCover>
+    );
+  }
+);
 
 const UIHolder = styled.div<{}>`
   display: grid;

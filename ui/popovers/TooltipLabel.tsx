@@ -1,8 +1,10 @@
 import React, { ReactNode, RefObject } from "react";
 import styled from "styled-components";
+
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius, colors, fontSize } from "~ui/baseStyles";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
+
 import { Popover, PopoverPlacement } from "./Popover";
 
 export interface TooltipLabelProps {

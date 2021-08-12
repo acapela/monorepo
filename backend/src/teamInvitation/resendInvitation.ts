@@ -1,7 +1,8 @@
-import { db } from "~db";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { db } from "~db";
 import { assert } from "~shared/assert";
+
 import { sendInviteNotification } from "./sendInviteNotification";
 
 export interface ResendInvitationActionInputs {

@@ -1,13 +1,15 @@
 import React, { ReactNode, useRef } from "react";
 import { useClickAway, useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
-import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { DropdownItem } from "./DropdownItem";
+
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
+import { PopPresenceAnimator } from "~ui/animations";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+
+import { DropdownItem } from "./DropdownItem";
 
 interface Props<I> {
   items: I[];

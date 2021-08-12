@@ -1,7 +1,8 @@
-import { ReactChild, isValidElement, ReactElement } from "react";
+import NextLink from "next/link";
+import { ReactChild, ReactElement, isValidElement } from "react";
+
 import { Route } from "./create";
 import { fillParamsInUrl } from "./utils";
-import NextLink from "next/link";
 
 interface Props<P> {
   route: Route<P>;

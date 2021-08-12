@@ -1,47 +1,59 @@
-import React, { useMemo, useState } from "react";
+import { gql } from "@apollo/client";
 import {
-  closestCenter,
   DndContext,
   DragEndEvent,
   DragStartEvent,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
-import { TopicDetailedInfoFragment } from "~gql";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import React, { useMemo, useState } from "react";
+
+import { withFragments } from "~frontend/gql/utils";
+import {
+  getIndexBetweenCurrentAndLast,
+  getIndexBetweenFirstAndCurrent,
+  getIndexBetweenItems,
+} from "~frontend/rooms/order";
+import { useUpdateTopic } from "~frontend/views/RoomView/shared";
+import { SortableTopicList_RoomFragment } from "~gql";
 
 import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
 import { SortableTopicMenuItem } from "./TopicMenuItem";
 
-interface Props {
-  topics: TopicDetailedInfoFragment[];
+const fragments = {
+  room: gql`
+    ${SortableTopicMenuItem.fragments.room}
+    ${SortableTopicMenuItem.fragments.topic}
+
+    fragment SortableTopicList_room on room {
+      id
+      ...TopicMenuItem_room
+      topics {
+        index
+        ...TopicMenuItem_topic
+      }
+    }
+  `,
+};
+
+type Props = {
+  room: SortableTopicList_RoomFragment;
   isDisabled?: boolean;
   activeTopicId: string | null;
-  onMoveToStart: (toMove: TopicDetailedInfoFragment) => void;
-  onMoveToEnd: (toMove: TopicDetailedInfoFragment) => void;
-  onMoveBetween: (
-    toMove: TopicDetailedInfoFragment,
-    start: TopicDetailedInfoFragment,
-    end: TopicDetailedInfoFragment
-  ) => void;
-}
-
-export const SortableTopicsList = ({
-  topics,
-  activeTopicId,
-  isDisabled,
-  onMoveToStart: moveToStart,
-  onMoveToEnd: moveToEnd,
-  onMoveBetween: moveBetween,
-}: Props) => {
+};
+export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicId, isDisabled }: Props) => {
+  const { topics } = room;
   const [draggedTopicId, setDraggedId] = useState<string | null>(null);
   const draggedTopicIndex = useMemo(
     () => topics.findIndex((topic) => topic.id == draggedTopicId),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [draggedTopicId]
   );
+  const [updateTopic] = useUpdateTopic();
 
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor));
@@ -53,24 +65,23 @@ export const SortableTopicsList = ({
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (over && active.id !== over.id) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const overIndex = topics.findIndex((topic) => topic.id == over.id)!;
+      const overIndex = room.topics.findIndex((topic) => topic.id == over.id)!;
+      let newIndex: string;
       if (overIndex === 0) {
-        moveToStart(topics[draggedTopicIndex]);
-        return;
+        newIndex = getIndexBetweenFirstAndCurrent(topics[0].index);
+      } else if (overIndex === topics.length - 1) {
+        const lastTopicInList = topics[topics.length - 1];
+        newIndex = getIndexBetweenCurrentAndLast(lastTopicInList.index);
+      } else {
+        // overTopic indexes differ depending if the draggedTopic comes before/after item
+        const { start, end } =
+          overIndex > draggedTopicIndex
+            ? { start: overIndex, end: overIndex + 1 }
+            : { start: overIndex - 1, end: overIndex };
+
+        newIndex = getIndexBetweenItems(topics[start].index, topics[end].index);
       }
-
-      if (overIndex === topics.length - 1) {
-        moveToEnd(topics[draggedTopicIndex]);
-        return;
-      }
-
-      // overTopic indexes differ depending if the draggedTopic comes before/after item
-      const { start, end } =
-        overIndex > draggedTopicIndex
-          ? { start: overIndex, end: overIndex + 1 }
-          : { start: overIndex - 1, end: overIndex };
-
-      moveBetween(topics[draggedTopicIndex], topics[start], topics[end]);
+      updateTopic({ variables: { id: topics[draggedTopicIndex].id, input: { index: newIndex } } });
     }
 
     setDraggedId(null);
@@ -89,7 +100,12 @@ export const SortableTopicsList = ({
           <SortableContext items={topics.map((topic) => topic.id)} strategy={verticalListSortingStrategy}>
             {topics.map((topic) => (
               <UITopic key={topic.id}>
-                <SortableTopicMenuItem isDisabled={isDisabled} topic={topic} isActive={activeTopicId === topic.id} />
+                <SortableTopicMenuItem
+                  isDisabled={isDisabled}
+                  room={room}
+                  topic={topic}
+                  isActive={activeTopicId === topic.id}
+                />
               </UITopic>
             ))}
           </SortableContext>
@@ -97,4 +113,4 @@ export const SortableTopicsList = ({
       </DndContext>
     </UIScrollContainer>
   );
-};
+});

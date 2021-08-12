@@ -1,59 +1,82 @@
+import { gql } from "@apollo/client";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
-import { select } from "~shared/sharedState";
-import { updateTopic } from "~frontend/gql/topics";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { routes, RouteLink } from "~frontend/router";
+import { RouteLink, routes } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { TopicDetailedInfoFragment } from "~gql";
+import { useUpdateTopic } from "~frontend/views/RoomView/shared";
+import { TopicMenuItem_RoomFragment, TopicMenuItem_TopicFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { theme } from "~ui/theme";
+import { select } from "~shared/sharedState";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EditableText } from "~ui/forms/EditableText";
 import { IconCross, IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
+import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
+
+import { useDeleteTopic } from ".//shared";
 import { ManageTopic } from "./ManageTopic";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { useTopic } from "~frontend/topics/useTopic";
 import { TopicOwner } from "./TopicOwner";
 
+const fragments = {
+  room: gql`
+    fragment TopicMenuItem_room on room {
+      id
+      space_id
+    }
+  `,
+  topic: gql`
+    fragment TopicMenuItem_topic on topic {
+      id
+      name
+      closed_at
+    }
+  `,
+};
+
 type Props = {
-  topic: TopicDetailedInfoFragment;
+  room: TopicMenuItem_RoomFragment;
+  topic: TopicMenuItem_TopicFragment;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
   rootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
-export function SortableTopicMenuItem({
-  isDisabled,
-  ...props
-}: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: props.topic.id,
-    disabled: isDisabled,
-  });
+export const SortableTopicMenuItem = withFragments(
+  fragments,
+  ({ isDisabled, ...props }: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+      id: props.topic.id,
+      disabled: isDisabled,
+    });
 
-  const style = {
-    // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-  };
+    const style = {
+      // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
+      transform: CSS.Transform.toString(transform),
+      transition: transition ?? undefined,
+    };
 
-  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
-}
+    return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
+  }
+);
 
-export const TopicMenuItem = styled<Props>(
+export const _TopicMenuItem = styled<Props>(
   observer(
     React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
-      { topic, isActive, className, isEditingDisabled, rootProps },
+      { room, topic, isActive, className, isEditingDisabled, rootProps },
       ref
     ) {
       const roomContext = useRoomStoreContext();
-      const { deleteTopic } = useTopic(topic);
+      const [updateTopic] = useUpdateTopic();
+      const [deleteTopic] = useDeleteTopic();
       const unreadCount = useTopicUnreadMessagesCount(topic.id);
       const hasUnreadMessaged = !isActive && unreadCount > 0;
 
@@ -66,7 +89,8 @@ export const TopicMenuItem = styled<Props>(
       const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
       function handleNewTopicName(newName: string) {
-        updateTopic({ topicId: topic.id, input: { name: newName } });
+        trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: newName, oldTopicName: topic.name });
+        updateTopic({ variables: { id: topic.id, input: { name: newName } } });
 
         roomContext.editingNameTopicId = null;
 
@@ -83,7 +107,7 @@ export const TopicMenuItem = styled<Props>(
           ) : (
             <RouteLink
               route={routes.spaceRoomTopic}
-              params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}
+              params={{ topicId: topic.id, roomId: room.id, spaceId: room.space_id }}
               {...props}
             />
           ),
@@ -131,7 +155,8 @@ export const TopicMenuItem = styled<Props>(
                     size="small"
                     icon={<IconCross />}
                     onClick={() => {
-                      deleteTopic();
+                      deleteTopic({ variables: { id: topic.id } });
+                      trackEvent("Deleted Topic", { topicId: topic.id });
                     }}
                   />
                 ) : (
@@ -150,6 +175,8 @@ export const TopicMenuItem = styled<Props>(
     })
   )
 )``;
+
+export const TopicMenuItem = withFragments(fragments, _TopicMenuItem);
 
 const PADDING = "12px";
 

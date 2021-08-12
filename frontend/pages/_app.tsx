@@ -1,27 +1,29 @@
 // Polyfill for :focus-visible pseudo-selector.
 import "focus-visible";
-import { useEffect } from "react";
+
+import * as Sentry from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
-import { getSession, Provider as SessionProvider } from "next-auth/client";
+import { Provider as SessionProvider, getSession } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
+import { useEffect } from "react";
 import { createGlobalStyle } from "styled-components";
+import { ThemeProvider } from "styled-components";
+
+import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
-import { global } from "~frontend/styles/global";
-import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { PromiseUIRenderer } from "~ui/createPromiseUI";
-import { POP_ANIMATION_CONFIG } from "~ui/animations";
-import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
-import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
-import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
-import { ThemeProvider } from "styled-components";
-import * as Sentry from "@sentry/nextjs";
-import { getTheme } from "~ui/theme";
+import { global } from "~frontend/styles/global";
 import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
+import { renderWithPageLayout } from "~frontend/utils/pageLayout";
+import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { PromiseUIRenderer } from "~ui/createPromiseUI";
+import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { getTheme } from "~ui/theme";
+import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {

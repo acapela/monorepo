@@ -1,16 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { gql } from "@apollo/client";
-import { slugify } from "~shared/slugify";
-import { getUUID } from "~shared/uuid";
+
 import {
-  AddTopicMemberMutation,
-  AddTopicMemberMutationVariables,
   CreateTopicMutation,
   CreateTopicMutationVariables,
-  DeleteTopicMutation,
-  DeleteTopicMutationVariables,
-  RemoveTopicMemberMutation,
-  RemoveTopicMemberMutationVariables,
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
   SingleTopicQuery,
@@ -21,16 +14,15 @@ import {
   TopicsQuery,
   TopicsQueryVariables,
   UpdateLastSeenMessageMutationVariables,
-  UpdateTopicMutation,
-  UpdateTopicMutationVariables,
 } from "~gql";
-import { addToast } from "~ui/toasts/data";
+import { assert } from "~shared/assert";
+import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
+
 import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
-import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { assert } from "~shared/assert";
 
 function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
   topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
@@ -170,63 +162,6 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
   `
 );
 
-export const [useAddTopicMemberMutation] = createMutation<AddTopicMemberMutation, AddTopicMemberMutationVariables>(
-  () => gql`
-    mutation AddTopicMember($topicId: uuid!, $userId: uuid!) {
-      insert_topic_member_one(object: { topic_id: $topicId, user_id: $userId }) {
-        topic_id
-        user_id
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      return {
-        __typename: "mutation_root",
-        insert_topic_member_one: {
-          __typename: "topic_member",
-          topic_id: vars.topicId,
-          user_id: vars.userId,
-        },
-      };
-    },
-    onOptimisticOrActualResponse(data, vars) {
-      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
-        topic.members.push({ __typename: "topic_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
-      });
-    },
-  }
-);
-
-export const [useRemoveTopicMemberMutation] = createMutation<
-  RemoveTopicMemberMutation,
-  RemoveTopicMemberMutationVariables
->(
-  () => gql`
-    mutation RemoveTopicMember($topicId: uuid!, $userId: uuid!) {
-      delete_topic_member(where: { topic_id: { _eq: $topicId }, user_id: { _eq: $userId } }) {
-        affected_rows
-      }
-    }
-  `,
-  {
-    optimisticResponse() {
-      return {
-        __typename: "mutation_root",
-        delete_topic_member: {
-          __typename: "topic_member_mutation_response",
-          affected_rows: 1,
-        },
-      };
-    },
-    onOptimisticOrActualResponse(data, vars) {
-      TopicDetailedInfoFragment.update(vars.topicId, (topic) => {
-        topic.members = topic.members.filter((member) => member.user.id !== vars.userId);
-      });
-    },
-  }
-);
-
 export const [useLastSeenMessageMutation, { mutate: updateLastSeenMessage }] = createMutation<
   UpdateLastSeenMessageMutationVariables,
   UpdateLastSeenMessageMutationVariables
@@ -266,62 +201,4 @@ export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
       }
     }
   `
-);
-
-export const [useUpdateTopicMutation, { mutate: updateTopic }] = createMutation<
-  UpdateTopicMutation,
-  UpdateTopicMutationVariables
->(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-    mutation UpdateTopic($topicId: uuid!, $input: topic_set_input!) {
-      topic: update_topic_by_pk(pk_columns: { id: $topicId }, _set: $input) {
-        ...TopicDetailedInfo
-      }
-    }
-  `,
-  {
-    inputMapper({ input }) {
-      if (input.name && !input.slug) {
-        input.slug = slugify(input.name);
-      }
-    },
-    optimisticResponse({ topicId, input }) {
-      const topic = TopicDetailedInfoFragment.assertRead(topicId);
-      const newData = getUpdatedDataWithInput(topic, input);
-      return { __typename: "mutation_root", topic: newData };
-    },
-    onOptimisticOrActualResponse(topic) {
-      RoomDetailedInfoFragment.update(topic.room.id, (data) => {
-        optimisticallySortTopics(data.topics);
-      });
-    },
-  }
-);
-
-export const [useDeleteTopicMutation] = createMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-    mutation DeleteTopic($topicId: uuid!) {
-      topic: delete_topic_by_pk(id: $topicId) {
-        ...TopicDetailedInfo
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      const topic = TopicDetailedInfoFragment.assertRead(vars.topicId);
-
-      return { __typename: "mutation_root", topic };
-    },
-    onOptimisticOrActualResponse(removedTopic) {
-      RoomDetailedInfoFragment.update(removedTopic.room.id, (room) => {
-        room.topics = room.topics.filter((topic) => topic.id !== removedTopic.id);
-      });
-    },
-
-    onActualResponse() {
-      addToast({ type: "success", title: `Topic was removed` });
-    },
-  }
 );

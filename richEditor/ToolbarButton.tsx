@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
-import { PRIMARY_COLOR, WHITE } from "~ui/theme/colors/base";
-import { disabledCss } from "~ui/disabled";
-import { getButtonColorStyles } from "~ui/transitions";
+
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { borderRadius } from "~ui/baseStyles";
+import { disabledCss } from "~ui/disabled";
+import { PRIMARY_COLOR, WHITE } from "~ui/theme/colors/base";
+import { getButtonColorStyles } from "~ui/transitions";
 
 interface Props {
   icon: ReactNode;

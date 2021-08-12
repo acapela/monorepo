@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
-import styled, { css, StylesPart } from "styled-components";
+import styled, { StylesPart, css } from "styled-components";
+
 import { theme } from "~ui/theme";
+
 import { ButtonKind, ButtonSize } from "./types";
 
 export interface Props {

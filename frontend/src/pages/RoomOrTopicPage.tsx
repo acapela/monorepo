@@ -1,6 +1,7 @@
 import React from "react";
-import { routes } from "~frontend/router";
+
 import { RoomPage } from "~frontend/rooms/RoomPage";
+import { routes } from "~frontend/router";
 
 export function RoomOrTopicPage() {
   const topicParams = routes.spaceRoomTopic.useParams()?.route;

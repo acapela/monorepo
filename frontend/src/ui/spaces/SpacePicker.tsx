@@ -1,15 +1,16 @@
+import { gql } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+
 import { createSpace } from "~frontend/gql/spaces";
+import { createQuery } from "~frontend/gql/utils";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpacePickerQuery, SpacePickerQueryVariables } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { IconSelection } from "~ui/icons";
-import { createQuery } from "~frontend/gql/utils";
-import { gql } from "@apollo/client";
 
 interface Props {
   selectedSpaceId: string | null;

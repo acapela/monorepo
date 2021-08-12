@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { Button } from "~ui/buttons/Button";
-import { TextInput } from "~ui/forms/TextInput";
-import { Modal, ModalAnchor } from "~frontend/ui/Modal";
-import { createPromiseUI } from "~ui/createPromiseUI";
+import { ReactNode } from "react";
 import styled from "styled-components";
+
+import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { InputValidatorFunction } from "~shared/validation/inputValidation";
-import { ReactNode } from "react";
+import { Button } from "~ui/buttons/Button";
+import { createPromiseUI } from "~ui/createPromiseUI";
+import { TextInput } from "~ui/forms/TextInput";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface PromptInput {
   title: string;

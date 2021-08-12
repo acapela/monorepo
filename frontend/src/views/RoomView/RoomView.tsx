@@ -1,11 +1,14 @@
+import { gql } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { useIsCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+
+import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { RoomDetailedInfoFragment } from "~gql";
+import { RoomView_RoomFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
@@ -14,35 +17,60 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
-import { trackEvent } from "~frontend/analytics/tracking";
+
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
+import { useUpdateRoom } from "./shared";
 import { TopicsList } from "./TopicsList";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+    ${getRoomManagePopoverOptions.fragments.room}
+    ${RoomSidebarInfo.fragments.room}
+    ${TopicsList.fragments.room}
+
+    fragment RoomView_room on room {
+      id
+      name
+      finished_at
+      is_private
+      source_google_calendar_event_id
+      ...IsCurrentUserRoomMember_room
+      ...EditOptions_room
+      ...RoomSidebarInfo_room
+      ...TopicList_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: RoomView_RoomFragment;
   selectedTopicId: string | null;
   children: React.ReactNode;
 }
 
-export function RoomView(props: Props) {
+export const RoomView = withFragments(fragments, function RoomView(props: Props) {
   return (
     // Re-create context if re-rendered for a different room
     <RoomStoreContext key={props.room.id}>
       <RoomViewDisplayer {...props} />
     </RoomStoreContext>
   );
-}
+});
 
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
-  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
+  const amIMember = useIsCurrentUserRoomMember(room);
+
+  const [updateRoom] = useUpdateRoom();
+  const [deleteRoom] = useDeleteRoom();
 
   const isRoomOpen = !room.finished_at;
 
   async function handleRoomNameChange(newName: string) {
     const oldRoomName = room.name;
-    await updateRoom({ roomId: room.id, input: { name: newName } });
+    await updateRoom({ variables: { id: room.id, input: { name: newName } } });
     trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
 
@@ -76,8 +104,11 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
                 {amIMember && (
                   <PopoverMenuTrigger
-                    options={getRoomManagePopoverOptions(room, {
+                    options={getRoomManagePopoverOptions({
+                      room,
                       onEditRoomNameRequest: () => enterNameEditMode(),
+                      onUpdateRoom: (variables) => updateRoom({ variables }),
+                      onDeleteRoom: (variables) => deleteRoom({ variables }),
                     })}
                   >
                     <CircleOptionsButton />

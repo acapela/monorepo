@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { useMemo } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
-import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { createTeamIvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { useMemo } from "react";
-import { trackEvent } from "~frontend/analytics/tracking";
 import { Button } from "~ui/buttons/Button";
+import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { IconPlusSquare } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 

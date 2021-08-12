@@ -1,37 +1,70 @@
+import { gql } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import styled, { css } from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
-import { useTopic } from "~frontend/topics/useTopic";
+import { isTopicClosed } from "~frontend/topics/utils";
+import { useUpdateTopic } from "~frontend/views/RoomView/shared";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
-import { TopicDetailedInfoFragment } from "~gql";
+import { TopicHeader_RoomFragment, TopicHeader_TopicFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 import { TextH3 } from "~ui/typo";
+
 import { CloseTopicModal } from "./CloseTopicModal";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+
+    fragment TopicHeader_room on room {
+      id
+      finished_at
+      ...IsCurrentUserRoomMember_room
+    }
+  `,
+  topic: gql`
+    ${isTopicClosed.fragments.topic}
+
+    fragment TopicHeader_topic on topic {
+      id
+      name
+      ...IsTopicClosed_topic
+    }
+  `,
+};
+
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  room: TopicHeader_RoomFragment;
+  topic: TopicHeader_TopicFragment;
+  className?: string;
 }
 
-export const TopicHeader = ({ topic }: Props) => {
+const _TopicHeader = ({ room, topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isMember = useIsCurrentUserRoomMember(topic.room);
+  const user = useAssertCurrentUser();
+  const isMember = useIsCurrentUserRoomMember(room);
+  const [updateTopic] = useUpdateTopic();
+  const isClosed = isTopicClosed(topic);
   const isTopicManager = useIsCurrentUserTopicManager(topic);
-
-  const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
   return (
     <UIHolder>
       <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
-      {isParentRoomOpen && (
+      {!room.finished_at && (
         <UIActions>
           {isClosed && (
             <UIToggleCloseButton
-              onClick={openTopic}
-              isLoading={loading}
+              onClick={() => {
+                updateTopic({ variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null } } });
+                trackEvent("Reopened Topic");
+              }}
               isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
             >
               Reopen Topic
@@ -51,16 +84,30 @@ export const TopicHeader = ({ topic }: Props) => {
       <AnimatePresence>
         {isClosingTopic && (
           <CloseTopicModal
+            loading={false}
             topicId={topic.id}
-            loading={loading}
             onDismissRequest={() => closeClosingModal()}
-            onTopicClosed={(topicSummary) => closeTopic(topicSummary)}
+            onTopicClosed={(topicSummary) => {
+              updateTopic({
+                variables: {
+                  id: topic.id,
+                  input: {
+                    closed_at: new Date().toISOString(),
+                    closed_by_user_id: user.id,
+                    closing_summary: topicSummary,
+                  },
+                },
+              });
+              trackEvent("Closed Topic", { topicId: topic.id });
+            }}
           />
         )}
       </AnimatePresence>
     </UIHolder>
   );
 };
+
+export const TopicHeader = withFragments(fragments, _TopicHeader);
 
 const UIHolder = styled.div<{}>`
   display: flex;

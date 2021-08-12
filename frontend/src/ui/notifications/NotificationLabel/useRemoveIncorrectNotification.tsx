@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { NotificationInfoFragment } from "~gql";
+
 import { removeNotification } from "~frontend/gql/notifications";
+import { NotificationInfoFragment } from "~gql";
 
 interface UseRemoveIncorrectNotificationInput {
   isLoading: boolean;

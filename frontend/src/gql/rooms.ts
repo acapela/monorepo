@@ -1,23 +1,16 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
-  AddRoomMemberMutation,
-  AddRoomMemberMutationVariables,
-  CloseOpenTopicsMutation,
-  CloseOpenTopicsMutationVariables,
   CreateRoomMutation,
   CreateRoomMutationVariables,
   DeleteRoomMutation,
   DeleteRoomMutationVariables,
+  IsCurrentUserRoomMember_RoomFragment,
   PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
-  RemoveRoomMemberMutation,
-  RemoveRoomMemberMutationVariables,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
-  RoomParticipantBasicInfoFragment as RoomParticipantBasicInfoFragmentType,
-  RoomParticipantsQuery,
-  RoomParticipantsQueryVariables,
   RoomsInSpaceQuery,
   RoomsInSpaceQueryVariables,
   RoomsQuery,
@@ -26,19 +19,16 @@ import {
   SinglePrivateRoomQueryVariables,
   SingleRoomQuery,
   SingleRoomQueryVariables,
-  UpdateRoomMutation,
-  UpdateRoomMutationVariables,
 } from "~gql";
+import { assert } from "~shared/assert";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
-import { addToast } from "~ui/toasts/data";
+
 import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
-import { createFragment, createMutation, createQuery } from "./utils";
-import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { assert } from "~shared/assert";
+import { createFragment, createMutation, createQuery, withFragments } from "./utils";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -104,17 +94,6 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
   `
 );
 
-const RoomParticipantBasicInfoFragment = createFragment<RoomParticipantBasicInfoFragmentType>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-    fragment RoomParticipantBasicInfo on room_member {
-      user {
-        ...UserBasicInfo
-      }
-    }
-  `
-);
-
 export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQueryVariables>(
   () => gql`
     ${RoomBasicInfoFragment()}
@@ -169,11 +148,23 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
   `
 );
 
-export function useIsCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
-  const user = useAssertCurrentUser();
-
-  return room?.members.some((member) => member.user.id === user.id) ?? false;
-}
+export const useIsCurrentUserRoomMember = withFragments(
+  {
+    room: gql`
+      fragment IsCurrentUserRoomMember_room on room {
+        members {
+          user {
+            id
+          }
+        }
+      }
+    `,
+  },
+  function useIsCurrentUserRoomMember(room?: IsCurrentUserRoomMember_RoomFragment) {
+    const user = useAssertCurrentUser();
+    return room?.members.some((member) => member.user.id === user.id) ?? false;
+  }
+);
 
 export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
   CreateRoomMutation,
@@ -243,140 +234,11 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
   }
 );
 
-export const [useRoomParticipantsQuery] = createQuery<RoomParticipantsQuery, RoomParticipantsQueryVariables>(
-  () => gql`
-    ${RoomParticipantBasicInfoFragment()}
-
-    query RoomParticipants($roomId: uuid!) {
-      members: room_member(where: { room_id: { _eq: $roomId } }) {
-        ...RoomParticipantBasicInfo
+export const useDeleteRoom = () =>
+  useMutation<DeleteRoomMutation, DeleteRoomMutationVariables>(gql`
+    mutation DeleteRoom($id: uuid!) {
+      room: delete_room_by_pk(id: $id) {
+        id
       }
     }
-  `
-);
-
-export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, AddRoomMemberMutationVariables>(
-  () => gql`
-    mutation AddRoomMember($roomId: uuid!, $userId: uuid!) {
-      insert_room_member_one(object: { room_id: $roomId, user_id: $userId }) {
-        room_id
-        user_id
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      return {
-        __typename: "mutation_root",
-        insert_room_member_one: { __typename: "room_member", user_id: vars.userId, room_id: vars.roomId },
-      };
-    },
-    onOptimisticOrActualResponse(data, vars) {
-      RoomDetailedInfoFragment.update(vars.roomId, (room) => {
-        room.members.push({ __typename: "room_member", user: UserBasicInfoFragment.assertRead(vars.userId) });
-      });
-    },
-    onActualResponse() {
-      addToast({ type: "success", title: `Room member was added` });
-    },
-  }
-);
-
-export const [useRemoveRoomMemberMutation] = createMutation<
-  RemoveRoomMemberMutation,
-  RemoveRoomMemberMutationVariables
->(
-  () => gql`
-    mutation RemoveRoomMember($roomId: uuid!, $userId: uuid!) {
-      delete_room_member(where: { room_id: { _eq: $roomId }, user_id: { _eq: $userId } }) {
-        affected_rows
-      }
-    }
-  `,
-  {
-    optimisticResponse() {
-      return {
-        __typename: "mutation_root",
-        delete_room_member: { __typename: "room_member_mutation_response", affected_rows: 1 },
-      };
-    },
-    onOptimisticOrActualResponse(data, vars) {
-      RoomDetailedInfoFragment.update(vars.roomId, (room) => {
-        room.members = room.members.filter((member) => member.user.id !== vars.userId);
-      });
-    },
-    onActualResponse() {
-      addToast({ type: "success", title: `Room member was removed` });
-    },
-  }
-);
-
-export const [useUpdateRoomMutation, { mutate: updateRoom }] = createMutation<
-  UpdateRoomMutation,
-  UpdateRoomMutationVariables
->(
-  () => gql`
-    ${RoomDetailedInfoFragment()}
-    mutation UpdateRoom($roomId: uuid!, $input: room_set_input!) {
-      room: update_room_by_pk(pk_columns: { id: $roomId }, _set: $input) {
-        ...RoomDetailedInfo
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      const existingData = RoomDetailedInfoFragment.assertRead(vars.roomId);
-      const newData = getUpdatedDataWithInput(existingData, vars.input);
-
-      return {
-        __typename: "mutation_root",
-        room: newData,
-      };
-    },
-  }
-);
-
-export const [useDeleteRoomMutation, { mutate: deleteRoom }] = createMutation<
-  DeleteRoomMutation,
-  DeleteRoomMutationVariables
->(
-  () => gql`
-    ${RoomDetailedInfoFragment()}
-    mutation DeleteRoom($roomId: uuid!) {
-      room: delete_room_by_pk(id: $roomId) {
-        ...RoomDetailedInfo
-      }
-    }
-  `,
-  {
-    optimisticResponse(vars) {
-      return {
-        __typename: "mutation_root",
-        room: RoomDetailedInfoFragment.assertRead(vars.roomId),
-      };
-    },
-    onOptimisticOrActualResponse(removedRoom) {
-      if (!removedRoom.space_id) return;
-      SpaceDetailedInfoFragment.update(removedRoom.space_id, (space) => {
-        space.rooms = space.rooms.filter((room) => room.id !== removedRoom.id);
-      });
-
-      updateHomeviewQuery((result) => {
-        result.rooms = result.rooms.filter((room) => room.id !== removedRoom.id);
-      });
-    },
-  }
-);
-
-export const [useCloseOpenTopicsMutation] = createMutation<CloseOpenTopicsMutation, CloseOpenTopicsMutationVariables>(
-  () => gql`
-    mutation CloseOpenTopics($roomId: uuid!, $closedAt: timestamp, $closedByUserId: uuid) {
-      update_topic(
-        where: { room_id: { _eq: $roomId } }
-        _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId }
-      ) {
-        affected_rows
-      }
-    }
-  `
-);
+  `);

@@ -1,4 +1,4 @@
-import { css, StaticInterpolation } from "styled-components";
+import { StaticInterpolation, css } from "styled-components";
 
 export function propValueStyles<P, K extends keyof P>(name: K, value: P[K], styles: StaticInterpolation | string) {
   return function applied(props: P): StaticInterpolation | undefined {

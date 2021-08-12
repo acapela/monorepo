@@ -27,8 +27,8 @@ model attachment {
   original_name    String
   mime_type        String
   message_id       String?        @db.Uuid
-  transcription_id String?        @db.Uuid
   user_id          String?        @db.Uuid
+  transcription_id String?        @db.Uuid
   message          message?       @relation(fields: [message_id], references: [id])
   transcription    transcription? @relation(fields: [transcription_id], references: [id])
   user             user?          @relation(fields: [user_id], references: [id])
@@ -164,6 +164,7 @@ model team_invitation {
 model team_member {
   team_id String @db.Uuid
   user_id String @db.Uuid
+  id      String @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   team    team   @relation(fields: [team_id], references: [id])
   user    user   @relation(fields: [user_id], references: [id])
 
@@ -222,6 +223,8 @@ model user {
   created_at                                             DateTime            @default(now()) @db.Timestamptz(6)
   email_verified                                         DateTime?           @db.Timestamptz(6)
   current_team_id                                        String?             @db.Uuid
+  notify_email                                           Boolean             @default(true)
+  notify_slack                                           Boolean             @default(true)
   team_teamTouser_current_team_id                        team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
   account                                                account[]
   attachment                                             attachment[]

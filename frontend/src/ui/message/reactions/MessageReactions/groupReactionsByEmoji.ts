@@ -1,13 +1,25 @@
-import { ReactionBasicInfoFragment } from "~gql";
+import { gql } from "@apollo/client";
 
-export const groupReactionsByEmoji = (
-  reactions: ReactionBasicInfoFragment[]
-): Record<string, ReactionBasicInfoFragment[]> => {
-  return reactions.reduce((acc: Record<string, ReactionBasicInfoFragment[]>, reaction) => {
-    acc[reaction.emoji] = acc[reaction.emoji] || [];
+import { withFragments } from "~frontend/gql/utils";
+import { GroupReactionsByEmoji_ReactionFragment } from "~gql";
 
-    acc[reaction.emoji].push(reaction);
+type Reaction = GroupReactionsByEmoji_ReactionFragment;
 
-    return acc;
-  }, {});
-};
+export const groupReactionsByEmoji = withFragments(
+  {
+    message_reaction: gql`
+      fragment GroupReactionsByEmoji_reaction on message_reaction {
+        emoji
+      }
+    `,
+  },
+  (reactions: Reaction[]): Record<string, Reaction[]> => {
+    return reactions.reduce((acc: Record<string, Reaction[]>, reaction) => {
+      acc[reaction.emoji] = acc[reaction.emoji] || [];
+
+      acc[reaction.emoji].push(reaction);
+
+      return acc;
+    }, {});
+  }
+);

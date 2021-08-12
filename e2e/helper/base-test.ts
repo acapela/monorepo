@@ -1,7 +1,8 @@
-import { get } from "lodash";
 import { test as rootTest } from "@playwright/test";
+import { get } from "lodash";
+
 import { domain } from "./constants";
-import type { setupDatabase, TestUser } from "./db";
+import type { TestUser, setupDatabase } from "./db";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
