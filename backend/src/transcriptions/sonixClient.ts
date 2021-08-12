@@ -38,15 +38,15 @@ const SONIX_API_URL = "https://api.sonix.ai/v1";
  */
 async function getPublicBackendUrl() {
   if (isDev()) {
-    return getDevPublicTunnel();
+    return `${await getDevPublicTunnel()}/api`;
   }
 
-  return process.env.BACKEND_HOST;
+  return process.env.BACKEND_API_ENDPOINT;
 }
 
 export async function getSonixCallbackUrl() {
   const backendUrl = await getPublicBackendUrl();
-  const endpoint = "/api/v1/transcriptions";
+  const endpoint = "/v1/transcriptions";
 
   assert(backendUrl, "Failed to build callback URL");
 
