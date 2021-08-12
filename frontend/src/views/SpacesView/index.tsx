@@ -10,6 +10,7 @@ import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconPlusSquare, IconSelection } from "~ui/icons";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { PageHeader } from "~frontend/layouts/AppLayout/PageHeader";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { getUUID } from "~shared/uuid";
 
 export function SpacesView() {
@@ -37,6 +38,7 @@ export function SpacesView() {
     createSpace({ input: { name: spaceName, team_id: teamId, id: spaceId } });
 
     routes.space.push({ spaceId });
+    trackEvent("Created Space", { spaceName, teamId });
   }
 
   return (

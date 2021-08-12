@@ -25,11 +25,12 @@ export type AnalyticsEventsMap = {
   "Trial Started": void;
   // can be ignored for now
   "Trial Ended": void;
-  "Created Space": void;
+  "Created Space": { spaceName: string; teamId: string };
   // current user or when current user adds someone else
-  "Joined Space": void;
-  "Left Space": void;
-  "Deleted Space": void;
+  "Joined Space": { spaceId: string; userId: string };
+  "Left Space": { spaceId: string; userId: string };
+  "Deleted Space": { spaceId: string };
+  "Renamed Space": { spaceId: string; newSpaceName: string; oldSpaceName: string };
   "Created Room": void;
   "Joined Room": void;
   "Left Room": void;
