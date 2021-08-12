@@ -13,12 +13,12 @@ import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
 interface Props {
-  defaultWidth: number;
-  availableSpace: number;
+  defaultWidthInPx: number;
+  availableSpaceInPx: number;
 }
 
 export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function TopBarSearchBar(
-  { defaultWidth, availableSpace }: Props,
+  { defaultWidthInPx, availableSpaceInPx }: Props,
   staticSearchBarRef
 ) {
   // All of apple computers use "Mac".
@@ -41,8 +41,8 @@ export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function T
   return (
     <>
       <UIHolder
-        defaultWidth={defaultWidth}
-        availableSpace={availableSpace}
+        defaultWidthInPx={defaultWidthInPx}
+        availableSpaceInPx={availableSpaceInPx}
         ref={staticSearchBarRef}
         onClick={handleSearchBarModalOpen}
       >
@@ -79,23 +79,23 @@ const UIShortcutIndicator = styled.div<{}>`
   ${theme.font.body14.build}
 `;
 
-const UIHolder = styled.div<{ defaultWidth: number; availableSpace: number }>`
+const UIHolder = styled.div<{ defaultWidthInPx: number; availableSpaceInPx: number }>`
   padding: 14px;
 
   height: 32px;
-  width: ${({ defaultWidth }) => defaultWidth}px;
+  width: ${({ defaultWidthInPx: defaultWidth }) => defaultWidth}px;
 
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 
-  ${({ availableSpace, defaultWidth }) => {
-    if (availableSpace >= defaultWidth) {
+  ${({ availableSpaceInPx, defaultWidthInPx }) => {
+    if (availableSpaceInPx >= defaultWidthInPx) {
       return;
     }
 
-    if (availableSpace < 100) {
+    if (availableSpaceInPx < 100) {
       return css`
         padding: 8px;
         width: 32px;
@@ -110,7 +110,7 @@ const UIHolder = styled.div<{ defaultWidth: number; availableSpace: number }>`
       `;
     }
 
-    if (availableSpace < 150) {
+    if (availableSpaceInPx < 150) {
       return css`
         ${UIShortcutIndicator} {
           display: none;
