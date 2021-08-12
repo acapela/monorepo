@@ -62,6 +62,9 @@ export function RoomSummaryView({ room }: Props) {
           <UITitle>Room Summary</UITitle>
           {room && room.finished_at && <UIRoomClosingTime>Created {formatDate(room.finished_at)}</UIRoomClosingTime>}
         </UIHeader>
+
+        <UILine />
+
         <UITopicSummaries>
           {room?.topics.map((topic) => (
             <TopicSummary key={topic.id} topic={topic} />
@@ -108,10 +111,17 @@ const UIHeader = styled.div<{}>`
   gap: 8px;
 `;
 
+const UILine = styled.hr<{}>`
+  margin: 24px 0;
+  width: 100%;
+  height: 1px;
+  background: ${theme.colors.layout.softLine()};
+`;
+
 const UITopicSummaries = styled.div<{}>`
   display: grid;
   gap: 16px;
-  padding: 40px 0;
+  padding-bottom: 32px;
 `;
 
 const UIAdditionalNotes = styled(TextArea)<{}>`
