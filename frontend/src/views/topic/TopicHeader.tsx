@@ -11,21 +11,12 @@ import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 
 interface Props {
-  topic?: TopicDetailedInfoFragment | null;
-  className?: string;
-}
-
-export const TopicHeader = styled(function TopicHeader({ topic, className }: Props) {
-  return <UIHolder className={className}>{topic && <TopicHeaderContent topic={topic} />}</UIHolder>;
-})``;
-
-interface TopicHeaderContentProps {
   topic: TopicDetailedInfoFragment;
 }
 
-const TopicHeaderContent = ({ topic }: TopicHeaderContentProps) => {
+export const TopicHeader = ({ topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isMember = isCurrentUserRoomMember(topic?.room);
+  const isMember = isCurrentUserRoomMember(topic.room);
   const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
@@ -71,12 +62,6 @@ const TopicHeaderContent = ({ topic }: TopicHeaderContentProps) => {
     </>
   );
 };
-
-const UIHolder = styled.div<{}>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 const UITitle = styled(TextH3)<{ isClosed: boolean }>`
   padding: 0 25%;
