@@ -3,9 +3,10 @@ interface AnyEvent {
   preventDefault: () => void;
 }
 
-export function handleWithStopPropagation<E extends AnyEvent>(handler?: (event: E) => void) {
-  return function handle(event: E) {
+export function handleWithStopPropagation<E extends AnyEvent>(handler?: (event?: E) => void) {
+  return function handle(event?: E) {
     event?.stopPropagation?.();
+
     handler?.(event);
   };
 }

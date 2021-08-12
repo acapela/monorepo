@@ -34,6 +34,8 @@ export function PlaybackControls({
   const progress = time / duration;
 
   function handleProgressBarMouseEvent(event: MouseEvent) {
+    event.stopPropagation();
+
     const target = event.target as HTMLDivElement;
     const barRect = target.getBoundingClientRect();
 
@@ -64,7 +66,7 @@ export function PlaybackControls({
           {!isPlaying && <IconPlay />}
         </UITogglePlayButton>
       </AnimatePresence>
-      <UIProgressBar onClick={handleWithStopPropagation(handleProgressBarMouseEvent)}>
+      <UIProgressBar onClick={handleProgressBarMouseEvent}>
         <UIProgressInner>
           <UIProgressBarProgressIndicator
             animate={{ width: `${progress * 100}%` }}
