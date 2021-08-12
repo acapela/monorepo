@@ -24,6 +24,7 @@ export type {
   whitelist as Whitelist,
   notification as Notification,
   PrismaPromise,
+  Prisma,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

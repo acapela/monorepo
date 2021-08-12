@@ -1,118 +1,102 @@
 import axios, { Method } from "axios";
 import querystring from "querystring";
 import { assert, assertDefined } from "~shared/assert";
-import { getTunnelPublicUrl } from "../localtunnel";
-import { isDev } from "../utils";
+import { isDev } from "~shared/dev";
+import { SonixTranscriptData } from "~shared/types/transcript";
+import { getDevPublicTunnel } from "../localtunnel";
+import { SonixCustomData } from "./customData";
 
-interface SonixOptions {
-  key?: string;
-}
-
-interface SonixRequestOptions {
+interface SonixRequestOptions<Input = Record<string, string>> {
   method: Method;
   path: string;
-  formData?: { [key: string]: string };
+  formData?: Input;
 }
 
-export interface MediaResponse {
+export interface SonixMediaResponse {
   id: string;
   name: string;
   status: "preparing" | "transcribing" | "completed" | "blocked" | "failed";
   language: string;
   created_at: number;
   public_url: string;
-  custom_data: { messageId: string };
-}
-
-export interface JsonTranscriptResponse {
-  name: string;
-  transcript: {
-    speaker: string;
-    start_time: number;
-    end_time: number;
-    words: {
-      text: string;
-      start_time: number;
-      end_time: number;
-    }[];
-  }[];
+  custom_data: SonixCustomData;
 }
 
 const sonixCallbackSecret = assertDefined(process.env.SONIX_CALLBACK_SECRET, "SONIX_CALLBACK_SECRET is required");
 
-let sonixClient: Sonix;
+const SONIX_API_URL = "https://api.sonix.ai/v1";
 
-class Sonix {
-  private url = "https://api.sonix.ai/v1";
-  private key: string;
-
-  constructor({ key = process.env.SONIX_API_KEY }: SonixOptions = {}) {
-    const sonixApiKey = assertDefined(key, "Sonix API key is required");
-
-    this.key = sonixApiKey;
+/**
+ * Sonix will take some time to prepare the transcript and it'll let us know when it is ready.
+ *
+ * Thus, to let us know it has to know some url to call.
+ *
+ * In production it is normal, public url of the backend, but when testing locally we need some way of 'outer' world
+ * to let us know.
+ *
+ * Because of that, we're using tunnel that will create 'proxy' connecting to localhost and get us public url.
+ */
+async function getPublicBackendUrl() {
+  if (isDev()) {
+    return getDevPublicTunnel();
   }
 
-  private async getCallbackUrl() {
-    const domain = isDev() ? await getTunnelPublicUrl() : process.env.BACKEND_HOST;
-    const endpoint = "/api/v1/transcriptions";
-
-    assert(domain, "Failed to build callback URL");
-
-    return `${domain}${endpoint}?secret=${encodeURIComponent(sonixCallbackSecret)}`;
-  }
-
-  private async doRequest({ method, path, formData }: SonixRequestOptions) {
-    const { data } = await axios({
-      method,
-      url: `${this.url}${path}`,
-      headers: {
-        Authorization: `Bearer ${this.key}`,
-      },
-      data: querystring.encode(formData),
-    });
-
-    return data;
-  }
-
-  public async submitNewMedia({
-    messageId,
-    fileUrl,
-    fileName,
-    language,
-  }: {
-    messageId: string;
-    fileUrl: string;
-    fileName: string;
-    language: string;
-  }): Promise<MediaResponse> {
-    const callbackUrl = await this.getCallbackUrl();
-    const formData = {
-      file_url: fileUrl,
-      name: fileName,
-      language,
-      callback_url: callbackUrl,
-      custom_data: JSON.stringify({ messageId }),
-    };
-
-    return await this.doRequest({
-      method: "POST",
-      path: "/media",
-      formData,
-    });
-  }
-
-  public async getJsonTranscript({ mediaId }: { mediaId: string }): Promise<JsonTranscriptResponse> {
-    return await this.doRequest({
-      method: "GET",
-      path: `/media/${mediaId}/transcript.json`,
-    });
-  }
+  return process.env.BACKEND_HOST;
 }
 
-export function getSonixClient() {
-  if (!sonixClient) {
-    sonixClient = new Sonix();
-  }
+export async function getSonixCallbackUrl() {
+  const backendUrl = await getPublicBackendUrl();
+  const endpoint = "/api/v1/transcriptions";
 
-  return sonixClient;
+  assert(backendUrl, "Failed to build callback URL");
+
+  return `${backendUrl}${endpoint}?secret=${encodeURIComponent(sonixCallbackSecret)}`;
+}
+
+async function sendSonixRequest<Output>({ method, path, formData }: SonixRequestOptions) {
+  const { data } = await axios({
+    method,
+    url: `${SONIX_API_URL}${path}`,
+    headers: {
+      Authorization: `Bearer ${process.env.SONIX_API_KEY}`,
+    },
+    data: querystring.encode(formData),
+  });
+
+  return data as Output;
+}
+
+export async function requestSonixMediaTranscript({
+  attachmentId,
+  fileUrl,
+  fileName,
+  language,
+}: {
+  attachmentId: string;
+  fileUrl: string;
+  fileName: string;
+  language: string;
+}): Promise<SonixMediaResponse> {
+  const callbackUrl = await getSonixCallbackUrl();
+
+  const formData = {
+    file_url: fileUrl,
+    name: fileName,
+    language,
+    callback_url: callbackUrl,
+    custom_data: JSON.stringify({ attachmentId } as SonixCustomData),
+  };
+
+  return await sendSonixRequest<SonixMediaResponse>({
+    method: "POST",
+    path: "/media",
+    formData,
+  });
+}
+
+export async function fetchSonixTranscriptForMedia(mediaId: string): Promise<SonixTranscriptData> {
+  return await sendSonixRequest<SonixTranscriptData>({
+    method: "GET",
+    path: `/media/${mediaId}/transcript.json`,
+  });
 }

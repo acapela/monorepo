@@ -12,6 +12,9 @@
     - name: message
       using:
         foreign_key_constraint_on: message_id
+    - name: transcription
+      using:
+        foreign_key_constraint_on: transcription_id
   insert_permissions:
     - role: user
       permission:
@@ -73,38 +76,6 @@
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: full_text_search
-  object_relationships:
-    - name: room
-      using:
-        manual_configuration:
-          remote_table:
-            schema: public
-            name: room
-          column_mapping:
-            room_id: id
-  select_permissions:
-    - role: user
-      permission:
-        columns:
-          - room_id
-          - room_name
-          - user_id
-          - topic_id
-          - topic_name
-          - message_created_at
-          - message_type
-          - message_id
-          - message_content
-          - transcription_id
-          - attachment_id
-          - attachment_name
-          - transcript
-        filter:
-          user_id:
-            _eq: X-Hasura-User-Id
-- table:
-    schema: public
     name: last_seen_message
   insert_permissions:
     - role: user
@@ -157,9 +128,6 @@
     - name: topic
       using:
         foreign_key_constraint_on: topic_id
-    - name: transcription
-      using:
-        foreign_key_constraint_on: transcription_id
     - name: user
       using:
         foreign_key_constraint_on: user_id
@@ -221,7 +189,6 @@
       permission:
         columns:
           - content
-          - content_text
           - created_at
           - id
           - is_draft
@@ -271,7 +238,6 @@
             - id
             - replied_to_message_id
             - topic_id
-            - transcription_id
             - user_id
       retry_conf:
         num_retries: 5
@@ -1326,6 +1292,14 @@
 - table:
     schema: public
     name: transcription
+  array_relationships:
+    - name: attachments
+      using:
+        foreign_key_constraint_on:
+          column: transcription_id
+          table:
+            schema: public
+            name: attachment
   select_permissions:
     - role: user
       permission:
@@ -1335,10 +1309,14 @@
           - status
           - transcript
           - updated_at
-        filter: {}
-- table:
-    schema: public
-    name: transcription_full_text
+        filter:
+          attachments:
+            message:
+              topic:
+                room:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: transcription_status
