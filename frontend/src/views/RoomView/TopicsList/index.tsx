@@ -2,6 +2,7 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
+import { getUUID } from "~shared/uuid";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
@@ -10,7 +11,6 @@ import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { routes, RouteLink } from "~frontend/router";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { RoomDetailedInfoFragment } from "~gql";
-import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
 import { Button } from "~ui/buttons/Button";
@@ -54,7 +54,9 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   async function handleCreateNewTopic() {
-    await startCreateNewTopicFlow({
+    const topicId = getUUID();
+    const newTopic = await startCreateNewTopicFlow({
+      topicId,
       ownerId: user.id,
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
@@ -62,19 +64,16 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
       navigateAfterCreation: true,
       index: getNewTopicIndex(topics, activeTopicId),
     });
-  }
 
-  useNewItemInArrayEffect(
-    topics,
-    (topic) => topic.id,
-    (newTopic) => {
-      runInAction(() => {
-        roomContext.newTopicId = newTopic.id;
-        roomContext.editingNameTopicId = newTopic.id;
-      });
+    runInAction(() => {
+      roomContext.newTopicId = topicId;
+      roomContext.editingNameTopicId = topicId;
+    });
+
+    if (newTopic) {
       routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
     }
-  );
+  }
 
   return (
     <CollapsePanel

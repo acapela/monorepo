@@ -10,6 +10,7 @@ import {
 } from "~shared/notifications/types";
 import { NotificationPlainLabel } from "./NotificationPlainLabel";
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
+import { useRemoveIncorrectNotification } from "./useRemoveIncorrectNotification";
 
 interface Props {
   notification: NotificationInfoFragment;
@@ -54,8 +55,14 @@ function MentionNotificationLabel({
   payload: { mentionedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicMention">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const mentioningUser = useCurrentTeamMember(mentionedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [mentioningUser, isUserLoading] = useCurrentTeamMember(mentionedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !mentioningUser,
+    notification,
+  });
 
   if (!topic || !mentioningUser) return null;
 
@@ -78,8 +85,14 @@ function TopicClosedNotificationLabel({
   payload: { closedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicClosed">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const closingUser = useCurrentTeamMember(closedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !closingUser,
+    notification,
+  });
 
   if (!topic || !closingUser) return null;
 
@@ -102,8 +115,14 @@ function TopicAssignedNotificationLabel({
   payload: { assignedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicAssigned">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const assigningUser = useCurrentTeamMember(assignedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [assigningUser, isUserLoading] = useCurrentTeamMember(assignedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !assigningUser,
+    notification,
+  });
 
   if (!topic || !assigningUser) return null;
 
@@ -126,8 +145,14 @@ function AddedToTopicClosedNotificationLabel({
   payload: { addedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"addedToTopic">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const addedByUser = useCurrentTeamMember(addedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [addedByUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !addedByUser,
+    notification,
+  });
 
   if (!topic || !addedByUser) return null;
 
@@ -150,8 +175,14 @@ function RoomClosedNotificationLabel({
   payload: { closedByUserId, roomId },
   notification,
 }: NotificationTypeComponentProps<"roomClosed">) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-  const closingUser = useCurrentTeamMember(closedByUserId);
+  const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
+  const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !closingUser,
+    notification,
+  });
 
   // TODO: Sentry - add info in case of incorrect data
   if (!room || !closingUser) return null;
@@ -175,8 +206,14 @@ function AddedToRoomClosedNotificationLabel({
   payload: { roomId, addedByUserId },
   notification,
 }: NotificationTypeComponentProps<"addedToRoom">) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-  const addingUser = useCurrentTeamMember(addedByUserId);
+  const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
+  const [addingUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !addingUser,
+    notification,
+  });
 
   if (!room || !addingUser) return null;
 
