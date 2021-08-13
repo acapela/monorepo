@@ -8,8 +8,6 @@ interface Props {
 }
 
 export const RoomOwner = ({ room }: Props) => {
-  if (!room.owner) return null;
-
   return (
     <UIHolder data-tooltip={`${room.owner.name} (Room Owner)`}>
       <UserAvatar disableNameTooltip size="medium" user={room.owner} />

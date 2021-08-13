@@ -5925,8 +5925,8 @@ type room {
   """
   An object relationship
   """
-  owner: user
-  owner_id: uuid
+  owner: user!
+  owner_id: uuid!
   slug: String!
   source_google_calendar_event_id: String
 
@@ -10405,8 +10405,8 @@ type topic {
   """
   An object relationship
   """
-  owner: user
-  owner_id: uuid
+  owner: user!
+  owner_id: uuid!
 
   """
   An object relationship

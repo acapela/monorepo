@@ -22,8 +22,6 @@ export const TopicOwner = ({ topic }: Props) => {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpened, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
-  if (!topic.owner) return null;
-
   const onOwnerSelect = (user: UserBasicInfoFragment) => {
     updateTopic({ topicId: topic.id, input: { owner_id: user.id } });
     closeMenu();

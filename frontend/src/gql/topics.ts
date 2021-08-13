@@ -30,6 +30,7 @@ import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
+import { assert } from "~shared/assert";
 
 function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
   topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
@@ -98,12 +99,15 @@ export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
       }
     },
     optimisticResponse({ input }) {
+      assert(input.owner_id, "No owner id");
+
       return {
         __typename: "mutation_root",
         topic: {
           __typename: "topic",
           id: input.id!,
           index: input.index!,
+          owner: UserBasicInfoFragment.assertRead(input.owner_id),
           lastMessage: {
             __typename: "message_aggregate",
             aggregate: {
