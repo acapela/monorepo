@@ -58,7 +58,11 @@ function MentionNotificationLabel({
   const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
   const [mentioningUser, isUserLoading] = useCurrentTeamMember(mentionedByUserId);
 
-  useRemoveIncorrectNotification(isTopicLoading || isUserLoading, !topic && !mentioningUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !mentioningUser,
+    notification,
+  });
 
   if (!topic || !mentioningUser) return null;
 
@@ -84,7 +88,11 @@ function TopicClosedNotificationLabel({
   const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
   const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
 
-  useRemoveIncorrectNotification(isTopicLoading || isUserLoading, !topic && !closingUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !closingUser,
+    notification,
+  });
 
   if (!topic || !closingUser) return null;
 
@@ -110,7 +118,11 @@ function TopicAssignedNotificationLabel({
   const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
   const [assigningUser, isUserLoading] = useCurrentTeamMember(assignedByUserId);
 
-  useRemoveIncorrectNotification(isTopicLoading || isUserLoading, !topic && !assigningUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !assigningUser,
+    notification,
+  });
 
   if (!topic || !assigningUser) return null;
 
@@ -136,7 +148,11 @@ function AddedToTopicClosedNotificationLabel({
   const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
   const [addedByUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
 
-  useRemoveIncorrectNotification(isTopicLoading || isUserLoading, !topic && !addedByUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !addedByUser,
+    notification,
+  });
 
   if (!topic || !addedByUser) return null;
 
@@ -162,7 +178,11 @@ function RoomClosedNotificationLabel({
   const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
   const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
 
-  useRemoveIncorrectNotification(isRoomLoading || isUserLoading, !room && !closingUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !closingUser,
+    notification,
+  });
 
   // TODO: Sentry - add info in case of incorrect data
   if (!room || !closingUser) return null;
@@ -189,7 +209,11 @@ function AddedToRoomClosedNotificationLabel({
   const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
   const [addingUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
 
-  useRemoveIncorrectNotification(isRoomLoading || isUserLoading, !room && !addingUser, notification);
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !addingUser,
+    notification,
+  });
 
   if (!room || !addingUser) return null;
 

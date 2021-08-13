@@ -2,6 +2,12 @@ import { useEffect } from "react";
 import { NotificationInfoFragment } from "~gql";
 import { removeNotification } from "~frontend/gql/notifications";
 
+interface UseRemoveIncorrectNotificationInput {
+  isLoading: boolean;
+  shouldRemove: boolean;
+  notification: NotificationInfoFragment;
+}
+
 /**
  * Will automatically remove notification if provided condition is true.
  *
@@ -32,11 +38,11 @@ import { removeNotification } from "~frontend/gql/notifications";
  *
  *
  */
-export function useRemoveIncorrectNotification(
-  isLoading: boolean,
-  shouldRemove: boolean,
-  notification: NotificationInfoFragment
-) {
+export function useRemoveIncorrectNotification({
+  isLoading,
+  notification,
+  shouldRemove,
+}: UseRemoveIncorrectNotificationInput) {
   useEffect(() => {
     if (isLoading) return;
 
