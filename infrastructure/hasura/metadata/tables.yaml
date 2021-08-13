@@ -189,7 +189,6 @@
       permission:
         columns:
           - content
-          - content_text
           - created_at
           - id
           - is_draft
@@ -1234,7 +1233,6 @@
             - closed_at
             - closed_by_user_id
             - id
-            - owner_id
             - room_id
       retry_conf:
         num_retries: 0
