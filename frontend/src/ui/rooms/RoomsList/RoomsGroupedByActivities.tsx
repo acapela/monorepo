@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, rooms }: Props) {
-  const roomsWithActivities = useRoomsWithActivities(rooms);
+  const roomsWithActivities = useRoomsWithActivities({ rooms, options: { sort: "desc" } });
 
   const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomWithActivity>(
     roomsWithActivities,

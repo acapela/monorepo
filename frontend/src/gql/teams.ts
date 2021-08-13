@@ -146,12 +146,14 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export function useCurrentTeamMember(userId: string): UserBasicInfoFragmentType | null {
-  const [teamDetails] = useCurrentTeamDetails();
+export function useCurrentTeamMember(userId: string): [UserBasicInfoFragmentType | null, boolean] {
+  const [teamDetails, { loading }] = useCurrentTeamDetails();
 
   const teamMember = teamDetails?.memberships.find((membership) => membership.user.id === userId)?.user;
 
-  return teamMember ?? null;
+  const teamMemberData = teamMember ?? null;
+
+  return [teamMemberData, loading];
 }
 
 export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<

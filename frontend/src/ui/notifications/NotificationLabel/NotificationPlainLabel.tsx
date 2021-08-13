@@ -33,7 +33,7 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
 ) {
   const holderRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   const id = notification.id;
-  const user = useCurrentTeamMember(userId);
+  const [user] = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
 
   const isHovered = useIsElementOrChildHovered(holderRef);

@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { getTopicCloseInfo } from "~frontend/topics/useTopic";
+import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
+import { TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
-import { getTopicCloseInfo } from "~frontend/topics/useTopic";
-import { TopicDetailedInfoFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
-import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

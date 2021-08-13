@@ -6,18 +6,17 @@ import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
-import { theme } from "~ui/theme";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
-import { useBoolean } from "~shared/hooks/useBoolean";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
-import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -120,12 +119,6 @@ const UIRoomInfo = styled.div<{}>`
 
 const UIContentHolder = styled.div<{}>`
   flex-grow: 1;
-  background: #ffffff;
-  border: 1px solid #f8f8f8;
-  box-sizing: border-box;
-  box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  ${theme.borderRadius.card};
-  padding: 32px;
   min-height: 0;
   min-width: 0;
 `;
