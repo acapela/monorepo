@@ -189,6 +189,7 @@
       permission:
         columns:
           - content
+          - content_text
           - created_at
           - id
           - is_draft
