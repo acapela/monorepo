@@ -38,6 +38,7 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
+import { assert } from "~shared/assert";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -213,6 +214,8 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const spaceId = input.space_id!;
 
+      assert(input.owner_id, "No owner id");
+
       return {
         __typename: "mutation_root",
         room: {
@@ -221,6 +224,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           deadline: input.deadline!,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: input.id!,
+          owner: UserBasicInfoFragment.assertRead(input.owner_id),
           members: [],
           invitations: [],
           space: SpaceDetailedInfoFragment.assertRead(spaceId),
