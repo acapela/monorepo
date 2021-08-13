@@ -10,6 +10,7 @@ import { IconSearch } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { TextBody14 } from "~ui/typo";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export const TopBarSearchBar = (): JSX.Element => {
   // All of apple computers use "Mac".
@@ -29,6 +30,7 @@ export const TopBarSearchBar = (): JSX.Element => {
     event.preventDefault();
 
     openModal();
+    trackEvent("Opened Search Bar");
   }
 
   return (

@@ -12,6 +12,7 @@ import { makePromiseVoidable } from "~shared/promises";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { RichEditorNode } from "~richEditor/content/types";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -67,7 +68,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
     );
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
-
+    trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }
 

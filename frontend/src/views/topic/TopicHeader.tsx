@@ -18,11 +18,11 @@ export const TopicHeader = styled(function TopicHeader({ topic, className }: Pro
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const isMember = isCurrentUserRoomMember(topic?.room);
 
-  const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
-
   if (!topic) {
     return <UIHolder className={className}></UIHolder>;
   }
+
+  const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
   if (!isParentRoomOpen) {
     return (

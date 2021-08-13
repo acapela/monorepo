@@ -7,38 +7,41 @@ import { InviteMemberForm } from "./InviteMemberForm";
 import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { assertDefined } from "~shared/assert";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
+  const validatedTeam = assertDefined(team, "Was not able to fetch current team");
 
-  const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
+  const teamMembers = validatedTeam.memberships.map((membership) => membership.user) ?? [];
   const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
-  const handleRemoveTeamMember = (userId: string) => {
-    if (!team?.id) return;
+  function handleRemoveTeamMember(userId: string) {
+    removeTeamMember({ userId, teamId: validatedTeam.id });
+    trackEvent("Account Removed User", { teamId: validatedTeam.id, userId });
+  }
 
-    removeTeamMember({ userId, teamId: team.id });
-  };
-
-  const invitations = team?.invitations ?? [];
+  const invitations = validatedTeam.invitations ?? [];
   const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
-  const handleRemoveInvitation = (invitationId: string) => {
+  function handleRemoveInvitation(invitationId: string) {
     removeTeamInvitation({ id: invitationId });
-  };
+    trackEvent("Deleted Team Invitation", { teamId: validatedTeam.id, invitationId });
+  }
 
   const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+  const isCurrentUserTeamOwner = currentUser.id === validatedTeam.owner_id;
 
   return (
-    <PanelWithTopbarAndCloseButton title="Team members">
+    <PanelWithTopbarAndCloseButton title={`${validatedTeam.name} members`}>
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>
           {teamMembers.map((user) => (
             <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
-              {!(user.id === team?.owner_id) && (
+              {!(user.id === validatedTeam.owner_id) && (
                 <CircleCloseIconButton
                   isDisabled={!isCurrentUserTeamOwner}
                   onClick={() => handleRemoveTeamMember(user.id)}
@@ -67,6 +70,5 @@ const UIItemHolder = styled.div<{}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 8px;
 `;

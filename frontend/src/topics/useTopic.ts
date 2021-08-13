@@ -1,6 +1,7 @@
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicDetailedInfoFragment, Topic_Set_Input } from "~gql";
 import { useDeleteTopicMutation, useUpdateTopicMutation } from "~frontend/gql/topics";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 function nowAsIsoString(): string {
   return new Date().toISOString();
@@ -20,50 +21,60 @@ export function getTopicCloseInfo(value?: TopicDetailedInfoFragment | null) {
 
 const isTruthy = (value: boolean) => value;
 
-export function useTopic(value?: TopicDetailedInfoFragment | null) {
+export function useTopic(topic: TopicDetailedInfoFragment) {
   const { id: currentUserId } = useAssertCurrentUser();
   const [deleteTopic, { loading: loadingDelete }] = useDeleteTopicMutation();
   const [updateTopic, { loading: isUpdating }] = useUpdateTopicMutation();
 
-  const topicId = value?.id;
+  const topicId = topic.id;
   const loading = [loadingDelete, isUpdating].some(isTruthy);
 
   const update = (input: Topic_Set_Input) => topicId && updateTopic({ topicId, input });
 
   return {
-    hasTopic: !!value,
-
-    isClosed: !!(value?.closed_at && value?.closed_by_user),
+    isClosed: !!(topic.closed_at && topic.closed_by_user),
 
     loading,
 
-    topicCloseInfo: getTopicCloseInfo(value),
+    topicCloseInfo: getTopicCloseInfo(topic),
 
-    isParentRoomOpen: !value?.room.finished_at,
+    isParentRoomOpen: !topic.room.finished_at,
 
-    editName: (name: string) =>
+    editName: (name: string) => {
+      const oldTopicName = topic.name;
       update({
         name,
-      }),
+      });
+      trackEvent("Renamed Topic", { topicId, newTopicName: name, oldTopicName });
+    },
 
-    close: (closing_summary: string) =>
+    close: (closing_summary: string) => {
       update({
         closed_at: nowAsIsoString(),
         closed_by_user_id: currentUserId,
         closing_summary,
-      }),
+      });
+      trackEvent("Closed Topic", { topicId });
+    },
 
-    open: () =>
+    open: () => {
       update({
         closed_at: null,
         closed_by_user_id: null,
-      }),
+      });
+      trackEvent("Reopened Topic");
+    },
 
-    updateSummary: (closing_summary: string) =>
+    updateSummary: (closing_summary: string) => {
       update({
         closing_summary,
-      }),
+      });
+      trackEvent("Updated Topic Summary", { topicId });
+    },
 
-    deleteTopic: () => topicId && deleteTopic({ topicId }),
+    deleteTopic: () => {
+      deleteTopic({ topicId });
+      trackEvent("Deleted Topic", { topicId });
+    },
   } as const;
 }

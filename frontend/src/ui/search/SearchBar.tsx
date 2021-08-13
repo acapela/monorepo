@@ -4,9 +4,10 @@ import styled from "styled-components";
 import { borderRadius } from "~ui/baseStyles";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
 import { SearchInput } from "~ui/forms/SearchInput";
-import { SearchResults } from "./SearchResults";
 import { WHITE } from "~ui/theme/colors/base";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { SearchResults } from "./SearchResults";
 
 interface Props {
   className?: string;
@@ -22,6 +23,7 @@ const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, r
   useDebounce(
     () => {
       setTerm(value);
+      trackEvent("Used Search Bar", { searchTerm: value });
     },
     DEBOUNCE_DELAY_MS,
     [value]

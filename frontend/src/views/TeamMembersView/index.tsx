@@ -14,7 +14,7 @@ export const TeamMembersView = () => {
   return (
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
-        {user?.currentTeamId ? <CurrentTeamMembersManager /> : <div />}
+        <CurrentTeamMembersManager />
         {appVersion && <TextMeta10 secondary>Version: {appVersion}</TextMeta10>}
       </UIHolder>
     </SpacedAppLayoutContainer>

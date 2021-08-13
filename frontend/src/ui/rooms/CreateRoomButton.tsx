@@ -36,6 +36,7 @@ export const CreateRoomButton = styled(function CreateRoomButton(props: Props) {
       roomDeadline: createRoomInput.deadline,
       spaceId: createRoomInput.spaceId,
       numberOfInitialMembers: initialMembers.data.length,
+      isCalendarEvent: false,
     });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
   }
