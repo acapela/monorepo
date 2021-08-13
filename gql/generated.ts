@@ -3811,8 +3811,8 @@ export interface Room {
   name: Scalars['String'];
   notification_job_id?: Maybe<Scalars['String']>;
   /** An object relationship */
-  owner?: Maybe<User>;
-  owner_id?: Maybe<Scalars['uuid']>;
+  owner: User;
+  owner_id: Scalars['uuid'];
   slug: Scalars['String'];
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   /** An object relationship */
@@ -6561,8 +6561,8 @@ export interface Topic {
   messages_aggregate: Message_Aggregate;
   name: Scalars['String'];
   /** An object relationship */
-  owner?: Maybe<User>;
-  owner_id?: Maybe<Scalars['uuid']>;
+  owner: User;
+  owner_id: Scalars['uuid'];
   /** An object relationship */
   room: Room;
   room_id: Scalars['uuid'];
@@ -8549,10 +8549,10 @@ export type PrivateRoomInfoFragment = (
 export type RoomBasicInfoFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'space_id' | 'deadline' | 'summary' | 'finished_at' | 'source_google_calendar_event_id' | 'last_activity_at'>
-  & { owner?: Maybe<(
+  & { owner: (
     { __typename?: 'user' }
     & UserBasicInfoFragment
-  )>, members: Array<(
+  ), members: Array<(
     { __typename?: 'room_member' }
     & { user: (
       { __typename?: 'user' }
@@ -9060,10 +9060,10 @@ export type ResendInvitationMutation = (
 export type TopicDetailedInfoFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'index' | 'slug' | 'closed_at' | 'closing_summary'>
-  & { owner?: Maybe<(
+  & { owner: (
     { __typename?: 'user' }
     & UserBasicInfoFragment
-  )>, closed_by_user?: Maybe<(
+  ), closed_by_user?: Maybe<(
     { __typename?: 'user' }
     & UserBasicInfoFragment
   )>, room: (
