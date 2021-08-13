@@ -7,7 +7,6 @@ import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/Invitati
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { trackEvent } from "~frontend/analytics/tracking";
-import { assert } from "~shared/assert";
 import { theme } from "~ui/theme";
 import { ExitTeamButton } from "./ExitTeamButton";
 import { ResendInviteButton } from "./ResendInviteButton";
