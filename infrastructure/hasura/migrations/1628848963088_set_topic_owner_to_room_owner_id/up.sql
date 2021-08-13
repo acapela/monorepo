@@ -3,7 +3,7 @@ UPDATE
 SET
    owner_id = (
       SELECT
-         owner_id
+         creator_id
       FROM
          room
       WHERE
