@@ -1,14 +1,15 @@
-import styled, { css } from "styled-components";
-import { TextH3 } from "~ui/typo";
-import { TopicDetailedInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { CloseTopicModal } from "./CloseTopicModal";
-import { useTopic } from "~frontend/topics/useTopic";
 import { AnimatePresence } from "framer-motion";
-import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
+import styled, { css } from "styled-components";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
+import { useTopic } from "~frontend/topics/useTopic";
+import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
+import { TopicDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
+import { theme } from "~ui/theme";
+import { TextH3 } from "~ui/typo";
+import { CloseTopicModal } from "./CloseTopicModal";
 
 interface Props {
   topic: TopicDetailedInfoFragment;
@@ -21,34 +22,32 @@ export const TopicHeader = ({ topic }: Props) => {
 
   const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
 
-  if (!isParentRoomOpen) {
-    return <UITitle isClosed={isClosed}>{topic.name}</UITitle>;
-  }
-
   return (
-    <>
+    <UIHolder>
       <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
-      <UIActions>
-        {isClosed && (
-          <UIToggleCloseButton
-            onClick={openTopic}
-            isLoading={loading}
-            isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
-          >
-            Reopen Topic
-          </UIToggleCloseButton>
-        )}
-        {!isClosed && (
-          <UIToggleCloseButton
-            onClick={openClosingTopicModal}
-            isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
-          >
-            Close Topic
-          </UIToggleCloseButton>
-        )}
-        {isMember && <ManageTopic topic={topic} />}
-      </UIActions>
+      {isParentRoomOpen && (
+        <UIActions>
+          {isClosed && (
+            <UIToggleCloseButton
+              onClick={openTopic}
+              isLoading={loading}
+              isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
+            >
+              Reopen Topic
+            </UIToggleCloseButton>
+          )}
+          {!isClosed && (
+            <UIToggleCloseButton
+              onClick={openClosingTopicModal}
+              isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
+            >
+              Close Topic
+            </UIToggleCloseButton>
+          )}
+          {isMember && <ManageTopic topic={topic} />}
+        </UIActions>
+      )}
       <AnimatePresence>
         {isClosingTopic && (
           <CloseTopicModal
@@ -59,19 +58,32 @@ export const TopicHeader = ({ topic }: Props) => {
           />
         )}
       </AnimatePresence>
-    </>
+    </UIHolder>
   );
 };
 
+const UIHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 96px;
+`;
+
 const UITitle = styled(TextH3)<{ isClosed: boolean }>`
-  padding: 0 25%;
-  text-align: center;
+  margin-top: 24px;
+
+  text-align: start;
+
+  align-self: flex-start;
+
+  ${theme.font.h4.spezia.medium.build}
 
   ${(props) => {
     if (props.isClosed) {
       return css`
         text-decoration: line-through;
-        color: hsla(211, 12%, 62%, 1);
+        color: ${theme.colors.layout.supportingText()};
       `;
     }
   }}
@@ -79,11 +91,8 @@ const UITitle = styled(TextH3)<{ isClosed: boolean }>`
 
 const UIActions = styled.div<{}>`
   display: flex;
-  right: 0;
-  position: absolute;
   align-items: center;
+  gap: 16px;
 `;
 
-const UIToggleCloseButton = styled(Button)<{}>`
-  margin-right: 16px;
-`;
+const UIToggleCloseButton = styled(Button)<{}>``;
