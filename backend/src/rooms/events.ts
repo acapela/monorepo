@@ -2,7 +2,7 @@ import { db, Room } from "~db";
 import logger from "~shared/logger";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
-import { addRoomParticipant, getIfParticipantExists } from "./rooms";
+import { addRoomParticipant, getIfParticipantExists, updateRoomLastActivityDate } from "./rooms";
 
 async function ensureOwnerIsRoomMember(room: Room) {
   const { creator_id: creatorId, id: roomId } = room;
@@ -43,6 +43,7 @@ async function createRoomClosedNotifications(room: Room, closedByUserId: string)
 
 export async function handleRoomUpdates({ item: room, itemBefore: roomBefore, userId }: HasuraEvent<Room>) {
   await ensureOwnerIsRoomMember(room);
+  await updateRoomLastActivityDate(room.id);
 
   const wasRoomJustClosed = room.finished_at && roomBefore && !roomBefore.finished_at;
 

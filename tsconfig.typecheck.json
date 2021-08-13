@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "~frontend/*": ["./frontend/src/*"],
+      "~shared/*": ["./shared/*"],
+      "~ui/*": ["./ui/*"],
+      "~gql/*": ["./gql/*"],
+      "~db/*": ["./db/*"],
+      "~richEditor/*": ["./richEditor/*"],
+      "~config/*": ["./config/*"]
+    }
+  }
+}

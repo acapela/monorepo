@@ -1,8 +1,11 @@
 import { db, Topic } from "~db";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
+import { updateRoomLastActivityDate } from "../rooms/rooms";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
+  await updateRoomLastActivityDate(event.item.room_id);
+
   if (event.type === "create") {
     await inheritTopicMembersFromParentRoom(event.item);
   }
@@ -12,6 +15,22 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
 
     if (wasJustClosed && event.userId) {
       await createTopicClosedNotifications(event.item, event.userId);
+    }
+
+    const ownerId = event.item.owner_id;
+    const assignedByUserId = event.userId;
+    const hasNewOwner = ownerId !== event.itemBefore.owner_id;
+    const shouldNotifyAssignee = ownerId && hasNewOwner && assignedByUserId && assignedByUserId !== ownerId;
+
+    if (shouldNotifyAssignee) {
+      await createNotification({
+        type: "topicAssigned",
+        userId: ownerId,
+        payload: {
+          topicId: event.item.id,
+          assignedByUserId,
+        },
+      });
     }
   }
 }

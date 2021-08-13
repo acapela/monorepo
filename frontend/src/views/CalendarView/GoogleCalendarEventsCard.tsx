@@ -10,9 +10,11 @@ import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt"
 import { niceFormatDateTime } from "~shared/dates/format";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { TextH4 } from "~ui/typo";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { routes } from "~frontend/router";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   event: JsonValue<GoogleCalendarEvent>;
@@ -23,6 +25,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
   event,
   className,
 }: Props): JSX.Element {
+  const user = useAssertCurrentUser();
   const currentTeamMembers = useCurrentTeamMembers();
   const deadline = tryParseStringDate(event.startTime) ?? undefined;
 
@@ -49,7 +52,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
         source_google_calendar_event_id: event.id,
-        slug: createRoomInput.slug,
+        owner_id: user.id,
         members: {
           data: createRoomInput.participantsIds.map((userId) => {
             return { user_id: userId };
@@ -76,6 +79,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         <UIInfo>
           <UIName spezia medium>
             {event.title}
+            <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
           </UIName>
           {deadline && (
             <UIMeta>
@@ -116,6 +120,9 @@ const UIInfo = styled.div<{}>`
 `;
 
 const UIName = styled(TextH4)<{}>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: bold;
 `;
 

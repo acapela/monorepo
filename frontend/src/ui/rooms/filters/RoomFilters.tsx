@@ -1,59 +1,40 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useList } from "react-use";
 import styled from "styled-components";
-import { UserBasicInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { getIsUserFilter, RoomFilter } from "./filter";
-
 import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
+import { getUsersFromRoomCriteriaList, RoomCriteria } from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 
 type FilterPickingStage = "off" | "main" | "participants";
 
 interface Props {
-  initialFilters?: RoomFilter[];
-  onFiltersChange: (filters: RoomFilter[]) => void;
+  filters?: RoomCriteria[];
+  onFiltersChange: (filters: RoomCriteria[]) => void;
   className?: string;
 }
 
-function getSelectedUsersFromTopicFilters(filters: RoomFilter[]) {
-  const selectedMembers: UserBasicInfoFragment[] = [];
-
-  for (const filter of filters) {
-    if (!getIsUserFilter(filter)) {
-      continue;
-    }
-
-    selectedMembers.push(filter.user);
-  }
-
-  return selectedMembers;
-}
-
-export const RoomFilters = styled(function RecentTopicFilters({
+export const RoomFiltersPicker = styled(function RoomFiltersPicker({
   onFiltersChange,
   className,
-  initialFilters = [],
+  filters = [],
 }: Props) {
-  const [filters, { push: addFilter, filter: applyFilterToFiltersList }] = useList<RoomFilter>(initialFilters);
-
-  function removeFilter(filterToRemove: RoomFilter) {
-    applyFilterToFiltersList((existingFilter) => existingFilter !== filterToRemove);
+  function removeFilter(filterToRemove: RoomCriteria) {
+    onFiltersChange(filters.filter((filter) => filter.key !== filterToRemove.key));
   }
 
-  function handleAddFilter(filterToAdd: RoomFilter) {
+  function handleAddFilter(filterToAdd: RoomCriteria) {
     if (hasFilter(filterToAdd)) {
       return;
     }
 
-    addFilter(filterToAdd);
+    onFiltersChange([...filters, filterToAdd]);
   }
 
-  function hasFilter(filterToCheck: RoomFilter) {
+  function hasFilter(filterToCheck: RoomCriteria) {
     return filters.some((existingFilter) => existingFilter.key === filterToCheck.key);
   }
 
@@ -107,7 +88,7 @@ export const RoomFilters = styled(function RecentTopicFilters({
             <ParticipantsPickerMenu
               anchorRef={buttonRef}
               onCloseRequest={() => setStage("off")}
-              selectedUsers={getSelectedUsersFromTopicFilters(filters)}
+              selectedUsers={getUsersFromRoomCriteriaList(filters)}
               onUserSelected={(user) => {
                 setStage("off");
                 handleAddFilter(createUserFilter(user));

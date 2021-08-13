@@ -74,7 +74,7 @@ function TestComponent() {
 }
 
 function TestQueryComponent() {
-  const [rooms] = useSpaceRoomsQuery();
+  const [rooms] = useSpaceRoomsQuery({ spaceId: "foo" });
   return <>Rooms: {rooms ? rooms.map((room) => <li key={room.id}>{room.id}</li>) : "Loading"}</>;
 }
 

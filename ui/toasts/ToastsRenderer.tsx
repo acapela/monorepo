@@ -37,13 +37,19 @@ const UIFlyer = styled.div<{}>`
   pointer-events: none;
 `;
 
+const TOAST_WIDTH_PX = 460;
+
 const UIToastsHolder = styled.div<{}>`
-  max-width: 360px;
+  width: ${TOAST_WIDTH_PX}px;
   display: flex;
   flex-direction: column-reverse;
 
   ${ToastLabel} {
     margin-top: 8px;
     pointer-events: all;
+  }
+
+  @media (max-width: ${TOAST_WIDTH_PX + 40}px) {
+    width: calc(100% - 32px);
   }
 `;

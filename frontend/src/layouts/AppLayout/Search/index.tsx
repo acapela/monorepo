@@ -1,25 +1,28 @@
-import React, { useRef } from "react";
-import styled from "styled-components";
-import { theme } from "~ui/theme";
+import { AnimatePresence } from "framer-motion";
+import React, { RefObject } from "react";
+import styled, { css } from "styled-components";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { SearchBar } from "~frontend/ui/search/SearchBar";
+import { isMac } from "~frontend/utils/platformDetection";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { PopPresenceAnimator } from "~ui/animations";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { IconSearch } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
-import { TextBody14 } from "~ui/typo";
 import { trackEvent } from "~frontend/analytics/tracking";
+import { theme } from "~ui/theme";
 
-export const TopBarSearchBar = (): JSX.Element => {
-  // All of apple computers use "Mac".
-  // https://stackoverflow.com/a/11752084
-  const platform = global.window && window.navigator.platform;
-  const isMac = platform && platform.toLowerCase().includes("mac");
+interface Props {
+  defaultWidthInPx: number;
+  availableSpaceInPx: number;
+}
 
-  const staticSearchBarRef = useRef<HTMLDivElement | null>(null);
-
+export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function TopBarSearchBar(
+  { defaultWidthInPx, availableSpaceInPx }: Props,
+  staticSearchBarRef
+) {
   const [isShowingSearchModal, { set: openModal, unset: closeModal }] = useBoolean(false);
 
   useShortcut(["Mod", "/"], handleSearchBarModalOpen);
@@ -35,39 +38,84 @@ export const TopBarSearchBar = (): JSX.Element => {
 
   return (
     <>
-      <UIHolder ref={staticSearchBarRef} onClick={handleSearchBarModalOpen}>
+      <UIHolder
+        defaultWidthInPx={defaultWidthInPx}
+        availableSpaceInPx={availableSpaceInPx}
+        ref={staticSearchBarRef}
+        onClick={handleSearchBarModalOpen}
+      >
         <UIPlaceholder>
           <UISearchIcon />
-          <TextBody14>Search</TextBody14>
+          <UITextPlaceholder>Search</UITextPlaceholder>
         </UIPlaceholder>
         <ClientSideOnly>
-          {isMac && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
-          {!isMac && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
+          {isMac() && <UIShortcutIndicator>⌘+/</UIShortcutIndicator>}
+          {!isMac() && <UIShortcutIndicator>ctrl+/</UIShortcutIndicator>}
         </ClientSideOnly>
       </UIHolder>
-      {isShowingSearchModal && (
-        <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
-          <Popover anchorRef={staticSearchBarRef} placement={"bottom-end"} distance={-32}>
-            <UISearchContainer>
-              <SearchBar />
-            </UISearchContainer>
-          </Popover>
-        </ScreenCover>
-      )}
+      <AnimatePresence>
+        {isShowingSearchModal && (
+          <ScreenCover isTransparent={true} onCloseRequest={closeModal}>
+            <Popover anchorRef={staticSearchBarRef as RefObject<HTMLElement>} placement={"bottom-end"} distance={-32}>
+              <UISearchContainer>
+                <SearchBar />
+              </UISearchContainer>
+            </Popover>
+          </ScreenCover>
+        )}
+      </AnimatePresence>
     </>
   );
-};
+});
 
-const UIHolder = styled.div<{}>`
+const UITextPlaceholder = styled.div<{}>`
+  ${theme.font.body14.build}
+  color: ${theme.colors.layout.supportingText()}
+`;
+
+const UIShortcutIndicator = styled.div<{}>`
+  ${theme.font.body14.build}
+`;
+
+const UIHolder = styled.div<{ defaultWidthInPx: number; availableSpaceInPx: number }>`
   padding: 14px;
 
   height: 32px;
-  width: 208px;
+  width: ${({ defaultWidthInPx: defaultWidth }) => defaultWidth}px;
 
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
+  ${({ availableSpaceInPx, defaultWidthInPx }) => {
+    if (availableSpaceInPx >= defaultWidthInPx) {
+      return;
+    }
+
+    if (availableSpaceInPx < 100) {
+      return css`
+        padding: 8px;
+        width: 32px;
+
+        ${UITextPlaceholder} {
+          display: none;
+        }
+
+        ${UIShortcutIndicator} {
+          display: none;
+        }
+      `;
+    }
+
+    if (availableSpaceInPx < 150) {
+      return css`
+        ${UIShortcutIndicator} {
+          display: none;
+        }
+      `;
+    }
+  }}
 
   ${theme.colors.actions.tertiary.all()}
 
@@ -85,11 +133,7 @@ const UIPlaceholder = styled.div<{}>`
 
 const UISearchIcon = styled(IconSearch)<{}>`
   font-size: 1rem;
-  line-height: 1.25rem;
-`;
-
-const UIShortcutIndicator = styled.div<{}>`
-  ${theme.font.body12.build}
+  line-height: 1.25;
 `;
 
 const UISearchContainer = styled(PopPresenceAnimator)<{}>`

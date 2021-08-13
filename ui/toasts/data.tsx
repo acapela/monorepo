@@ -2,9 +2,10 @@ import { ReactNode } from "react";
 import { createChannel } from "~shared/channel";
 import { createTimeout } from "~shared/time";
 
-export type ToastType = "info" | "success" | "error";
+export type ToastType = "success" | "warning" | "error";
 
 const DEFAULT_TOAST_TIMEOUT = 3000;
+const DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT = 6000;
 const MAX_TOASTS_COUNT = 5;
 
 interface ToastAction {
@@ -15,7 +16,8 @@ interface ToastAction {
 
 export interface ToastData {
   type: ToastType;
-  content: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
   icon?: ReactNode;
   actions?: ToastAction[];
   timeout?: number;
@@ -27,9 +29,15 @@ function getToasts() {
   return toastsChannel.getLastValue() ?? [];
 }
 
+const getFinalTimeout = ({ timeout, description }: ToastData) => {
+  if (timeout) return timeout;
+
+  return description ? DEFAULT_TOAST_WITH_DESCRIPTION_TIMEOUT : DEFAULT_TOAST_TIMEOUT;
+};
+
 export function addToast(toast: ToastData) {
   // If no timeout is set, use default value
-  toast = { timeout: DEFAULT_TOAST_TIMEOUT, ...toast };
+  toast.timeout = getFinalTimeout(toast);
   const newToasts = [toast, ...getToasts()].slice(0, MAX_TOASTS_COUNT);
 
   toastsChannel.publish(newToasts);

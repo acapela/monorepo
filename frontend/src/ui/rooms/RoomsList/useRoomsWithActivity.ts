@@ -1,19 +1,12 @@
-import { useRoomsQuery } from "~frontend/gql/rooms";
 import { useSSRRoomsMessagesCount } from "~frontend/utils/unreadMessages";
-import { RoomDetailedInfoFragment, RoomsQueryVariables } from "~gql";
+import { RoomDetailedInfoFragment } from "~gql";
 
 export interface RoomWithActivity {
   room: RoomDetailedInfoFragment;
   unreadMessages: number;
 }
 
-interface Props {
-  query: RoomsQueryVariables;
-}
-
-export function useRoomsWithActivity({ query }: Props): RoomWithActivity[] {
-  const [rooms = []] = useRoomsQuery(query);
-
+export function useRoomsWithActivities(rooms: RoomDetailedInfoFragment[]): RoomWithActivity[] {
   const roomUnreadMessages = useSSRRoomsMessagesCount();
 
   return rooms.map((room: RoomDetailedInfoFragment) => ({

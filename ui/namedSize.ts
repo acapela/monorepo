@@ -1,6 +1,7 @@
 import { css } from "styled-components";
 
 const namedSize = {
+  "extra-small": 16,
   small: 24,
   regular: 32,
   medium: 40,

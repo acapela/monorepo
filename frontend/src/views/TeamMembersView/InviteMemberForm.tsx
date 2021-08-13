@@ -3,7 +3,7 @@ import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { createTeamIvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
-import { useAssertCurrentTeamId } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { useMemo } from "react";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { Button } from "~ui/buttons/Button";

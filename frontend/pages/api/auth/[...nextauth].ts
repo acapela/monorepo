@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
-import { AdapterInstance, SendVerificationRequestParams } from "next-auth/adapters";
+import { AdapterInstance } from "next-auth/adapters";
 import Providers from "next-auth/providers";
 import { initializeSecrets } from "~config";
 import { Account, db, User } from "~db";
@@ -171,17 +171,6 @@ const authAdapterProvider = {
       async deleteSession(sessionToken: string) {
         // We're using JWT so sessions are not needed.
         // throw new SessionsNotSupportedError();
-      },
-      // Those will have to be implemented to add support for 'magic link'
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async createVerificationRequest(identifier, url, token, secret, provider, options) {
-        const { sendVerificationRequest } = provider;
-        const ONE_DAY = 1000 * 24 * 60 * 60;
-        const expires = new Date(Date.now() + ONE_DAY);
-        const verificationRequest = await db.verification_requests.create({ data: { identifier, token, expires } });
-
-        await sendVerificationRequest({ identifier, url } as SendVerificationRequestParams);
-        return verificationRequest;
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async getVerificationRequest(identifier, token, secret, provider) {

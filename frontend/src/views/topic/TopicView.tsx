@@ -64,13 +64,13 @@ export const TopicView = ({ topicId }: Props) => {
   return (
     <TopicStoreContext>
       <TopicRoot>
-        {/* We need to render the topic header or else flex bugs out on page reload */}
-        <TopicHeader topic={topic} />
+        {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
+        <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
         <ScrollableMessages>
           <AnimateSharedLayout>
             <MessagesFeed isReadonly={!isMember} messages={messages} />
 
-            {topicCloseInfo && <TopicSummaryMessage topic={topic} />}
+            {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
           </AnimateSharedLayout>
           {!messages.length && !topicCloseInfo && (
             <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
@@ -85,10 +85,25 @@ export const TopicView = ({ topicId }: Props) => {
             </UIMessageComposer>
           </ClientSideOnly>
         )}
+
+        {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+        {!isTopicClosed && (
+          <ClientSideOnly>
+            <UIMessageComposer isDisabled={!isMember}>
+              <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
+            </UIMessageComposer>
+          </ClientSideOnly>
+        )}
       </TopicRoot>
     </TopicStoreContext>
   );
 };
+
+const UITopicHeaderHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const TopicRoot = styled(DropFileContext)<{}>`
   position: relative;
@@ -102,7 +117,7 @@ const TopicRoot = styled(DropFileContext)<{}>`
     overflow: auto;
   }
 
-  ${TopicHeader} {
+  ${UITopicHeaderHolder} {
     margin-bottom: 16px;
   }
 `;

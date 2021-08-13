@@ -8,6 +8,7 @@ import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 
 interface CreateTopicInput {
   roomId: string;
+  ownerId: string;
   modalAnchor?: ModalAnchor;
   navigateAfterCreation?: boolean;
   index: string;
@@ -17,6 +18,7 @@ interface CreateTopicInput {
 
 export async function startCreateNewTopicFlow({
   roomId,
+  ownerId,
   modalAnchor,
   navigateAfterCreation,
   index,
@@ -48,6 +50,7 @@ export async function startCreateNewTopicFlow({
       slug,
       index,
       room_id: roomId,
+      owner_id: ownerId,
     },
   });
 

@@ -1,20 +1,20 @@
 import styled from "styled-components";
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { TextMeta10 } from "~ui/typo";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
 export const TeamMembersView = () => {
-  const user = useCurrentUser();
+  const currentTeamId = useCurrentTeamId();
 
-  if (!user?.currentTeamId) return null;
+  if (!currentTeamId) return null;
 
   return (
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
-        <CurrentTeamMembersManager />
+        {currentTeamId ? <CurrentTeamMembersManager /> : <div />}
         {appVersion && <TextMeta10 secondary>Version: {appVersion}</TextMeta10>}
       </UIHolder>
     </SpacedAppLayoutContainer>

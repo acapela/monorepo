@@ -27,7 +27,7 @@ spec:
           allowPrivilegeEscalation: false
           runAsUser: 2 # non-root user
       - name: frontend
-        image: eu.gcr.io/meetnomoreapp/monorepo:1.19.0
+        image: eu.gcr.io/meetnomoreapp/monorepo:2.28.0
         command: ["yarn", "run", "start:frontend"]
         ports:
         - containerPort: 3000

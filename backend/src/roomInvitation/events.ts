@@ -40,19 +40,11 @@ export async function handleRoomInvitationCreated({ item: invite, userId }: Hasu
     throw new UnprocessableEntityError(`Room ${roomId} or inviter ${invitingUserId} does not exist`);
   }
 
-  // if someone gets invited to a room, he automatically gets invited to the team also
-  await db.team_invitation.upsert({
-    where: {
-      team_invitation_team_id_email_key: {
-        email,
-        team_id: teamId,
-      },
-    },
-    create: {
-      email,
-      team_id: teamId,
-      inviting_user_id: invitingUserId,
-    },
-    update: {},
-  });
+  const existingTeamInvitation = await db.team_invitation.findFirst({ where: { email, team_id: teamId } });
+
+  if (existingTeamInvitation) {
+    return;
+  }
+
+  await db.team_invitation.create({ data: { email, team_id: teamId, inviting_user_id: invitingUserId } });
 }

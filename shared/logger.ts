@@ -5,6 +5,7 @@ import { ServerResponse } from "http";
 import pino from "pino";
 
 import { assertDefined } from "./assert";
+import { isDev } from "./dev";
 
 const NANOSECONDS_IN_MILLISECOND = 10e5;
 
@@ -69,14 +70,16 @@ export function error(message: string, params: Record<string, unknown> = {}): vo
 export function middleware(req: Request, res: ServerResponse, next: () => void): void {
   const startTime = process.hrtime();
   res.once("finish", () => {
-    info("Request finished", {
-      url: req.url,
-      method: req.method,
-      status: res.statusCode,
-      host: req.hostname,
-      userAgent: req.get("user-agent"),
-      timeInMilliseconds: process.hrtime(startTime)[1] / NANOSECONDS_IN_MILLISECOND,
-    });
+    const requestStatusDescription = `[${req.method}] ${req.url} (status: ${req.statusCode})`;
+    if (!isDev()) {
+      info(`Request finished - ${requestStatusDescription}`, {
+        host: req.hostname,
+        userAgent: req.get("user-agent"),
+        timeInMilliseconds: process.hrtime(startTime)[1] / NANOSECONDS_IN_MILLISECOND,
+      });
+    } else {
+      info(`Request finished - ${requestStatusDescription}`);
+    }
   });
   next();
 }

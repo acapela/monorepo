@@ -7,6 +7,10 @@ export interface NotificationTypesMap {
     topicId: string;
     closedByUserId: string;
   };
+  topicAssigned: {
+    topicId: string;
+    assignedByUserId: string;
+  };
   roomClosed: {
     roomId: string;
     closedByUserId: string;

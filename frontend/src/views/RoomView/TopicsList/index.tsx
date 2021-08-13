@@ -2,6 +2,7 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -40,6 +41,8 @@ function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopi
 }
 
 export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+  const user = useAssertCurrentUser();
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const roomId = room.id;
   const spaceId = room.space_id;
@@ -52,6 +55,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
 
   async function handleCreateNewTopic() {
     await startCreateNewTopicFlow({
+      ownerId: user.id,
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
       roomId: room.id,
@@ -109,7 +113,11 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
           <UINewTopicButton
             kind="secondary"
             onClick={handleCreateNewTopic}
-            isDisabled={!amIMember && { reason: `You have to be room member to ${isRoomOpen ? "close" : "open"} room` }}
+            isDisabled={
+              isRoomOpen
+                ? !amIMember && { reason: "You have to be room member to open a topic" }
+                : { reason: "You can not create topics in closed rooms" }
+            }
             icon={<IconPlusSquare />}
             iconPosition="start"
           >

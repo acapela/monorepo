@@ -19,6 +19,7 @@ interface RoomInputInitialData {
   name?: string;
   deadline?: Date;
   spaceId?: string;
+  hideSpaceInput?: boolean;
   participantsIds?: string[];
 }
 
@@ -36,6 +37,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
       deadline: initialDeadline = getRoomDefaultDeadline(),
       spaceId: initialSpaceId,
       participantsIds: initialParticipantsIds = [],
+      hideSpaceInput,
     },
     resolve
   ) => {
@@ -87,7 +89,8 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             participantsIds: participantIdsWithCurrentUser,
           });
         } catch (err) {
-          if (err.message.includes("Uniqueness violation")) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((err as any)?.message?.includes("Uniqueness violation")) {
             setFormErrorMessage("Room with this name already exists");
           } else {
             throw err;
@@ -115,7 +118,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
                 placeholder="Room name"
               />
             </AnimateSharedLayout>
-            <SpacePicker selectedSpaceId={selectedSpaceId} onChange={setSelectedSpaceId} />
+            {!hideSpaceInput && <SpacePicker selectedSpaceId={selectedSpaceId} onChange={setSelectedSpaceId} />}
 
             <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
 

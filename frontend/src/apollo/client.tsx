@@ -132,11 +132,11 @@ const errorLink = onError(({ graphQLErrors = [], networkError }) => {
   for (const graphqlError of graphQLErrors) {
     const message = formatGraphqlErrorMessage(graphqlError);
 
-    addToast({ type: "error", content: message, timeout: 4000 });
+    addToast({ type: "error", title: message, timeout: 4000 });
   }
 
   if (networkError) {
-    addToast({ type: "error", content: "Network error", timeout: 4000 });
+    addToast({ type: "error", title: "Network error", timeout: 4000 });
   }
 });
 
