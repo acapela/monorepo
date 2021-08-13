@@ -14,26 +14,31 @@ import { ResendInviteButton } from "./ResendInviteButton";
 
 export const CurrentTeamMembersManager = () => {
   const [team] = useCurrentTeamDetails();
-  assert(team, "Was not able to fetch current team");
 
-  const teamMembers = team.memberships.map((membership) => membership.user) ?? [];
+  const teamMembers = team?.memberships.map((membership) => membership.user) ?? [];
   const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
   const handleRemoveTeamMember = (userId: string) => {
+    if (!team) return;
     removeTeamMember({ userId, teamId: team.id });
     trackEvent("Account Removed User", { teamId: team.id, userId });
   };
 
-  const invitations = team.invitations ?? [];
+  const invitations = team?.invitations ?? [];
   const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
   const handleRemoveInvitation = (invitationId: string) => {
+    if (!team) return;
     removeTeamInvitation({ id: invitationId });
     trackEvent("Deleted Team Invitation", { teamId: team.id, invitationId });
   };
 
   const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team.owner_id;
+  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+
+  if (!team) {
+    return null;
+  }
 
   return (
     <UIPanel>

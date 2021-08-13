@@ -50,7 +50,7 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 
 export const TopicView = ({ topicId }: Props) => {
   const [topic] = useSingleTopicQuery({ id: topicId });
-  if (!topic) return null;
+
   const [messages = []] = useTopicMessagesQuery({
     topicId: topicId,
   });
@@ -58,6 +58,8 @@ export const TopicView = ({ topicId }: Props) => {
   const isMember = isCurrentUserRoomMember(topic?.room);
 
   useMarkTopicAsRead(topicId, messages);
+
+  if (!topic) return null;
 
   const { isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
 
@@ -76,15 +78,6 @@ export const TopicView = ({ topicId }: Props) => {
             <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
           )}
         </ScrollableMessages>
-
-        {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
-        {!isTopicClosed && (
-          <ClientSideOnly>
-            <UIMessageComposer isDisabled={!isMember}>
-              <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
-            </UIMessageComposer>
-          </ClientSideOnly>
-        )}
 
         {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
         {!isTopicClosed && (
