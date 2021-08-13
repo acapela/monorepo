@@ -1,8 +1,7 @@
 import styled, { css } from "styled-components";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { OptionsButton } from "./OptionsButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
+import { OptionsButtonWithMenu } from "./OptionsButtonWithMenu";
 
 interface Props {
   options: PopoverMenuOption[];
@@ -14,9 +13,7 @@ export function CornerOptionsMenu({ options, tooltip }: Props) {
 
   return (
     <UIMenuIcon forceVisible={isOpened}>
-      <PopoverMenuTrigger options={options} onOpen={markOpened} onClose={unmarkOpened}>
-        <OptionsButton tooltip={tooltip} />
-      </PopoverMenuTrigger>
+      <OptionsButtonWithMenu options={options} tooltip={tooltip} onOpen={markOpened} onClose={unmarkOpened} />
     </UIMenuIcon>
   );
 }
