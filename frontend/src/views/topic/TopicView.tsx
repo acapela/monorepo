@@ -49,7 +49,7 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ topicId }: Props) => {
-  const [topic] = useSingleTopicQuery({ id: topicId });
+  const [topic = null] = useSingleTopicQuery({ id: topicId });
 
   const [messages = []] = useTopicMessagesQuery({
     topicId: topicId,
@@ -59,9 +59,9 @@ export const TopicView = ({ topicId }: Props) => {
 
   useMarkTopicAsRead(topicId, messages);
 
-  if (!topic) return null;
-
   const { isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
+
+  if (!topic) return null;
 
   return (
     <TopicStoreContext>
