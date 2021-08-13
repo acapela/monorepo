@@ -271,7 +271,9 @@ async function getAuthInitOptions() {
           return true;
         }
 
-        trackBackendUserEvent(user, "Signed In", { userEmail: user.email });
+        if (user.email) {
+          trackBackendUserEvent(user, "Signed In", { userEmail: user.email });
+        }
 
         try {
           const existingAccount = await db.account.findFirst({
