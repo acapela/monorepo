@@ -42,7 +42,7 @@ export const TopicHeader = ({ topic }: Props) => {
         {!isClosed && (
           <UIToggleCloseButton
             onClick={openClosingTopicModal}
-            isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to close topics` }}
+            isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
           >
             Close Topic
           </UIToggleCloseButton>
