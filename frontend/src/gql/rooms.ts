@@ -64,6 +64,10 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       source_google_calendar_event_id
       last_activity_at
 
+      owner {
+        ...UserBasicInfo
+      }
+
       members {
         user {
           ...UserBasicInfo
@@ -87,10 +91,6 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
 
     fragment RoomDetailedInfo on room {
       ...RoomBasicInfo
-
-      owner {
-        ...UserBasicInfo
-      }
 
       topics(order_by: { index: asc }) {
         ...TopicDetailedInfo

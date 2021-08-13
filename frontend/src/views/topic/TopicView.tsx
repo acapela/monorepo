@@ -64,8 +64,8 @@ export const TopicView = ({ topicId }: Props) => {
     <TopicStoreContext>
       {hasTopic && (
         <TopicRoot>
-          {/* We need to render the topic header or else flex bugs out on page reload */}
-          <TopicHeader topic={topic} />
+          {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
+          <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
           <ScrollableMessages>
             <AnimateSharedLayout>
               <MessagesFeed isReadonly={!isMember} messages={messages} />
@@ -91,6 +91,12 @@ export const TopicView = ({ topicId }: Props) => {
   );
 };
 
+const UITopicHeaderHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const TopicRoot = styled(DropFileContext)<{}>`
   position: relative;
   display: flex;
@@ -103,7 +109,7 @@ const TopicRoot = styled(DropFileContext)<{}>`
     overflow: auto;
   }
 
-  ${TopicHeader} {
+  ${UITopicHeaderHolder} {
     margin-bottom: 16px;
   }
 `;
