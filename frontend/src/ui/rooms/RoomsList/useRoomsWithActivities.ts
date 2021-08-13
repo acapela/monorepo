@@ -26,9 +26,10 @@ export function useRoomsWithActivities({ rooms, options }: Props): RoomWithActiv
 
   if (options?.sort) {
     const compareFn = options.sort === "asc" ? compareAsc : compareDesc;
+    const lastActivityFallback = options.sort === "asc" ? new Date() : EARLIEST_POSSIBLE_DATE;
     roomsWithActivities.sort(({ room: roomA }, { room: roomB }) => {
-      const dateA = roomA.last_activity_at ? new Date(roomA.last_activity_at) : EARLIEST_POSSIBLE_DATE;
-      const dateB = roomB.last_activity_at ? new Date(roomB.last_activity_at) : EARLIEST_POSSIBLE_DATE;
+      const dateA = roomA.last_activity_at ? new Date(roomA.last_activity_at) : lastActivityFallback;
+      const dateB = roomB.last_activity_at ? new Date(roomB.last_activity_at) : lastActivityFallback;
       return compareFn(dateA, dateB);
     });
   }
