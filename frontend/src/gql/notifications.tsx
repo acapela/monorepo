@@ -8,6 +8,12 @@ import {
   UnreadNotificationsQueryVariables,
   MarkNotificationAsReadMutation,
   MarkNotificationAsReadMutationVariables,
+  RemoveNotificationMutationVariables,
+  RemoveNotificationMutation,
+  DeleteAllReadNotificationsMutation,
+  DeleteAllReadNotificationsMutationVariables,
+  MarkAllNotificationsAsReadMutation,
+  MarkAllNotificationsAsReadMutationVariables,
 } from "~gql";
 
 const NotificationInfoFragment = createFragment<NotificationInfoFragmentType>(
@@ -21,7 +27,10 @@ const NotificationInfoFragment = createFragment<NotificationInfoFragmentType>(
   `
 );
 
-export const [useNotifications] = createQuery<NotificationsQuery, NotificationsQueryVariables>(
+export const [useNotifications, notificationsQueryManager] = createQuery<
+  NotificationsQuery,
+  NotificationsQueryVariables
+>(
   () => gql`
     ${NotificationInfoFragment()}
 
@@ -33,7 +42,10 @@ export const [useNotifications] = createQuery<NotificationsQuery, NotificationsQ
   `
 );
 
-export const [useUnreadNotifications] = createQuery<UnreadNotificationsQuery, UnreadNotificationsQueryVariables>(
+export const [useUnreadNotifications, unreadNotificationsQueryManager] = createQuery<
+  UnreadNotificationsQuery,
+  UnreadNotificationsQueryVariables
+>(
   () => gql`
     ${NotificationInfoFragment()}
 
@@ -81,6 +93,57 @@ export const [useMarkNotificationAsRead, { mutate: markNotificationAsRead }] = c
       };
     },
   }
+);
+
+export const [useRemoveNotification, { mutate: removeNotification }] = createMutation<
+  RemoveNotificationMutation,
+  RemoveNotificationMutationVariables
+>(
+  () => gql`
+    ${NotificationInfoFragment()}
+    mutation RemoveNotification($id: uuid!) {
+      delete_notification_by_pk(id: $id) {
+        ...NotificationInfo
+      }
+    }
+  `
+);
+
+export const [useMarkAllNotificationsAsRead, { mutate: markAllNotificationsAsRead }] = createMutation<
+  MarkAllNotificationsAsReadMutation,
+  MarkAllNotificationsAsReadMutationVariables
+>(
+  () => gql`
+    ${NotificationInfoFragment()}
+    mutation MarkAllNotificationsAsRead($date: timestamptz) {
+      update_notification(where: { read_at: { _is_null: true } }, _set: { read_at: $date }) {
+        returning {
+          ...NotificationInfo
+        }
+      }
+    }
+  `,
+  {
+    defaultVariables() {
+      return {
+        date: new Date().toISOString(),
+      };
+    },
+  }
+);
+
+export const [useDeleteAllReadNotifications, { mutate: deleteAllReadNotifications }] = createMutation<
+  DeleteAllReadNotificationsMutation,
+  DeleteAllReadNotificationsMutationVariables
+>(
+  () => gql`
+    ${NotificationInfoFragment()}
+    mutation DeleteAllReadNotifications {
+      delete_notification(where: { read_at: { _is_null: false } }) {
+        affected_rows
+      }
+    }
+  `
 );
 
 export const [useMarkNotificationAsUnread, { mutate: markNotificationAsUnread }] = createMutation<

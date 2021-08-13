@@ -8442,6 +8442,46 @@ export type MarkNotificationAsReadMutation = (
   )> }
 );
 
+export type RemoveNotificationMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type RemoveNotificationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_notification_by_pk?: Maybe<(
+    { __typename?: 'notification' }
+    & NotificationInfoFragment
+  )> }
+);
+
+export type MarkAllNotificationsAsReadMutationVariables = Exact<{
+  date?: Maybe<Scalars['timestamptz']>;
+}>;
+
+
+export type MarkAllNotificationsAsReadMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_notification?: Maybe<(
+    { __typename?: 'notification_mutation_response' }
+    & { returning: Array<(
+      { __typename?: 'notification' }
+      & NotificationInfoFragment
+    )> }
+  )> }
+);
+
+export type DeleteAllReadNotificationsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DeleteAllReadNotificationsMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_notification?: Maybe<(
+    { __typename?: 'notification_mutation_response' }
+    & Pick<Notification_Mutation_Response, 'affected_rows'>
+  )> }
+);
+
 export type MarkNotificationAsUnreadMutationVariables = Exact<{
   id: Scalars['uuid'];
 }>;
