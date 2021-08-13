@@ -6,6 +6,7 @@ import { Button } from "~ui/buttons/Button";
 import { IconPlusSquare } from "~ui/icons/default";
 import styled from "styled-components";
 import { getUUID } from "~shared/uuid";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 type Props = React.ComponentProps<typeof Button>;
 
@@ -18,6 +19,7 @@ export const CreateRoomButton = styled(function CreateRoomButton(props: Props) {
     }
 
     const roomId = getUUID();
+    const initialMembers = { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) };
 
     createRoom({
       input: {
@@ -25,10 +27,16 @@ export const CreateRoomButton = styled(function CreateRoomButton(props: Props) {
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
-        members: { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) },
+        members: initialMembers,
       },
     });
-
+    trackEvent("Created Room", {
+      roomId,
+      roomName: createRoomInput.name,
+      roomDeadline: createRoomInput.deadline,
+      spaceId: createRoomInput.spaceId,
+      numberOfInitialMembers: initialMembers.data.length,
+    });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
   }
 

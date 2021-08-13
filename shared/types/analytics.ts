@@ -31,20 +31,30 @@ export type AnalyticsEventsMap = {
   "Left Space": { spaceId: string; userId: string };
   "Deleted Space": { spaceId: string };
   "Renamed Space": { spaceId: string; newSpaceName: string; oldSpaceName: string };
-  "Created Room": void;
-  "Joined Room": void;
-  "Left Room": void;
-  "Reopened Room": void;
-  "Closed Room": void;
-  "Deleted Room": void;
-  "Renamed Room": void;
-  "Made Room Public": void;
-  "Made Room Private": void;
+  // current user or when current user adds someone else
+  "Created Room": {
+    roomId: string;
+    roomName: string;
+    roomDeadline: Date;
+    spaceId: string;
+    numberOfInitialMembers: number;
+  };
+  "Joined Room": { roomId: string; userId: string };
+  "Left Room": { roomId: string; userId: string };
+  "Invited To Room": { roomId: string; userEmail: string };
+  "Deleted Room Invitation": { roomId: string; invitationId: string };
+  "Updated Room Deadline": { roomId: string; newDeadline: Date; oldDeadline: Date };
+  "Reopened Room": { roomId: string };
+  "Closed Room": { roomId: string; hasRoomOpenTopics: boolean };
+  "Deleted Room": { roomId: string };
+  "Renamed Room": { roomId: string; newRoomName: string; oldRoomName: string };
+  "Made Room Public": { roomId: string };
+  "Made Room Private": { roomId: string };
   "Created Topic": void;
   "Reopened Topic": void;
   "Closed Topic": void;
   "Deleted Topic": void;
-  "Renamed Topic": void;
+  "Renamed Topic": { topicId: string; newTopicName: string; oldTopicName: string };
   // should track type of message (video, text, audio, files)
   "Sent Message": void;
   "Edited Message": void;

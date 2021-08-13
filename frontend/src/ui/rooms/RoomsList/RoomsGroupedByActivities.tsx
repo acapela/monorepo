@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { RoomsQueryVariables } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { RoomWithActivities, useRoomsWithActivities } from "./useRoomsWithActivities";
+import { RoomWithActivity, useRoomsWithActivity } from "./useRoomsWithActivity";
 
 interface Props {
   className?: string;
@@ -10,20 +10,20 @@ interface Props {
 }
 
 export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, query }: Props) {
-  const roomsWithActivities = useRoomsWithActivities({ query });
+  const roomsWithActivity = useRoomsWithActivity({ query });
 
-  const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomWithActivities>(
-    roomsWithActivities,
+  const [roomsWithNewActivity, roomsWithoutNewActivity] = groupByFilter<RoomWithActivity>(
+    roomsWithActivity,
     ({ unreadMessages }) => unreadMessages > 0
   );
 
   return (
     <UIHolder className={className}>
-      {roomsWithNewActivities.length > 0 && (
-        <RoomsListCategory categoryName="Rooms with updates" rooms={roomsWithNewActivities} />
+      {roomsWithNewActivity.length > 0 && (
+        <RoomsListCategory categoryName="Rooms with updates" rooms={roomsWithNewActivity} />
       )}
-      {roomsWithAlreadySeenActivities.length > 0 && (
-        <RoomsListCategory categoryName="Already seen" rooms={roomsWithAlreadySeenActivities} />
+      {roomsWithoutNewActivity.length > 0 && (
+        <RoomsListCategory categoryName="Already seen" rooms={roomsWithoutNewActivity} />
       )}
     </UIHolder>
   );

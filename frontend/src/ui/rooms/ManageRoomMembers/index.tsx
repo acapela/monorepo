@@ -18,6 +18,7 @@ import { addToast } from "~ui/toasts/data";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -40,6 +41,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   async function handleJoin(userId: string) {
     await addRoomMember({ userId, roomId: room.id });
+    trackEvent("Joined Room", { roomId: room.id, userId });
   }
 
   async function handleLeave(userId: string) {
@@ -54,6 +56,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     if (onCurrentUserLeave && userId === safeCurrentUser.id) {
       onCurrentUserLeave();
     }
+    trackEvent("Left Room", { roomId: room.id, userId });
   }
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
@@ -62,12 +65,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const requestedEmail = useRef<string | null>(null);
 
-  const closeInviteWarning = () => {
+  function closeInviteWarning() {
     setShouldShowWarning(false);
     requestedEmail.current = null;
-  };
+  }
 
-  const handleInviteByEmail = () => {
+  function handleInviteByEmail() {
     const email = requestedEmail.current;
     if (!email) return;
 
@@ -89,9 +92,10 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     }
 
     createRoomInvitation({ roomId: room.id, teamId, email });
-  };
+    trackEvent("Invited To Room", { roomId: room.id, userEmail: email });
+  }
 
-  const handleInviteByEmailRequest = (email: string) => {
+  function handleInviteByEmailRequest(email: string) {
     requestedEmail.current = email;
 
     const teamInvitationsEmails = new Set(team?.invitations.map(({ email }) => email));
@@ -100,7 +104,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     } else {
       setShouldShowWarning(true);
     }
-  };
+  }
+
+  function handleRemoveRoomInvitation(invitationId: string) {
+    removeRoomInvitation({ id: invitationId });
+    trackEvent("Deleted Room Invitation", { roomId: room.id, invitationId });
+  }
 
   return (
     <>
@@ -122,13 +131,13 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
         )}
         {isPickingUser && !shouldShowWarning && (
           <MembersManagerModal
-            title={"Invite your team to this room"}
+            title={"Invite your team members to this room"}
             currentUsers={members}
             onCloseRequest={closeUserPicker}
             onAddUser={handleJoin}
             onRemoveUser={handleLeave}
             invitations={room.invitations}
-            onRemoveInvitation={(id) => removeRoomInvitation({ id })}
+            onRemoveInvitation={handleRemoveRoomInvitation}
             onInviteByEmail={handleInviteByEmailRequest}
           />
         )}
