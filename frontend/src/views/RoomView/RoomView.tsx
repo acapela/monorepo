@@ -14,6 +14,7 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
 
@@ -40,7 +41,9 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const isRoomOpen = !room.finished_at;
 
   async function handleRoomNameChange(newName: string) {
+    const oldRoomName = room.name;
     await updateRoom({ roomId: room.id, input: { name: newName } });
+    trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
 
   return (
@@ -50,6 +53,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
         <UIRoomInfo>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
+            initialIsOpened={true}
             headerNode={
               <UIRoomHead spezia semibold>
                 <UIRoomTitle ref={titleHolderRef}>

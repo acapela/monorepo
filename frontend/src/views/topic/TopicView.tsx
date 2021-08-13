@@ -51,7 +51,8 @@ function useMarkTopicAsRead(topicId: string, messages: Pick<MessageType, "id">[]
 }
 
 export const TopicView = ({ topicId }: Props) => {
-  const [topic] = useSingleTopicQuery({ id: topicId });
+  const [topic = null] = useSingleTopicQuery({ id: topicId });
+
   const [messages = []] = useTopicMessagesQuery({
     topicId: topicId,
   });
@@ -60,45 +61,45 @@ export const TopicView = ({ topicId }: Props) => {
 
   useMarkTopicAsRead(topicId, messages);
 
-  const { hasTopic, isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
+  const { isParentRoomOpen, isClosed: isTopicClosed, topicCloseInfo } = useTopic(topic);
+
+  if (!topic) return null;
 
   return (
     <TopicStoreContext>
-      {hasTopic && (
-        <UIHolder>
-          {/* Absolutely placed backdrop will take it's width relative to the width its container */}
-          {/* This works as this nested container holds no padding/margin left or right */}
-          <UIBackdropContainer>
-            <UIBackDrop />
-            <UIMainContainer>
-              {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-              <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
+      <UIHolder>
+        {/* Absolutely placed backdrop will take it's width relative to the width its container */}
+        {/* This works as this nested container holds no padding/margin left or right */}
+        <UIBackdropContainer>
+          <UIBackDrop />
+          <UIMainContainer>
+            {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
+            <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
 
-              <ScrollableMessages>
-                <AnimateSharedLayout>
-                  <MessagesFeed isReadonly={!isMember} messages={messages} />
+            <ScrollableMessages>
+              <AnimateSharedLayout>
+                <MessagesFeed isReadonly={!isMember} messages={messages} />
 
-                  {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
-                </AnimateSharedLayout>
+                {topic && topicCloseInfo && <TopicSummaryMessage topic={topic} />}
+              </AnimateSharedLayout>
 
-                {!messages.length && !topicCloseInfo && (
-                  <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
-                )}
-
-                {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
-              </ScrollableMessages>
-
-              {!isTopicClosed && (
-                <ClientSideOnly>
-                  <UIMessageComposer isDisabled={!isMember}>
-                    <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
-                  </UIMessageComposer>
-                </ClientSideOnly>
+              {!messages.length && !topicCloseInfo && (
+                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
               )}
-            </UIMainContainer>
-          </UIBackdropContainer>
-        </UIHolder>
-      )}
+
+              {isTopicClosed && <TopicClosureNote isParentRoomOpen={isParentRoomOpen} />}
+            </ScrollableMessages>
+
+            {!isTopicClosed && (
+              <ClientSideOnly>
+                <UIMessageComposer isDisabled={!isMember}>
+                  <CreateNewMessageEditor topicId={topicId} isDisabled={!isMember} />
+                </UIMessageComposer>
+              </ClientSideOnly>
+            )}
+          </UIMainContainer>
+        </UIBackdropContainer>
+      </UIHolder>
     </TopicStoreContext>
   );
 };

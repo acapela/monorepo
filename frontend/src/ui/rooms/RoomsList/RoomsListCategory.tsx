@@ -1,13 +1,15 @@
+import { useEffect } from "react";
 import styled from "styled-components";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { Toggle } from "~ui/toggle";
 import { RoomsList } from "./RoomsList";
-import { RoomWithActivities } from "./useRoomsWithActivities";
+import { RoomWithActivity } from "./useRoomsWithActivity";
 
 interface Props {
   className?: string;
-  rooms: RoomWithActivities[];
+  rooms: RoomWithActivity[];
   categoryName: string;
   showClosedToggle?: boolean;
 }
@@ -19,6 +21,10 @@ export const RoomsListCategory = styled(function FilteredRoomsList({
   showClosedToggle,
 }: Props) {
   const [isShowingClosedRooms, { set: showOnlyClosed, unset: showOnlyOpen }] = useBoolean(false);
+
+  useEffect(() => {
+    trackEvent("Toggled Closed Rooms", { isShowingClosedRooms });
+  }, [isShowingClosedRooms]);
 
   const roomsToShow = rooms.filter(({ room }) => {
     if (!isShowingClosedRooms) {

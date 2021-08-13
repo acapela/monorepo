@@ -8,6 +8,7 @@ import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock } from "
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
 import { routes } from "~frontend/router";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({
@@ -21,28 +22,30 @@ export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: M
 
   if (!newName?.trim()) return;
 
-  if (newName === room.name) return;
+  const oldRoomName = room.name;
+  if (newName === oldRoomName) return;
 
   await updateRoom({ roomId: room.id, input: { name: newName } });
+  trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
 }
 
 export async function handleDeleteRoom(room: RoomBasicInfoFragment) {
   routes.space.prefetch({ spaceId: room.space_id });
 
   const didConfirm = await openConfirmPrompt({
-    title: `Remove room`,
+    title: `Delete room`,
     description: (
       <>
-        Are you sure you want to remove room <strong>{room.name}</strong>
+        Are you sure you want to delete room <strong>{room.name}</strong>
       </>
     ),
-    confirmLabel: `Remove`,
+    confirmLabel: `Delete`,
   });
 
   if (!didConfirm) return;
 
   await deleteRoom({ roomId: room.id });
-
+  trackEvent("Deleted Room", { roomId: room.id });
   await routes.space.push({ spaceId: room.space_id });
 }
 
@@ -60,6 +63,7 @@ async function closeRoom(roomId: string, topics: TopicDetailedInfoFragment[]): P
   }
 
   await updateRoom({ roomId, input: { finished_at: new Date().toISOString() } });
+  trackEvent("Closed Room", { roomId, hasRoomOpenTopics: openTopics.length > 0 });
   return false;
 }
 
@@ -73,6 +77,7 @@ export async function handleToggleCloseRoom(basicRoom: RoomBasicInfoFragment): P
     return isRoomStillOpen;
   } else {
     await updateRoom({ roomId, input: { finished_at: null } });
+    trackEvent("Reopened Room", { roomId });
     return true;
   }
 }
@@ -81,8 +86,10 @@ export async function handleToggleRoomPrivate(room: RoomBasicInfoFragment) {
   const roomId = room.id;
   if (room.is_private) {
     await updateRoom({ roomId, input: { is_private: false } });
+    trackEvent("Made Room Public", { roomId });
   } else {
     await updateRoom({ roomId, input: { is_private: true } });
+    trackEvent("Made Room Private", { roomId });
   }
 }
 

@@ -2,7 +2,7 @@ import { compareAsc, compareDesc } from "date-fns";
 import { useSSRRoomsMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomDetailedInfoFragment } from "~gql";
 
-export interface RoomWithActivities {
+export interface RoomWithActivity {
   room: RoomDetailedInfoFragment;
   unreadMessages: number;
 }
@@ -18,7 +18,7 @@ interface Props {
 
 const EARLIEST_POSSIBLE_DATE = new Date(0);
 
-function sortRoomsBy(roomsWithActivities: RoomWithActivities[], sort: Sort): void {
+function sortRoomsBy(roomsWithActivities: RoomWithActivity[], sort: Sort): void {
   const compareFn = sort === "asc" ? compareAsc : compareDesc;
   const lastActivityFallback = sort === "asc" ? new Date() : EARLIEST_POSSIBLE_DATE;
 
@@ -29,7 +29,7 @@ function sortRoomsBy(roomsWithActivities: RoomWithActivities[], sort: Sort): voi
   });
 }
 
-export function useRoomsWithActivities({ rooms, options }: Props): RoomWithActivities[] {
+export function useRoomsWithActivities({ rooms, options }: Props): RoomWithActivity[] {
   const roomUnreadMessages = useSSRRoomsMessagesCount();
 
   const roomsWithActivities = rooms.map((room: RoomDetailedInfoFragment) => ({

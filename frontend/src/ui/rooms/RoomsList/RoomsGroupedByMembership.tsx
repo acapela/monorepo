@@ -3,7 +3,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { RoomWithActivities, useRoomsWithActivities } from "./useRoomsWithActivities";
+import { RoomWithActivity, useRoomsWithActivities } from "./useRoomsWithActivity";
 
 interface Props {
   className?: string;
@@ -15,7 +15,7 @@ export const RoomsGroupedByMembership = styled(function FilteredRoomsList({ clas
 
   const roomsWithActivities = useRoomsWithActivities({ rooms, options: { sort: "desc" } });
 
-  const [joinedRooms, notJoinedRooms] = groupByFilter<RoomWithActivities>(roomsWithActivities, ({ room }) => {
+  const [joinedRooms, notJoinedRooms] = groupByFilter<RoomWithActivity>(roomsWithActivities, ({ room }) => {
     return room.members.some((member) => member.user.id === user.id);
   });
 

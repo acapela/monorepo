@@ -89,7 +89,7 @@ const authAdapterProvider = {
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
 
-        trackBackendUserEvent(user, "Signed Up");
+        trackBackendUserEvent(user, "Signed Up", { userEmail: profile.email });
 
         return user;
       },
@@ -271,7 +271,9 @@ async function getAuthInitOptions() {
           return true;
         }
 
-        trackBackendUserEvent(user, "Signed In");
+        if (user.email) {
+          trackBackendUserEvent(user, "Signed In", { userEmail: user.email });
+        }
 
         try {
           const existingAccount = await db.account.findFirst({

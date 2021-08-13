@@ -12,6 +12,8 @@ import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { TextH4 } from "~ui/typo";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { routes } from "~frontend/router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
@@ -60,6 +62,15 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
     });
 
     if (!room) return;
+    trackEvent("Created Room", {
+      roomId: room.id,
+      roomName: room.name,
+      roomDeadline: new Date(room.deadline),
+      spaceId: room.space_id,
+      numberOfInitialMembers: room.members.length,
+      isCalendarEvent: true,
+    });
+    routes.spaceRoom.push({ spaceId: room.space_id, roomId: room.id });
   }
 
   return (

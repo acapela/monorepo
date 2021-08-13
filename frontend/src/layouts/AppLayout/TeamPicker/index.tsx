@@ -41,8 +41,8 @@ export function TeamPickerView() {
         "The team has been created successfully and we are happy to have you on board. Now you can invite your team members and start the collaboration!",
     });
 
-    trackEvent("Account Created");
-    trackEvent("Trial Started");
+    trackEvent("Account Created", { teamName: name });
+    trackEvent("Trial Started", { teamName: name });
   }
 
   return (

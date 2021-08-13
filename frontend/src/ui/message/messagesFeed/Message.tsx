@@ -1,6 +1,7 @@
 import { MotionProps } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
+import { observer } from "mobx-react";
 import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
@@ -21,7 +22,7 @@ import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionB
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
 import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 import { select } from "~shared/sharedState";
-import { observer } from "mobx-react";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props extends MotionProps {
   message: MessageFeedInfoFragment;
@@ -57,15 +58,16 @@ export const Message = styled<Props>(
       setIsActive(false);
     });
 
-    async function handleRemoveWithConfirm() {
+    async function handleDeleteWithConfirm() {
       const didConfirm = await openConfirmPrompt({
         title: "Are you sure?",
         description: "This action cannot be undone.",
-        confirmLabel: "Remove message",
+        confirmLabel: "Delete message",
       });
 
       if (didConfirm) {
         await deleteMessage({ id: message.id });
+        trackEvent("Deleted Message", { messageId: message.id });
       }
     }
 
@@ -81,7 +83,7 @@ export const Message = styled<Props>(
       if (isOwnMessage) {
         options.push({
           label: "Delete message",
-          onSelect: handleRemoveWithConfirm,
+          onSelect: handleDeleteWithConfirm,
           isDestructive: true,
           icon: <IconTrash />,
         });

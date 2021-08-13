@@ -11,6 +11,7 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { IconSearch } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -32,6 +33,7 @@ export const TopBarSearchBar = namedForwardRef<HTMLDivElement, Props>(function T
     event.preventDefault();
 
     openModal();
+    trackEvent("Opened Search Bar");
   }
 
   return (

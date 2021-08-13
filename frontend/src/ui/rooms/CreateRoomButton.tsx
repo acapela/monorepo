@@ -6,6 +6,7 @@ import { Button } from "~ui/buttons/Button";
 import { IconPlusSquare } from "~ui/icons/default";
 import styled from "styled-components";
 import { getUUID } from "~shared/uuid";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 type Props = {
@@ -25,6 +26,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
     }
 
     const roomId = getUUID();
+    const initialMembers = { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) };
 
     createRoom({
       input: {
@@ -32,11 +34,18 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
-        members: { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) },
+        members: initialMembers,
         owner_id: user.id,
       },
     });
-
+    trackEvent("Created Room", {
+      roomId,
+      roomName: createRoomInput.name,
+      roomDeadline: createRoomInput.deadline,
+      spaceId: createRoomInput.spaceId,
+      numberOfInitialMembers: initialMembers.data.length,
+      isCalendarEvent: false,
+    });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
   }
 

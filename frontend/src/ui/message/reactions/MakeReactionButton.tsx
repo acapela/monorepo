@@ -10,6 +10,7 @@ import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { MessageDetailedInfoFragment } from "~gql";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { addMessageReaction } from "~frontend/gql/reactions";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   message: MessageDetailedInfoFragment;
@@ -43,6 +44,7 @@ export const MakeReactionButton = ({ message }: Props) => {
         user_id: user.id,
       },
     });
+    trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji.native });
   };
 
   return (
