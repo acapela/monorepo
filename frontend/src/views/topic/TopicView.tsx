@@ -4,22 +4,22 @@ import styled from "styled-components";
 import { Message as MessageType } from "~db";
 import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { updateLastSeenMessage, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
+import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
+import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { useTopic } from "~frontend/topics/useTopic";
+import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
+import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import { DropFileContext } from "~richEditor/DropFileContext";
+import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
-import { TopicSummaryMessage } from "./TopicSummary";
+import { theme } from "~ui/theme";
+import { Modifiers } from "~ui/theme/colors/createColor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
-import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
-import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
-import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
-import { theme } from "~ui/theme";
-import { Modifiers } from "~ui/theme/colors/createColor";
+import { TopicSummaryMessage } from "./TopicSummary";
 
 interface Props {
   topicId: string;
@@ -71,8 +71,8 @@ export const TopicView = ({ topicId }: Props) => {
           <UIBackdropContainer>
             <UIBackDrop />
             <UIMainContainer>
-              {/* We need to render the topic header or else flex bugs out on page reload */}
-              <TopicHeader topic={topic} />
+              {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
+              <UITopicHeaderHolder>{topic && <TopicHeader topic={topic} />}</UITopicHeaderHolder>
 
               <ScrollableMessages>
                 <AnimateSharedLayout>
@@ -136,6 +136,8 @@ const UIBackDrop = styled.div<{}>`
   ${theme.borderRadius.card};
 `;
 
+const UITopicHeaderHolder = styled.div<{}>``;
+
 const UIMainContainer = styled.div<{}>`
   position: relative;
   display: flex;
@@ -159,7 +161,7 @@ const UIMainContainer = styled.div<{}>`
     overflow: auto;
   }
 
-  ${TopicHeader} {
+  ${UITopicHeaderHolder} {
     height: 96px;
 
     background: ${theme.colors.layout.foreground()};

@@ -439,6 +439,7 @@ type attachment {
   """
   transcription: transcription
   transcription_id: uuid
+  user_id: uuid
 }
 
 """
@@ -490,6 +491,7 @@ input attachment_bool_exp {
   original_name: String_comparison_exp
   transcription: transcription_bool_exp
   transcription_id: uuid_comparison_exp
+  user_id: uuid_comparison_exp
 }
 
 """
@@ -519,6 +521,7 @@ input attachment_insert_input {
   original_name: String
   transcription: transcription_obj_rel_insert_input
   transcription_id: uuid
+  user_id: uuid
 }
 
 """
@@ -531,6 +534,7 @@ type attachment_max_fields {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  user_id: uuid
 }
 
 """
@@ -543,6 +547,7 @@ input attachment_max_order_by {
   mime_type: order_by
   original_name: order_by
   transcription_id: order_by
+  user_id: order_by
 }
 
 """
@@ -555,6 +560,7 @@ type attachment_min_fields {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  user_id: uuid
 }
 
 """
@@ -567,6 +573,7 @@ input attachment_min_order_by {
   mime_type: order_by
   original_name: order_by
   transcription_id: order_by
+  user_id: order_by
 }
 
 """
@@ -613,6 +620,7 @@ input attachment_order_by {
   original_name: order_by
   transcription: transcription_order_by
   transcription_id: order_by
+  user_id: order_by
 }
 
 """
@@ -655,6 +663,11 @@ enum attachment_select_column {
   column name
   """
   transcription_id
+
+  """
+  column name
+  """
+  user_id
 }
 
 """
@@ -667,6 +680,7 @@ input attachment_set_input {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  user_id: uuid
 }
 
 """
@@ -702,6 +716,11 @@ enum attachment_update_column {
   column name
   """
   transcription_id
+
+  """
+  column name
+  """
+  user_id
 }
 
 scalar bigint
@@ -4324,11 +4343,6 @@ type query_root {
   attachment_by_pk(id: uuid!): attachment
 
   """
-  perform the action: "get_download_url"
-  """
-  get_download_url(uuid: uuid!): DownloadUrlResponse
-
-  """
   perform the action: "get_upload_url"
   """
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
@@ -7810,11 +7824,6 @@ type subscription_root {
   attachment_by_pk(id: uuid!): attachment
 
   """
-  perform the action: "get_download_url"
-  """
-  get_download_url(uuid: uuid!): DownloadUrlResponse
-
-  """
   perform the action: "get_upload_url"
   """
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
@@ -10396,6 +10405,12 @@ type topic {
   """
   An object relationship
   """
+  owner: user
+  owner_id: uuid
+
+  """
+  An object relationship
+  """
   room: room!
   room_id: uuid!
   slug: String!
@@ -10451,6 +10466,8 @@ input topic_bool_exp {
   members: topic_member_bool_exp
   messages: message_bool_exp
   name: String_comparison_exp
+  owner: user_bool_exp
+  owner_id: uuid_comparison_exp
   room: room_bool_exp
   room_id: uuid_comparison_exp
   slug: String_comparison_exp
@@ -10484,6 +10501,8 @@ input topic_insert_input {
   members: topic_member_arr_rel_insert_input
   messages: message_arr_rel_insert_input
   name: String
+  owner: user_obj_rel_insert_input
+  owner_id: uuid
   room: room_obj_rel_insert_input
   room_id: uuid
   slug: String
@@ -10499,6 +10518,7 @@ type topic_max_fields {
   id: uuid
   index: String
   name: String
+  owner_id: uuid
   room_id: uuid
   slug: String
 }
@@ -10513,6 +10533,7 @@ input topic_max_order_by {
   id: order_by
   index: order_by
   name: order_by
+  owner_id: order_by
   room_id: order_by
   slug: order_by
 }
@@ -10731,6 +10752,7 @@ type topic_min_fields {
   id: uuid
   index: String
   name: String
+  owner_id: uuid
   room_id: uuid
   slug: String
 }
@@ -10745,6 +10767,7 @@ input topic_min_order_by {
   id: order_by
   index: order_by
   name: order_by
+  owner_id: order_by
   room_id: order_by
   slug: order_by
 }
@@ -10794,6 +10817,8 @@ input topic_order_by {
   members_aggregate: topic_member_aggregate_order_by
   messages_aggregate: message_aggregate_order_by
   name: order_by
+  owner: user_order_by
+  owner_id: order_by
   room: room_order_by
   room_id: order_by
   slug: order_by
@@ -10843,6 +10868,11 @@ enum topic_select_column {
   """
   column name
   """
+  owner_id
+
+  """
+  column name
+  """
   room_id
 
   """
@@ -10861,6 +10891,7 @@ input topic_set_input {
   id: uuid
   index: String
   name: String
+  owner_id: uuid
   room_id: uuid
   slug: String
 }
@@ -10898,6 +10929,11 @@ enum topic_update_column {
   column name
   """
   name
+
+  """
+  column name
+  """
+  owner_id
 
   """
   column name

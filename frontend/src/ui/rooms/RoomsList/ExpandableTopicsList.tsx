@@ -10,6 +10,7 @@ import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
 import { TopicCard } from "./TopicCard";
 import { useExpandableListToggle } from "./useExpandableListToggle";
 import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   roomId: string;
@@ -20,6 +21,8 @@ interface Props {
 const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
 export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topics, isAbleToAddTopic, roomId }: Props) {
+  const user = useAssertCurrentUser();
+
   const detailedRoomMessagesCount = useDetailedRoomMessagesCount(roomId);
 
   const orderedTopics = useMemo(() => {
@@ -44,6 +47,7 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
   async function handleCreateTopic() {
     await startCreateNewTopicFlow({
       roomId: roomId,
+      ownerId: user.id,
       navigateAfterCreation: true,
       index: getIndexBetweenCurrentAndLast(topics[topics.length - 1]?.index ?? ""),
     });

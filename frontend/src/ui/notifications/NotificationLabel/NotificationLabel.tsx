@@ -30,6 +30,10 @@ export function NotificationLabel({ notification }: Props) {
     return <TopicClosedNotificationLabel notification={notification} payload={notificationData.payload} />;
   }
 
+  if (isNotificationDataOfType(notificationData, "topicAssigned")) {
+    return <TopicAssignedNotificationLabel notification={notification} payload={notificationData.payload} />;
+  }
+
   if (isNotificationDataOfType(notificationData, "addedToTopic")) {
     return <AddedToTopicClosedNotificationLabel notification={notification} payload={notificationData.payload} />;
   }
@@ -89,6 +93,30 @@ function TopicClosedNotificationLabel({
           </>
         }
         userId={closedByUserId}
+      />
+    </RouteLink>
+  );
+}
+
+function TopicAssignedNotificationLabel({
+  payload: { assignedByUserId, topicId },
+  notification,
+}: NotificationTypeComponentProps<"topicAssigned">) {
+  const [topic] = useSingleTopicQuery({ id: topicId });
+  const assigningUser = useCurrentTeamMember(assignedByUserId);
+
+  if (!topic || !assigningUser) return null;
+
+  return (
+    <RouteLink route={routes.spaceRoomTopic} params={{ topicId, spaceId: topic.room.space_id, roomId: topic.room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{assigningUser.name}</strong> assigned you the topic <strong>{topic.name}</strong>
+          </>
+        }
+        userId={assignedByUserId}
       />
     </RouteLink>
   );
