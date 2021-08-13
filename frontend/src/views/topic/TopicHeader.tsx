@@ -26,7 +26,7 @@ export const TopicHeader = ({ topic }: Props) => {
     <UIHolder>
       <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
-      {!isParentRoomOpen && (
+      {isParentRoomOpen && (
         <UIActions>
           {isClosed && (
             <UIToggleCloseButton
@@ -67,7 +67,7 @@ const UIHolder = styled.div<{}>`
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: 100%;
+  height: 96px;
 `;
 
 const UITitle = styled(TextH3)<{ isClosed: boolean }>`

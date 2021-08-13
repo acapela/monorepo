@@ -136,7 +136,13 @@ const UIBackDrop = styled.div<{}>`
   ${theme.borderRadius.card};
 `;
 
-const UITopicHeaderHolder = styled.div<{}>``;
+const UITopicHeaderHolder = styled.div<{}>`
+  background: ${theme.colors.layout.foreground()};
+
+  ${theme.borderRadius.card}
+  border-bottom-left-radius: 0%;
+  border-bottom-right-radius: 0%;
+`;
 
 const UIMainContainer = styled.div<{}>`
   position: relative;
@@ -159,16 +165,6 @@ const UIMainContainer = styled.div<{}>`
     padding: 16px 24px;
     width: 100%;
     overflow: auto;
-  }
-
-  ${UITopicHeaderHolder} {
-    height: 96px;
-
-    background: ${theme.colors.layout.foreground()};
-
-    ${theme.borderRadius.card}
-    border-bottom-left-radius: 0%;
-    border-bottom-right-radius: 0%;
   }
 
   ${TopicClosureNote} {
