@@ -1,29 +1,50 @@
-import { Entity, EntityDefinition } from "./entity";
-import { EntityDraft } from "./entity/draft";
-import { EntityQuery } from "./entity/query";
+import { typedKeys } from "~shared/object";
+import { createEntityClient, EntityClient, GetEntityClientByDefinition } from "./entity/client";
+import { LocalDbAdapter } from "./entity/db/adapter";
+import { EntityDefinition } from "./entity/definition";
+import { EntitiesConnectionsConfig } from "./entity/entitiesConnections";
+import { EntitiesMap } from "./entity/entitiesMap";
 
-export { defineEntity } from "./entity";
+export * from "./entity/index";
 
 interface ClientDbConfig {
-  dbName: string;
+  dbAdapter?: LocalDbAdapter;
 }
 
-type EntitiesMap = Record<string, EntityDefinition<any>>;
-
-type ClientDbEntityClient<Data> = {
-  findById(id: string): Entity<Data> | null;
-  removeById(id: string): boolean;
-  query: (filter: (item: Data) => boolean) => EntityQuery<Data>;
-  createDraft(input: Data): EntityDraft<Data>;
-};
-
 type ClientDb<Entities extends EntitiesMap> = {
-  [key in keyof Entities]: Entities[key] extends EntityDefinition<infer Data> ? ClientDbEntityClient<Data> : never;
+  [key in keyof Entities]: EntityClient<Entities[key]>;
 };
 
 export function createClientDb<Entities extends EntitiesMap>(
   config: ClientDbConfig,
   entitiesMap: Entities
 ): ClientDb<Entities> {
-  return null as any;
+  const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
+
+  const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any>>();
+
+  const entitiesConnectionConfig: EntitiesConnectionsConfig = {
+    getEntityClientByDefinition<Data, Connections>(
+      definition: EntityDefinition<Data, Connections>
+    ): EntityClient<Data & Connections> {
+      const client = definitionClientMap.get(definition);
+
+      if (!client) {
+        throw new Error("no client for given definition in this db");
+      }
+
+      return client;
+    },
+  };
+
+  typedKeys(entitiesMap).forEach((entityKey) => {
+    const definition = entitiesMap[entityKey];
+    const entityClient = createEntityClient(definition, entitiesConnectionConfig);
+
+    definitionClientMap.set(definition, entityClient);
+
+    clientdb[entityKey] = entityClient;
+  });
+
+  return clientdb;
 }

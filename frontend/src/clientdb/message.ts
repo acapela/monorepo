@@ -3,6 +3,9 @@ import { defineEntity } from "~clientdb";
 import { MessageFragment, UpdatedMessagesQuery, UpdatedMessagesQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { attachmentEntity } from "./attachment";
+import { topicEntity } from "./topic";
+import { userEntity } from "./user";
 import { getType } from "./utils";
 
 const messageFragment = gql`
@@ -36,28 +39,28 @@ export const messageEntity = defineEntity(
     name: "message",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.message);
         });
       },
     },
   },
-  (message) => {
+  (message, { getEntity }) => {
     return {
       get topic() {
-        return clientdb.topic.findById(message.topic_id);
+        return getEntity(topicEntity).findById(message.topic_id);
       },
       get user() {
-        return clientdb.user.findById(message.user_id);
+        return getEntity(userEntity).findById(message.user_id);
       },
       // get repliedToMessage() {
       //   if (!message.replied_to_message_id) return null;
 
-      //   return clientdb.message.findById(message.replied_to_message_id);
+      //   return getEntity(message.findById(message.replied_to_message_id);
       // },
       get attachments() {
-        return clientdb.attachment.query((attachment) => attachment.message_id === message.id);
+        return getEntity(attachmentEntity).query((attachment) => attachment.message_id === message.id);
       },
     };
   }

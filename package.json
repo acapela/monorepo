@@ -98,7 +98,8 @@
     "ts-node": "^10.1.0",
     "typescript": "4.4.0-beta",
     "utility-types": "^3.10.0",
-    "~tooling": "0.1.0"
+    "~tooling": "0.1.0",
+    "mobx": "6.3.2"
   },
   "resolutions": {
     "react": "17.0.2",

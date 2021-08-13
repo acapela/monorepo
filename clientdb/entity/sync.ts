@@ -7,5 +7,6 @@ interface SyncManager<Data> {
 type SyncCleanup = () => void;
 
 export interface EntitySyncConfig<Data> {
-  runSync: (manager: SyncManager<Data>) => SyncCleanup | void;
+  pull?: (manager: SyncManager<Data>) => SyncCleanup | void;
+  push?: (entityToSync: Data) => Promise<Data | false>;
 }

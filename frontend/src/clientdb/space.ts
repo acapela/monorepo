@@ -3,6 +3,8 @@ import { defineEntity } from "~clientdb";
 import { SpaceFragment, UpdatedSpacesQuery, UpdatedSpacesQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { roomEntity } from "./room";
+import { teamEntity } from "./team";
 import { userEntity } from "./user";
 import { getType } from "./utils";
 
@@ -38,24 +40,24 @@ export const spaceEntity = defineEntity(
     name: "space",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.space);
         });
       },
     },
   },
-  (space) => {
+  (space, { getEntity }) => {
     const memberIds = space.membersIds.map((member) => member.user_id);
     return {
       get members() {
-        return clientdb.user.query((user) => memberIds.includes(user.id));
+        return getEntity(userEntity).query((user) => memberIds.includes(user.id));
       },
       get rooms() {
-        return clientdb.room.query((room) => room.space_id === space.id);
+        return getEntity(roomEntity).query((room) => room.space_id === space.id);
       },
       get team() {
-        return clientdb.team.findById(space.team_id);
+        return getEntity(teamEntity).findById(space.team_id);
       },
     };
   }

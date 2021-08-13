@@ -3,6 +3,9 @@ import { defineEntity } from "~clientdb";
 import { TopicFragment, UpdatedTopicsQuery, UpdatedTopicsQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { messageEntity } from "./message";
+import { roomEntity } from "./room";
+import { spaceEntity } from "./space";
 import { userEntity } from "./user";
 import { getType } from "./utils";
 
@@ -41,31 +44,31 @@ export const topicEntity = defineEntity(
     name: "topic",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToTopicUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.topic);
         });
       },
     },
   },
-  (topic) => {
+  (topic, { getEntity }) => {
     const memberIds = topic.membersIds.map((member) => member.user_id);
     return {
       get members() {
-        return clientdb.user.query((user) => memberIds.includes(user.id));
+        return getEntity(userEntity).query((user) => memberIds.includes(user.id));
       },
       get room() {
-        return clientdb.room.findById(topic.room_id);
+        return getEntity(roomEntity).findById(topic.room_id);
       },
       get space() {
-        const room = clientdb.room.findById(topic.room_id);
+        const room = getEntity(roomEntity).findById(topic.room_id);
 
         if (!room) return null;
 
-        return clientdb.space.findById(room.space_id);
+        return getEntity(spaceEntity).findById(room.space_id);
       },
       get messages() {
-        return clientdb.message.query((message) => message.topic_id === topic.id);
+        return getEntity(messageEntity).query((message) => message.topic_id === topic.id);
       },
     };
   }

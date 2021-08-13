@@ -3,6 +3,7 @@ import { defineEntity } from "~clientdb";
 import { AttachmentFragment, UpdatedAttachmentsQuery, UpdatedAttachmentsQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { messageEntity } from "./message";
 import { userEntity } from "./user";
 
 const attachmentFragment = gql`
@@ -35,19 +36,19 @@ export const attachmentEntity = defineEntity<AttachmentFragment>(
     name: "attachment",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.attachment);
         });
       },
     },
   },
-  (attachment) => {
+  (attachment, { getEntity }) => {
     return {
       get message() {
         if (!attachment.message_id) return;
 
-        return clientdb.message.findById(attachment.message_id);
+        return getEntity(messageEntity).findById(attachment.message_id);
       },
     };
   }

@@ -3,6 +3,7 @@ import { defineEntity } from "~clientdb";
 import { TeamFragment, UpdatedTeamsQuery, UpdatedTeamsQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { spaceEntity } from "./space";
 import { userEntity } from "./user";
 import { getType } from "./utils";
 
@@ -37,21 +38,21 @@ export const teamEntity = defineEntity(
     name: "team",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.team);
         });
       },
     },
   },
-  (team) => {
+  (team, { getEntity }) => {
     const memberIds = team.membershipsIds.map((member) => member.user_id);
     return {
       get members() {
-        return clientdb.user.query((user) => memberIds.includes(user.id));
+        return getEntity(userEntity).query((user) => memberIds.includes(user.id));
       },
       get spaces() {
-        return clientdb.space.query((space) => space.team_id === team.id);
+        return getEntity(spaceEntity).query((space) => space.team_id === team.id);
       },
     };
   }

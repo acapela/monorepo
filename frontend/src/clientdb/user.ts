@@ -3,6 +3,7 @@ import { defineEntity } from "~clientdb";
 import { UserFragment, UpdatedUsersQuery, UpdatedUsersQueryVariables } from "~frontend/../../gql";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
+import { spaceEntity } from "./space";
 import { getType } from "./utils";
 
 const userFragment = gql`
@@ -33,17 +34,17 @@ export const userEntity = defineEntity(
     name: "space",
     getCacheKey: (space) => space.id,
     sync: {
-      runSync({ lastSyncDate, updateItems }) {
+      pull({ lastSyncDate, updateItems }) {
         return subscribeToUserUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.user);
         });
       },
     },
   },
-  (user) => {
+  (user, { getEntity }) => {
     return {
       get createdSpaces() {
-        return clientdb.space.query((space) => space.creator_id === user.id);
+        return getEntity(spaceEntity).query((space) => space.creator_id === user.id);
       },
     };
   }
