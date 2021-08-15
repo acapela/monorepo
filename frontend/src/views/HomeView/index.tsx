@@ -7,17 +7,34 @@ import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
 import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
 import { getHomeViewRoomsQueryWhere } from "./query";
 import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
-
+import { clientdb } from "~frontend/clientdb";
+import { observer } from "mobx-react";
 const sortByLatestActivity = createSortByLatestActivityFilter();
 
-export function HomeView() {
+export const HomeView = observer(function HomeView() {
+  const roomz = clientdb.room.query(() => true).all;
   const user = useAssertCurrentUser();
 
-  const [rooms = []] = useRoomsQuery({
-    where: getHomeViewRoomsQueryWhere(user.id),
-  });
+  console.log({ roomz });
+  // const [rooms = []] = useRoomsQuery({
+  //   where: getHomeViewRoomsQueryWhere(user.id),
+  // });
 
-  const [filteredRooms] = useRoomsCriteria(rooms, [sortByLatestActivity]);
+  // const [filteredRooms] = useRoomsCriteria(rooms, [sortByLatestActivity]);
+
+  return (
+    <div>
+      dfsjksdfjklsdfjklsdf
+      {roomz.map((room) => {
+        console.log("elko", room.name);
+        return (
+          <div key={room.id}>
+            {room.name} (owner {room.owner.name})
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <UIHolder isNarrow>
@@ -27,7 +44,7 @@ export function HomeView() {
       <FlyingCreateRoomButton buttonProps={{ size: "large" }} />
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled(SpacedAppLayoutContainer)<{}>``;
 

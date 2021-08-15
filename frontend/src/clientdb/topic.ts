@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { defineEntity } from "~clientdb";
 import { TopicFragment, UpdatedTopicsQuery, UpdatedTopicsQueryVariables } from "~frontend/../../gql";
+import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
 import { messageEntity } from "./message";
@@ -43,7 +44,9 @@ export const topicEntity = defineEntity(
     type: getType<TopicFragment>(),
     name: "topic",
     getCacheKey: (space) => space.id,
+    getId: (topic) => topic.id,
     sync: {
+      initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
         return subscribeToTopicUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.topic);

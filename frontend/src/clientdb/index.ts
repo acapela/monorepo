@@ -8,7 +8,7 @@ import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 
 export const clientdb = createClientDb(
-  { dbName: "acapela" },
+  {},
   {
     space: spaceEntity,
     user: userEntity,

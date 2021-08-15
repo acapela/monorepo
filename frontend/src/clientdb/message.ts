@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { defineEntity } from "~clientdb";
 import { MessageFragment, UpdatedMessagesQuery, UpdatedMessagesQueryVariables } from "~frontend/../../gql";
+import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
 import { attachmentEntity } from "./attachment";
@@ -38,7 +39,9 @@ export const messageEntity = defineEntity(
     type: getType<MessageFragment>(),
     name: "message",
     getCacheKey: (space) => space.id,
+    getId: (message) => message.id,
     sync: {
+      initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
         return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.message);

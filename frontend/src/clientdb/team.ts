@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { defineEntity } from "~clientdb";
 import { TeamFragment, UpdatedTeamsQuery, UpdatedTeamsQueryVariables } from "~frontend/../../gql";
+import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
 import { clientdb } from ".";
 import { spaceEntity } from "./space";
@@ -37,7 +38,9 @@ export const teamEntity = defineEntity(
     type: getType<TeamFragment>(),
     name: "team",
     getCacheKey: (space) => space.id,
+    getId: (team) => team.id,
     sync: {
+      initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
         return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
           updateItems(newData.team);

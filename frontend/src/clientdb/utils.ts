@@ -1,3 +1,3 @@
 export function getType<T>(): T {
-  throw new Error();
+  return null as any as T;
 }

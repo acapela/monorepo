@@ -24,6 +24,7 @@ import { useConst } from "~shared/hooks/useConst";
 import { addToast } from "~ui/toasts/data";
 import { createDateParseLink } from "./dateStringParseLink";
 import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
+import { createResolvablePromise } from "~frontend/../../shared/promises";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
@@ -213,6 +214,9 @@ export function getRenderedApolloClient() {
   return assertDefined(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
 }
 
+export const [renderedApolloClientPromise, resolveApolloClientPromise] =
+  createResolvablePromise<ApolloClient<unknown>>();
+
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
   const client = useConst(() =>
     getApolloClient({
@@ -220,6 +224,8 @@ export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint
       websocketEndpoint: websocketEndpoint ?? undefined,
     })
   );
+
+  resolveApolloClientPromise(client);
 
   renderedApolloClient = client;
 

@@ -1,5 +1,10 @@
 import { typedKeys } from "~shared/object";
-import { createEntityClient, EntityClient, GetEntityClientByDefinition } from "./entity/client";
+import {
+  createEntityClient,
+  EntityClient,
+  EntityClientFromDefinition,
+  GetEntityClientByDefinition,
+} from "./entity/client";
 import { LocalDbAdapter } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { EntitiesConnectionsConfig } from "./entity/entitiesConnections";
@@ -12,7 +17,7 @@ interface ClientDbConfig {
 }
 
 type ClientDb<Entities extends EntitiesMap> = {
-  [key in keyof Entities]: EntityClient<Entities[key]>;
+  [key in keyof Entities]: EntityClientFromDefinition<Entities[key]>;
 };
 
 export function createClientDb<Entities extends EntitiesMap>(
@@ -21,12 +26,12 @@ export function createClientDb<Entities extends EntitiesMap>(
 ): ClientDb<Entities> {
   const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
 
-  const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any>>();
+  const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
 
   const entitiesConnectionConfig: EntitiesConnectionsConfig = {
     getEntityClientByDefinition<Data, Connections>(
       definition: EntityDefinition<Data, Connections>
-    ): EntityClient<Data & Connections> {
+    ): EntityClient<Data, Connections> {
       const client = definitionClientMap.get(definition);
 
       if (!client) {

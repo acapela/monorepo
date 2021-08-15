@@ -8899,7 +8899,7 @@ export type UpdatedMessagesQuery = (
 
 export type RoomFragment = (
   { __typename?: 'room' }
-  & Pick<Room, 'id' | 'owner_id' | 'creator_id' | 'finished_at' | 'created_at' | 'is_private' | 'deadline' | 'last_activity_at' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary'>
+  & Pick<Room, 'id' | 'name' | 'owner_id' | 'creator_id' | 'finished_at' | 'created_at' | 'is_private' | 'deadline' | 'last_activity_at' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary'>
   & { membersIds: Array<(
     { __typename?: 'room_member' }
     & Pick<Room_Member, 'user_id'>

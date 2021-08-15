@@ -172,6 +172,7 @@ export function createQuery<Data, Variables>(
   }
 
   function subscribe(variables: Variables, callback: (data: Data) => void) {
+    console.log({ variables });
     const subscription = getRenderedApolloClient()
       .subscribe<Data, Variables>({ variables, query: getSubscriptionQuery() })
       .subscribe((newResults) => {
@@ -181,6 +182,7 @@ export function createQuery<Data, Variables>(
       });
 
     return () => {
+      console.log("cleanup");
       subscription.unsubscribe();
     };
   }

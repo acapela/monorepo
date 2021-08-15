@@ -15,15 +15,12 @@ export interface EntityDefinition<Data, Connections> {
   getConnections: EntityDefinitionGetConnections<Data, Connections>;
 }
 
-type EntityDefinitionGetConnections<Data, Connections> = (
-  item: Data,
-  manager: GetConnectionsManager<Data, Connections>
-) => Connections;
+type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: GetConnectionsManager) => Connections;
 
-interface GetConnectionsManager<Data, Connections> {
+interface GetConnectionsManager {
   getEntity<OtherData, Connections>(
     definition: EntityDefinition<OtherData, Connections>
-  ): EntityClient<OtherData & Connections>;
+  ): EntityClient<OtherData, Connections>;
 }
 
 export function defineEntity<Data, Connections = {}>(
