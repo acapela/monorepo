@@ -3,6 +3,7 @@ import { throttle } from "lodash";
 import React, { ReactNode, useEffect, useState } from "react";
 import { usePopper } from "react-popper";
 import styled, { css } from "styled-components";
+
 import { createCleanupObject } from "~shared/cleanup";
 import { createDocumentEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";

@@ -1,15 +1,17 @@
-import styled, { css } from "styled-components";
-import { routes, RouteLink } from "~frontend/router";
-import { TopicDetailedInfoFragment, MessageBasicInfoFragment } from "~gql";
-import { TextH6 } from "~ui/typo";
-import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
-import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import React from "react";
+import styled, { css } from "styled-components";
+
+import { useTopicMessagesQuery } from "~frontend/gql/topics";
+import { RouteLink, routes } from "~frontend/router";
 import { useTopic } from "~frontend/topics/useTopic";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { UICardListItem } from "./shared";
+import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { MessageBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { convertRichEditorContentToHtml } from "~richEditor/content/html";
+import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
+import { TextH6 } from "~ui/typo";
+
+import { UICardListItem } from "./shared";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

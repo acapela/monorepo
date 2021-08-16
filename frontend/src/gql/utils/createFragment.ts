@@ -2,7 +2,9 @@ import { DocumentNode } from "@apollo/client";
 import { FragmentDefinitionNode } from "graphql";
 import produceWithImmer, { Draft } from "immer";
 import { memoize } from "lodash";
+
 import { assert } from "~shared/assert";
+
 import { getCurrentApolloClientHandler } from "./proxy";
 
 /**

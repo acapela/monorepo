@@ -1,10 +1,10 @@
-import { createLengthValidator } from "~shared/validation/inputValidation";
+import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 import { createTopic } from "~frontend/gql/topics";
 import { routes } from "~frontend/router";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { getUUID } from "~shared/uuid";
-import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 
 interface CreateTopicInput {
   topicId?: string;

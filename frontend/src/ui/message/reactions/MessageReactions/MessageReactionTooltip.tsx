@@ -1,9 +1,10 @@
+import { Data as EmojiDataset, getEmojiDataFromNative } from "emoji-mart";
+import data from "emoji-mart/data/all.json";
 import React from "react";
 import styled from "styled-components";
-import { getEmojiDataFromNative, Data as EmojiDataset } from "emoji-mart";
-import data from "emoji-mart/data/all.json";
-import { ReactionBasicInfoFragment } from "~gql";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { ReactionBasicInfoFragment } from "~gql";
 import { WHITE } from "~ui/theme/colors/base";
 
 interface Props {

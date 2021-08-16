@@ -1,6 +1,7 @@
+import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import React from "react";
-import { startOfWeek, endOfWeek, eachDayOfInterval, format } from "date-fns";
 import styled from "styled-components";
+
 import { TextBody12 } from "~ui/typo";
 
 const now = new Date();

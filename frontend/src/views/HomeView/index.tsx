@@ -1,12 +1,14 @@
 import styled from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useRoomsQuery } from "~frontend/gql/rooms";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
 import { createSortByLatestActivityFilter } from "~frontend/ui/rooms/filters/factories";
 import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
 import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
+
 import { getHomeViewRoomsQueryWhere } from "./query";
-import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
 
 const sortByLatestActivity = createSortByLatestActivityFilter();
 

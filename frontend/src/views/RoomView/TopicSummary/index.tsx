@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+
 import { useTopic } from "~frontend/topics/useTopic";
 import { TopicDetailedInfoFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
+
 import { formatDate } from "../shared";
 
 interface Props {

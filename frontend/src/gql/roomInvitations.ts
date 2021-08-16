@@ -1,16 +1,18 @@
 import { gql } from "@apollo/client";
+
 import {
   CreateRoomInvitationMutation,
   CreateRoomInvitationMutationVariables,
-  RoomInvitationBasicInfoFragment as RoomInvitationBasicInfoFragmentType,
   RemoveRoomInvitationMutation,
   RemoveRoomInvitationMutationVariables,
+  RoomInvitationBasicInfoFragment as RoomInvitationBasicInfoFragmentType,
   RoomInvitationViewQuery,
   RoomInvitationViewQueryVariables,
 } from "~gql";
-import { createMutation, createFragment, createQuery } from "./utils";
 import { addToast } from "~ui/toasts/data";
+
 import { RoomDetailedInfoFragment } from "./rooms";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const RoomInvitationBasicInfoFragment = createFragment<RoomInvitationBasicInfoFragmentType>(
   () => gql`

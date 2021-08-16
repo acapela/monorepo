@@ -1,7 +1,8 @@
 import { signIn } from "next-auth/client";
 import React, { ReactNode } from "react";
-import { emailInputValidator } from "~shared/validation/inputValidation";
+
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { emailInputValidator } from "~shared/validation/inputValidation";
 import { Button } from "~ui/buttons/Button";
 
 export const EmailLoginButton = ({

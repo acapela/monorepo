@@ -1,5 +1,6 @@
-import { RichEditorNode } from "./types";
 import { JSONContent } from "@tiptap/react";
+
+import { RichEditorNode } from "./types";
 
 function hasContentNodeAnyTextContent(node: JSONContent): boolean {
   if (node.text && node.text.length > 0) return true;

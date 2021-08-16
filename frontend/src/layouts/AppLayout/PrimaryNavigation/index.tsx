@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+
+import { IconCalendarDates, IconHome, IconSpaces } from "~ui/icons";
+
 import { PrimaryNavigationItem } from "./PrimaryNavigationItem";
-import { IconHome, IconSpaces, IconCalendarDates } from "~ui/icons";
 
 export const PrimaryNavigation = () => (
   <UINav>

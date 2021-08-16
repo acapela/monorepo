@@ -1,5 +1,7 @@
-import { css, StylesPart } from "styled-components";
+import { StylesPart, css } from "styled-components";
+
 import { setColorOpacity } from "~shared/colors";
+
 import { BLACK } from "./theme/colors/base";
 
 function createShadowCss(size: number, opacity = 0.2): StylesPart {

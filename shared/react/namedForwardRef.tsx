@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefExoticComponent, ForwardRefRenderFunction, PropsWithoutRef, RefAttributes } from "react";
+import { ForwardRefExoticComponent, ForwardRefRenderFunction, PropsWithoutRef, RefAttributes, forwardRef } from "react";
 
 /**
  * Built in forwardRef creates anonymous component which results in bunch of fast-refresh warnings quote:

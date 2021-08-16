@@ -1,7 +1,8 @@
 import styled, { css } from "styled-components";
-import { MessageDetailedInfoFragment } from "~gql";
-import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
+
 import { removeAttachment } from "~frontend/gql/attachments";
+import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
+import { MessageDetailedInfoFragment } from "~gql";
 
 interface Props {
   message: MessageDetailedInfoFragment;

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import { UserTokenData } from "~shared/types/jwtAuth";
+
 import { AuthenticationError } from "../errors/errorTypes";
 
 export function verifyAndParseJWT<AssumedData>(token: string) {

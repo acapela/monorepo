@@ -1,12 +1,13 @@
 import styled from "styled-components";
-import { TextH3, TextBody14 } from "~ui/typo";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useTeamSpacesQuery } from "~frontend/gql/spaces";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
 import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { groupByFilter } from "~shared/groupByFilter";
 import { CategoryNameLabel } from "~ui/theme/functional";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { TextBody14, TextH3 } from "~ui/typo";
 
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();

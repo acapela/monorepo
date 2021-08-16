@@ -1,6 +1,6 @@
-import { IconMoreHoriz } from "~ui/icons";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconMoreHoriz } from "~ui/icons";
 
 interface Props {
   onClick?: () => void;

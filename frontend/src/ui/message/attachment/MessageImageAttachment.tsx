@@ -1,9 +1,10 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import { PopPresenceAnimator } from "~ui/animations";
+
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { PopPresenceAnimator } from "~ui/animations";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconCross } from "~ui/icons";

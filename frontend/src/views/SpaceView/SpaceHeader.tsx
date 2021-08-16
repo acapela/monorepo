@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { SpaceDetailedInfoFragment } from "~gql";
 import { EntityKindLabel, HeroItemTitle } from "~ui/theme/functional";
 

@@ -1,5 +1,6 @@
-import styled, { css, StylesPart } from "styled-components";
 import { motion } from "framer-motion";
+import styled, { StylesPart, css } from "styled-components";
+
 import { typedKeys } from "~shared/object";
 import { BASE_GREY_1, BASE_GREY_3, PRIMARY_PINK_1, WARNING_COLOR } from "~ui/theme/colors/base";
 

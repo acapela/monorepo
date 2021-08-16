@@ -1,10 +1,12 @@
 import React, { ReactNode, useCallback, useRef } from "react";
 import styled from "styled-components";
-import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
-import { assertDefined } from "~shared/assert";
+
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { select } from "~shared/sharedState";
+import { assertDefined } from "~shared/assert";
 import { useElementEvent } from "~shared/domEvents";
+import { select } from "~shared/sharedState";
+
+import { ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
 
 interface Props {
   children: ReactNode;

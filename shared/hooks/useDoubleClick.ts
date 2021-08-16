@@ -1,4 +1,5 @@
 import { RefObject, useEffect } from "react";
+
 import { createElementEvent } from "~shared/domEvents";
 import { createTimeout } from "~shared/time";
 

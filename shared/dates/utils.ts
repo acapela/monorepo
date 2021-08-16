@@ -1,4 +1,4 @@
-import { startOfDay, endOfDay } from "date-fns";
+import { endOfDay, startOfDay } from "date-fns";
 import { sortBy } from "lodash";
 
 export function getDayBoundaries(date: Date) {

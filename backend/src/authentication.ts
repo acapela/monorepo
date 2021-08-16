@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { AuthenticationError } from "./errors/errorTypes";
 
 export const router = Router();

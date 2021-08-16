@@ -1,9 +1,11 @@
 import { isSameDay } from "date-fns";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
+
 import { MessageFeedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
+
 import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";
 

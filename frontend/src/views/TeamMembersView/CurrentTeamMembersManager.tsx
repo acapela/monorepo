@@ -1,14 +1,16 @@
 import styled from "styled-components";
-import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { removeTeamInvitation, removeTeamMember, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { InviteMemberForm } from "./InviteMemberForm";
-import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
-import { trackEvent } from "~frontend/analytics/tracking";
 import { theme } from "~ui/theme";
+
 import { ExitTeamButton } from "./ExitTeamButton";
+import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
 
 export const CurrentTeamMembersManager = () => {

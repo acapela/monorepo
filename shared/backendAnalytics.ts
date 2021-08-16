@@ -1,5 +1,7 @@
-import { User } from "~db";
 import Analytics from "analytics-node";
+
+import { User } from "~db";
+
 import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {

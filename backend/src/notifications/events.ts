@@ -1,13 +1,14 @@
-import { db, Notification } from "~db";
-import { AnyNotificationData, isNotificationDataOfType, NotificationData } from "~shared/notifications/types";
+import { Notification, db } from "~db";
+import { assert } from "~shared/assert";
+import { AnyNotificationData, NotificationData, isNotificationDataOfType } from "~shared/notifications/types";
+
+import { UnprocessableEntityError } from "../errors/errorTypes";
+import { HasuraEvent } from "../hasura";
+import { RoomAddedNotification } from "../roomInvitation/RoomAddedNotification";
+import { findRoomById } from "../rooms/rooms";
 import { findUserById, getNormalizedUserName } from "../users/users";
 import { MentionNotification } from "./MentionNotification";
 import { sendNotification } from "./sendNotification";
-import { assert } from "~shared/assert";
-import { HasuraEvent } from "../hasura";
-import { findRoomById } from "../rooms/rooms";
-import { UnprocessableEntityError } from "../errors/errorTypes";
-import { RoomAddedNotification } from "../roomInvitation/RoomAddedNotification";
 
 async function sendMentionEmailNotification(notification: Notification, data: NotificationData<"topicMention">) {
   const {

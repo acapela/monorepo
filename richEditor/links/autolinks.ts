@@ -1,6 +1,7 @@
 import { markInputRule } from "@tiptap/core";
 import { InputRule, inputRules } from "prosemirror-inputrules";
 import { MarkType } from "prosemirror-model";
+
 import { Link } from "./link";
 
 // These are almost the same as pasteRegex and pasteRegexWithBrackets but with

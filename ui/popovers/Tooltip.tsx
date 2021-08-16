@@ -1,11 +1,13 @@
+import { AnimatePresence } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+
 import { createChannel } from "~shared/channel";
 import { createDocumentEvent, createWindowEvent, useElementEvent } from "~shared/domEvents";
-import { useId } from "~shared/id";
-import { AnimatePresence } from "framer-motion";
-import { TooltipLabel, TooltipLabelProps } from "./TooltipLabel";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { useId } from "~shared/id";
+
+import { TooltipLabel, TooltipLabelProps } from "./TooltipLabel";
 
 /**
  * Having shared channel instead of 'isOpened' local state ensures there is never more than 1 tooltips opened at once

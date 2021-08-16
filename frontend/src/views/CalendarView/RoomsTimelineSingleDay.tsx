@@ -1,21 +1,23 @@
-import styled from "styled-components";
-import { TextH3 } from "~ui/typo";
 import { endOfDay, startOfDay } from "date-fns";
-import { getDayBoundaries } from "~shared/dates/utils";
-import { niceFormatDate } from "~shared/dates/format";
-import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { IconCalendar } from "~ui/icons";
 import { motion } from "framer-motion";
-import { getSpringTransitionWithDuration } from "~ui/animations";
+import { sortBy } from "lodash";
+import styled from "styled-components";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useRoomsQuery } from "~frontend/gql/rooms";
 import { googleCalendarEventsApi } from "~frontend/requests/googleCalendar";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
-import { RoomDetailedInfoFragment } from "~gql";
-import { JsonValue } from "~shared/types";
-import { sortBy } from "lodash";
-import { GoogleCalendarEventsCard } from "./GoogleCalendarEventsCard";
 import { CollapsibleRoomInfo } from "~frontend/ui/rooms/RoomsList/CollapsibleRoomInfo";
+import { RoomDetailedInfoFragment } from "~gql";
+import { niceFormatDate } from "~shared/dates/format";
+import { getDayBoundaries } from "~shared/dates/utils";
+import { JsonValue } from "~shared/types";
+import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
+import { getSpringTransitionWithDuration } from "~ui/animations";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { IconCalendar } from "~ui/icons";
+import { TextH3 } from "~ui/typo";
+
+import { GoogleCalendarEventsCard } from "./GoogleCalendarEventsCard";
 
 interface Props {
   startDate: Date;

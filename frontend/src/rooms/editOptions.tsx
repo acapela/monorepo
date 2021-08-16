@@ -1,14 +1,14 @@
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
-import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { deleteRoom, getSingleRoomQueryManager, updateRoom } from "~frontend/gql/rooms";
+import { routes } from "~frontend/router";
+import { ModalAnchor } from "~frontend/ui/Modal";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { IconCheck, IconEdit, IconTrash, IconUndo, IconLock, IconUnlock } from "~ui/icons";
-import { ModalAnchor } from "~frontend/ui/Modal";
 import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
-import { routes } from "~frontend/router";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
+import { IconCheck, IconEdit, IconLock, IconTrash, IconUndo, IconUnlock } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 
 export async function handleEditRoomName(room: RoomBasicInfoFragment, anchor?: ModalAnchor) {
   const newName = await openUIPrompt({

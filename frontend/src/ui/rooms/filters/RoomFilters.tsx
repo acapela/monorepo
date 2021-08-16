@@ -1,11 +1,13 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+
 import { Button } from "~ui/buttons/Button";
 import { IconChevronDown } from "~ui/icons";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+
 import { createSortByDueDateFilter, createSortByLatestActivityFilter, createUserFilter } from "./factories";
-import { getUsersFromRoomCriteriaList, RoomCriteria } from "./filter";
+import { RoomCriteria, getUsersFromRoomCriteriaList } from "./filter";
 import { FiltersList } from "./FiltersList";
 import { ParticipantsPickerMenu } from "./ParticipantsPickerMenu";
 

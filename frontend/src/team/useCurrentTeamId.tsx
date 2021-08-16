@@ -1,5 +1,7 @@
 import { useContext } from "react";
+
 import { assertDefined } from "~shared/assert";
+
 import { CurrentTeamIdContext } from "./CurrentTeamIdContext";
 
 export function useCurrentTeamId() {

@@ -1,8 +1,10 @@
 import { RefObject, useEffect, useState } from "react";
+
 import { createCleanupObject } from "~shared/cleanup";
 import { createElementEvent } from "~shared/domEvents";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { createLocalStorageValueManager } from "~shared/localStorage";
+
 import { MediaElement } from "./types";
 
 /**

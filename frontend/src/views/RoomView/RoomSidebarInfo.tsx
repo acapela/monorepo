@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
+
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { RoomDetailedInfoFragment } from "~gql";
 import { TextBody12 } from "~ui/typo";
+
 import { DeadlineManager } from "./DeadlineManager";
 
 interface Props {

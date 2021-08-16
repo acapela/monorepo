@@ -1,15 +1,17 @@
 import { useMemo } from "react";
 import styled from "styled-components";
+
 import { useCurrentTeamMembers } from "~frontend/gql/user";
-import { UserBasicInfoFragment } from "~gql";
-import { AddMemberInlineForm } from "./AddMemberInlineForm";
-import { UISelectGridContainer } from "./UISelectGridContainer";
-import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
-import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
-import { PopPresenceAnimator } from "~ui/animations";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
+import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import { UserBasicInfoFragment } from "~gql";
+import { PopPresenceAnimator } from "~ui/animations";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+
+import { AddMemberInlineForm } from "./AddMemberInlineForm";
 import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
+import { PanelWithTopbarAndCloseButton } from "./PanelWithTopbarAndCloseButton";
+import { UISelectGridContainer } from "./UISelectGridContainer";
 
 interface Invitation {
   email: string;

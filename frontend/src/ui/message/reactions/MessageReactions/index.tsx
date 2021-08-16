@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
+
 import { MessageDetailedInfoFragment } from "~gql";
+
 import { groupReactionsByEmoji } from "./groupReactionsByEmoji";
 import { MessageReaction } from "./MessageReaction";
 

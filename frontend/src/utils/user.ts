@@ -1,5 +1,5 @@
-import { UserTokenData } from "~shared/types/jwtAuth";
 import { UserBasicInfoFragment } from "~gql";
+import { UserTokenData } from "~shared/types/jwtAuth";
 
 export function convertUserAuthToBasicFragment({ id, name, email, picture }: UserTokenData): UserBasicInfoFragment {
   return {

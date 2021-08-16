@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
@@ -29,16 +30,17 @@ import {
   UpdateRoomMutation,
   UpdateRoomMutationVariables,
 } from "~gql";
+import { assert } from "~shared/assert";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 import { addToast } from "~ui/toasts/data";
+
 import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
 import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { assert } from "~shared/assert";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`

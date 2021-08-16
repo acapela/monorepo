@@ -1,7 +1,9 @@
 process.env.APP = "backend";
+
+import * as Sentry from "@sentry/node";
+
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import { initializeSecrets } from "~config";
-import * as Sentry from "@sentry/node";
 
 if (["staging", "production"].includes(process.env.STAGE)) {
   Sentry.init({

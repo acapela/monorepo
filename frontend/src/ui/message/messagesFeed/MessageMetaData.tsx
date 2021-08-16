@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
-import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 import { fontSize } from "~ui/baseStyles";
+import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
 interface Props {
   user: UserBasicInfoFragment;

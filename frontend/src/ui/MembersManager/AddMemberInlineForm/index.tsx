@@ -1,19 +1,20 @@
+import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { AnimatePresence } from "framer-motion";
-import { UserBasicInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { IconPlusSquare, IconSearch } from "~ui/icons";
-import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
-import { useBoundingBox } from "~shared/hooks/useBoundingBox";
-import { Popover } from "~ui/popovers/Popover";
-import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { useSearch } from "~shared/search";
 import isEmail from "validator/lib/isEmail";
+
+import { Avatar } from "~frontend/ui/users/Avatar";
+import { UserBasicInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { useSearch } from "~shared/search";
+import { Button } from "~ui/buttons/Button";
+import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
+import { IconPlusSquare, IconSearch } from "~ui/icons";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { Popover } from "~ui/popovers/Popover";
 
 interface Props {
   users: UserBasicInfoFragment[];

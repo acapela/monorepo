@@ -1,4 +1,5 @@
-import { css, StylesPart, StaticInterpolation } from "styled-components";
+import { StaticInterpolation, StylesPart, css } from "styled-components";
+
 import { ColorTargetOptions, VariantStates } from "../colors";
 
 export interface ActionStateInterpolations {

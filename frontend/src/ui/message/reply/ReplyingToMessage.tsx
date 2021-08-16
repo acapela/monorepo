@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
-import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageDetailedInfoFragment } from "~gql";
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { ITEM_BACKGROUND_WEAK, SECONDARY_ORANGE_1, PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
-import { borderRadius } from "~ui/baseStyles";
-import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
+import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { MessageDetailedInfoFragment } from "~gql";
+import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
+import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_1 } from "~ui/theme/colors/base";
 
 interface Props {
   message: MessageDetailedInfoFragment;

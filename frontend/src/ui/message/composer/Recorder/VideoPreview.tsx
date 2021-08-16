@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
+
 import { theme } from "~ui/theme";
 
 interface VideoPreviewParams {

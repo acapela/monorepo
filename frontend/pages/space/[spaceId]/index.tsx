@@ -1,6 +1,6 @@
-import { routes } from "~frontend/router";
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
 import { AppLayout } from "~frontend/layouts/AppLayout";
+import { routes } from "~frontend/router";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { SpaceView } from "~frontend/views/SpaceView";
 

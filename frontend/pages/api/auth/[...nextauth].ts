@@ -3,12 +3,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
 import { AdapterInstance } from "next-auth/adapters";
 import Providers from "next-auth/providers";
+
 import { initializeSecrets } from "~config";
-import { Account, db, User } from "~db";
+import { Account, User, db } from "~db";
 import { assert } from "~shared/assert";
-import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { DEFAULT_ROLE, ALLOWED_ROLES } from "~shared/roles";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
+import { ALLOWED_ROLES, DEFAULT_ROLE } from "~shared/roles";
 
 /**
  * In this file we manage authorization integration using next-auth.

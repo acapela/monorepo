@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
+
 import { HttpStatus } from "~backend/src/http";
 import logger from "~shared/logger";
-import { HttpError, isHttpError, NotFoundError } from "./errorTypes";
+
+import { HttpError, NotFoundError, isHttpError } from "./errorTypes";
 
 export function notFoundRouteMiddleware(): void {
   throw new NotFoundError();

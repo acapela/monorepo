@@ -1,4 +1,5 @@
-import { db, Topic } from "~db";
+import { Topic, db } from "~db";
+
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { updateRoomLastActivityDate } from "../rooms/rooms";

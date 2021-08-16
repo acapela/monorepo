@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef } from "react";
 import { addMinutes, format, minutesInHour, startOfDay } from "date-fns";
-import { RadioOption } from "~ui/forms/RadioOption";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useRendersCount } from "react-use";
-import { TextBody } from "~ui/typo";
 import styled from "styled-components";
+
+import { RadioOption } from "~ui/forms/RadioOption";
+import { TextBody } from "~ui/typo";
 
 interface Props {
   value: number;

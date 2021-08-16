@@ -1,13 +1,14 @@
 import React, { useCallback } from "react";
-import { TopicDetailedInfoFragment } from "~gql";
+
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { useTopic } from "~frontend/topics/useTopic";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { openUIPrompt } from "~frontend/utils/prompt";
+import { TopicDetailedInfoFragment } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 
 interface Props {
   topic: TopicDetailedInfoFragment;

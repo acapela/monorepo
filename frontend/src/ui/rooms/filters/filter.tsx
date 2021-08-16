@@ -1,8 +1,9 @@
 import { sortBy } from "lodash";
 import { ReactNode } from "react";
-import { isNotNullish } from "~shared/nullish";
-import { RoomDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
 import { useList } from "react-use";
+
+import { RoomDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
+import { isNotNullish } from "~shared/nullish";
 
 export type RoomCriteria = {
   key: string;

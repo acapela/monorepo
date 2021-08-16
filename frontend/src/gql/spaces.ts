@@ -1,34 +1,36 @@
 import { gql } from "@apollo/client";
-import { addToast } from "~ui/toasts/data";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
+  AddSpaceMemberMutation,
+  AddSpaceMemberMutationVariables,
   CreateSpaceMutation,
   CreateSpaceMutationVariables,
+  DeleteSpaceMutation,
+  DeleteSpaceMutationVariables,
+  EditSpaceMutation,
+  EditSpaceMutationVariables,
+  RemoveSpaceMemberMutation,
+  RemoveSpaceMemberMutationVariables,
+  SingleSpaceQuery,
+  SingleSpaceQueryVariables,
+  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
+  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
   SpacesQuery,
   SpacesQueryVariables,
   TeamSpacesQuery,
   TeamSpacesQueryVariables,
-  SingleSpaceQuery,
-  SingleSpaceQueryVariables,
-  AddSpaceMemberMutation,
-  AddSpaceMemberMutationVariables,
-  RemoveSpaceMemberMutation,
-  RemoveSpaceMemberMutationVariables,
-  EditSpaceMutation,
-  EditSpaceMutationVariables,
-  DeleteSpaceMutation,
-  DeleteSpaceMutationVariables,
-  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
-  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
 } from "~gql";
-import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
-import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { createFragment, createMutation, createQuery } from "./utils";
-import { TeamDetailedInfoFragment } from "./teams";
-import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
+import { addToast } from "~ui/toasts/data";
+
+import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
+import { TeamDetailedInfoFragment } from "./teams";
+import { UserBasicInfoFragment } from "./user";
+import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`

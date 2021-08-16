@@ -1,7 +1,8 @@
 import { ChainedCommands } from "@tiptap/react";
 import { Children } from "react";
 import styled from "styled-components";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import {
   IconAt,
   IconBrackets,
@@ -14,11 +15,12 @@ import {
   IconTextItalic,
   IconTextStrikethrough,
 } from "~ui/icons";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+
 import { useRichEditorContext } from "./context";
 import { EmojiButton } from "./EmojiButton";
 import { FileInput } from "./FileInput";
 import { ToolbarButton } from "./ToolbarButton";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 interface Props {
   onFilesSelected?: (files: File[]) => void;

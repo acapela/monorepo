@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserBasicInfoFragment } from "~gql";
-import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
 import { borderRadius } from "~ui/baseStyles";
+import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
+
 import { MessageMetaData } from "./MessageMetaData";
 
 interface Props {
