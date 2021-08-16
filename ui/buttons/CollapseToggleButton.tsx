@@ -26,9 +26,9 @@ const UIToggleButton = styled(CircleIconButton)<{ isOpen: boolean }>`
   svg {
     transform: rotateZ(
       ${(props) => {
-        return props.isOpen ? "180deg" : "0deg";
+        return props.isOpen ? "0deg" : "-90deg";
       }}
     );
-    transition: 0.15s all;
+    transition: 0.15s linear all;
   }
 `;
