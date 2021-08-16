@@ -19,36 +19,36 @@ interface Props {
 }
 
 export function EmojiPicker({ onPicked, className }: Props) {
-  const [isOpened, setIsOpened] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const holderRef = useRef<HTMLDivElement>(null);
   useClickAway(holderRef, () => {
-    setIsOpened(false);
+    setIsOpen(false);
   });
 
   useEffect(() => {
-    if (!isOpened) return;
+    if (!isOpen) return;
 
     // For performance reasons, we're showing picker on user hover (with 0 opacity), not on click
     // Picker only supports autoFocus prop which is respected on initial render only. Therefore we're
     // falling back to raw dom to focus picker input
     holderRef.current?.querySelector("input")?.focus();
-  }, [isOpened]);
+  }, [isOpen]);
 
   return (
     <UIHolder ref={holderRef} className={className}>
-      <UIOpenIcon onClick={() => setIsOpened(!isOpened)} />
+      <UIOpenIcon onClick={() => setIsOpen(!isOpen)} />
       <EmojiMartStyles />
       <AnimatePresence>
         <Suspense fallback={null}>
-          {isOpened && (
+          {isOpen && (
             <UIPopupHolder presenceStyles={{ y: [0, 10], opacity: [0, 1] }}>
               <EmojiPickerWindow
                 native
                 emojiTooltip
-                autoFocus={isOpened}
+                autoFocus={isOpen}
                 onSelect={(emojiData: BaseEmoji) => {
-                  setIsOpened(false);
+                  setIsOpen(false);
                   onPicked?.(emojiData.native);
                 }}
               />
