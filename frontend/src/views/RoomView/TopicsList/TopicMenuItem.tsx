@@ -87,6 +87,7 @@ export const TopicMenuItem = styled<Props>(
               {...props}
             />
           ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isInEditMode]
       );
 

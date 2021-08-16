@@ -40,6 +40,7 @@ export const RoomFiltersPicker = styled(function RoomFiltersPicker({
 
   useEffect(() => {
     onFiltersChange(filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const [stage, setStage] = useState<FilterPickingStage>("off");

@@ -18,6 +18,7 @@ export function CurrentTeamIdProvider({ children }: PropsWithChildren<{}>) {
     return userDetailedInfoQuery.subscribe({ id: user.id }, (newUserInfo) => {
       setTeamId(newUserInfo.user_by_pk?.current_team?.id ?? null);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   return <CurrentTeamIdContext.Provider value={teamId}>{children}</CurrentTeamIdContext.Provider>;

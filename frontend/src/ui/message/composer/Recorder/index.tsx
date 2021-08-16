@@ -110,6 +110,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         startCountdown();
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSource]);
 
   useEffect(() => {
@@ -122,6 +123,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       /* In case recording is forcefully stopped */
       setMediaSource(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDismissed, blob]);
 
   useEffect(() => {
@@ -133,6 +135,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
       setRecorderError(mediaSource, error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSource, error]);
 
   if (isUnsupportedBrowser) {

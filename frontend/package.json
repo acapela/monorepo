@@ -73,6 +73,7 @@
     "autoprefixer": "^10.3.0",
     "babel-jest": "^27.0.6",
     "babel-plugin-styled-components": "^1.13.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "identity-obj-proxy": "^3.0.0",
     "msw": "^0.31.0",
     "next-compose-plugins": "^2.2.1",
