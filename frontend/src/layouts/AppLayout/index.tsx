@@ -40,6 +40,12 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
     routes.spaceRoomSummary.path,
   ]);
 
+  useEffect(() => {
+    determineAvailableSpaceForSearchBar();
+  }, []);
+
+  useResizeCallback(topBarToolsRef, determineAvailableSpaceForSearchBar);
+
   if (!user) {
     return (
       <WindowView>
@@ -55,10 +61,6 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
       </WindowView>
     );
   }
-
-  useEffect(() => {
-    determineAvailableSpaceForSearchBar();
-  }, []);
 
   function determineAvailableSpaceForSearchBar() {
     if (!topBarToolsRef.current || !searchBarRef.current) {
@@ -77,8 +79,6 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
 
     setAvailableSpaceForSearchBarInPx(availableSpace);
   }
-
-  useResizeCallback(topBarToolsRef, determineAvailableSpaceForSearchBar);
 
   return (
     <>

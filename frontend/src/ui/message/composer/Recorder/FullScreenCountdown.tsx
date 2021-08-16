@@ -23,6 +23,7 @@ export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelle
     return createTimeout(() => {
       setSeconds((seconds) => seconds - 1);
     }, 1000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seconds]);
 
   return (

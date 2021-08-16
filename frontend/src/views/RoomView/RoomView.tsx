@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -36,7 +36,7 @@ export function RoomView(props: Props) {
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
-  const amIMember = isCurrentUserRoomMember(room ?? undefined);
+  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
 
   const isRoomOpen = !room.finished_at;
 

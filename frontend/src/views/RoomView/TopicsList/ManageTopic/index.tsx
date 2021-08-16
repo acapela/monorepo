@@ -26,6 +26,7 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
     if (isDeleteConfirmed) {
       await deleteTopic();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
   const handleRenameWithModal = useCallback(async () => {
@@ -41,6 +42,7 @@ export const ManageTopic = ({ topic, onRenameRequest }: Props) => {
       return;
     }
     await editName(name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
   const isTopicManager = useIsCurrentUserTopicManager(topic);

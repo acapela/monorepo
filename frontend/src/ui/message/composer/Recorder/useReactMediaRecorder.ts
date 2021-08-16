@@ -154,6 +154,7 @@ export function useReactMediaRecorder({
     if (!mediaStream.current && !acquireMediaOnDemand) {
       getMediaStream();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audio, screen, video, getMediaStream, mediaRecorderOptions]);
 
   // Media Recorder Handlers

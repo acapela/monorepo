@@ -49,5 +49,6 @@ export function useRemoveIncorrectNotification({
     if (!shouldRemove) return;
 
     removeNotification({ id: notification.id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, shouldRemove]);
 }

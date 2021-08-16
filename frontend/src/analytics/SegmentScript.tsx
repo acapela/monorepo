@@ -21,11 +21,7 @@ function getSegmentOptions() {
   return { ...segmentOptions };
 }
 
-export const SegmentScript = memo(() => {
-  if (!segmentOptions.apiKey) {
-    return null;
-  }
-
+const SegmentScriptWithSnippet = () => {
   const snippetHTML = useConst(() => snippet.min(getSegmentOptions()));
 
   const dangerouslySetInnerHTML = useConst(() => {
@@ -35,4 +31,12 @@ export const SegmentScript = memo(() => {
   });
 
   return <Script id="segment-script" dangerouslySetInnerHTML={dangerouslySetInnerHTML} />;
+};
+
+export const SegmentScript = memo(() => {
+  if (!segmentOptions.apiKey) {
+    return null;
+  }
+
+  return <SegmentScriptWithSnippet />;
 });
