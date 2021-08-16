@@ -80,7 +80,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   return (
     <CollapsePanel
       persistanceKey={`room-topics-${room.id}`}
-      initialIsOpened={true}
+      isInitiallyOpen
       headerNode={
         <UIHeader>
           <TextH6 spezia semibold>

@@ -48,7 +48,7 @@ export function MultipleOptionsDropdown<I>({
   icon,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
-  const [isOpened, { unset: close, toggle }] = useBoolean(false);
+  const [isOpen, { unset: close, toggle }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
 
   const hasSelection = selectedKeys.length > 0;
@@ -97,7 +97,7 @@ export function MultipleOptionsDropdown<I>({
           )}
         </UIMenuOpener>
         <AnimatePresence>
-          {isOpened && (
+          {isOpen && (
             <Popover anchorRef={openerRef} placement="bottom-start">
               <UIDropdownHolder style={{ width: `${menuOpenerWidth}px` }}>
                 <ItemsDropdown

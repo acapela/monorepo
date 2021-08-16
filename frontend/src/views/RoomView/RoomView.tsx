@@ -55,7 +55,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
         <UIRoomInfo>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
-            initialIsOpened={true}
+            isInitiallyOpen
             headerNode={
               <UIRoomHead spezia semibold>
                 <UIRoomTitle ref={titleHolderRef}>
