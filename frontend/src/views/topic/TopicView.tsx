@@ -2,7 +2,7 @@ import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 import { Message as MessageType } from "~db";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { updateLastSeenMessage, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
 import { waitForAllRunningMutationsToFinish } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
@@ -57,7 +57,7 @@ export const TopicView = ({ topicId }: Props) => {
     topicId: topicId,
   });
 
-  const isMember = isCurrentUserRoomMember(topic?.room);
+  const isMember = useIsCurrentUserRoomMember(topic?.room);
 
   useMarkTopicAsRead(topicId, messages);
 

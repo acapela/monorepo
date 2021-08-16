@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { routes, RouteLink } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
@@ -33,7 +33,8 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
   const unreadMessagesCount = useRoomUnreadMessagesCount(room.id, { overWriteCount: unreadMessages });
-  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
+  const isCurrentUserRoomMember = useIsCurrentUserRoomMember(room);
+  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember;
 
   return (
     <UIHolder className={className}>

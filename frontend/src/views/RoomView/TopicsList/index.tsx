@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import styled from "styled-components";
 import { getUUID } from "~shared/uuid";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
@@ -49,7 +49,7 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   const roomContext = useRoomStoreContext();
 
   const { topics, moveBetween, moveToStart, moveToEnd } = useRoomTopicList(room.id);
-  const amIMember = isCurrentUserRoomMember(room);
+  const amIMember = useIsCurrentUserRoomMember(room);
 
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 

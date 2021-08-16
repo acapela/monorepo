@@ -169,7 +169,7 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
   `
 );
 
-export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
+export function useIsCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
   const user = useAssertCurrentUser();
 
   return room?.members.some((member) => member.user.id === user.id) ?? false;

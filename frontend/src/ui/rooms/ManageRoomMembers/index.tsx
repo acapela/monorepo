@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
-import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useAddRoomMemberMutation, useIsCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
@@ -32,7 +32,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const [team] = useCurrentTeamDetails();
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
-  const amIMember = isCurrentUserRoomMember(room);
+  const amIMember = useIsCurrentUserRoomMember(room);
 
   const [addRoomMember] = useAddRoomMemberMutation();
   const [removeRoomMember] = useRemoveRoomMemberMutation();

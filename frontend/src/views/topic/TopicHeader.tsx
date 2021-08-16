@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import styled, { css } from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { useTopic } from "~frontend/topics/useTopic";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
@@ -17,7 +17,7 @@ interface Props {
 
 export const TopicHeader = ({ topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isMember = isCurrentUserRoomMember(topic.room);
+  const isMember = useIsCurrentUserRoomMember(topic.room);
   const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const { isClosed, isParentRoomOpen, loading, open: openTopic, close: closeTopic } = useTopic(topic);
