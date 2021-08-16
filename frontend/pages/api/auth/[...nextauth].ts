@@ -10,6 +10,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { ALLOWED_ROLES, DEFAULT_ROLE } from "~shared/roles";
+import { getSearchParams } from "~shared/urlParams";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -378,6 +379,7 @@ async function getAuthInitOptions() {
            * This will make sure we get refresh token each time user gives content for our access scopes
            */
           access_type: "offline",
+          hd: "acape.la",
         })}`,
 
         // Beside default scope, we need calendar access.
@@ -392,10 +394,6 @@ async function getAuthInitOptions() {
   };
 
   return authInitOptions;
-}
-
-function getSearchParams(params: Record<string, string>) {
-  return new URLSearchParams(params).toString();
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
