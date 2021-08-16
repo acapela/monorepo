@@ -19,7 +19,7 @@ export function createBackendRequestSender<Input, Output>(route: string) {
     return response.data;
   }
 
-  function use(input: Input) {
+  function useBackendRequestSender(input: Input) {
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState<JSONOutput | undefined>();
 
@@ -37,6 +37,6 @@ export function createBackendRequestSender<Input, Output>(route: string) {
 
   return {
     send,
-    use,
+    use: useBackendRequestSender,
   };
 }
