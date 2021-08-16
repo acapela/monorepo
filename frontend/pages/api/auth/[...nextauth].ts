@@ -379,7 +379,6 @@ async function getAuthInitOptions() {
            * This will make sure we get refresh token each time user gives content for our access scopes
            */
           access_type: "offline",
-          hd: "acape.la",
         })}`,
 
         // Beside default scope, we need calendar access.
