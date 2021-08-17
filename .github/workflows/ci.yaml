@@ -72,7 +72,7 @@ jobs:
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   backend:
     name: Backend
@@ -124,7 +124,7 @@ jobs:
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   e2e:
     name: E2E Tests
@@ -171,14 +171,14 @@ jobs:
           curl -v localhost:1337/healthz
       - run: yarn e2e test
       - uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
         with:
           name: test-artifacts
           path: e2e/test-results/
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   release:
     name: Release
