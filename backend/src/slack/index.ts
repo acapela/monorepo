@@ -70,14 +70,16 @@ const slackApp = new SlackBolt.App({
   developerMode: isDevelopment,
 });
 
-const getSlackInstallURL = async (state?: unknown) =>
-  slackReceiver.installer?.generateInstallUrl({
+const getSlackInstallURL = async (state?: unknown) => {
+  const basePath = isDevelopment
+    ? (await getDevPublicTunnel(3000)).url + "/api/backend"
+    : process.env.BACKEND_API_ENDPOINT;
+  return slackReceiver.installer?.generateInstallUrl({
     scopes,
-    redirectUri:
-      (isDevelopment ? (await getDevPublicTunnel(isDevelopment ? 3000 : undefined)).url : "") +
-      "/api/backend/slack/oauth_redirect",
+    redirectUri: basePath + "/slack/oauth_redirect",
     metadata: JSON.stringify(state),
   });
+};
 
 export const slackChat = slackApp.client.chat;
 
