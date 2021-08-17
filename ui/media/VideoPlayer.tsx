@@ -2,12 +2,12 @@ import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled from "styled-components";
 
+import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { TranscriptData } from "~shared/types/transcript";
-import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { PopPresenceAnimator } from "~ui/animations";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { theme } from "~ui/theme";

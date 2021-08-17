@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+
 import { useAttachmentQuery } from "~frontend/gql/attachments";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconCross } from "~ui/icons";
+
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface Props {
