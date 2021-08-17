@@ -1,10 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { IconPlus } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
+
 import { FieldWithLabel } from "../FieldWithLabel";
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";

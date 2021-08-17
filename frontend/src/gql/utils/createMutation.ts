@@ -7,12 +7,14 @@ import {
 } from "@apollo/client";
 import { memoize, merge } from "lodash";
 import { DeepPartial } from "utility-types";
-import { ValueUpdater, updateValue } from "~shared/updateValue";
+
 import { getRenderedApolloClient } from "~frontend/apollo/client";
+import { createPromisesGroup } from "~shared/promiseGroup";
+import { ValueUpdater, updateValue } from "~shared/updateValue";
+
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
-import { addRoleToContext, RequestWithRole } from "./withRole";
-import { createPromisesGroup } from "~shared/promiseGroup";
+import { RequestWithRole, addRoleToContext } from "./withRole";
 
 interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
   // This callback is called optionally twice for both optimistic and actual response

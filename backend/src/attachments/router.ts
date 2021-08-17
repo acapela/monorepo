@@ -1,9 +1,11 @@
-import { get } from "lodash";
 import { Request, Response, Router } from "express";
 import { verify } from "jsonwebtoken";
-import logger from "~shared/logger";
-import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
+import { get } from "lodash";
+
 import { db } from "~db";
+import logger from "~shared/logger";
+
+import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";
 
 export const router = Router();

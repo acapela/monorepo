@@ -1,5 +1,6 @@
 import { EditorContent, Extensions, JSONContent, useEditor } from "@tiptap/react";
 import React, { useMemo } from "react";
+
 import { richEditorExtensions } from "../preset";
 
 export function getEmptyRichContent(): JSONContent {

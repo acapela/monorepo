@@ -1,34 +1,36 @@
 import { gql } from "@apollo/client";
+
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
-  CreateTeamMutation,
-  CreateTeamMutationVariables,
-  TeamsQuery,
-  TeamsQueryVariables,
-  TeamDetailsQuery,
-  TeamDetailsQueryVariables,
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables,
-  TeamBasicInfoQuery,
-  TeamBasicInfoQueryVariables,
-  TeamBasicInfoFragment as TeamBasicInfoFragmentType,
-  TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
-  TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
-  UserBasicInfoFragment as UserBasicInfoFragmentType,
+  CreateTeamMutation,
+  CreateTeamMutationVariables,
+  LookupTeamNameQuery,
+  LookupTeamNameQueryVariables,
   RemoveTeamInvitationMutation,
   RemoveTeamInvitationMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
-  LookupTeamNameQuery,
-  LookupTeamNameQueryVariables,
   ResendInvitationMutation,
   ResendInvitationMutationVariables,
+  TeamBasicInfoFragment as TeamBasicInfoFragmentType,
+  TeamBasicInfoQuery,
+  TeamBasicInfoQueryVariables,
+  TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
+  TeamDetailsQuery,
+  TeamDetailsQueryVariables,
+  TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
+  TeamsQuery,
+  TeamsQueryVariables,
+  UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
-import { createFragment, createMutation, createQuery } from "./utils";
+import { slugify } from "~shared/slugify";
+import { addToast } from "~ui/toasts/data";
+
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { addToast } from "~ui/toasts/data";
-import { slugify } from "~shared/slugify";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
   () => gql`

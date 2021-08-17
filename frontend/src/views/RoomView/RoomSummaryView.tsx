@@ -2,14 +2,16 @@ import * as clipboard from "clipboard-polyfill";
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
-import { theme } from "~ui/theme";
+
 import { useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { RoomDetailedInfoFragment } from "~gql";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
 import { TextArea } from "~ui/forms/TextArea";
 import { IconClipboardCheck, IconCopy } from "~ui/icons";
+import { theme } from "~ui/theme";
 import { addToast } from "~ui/toasts/data";
+
 import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
 import { RoomView } from "./RoomView";
 import { formatDate } from "./shared";

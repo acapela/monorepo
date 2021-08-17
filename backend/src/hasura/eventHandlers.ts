@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
+
+import { convertMaybeArrayToArray } from "~shared/array";
+import { isDev } from "~shared/dev";
 import logger from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
-import { convertMaybeArrayToArray } from "~shared/array";
-import { RawHasuraEvent, HasuraEvent, normalizeHasuraEvent, getUserIdFromRawHasuraEvent } from "./eventUtils";
-import { isDev } from "~shared/dev";
+
+import { HasuraEvent, RawHasuraEvent, getUserIdFromRawHasuraEvent, normalizeHasuraEvent } from "./eventUtils";
 
 type EntitiesEventsMapBase = Record<string, unknown>;
 

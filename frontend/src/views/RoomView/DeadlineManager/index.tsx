@@ -1,8 +1,9 @@
 import React from "react";
-import { RoomDetailedInfoFragment } from "~gql";
-import { updateRoom } from "~frontend/gql/rooms";
-import { DateTimeInput } from "~ui/time/DateTimeInput";
+
 import { trackEvent } from "~frontend/analytics/tracking";
+import { updateRoom } from "~frontend/gql/rooms";
+import { RoomDetailedInfoFragment } from "~gql";
+import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 interface Props {
   room: RoomDetailedInfoFragment;

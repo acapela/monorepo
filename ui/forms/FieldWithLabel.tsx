@@ -1,12 +1,13 @@
 import { AnimateSharedLayout, motion } from "framer-motion";
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
+
 import { useId } from "~shared/id";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 import { IconChevronDown } from "~ui/icons";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { BACKGROUND_ACCENT, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 
 type CursorType = "action" | "input";
 export interface Props {

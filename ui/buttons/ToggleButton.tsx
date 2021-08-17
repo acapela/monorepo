@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import styled, { css } from "styled-components";
+
 import { theme } from "~ui/theme";
+
 import { buttonKindSpecificStyle, buttonSizeSpecificStyle } from "./sharedStyles";
 
 interface Props {

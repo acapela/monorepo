@@ -1,6 +1,8 @@
 import { StylesPart, css } from "styled-components";
+
 import { theme } from "~ui/theme";
-import { ButtonSize, ButtonKind } from "./types";
+
+import { ButtonKind, ButtonSize } from "./types";
 
 export const buttonSizeSpecificStyle: Partial<Record<ButtonSize, StylesPart>> = {
   small: css`

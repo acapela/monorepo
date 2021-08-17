@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
-import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
-import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
-import { RichEditorNode } from "~richEditor/content/types";
-import { EditorAttachmentInfo } from "./attachments";
+
 import { messageComposerExtensions } from "~frontend/message/extensions";
+import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichEditorNode } from "~richEditor/content/types";
+import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+
+import { EditorAttachmentInfo } from "./attachments";
 
 interface Props {
   autofocusKey?: string;

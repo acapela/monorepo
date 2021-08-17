@@ -1,4 +1,4 @@
-import { db, User } from "~db";
+import { User, db } from "~db";
 
 // TODO: Not used?
 export async function updateUser(user: User): Promise<User> {

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import styled from "styled-components";
+
 import { useIsCurrentUserSpaceMember, useSingleSpaceQuery } from "~frontend/gql/spaces";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
@@ -10,6 +11,7 @@ import { RoomsGroupedByMembership } from "~frontend/ui/rooms/RoomsList";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { CenteredContentWithSides } from "~ui/layout/CenteredContentWithSides";
+
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceTools } from "./SpaceTools";
 

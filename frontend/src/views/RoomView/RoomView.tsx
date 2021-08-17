@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { useIsCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { updateRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -14,7 +16,7 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
-import { trackEvent } from "~frontend/analytics/tracking";
+
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
 

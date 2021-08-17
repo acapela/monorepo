@@ -1,18 +1,18 @@
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import {
+  deleteSpace,
+  useAddSpaceMemberMutation,
+  useEditSpaceMutation,
+  useIsCurrentUserSpaceMember,
+  useRemoveSpaceMemberMutation,
+} from "~frontend/gql/spaces";
+import { routes } from "~frontend/router";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconSelection } from "~ui/icons";
-import { routes } from "~frontend/router";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import {
-  useEditSpaceMutation,
-  useRemoveSpaceMemberMutation,
-  useAddSpaceMemberMutation,
-  useIsCurrentUserSpaceMember,
-  deleteSpace,
-} from "~frontend/gql/spaces";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { openUIPrompt } from "~frontend/utils/prompt";
-import { trackEvent } from "~frontend/analytics/tracking";
 
 export function useSpaceManager(space: SpaceBasicInfoFragment) {
   const spaceId = space.id;

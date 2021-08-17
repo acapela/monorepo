@@ -1,12 +1,14 @@
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, WHITE, SECONDARY_TEXT_COLOR } from "~ui/theme/colors/base";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
-import { MessageReactionTooltip } from "./MessageReactionTooltip";
+import { MessageDetailedInfoFragment, ReactionBasicInfoFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
+
+import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
 interface Props {
   message: MessageDetailedInfoFragment;

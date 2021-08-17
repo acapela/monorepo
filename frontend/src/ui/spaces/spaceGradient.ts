@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
+
 import { pickNArrayItemsWithSeed } from "~shared/array";
+import { borderRadius } from "~ui/baseStyles";
 import { COLORS_PALETTE } from "~ui/theme/colors/base";
 
 const PALETTE_LIST = [...Object.values(COLORS_PALETTE)];

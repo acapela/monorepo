@@ -1,9 +1,11 @@
 import styled from "styled-components";
+
 import { MessageBasicInfoFragment } from "~gql";
-import { loomPreviewProvider } from "./loomPreviewProvider";
-import { figmaPreviewProvider } from "./figmaPreviewProvider";
-import { notionPreviewProvider } from "./notionPreviewProvider";
 import { extractLinksFromRichContent } from "~richEditor/links/extract";
+
+import { figmaPreviewProvider } from "./figmaPreviewProvider";
+import { loomPreviewProvider } from "./loomPreviewProvider";
+import { notionPreviewProvider } from "./notionPreviewProvider";
 
 const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider, notionPreviewProvider];
 

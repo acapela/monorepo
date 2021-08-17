@@ -1,7 +1,10 @@
-import { generate } from "@graphql-codegen/cli";
 import fs from "fs";
 import path from "path";
+
+import { generate } from "@graphql-codegen/cli";
+
 import { log } from "~shared/logger";
+
 import { SCHEMA_FILE_PATH, updateSchemaFile } from "./fetchSchema";
 import { GQL_PACKAGE_PATH, ROOT_PATH } from "./files";
 

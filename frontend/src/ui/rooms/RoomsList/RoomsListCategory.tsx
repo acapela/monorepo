@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import styled from "styled-components";
+
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { Toggle } from "~ui/toggle";
+
 import { RoomsList } from "./RoomsList";
 import { RoomWithActivity } from "./useRoomsWithActivity";
 

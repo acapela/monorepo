@@ -1,7 +1,9 @@
-import React, { InputHTMLAttributes, useState, useEffect } from "react";
+import React, { InputHTMLAttributes, useEffect, useState } from "react";
 import styled from "styled-components";
+
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+
 import { baseInputStyles } from "./utils";
 
 export interface TextAreaProps extends InputHTMLAttributes<HTMLTextAreaElement> {

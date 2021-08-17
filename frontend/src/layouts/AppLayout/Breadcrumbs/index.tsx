@@ -1,12 +1,14 @@
 import React, { Fragment } from "react";
 import styled from "styled-components";
-import { usePathParameter } from "~frontend/utils";
-import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
+
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useSingleSpaceQuery } from "~frontend/gql/spaces";
-import { IconSpaces, IconBox } from "~ui/icons";
 import { routes } from "~frontend/router";
+import { usePathParameter } from "~frontend/utils";
+import { IconBox, IconSpaces } from "~ui/icons";
 import { theme } from "~ui/theme";
+
+import { Breadcrumb, Props as BreadcrumbProps } from "./Breadcrumb";
 
 export const Breadcrumbs = () => {
   const breadcrumbsProps: BreadcrumbProps[] = [

@@ -1,4 +1,5 @@
 import sendgrid, { MailDataRequired } from "@sendgrid/mail";
+
 import { assertDefined } from "./assert";
 
 const sendgridApiKey = assertDefined(

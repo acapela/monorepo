@@ -1,4 +1,4 @@
-import { db, SpaceMember } from "~db";
+import { SpaceMember, db } from "~db";
 
 export async function getSpaceHasMember(spaceId: string, memberId: string): Promise<boolean> {
   const entry = await db.space_member.findFirst({

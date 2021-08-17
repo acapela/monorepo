@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { theme } from "~ui/theme";
+
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { RoomDetailedInfoFragment } from "~gql";
+import { theme } from "~ui/theme";
 
 interface Props {
   room: RoomDetailedInfoFragment;

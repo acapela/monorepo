@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+
 import { routes } from "~frontend/router";
+import { RoomDetailedInfoFragment } from "~gql";
+
 import { TopicView } from "../topic/TopicView";
 import { RoomView } from "./RoomView";
-import { RoomDetailedInfoFragment } from "~gql";
 
 interface Props {
   room: RoomDetailedInfoFragment;

@@ -1,12 +1,13 @@
-import { UserBasicInfoFragment } from "~gql";
-import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
+import styled from "styled-components";
+
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
-import { SelectList } from "~ui/SelectList";
+import { AutocompletePickerProps } from "~richEditor/autocomplete/component";
 import { useSearch } from "~shared/search";
-import styled from "styled-components";
 import { EditorMentionData } from "~shared/types/editor";
+import { SelectList } from "~ui/SelectList";
 
 /**
  * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions

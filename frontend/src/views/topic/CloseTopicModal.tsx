@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { TextH3 } from "~ui/typo";
+
 import { Modal } from "~frontend/ui/Modal";
-import { TextArea } from "~ui/forms/TextArea";
 import { Button } from "~ui/buttons/Button";
+import { TextArea } from "~ui/forms/TextArea";
 import { HStack } from "~ui/Stack";
+import { TextH3 } from "~ui/typo";
 
 interface Props {
   topicId: string;

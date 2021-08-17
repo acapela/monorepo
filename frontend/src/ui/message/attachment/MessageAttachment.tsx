@@ -1,9 +1,11 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { AttachmentDetailedInfoFragment } from "~gql";
 import { theme } from "~ui/theme";
+
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 

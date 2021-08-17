@@ -1,7 +1,9 @@
+import { convert as convertToPlainText } from "html-to-text";
+
 import { routes } from "~frontend/router";
 import { RoomDetailedInfoFragment, TopicDetailedInfoFragment } from "~gql";
+
 import { formatDate } from "../shared";
-import { convert as convertToPlainText } from "html-to-text";
 
 // Contains a special character within div that allows line-breaks to occur in notion
 const htmlLineBreak = "<div>‎</div>";

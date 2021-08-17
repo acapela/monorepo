@@ -1,14 +1,13 @@
 import React from "react";
-
-import { createPromiseUI } from "~ui/createPromiseUI";
-
-import { TopicDetailedInfoFragment } from "~gql";
-import { Modal } from "~frontend/ui/Modal";
-import { useCloseOpenTopicsMutation } from "~frontend/gql/rooms";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import styled from "styled-components";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCloseOpenTopicsMutation } from "~frontend/gql/rooms";
+import { Modal } from "~frontend/ui/Modal";
+import { TopicDetailedInfoFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
-import { TextH3, TextBody } from "~ui/typo";
+import { createPromiseUI } from "~ui/createPromiseUI";
+import { TextBody, TextH3 } from "~ui/typo";
 
 interface RoomCloseModalInput {
   roomId: string;

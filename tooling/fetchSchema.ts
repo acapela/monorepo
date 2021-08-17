@@ -1,9 +1,13 @@
-import axios from "axios";
-import fs from "fs";
-import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
-import path from "path";
 import "~config/dotenv";
+
+import fs from "fs";
+import path from "path";
+
+import axios from "axios";
+import { buildClientSchema, getIntrospectionQuery, printSchema } from "graphql/utilities";
+
 import { log } from "~shared/logger";
+
 import { GQL_PACKAGE_PATH } from "./files";
 
 export interface ProcessEnv {

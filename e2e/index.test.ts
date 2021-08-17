@@ -1,5 +1,6 @@
-import { test } from "./helper/base-test";
 import { basePath } from "~e2e/helper/constants";
+
+import { test } from "./helper/base-test";
 
 test("find login button", async ({ page }) => {
   await page.goto(basePath);

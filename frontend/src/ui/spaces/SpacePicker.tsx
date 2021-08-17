@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+
 import { createSpace, useCurrentTeamSpaces } from "~frontend/gql/spaces";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { SpaceBasicInfoFragment } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { IconSelection } from "~ui/icons";
 

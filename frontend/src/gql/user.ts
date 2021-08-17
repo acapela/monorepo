@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
-import { createFragment, createMutation, createQuery } from "./utils";
+
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
@@ -11,8 +12,9 @@ import {
   UserDetailedQueryVariables,
 } from "~gql";
 import { UserTokenData } from "~shared/types/jwtAuth";
+
 import { TeamBasicInfoFragment } from "./teams";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`

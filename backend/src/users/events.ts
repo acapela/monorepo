@@ -1,7 +1,7 @@
-import { db, User } from "~db";
 import { HasuraEvent } from "~backend/src/hasura";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { addTeamMember } from "~backend/src/teams/helpers";
+import { User, db } from "~db";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
 export async function handleUserCreated({ item: user }: HasuraEvent<User>) {
   await acceptAllNewUserInvitations(user);

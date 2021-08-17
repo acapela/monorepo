@@ -1,9 +1,11 @@
-import { RefObject, useEffect, useRef, useState } from "react";
-import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
-import { TooltipLabel } from "./TooltipLabel";
 import { AnimatePresence } from "framer-motion";
+import { RefObject, useEffect, useRef, useState } from "react";
+
+import { useDebouncedDocumentEvent, useDocumentEvent } from "~shared/domEvents";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { getObjectKey } from "~shared/object";
+
+import { TooltipLabel } from "./TooltipLabel";
 
 /**
  * This component will handle showing tooltips for every element that has html `data-tooltip` attribute.

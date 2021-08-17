@@ -3,21 +3,23 @@ import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
-import { select } from "~shared/sharedState";
+
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
-import { routes, RouteLink } from "~frontend/router";
+import { RouteLink, routes } from "~frontend/router";
+import { useTopic } from "~frontend/topics/useTopic";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { theme } from "~ui/theme";
+import { select } from "~shared/sharedState";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EditableText } from "~ui/forms/EditableText";
 import { IconCross, IconDragAndDrop } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
+import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
+
 import { ManageTopic } from "./ManageTopic";
-import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { useTopic } from "~frontend/topics/useTopic";
 import { TopicOwner } from "./TopicOwner";
 
 type Props = {

@@ -1,6 +1,8 @@
 import React from "react";
+
 import { TopicDetailedInfoFragment } from "~gql";
-import { UIScrollContainer, UITopicsList, UITopic } from "./shared";
+
+import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {

@@ -1,16 +1,17 @@
-import { useRef } from "react";
-import { AnimatePresence } from "framer-motion";
 import { EmojiData } from "emoji-mart";
-import { IconEmotionSmile } from "~ui/icons";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
-import { Popover } from "~ui/popovers/Popover";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
-import { isBaseEmoji } from "~richEditor/EmojiButton";
-import { MessageDetailedInfoFragment } from "~gql";
+import { AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { addMessageReaction } from "~frontend/gql/reactions";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { MessageDetailedInfoFragment } from "~gql";
+import { isBaseEmoji } from "~richEditor/EmojiButton";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
+import { IconEmotionSmile } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
 
 interface Props {
   message: MessageDetailedInfoFragment;

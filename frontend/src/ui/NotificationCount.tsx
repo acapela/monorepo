@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { formatNumberWithMaxValue } from "~shared/numbers";
 import { theme } from "~ui/theme";
 

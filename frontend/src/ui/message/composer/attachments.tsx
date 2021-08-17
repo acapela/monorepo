@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { uploadUrlQueryManager } from "~frontend/gql/attachments";
 
 interface UploadFileConfig {

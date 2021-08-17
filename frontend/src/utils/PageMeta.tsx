@@ -1,4 +1,5 @@
 import Head from "next/head";
+
 import { Maybe } from "~shared/types";
 
 interface Props {

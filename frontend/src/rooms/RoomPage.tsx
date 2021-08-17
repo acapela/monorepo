@@ -1,7 +1,9 @@
 import React from "react";
+
 import { singleTopicQueryManager, topicMessagesQueryManager } from "~frontend/gql/topics";
 import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
+
 import { AppLayout } from "../layouts/AppLayout";
 
 interface Props {

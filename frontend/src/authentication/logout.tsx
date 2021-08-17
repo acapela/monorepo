@@ -1,5 +1,6 @@
 import { signOut } from "next-auth/client";
 import React, { useState } from "react";
+
 import { Button } from "~ui/buttons/Button";
 
 interface Logout {

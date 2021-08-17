@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { gql } from "@apollo/client";
-import { slugify } from "~shared/slugify";
-import { getUUID } from "~shared/uuid";
+
 import {
   AddTopicMemberMutation,
   AddTopicMemberMutationVariables,
@@ -24,13 +23,16 @@ import {
   UpdateTopicMutation,
   UpdateTopicMutationVariables,
 } from "~gql";
+import { assert } from "~shared/assert";
+import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
 import { addToast } from "~ui/toasts/data";
+
 import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { assert } from "~shared/assert";
 
 function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
   topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));

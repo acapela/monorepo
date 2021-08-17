@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import { getTopicCloseInfo } from "~frontend/topics/useTopic";
 import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
 import { TopicDetailedInfoFragment } from "~gql";

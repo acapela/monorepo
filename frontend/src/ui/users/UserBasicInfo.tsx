@@ -1,6 +1,8 @@
 import React from "react";
-import { TextBody14, TextMeta10 } from "~ui/typo";
+
 import { UserBasicInfoFragment } from "~gql";
+import { TextBody14, TextMeta10 } from "~ui/typo";
+
 import { Avatar } from "./Avatar";
 import { UserBasicInfoContainer } from "./UserBasicInfoContainer";
 

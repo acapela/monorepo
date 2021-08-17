@@ -1,7 +1,8 @@
 import "~config/dotenv";
 
-import { Request } from "express";
 import { ServerResponse } from "http";
+
+import { Request } from "express";
 import pino from "pino";
 
 import { assertDefined } from "./assert";

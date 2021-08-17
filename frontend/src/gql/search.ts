@@ -1,6 +1,8 @@
 import { gql } from "@apollo/client";
-import { createQuery } from "./utils";
+
 import { SearchResultsQuery, SearchResultsQueryVariables } from "~gql";
+
+import { createQuery } from "./utils";
 
 export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
   () => gql`

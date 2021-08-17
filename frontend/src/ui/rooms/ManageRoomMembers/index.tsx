@@ -1,25 +1,27 @@
-import { useState, useRef } from "react";
-import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
-import { useAddRoomMemberMutation, useIsCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useRef, useState } from "react";
+import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { assertDefined } from "~shared/assert";
-import { RoomDetailedInfoFragment } from "~gql";
-import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
+import { useAddRoomMemberMutation, useIsCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { MembersManagerModal } from "~frontend/ui/MembersManager/MembersManagerModal";
-import { handleWithStopPropagation } from "~shared/events";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
+import { WarningModal } from "~frontend/utils/warningModal";
+import { RoomDetailedInfoFragment } from "~gql";
+import { assertDefined } from "~shared/assert";
+import { handleWithStopPropagation } from "~shared/events";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconPlus } from "~ui/icons";
-import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
 import { addToast } from "~ui/toasts/data";
-import { WarningModal } from "~frontend/utils/warningModal";
-import { Button } from "~ui/buttons/Button";
-import { useCurrentTeamDetails } from "~frontend/gql/teams";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+
+import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 import { RoomOwner } from "./RoomOwner";
 
 interface Props {

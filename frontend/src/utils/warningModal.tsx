@@ -1,9 +1,10 @@
 import React from "react";
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { theme } from "~ui/theme";
+
 import { Modal, ModalAnchor } from "~frontend/ui/Modal";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+import { theme } from "~ui/theme";
 
 interface Props {
   warning?: string;

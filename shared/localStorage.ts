@@ -1,8 +1,9 @@
 import { useState } from "react";
+
 import { createChannel } from "./channel";
 import { getJSONValue, typeSafeParseJSON } from "./dates/parseJSONWithDates";
 import { JsonValue } from "./types";
-import { updateValue, ValueUpdater } from "./updateValue";
+import { ValueUpdater, updateValue } from "./updateValue";
 
 type ValueWrapper<T> = { value: T };
 

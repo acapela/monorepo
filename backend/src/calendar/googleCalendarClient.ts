@@ -1,7 +1,9 @@
-import { google, calendar_v3 } from "googleapis";
+import { calendar_v3, google } from "googleapis";
+
+import { Account } from "~db";
 import { assert, assertDefined, assertGetAsync } from "~shared/assert";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
-import { Account } from "~db";
+
 import { PublicInternalServerError } from "../errors/errorTypes";
 
 const clientId = assertDefined(process.env.GOOGLE_CLIENT_ID, "GOOGLE_CLIENT_ID is required");

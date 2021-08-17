@@ -1,17 +1,18 @@
 import {
+  Attachment,
   Message,
+  Notification,
   Room,
+  RoomInvitation,
   RoomMember,
   Space,
   Team,
   TeamInvitation,
-  RoomInvitation,
+  TeamMember,
   Topic,
   User,
-  Attachment,
-  TeamMember,
-  Notification,
 } from "~db";
+
 import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{

@@ -1,5 +1,7 @@
 import "~config";
+
 import { db } from "~db";
+
 import { cleanupDatabase } from "./testDatabaseUtils";
 
 beforeEach(async () => {

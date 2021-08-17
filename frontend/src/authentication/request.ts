@@ -1,7 +1,9 @@
-import { NextApiRequest } from "next";
-import { parseJWTWithoutValidation } from "~shared/jwt";
-import { Session } from "next-auth";
 import { IncomingMessage } from "http";
+
+import { NextApiRequest } from "next";
+import { Session } from "next-auth";
+
+import { parseJWTWithoutValidation } from "~shared/jwt";
 
 type Empty = Record<string, never>;
 

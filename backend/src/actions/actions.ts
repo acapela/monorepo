@@ -1,7 +1,9 @@
 import { Request, Response, Router } from "express";
+
 import logger from "~shared/logger";
+
 import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError, isHttpError, UnprocessableEntityError } from "../errors/errorTypes";
+import { AuthenticationError, UnprocessableEntityError, isHttpError } from "../errors/errorTypes";
 import { HasuraSessionVariables } from "../hasura/session";
 import { ActionHandler, handlers } from "./actionHandlers";
 

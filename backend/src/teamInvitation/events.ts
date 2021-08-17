@@ -1,4 +1,5 @@
-import { db, TeamInvitation } from "~db";
+import { TeamInvitation, db } from "~db";
+
 import { HasuraEvent } from "../hasura";
 import { sendInviteNotification } from "./sendInviteNotification";
 

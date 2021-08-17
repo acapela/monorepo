@@ -1,7 +1,8 @@
 import { get, isFunction, isPlainObject } from "lodash";
 import DeepProxy from "proxy-deep";
-import { Theme } from "..";
+
 import { getIsTerminal } from "./nonTerminal";
+import { Theme } from "..";
 
 /*
  * Creates an access layer that allows us to easily use the theme provided to the styled-components context.

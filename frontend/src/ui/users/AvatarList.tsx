@@ -1,13 +1,15 @@
 import React from "react";
-import styled from "styled-components";
-import { UserBasicInfoFragment } from "~gql";
-import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
-import { groupByFilter } from "~shared/groupByFilter";
 import { useRef } from "react";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { UserAvatar } from "./UserAvatar";
-import { CircleLabel } from "~ui/icons/CircleLabel";
+import styled from "styled-components";
+
+import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
+import { UserBasicInfoFragment } from "~gql";
+import { groupByFilter } from "~shared/groupByFilter";
 import { formatNumberWithMaxValue } from "~shared/numbers";
+import { CircleLabel } from "~ui/icons/CircleLabel";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
+import { UserAvatar } from "./UserAvatar";
 
 interface Props {
   users: UserBasicInfoFragment[];

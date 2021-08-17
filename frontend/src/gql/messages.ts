@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import {
   CreateMessageMutation,
@@ -12,10 +13,11 @@ import {
   UpdateTextMessageMutationVariables,
 } from "~gql";
 import { getUUID } from "~shared/uuid";
+
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
 import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
-import { convertUserTokenDataToInfoFragment, UserBasicInfoFragment } from "./user";
+import { UserBasicInfoFragment, convertUserTokenDataToInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
 export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(

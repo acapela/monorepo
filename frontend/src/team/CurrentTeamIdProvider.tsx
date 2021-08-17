@@ -1,6 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { userDetailedInfoQuery } from "~frontend/gql/user";
+
 import { CurrentTeamIdContext } from "./CurrentTeamIdContext";
 
 /*

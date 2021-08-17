@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
-import { JsonValue } from "~shared/types";
+
 import { readCurrentToken } from "~frontend/authentication/cookie";
 import { useEqualEffect } from "~shared/hooks/useEqualEffect";
+import { JsonValue } from "~shared/types";
 
 export function createBackendRequestSender<Input, Output>(route: string) {
   // Response from the server is sent as JSON which mean Dates will be converted to strings. Reflect it in the result type.
