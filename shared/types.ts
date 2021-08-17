@@ -29,3 +29,10 @@ export type JsonValue<T> = DeepReplace<
     string | null // <-- into strings or nulls. (Invalid dates are converted to null on JSON.stringify eg JSON.stringify(new Date(NaN)) ->> "null")
   ]
 >;
+
+export interface AuthorizationUrlParams {
+  response_type: "code";
+  prompt: "select_account";
+  access_type: "offline";
+  hd?: string;
+}
