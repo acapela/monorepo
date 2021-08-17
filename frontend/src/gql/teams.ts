@@ -74,7 +74,9 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
           ...UserBasicInfo
         }
       }
-      has_slack_installation
+      slack_installation {
+        team_id
+      }
     }
   `
 );

@@ -42,11 +42,21 @@ const [useDeleteSlackInstallation] = createMutation<
 >(
   () => gql`
     mutation DeleteSlackInstallation($teamId: uuid!) {
-      delete_single_team_slack_installation(args: { from_team_id: $teamId }) {
-        has_slack_installation
+      delete_team_slack_installation_by_pk(team_id: $teamId) {
+        team {
+          slack_installation {
+            team_id
+          }
+        }
       }
     }
-  `
+  `,
+  {
+    optimisticResponse: (vars) => ({
+      __typename: "mutation_root",
+      team: { __typename: "team", id: vars.teamId, has_slack_installation: false },
+    }),
+  }
 );
 
 export const CurrentTeamMembersManager = () => {
@@ -60,7 +70,7 @@ export const CurrentTeamMembersManager = () => {
     {
       input: { teamId: team?.id ?? "", redirectURL: isServer ? "" : location.href },
     },
-    { skip: isServer || !isCurrentUserTeamOwner || !!team.has_slack_installation }
+    { skip: isServer || !isCurrentUserTeamOwner || !!team.slack_installation }
   );
 
   if (!team) {
@@ -93,7 +103,7 @@ export const CurrentTeamMembersManager = () => {
       </UIHeader>
       {isCurrentUserTeamOwner && (
         <div>
-          {team.has_slack_installation ? (
+          {team.slack_installation ? (
             <Button
               disabled={isDeletingSlackInstallation}
               onClick={async () => {

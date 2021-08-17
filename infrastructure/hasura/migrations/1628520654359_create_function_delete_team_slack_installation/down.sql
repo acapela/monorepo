@@ -1,1 +1,0 @@
-DROP FUNCTION delete_single_team_slack_installation;

@@ -6317,6 +6317,8 @@ export interface Team_Set_Input {
 export interface Team_Slack_Installation {
   __typename?: 'team_slack_installation';
   data: Scalars['jsonb'];
+  /** An object relationship */
+  team: Team;
   team_id: Scalars['uuid'];
 }
 
@@ -6359,6 +6361,7 @@ export interface Team_Slack_Installation_Bool_Exp {
   _not?: Maybe<Team_Slack_Installation_Bool_Exp>;
   _or?: Maybe<Array<Team_Slack_Installation_Bool_Exp>>;
   data?: Maybe<Jsonb_Comparison_Exp>;
+  team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
 }
 
@@ -6385,6 +6388,7 @@ export interface Team_Slack_Installation_Delete_Key_Input {
 /** input type for inserting data into table "team_slack_installation" */
 export interface Team_Slack_Installation_Insert_Input {
   data?: Maybe<Scalars['jsonb']>;
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -6426,6 +6430,7 @@ export interface Team_Slack_Installation_On_Conflict {
 /** Ordering options when selecting data from "team_slack_installation". */
 export interface Team_Slack_Installation_Order_By {
   data?: Maybe<Order_By>;
+  team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
 }
 
@@ -8725,7 +8730,7 @@ export type TeamInvitationBasicInfoFragment = (
 
 export type TeamDetailedInfoFragment = (
   { __typename?: 'team' }
-  & Pick<Team, 'id' | 'name' | 'slug' | 'owner_id' | 'has_slack_installation'>
+  & Pick<Team, 'id' | 'name' | 'slug' | 'owner_id'>
   & { spaces: Array<(
     { __typename?: 'space' }
     & SpaceBasicInfoFragment
@@ -8738,7 +8743,10 @@ export type TeamDetailedInfoFragment = (
       { __typename?: 'user' }
       & UserBasicInfoFragment
     ) }
-  )> }
+  )>, slack_installation: (
+    { __typename?: 'team_slack_installation' }
+    & Pick<Team_Slack_Installation, 'team_id'>
+  ) }
 );
 
 export type CreateTeamMutationVariables = Exact<{
@@ -9123,9 +9131,15 @@ export type DeleteSlackInstallationMutationVariables = Exact<{
 
 export type DeleteSlackInstallationMutation = (
   { __typename?: 'mutation_root' }
-  & { delete_single_team_slack_installation: Array<(
-    { __typename?: 'team' }
-    & Pick<Team, 'has_slack_installation'>
+  & { delete_team_slack_installation_by_pk?: Maybe<(
+    { __typename?: 'team_slack_installation' }
+    & { team: (
+      { __typename?: 'team' }
+      & { slack_installation: (
+        { __typename?: 'team_slack_installation' }
+        & Pick<Team_Slack_Installation, 'team_id'>
+      ) }
+    ) }
   )> }
 );
 
@@ -10187,9 +10201,10 @@ export type team_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_slack_installationKeySpecifier = ('data' | 'team_id' | team_slack_installationKeySpecifier)[];
+export type team_slack_installationKeySpecifier = ('data' | 'team' | 'team_id' | team_slack_installationKeySpecifier)[];
 export type team_slack_installationFieldPolicy = {
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_slack_installation_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_slack_installation_aggregateKeySpecifier)[];

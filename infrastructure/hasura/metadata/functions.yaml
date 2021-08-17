@@ -1,7 +1,1 @@
-- function:
-    schema: public
-    name: delete_single_team_slack_installation
-  configuration:
-    exposed_as: mutation
-  permissions:
-    - role: user
+[]

@@ -10354,6 +10354,11 @@ type team_slack_installation {
     """
     path: String
   ): jsonb!
+
+  """
+  An object relationship
+  """
+  team: team!
   team_id: uuid!
 }
 
@@ -10389,6 +10394,7 @@ input team_slack_installation_bool_exp {
   _not: team_slack_installation_bool_exp
   _or: [team_slack_installation_bool_exp!]
   data: jsonb_comparison_exp
+  team: team_bool_exp
   team_id: uuid_comparison_exp
 }
 
@@ -10428,6 +10434,7 @@ input type for inserting data into table "team_slack_installation"
 """
 input team_slack_installation_insert_input {
   data: jsonb
+  team: team_obj_rel_insert_input
   team_id: uuid
 }
 
@@ -10486,6 +10493,7 @@ Ordering options when selecting data from "team_slack_installation".
 """
 input team_slack_installation_order_by {
   data: order_by
+  team: team_order_by
   team_id: order_by
 }
 

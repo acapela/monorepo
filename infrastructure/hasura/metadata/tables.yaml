@@ -369,6 +369,7 @@
           remote_table:
             schema: public
             name: room_last_posted_message
+          insertion_order: null
           column_mapping:
             id: room_id
     - name: owner
@@ -391,6 +392,7 @@
           remote_table:
             schema: public
             name: room_member
+          insertion_order: null
           column_mapping:
             id: room_id
     - name: topics
@@ -598,6 +600,7 @@
           remote_table:
             schema: public
             name: room
+          insertion_order: null
           column_mapping:
             room_id: id
   select_permissions:
@@ -704,6 +707,7 @@
           remote_table:
             schema: public
             name: user
+          insertion_order: null
           column_mapping:
             creator_id: id
     - name: team
@@ -891,12 +895,6 @@
           table:
             schema: public
             name: space
-  computed_fields:
-    - name: has_slack_installation
-      definition:
-        function:
-          schema: public
-          name: team_has_slack_installation
   insert_permissions:
     - role: user
       permission:
@@ -915,8 +913,6 @@
           - name
           - owner_id
           - slug
-        computed_fields:
-          - has_slack_installation
         filter:
           _or:
             - owner_id:
@@ -1108,6 +1104,26 @@
 - table:
     schema: public
     name: team_slack_installation
+  object_relationships:
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - team_id
+        filter:
+          team:
+            owner_id:
+              _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          team:
+            owner_id:
+              _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: topic
@@ -1118,6 +1134,7 @@
           remote_table:
             schema: public
             name: user
+          insertion_order: null
           column_mapping:
             closed_by_user_id: id
     - name: owner
@@ -1140,6 +1157,7 @@
           remote_table:
             schema: public
             name: message
+          insertion_order: null
           column_mapping:
             id: topic_id
   insert_permissions:
@@ -1402,6 +1420,7 @@
           remote_table:
             schema: public
             name: message
+          insertion_order: null
           column_mapping:
             id: user_id
     - name: notifications
@@ -1424,6 +1443,7 @@
           remote_table:
             schema: public
             name: room_member
+          insertion_order: null
           column_mapping:
             id: user_id
     - name: space_memberships
