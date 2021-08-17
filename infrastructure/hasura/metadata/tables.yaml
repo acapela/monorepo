@@ -12,6 +12,9 @@
     - name: message
       using:
         foreign_key_constraint_on: message_id
+    - name: transcription
+      using:
+        foreign_key_constraint_on: transcription_id
   insert_permissions:
     - role: user
       permission:
@@ -73,38 +76,6 @@
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: full_text_search
-  object_relationships:
-    - name: room
-      using:
-        manual_configuration:
-          remote_table:
-            schema: public
-            name: room
-          column_mapping:
-            room_id: id
-  select_permissions:
-    - role: user
-      permission:
-        columns:
-          - room_id
-          - room_name
-          - user_id
-          - topic_id
-          - topic_name
-          - message_created_at
-          - message_type
-          - message_id
-          - message_content
-          - transcription_id
-          - attachment_id
-          - attachment_name
-          - transcript
-        filter:
-          user_id:
-            _eq: X-Hasura-User-Id
-- table:
-    schema: public
     name: last_seen_message
   insert_permissions:
     - role: user
@@ -157,9 +128,6 @@
     - name: topic
       using:
         foreign_key_constraint_on: topic_id
-    - name: transcription
-      using:
-        foreign_key_constraint_on: transcription_id
     - name: user
       using:
         foreign_key_constraint_on: user_id
@@ -182,13 +150,29 @@
     - role: user
       permission:
         check:
-          topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+          _and:
+            - topic:
+                room:
+                  space:
+                    team:
+                      memberships:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+            - _or:
+                - topic:
+                    room:
+                      is_private:
+                        _eq: false
+                - _and:
+                    - topic:
+                        room:
+                          is_private:
+                            _eq: true
+                    - topic:
+                        room:
+                          members:
+                            user_id:
+                              _eq: X-Hasura-User-Id
         set:
           user_id: x-hasura-User-Id
         columns:
@@ -255,7 +239,6 @@
             - id
             - replied_to_message_id
             - topic_id
-            - transcription_id
             - user_id
       retry_conf:
         num_retries: 5
@@ -343,6 +326,12 @@
           user_id:
             _eq: X-Hasura-User-Id
         check: null
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
   event_triggers:
     - name: notification_updates
       definition:
@@ -382,6 +371,9 @@
             name: room_last_posted_message
           column_mapping:
             id: room_id
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
     - name: space
       using:
         foreign_key_constraint_on: space_id
@@ -423,6 +415,7 @@
           - deadline
           - id
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -440,6 +433,7 @@
           - is_private
           - last_activity_at
           - name
+          - owner_id
           - slug
           - source_google_calendar_event_id
           - space_id
@@ -480,6 +474,7 @@
           - finished_at
           - is_private
           - name
+          - owner_id
           - slug
           - summary
         filter:
@@ -1125,6 +1120,9 @@
             name: user
           column_mapping:
             closed_by_user_id: id
+    - name: owner
+      using:
+        foreign_key_constraint_on: owner_id
     - name: room
       using:
         foreign_key_constraint_on: room_id
@@ -1166,6 +1164,7 @@
           - id
           - index
           - name
+          - owner_id
           - room_id
           - slug
         backend_only: false
@@ -1179,6 +1178,7 @@
           - id
           - index
           - name
+          - owner_id
           - room_id
           - slug
         filter:
@@ -1211,6 +1211,7 @@
           - closing_summary
           - index
           - name
+          - owner_id
           - slug
         filter:
           _and:
@@ -1257,6 +1258,7 @@
             - closed_at
             - closed_by_user_id
             - id
+            - owner_id
             - room_id
       retry_conf:
         num_retries: 0
@@ -1322,6 +1324,14 @@
 - table:
     schema: public
     name: transcription
+  array_relationships:
+    - name: attachments
+      using:
+        foreign_key_constraint_on:
+          column: transcription_id
+          table:
+            schema: public
+            name: attachment
   select_permissions:
     - role: user
       permission:
@@ -1331,10 +1341,14 @@
           - status
           - transcript
           - updated_at
-        filter: {}
-- table:
-    schema: public
-    name: transcription_full_text
+        filter:
+          attachments:
+            message:
+              topic:
+                room:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: transcription_status

@@ -2,14 +2,15 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { getUUID } from "~shared/uuid";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useRoomTopicList } from "~frontend/rooms/useRoomTopicList";
 import { routes, RouteLink } from "~frontend/router";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { RoomDetailedInfoFragment } from "~gql";
-import { useNewItemInArrayEffect } from "~shared/hooks/useNewItemInArrayEffect";
 import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
 import { Button } from "~ui/buttons/Button";
@@ -40,37 +41,39 @@ function getNewTopicIndex(topics: RoomDetailedInfoFragment["topics"], activeTopi
 }
 
 export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+  const user = useAssertCurrentUser();
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const roomId = room.id;
   const spaceId = room.space_id;
   const roomContext = useRoomStoreContext();
 
   const { topics, moveBetween, moveToStart, moveToEnd } = useRoomTopicList(room.id);
-  const amIMember = isCurrentUserRoomMember(room);
+  const amIMember = useIsCurrentUserRoomMember(room);
 
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   async function handleCreateNewTopic() {
-    await startCreateNewTopicFlow({
+    const topicId = getUUID();
+    const newTopic = await startCreateNewTopicFlow({
+      topicId,
+      ownerId: user.id,
       name: "New topic",
       slug: `new-topic-${generateId(5)}`,
       roomId: room.id,
       navigateAfterCreation: true,
       index: getNewTopicIndex(topics, activeTopicId),
     });
-  }
 
-  useNewItemInArrayEffect(
-    topics,
-    (topic) => topic.id,
-    (newTopic) => {
-      runInAction(() => {
-        roomContext.newTopicId = newTopic.id;
-        roomContext.editingNameTopicId = newTopic.id;
-      });
+    runInAction(() => {
+      roomContext.newTopicId = topicId;
+      roomContext.editingNameTopicId = topicId;
+    });
+
+    if (newTopic) {
       routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId: room.space_id, roomId: room.id });
     }
-  );
+  }
 
   return (
     <CollapsePanel

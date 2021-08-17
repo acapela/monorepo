@@ -5,6 +5,7 @@ import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { routes } from "~frontend/router";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
@@ -27,6 +28,7 @@ export function UserMenu() {
             label: "Logout",
             onSelect: () => {
               routes.logout.push({});
+              trackEvent("Signed Out");
             },
           },
         ]}

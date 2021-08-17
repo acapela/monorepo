@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+echo "cleanup cache..."
+
 container_sha=$(cat oras.log | awk '{ print $2 }' | tail -n 1)
 echo "found container sha: $container_sha"
 

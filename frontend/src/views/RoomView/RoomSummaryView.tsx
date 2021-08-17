@@ -1,13 +1,19 @@
+import * as clipboard from "clipboard-polyfill";
 import React, { useState } from "react";
-import styled from "styled-components";
-import { TextH3, TextBody } from "~ui/typo";
-import { useUpdateRoomMutation } from "~frontend/gql/rooms";
-import { RoomView } from "./RoomView";
-import { TextArea } from "~ui/forms/TextArea";
-import { TopicSummary } from "./TopicSummary";
 import { useDebounce } from "react-use";
-import { formatDate } from "./shared";
+import styled from "styled-components";
+import { theme } from "~ui/theme";
+import { useUpdateRoomMutation } from "~frontend/gql/rooms";
 import { RoomDetailedInfoFragment } from "~gql";
+import { handleWithStopPropagation } from "~shared/events";
+import { Button } from "~ui/buttons/Button";
+import { TextArea } from "~ui/forms/TextArea";
+import { IconClipboardCheck, IconCopy } from "~ui/icons";
+import { addToast } from "~ui/toasts/data";
+import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
+import { RoomView } from "./RoomView";
+import { formatDate } from "./shared";
+import { TopicSummary } from "./TopicSummary";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -34,13 +40,31 @@ export function RoomSummaryView({ room }: Props) {
     [roomSummary]
   );
 
+  async function handleCopy() {
+    const item = new clipboard.ClipboardItem({
+      "text/html": new Blob([convertRoomToHtml(room)], { type: "text/html" }),
+      "text/plain": new Blob([convertRoomToPlainText(room)], { type: "text/plain" }),
+    });
+
+    await clipboard.write([item]);
+
+    addToast({
+      type: "success",
+      title: "Room summary copied to clipboard",
+      icon: <IconClipboardCheck />,
+    });
+  }
+
   return (
     <RoomView room={room} selectedTopicId={null}>
       <UIHolder>
         <UIHeader>
-          <TextH3>Summary</TextH3>
-          {room && room.finished_at && <TextBody>Created {formatDate(room.finished_at)}</TextBody>}
+          <UITitle>Room Summary</UITitle>
+          {room && room.finished_at && <UIRoomClosingTime>Created {formatDate(room.finished_at)}</UIRoomClosingTime>}
         </UIHeader>
+
+        <UILine />
+
         <UITopicSummaries>
           {room?.topics.map((topic) => (
             <TopicSummary key={topic.id} topic={topic} />
@@ -52,27 +76,52 @@ export function RoomSummaryView({ room }: Props) {
           isResizable={true}
           onChangeText={setRoomSummary}
         />
+        <Button
+          kind="secondary"
+          iconPosition="start"
+          icon={<IconCopy />}
+          onClick={handleWithStopPropagation(() => handleCopy())}
+        >
+          Copy summary as text
+        </Button>
       </UIHolder>
     </RoomView>
   );
 }
 
 const UIHolder = styled.div<{}>`
-  padding: 60px;
+  padding: 32px 60px;
   overflow-y: auto;
   height: 100%;
+  background-color: ${theme.colors.layout.foreground()};
+`;
+
+const UITitle = styled.div<{}>`
+  ${theme.font.h4.spezia.build}
+`;
+
+const UIRoomClosingTime = styled.div<{}>`
+  ${theme.font.body12.speziaMono.semibold.build}
+  color: ${theme.colors.layout.supportingText()}
 `;
 
 const UIHeader = styled.div<{}>`
-  ${TextBody} {
-    line-height: 2rem;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const UILine = styled.hr<{}>`
+  margin: 24px 0;
+  width: 100%;
+  height: 1px;
+  background: ${theme.colors.layout.softLine()};
 `;
 
 const UITopicSummaries = styled.div<{}>`
   display: grid;
   gap: 16px;
-  padding: 40px 0;
+  padding-bottom: 32px;
 `;
 
 const UIAdditionalNotes = styled(TextArea)<{}>`

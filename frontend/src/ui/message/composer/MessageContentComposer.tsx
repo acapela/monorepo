@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
-import { ATTACHMENT_PREVIEW_HEIGHT_PX } from "~frontend/ui/message/attachment/MessageAttachmentDisplayer";
 import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { RichEditorNode } from "~richEditor/content/types";
 import { EditorAttachmentInfo } from "./attachments";
@@ -83,6 +82,6 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
 });
 
 const UIAttachmentsPreviews = styled.div<{}>`
-  height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
   display: flex;
+  gap: 12px;
 `;

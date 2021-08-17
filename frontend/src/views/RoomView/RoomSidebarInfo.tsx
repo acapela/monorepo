@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { RoomDetailedInfoFragment } from "~gql";
 import { TextBody12 } from "~ui/typo";
@@ -13,7 +13,7 @@ interface Props {
 export function RoomSidebarInfo({ room }: Props) {
   const router = useRouter();
 
-  const amIMember = isCurrentUserRoomMember(room ?? undefined);
+  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
 
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);
@@ -21,9 +21,7 @@ export function RoomSidebarInfo({ room }: Props) {
 
   return (
     <UIRoomInfo>
-      <UIManageSection>
-        <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
-      </UIManageSection>
+      <ManageRoomMembers onCurrentUserLeave={handleRoomLeave} room={room} />
 
       <UIManageSections>
         <UIManageSection>

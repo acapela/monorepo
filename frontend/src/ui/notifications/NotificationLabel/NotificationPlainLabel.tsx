@@ -17,12 +17,13 @@ import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   userId: string;
   date?: Date;
   titleNode: ReactNode;
-  onClick?: (event: event) => void;
+  onClick?: (event: MouseEvent) => void;
   notification: NotificationInfoFragment;
 }
 
@@ -32,7 +33,7 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
 ) {
   const holderRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   const id = notification.id;
-  const user = useCurrentTeamMember(userId);
+  const [user] = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
 
   const isHovered = useIsElementOrChildHovered(holderRef);
@@ -40,14 +41,17 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
   function handleClick(event: MouseEvent) {
     markAsRead();
     onClick?.(event);
+    trackEvent("Clicked Notification Link");
   }
 
   function markAsRead() {
     markNotificationAsRead({ id, date: new Date().toISOString() });
+    trackEvent("Marked Notification As Read");
   }
 
   function markAsUnread() {
     markNotificationAsUnread({ id });
+    trackEvent("Marked Notification As Unread");
   }
 
   return (

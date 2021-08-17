@@ -9,6 +9,7 @@ import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
 import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { useRecorderErrors } from "./useRecorderErrors";
+import { AnimatePresence } from "framer-motion";
 
 interface RecorderProps {
   className?: string;
@@ -109,6 +110,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         startCountdown();
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSource]);
 
   useEffect(() => {
@@ -121,6 +123,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       /* In case recording is forcefully stopped */
       setMediaSource(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDismissed, blob]);
 
   useEffect(() => {
@@ -132,6 +135,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
       setRecorderError(mediaSource, error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSource, error]);
 
   if (isUnsupportedBrowser) {
@@ -177,9 +181,12 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         <IconMic />
       </RecordButton>
 
-      {isCountdownStarted && (
-        <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
-      )}
+      <AnimatePresence>
+        {isCountdownStarted && (
+          <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
+        )}
+      </AnimatePresence>
+
       {isRecording && (
         <RecorderControls
           handlerRef={popoverHandlerRef}

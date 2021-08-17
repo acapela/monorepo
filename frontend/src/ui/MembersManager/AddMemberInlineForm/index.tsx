@@ -42,6 +42,7 @@ export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Pro
     } else if (inputValue) {
       openMenu();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser, inputValue]);
 
   const handleSubmit = () => {

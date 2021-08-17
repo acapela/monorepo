@@ -6,7 +6,7 @@ import type { Express } from "express";
 import { db } from "~db";
 import { assert, assertDefined } from "~shared/assert";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { getTunnelPublicUrl } from "~backend/src/localtunnel";
+import { getDevPublicTunnel, getTunnelPublicUrl } from "~backend/src/localtunnel";
 import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 
@@ -73,7 +73,7 @@ const slackApp = new SlackBolt.App({
 const getSlackInstallURL = async (port?: number, state?: unknown) =>
   slackReceiver.installer?.generateInstallUrl({
     scopes,
-    redirectUri: (isDevelopment ? await getTunnelPublicUrl(port) : "") + "/api/backend/slack/oauth_redirect",
+    redirectUri: (isDevelopment ? (await getDevPublicTunnel(port)).url : "") + "/api/backend/slack/oauth_redirect",
     metadata: JSON.stringify(state),
   });
 

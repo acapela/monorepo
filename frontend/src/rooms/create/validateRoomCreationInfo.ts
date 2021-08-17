@@ -16,4 +16,6 @@ export const validateRoomCreationInfo = ({ roomName, spaceId }: RoomCreateInput)
   if (!spaceId) {
     return "Space is required";
   }
+
+  return true;
 };

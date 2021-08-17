@@ -18,13 +18,14 @@ import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { useTopic } from "~frontend/topics/useTopic";
+import { TopicOwner } from "./TopicOwner";
 
 type Props = {
   topic: TopicDetailedInfoFragment;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
-  rootProps?: React.HTMLAttributes<unknown>;
+  rootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
 export function SortableTopicMenuItem({
@@ -39,7 +40,7 @@ export function SortableTopicMenuItem({
   const style = {
     // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition ?? undefined,
   };
 
   return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
@@ -47,7 +48,7 @@ export function SortableTopicMenuItem({
 
 export const TopicMenuItem = styled<Props>(
   observer(
-    React.forwardRef<HTMLElement, Props>(function TopicMenuItem(
+    React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
       { topic, isActive, className, isEditingDisabled, rootProps },
       ref
     ) {
@@ -62,7 +63,7 @@ export const TopicMenuItem = styled<Props>(
       const isNewTopic = select(() => roomContext.newTopicId === topic.id);
       const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-      const manageWrapperRef = useRef<HTMLElement | null>(null);
+      const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
       function handleNewTopicName(newName: string) {
         updateTopic({ topicId: topic.id, input: { name: newName } });
@@ -86,6 +87,7 @@ export const TopicMenuItem = styled<Props>(
               {...props}
             />
           ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isInEditMode]
       );
 
@@ -119,6 +121,7 @@ export const TopicMenuItem = styled<Props>(
                     Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
                   }
                 />
+                <TopicOwner topic={topic} />
               </UIHolder>
             </NameWrap>
             {!isEditingDisabled && (
@@ -155,8 +158,9 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   padding: ${PADDING} 24px;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   width: 100%;
-  align-items: center;
 
   ${theme.borderRadius.button}
 

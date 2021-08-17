@@ -30,6 +30,7 @@ export function useRoomTopicList(roomId: string) {
       // Prevents cases were single room query subscription flashes an wrongly ordered list with correct index
       setTopicsToShow([...currentTopics].sort(byIndexAscending));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTopics]);
 
   function byIndexAscending(a: TopicDetailedInfoFragment, b: TopicDetailedInfoFragment) {

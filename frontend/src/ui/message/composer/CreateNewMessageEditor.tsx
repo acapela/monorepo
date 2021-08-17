@@ -16,6 +16,7 @@ import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   topicId: string;
@@ -81,6 +82,11 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
     });
 
     if (message) {
+      trackEvent("Sent Message", {
+        messageType: type,
+        isReply: !!topicContext.currentlyReplyingToMessage,
+        hasAttachments: attachments.length > 0,
+      });
       await Promise.all(
         bindAttachmentsToMessage(
           message.id,

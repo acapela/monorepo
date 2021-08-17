@@ -20,6 +20,9 @@ export const shadow = {
   card: css`
     box-shadow: 0px 3px 0px rgba(43, 42, 53, 0.04);
   `,
+  item: css`
+    filter: drop-shadow(0px 3px 0px rgba(43, 42, 53, 0.04));
+  `,
   cardItem: css`
     box-shadow: 0px 2px 3px rgba(43, 42, 53, 0.03);
   `,
@@ -34,6 +37,9 @@ export const shadow = {
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
   `,
+  largeFrame: css`
+    box-shadow: 0px 12px 68px rgba(0, 0, 0, 0.05);
+  `,
 } as const;
 
 export const borderRadius = {
@@ -44,6 +50,9 @@ export const borderRadius = {
     border-radius: 16px;
   `,
   modal: css`
+    border-radius: 16px;
+  `,
+  toast: css`
     border-radius: 16px;
   `,
   label: css`

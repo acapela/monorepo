@@ -22,7 +22,7 @@ export function createCleanupObject() {
         cleanup();
       });
     },
-    enqueue(...cleanupsToAdd: CleanupFunction[]) {
+    enqueue(...cleanupsToAdd: Array<CleanupFunction>) {
       cleanupsToAdd.forEach((cleanupToAdd) => {
         cleanups.add(cleanupToAdd);
       });

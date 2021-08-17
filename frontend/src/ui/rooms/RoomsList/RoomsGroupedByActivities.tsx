@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { RoomDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { RoomsListCategory } from "./RoomsListCategory";
-import { RoomWithActivities, useRoomsWithActivities } from "./useRoomsWithActivities";
+import { RoomWithActivity, useRoomsWithActivities } from "./useRoomsWithActivity";
 
 interface Props {
   className?: string;
@@ -10,9 +10,9 @@ interface Props {
 }
 
 export const RoomsGroupedByActivities = styled(function FilteredRoomsList({ className, rooms }: Props) {
-  const roomsWithActivities = useRoomsWithActivities(rooms);
+  const roomsWithActivities = useRoomsWithActivities({ rooms, options: { sort: "desc" } });
 
-  const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomWithActivities>(
+  const [roomsWithNewActivities, roomsWithAlreadySeenActivities] = groupByFilter<RoomWithActivity>(
     roomsWithActivities,
     (room) => room.unreadMessages > 0
   );

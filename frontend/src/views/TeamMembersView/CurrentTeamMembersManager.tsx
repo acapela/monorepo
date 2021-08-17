@@ -17,6 +17,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { Button } from "~ui/buttons/Button";
 import { IconMinus, IconPlus } from "~ui/icons";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { theme } from "~ui/theme";
 import { ExitTeamButton } from "./ExitTeamButton";
 import { ResendInviteButton } from "./ResendInviteButton";
@@ -40,7 +41,6 @@ const [useDeleteSlackInstallation] = createMutation<
   () => gql`
     mutation DeleteSlackInstallation($teamId: uuid!) {
       delete_single_team_slack_installation(args: { from_team_id: $teamId }) {
-        id
         has_slack_installation
       }
     }
@@ -52,7 +52,7 @@ export const CurrentTeamMembersManager = () => {
   const currentUser = useAssertCurrentUser();
   const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
-  const [deleteSlackInstallation, { loading: isDeleteingSlackInstallation }] = useDeleteSlackInstallation({});
+  const [deleteSlackInstallation, { loading: isDeletingSlackInstallation }] = useDeleteSlackInstallation({});
   const isServer = typeof window == "undefined";
   const [slackInstallation] = useGetSlackInstallationURL(
     {
@@ -69,14 +69,18 @@ export const CurrentTeamMembersManager = () => {
   const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
 
   const handleRemoveTeamMember = (userId: string) => {
+    if (!team) return;
     removeTeamMember({ userId, teamId: team.id });
+    trackEvent("Account Removed User", { teamId: team.id, userId });
   };
 
   const invitations = team.invitations ?? [];
   const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
 
   const handleRemoveInvitation = (invitationId: string) => {
+    if (!team) return;
     removeTeamInvitation({ id: invitationId });
+    trackEvent("Deleted Team Invitation", { teamId: team.id, invitationId });
   };
 
   return (
@@ -89,7 +93,7 @@ export const CurrentTeamMembersManager = () => {
         <div>
           {team.has_slack_installation ? (
             <Button
-              disabled={isDeleteingSlackInstallation}
+              disabled={isDeletingSlackInstallation}
               onClick={async () => {
                 const didConfirm = await openConfirmPrompt({
                   title: "Disable Slack Integration",
@@ -100,7 +104,7 @@ export const CurrentTeamMembersManager = () => {
                   return;
                 }
                 await deleteSlackInstallation({ teamId: team.id });
-                addToast({ type: "info", content: "Slack installation was disabled" });
+                addToast({ type: "success", title: "Slack installation was disabled" });
               }}
               icon={<IconMinus />}
               iconPosition="start"

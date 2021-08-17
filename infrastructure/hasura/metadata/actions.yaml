@@ -1,8 +1,4 @@
 actions:
-  - name: get_download_url
-    definition:
-      kind: ""
-      handler: "{{HASURA_ACTIONS_WEBHOOK_URL}}"
   - name: get_team_slack_installation_url
     definition:
       kind: ""

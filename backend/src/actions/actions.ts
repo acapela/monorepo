@@ -13,8 +13,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
 
-  logger.info("Handling action", {
-    actionName: hasuraAction.action.name,
+  logger.info(`Handling action (${hasuraAction.action.name})`, {
     userId,
   });
 
@@ -26,8 +25,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   try {
     const response = await handler.handle(userId, hasuraAction.input);
     res.status(200).json(response);
-    logger.info("Action handled", {
-      actionName: hasuraAction.action.name,
+    logger.info(`Action handled (${hasuraAction.action.name})`, {
       userId,
     });
   } catch (error) {

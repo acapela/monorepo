@@ -7,7 +7,9 @@ import { getUUID } from "~shared/uuid";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 
 interface CreateTopicInput {
+  topicId?: string;
   roomId: string;
+  ownerId: string;
   modalAnchor?: ModalAnchor;
   navigateAfterCreation?: boolean;
   index: string;
@@ -16,7 +18,9 @@ interface CreateTopicInput {
 }
 
 export async function startCreateNewTopicFlow({
+  topicId = getUUID(),
   roomId,
+  ownerId,
   modalAnchor,
   navigateAfterCreation,
   index,
@@ -39,8 +43,6 @@ export async function startCreateNewTopicFlow({
     return;
   }
 
-  const topicId = getUUID();
-
   const createTopicPromise = createTopic({
     input: {
       id: topicId,
@@ -48,6 +50,7 @@ export async function startCreateNewTopicFlow({
       slug,
       index,
       room_id: roomId,
+      owner_id: ownerId,
     },
   });
 

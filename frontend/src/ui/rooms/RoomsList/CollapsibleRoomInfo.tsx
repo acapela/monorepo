@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { routes, RouteLink } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
+import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { RoomBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -18,8 +19,8 @@ import { ExpandableTopicsList } from "./ExpandableTopicsList";
 
 interface Props {
   room: RoomBasicInfoFragment;
-  unreadMessages: number;
   topics: TopicDetailedInfoFragment[];
+  unreadMessages?: number;
   className?: string;
 }
 
@@ -31,7 +32,9 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
 }: Props) {
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
-  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
+  const unreadMessagesCount = useRoomUnreadMessagesCount(room.id, { overWriteCount: unreadMessages });
+  const isCurrentUserRoomMember = useIsCurrentUserRoomMember(room);
+  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember;
 
   return (
     <UIHolder className={className}>
@@ -51,7 +54,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
               </UIRoomName>
 
               <UIRoomMetaData>
-                <ValueDescriptor keyNode={<NotificationCount value={unreadMessages} />} value={"New Messages"} />
+                <ValueDescriptor keyNode={<NotificationCount value={unreadMessagesCount} />} value={"New Messages"} />
                 <ValueDescriptor
                   keyNode={<IconComment2Dots />}
                   isIconKey

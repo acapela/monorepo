@@ -6,7 +6,7 @@ interface Props {
   isParentRoomOpen: boolean;
 }
 
-export const TopicClosureBanner = ({ className, isParentRoomOpen }: Props) => {
+export const TopicClosureBanner = styled(function TopicClosureBanner({ className, isParentRoomOpen }: Props) {
   return (
     <UIBanner className={className}>
       <UIClosingInfo>
@@ -25,7 +25,7 @@ export const TopicClosureBanner = ({ className, isParentRoomOpen }: Props) => {
       </UIClosingInfo>
     </UIBanner>
   );
-};
+})``;
 
 const UIBanner = styled.div<{}>`
   padding: 16px;

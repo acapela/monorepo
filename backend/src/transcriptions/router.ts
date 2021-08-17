@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 import logger from "~shared/logger";
 import { BadRequestError } from "../errors/errorTypes";
-import { MediaResponse } from "./sonixClient";
-import { updateMessageTranscription } from "./transcriptionService";
+import { SonixMediaResponse } from "./sonixClient";
+import { handleAttachementTranscriptionStatusUpdate } from "./transcriptionService";
 
 export const router = Router();
 
@@ -18,14 +18,14 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
     return res.status(401).end();
   }
 
-  const media = req.body as MediaResponse;
+  const media = req.body as SonixMediaResponse;
 
   if (!media) {
     throw new BadRequestError("Sonix call has no body");
   }
 
   if (media.status === "completed") {
-    await updateMessageTranscription(media);
+    await handleAttachementTranscriptionStatusUpdate(media);
   }
 
   res.status(204).end();

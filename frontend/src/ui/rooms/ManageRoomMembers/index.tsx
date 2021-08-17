@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
-import { useAddRoomMemberMutation, isCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
+import { useAddRoomMemberMutation, useIsCurrentUserRoomMember, useRemoveRoomMemberMutation } from "~frontend/gql/rooms";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { assertDefined } from "~shared/assert";
 import { RoomDetailedInfoFragment } from "~gql";
@@ -18,7 +18,9 @@ import { addToast } from "~ui/toasts/data";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { useCurrentTeamDetails } from "~frontend/gql/teams";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { RoomOwner } from "./RoomOwner";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -30,7 +32,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
   const [team] = useCurrentTeamDetails();
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
-  const amIMember = isCurrentUserRoomMember(room);
+  const amIMember = useIsCurrentUserRoomMember(room);
 
   const [addRoomMember] = useAddRoomMemberMutation();
   const [removeRoomMember] = useRemoveRoomMemberMutation();
@@ -41,6 +43,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   async function handleJoin(userId: string) {
     await addRoomMember({ userId, roomId: room.id });
+    trackEvent("Joined Room", { roomId: room.id, userId });
   }
 
   async function handleLeave(userId: string) {
@@ -55,6 +58,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     if (onCurrentUserLeave && userId === safeCurrentUser.id) {
       onCurrentUserLeave();
     }
+    trackEvent("Left Room", { roomId: room.id, userId });
   }
 
   const [isPickingUser, { set: openUserPicker, unset: closeUserPicker }] = useBoolean(false);
@@ -63,12 +67,12 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 
   const requestedEmail = useRef<string | null>(null);
 
-  const closeInviteWarning = () => {
+  function closeInviteWarning() {
     setShouldShowWarning(false);
     requestedEmail.current = null;
-  };
+  }
 
-  const handleInviteByEmail = () => {
+  function handleInviteByEmail() {
     const email = requestedEmail.current;
     if (!email) return;
 
@@ -80,19 +84,20 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     ]);
 
     if (reservedEmails.has(email)) {
-      addToast({ type: "info", content: "The person with this email already invited" });
+      addToast({ type: "success", title: "The person with this email already invited" });
       return;
     }
 
     if (!amIMember) {
-      addToast({ type: "error", content: "Join the room to invite a new member" });
+      addToast({ type: "error", title: "Join the room to invite a new member" });
       return;
     }
 
     createRoomInvitation({ roomId: room.id, teamId, email });
-  };
+    trackEvent("Invited To Room", { roomId: room.id, userEmail: email });
+  }
 
-  const handleInviteByEmailRequest = (email: string) => {
+  function handleInviteByEmailRequest(email: string) {
     requestedEmail.current = email;
 
     const teamInvitationsEmails = new Set(team?.invitations.map(({ email }) => email));
@@ -101,7 +106,14 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
     } else {
       setShouldShowWarning(true);
     }
-  };
+  }
+
+  function handleRemoveRoomInvitation(invitationId: string) {
+    removeRoomInvitation({ id: invitationId });
+    trackEvent("Deleted Room Invitation", { roomId: room.id, invitationId });
+  }
+
+  const membersExceptOwner = members.filter((member) => member.id !== room?.owner?.id);
 
   return (
     <>
@@ -123,20 +135,21 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
         )}
         {isPickingUser && !shouldShowWarning && (
           <MembersManagerModal
-            title={"Invite your team to this room"}
+            title={"Invite your team members to this room"}
             currentUsers={members}
             onCloseRequest={closeUserPicker}
             onAddUser={handleJoin}
             onRemoveUser={handleLeave}
             invitations={room.invitations}
-            onRemoveInvitation={(id) => removeRoomInvitation({ id })}
+            onRemoveInvitation={handleRemoveRoomInvitation}
             onInviteByEmail={handleInviteByEmailRequest}
           />
         )}
       </AnimatePresence>
       <UIHolder>
+        <RoomOwner room={room} />
         <UIMembers onClick={handleWithStopPropagation(openUserPicker)}>
-          {members.length > 0 && <AvatarList users={members} size="inherit" />}
+          {membersExceptOwner.length > 0 && <AvatarList users={membersExceptOwner} size="inherit" />}
           {amIMember && (
             <CircleIconButton
               kind="primary"
@@ -164,6 +177,7 @@ export const ManageRoomMembers = ({ room, onCurrentUserLeave }: Props) => {
 const UIHolder = styled.div`
   margin-top: 4px;
   display: flex;
+  gap: 16px;
   align-items: center;
   width: 100%;
 `;

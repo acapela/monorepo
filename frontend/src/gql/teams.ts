@@ -77,7 +77,10 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
   `
 );
 
-export const [useCreateTeamMutation] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
+export const [useCreateTeamMutation, { mutate: createTeam }] = createMutation<
+  CreateTeamMutation,
+  CreateTeamMutationVariables
+>(
   () => gql`
     ${TeamDetailedInfoFragment()}
     mutation CreateTeam($input: team_insert_input!) {
@@ -144,12 +147,14 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export function useCurrentTeamMember(userId: string): UserBasicInfoFragmentType | null {
-  const [teamDetails] = useCurrentTeamDetails();
+export function useCurrentTeamMember(userId: string): [UserBasicInfoFragmentType | null, boolean] {
+  const [teamDetails, { loading }] = useCurrentTeamDetails();
 
   const teamMember = teamDetails?.memberships.find((membership) => membership.user.id === userId)?.user;
 
-  return teamMember ?? null;
+  const teamMemberData = teamMember ?? null;
+
+  return [teamMemberData, loading];
 }
 
 export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
@@ -166,7 +171,7 @@ export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] 
   `,
   {
     onActualResponse() {
-      addToast({ type: "info", content: `New team member was invited` });
+      addToast({ type: "success", title: `New team member was invited` });
     },
   }
 );
@@ -198,7 +203,7 @@ export const [useRemoveTeamInvitation, { mutate: removeTeamInvitation }] = creat
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Team invitation was removed` });
+      addToast({ type: "success", title: `Team invitation was removed` });
     },
   }
 );
@@ -231,7 +236,7 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Team member was removed` });
+      addToast({ type: "success", title: `Team member was removed` });
     },
   }
 );
@@ -257,7 +262,7 @@ export const [useResendInvitation] = createMutation<ResendInvitationMutation, Re
   `,
   {
     onActualResponse() {
-      addToast({ type: "info", content: `Team invitation was sent` });
+      addToast({ type: "success", title: `Team invitation was sent` });
     },
   }
 );

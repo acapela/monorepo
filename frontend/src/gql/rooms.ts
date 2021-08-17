@@ -38,6 +38,7 @@ import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
+import { assert } from "~shared/assert";
 
 export const PrivateRoomInfoFragment = createFragment<PrivateRoomInfoFragmentType>(
   () => gql`
@@ -63,6 +64,10 @@ export const RoomBasicInfoFragment = createFragment<RoomBasicInfoFragmentType>(
       finished_at
       source_google_calendar_event_id
       last_activity_at
+
+      owner {
+        ...UserBasicInfo
+      }
 
       members {
         user {
@@ -164,7 +169,7 @@ export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<Singl
   `
 );
 
-export function isCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
+export function useIsCurrentUserRoomMember(room?: RoomBasicInfoFragmentType) {
   const user = useAssertCurrentUser();
 
   return room?.members.some((member) => member.user.id === user.id) ?? false;
@@ -209,6 +214,8 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const spaceId = input.space_id!;
 
+      assert(input.owner_id, "No owner id");
+
       return {
         __typename: "mutation_root",
         room: {
@@ -217,6 +224,7 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
           deadline: input.deadline!,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           id: input.id!,
+          owner: UserBasicInfoFragment.assertRead(input.owner_id),
           members: [],
           invitations: [],
           space: SpaceDetailedInfoFragment.assertRead(spaceId),
@@ -269,7 +277,7 @@ export const [useAddRoomMemberMutation] = createMutation<AddRoomMemberMutation, 
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was added` });
+      addToast({ type: "success", title: `Room member was added` });
     },
   }
 );
@@ -298,7 +306,7 @@ export const [useRemoveRoomMemberMutation] = createMutation<
       });
     },
     onActualResponse() {
-      addToast({ type: "info", content: `Room member was removed` });
+      addToast({ type: "success", title: `Room member was removed` });
     },
   }
 );

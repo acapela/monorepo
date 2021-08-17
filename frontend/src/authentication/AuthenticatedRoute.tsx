@@ -12,6 +12,7 @@ export const AuthenticatedRoute = ({ children }: PropsWithChildren<unknown>) => 
       const redirectUrl = encodeURIComponent(currentRoute);
       router.replace(`/login?redirectUrl=${redirectUrl}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, session]);
 
   if (isLoading || !session) {

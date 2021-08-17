@@ -65,6 +65,6 @@ const UIWord = styled.span<{ isActive: boolean }>`
   ${({ isActive, theme }) =>
     isActive &&
     css`
-      ${theme.colors.actions.tertiary.active()}
+      ${theme?.colors.actions.tertiary.active()}
     `}
 `;

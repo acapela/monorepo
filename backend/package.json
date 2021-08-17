@@ -7,6 +7,7 @@
     "test": "APP=backend jest src --runInBand",
     "test:watch": "APP=backend jest src --runInBand --watch",
     "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
+    "start:ci": "nohup ts-node --transpile-only ./src/index.ts & echo $! > backend.pid",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
@@ -22,6 +23,7 @@
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.8.0",
     "@slack/bolt": "^3.5.0",
+    "cookie-parser": "^1.4.5",
     "express-async-errors": "^3.1.1",
     "googleapis": "^81.0.0",
     "helmet": "^4.6.0",
@@ -31,6 +33,7 @@
     "~config": "0.1.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
     "@types/express": "4.17.13",
     "@types/jest": "26.0.24",
     "@types/localtunnel": "^2.0.1",

@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
@@ -8,11 +8,16 @@ import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconActivity } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { useUnreadNotifications } from "~frontend/gql/notifications";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { NotificationsCenterPopover } from "./NotificationsCenterPopover";
 
 export function NotificationsOpener() {
   const [unreadNotifications = []] = useUnreadNotifications();
   const [isOpened, { set: openNotifications, unset: closeNotifications }] = useBoolean(false);
+
+  useEffect(() => {
+    trackEvent("Toggled Notifications Center", { isOpened });
+  }, [isOpened]);
 
   const hasUnreadNotifications = unreadNotifications.length > 0;
 

@@ -1,10 +1,4 @@
 type Query {
-  get_download_url (
-    uuid: uuid!
-  ): DownloadUrlResponse
-}
-
-type Query {
   get_team_slack_installation_url (
     input: GetTeamSlackInstallationURLInput!
   ): GetTeamSlackInstallationURLOutput

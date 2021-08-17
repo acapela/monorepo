@@ -2,11 +2,11 @@ import styled from "styled-components";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { getObjectKey } from "~shared/object";
 import { Button } from "~ui/buttons/Button";
-import { RoomFilter } from "./filter";
+import { RoomCriteria } from "./filter";
 
 interface Props {
-  filters: RoomFilter[];
-  onFilterRemoveRequest: (filter: RoomFilter) => void;
+  filters: RoomCriteria[];
+  onFilterRemoveRequest: (filter: RoomCriteria) => void;
 }
 
 export function FiltersList({ filters, onFilterRemoveRequest }: Props) {

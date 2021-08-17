@@ -1,21 +1,22 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { isCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember, updateRoom } from "~frontend/gql/rooms";
 import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
-import { theme } from "~ui/theme";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
+import { trackEvent } from "~frontend/analytics/tracking";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
-import { useBoolean } from "~shared/hooks/useBoolean";
 
 interface Props {
   room: RoomDetailedInfoFragment;
@@ -35,12 +36,14 @@ export function RoomView(props: Props) {
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
-  const amIMember = isCurrentUserRoomMember(room ?? undefined);
+  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
 
   const isRoomOpen = !room.finished_at;
 
   async function handleRoomNameChange(newName: string) {
+    const oldRoomName = room.name;
     await updateRoom({ roomId: room.id, input: { name: newName } });
+    trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
 
   return (
@@ -50,6 +53,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
         <UIRoomInfo>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
+            initialIsOpened={true}
             headerNode={
               <UIRoomHead spezia semibold>
                 <UIRoomTitle ref={titleHolderRef}>
@@ -61,7 +65,13 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                     onExitEditModeChangeRequest={exitNameEditMode}
                   />
 
-                  {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+                  <UIRoomTags>
+                    {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+
+                    {room.source_google_calendar_event_id && (
+                      <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
+                    )}
+                  </UIRoomTags>
                 </UIRoomTitle>
 
                 {amIMember && (
@@ -109,12 +119,6 @@ const UIRoomInfo = styled.div<{}>`
 
 const UIContentHolder = styled.div<{}>`
   flex-grow: 1;
-  background: #ffffff;
-  border: 1px solid #f8f8f8;
-  box-sizing: border-box;
-  box-shadow: 0px 12px 132px rgba(0, 0, 0, 0.05);
-  ${theme.borderRadius.card};
-  padding: 32px;
   min-height: 0;
   min-width: 0;
 `;
@@ -132,4 +136,11 @@ const UIRoomTitle = styled.div<{}>`
     css`
       cursor: pointer;
     `}
+`;
+
+const UIRoomTags = styled.div<{}>`
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;

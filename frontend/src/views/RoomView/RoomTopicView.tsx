@@ -67,6 +67,7 @@ export function RoomTopicView({ room, topicId }: Props) {
         routeToFirstTopicUrl();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicId, firstTopic, room?.topics]);
 
   return (

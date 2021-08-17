@@ -114,7 +114,8 @@ export function useReactMediaRecorder({
 
       return true;
     } catch (error) {
-      setError(error.name);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
       return false;
     } finally {
       setStatus("idle");
@@ -153,6 +154,7 @@ export function useReactMediaRecorder({
     if (!mediaStream.current && !acquireMediaOnDemand) {
       getMediaStream();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audio, screen, video, getMediaStream, mediaRecorderOptions]);
 
   // Media Recorder Handlers

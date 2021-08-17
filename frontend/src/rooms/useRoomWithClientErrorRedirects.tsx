@@ -41,6 +41,7 @@ export const useRoomWithClientErrorRedirects = ({ roomId, spaceId }: Props) => {
       }
     }
     if (!loading) redirectOnClientError();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room, loading]);
 
   return { room } as const;

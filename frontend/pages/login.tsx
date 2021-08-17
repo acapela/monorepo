@@ -33,6 +33,7 @@ function useRedirectWhenAuthenticated() {
       setIsRedirecting(true);
       replace(redirectUrl).then(() => setIsRedirecting(false));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [redirectUrl, isAuthenticated]);
 
   return { isRedirecting, isAuthenticated };

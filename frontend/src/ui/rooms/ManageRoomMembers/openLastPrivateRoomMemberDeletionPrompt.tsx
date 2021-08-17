@@ -8,6 +8,7 @@ import { RoomBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { Button } from "~ui/buttons/Button";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 interface PromptInput {
   room: RoomBasicInfoFragment;
@@ -32,7 +33,7 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
       await routes.space.push({ spaceId: room.space_id });
 
       await deleteRoom({ roomId: room.id });
-
+      trackEvent("Deleted Room", { roomId: room.id });
       resolve();
     }
 

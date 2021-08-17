@@ -12,6 +12,7 @@ import {
 } from "~frontend/gql/spaces";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { trackEvent } from "~frontend/analytics/tracking";
 
 export function useSpaceManager(space: SpaceBasicInfoFragment) {
   const spaceId = space.id;
@@ -24,18 +25,22 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
 
   async function join() {
     await addMember(user.id);
+    trackEvent("Joined Space", { userId: user.id, spaceId });
   }
 
   async function leave() {
     await removeMember(user.id);
+    trackEvent("Left Space", { userId: user.id, spaceId });
   }
 
   async function addMember(userId: string) {
     addSpaceMember({ userId, spaceId });
+    trackEvent("Joined Space", { userId, spaceId });
   }
 
   async function removeMember(userId: string) {
     removeSpaceMember({ userId, spaceId });
+    trackEvent("Left Space", { userId, spaceId });
   }
 
   async function toggleJoin() {
@@ -59,20 +64,21 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     if (!newSpaceName?.trim()) return;
 
     if (newSpaceName === space.name) return;
-
+    const oldSpaceName = space?.name;
     await edit({ spaceId: space?.id, input: { name: newSpaceName } });
+    trackEvent("Renamed Space", { spaceId, newSpaceName, oldSpaceName });
   }
 
   async function remove() {
     routes.spaces.prefetch({});
     const didConfirm = await openConfirmPrompt({
-      title: `Remove space`,
+      title: `Delete space`,
       description: (
         <>
-          Are you sure you want to remove space <strong>{space.name}</strong>
+          Are you sure you want to delete space <strong>{space.name}</strong>
         </>
       ),
-      confirmLabel: `Remove`,
+      confirmLabel: `Renamed Space`,
     });
 
     if (!didConfirm) return;
@@ -80,6 +86,7 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     routes.spaces.push({});
 
     await deleteSpace({ spaceId: space.id });
+    trackEvent("Deleted Space", { spaceId });
   }
 
   const members = space.members.map((member) => member.user);

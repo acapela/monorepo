@@ -37,7 +37,11 @@ export const SortableTopicsList = ({
   onMoveBetween: moveBetween,
 }: Props) => {
   const [draggedTopicId, setDraggedId] = useState<string | null>(null);
-  const draggedTopicIndex = useMemo(() => topics.findIndex((topic) => topic.id == draggedTopicId), [draggedTopicId]);
+  const draggedTopicIndex = useMemo(
+    () => topics.findIndex((topic) => topic.id == draggedTopicId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [draggedTopicId]
+  );
 
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor));

@@ -47,6 +47,7 @@ export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
         scrollToBottomOfParent();
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [getShouldScroll]
   );
 

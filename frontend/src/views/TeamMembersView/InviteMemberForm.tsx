@@ -31,10 +31,8 @@ export const InviteMemberForm = () => {
 
   const handleSubmit = () => {
     createTeamIvitation({ email, teamId });
-
-    trackEvent("Invite Sent");
-
     setEmail("");
+    trackEvent("Invite Sent", { inviteEmail: email, teamId });
   };
 
   useShortcut("Enter", handleSubmit, { isEnabled: isEmailAcceptable });
