@@ -554,10 +554,6 @@ export interface Date_Comparison_Exp {
   _nin?: Maybe<Array<Scalars['date']>>;
 }
 
-export interface Delete_Single_Team_Slack_Installation_Args {
-  from_team_id?: Maybe<Scalars['uuid']>;
-}
-
 
 /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
 export interface Jsonb_Comparison_Exp {
@@ -1477,8 +1473,6 @@ export interface Mutation_Root {
   delete_room_member?: Maybe<Room_Member_Mutation_Response>;
   /** delete single row from the table: "room_member" */
   delete_room_member_by_pk?: Maybe<Room_Member>;
-  /** execute VOLATILE function "delete_single_team_slack_installation" which returns "team" */
-  delete_single_team_slack_installation: Array<Team>;
   /** delete data from the table: "space" */
   delete_space?: Maybe<Space_Mutation_Response>;
   /** delete single row from the table: "space" */
@@ -1849,17 +1843,6 @@ export interface Mutation_RootDelete_Room_MemberArgs {
 export interface Mutation_RootDelete_Room_Member_By_PkArgs {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-}
-
-
-/** mutation root */
-export interface Mutation_RootDelete_Single_Team_Slack_InstallationArgs {
-  args: Delete_Single_Team_Slack_Installation_Args;
-  distinct_on?: Maybe<Array<Team_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Team_Order_By>>;
-  where?: Maybe<Team_Bool_Exp>;
 }
 
 
@@ -5680,8 +5663,6 @@ export interface Subscription_RootWhitelist_By_PkArgs {
 /** columns and relationships of "team" */
 export interface Team {
   __typename?: 'team';
-  /** A computed field, executes function "team_has_slack_installation" */
-  has_slack_installation?: Maybe<Scalars['Boolean']>;
   id: Scalars['uuid'];
   /** An array relationship */
   invitations: Array<Team_Invitation>;
@@ -5805,7 +5786,6 @@ export interface Team_Bool_Exp {
   _and?: Maybe<Array<Team_Bool_Exp>>;
   _not?: Maybe<Team_Bool_Exp>;
   _or?: Maybe<Array<Team_Bool_Exp>>;
-  has_slack_installation?: Maybe<Boolean_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   invitations?: Maybe<Team_Invitation_Bool_Exp>;
   memberships?: Maybe<Team_Member_Bool_Exp>;
@@ -9458,7 +9438,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_single_team_slack_installation' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9482,7 +9462,6 @@ export type mutation_rootFieldPolicy = {
 	delete_room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_single_team_slack_installation?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10070,9 +10049,8 @@ export type subscription_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type teamKeySpecifier = ('has_slack_installation' | 'id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
+export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
 export type teamFieldPolicy = {
-	has_slack_installation?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,

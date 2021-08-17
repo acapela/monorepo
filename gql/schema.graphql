@@ -763,10 +763,6 @@ input date_comparison_exp {
   _nin: [date!]
 }
 
-input delete_single_team_slack_installation_args {
-  from_team_id: uuid
-}
-
 scalar jsonb
 
 """
@@ -2192,41 +2188,6 @@ type mutation_root {
   delete single row from the table: "room_member"
   """
   delete_room_member_by_pk(room_id: uuid!, user_id: uuid!): room_member
-
-  """
-  execute VOLATILE function "delete_single_team_slack_installation" which returns "team"
-  """
-  delete_single_team_slack_installation(
-    """
-    input parameters for function "delete_single_team_slack_installation"
-    """
-    args: delete_single_team_slack_installation_args!
-
-    """
-    distinct select on columns
-    """
-    distinct_on: [team_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [team_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: team_bool_exp
-  ): [team!]!
 
   """
   delete data from the table: "space"
@@ -9387,10 +9348,6 @@ type subscription_root {
 columns and relationships of "team"
 """
 type team {
-  """
-  A computed field, executes function "team_has_slack_installation"
-  """
-  has_slack_installation: Boolean
   id: uuid!
 
   """
@@ -9632,7 +9589,6 @@ input team_bool_exp {
   _and: [team_bool_exp!]
   _not: team_bool_exp
   _or: [team_bool_exp!]
-  has_slack_installation: Boolean_comparison_exp
   id: uuid_comparison_exp
   invitations: team_invitation_bool_exp
   memberships: team_member_bool_exp
