@@ -5,7 +5,7 @@ import type { Express } from "express";
 
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { getDevPublicTunnel, getTunnelPublicUrl } from "~backend/src/localtunnel";
+import { getDevPublicTunnel } from "~backend/src/localtunnel";
 import { db } from "~db";
 import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
 import { assert, assertDefined } from "~shared/assert";
@@ -70,10 +70,12 @@ const slackApp = new SlackBolt.App({
   developerMode: isDevelopment,
 });
 
-const getSlackInstallURL = async (port?: number, state?: unknown) =>
+const getSlackInstallURL = async (state?: unknown) =>
   slackReceiver.installer?.generateInstallUrl({
     scopes,
-    redirectUri: (isDevelopment ? (await getDevPublicTunnel(port)).url : "") + "/api/backend/slack/oauth_redirect",
+    redirectUri:
+      (isDevelopment ? (await getDevPublicTunnel(isDevelopment ? 3000 : undefined)).url : "") +
+      "/api/backend/slack/oauth_redirect",
     metadata: JSON.stringify(state),
   });
 
@@ -88,7 +90,7 @@ export const getTeamSlackInstallationURL: ActionHandler<
   async handle(userId, { input: { teamId, redirectURL } }) {
     const team = await db.team.findFirst({ where: { id: teamId, owner_id: userId } });
     assert(team, new UnprocessableEntityError(`Team ${teamId} for owner ${userId} not found`));
-    const url = await getSlackInstallURL(isDevelopment ? 3000 : undefined, { teamId, redirectURL });
+    const url = await getSlackInstallURL({ teamId, redirectURL });
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
     return { url };
   },
