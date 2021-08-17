@@ -1,10 +1,12 @@
-import styled from "styled-components";
-import { BodyPortal } from "~ui/BodyPortal";
-import { useToasts, removeToast } from "./data";
-import { ToastLabel } from "./ToastLabel";
 import { AnimatePresence } from "framer-motion";
+import styled from "styled-components";
+
 import { getObjectKey } from "~shared/object";
+import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
+
+import { removeToast, useToasts } from "./data";
+import { ToastLabel } from "./ToastLabel";
 
 export function ToastsRenderer() {
   const toasts = useToasts();

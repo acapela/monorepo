@@ -1,6 +1,7 @@
 import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
+
 import { Message as MessageType } from "~db";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { updateLastSeenMessage, useSingleTopicQuery, useTopicMessagesQuery } from "~frontend/gql/topics";
@@ -16,6 +17,7 @@ import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
+
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";

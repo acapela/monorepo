@@ -1,6 +1,7 @@
 import { memoize } from "lodash";
-import { ComponentType, lazy, LazyExoticComponent } from "react";
+import { ComponentType, LazyExoticComponent, lazy } from "react";
 import { PickByValue } from "utility-types";
+
 import { onDocumentReady } from "~shared/document";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

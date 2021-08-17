@@ -1,20 +1,22 @@
 import { gql } from "@apollo/client";
-import { createFragment, createMutation, createQuery } from "./utils";
+
 import {
-  NotificationInfoFragment as NotificationInfoFragmentType,
-  NotificationsQuery,
-  NotificationsQueryVariables,
-  UnreadNotificationsQuery,
-  UnreadNotificationsQueryVariables,
-  MarkNotificationAsReadMutation,
-  MarkNotificationAsReadMutationVariables,
-  RemoveNotificationMutationVariables,
-  RemoveNotificationMutation,
   DeleteAllReadNotificationsMutation,
   DeleteAllReadNotificationsMutationVariables,
   MarkAllNotificationsAsReadMutation,
   MarkAllNotificationsAsReadMutationVariables,
+  MarkNotificationAsReadMutation,
+  MarkNotificationAsReadMutationVariables,
+  NotificationInfoFragment as NotificationInfoFragmentType,
+  NotificationsQuery,
+  NotificationsQueryVariables,
+  RemoveNotificationMutation,
+  RemoveNotificationMutationVariables,
+  UnreadNotificationsQuery,
+  UnreadNotificationsQueryVariables,
 } from "~gql";
+
+import { createFragment, createMutation, createQuery } from "./utils";
 
 const NotificationInfoFragment = createFragment<NotificationInfoFragmentType>(
   () => gql`

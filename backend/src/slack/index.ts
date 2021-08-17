@@ -3,12 +3,12 @@ import * as crypto from "crypto";
 import * as SlackBolt from "@slack/bolt";
 import type { Express } from "express";
 
-import { db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
-import { getDevPublicTunnel, getTunnelPublicUrl } from "~backend/src/localtunnel";
-import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { getDevPublicTunnel, getTunnelPublicUrl } from "~backend/src/localtunnel";
+import { db } from "~db";
+import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
+import { assert, assertDefined } from "~shared/assert";
 
 const scopes = ["im:write"];
 

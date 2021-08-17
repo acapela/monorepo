@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+
 import { useAttachmentQuery } from "~frontend/gql/attachments";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconTrash } from "~ui/icons";
+
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
 interface Props {

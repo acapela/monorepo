@@ -1,28 +1,30 @@
 import { gql } from "@apollo/client";
 import styled from "styled-components";
-import { assertDefined } from "~shared/assert";
-import { removeTeamMember, useCurrentTeamDetails, removeTeamInvitation } from "~frontend/gql/teams";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { removeTeamInvitation, removeTeamMember, useCurrentTeamDetails } from "~frontend/gql/teams";
 import { createMutation, createQuery } from "~frontend/gql/utils";
+import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
 import {
   DeleteSlackInstallationMutation,
   DeleteSlackInstallationMutationVariables,
   GetSlackInstallationUrlQuery,
   GetSlackInstallationUrlQueryVariables,
 } from "~gql";
-import { InviteMemberForm } from "./InviteMemberForm";
-import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
+import { assertDefined } from "~shared/assert";
 import { Button } from "~ui/buttons/Button";
+import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { IconMinus, IconPlus } from "~ui/icons";
-import { trackEvent } from "~frontend/analytics/tracking";
 import { theme } from "~ui/theme";
-import { ExitTeamButton } from "./ExitTeamButton";
-import { ResendInviteButton } from "./ResendInviteButton";
 import { addToast } from "~ui/toasts/data";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
+
+import { ExitTeamButton } from "./ExitTeamButton";
+import { InviteMemberForm } from "./InviteMemberForm";
+import { ResendInviteButton } from "./ResendInviteButton";
 
 const [useGetSlackInstallationURL] = createQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
   () => gql`

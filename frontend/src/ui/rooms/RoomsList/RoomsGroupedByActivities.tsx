@@ -1,6 +1,8 @@
 import styled from "styled-components";
+
 import { RoomDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
+
 import { RoomsListCategory } from "./RoomsListCategory";
 import { RoomWithActivity, useRoomsWithActivities } from "./useRoomsWithActivity";
 

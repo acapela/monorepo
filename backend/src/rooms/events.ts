@@ -1,5 +1,6 @@
-import { db, Room } from "~db";
+import { Room, db } from "~db";
 import logger from "~shared/logger";
+
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { addRoomParticipant, getIfParticipantExists, updateRoomLastActivityDate } from "./rooms";

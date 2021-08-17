@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+
+import { fetchPrivateRoom, useSingleRoomQuery } from "~frontend/gql/rooms";
 import { routes } from "~frontend/router";
-import { useSingleRoomQuery, fetchPrivateRoom } from "~frontend/gql/rooms";
 import { openForbiddenAccessModal } from "~frontend/utils/accessForbidden";
 import { openNotFoundModal } from "~frontend/utils/notFound";
 

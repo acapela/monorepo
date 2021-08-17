@@ -1,8 +1,10 @@
-import styled from "styled-components";
-import { PRIMARY_PINK_3 } from "../theme/colors/base";
 import { ReactNode } from "react";
+import styled from "styled-components";
+
 import { setColorOpacity } from "~shared/colors";
 import { borderRadius } from "~ui/baseStyles";
+
+import { PRIMARY_PINK_3 } from "../theme/colors/base";
 
 interface TagProps {
   color: string;

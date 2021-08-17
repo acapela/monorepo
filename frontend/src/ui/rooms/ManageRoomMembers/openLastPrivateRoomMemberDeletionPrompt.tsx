@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import { routes } from "~frontend/router";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { deleteRoom } from "~frontend/gql/rooms";
+import { routes } from "~frontend/router";
 import { ModalAnchor } from "~frontend/ui/Modal";
 import { WarningModal } from "~frontend/utils/warningModal";
 import { RoomBasicInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { createPromiseUI } from "~ui/createPromiseUI";
 import { Button } from "~ui/buttons/Button";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { createPromiseUI } from "~ui/createPromiseUI";
 
 interface PromptInput {
   room: RoomBasicInfoFragment;

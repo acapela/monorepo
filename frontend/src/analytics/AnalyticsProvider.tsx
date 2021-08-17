@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { fetchTeamBasicInfoQuery } from "~frontend/gql/teams";
-import { identifyUser, identifyUserGroup } from "./tracking";
-import { SegmentScript } from "./SegmentScript";
-import { ErrorBoundary } from "~ui/ErrorBoundary";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
+
+import { SegmentScript } from "./SegmentScript";
+import { identifyUser, identifyUserGroup } from "./tracking";
 
 export function AnalyticsManager() {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);

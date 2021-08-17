@@ -1,15 +1,17 @@
-import { db, Message, Notification, PrismaPromise } from "~db";
+import { uniqBy } from "lodash";
+
+import { Message, Notification, PrismaPromise, db } from "~db";
 import { Message_Type_Enum } from "~gql";
-import log from "~shared/logger";
+import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
+import { assert } from "~shared/assert";
+import log from "~shared/logger";
 import { EditorMentionData } from "~shared/types/editor";
-import { uniqBy } from "lodash";
+
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { updateRoomLastActivityDate } from "../rooms/rooms";
-import { assert } from "~shared/assert";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {

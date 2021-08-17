@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
-import { TopicDetailedInfoFragment } from "~gql";
+import { useEffect, useState } from "react";
+
 import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useUpdateTopicMutation } from "~frontend/gql/topics";
+import { TopicDetailedInfoFragment } from "~gql";
+
 import { getIndexBetweenCurrentAndLast, getIndexBetweenFirstAndCurrent, getIndexBetweenItems } from "./order";
 
 /*

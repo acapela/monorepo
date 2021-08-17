@@ -1,5 +1,6 @@
+import { GoogleCalendarEvent, GoogleCalendarEventsAPIRequestBody } from "~shared/types/googleCalendar";
+
 import { createBackendRequestSender } from "./create";
-import { GoogleCalendarEventsAPIRequestBody, GoogleCalendarEvent } from "~shared/types/googleCalendar";
 
 export const googleCalendarEventsApi = createBackendRequestSender<
   GoogleCalendarEventsAPIRequestBody,

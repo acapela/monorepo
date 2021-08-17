@@ -2,7 +2,8 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { select, useAutorun } from "~shared/sharedState";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useCreateMessageMutation } from "~frontend/gql/messages";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -13,10 +14,11 @@ import { Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
+import { select, useAutorun } from "~shared/sharedState";
+
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 import { Recorder } from "./Recorder";
-import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   topicId: string;

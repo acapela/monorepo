@@ -1,10 +1,11 @@
-import { db, TeamInvitation } from "~db";
+import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { sendNotification } from "~backend/src/notifications/sendNotification";
 import { findTeamById } from "~backend/src/teams/helpers";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
-import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { TeamInvitationNotification } from "./InviteNotification";
-import { sendNotification } from "~backend/src/notifications/sendNotification";
+import { TeamInvitation, db } from "~db";
 import logger from "~shared/logger";
+
+import { TeamInvitationNotification } from "./InviteNotification";
 
 export const sendInviteNotification = async (invite: TeamInvitation, userId: string | null) => {
   const { email, inviting_user_id: invitingUserId, team_id: teamId } = invite;

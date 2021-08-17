@@ -1,18 +1,20 @@
 import { Request, Response, Router } from "express";
-import { hasuraEvents } from "./eventHandlers";
+
+import { handleAttachmentUpdates } from "~backend/src/attachments/events";
 import { extractAndAssertBearerToken } from "~backend/src/authentication";
 import { AuthenticationError } from "~backend/src/errors/errorTypes";
-import { handleTeamInvitationCreated, handleTeamInvitationDeleted } from "~backend/src/teamInvitation/events";
-import { handleRoomUpdates } from "~backend/src/rooms/events";
-import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleMessageChanges } from "~backend/src/messages/events";
+import { handleNotificationCreated } from "~backend/src/notifications/events";
+import { handleRoomInvitationCreated, handleRoomMemberCreated } from "~backend/src/roomInvitation/events";
+import { handleRoomUpdates } from "~backend/src/rooms/events";
 import { handleSpaceUpdates } from "~backend/src/spaces/events";
+import { handleTeamInvitationCreated, handleTeamInvitationDeleted } from "~backend/src/teamInvitation/events";
+import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
+import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserCreated } from "~backend/src/users/events";
-import { handleRoomMemberCreated, handleRoomInvitationCreated } from "~backend/src/roomInvitation/events";
-import { handleAttachmentUpdates } from "~backend/src/attachments/events";
-import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
-import { handleNotificationCreated } from "~backend/src/notifications/events";
+
+import { hasuraEvents } from "./eventHandlers";
 
 export const router = Router();
 

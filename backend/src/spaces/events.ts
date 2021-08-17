@@ -1,5 +1,6 @@
 import { Space } from "~db";
 import logger from "~shared/logger";
+
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
 import { addSpaceMember, getSpaceHasMember } from "./helpers";

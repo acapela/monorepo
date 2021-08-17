@@ -1,8 +1,9 @@
-import { Attachment, db, Prisma } from "~db";
+import { Attachment, Prisma, db } from "~db";
 import { assert } from "~shared/assert";
+
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
 import { SonixCustomData } from "./customData";
-import { requestSonixMediaTranscript, SonixMediaResponse, fetchSonixTranscriptForMedia } from "./sonixClient";
+import { SonixMediaResponse, fetchSonixTranscriptForMedia, requestSonixMediaTranscript } from "./sonixClient";
 
 export async function initializeAttachmentTranscription(attachment: Attachment) {
   const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);

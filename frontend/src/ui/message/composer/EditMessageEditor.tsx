@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { MessageDetailedInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { updateTextMessage } from "~frontend/gql/messages";
+import { MessageDetailedInfoFragment } from "~gql";
+import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichEditorNode } from "~richEditor/content/types";
+import { makePromiseVoidable } from "~shared/promises";
+import { Button } from "~ui/buttons/Button";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { HStack } from "~ui/Stack";
+
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
-import { makePromiseVoidable } from "~shared/promises";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { RichEditorNode } from "~richEditor/content/types";
-import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { trackEvent } from "~frontend/analytics/tracking";
 
 interface Props {
   message: MessageDetailedInfoFragment;

@@ -1,11 +1,13 @@
 import React, { RefObject, useState } from "react";
 import { useInterval } from "react-use";
 import styled from "styled-components";
+
 import { BodyPortal } from "~ui/BodyPortal";
 import { Button } from "~ui/buttons/Button";
 import { Popover } from "~ui/popovers/Popover";
 import { HStack } from "~ui/Stack";
 import { theme } from "~ui/theme";
+
 import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {

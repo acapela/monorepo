@@ -1,15 +1,16 @@
-import { NotificationInfoFragment } from "~gql";
-import { routes, RouteLink } from "~frontend/router";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";
+import { RouteLink, routes } from "~frontend/router";
+import { NotificationInfoFragment } from "~gql";
 import {
   AnyNotificationData,
-  isNotificationDataOfType,
   NotificationType,
   NotificationTypesMap,
+  isNotificationDataOfType,
 } from "~shared/notifications/types";
+
 import { NotificationPlainLabel } from "./NotificationPlainLabel";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useRemoveIncorrectNotification } from "./useRemoveIncorrectNotification";
 
 interface Props {

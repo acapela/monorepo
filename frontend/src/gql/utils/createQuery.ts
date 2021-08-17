@@ -8,15 +8,17 @@ import {
 } from "@apollo/client";
 import { memoize } from "lodash";
 import { useRef } from "react";
-import { VoidableIfEmpty } from "~shared/types";
-import { reportQueryUsage } from "./hydration";
-import { unwrapQueryData } from "./unwrapQueryData";
-import { getCurrentApolloClientHandler } from "./proxy";
+
 import { getRenderedApolloClient } from "~frontend/apollo/client";
-import { addRoleToContext, RequestWithRole } from "./withRole";
-import { waitForAllRunningMutationsToFinish } from "./createMutation";
 import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { updateValue, ValueUpdater } from "~shared/updateValue";
+import { VoidableIfEmpty } from "~shared/types";
+import { ValueUpdater, updateValue } from "~shared/updateValue";
+
+import { waitForAllRunningMutationsToFinish } from "./createMutation";
+import { reportQueryUsage } from "./hydration";
+import { getCurrentApolloClientHandler } from "./proxy";
+import { unwrapQueryData } from "./unwrapQueryData";
+import { RequestWithRole, addRoleToContext } from "./withRole";
 
 type QueryDefinitionOptions = RequestWithRole;
 

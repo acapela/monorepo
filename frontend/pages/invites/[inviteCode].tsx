@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useRoomInvitationViewQuery } from "~frontend/gql/roomInvitations";
+import { lookupTeamName } from "~frontend/gql/teams";
 import { routes } from "~frontend/router";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { assert } from "~shared/assert";
-import { lookupTeamName } from "~frontend/gql/teams";
-import { useRoomInvitationViewQuery } from "~frontend/gql/roomInvitations";
 
 export default function InvitePage() {
   const user = useCurrentUser();

@@ -1,20 +1,22 @@
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
+
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { routes, useIsAnyRouteActive } from "~frontend/router";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { SmallLogo } from "~frontend/ui/Logo";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
+import { useResizeCallback } from "~shared/hooks/useResizeCallback";
+import { theme } from "~ui/theme";
+
 import { Breadcrumbs } from "./Breadcrumbs";
+import { NotificationsOpener } from "./NotificationsOpener";
 import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
-import { theme } from "~ui/theme";
-import { NotificationsOpener } from "./NotificationsOpener";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 
 interface Props {
   children?: ReactNode;

@@ -1,8 +1,9 @@
 import { validate as validateUuid } from "uuid";
-import { db } from "~db";
+
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { NotFoundError, UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { getNormalizedUserName } from "~backend/src/users/users";
+import { db } from "~db";
 
 export interface RoomInvitationViewActionInputs {
   token: string;

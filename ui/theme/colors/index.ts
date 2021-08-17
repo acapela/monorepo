@@ -1,6 +1,6 @@
-import { Variant } from "..";
 import { ColorGetter } from "./createColor";
 import { defaultTheme } from "./default";
+import { Variant } from "..";
 
 export interface VariantStates {
   regular: ColorTargetOptions;

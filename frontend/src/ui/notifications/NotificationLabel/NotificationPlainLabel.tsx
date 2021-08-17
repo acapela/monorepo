@@ -1,23 +1,24 @@
 import { AnimatePresence } from "framer-motion";
 import { MouseEvent, ReactNode } from "react";
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
+import { useCurrentTeamMember } from "~frontend/gql/teams";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { NotificationInfoFragment } from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { handleWithStopPropagation } from "~shared/events";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconCheck, IconNotificationIndicator } from "~ui/icons";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
-import { TextBody14, TextBody } from "~ui/typo";
-import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
-import { useCurrentTeamMember } from "~frontend/gql/teams";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { TextBody, TextBody14 } from "~ui/typo";
 
 interface Props {
   userId: string;

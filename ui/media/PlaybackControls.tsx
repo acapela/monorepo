@@ -1,11 +1,13 @@
 import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { MouseEvent } from "react";
 import styled from "styled-components";
+
 import { handleWithStopPropagation } from "~shared/events";
 import { PopPresenceAnimator } from "~ui/animations";
 import { IconPause, IconPlay } from "~ui/icons";
 import { theme } from "~ui/theme";
-import { motion } from "framer-motion";
+
 import { PlaybackRateButton } from "./PlaybackRateButton";
 
 interface Props {

@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
-import { MessageBasicInfoFragment } from "~gql";
-import { richEditorContentCss } from "~richEditor/Theme";
-import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
 import { messageComposerExtensions } from "~frontend/message/extensions";
-import { ErrorBoundary } from "~ui/ErrorBoundary";
+import { MessageBasicInfoFragment } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
+import { richEditorContentCss } from "~richEditor/Theme";
+import { ErrorBoundary } from "~ui/ErrorBoundary";
 
 interface Props {
   message: MessageBasicInfoFragment;

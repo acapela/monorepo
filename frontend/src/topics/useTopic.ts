@@ -1,7 +1,7 @@
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicDetailedInfoFragment, Topic_Set_Input } from "~gql";
-import { useDeleteTopicMutation, useUpdateTopicMutation } from "~frontend/gql/topics";
 import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useDeleteTopicMutation, useUpdateTopicMutation } from "~frontend/gql/topics";
+import { TopicDetailedInfoFragment, Topic_Set_Input } from "~gql";
 
 function nowAsIsoString(): string {
   return new Date().toISOString();

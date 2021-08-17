@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { hoverActionCss, hoverActionActiveCss } from "~ui/transitions";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { borderRadius, shadow } from "~ui/baseStyles";
+
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 interface Props<T> {
   items: T[];

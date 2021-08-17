@@ -1,14 +1,16 @@
 import { AnimatePresence } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useUnreadNotifications } from "~frontend/gql/notifications";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconActivity } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-import { useUnreadNotifications } from "~frontend/gql/notifications";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
+
 import { NotificationsCenterPopover } from "./NotificationsCenterPopover";
 
 export function NotificationsOpener() {

@@ -1,12 +1,14 @@
 import { addDays } from "date-fns";
 import { Router } from "express";
+
 import { db } from "~db";
 import { assert } from "~shared/assert";
+import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
 import { GoogleCalendarEvent, GoogleCalendarEventsAPIRequestBody } from "~shared/types/googleCalendar";
+
 import { createAuthorizedEndpointHandler } from "../endpoints/createEndpointHandler";
 import { AuthenticationError } from "../errors/errorTypes";
 import { fetchSingleCalendarEventsInRange } from "./googleCalendarClient";
-import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
 
 const TWO_WEEKS_IN_DAYS = 14;
 

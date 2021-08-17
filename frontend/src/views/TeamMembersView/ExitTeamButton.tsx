@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { theme } from "~ui/theme";
-import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
+import { theme } from "~ui/theme";
 
 export const ExitTeamButton = () => {
   const user = useAssertCurrentUser();

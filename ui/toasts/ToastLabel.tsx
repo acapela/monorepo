@@ -1,13 +1,15 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
+
 import { getObjectKey } from "~shared/object";
 import { POP_PRESENCE_STYLES } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
-import { PresenceAnimator } from "~ui/PresenceAnimator";
-import { ToastData, ToastType } from "./data";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
-import { theme } from "~ui/theme";
-import { ReactNode } from "react";
 import { IconAlertCircle, IconAlertTriangle, IconCheckCircle } from "~ui/icons";
+import { PresenceAnimator } from "~ui/PresenceAnimator";
+import { theme } from "~ui/theme";
+
+import { ToastData, ToastType } from "./data";
 
 interface Props {
   toast: ToastData;

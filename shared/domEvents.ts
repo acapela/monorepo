@@ -1,6 +1,7 @@
-import { RefObject, useEffect } from "react";
-import { useBoolean } from "./hooks/useBoolean";
 import { noop } from "lodash";
+import { RefObject, useEffect } from "react";
+
+import { useBoolean } from "./hooks/useBoolean";
 
 export function createWindowEvent<K extends keyof WindowEventMap>(
   type: K,

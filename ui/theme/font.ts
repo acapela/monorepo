@@ -1,6 +1,7 @@
-import { css, StylesPart } from "styled-components";
-import { markAsNotTerminal } from "~ui/theme/proxy/nonTerminal";
 import { noop } from "lodash";
+import { StylesPart, css } from "styled-components";
+
+import { markAsNotTerminal } from "~ui/theme/proxy/nonTerminal";
 
 export interface Font {
   spezia: Font;

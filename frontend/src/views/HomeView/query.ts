@@ -1,7 +1,7 @@
-import { ValueUpdater } from "~shared/updateValue";
 import { readUserDataFromCookie } from "~frontend/authentication/cookie";
 import { roomsQueryManager } from "~frontend/gql/rooms";
-import { RoomsQuery, Room_Bool_Exp } from "~gql";
+import { Room_Bool_Exp, RoomsQuery } from "~gql";
+import { ValueUpdater } from "~shared/updateValue";
 
 export function getHomeViewRoomsQueryWhere(userId: string): Room_Bool_Exp {
   return {

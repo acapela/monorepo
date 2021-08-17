@@ -1,14 +1,18 @@
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import { useUpdate } from "react-use";
 import styled from "styled-components";
+
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+
 import { RichEditorNode } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
@@ -16,8 +20,6 @@ import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
 import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
-import { useUpdate } from "react-use";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";

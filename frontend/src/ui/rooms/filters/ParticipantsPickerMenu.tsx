@@ -1,8 +1,9 @@
 import { RefObject } from "react";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
-import { UserBasicInfoFragment } from "~gql";
+
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { UserBasicInfoFragment } from "~gql";
+import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 
 interface Props {
   anchorRef: RefObject<HTMLElement>;

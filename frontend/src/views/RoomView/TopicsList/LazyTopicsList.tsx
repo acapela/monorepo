@@ -1,7 +1,9 @@
 import React, { Suspense } from "react";
+
 import { TopicDetailedInfoFragment } from "~gql";
 import { namedLazy } from "~shared/namedLazy";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
+
 import { StaticTopicsList } from "./StaticTopicsList";
 
 const SortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");

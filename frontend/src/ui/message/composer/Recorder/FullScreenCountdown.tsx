@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { createTimeout } from "~shared/time";
 import { PopPresenceAnimator } from "~ui/animations";

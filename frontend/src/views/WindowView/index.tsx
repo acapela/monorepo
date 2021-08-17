@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { borderRadius, shadow } from "~ui/baseStyles";
+
 import { Logo } from "~frontend/ui/Logo";
+import { borderRadius, shadow } from "~ui/baseStyles";
 
 interface Props {
   children: ReactNode;

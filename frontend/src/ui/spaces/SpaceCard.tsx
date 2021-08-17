@@ -1,14 +1,15 @@
 import styled from "styled-components";
-import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RouteLink, routes } from "~frontend/router";
+import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
+import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
+import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
+import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { SpaceBasicInfoFragment } from "~gql";
 import { CardBase } from "~ui/card/Base";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
-import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
-import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
-import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { RouteLink, routes } from "~frontend/router";
 
 interface Props {
   space: SpaceBasicInfoFragment;

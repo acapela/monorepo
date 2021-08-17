@@ -1,5 +1,6 @@
-import { useEffect } from "react";
 import { signOut } from "next-auth/client";
+import { useEffect } from "react";
+
 import { trackEvent } from "~frontend/analytics/tracking";
 
 export default function LogoutPage() {

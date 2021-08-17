@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useResendInvitation } from "~frontend/gql/teams";
 import { Button } from "~ui/buttons/Button";
 

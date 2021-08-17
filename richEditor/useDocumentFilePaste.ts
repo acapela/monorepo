@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import { createDocumentEvent } from "~shared/domEvents";
 
 let isAnyWatchingForPaste = false;

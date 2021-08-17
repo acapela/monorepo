@@ -1,21 +1,25 @@
-import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
-import express, { Application, json } from "express";
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
-import securityMiddleware from "helmet";
-import cookieParser from "cookie-parser";
-import { createServer, Server } from "http";
+
+import { Server, createServer } from "http";
 import { promisify } from "util";
+
+import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
+import * as Sentry from "@sentry/node";
+import cookieParser from "cookie-parser";
+import express, { Application, json } from "express";
+import securityMiddleware from "helmet";
+
 import { initializeSecrets } from "~config";
 import logger from "~shared/logger";
+
 import { router as actionRoutes } from "./actions/actions";
-import { router as authenticationRoutes } from "./authentication";
-import { router as eventRoutes } from "./events/events";
-import { router as transcriptionRoutes } from "./transcriptions/router";
-import { router as calendarRoutes } from "./calendar/calendar";
 import { router as attachmentsRoutes } from "./attachments/router";
+import { router as authenticationRoutes } from "./authentication";
+import { router as calendarRoutes } from "./calendar/calendar";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
+import { router as eventRoutes } from "./events/events";
 import { setupSlackBoltRoutes } from "./slack";
-import * as Sentry from "@sentry/node";
+import { router as transcriptionRoutes } from "./transcriptions/router";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();

@@ -1,5 +1,6 @@
-import { warn } from "~shared/logger";
 import "./dotenv";
+
+import { warn } from "~shared/logger";
 
 let isLoaded = false;
 let loadingPromise: Promise<void> | null = null;

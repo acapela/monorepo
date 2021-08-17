@@ -1,9 +1,10 @@
+import { observer } from "mobx-react";
 import React from "react";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
-import { IconReply } from "~ui/icons";
+
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessageDetailedInfoFragment } from "~gql";
-import { observer } from "mobx-react";
+import { WideIconButton } from "~ui/buttons/WideIconButton";
+import { IconReply } from "~ui/icons";
 
 interface Props {
   message: MessageDetailedInfoFragment;

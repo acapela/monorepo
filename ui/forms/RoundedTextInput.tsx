@@ -1,9 +1,10 @@
-import { ComponentPropsWithoutRef, ReactNode, ChangeEvent, useRef } from "react";
+import { ChangeEvent, ComponentPropsWithoutRef, ReactNode, useRef } from "react";
 import styled from "styled-components";
+
+import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
 import { borderRadius } from "~ui/baseStyles";
 import { BASE_GREY_1, BASE_GREY_3, BASE_GREY_5, BASE_GREY_6, PRIMARY_PINK_1, WHITE } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
-import { combineCallbacks } from "~shared/callbacks/combineCallbacks";
 
 interface Props extends ComponentPropsWithoutRef<"input"> {
   onChangeText?: (text: string) => void;

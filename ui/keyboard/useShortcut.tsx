@@ -1,11 +1,13 @@
-import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
-import { Key } from "./codes";
 import isHotkey from "is-hotkey";
+import { sortBy } from "lodash";
 import { useEffect } from "react";
+
+import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
 import { createCleanupObject } from "~shared/cleanup";
 import { onDocumentReady } from "~shared/document";
 import { mapGetOrCreate } from "~shared/map";
-import { sortBy } from "lodash";
+
+import { Key } from "./codes";
 
 type ShortcutDefinition = Key | Key[];
 

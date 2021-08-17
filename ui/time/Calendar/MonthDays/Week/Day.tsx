@@ -1,9 +1,10 @@
 import { format, isSameDay, isSameMonth } from "date-fns";
 import React from "react";
 import styled, { css } from "styled-components";
+
+import { Button } from "~ui/buttons/Button";
 import { ACTIVE_COLOR } from "~ui/theme/colors/base";
 import { getButtonColorStyles } from "~ui/transitions";
-import { Button } from "~ui/buttons/Button";
 
 interface Props {
   dayDate: Date;

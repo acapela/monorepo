@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
-import { TextH3 } from "~ui/typo";
-import { markAllNotificationsAsRead, useNotifications, deleteAllReadNotifications } from "~frontend/gql/notifications";
+
+import { deleteAllReadNotifications, markAllNotificationsAsRead, useNotifications } from "~frontend/gql/notifications";
 import { NotificationsTimeline } from "~frontend/ui/notifications/NotificationLabel/NotificationsTimeline";
-import { theme } from "~ui/theme";
 import { OptionsButtonWithMenu } from "~frontend/ui/options/OptionsButtonWithMenu";
+import { UIDropdownPanelBody } from "~ui/popovers/DropdownPanelBody";
+import { theme } from "~ui/theme";
+import { TextH3 } from "~ui/typo";
 
 export function NotificationsCenterPopover() {
   const holderRef = useRef<HTMLDivElement>(null);

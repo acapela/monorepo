@@ -1,28 +1,30 @@
 import { MotionProps } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { observer } from "mobx-react";
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDeleteTextMessageMutation } from "~frontend/gql/messages";
-import { MessageFeedInfoFragment } from "~gql";
-import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
+import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
+import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageLikeContent } from "./MessageLikeContent";
-import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
-import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
-import { IconEdit, IconTrash } from "~ui/icons";
-import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
-import { OptionsButton } from "~frontend/ui/options/OptionsButton";
-import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
 import { MakeReactionButton } from "~frontend/ui/message/reactions/MakeReactionButton";
 import { MessageReactions } from "~frontend/ui/message/reactions/MessageReactions";
 import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
+import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
+import { OptionsButton } from "~frontend/ui/options/OptionsButton";
+import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { MessageFeedInfoFragment } from "~gql";
+import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { trackEvent } from "~frontend/analytics/tracking";
+import { IconEdit, IconTrash } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
+import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props extends MotionProps {
   message: MessageFeedInfoFragment;

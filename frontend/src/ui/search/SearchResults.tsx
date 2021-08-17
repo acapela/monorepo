@@ -1,13 +1,14 @@
 import Link from "next/link";
 import styled, { css } from "styled-components";
-import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/theme/colors/base";
-import { borderRadius } from "~ui/baseStyles";
-import { zIndex } from "~ui/zIndex";
+
+import { routes } from "~frontend/router";
+import { SearchResultsQuery } from "~gql";
+import { assert } from "~shared/assert";
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
 import { PopPresenceAnimator } from "~ui/animations";
-import { SearchResultsQuery } from "~gql";
-import { routes } from "~frontend/router";
-import { assert } from "~shared/assert";
+import { borderRadius } from "~ui/baseStyles";
+import { BASE_GREY_5, PRIMARY_PINK_1, PRIMARY_PINK_1_TRANSPARENT } from "~ui/theme/colors/base";
+import { zIndex } from "~ui/zIndex";
 
 interface Props {
   className?: string;

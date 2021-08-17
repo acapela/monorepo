@@ -1,12 +1,14 @@
-import { Popover } from "~ui/popovers/Popover";
 import { NodeViewWrapper } from "@tiptap/react";
 import { SuggestionProps } from "@tiptap/suggestion";
 import { ComponentType, useState } from "react";
-import { AutocompletePickerProps } from "./component";
+
+import { useComparingEffect } from "~shared/hooks/useComparingEffect";
 import { useValueRef } from "~shared/hooks/useValueRef";
 import { PopPresenceAnimator } from "~ui/animations";
 import { useShortcut } from "~ui/keyboard/useShortcut";
-import { useComparingEffect } from "~shared/hooks/useComparingEffect";
+import { Popover } from "~ui/popovers/Popover";
+
+import { AutocompletePickerProps } from "./component";
 
 interface Props<D> {
   baseProps: SuggestionProps;

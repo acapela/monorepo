@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import { SpaceDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
 import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { MembersManagerModal } from "~frontend/ui/MembersManager/MembersManagerModal";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
+import { SpaceDetailedInfoFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 interface Props {
   space: SpaceDetailedInfoFragment;

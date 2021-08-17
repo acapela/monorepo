@@ -1,6 +1,7 @@
 import snippet from "@segment/snippet";
 import Script from "next/script";
 import { memo } from "react";
+
 import { useConst } from "~shared/hooks/useConst";
 
 const segmentApiKey = process.env.NEXT_PUBLIC_SEGMENT_API_KEY;

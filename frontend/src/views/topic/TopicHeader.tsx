@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import styled, { css } from "styled-components";
+
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { useTopic } from "~frontend/topics/useTopic";
@@ -9,6 +10,7 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 import { TextH3 } from "~ui/typo";
+
 import { CloseTopicModal } from "./CloseTopicModal";
 
 interface Props {

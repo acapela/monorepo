@@ -1,11 +1,13 @@
 import { motion } from "framer-motion";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
-import { AudioPlayer } from "~ui/media/AudioPlayer";
-import { VideoPlayer } from "~ui/media/VideoPlayer";
+
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { AttachmentDetailedInfoFragment } from "~gql";
+import { AudioPlayer } from "~ui/media/AudioPlayer";
+import { VideoPlayer } from "~ui/media/VideoPlayer";
 import { theme } from "~ui/theme";
+
 import { MessageImageAttachment } from "./MessageImageAttachment";
 
 interface AttachmentProps {

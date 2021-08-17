@@ -1,4 +1,5 @@
 import Cookie from "js-cookie";
+
 import { assertDefined } from "~shared/assert";
 import { parseJWTWithoutValidation } from "~shared/jwt";
 import { UserTokenData } from "~shared/types/jwtAuth";

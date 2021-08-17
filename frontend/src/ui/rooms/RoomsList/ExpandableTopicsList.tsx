@@ -1,16 +1,18 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
-import { groupByFilter } from "~shared/groupByFilter";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
 import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
+import { groupByFilter } from "~shared/groupByFilter";
 import { Button } from "~ui/buttons/Button";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
+
 import { TopicCard } from "./TopicCard";
 import { useExpandableListToggle } from "./useExpandableListToggle";
-import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   roomId: string;
