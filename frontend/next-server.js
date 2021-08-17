@@ -21,8 +21,6 @@ if (["staging", "production"].includes(stage)) {
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so
     // that it will also get attached to your source maps
     environment: stage,
-    // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
-    ignoreErrors: ["ResizeObserver loop limit exceeded"],
   });
 } else {
   console.info(`Sentry disabled for ${stage}`);
