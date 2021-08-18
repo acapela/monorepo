@@ -9,6 +9,9 @@ import { getDevPublicTunnel } from "~backend/src/localtunnel";
 import { db } from "~db";
 import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
 import { assert, assertDefined } from "~shared/assert";
+import { isDev } from "~shared/dev";
+
+import { setupSlackCommands } from "./commands";
 
 const scopes = ["im:write"];
 
@@ -37,9 +40,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       await db.team_slack_installation.create({ data: { team_id: teamId, data: installation as never } });
     },
     async fetchInstallation(query) {
-      const slackInstallation = await db.team_slack_installation.findFirst({
-        where: { data: { path: ["teamId"], equals: query.teamId } },
-      });
+      const slackInstallation = await db.team_slack_installation.findFirst({});
       assert(
         slackInstallation?.data,
         new UnprocessableEntityError(`No Slack installation found for query ${JSON.stringify(query)}`)
@@ -61,25 +62,22 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   },
 };
 
-const isDevelopment = process.env.STAGE === "development";
-
-const slackReceiver = new SlackBolt.ExpressReceiver({ ...sharedOptions, endpoints: "/" });
-const slackApp = new SlackBolt.App({
-  ...sharedOptions,
-  receiver: slackReceiver,
-  developerMode: isDevelopment,
-});
+const slackReceiver = new SlackBolt.ExpressReceiver({ ...sharedOptions, endpoints: { commands: "/slack/commands" } });
 
 const getSlackInstallURL = async (state?: unknown) => {
-  const basePath = isDevelopment
-    ? (await getDevPublicTunnel(3000)).url + "/api/backend"
-    : process.env.BACKEND_API_ENDPOINT;
+  const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
   return slackReceiver.installer?.generateInstallUrl({
     scopes,
     redirectUri: basePath + "/slack/oauth_redirect",
     metadata: JSON.stringify(state),
   });
 };
+
+export const slackApp = new SlackBolt.App({
+  ...sharedOptions,
+  receiver: slackReceiver,
+  developerMode: isDev(),
+});
 
 export const slackChat = slackApp.client.chat;
 
@@ -97,6 +95,8 @@ export const getTeamSlackInstallationURL: ActionHandler<
     return { url };
   },
 };
+
+setupSlackCommands(slackApp);
 
 export function setupSlackBoltRoutes(app: Express) {
   app.use("/api", slackReceiver.router);
