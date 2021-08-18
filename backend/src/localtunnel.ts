@@ -14,14 +14,14 @@ const hostname = os.hostname().toLocaleLowerCase().replace(/\./g, "-");
  * This way it's possible to receive webhooks to the dev environment
  */
 
-export const getDevPublicTunnel = createSelfCleaningCache(async (reset) => {
+export const getDevPublicTunnel = createSelfCleaningCache(async (reset, port: number = parseInt(backendPort, 10)) => {
   if (!isDev()) {
     throw new Error(`Public tunnel is only allowed to be used in dev mode.`);
   }
 
   const tunnel = await localtunnel({
-    subdomain: `acapela-dev-${hostname}`,
-    port: parseInt(backendPort, 10),
+    subdomain: `acapela-dev-${hostname}-${port}`,
+    port,
     allow_invalid_cert: true,
   });
 
@@ -32,28 +32,31 @@ export const getDevPublicTunnel = createSelfCleaningCache(async (reset) => {
   return tunnel;
 });
 
-export async function getDevPublicTunnelUrl(): Promise<string> {
-  const tunnel = await getDevPublicTunnel();
-
-  return tunnel.url;
-}
-
-function createSelfCleaningCache<T>(getter: (reset: () => void) => T): () => T {
-  let cachedValue: T | null;
+// Allows sharing instances between invocations with the same arguments.
+// The given function also receives a reset function as the first parameter
+// which it can use to nuke the cache, thus being called anew in the next
+// invocation.
+function createSelfCleaningCache<Args extends unknown[], R>(
+  getter: (reset: () => void, ...args: Args) => R
+): (...p: Args) => R {
+  const cache = new Map<string, R>();
 
   function reset() {
-    cachedValue = null;
+    cache.clear();
   }
 
-  function get(): T {
-    if (cachedValue) return cachedValue;
+  return function get(...p) {
+    const key = JSON.stringify(p);
 
-    const newValue = getter(reset);
+    const value = cache.get(key);
+    if (value) {
+      return value;
+    }
 
-    cachedValue = newValue;
+    const newValue = getter(reset, ...p);
+
+    cache.set(key, newValue);
 
     return newValue;
-  }
-
-  return get;
+  };
 }

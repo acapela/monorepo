@@ -34,6 +34,15 @@ input Boolean_comparison_exp {
   _nin: [Boolean!]
 }
 
+input GetTeamSlackInstallationURLInput {
+  redirectURL: String!
+  teamId: uuid!
+}
+
+type GetTeamSlackInstallationURLOutput {
+  url: String!
+}
+
 type LookupTeamNameResponse {
   email: String!
   inviter_name: String!
@@ -2257,6 +2266,21 @@ type mutation_root {
   delete_team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
 
   """
+  delete data from the table: "team_slack_installation"
+  """
+  delete_team_slack_installation(
+    """
+    filter the rows which have to be deleted
+    """
+    where: team_slack_installation_bool_exp!
+  ): team_slack_installation_mutation_response
+
+  """
+  delete single row from the table: "team_slack_installation"
+  """
+  delete_team_slack_installation_by_pk(team_id: uuid!): team_slack_installation
+
+  """
   delete data from the table: "topic"
   """
   delete_topic(
@@ -2825,6 +2849,36 @@ type mutation_root {
     """
     on_conflict: team_on_conflict
   ): team
+
+  """
+  insert data into the table: "team_slack_installation"
+  """
+  insert_team_slack_installation(
+    """
+    the rows to be inserted
+    """
+    objects: [team_slack_installation_insert_input!]!
+
+    """
+    on conflict condition
+    """
+    on_conflict: team_slack_installation_on_conflict
+  ): team_slack_installation_mutation_response
+
+  """
+  insert a single row into the table: "team_slack_installation"
+  """
+  insert_team_slack_installation_one(
+    """
+    the row to be inserted
+    """
+    object: team_slack_installation_insert_input!
+
+    """
+    on conflict condition
+    """
+    on_conflict: team_slack_installation_on_conflict
+  ): team_slack_installation
 
   """
   insert data into the table: "topic"
@@ -3524,6 +3578,82 @@ type mutation_root {
   ): team_member
 
   """
+  update data of the table: "team_slack_installation"
+  """
+  update_team_slack_installation(
+    """
+    append existing jsonb value of filtered columns with new jsonb value
+    """
+    _append: team_slack_installation_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: team_slack_installation_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: team_slack_installation_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: team_slack_installation_delete_key_input
+
+    """
+    prepend existing jsonb value of filtered columns with new jsonb value
+    """
+    _prepend: team_slack_installation_prepend_input
+
+    """
+    sets the columns of the filtered rows to the given values
+    """
+    _set: team_slack_installation_set_input
+
+    """
+    filter the rows which have to be updated
+    """
+    where: team_slack_installation_bool_exp!
+  ): team_slack_installation_mutation_response
+
+  """
+  update single row of the table: "team_slack_installation"
+  """
+  update_team_slack_installation_by_pk(
+    """
+    append existing jsonb value of filtered columns with new jsonb value
+    """
+    _append: team_slack_installation_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: team_slack_installation_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: team_slack_installation_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: team_slack_installation_delete_key_input
+
+    """
+    prepend existing jsonb value of filtered columns with new jsonb value
+    """
+    _prepend: team_slack_installation_prepend_input
+
+    """
+    sets the columns of the filtered rows to the given values
+    """
+    _set: team_slack_installation_set_input
+    pk_columns: team_slack_installation_pk_columns_input!
+  ): team_slack_installation
+
+  """
   update data of the table: "topic"
   """
   update_topic(
@@ -4200,6 +4330,7 @@ type query_root {
   fetch data from the table: "attachment" using primary key columns
   """
   attachment_by_pk(id: uuid!): attachment
+  get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 
   """
@@ -5173,6 +5304,71 @@ type query_root {
   fetch data from the table: "team_member" using primary key columns
   """
   team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+
+  """
+  fetch data from the table: "team_slack_installation"
+  """
+  team_slack_installation(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_slack_installation_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_slack_installation_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_slack_installation_bool_exp
+  ): [team_slack_installation!]!
+
+  """
+  fetch aggregated fields from the table: "team_slack_installation"
+  """
+  team_slack_installation_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_slack_installation_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_slack_installation_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_slack_installation_bool_exp
+  ): team_slack_installation_aggregate!
+
+  """
+  fetch data from the table: "team_slack_installation" using primary key columns
+  """
+  team_slack_installation_by_pk(team_id: uuid!): team_slack_installation
 
   """
   fetch data from the table: "topic"
@@ -8634,6 +8830,71 @@ type subscription_root {
   team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
 
   """
+  fetch data from the table: "team_slack_installation"
+  """
+  team_slack_installation(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_slack_installation_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_slack_installation_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_slack_installation_bool_exp
+  ): [team_slack_installation!]!
+
+  """
+  fetch aggregated fields from the table: "team_slack_installation"
+  """
+  team_slack_installation_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [team_slack_installation_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [team_slack_installation_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: team_slack_installation_bool_exp
+  ): team_slack_installation_aggregate!
+
+  """
+  fetch data from the table: "team_slack_installation" using primary key columns
+  """
+  team_slack_installation_by_pk(team_id: uuid!): team_slack_installation
+
+  """
   fetch data from the table: "topic"
   """
   topic(
@@ -9216,6 +9477,11 @@ type team {
   """
   owner: user!
   owner_id: uuid!
+
+  """
+  An object relationship
+  """
+  slack_installation: team_slack_installation
   slug: String!
 
   """
@@ -9330,6 +9596,7 @@ input team_bool_exp {
   name: String_comparison_exp
   owner: user_bool_exp
   owner_id: uuid_comparison_exp
+  slack_installation: team_slack_installation_bool_exp
   slug: String_comparison_exp
   spaces: space_bool_exp
 }
@@ -9364,6 +9631,7 @@ input team_insert_input {
   name: String
   owner: user_obj_rel_insert_input
   owner_id: uuid
+  slack_installation: team_slack_installation_obj_rel_insert_input
   slug: String
   spaces: space_arr_rel_insert_input
 }
@@ -9986,6 +10254,7 @@ input team_order_by {
   name: order_by
   owner: user_order_by
   owner_id: order_by
+  slack_installation: team_slack_installation_order_by
   slug: order_by
   spaces_aggregate: space_aggregate_order_by
 }
@@ -10030,6 +10299,211 @@ input team_set_input {
   name: String
   owner_id: uuid
   slug: String
+}
+
+"""
+columns and relationships of "team_slack_installation"
+"""
+type team_slack_installation {
+  data(
+    """
+    JSON select path
+    """
+    path: String
+  ): jsonb!
+
+  """
+  An object relationship
+  """
+  team: team!
+  team_id: uuid!
+}
+
+"""
+aggregated selection of "team_slack_installation"
+"""
+type team_slack_installation_aggregate {
+  aggregate: team_slack_installation_aggregate_fields
+  nodes: [team_slack_installation!]!
+}
+
+"""
+aggregate fields of "team_slack_installation"
+"""
+type team_slack_installation_aggregate_fields {
+  count(columns: [team_slack_installation_select_column!], distinct: Boolean): Int!
+  max: team_slack_installation_max_fields
+  min: team_slack_installation_min_fields
+}
+
+"""
+append existing jsonb value of filtered columns with new jsonb value
+"""
+input team_slack_installation_append_input {
+  data: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "team_slack_installation". All fields are combined with a logical 'AND'.
+"""
+input team_slack_installation_bool_exp {
+  _and: [team_slack_installation_bool_exp!]
+  _not: team_slack_installation_bool_exp
+  _or: [team_slack_installation_bool_exp!]
+  data: jsonb_comparison_exp
+  team: team_bool_exp
+  team_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "team_slack_installation"
+"""
+enum team_slack_installation_constraint {
+  """
+  unique or primary key constraint
+  """
+  team_slack_installation_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input team_slack_installation_delete_at_path_input {
+  data: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input team_slack_installation_delete_elem_input {
+  data: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input team_slack_installation_delete_key_input {
+  data: String
+}
+
+"""
+input type for inserting data into table "team_slack_installation"
+"""
+input team_slack_installation_insert_input {
+  data: jsonb
+  team: team_obj_rel_insert_input
+  team_id: uuid
+}
+
+"""
+aggregate max on columns
+"""
+type team_slack_installation_max_fields {
+  team_id: uuid
+}
+
+"""
+aggregate min on columns
+"""
+type team_slack_installation_min_fields {
+  team_id: uuid
+}
+
+"""
+response of any mutation on the table "team_slack_installation"
+"""
+type team_slack_installation_mutation_response {
+  """
+  number of rows affected by the mutation
+  """
+  affected_rows: Int!
+
+  """
+  data from the rows affected by the mutation
+  """
+  returning: [team_slack_installation!]!
+}
+
+"""
+input type for inserting object relation for remote table "team_slack_installation"
+"""
+input team_slack_installation_obj_rel_insert_input {
+  data: team_slack_installation_insert_input!
+
+  """
+  on conflict condition
+  """
+  on_conflict: team_slack_installation_on_conflict
+}
+
+"""
+on conflict condition type for table "team_slack_installation"
+"""
+input team_slack_installation_on_conflict {
+  constraint: team_slack_installation_constraint!
+  update_columns: [team_slack_installation_update_column!]! = []
+  where: team_slack_installation_bool_exp
+}
+
+"""
+Ordering options when selecting data from "team_slack_installation".
+"""
+input team_slack_installation_order_by {
+  data: order_by
+  team: team_order_by
+  team_id: order_by
+}
+
+"""
+primary key columns input for table: team_slack_installation
+"""
+input team_slack_installation_pk_columns_input {
+  team_id: uuid!
+}
+
+"""
+prepend existing jsonb value of filtered columns with new jsonb value
+"""
+input team_slack_installation_prepend_input {
+  data: jsonb
+}
+
+"""
+select columns of table "team_slack_installation"
+"""
+enum team_slack_installation_select_column {
+  """
+  column name
+  """
+  data
+
+  """
+  column name
+  """
+  team_id
+}
+
+"""
+input type for updating data in table "team_slack_installation"
+"""
+input team_slack_installation_set_input {
+  data: jsonb
+  team_id: uuid
+}
+
+"""
+update columns of table "team_slack_installation"
+"""
+enum team_slack_installation_update_column {
+  """
+  column name
+  """
+  data
+
+  """
+  column name
+  """
+  team_id
 }
 
 """
