@@ -14,6 +14,7 @@ export type {
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
+  task as Task,
   team as Team,
   space as Space,
   team_invitation as TeamInvitation,
