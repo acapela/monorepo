@@ -42,8 +42,8 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
     <UIHolder className={className}>
       <UIIndentBody>
         <UIHead>
-          <UICollapseHolder isOpened={isOpen}>
-            <CollapseToggleButton isOpened={isOpen} onToggle={toggleIsOpen} />
+          <UICollapseHolder isOpen={isOpen}>
+            <CollapseToggleButton isOpen={isOpen} onToggle={toggleIsOpen} />
           </UICollapseHolder>
           <RouteLink route={routes.spaceRoom} params={{ roomId: room.id, spaceId: room.space_id }}>
             <UIHeadPrimary>
@@ -85,7 +85,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
 
 const UIHolder = styled(CardBase)<{}>``;
 
-const UICollapseHolder = styled.div<{ isOpened: boolean }>`
+const UICollapseHolder = styled.div<{ isOpen: boolean }>`
   padding-right: 16px;
 `;
 const UIIndentBody = styled.div<{}>`

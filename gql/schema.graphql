@@ -44,6 +44,7 @@ type GetTeamSlackInstallationURLOutput {
 }
 
 type LookupTeamNameResponse {
+  email: String!
   inviter_name: String!
   team_name: String!
 }
@@ -9480,7 +9481,7 @@ type team {
   """
   An object relationship
   """
-  slack_installation: team_slack_installation!
+  slack_installation: team_slack_installation
   slug: String!
 
   """

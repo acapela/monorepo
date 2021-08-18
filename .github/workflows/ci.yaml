@@ -72,7 +72,7 @@ jobs:
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   backend:
     name: Backend
@@ -124,7 +124,7 @@ jobs:
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   e2e:
     name: E2E Tests
@@ -178,7 +178,7 @@ jobs:
       - run: ./scripts/cleanup-ghcr.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
-        if: ${{ failure() }}
+        if: ${{ failure() || cancelled() }}
 
   release:
     name: Release

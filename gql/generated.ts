@@ -44,6 +44,7 @@ export interface GetTeamSlackInstallationUrlOutput {
 
 export interface LookupTeamNameResponse {
   __typename?: 'LookupTeamNameResponse';
+  email: Scalars['String'];
   inviter_name: Scalars['String'];
   team_name: Scalars['String'];
 }
@@ -5677,7 +5678,7 @@ export interface Team {
   owner: User;
   owner_id: Scalars['uuid'];
   /** An object relationship */
-  slack_installation: Team_Slack_Installation;
+  slack_installation?: Maybe<Team_Slack_Installation>;
   slug: Scalars['String'];
   /** An array relationship */
   spaces: Array<Space>;
@@ -8723,10 +8724,10 @@ export type TeamDetailedInfoFragment = (
       { __typename?: 'user' }
       & UserBasicInfoFragment
     ) }
-  )>, slack_installation: (
+  )>, slack_installation?: Maybe<(
     { __typename?: 'team_slack_installation' }
     & Pick<Team_Slack_Installation, 'team_id'>
-  ) }
+  )> }
 );
 
 export type CreateTeamMutationVariables = Exact<{
@@ -8829,7 +8830,7 @@ export type LookupTeamNameQuery = (
   { __typename?: 'query_root' }
   & { invite?: Maybe<(
     { __typename?: 'LookupTeamNameResponse' }
-    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name'>
+    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name' | 'email'>
   )> }
 );
 
@@ -9115,10 +9116,10 @@ export type DeleteSlackInstallationMutation = (
     { __typename?: 'team_slack_installation' }
     & { team: (
       { __typename?: 'team' }
-      & { slack_installation: (
+      & { slack_installation?: Maybe<(
         { __typename?: 'team_slack_installation' }
         & Pick<Team_Slack_Installation, 'team_id'>
-      ) }
+      )> }
     ) }
   )> }
 );
@@ -9127,8 +9128,9 @@ export type GetTeamSlackInstallationURLOutputKeySpecifier = ('url' | GetTeamSlac
 export type GetTeamSlackInstallationURLOutputFieldPolicy = {
 	url?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LookupTeamNameResponseKeySpecifier = ('inviter_name' | 'team_name' | LookupTeamNameResponseKeySpecifier)[];
+export type LookupTeamNameResponseKeySpecifier = ('email' | 'inviter_name' | 'team_name' | LookupTeamNameResponseKeySpecifier)[];
 export type LookupTeamNameResponseFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	inviter_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_name?: FieldPolicy<any> | FieldReadFunction<any>
 };

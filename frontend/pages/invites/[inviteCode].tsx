@@ -47,7 +47,7 @@ export default function InvitePage() {
         You have been invited by {invitationInfo.inviter_name} to join the{" "}
         {teamInvitationInfo ? `"${teamInvitationInfo.team_name}" team` : `"${roomInvitationInfo?.room_name}" room`}.
         <div>
-          <LoginOptionsView />
+          <LoginOptionsView signupEmail={teamInvitationInfo?.email} />
         </div>
       </UIHolder>
     );

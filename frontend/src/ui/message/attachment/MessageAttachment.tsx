@@ -50,6 +50,7 @@ export const MessageAttachment = styled<AttachmentProps>(({ attachment, classNam
 })``;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
+  height: 100%;
   display: flex;
   position: relative;
   ${theme.borderRadius.item}

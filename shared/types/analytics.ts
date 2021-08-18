@@ -16,7 +16,7 @@ export type AnalyticsEventsMap = {
   // team created
   "Account Created": { teamName: string };
   // unused for now - would be in case a team gets deleted
-  "Account Deleted": void;
+  "Account Deleted": { teamName: string };
   "Signed Up": { userEmail: string };
   "Signed In": { userEmail: string };
   "Signed Out": void;
@@ -30,11 +30,11 @@ export type AnalyticsEventsMap = {
   // should be called simultanously with Account Created for now
   "Trial Started": { teamName: string };
   // can be ignored for now
-  "Trial Ended": void;
+  "Trial Ended": { teamName: string };
 
   // General events
 
-  "Toggled Notifications Center": { isOpened: boolean };
+  "Toggled Notifications Center": { isOpen: boolean };
   "Clicked Notification Link": void;
   "Marked Notification As Read": void;
   "Marked Notification As Unread": void;
@@ -47,7 +47,7 @@ export type AnalyticsEventsMap = {
 
   // Space related events
 
-  "Created Space": { spaceName: string; teamId: string };
+  "Created Space": { spaceName: string };
   // current user or when current user adds someone else
   "Joined Space": { spaceId: string; userId: string };
   "Left Space": { spaceId: string; userId: string };

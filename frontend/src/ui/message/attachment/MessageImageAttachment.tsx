@@ -54,7 +54,6 @@ const UIInlineAttachmentHolder = styled.div<{}>`
   position: relative;
   ${theme.borderRadius.item}
   overflow: hidden;
-  max-height: 120px;
   cursor: pointer;
 `;
 

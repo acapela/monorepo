@@ -10,7 +10,7 @@ import { useId } from "~shared/id";
 import { TooltipLabel, TooltipLabelProps } from "./TooltipLabel";
 
 /**
- * Having shared channel instead of 'isOpened' local state ensures there is never more than 1 tooltips opened at once
+ * Having shared channel instead of 'isOpen' local state ensures there is never more than 1 tooltips opened at once
  */
 const activeTooltipIdChannel = createChannel<string | null>();
 

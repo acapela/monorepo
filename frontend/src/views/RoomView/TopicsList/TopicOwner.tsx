@@ -21,7 +21,7 @@ export const TopicOwner = ({ topic }: Props) => {
   const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const openerRef = useRef<HTMLDivElement>(null);
-  const [isMenuOpened, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
+  const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
   const onOwnerSelect = (user: UserBasicInfoFragment) => {
     updateTopic({ topicId: topic.id, input: { owner_id: user.id } });
@@ -36,8 +36,8 @@ export const TopicOwner = ({ topic }: Props) => {
         {isTopicManager && <IconChevronDown />}
       </UIHolder>
       <AnimatePresence>
-        {isMenuOpened && (
-          <Popover anchorRef={openerRef} placement="bottom-start">
+        {isMenuOpen && (
+          <Popover anchorRef={openerRef} placement="bottom-start" enableScreenCover>
             <ItemsDropdown
               items={topic.room.members.map(({ user }) => user)}
               keyGetter={(user) => user.id}
@@ -58,6 +58,7 @@ const UIHolder = styled.div<{ isInteractive: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
+  width: fit-content;
   ${theme.font.body12.build()};
   color: ${theme.colors.layout.supportingText()};
 
