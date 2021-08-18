@@ -27,7 +27,7 @@ export function createEntitySyncManager<Data>(
   definition: EntityDefinition<Data, any>,
   config: EntitySyncManagerConfig<Data>
 ): EntitySyncManager<Data> {
-  let lastSyncDate: Date | null = null;
+  let lastSyncDate: Date | null = new Date(0);
   const syncConfig = definition.config.sync;
 
   if (!syncConfig) {

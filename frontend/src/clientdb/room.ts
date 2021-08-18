@@ -15,7 +15,7 @@ const roomFragment = gql`
     owner_id
     creator_id
     finished_at
-    created_at
+    updated_at
     is_private
     name
     deadline

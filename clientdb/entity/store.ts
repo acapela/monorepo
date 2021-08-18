@@ -8,7 +8,7 @@ export type EntityStore<Data> = {
   items: IObservableArray<Data>;
   findById(id: string): Entity<Data> | null;
   removeById(id: string): boolean;
-  query: (filter: EntityQueryConfig<Data>) => EntityQuery<Data>;
+  query: (filter?: EntityQueryConfig<Data>) => EntityQuery<Data>;
   add(input: Entity<Data>): Entity<Data>;
 };
 

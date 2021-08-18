@@ -2,9 +2,13 @@ import { computed, IObservableArray } from "mobx";
 
 type EntityQueryFilter<Data> = (item: Data) => boolean;
 
+type SortResult = number | string | Date | boolean | null | undefined;
+
+type EntityQuerySorter<Data> = (item: Data) => SortResult;
+
 type EntityQueryResolvedConfig<Data> = {
-  filter: EntityQueryFilter<Data>;
-  sort?: any;
+  filter?: EntityQueryFilter<Data>;
+  sort?: EntityQuerySorter<Data>;
 };
 
 export type EntityQueryConfig<Data> = EntityQueryFilter<Data> | EntityQueryResolvedConfig<Data>;
@@ -16,6 +20,10 @@ function resolveEntityQueryConfig<Data>(config: EntityQueryConfig<Data>): Entity
     };
   }
 
+  if (!config) {
+    return { filter: truePredicate };
+  }
+
   return config;
 }
 
@@ -24,6 +32,10 @@ export type EntityQuery<Data> = {
   query: (config: EntityQueryConfig<Data>) => EntityQuery<Data>;
 };
 
+function truePredicate() {
+  return true;
+}
+
 export function createEntityQuery<Data>(
   source: IObservableArray<Data> | Data[],
   config: EntityQueryConfig<Data>
@@ -31,7 +43,7 @@ export function createEntityQuery<Data>(
   const { filter, sort } = resolveEntityQueryConfig(config);
 
   const passingItems = computed(() => {
-    return source.filter(filter);
+    return source.filter(filter ?? truePredicate);
   });
 
   return {

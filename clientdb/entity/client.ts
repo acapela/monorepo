@@ -10,7 +10,8 @@ import { createEntitySyncManager } from "./sync";
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   removeById(id: string): boolean;
-  query: (filter: EntityQueryConfig<Data>) => EntityQuery<Data & Connections>;
+  query: (filter?: EntityQueryConfig<Data>) => EntityQuery<Data & Connections>;
+  all: Entity<Data, Connections>[];
   createDraft(input: Data): EntityDraft<Data & Connections>;
   create(input: Data): Entity<Data, Connections>;
   update(id: string, input: Data): Entity<Data, Connections>;
@@ -35,6 +36,9 @@ export function createEntityClient<Data, Connections>(
     },
     query(config) {
       return store.query(config);
+    },
+    get all() {
+      return client.query().all;
     },
     removeById(id) {
       return store.removeById(id);

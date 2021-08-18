@@ -41,10 +41,6 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
 
     fragment MessageDetailedInfo on message {
       ...MessageBasicInfo
-      transcription {
-        status
-        transcript
-      }
       message_attachments {
         ...AttachmentDetailedInfo
       }
