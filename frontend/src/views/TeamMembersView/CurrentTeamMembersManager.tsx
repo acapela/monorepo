@@ -95,6 +95,19 @@ export const CurrentTeamMembersManager = () => {
     trackEvent("Deleted Team Invitation", { teamId: team.id, invitationId });
   };
 
+  const handleClickDisableSlack = async () => {
+    const didConfirm = await openConfirmPrompt({
+      title: "Disable Slack Integration",
+      description: "Are you sure you want to disable Slack integration for notifications?",
+      confirmLabel: "Disable",
+    });
+    if (!didConfirm) {
+      return;
+    }
+    await deleteSlackInstallation({ teamId: team.id });
+    addToast({ type: "success", title: "Slack installation was disabled" });
+  };
+
   return (
     <UIPanel>
       <UIHeader>
@@ -106,18 +119,7 @@ export const CurrentTeamMembersManager = () => {
           {team.slack_installation ? (
             <Button
               disabled={isDeletingSlackInstallation}
-              onClick={async () => {
-                const didConfirm = await openConfirmPrompt({
-                  title: "Disable Slack Integration",
-                  description: "Are you sure you want to disable Slack integration for notifications?",
-                  confirmLabel: "Disable",
-                });
-                if (!didConfirm) {
-                  return;
-                }
-                await deleteSlackInstallation({ teamId: team.id });
-                addToast({ type: "success", title: "Slack installation was disabled" });
-              }}
+              onClick={handleClickDisableSlack}
               icon={<IconMinus />}
               iconPosition="start"
               tooltip="Disable notifications through slack"

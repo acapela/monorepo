@@ -32,6 +32,10 @@ export const getDevPublicTunnel = createSelfCleaningCache(async (reset, port: nu
   return tunnel;
 });
 
+// Allows sharing instances between invocations with the same arguments.
+// The given function also receives a reset function as the first parameter
+// which it can use to nuke the cache, thus being called anew in the next
+// invocation.
 function createSelfCleaningCache<Args extends unknown[], R>(
   getter: (reset: () => void, ...args: Args) => R
 ): (...p: Args) => R {
