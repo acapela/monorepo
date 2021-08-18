@@ -10,6 +10,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { ALLOWED_ROLES, DEFAULT_ROLE } from "~shared/roles";
+import { getSearchParams } from "~shared/urlParams";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -50,6 +51,7 @@ interface Session {}
 type AuthAdapter = AdapterInstance<User, Profile, Session>;
 
 async function checkWhitelist(profile: Profile) {
+  return;
   const email = profile.email.toLocaleLowerCase();
 
   const teamInviteEntry = await db.team_invitation.findFirst({ where: { email } });
@@ -392,10 +394,6 @@ async function getAuthInitOptions() {
   };
 
   return authInitOptions;
-}
-
-function getSearchParams(params: Record<string, string>) {
-  return new URLSearchParams(params).toString();
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {

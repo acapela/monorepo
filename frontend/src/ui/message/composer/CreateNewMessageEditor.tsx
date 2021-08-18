@@ -86,7 +86,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
     if (message) {
       trackEvent("Sent Message", {
         messageType: type,
-        isReply: !!topicContext.currentlyReplyingToMessage,
+        isReply: !!topicContext.currentlyReplyingToMessageId,
         hasAttachments: attachments.length > 0,
       });
       await Promise.all(

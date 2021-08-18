@@ -11,10 +11,10 @@ interface Props {
 }
 
 export function CornerOptionsMenu({ options, tooltip }: Props) {
-  const [isOpened, { set: markOpened, unset: unmarkOpened }] = useBoolean(false);
+  const [isOpen, { set: markOpened, unset: unmarkOpened }] = useBoolean(false);
 
   return (
-    <UIMenuIcon forceVisible={isOpened}>
+    <UIMenuIcon forceVisible={isOpen}>
       <OptionsButtonWithMenu options={options} tooltip={tooltip} onOpen={markOpened} onClose={unmarkOpened} />
     </UIMenuIcon>
   );

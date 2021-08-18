@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import React from "react";
 
 import { withFragments } from "~frontend/gql/utils";
+import { byIndexAscending } from "~frontend/topics/utils";
 import { StaticTopicList_RoomFragment } from "~gql";
 
 import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
@@ -14,23 +15,26 @@ export const StaticTopicsList = withFragments(
       ${TopicMenuItem.fragments.topic}
 
       fragment StaticTopicList_room on room {
+        ...TopicMenuItem_room
         topics {
           id
           index
           ...TopicMenuItem_topic
         }
-        ...TopicMenuItem_room
       }
     `,
   },
   ({ room, activeTopicId }: { room: StaticTopicList_RoomFragment; activeTopicId: string | null }) => (
     <UIScrollContainer>
       <UITopicsList>
-        {room.topics.map((topic) => (
-          <UITopic key={topic.id}>
-            <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
-          </UITopic>
-        ))}
+        {room.topics
+          .slice()
+          .sort(byIndexAscending)
+          .map((topic) => (
+            <UITopic key={topic.id}>
+              <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
+            </UITopic>
+          ))}
       </UITopicsList>
     </UIScrollContainer>
   )

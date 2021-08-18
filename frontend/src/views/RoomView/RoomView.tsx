@@ -2,12 +2,13 @@ import { gql } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
-import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
+import { getRoomManagePopoverOptions } from "~frontend/views/RoomView/editOptions";
 import { RoomView_RoomFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { CardBase } from "~ui/card/Base";
@@ -81,7 +82,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
         <UIRoomInfo>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
-            initialIsOpened={true}
+            isInitiallyOpen
             headerNode={
               <UIRoomHead spezia semibold>
                 <UIRoomTitle ref={titleHolderRef}>

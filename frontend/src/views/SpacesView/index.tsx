@@ -40,7 +40,7 @@ export function SpacesView() {
     createSpace({ input: { name: spaceName, team_id: teamId, id: spaceId } });
 
     routes.space.push({ spaceId });
-    trackEvent("Created Space", { spaceName, teamId });
+    trackEvent("Created Space", { spaceName });
   }
 
   return (

@@ -76,11 +76,14 @@ const UIHolder = styled(motion.div)<{}>`
   display: flex;
 `;
 
-const PlayableMediaWrapper = styled.div<{ isWide?: boolean }>`
+const PlayableMediaWrapper = styled.div<{}>`
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const UIMediaTypeIndicator = styled.div`
   ${theme.font.body12.semibold.build()};
-  margin-bottom: 16px;
 `;

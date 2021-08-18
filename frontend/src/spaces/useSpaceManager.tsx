@@ -93,7 +93,7 @@ export const useSpaceManager = withFragments(fragments, function useSpaceManager
           Are you sure you want to delete space <strong>{space.name}</strong>
         </>
       ),
-      confirmLabel: `Renamed Space`,
+      confirmLabel: `Delete Space`,
     });
 
     if (!didConfirm) return;

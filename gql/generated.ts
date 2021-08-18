@@ -44,6 +44,7 @@ export interface GetTeamSlackInstallationUrlOutput {
 
 export interface LookupTeamNameResponse {
   __typename?: 'LookupTeamNameResponse';
+  email: Scalars['String'];
   inviter_name: Scalars['String'];
   team_name: Scalars['String'];
 }
@@ -552,10 +553,6 @@ export interface Date_Comparison_Exp {
   _lte?: Maybe<Scalars['date']>;
   _neq?: Maybe<Scalars['date']>;
   _nin?: Maybe<Array<Scalars['date']>>;
-}
-
-export interface Delete_Single_Team_Slack_Installation_Args {
-  from_team_id?: Maybe<Scalars['uuid']>;
 }
 
 
@@ -1477,8 +1474,6 @@ export interface Mutation_Root {
   delete_room_member?: Maybe<Room_Member_Mutation_Response>;
   /** delete single row from the table: "room_member" */
   delete_room_member_by_pk?: Maybe<Room_Member>;
-  /** execute VOLATILE function "delete_single_team_slack_installation" which returns "team" */
-  delete_single_team_slack_installation: Array<Team>;
   /** delete data from the table: "space" */
   delete_space?: Maybe<Space_Mutation_Response>;
   /** delete single row from the table: "space" */
@@ -1849,17 +1844,6 @@ export interface Mutation_RootDelete_Room_MemberArgs {
 export interface Mutation_RootDelete_Room_Member_By_PkArgs {
   room_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
-}
-
-
-/** mutation root */
-export interface Mutation_RootDelete_Single_Team_Slack_InstallationArgs {
-  args: Delete_Single_Team_Slack_Installation_Args;
-  distinct_on?: Maybe<Array<Team_Select_Column>>;
-  limit?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-  order_by?: Maybe<Array<Team_Order_By>>;
-  where?: Maybe<Team_Bool_Exp>;
 }
 
 
@@ -5680,8 +5664,6 @@ export interface Subscription_RootWhitelist_By_PkArgs {
 /** columns and relationships of "team" */
 export interface Team {
   __typename?: 'team';
-  /** A computed field, executes function "team_has_slack_installation" */
-  has_slack_installation?: Maybe<Scalars['Boolean']>;
   id: Scalars['uuid'];
   /** An array relationship */
   invitations: Array<Team_Invitation>;
@@ -5696,7 +5678,7 @@ export interface Team {
   owner: User;
   owner_id: Scalars['uuid'];
   /** An object relationship */
-  slack_installation: Team_Slack_Installation;
+  slack_installation?: Maybe<Team_Slack_Installation>;
   slug: Scalars['String'];
   /** An array relationship */
   spaces: Array<Space>;
@@ -5805,7 +5787,6 @@ export interface Team_Bool_Exp {
   _and?: Maybe<Array<Team_Bool_Exp>>;
   _not?: Maybe<Team_Bool_Exp>;
   _or?: Maybe<Array<Team_Bool_Exp>>;
-  has_slack_installation?: Maybe<Boolean_Comparison_Exp>;
   id?: Maybe<Uuid_Comparison_Exp>;
   invitations?: Maybe<Team_Invitation_Bool_Exp>;
   memberships?: Maybe<Team_Member_Bool_Exp>;
@@ -6317,6 +6298,8 @@ export interface Team_Set_Input {
 export interface Team_Slack_Installation {
   __typename?: 'team_slack_installation';
   data: Scalars['jsonb'];
+  /** An object relationship */
+  team: Team;
   team_id: Scalars['uuid'];
 }
 
@@ -6359,6 +6342,7 @@ export interface Team_Slack_Installation_Bool_Exp {
   _not?: Maybe<Team_Slack_Installation_Bool_Exp>;
   _or?: Maybe<Array<Team_Slack_Installation_Bool_Exp>>;
   data?: Maybe<Jsonb_Comparison_Exp>;
+  team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
 }
 
@@ -6385,6 +6369,7 @@ export interface Team_Slack_Installation_Delete_Key_Input {
 /** input type for inserting data into table "team_slack_installation" */
 export interface Team_Slack_Installation_Insert_Input {
   data?: Maybe<Scalars['jsonb']>;
+  team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -6426,6 +6411,7 @@ export interface Team_Slack_Installation_On_Conflict {
 /** Ordering options when selecting data from "team_slack_installation". */
 export interface Team_Slack_Installation_Order_By {
   data?: Maybe<Order_By>;
+  team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
 }
 
@@ -7999,6 +7985,19 @@ export type Whitelist_Update_Column =
   /** column name */
   | 'timestamp';
 
+export type RoomSummaryPageQueryVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type RoomSummaryPageQuery = (
+  { __typename?: 'query_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & RoomSummaryView_RoomFragment
+  )> }
+);
+
 export type RoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8786,7 +8785,7 @@ export type LookupTeamNameQuery = (
   { __typename?: 'query_root' }
   & { invite?: Maybe<(
     { __typename?: 'LookupTeamNameResponse' }
-    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name'>
+    & Pick<LookupTeamNameResponse, 'team_name' | 'inviter_name' | 'email'>
   )> }
 );
 
@@ -8831,19 +8830,6 @@ export type TopicDetailedInfoFragment = (
       )> }
     )> }
   ) }
-);
-
-export type CreateTopicMutationVariables = Exact<{
-  input: Topic_Insert_Input;
-}>;
-
-
-export type CreateTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & TopicDetailedInfoFragment
-  )> }
 );
 
 export type RoomTopicsQueryVariables = Exact<{
@@ -9015,6 +9001,29 @@ export type SpaceManager_SpaceFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
   & SpaceWithMembersFragment
+);
+
+export type CreateTopicMutationVariables = Exact<{
+  input: Topic_Insert_Input;
+}>;
+
+
+export type CreateTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id'>
+  )> }
+);
+
+export type IsCurrentUserTopicManager_RoomFragment = (
+  { __typename?: 'room' }
+  & Pick<Room, 'owner_id'>
+);
+
+export type IsCurrentUserTopicManager_TopicFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'owner_id'>
 );
 
 export type IsTopicClosed_TopicFragment = (
@@ -9196,6 +9205,7 @@ export type ManageRoomMembers_RoomFragment = (
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & PrivateRoomDeletionPrompt_RoomFragment
+  & RoomOwner_RoomFragment
 );
 
 export type AddRoomMemberMutationVariables = Exact<{
@@ -9260,6 +9270,11 @@ export type UserBasicInfo_UserFragment = (
   & Pick<User, 'name' | 'email'>
 );
 
+export type GetUserDisplayName_UserFragment = (
+  { __typename?: 'user' }
+  & Pick<User, 'name' | 'email'>
+);
+
 export type UnreadMessageFragmentFragment = (
   { __typename?: 'unread_messages' }
   & { roomId: Unread_Messages['room_id'], topicId: Unread_Messages['topic_id'], unreadMessages: Unread_Messages['unread_messages'] }
@@ -9315,6 +9330,30 @@ export type RoomSidebarInfo_RoomFragment = (
   & DeadlineManager_RoomFragment
 );
 
+export type ConvertRoom_RoomFragment = (
+  { __typename?: 'room' }
+  & Pick<Room, 'id' | 'space_id' | 'name' | 'finished_at' | 'summary'>
+  & { topics: Array<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'name' | 'closed_at' | 'closing_summary'>
+    & { closed_by_user?: Maybe<(
+      { __typename?: 'user' }
+      & Pick<User, 'name'>
+    )> }
+  )> }
+);
+
+export type RoomSummaryView_RoomFragment = (
+  { __typename?: 'room' }
+  & Pick<Room, 'summary'>
+  & { topics: Array<(
+    { __typename?: 'topic' }
+    & TopicSummary_TopicFragment
+  )> }
+  & RoomView_RoomFragment
+  & ConvertRoom_RoomFragment
+);
+
 export type RoomTopicView_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'space_id'>
@@ -9340,24 +9379,45 @@ export type RoomView_RoomFragment = (
   & TopicList_RoomFragment
 );
 
+export type TopicSummary_TopicFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'name' | 'closing_summary' | 'closed_at'>
+  & { closed_by_user?: Maybe<(
+    { __typename?: 'user' }
+    & Pick<User, 'name'>
+  )> }
+);
+
 export type TopicHeader_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
   & IsCurrentUserRoomMember_RoomFragment
+  & IsCurrentUserTopicManager_RoomFragment
+  & ManageTopic_RoomFragment
 );
 
-export type TopicHeader_TopicFragment = (
-  { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
-  & IsTopicClosed_TopicFragment
+export type TopicHeader_TopicSubscriptionVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type TopicHeader_TopicSubscription = (
+  { __typename?: 'subscription_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name'>
+    & IsTopicClosed_TopicFragment
+    & IsCurrentUserTopicManager_TopicFragment
+    & ManageTopic_TopicFragment
+  )> }
 );
 
-export type TopicSummary_TopicFragment = (
+export type TopicSummaryMessage_TopicFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'closed_at' | 'closing_summary'>
   & { closed_by_user?: Maybe<(
     { __typename?: 'user' }
-    & Pick<User, 'id'>
+    & Pick<User, 'id' | 'name' | 'email'>
   )> }
 );
 
@@ -9370,9 +9430,8 @@ export type TopicWithMessages_RoomFragment = (
 export type TopicWithMessages_TopicFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id'>
-  & TopicHeader_TopicFragment
   & IsTopicClosed_TopicFragment
-  & TopicSummary_TopicFragment
+  & TopicSummaryMessage_TopicFragment
 );
 
 export type TopicMessagesAscSubscriptionVariables = Exact<{
@@ -9393,12 +9452,60 @@ export type TopicMessagesAscSubscription = (
 
 export type LazyTopicList_RoomFragment = (
   { __typename?: 'room' }
+  & Pick<Room, 'id'>
   & StaticTopicList_RoomFragment
+);
+
+export type TopicListSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type TopicListSubscription = (
+  { __typename?: 'subscription_root' }
+  & { topics: Array<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'index'>
+  )> }
+);
+
+export type UpdateTopicNameMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  name: Scalars['String'];
+}>;
+
+
+export type UpdateTopicNameMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name'>
+  )> }
+);
+
+export type ManageTopic_RoomFragment = (
+  { __typename?: 'room' }
+  & IsCurrentUserTopicManager_RoomFragment
 );
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name'>
+  & IsCurrentUserTopicManager_TopicFragment
+);
+
+export type UpdateTopicIndexMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  index: Scalars['String'];
+}>;
+
+
+export type UpdateTopicIndexMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'index'>
+  )> }
 );
 
 export type SortableTopicList_RoomFragment = (
@@ -9406,7 +9513,7 @@ export type SortableTopicList_RoomFragment = (
   & Pick<Room, 'id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'index'>
+    & Pick<Topic, 'id' | 'index'>
     & TopicMenuItem_TopicFragment
   )> }
   & TopicMenuItem_RoomFragment
@@ -9425,11 +9532,51 @@ export type StaticTopicList_RoomFragment = (
 export type TopicMenuItem_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'space_id'>
+  & ManageTopic_RoomFragment
+  & TopicOwner_RoomFragment
 );
 
 export type TopicMenuItem_TopicFragment = (
   { __typename?: 'topic' }
   & Pick<Topic, 'id' | 'name' | 'closed_at'>
+  & ManageTopic_TopicFragment
+  & TopicOwner_TopicFragment
+);
+
+export type TopicMenuItemSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type TopicMenuItemSubscription = (
+  { __typename?: 'subscription_root' }
+  & { topic_by_pk?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name' | 'closed_at'>
+  )> }
+);
+
+export type TopicOwner_RoomFragment = (
+  { __typename?: 'room' }
+  & { members: Array<(
+    { __typename?: 'room_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & Pick<User, 'id' | 'name' | 'email'>
+    ) }
+  )> }
+  & IsCurrentUserTopicManager_RoomFragment
+);
+
+export type TopicOwner_TopicFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id'>
+  & { owner: (
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'name'>
+    & UserAvatar_UserFragment
+  ) }
+  & IsCurrentUserTopicManager_TopicFragment
 );
 
 export type TopicList_RoomFragment = (
@@ -9440,7 +9587,6 @@ export type TopicList_RoomFragment = (
     & Pick<Topic, 'id' | 'index'>
   )> }
   & IsCurrentUserRoomMember_RoomFragment
-  & LazyTopicList_RoomFragment
   & StaticTopicList_RoomFragment
 );
 
@@ -9534,8 +9680,9 @@ export type GetTeamSlackInstallationURLOutputKeySpecifier = ('url' | GetTeamSlac
 export type GetTeamSlackInstallationURLOutputFieldPolicy = {
 	url?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LookupTeamNameResponseKeySpecifier = ('inviter_name' | 'team_name' | LookupTeamNameResponseKeySpecifier)[];
+export type LookupTeamNameResponseKeySpecifier = ('email' | 'inviter_name' | 'team_name' | LookupTeamNameResponseKeySpecifier)[];
 export type LookupTeamNameResponseFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	inviter_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_name?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -9845,7 +9992,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_single_team_slack_installation' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9869,7 +10016,6 @@ export type mutation_rootFieldPolicy = {
 	delete_room_invitation_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_room_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
-	delete_single_team_slack_installation?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10457,9 +10603,8 @@ export type subscription_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type teamKeySpecifier = ('has_slack_installation' | 'id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
+export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
 export type teamFieldPolicy = {
-	has_slack_installation?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10588,9 +10733,10 @@ export type team_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_slack_installationKeySpecifier = ('data' | 'team_id' | team_slack_installationKeySpecifier)[];
+export type team_slack_installationKeySpecifier = ('data' | 'team' | 'team_id' | team_slack_installationKeySpecifier)[];
 export type team_slack_installationFieldPolicy = {
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_slack_installation_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_slack_installation_aggregateKeySpecifier)[];

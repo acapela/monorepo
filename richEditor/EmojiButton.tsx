@@ -22,7 +22,7 @@ export function EmojiButton({ onEmojiSelected }: Props) {
       <ToolbarButton ref={buttonRef} tooltipLabel="Add emoji..." onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
-          <Popover anchorRef={buttonRef} placement="top">
+          <Popover anchorRef={buttonRef} placement="top" enableScreenCover>
             <EmojiPickerWindow
               onCloseRequest={close}
               onSelect={(emoji) => {

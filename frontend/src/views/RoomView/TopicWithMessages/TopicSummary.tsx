@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
 import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
-import { TopicDetailedInfoFragment } from "~gql";
+import { TopicSummaryMessage_TopicFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
 import { borderRadius } from "~ui/baseStyles";
@@ -12,17 +12,19 @@ import { borderRadius } from "~ui/baseStyles";
 export const TopicSummaryMessage = withFragments(
   {
     topic: gql`
-      fragment TopicSummary_topic on topic {
+      fragment TopicSummaryMessage_topic on topic {
         closed_at
         closing_summary
         closed_by_user {
           id
+          name
+          email
         }
       }
     `,
   },
   styled<{
-    topic: TopicDetailedInfoFragment;
+    topic: TopicSummaryMessage_TopicFragment;
     className?: string;
   }>(({ topic, className }) => {
     const { closed_by_user, closed_at, closing_summary } = topic;

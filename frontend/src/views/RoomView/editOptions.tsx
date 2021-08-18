@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
 import { routes } from "~frontend/router";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -74,7 +75,7 @@ export const getRoomManagePopoverOptions = withFragments(
       label: room.is_private ? "Set as public" : "Set as private",
       onSelect: () => {
         onUpdateRoom({ id: room.id, input: { is_private: !room.is_private } });
-        trackEvent("Made Room " + (room.is_private ? "Public" : "Private"), { roomId });
+        trackEvent(room.is_private ? "Made Room Public" : "Made Room Private", { roomId: room.id });
       },
       icon: room.is_private ? <IconUnlock /> : <IconLock />,
     },

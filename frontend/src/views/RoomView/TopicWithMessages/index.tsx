@@ -41,15 +41,13 @@ const fragments = {
     }
   `,
   topic: gql`
-    ${TopicHeader.fragments.topic}
     ${isTopicClosed.fragments.topic}
     ${TopicSummaryMessage.fragments.topic}
 
     fragment TopicWithMessages_topic on topic {
       id
-      ...TopicHeader_topic
       ...IsTopicClosed_topic
-      ...TopicSummary_topic
+      ...TopicSummaryMessage_topic
     }
   `,
 };
@@ -126,7 +124,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
           <UIBackDrop />
           <UIMainContainer>
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-            <UITopicHeaderHolder>{topic && <TopicHeader room={room} topic={topic} />}</UITopicHeaderHolder>
+            <UITopicHeaderHolder>{topic && <TopicHeader room={room} topicId={topic.id} />}</UITopicHeaderHolder>
 
             <ScrollableMessages>
               <AnimateSharedLayout>

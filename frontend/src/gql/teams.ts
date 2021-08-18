@@ -248,6 +248,7 @@ export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQ
       invite: lookup_team_name(token: $token) {
         team_name
         inviter_name
+        email
       }
     }
   `

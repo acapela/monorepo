@@ -12,7 +12,7 @@ import { DeadlineManager } from "./DeadlineManager";
 
 const fragments = {
   room: gql`
-    ${isCurrentUserRoomMember.fragments.room}
+    ${useIsCurrentUserRoomMember.fragments.room}
     ${ManageRoomMembers.fragments.room}
     ${DeadlineManager.fragments.room}
 

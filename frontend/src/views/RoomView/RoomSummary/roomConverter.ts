@@ -1,14 +1,33 @@
+import { gql } from "@apollo/client";
 import { convert as convertToPlainText } from "html-to-text";
 
 import { routes } from "~frontend/router";
-import { RoomDetailedInfoFragment, TopicDetailedInfoFragment } from "~gql";
+import { ConvertRoom_RoomFragment } from "~gql";
 
 import { formatDate } from "../shared";
 
 // Contains a special character within div that allows line-breaks to occur in notion
 const htmlLineBreak = "<div>‎</div>";
 
-export function convertRoomToHtml(room: RoomDetailedInfoFragment): string {
+export const convertRoomFragment = gql`
+  fragment ConvertRoom_room on room {
+    id
+    space_id
+    name
+    finished_at
+    summary
+    topics {
+      name
+      closed_by_user {
+        name
+      }
+      closed_at
+      closing_summary
+    }
+  }
+`;
+
+export function convertRoomToHtml(room: ConvertRoom_RoomFragment): string {
   const roomSummaryUrl = routes.spaceRoomSummary.getUrlWithParams({ spaceId: room.space_id, roomId: room.id });
   return `
     <div>
@@ -19,7 +38,7 @@ export function convertRoomToHtml(room: RoomDetailedInfoFragment): string {
       
       ${room.topics
         .map(
-          (topic: TopicDetailedInfoFragment) =>
+          (topic) =>
             `      
         <div><strong>${topic.name}</strong> was closed by <strong>${topic.closed_by_user?.name}</strong> · ${formatDate(
               topic.closed_at
@@ -41,7 +60,7 @@ export function convertRoomToHtml(room: RoomDetailedInfoFragment): string {
   `;
 }
 
-export function convertRoomToPlainText(room: RoomDetailedInfoFragment): string {
+export function convertRoomToPlainText(room: ConvertRoom_RoomFragment): string {
   // We're reusing a library already in use for our content editor
   return convertToPlainText(convertRoomToHtml(room), {
     selectors: [

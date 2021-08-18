@@ -5,30 +5,30 @@ import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconChevronDown } from "~ui/icons";
 
 interface Props {
-  isOpened: boolean;
-  onToggle(isOpened: boolean): void;
+  isOpen: boolean;
+  onToggle(isOpen: boolean): void;
   className?: string;
 }
 
-export const CollapseToggleButton = styled(function CollapseToggleButton({ isOpened, onToggle, className }: Props) {
+export const CollapseToggleButton = styled(function CollapseToggleButton({ isOpen, onToggle, className }: Props) {
   return (
     <UIToggleButton
-      isOpened={isOpened}
+      isOpen={isOpen}
       className={className}
       icon={<IconChevronDown />}
-      onClick={() => onToggle(!isOpened)}
+      onClick={() => onToggle(!isOpen)}
       kind="tertiary"
     />
   );
 })``;
 
-const UIToggleButton = styled(CircleIconButton)<{ isOpened: boolean }>`
+const UIToggleButton = styled(CircleIconButton)<{ isOpen: boolean }>`
   svg {
     transform: rotateZ(
       ${(props) => {
-        return props.isOpened ? "180deg" : "0deg";
+        return props.isOpen ? "0deg" : "-90deg";
       }}
     );
-    transition: 0.15s all;
+    transition: 0.15s linear all;
   }
 `;

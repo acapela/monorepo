@@ -8,13 +8,16 @@ import { theme } from "~ui/theme";
 
 export const RoomOwner = withFragments(
   {
-    room: gql`fragment RoomOwner_room on room {
-        ${UserAvatar.fragments.user}
+    room: gql`
+      ${UserAvatar.fragments.user}
+
+      fragment RoomOwner_room on room {
         owner {
-            name
-            ...UserAvatar_user
+          name
+          ...UserAvatar_user
         }
-    }`,
+      }
+    `,
   },
   ({ room }: { room: RoomOwner_RoomFragment }) => (
     <UIHolder data-tooltip={`${room.owner.name} (Room Owner)`}>

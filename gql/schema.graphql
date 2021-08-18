@@ -44,6 +44,7 @@ type GetTeamSlackInstallationURLOutput {
 }
 
 type LookupTeamNameResponse {
+  email: String!
   inviter_name: String!
   team_name: String!
 }
@@ -761,10 +762,6 @@ input date_comparison_exp {
   _lte: date
   _neq: date
   _nin: [date!]
-}
-
-input delete_single_team_slack_installation_args {
-  from_team_id: uuid
 }
 
 scalar jsonb
@@ -2192,41 +2189,6 @@ type mutation_root {
   delete single row from the table: "room_member"
   """
   delete_room_member_by_pk(room_id: uuid!, user_id: uuid!): room_member
-
-  """
-  execute VOLATILE function "delete_single_team_slack_installation" which returns "team"
-  """
-  delete_single_team_slack_installation(
-    """
-    input parameters for function "delete_single_team_slack_installation"
-    """
-    args: delete_single_team_slack_installation_args!
-
-    """
-    distinct select on columns
-    """
-    distinct_on: [team_select_column!]
-
-    """
-    limit the number of rows returned
-    """
-    limit: Int
-
-    """
-    skip the first n rows. Use only with order_by
-    """
-    offset: Int
-
-    """
-    sort the rows by one or more columns
-    """
-    order_by: [team_order_by!]
-
-    """
-    filter the rows returned
-    """
-    where: team_bool_exp
-  ): [team!]!
 
   """
   delete data from the table: "space"
@@ -9387,10 +9349,6 @@ type subscription_root {
 columns and relationships of "team"
 """
 type team {
-  """
-  A computed field, executes function "team_has_slack_installation"
-  """
-  has_slack_installation: Boolean
   id: uuid!
 
   """
@@ -9523,7 +9481,7 @@ type team {
   """
   An object relationship
   """
-  slack_installation: team_slack_installation!
+  slack_installation: team_slack_installation
   slug: String!
 
   """
@@ -9632,7 +9590,6 @@ input team_bool_exp {
   _and: [team_bool_exp!]
   _not: team_bool_exp
   _or: [team_bool_exp!]
-  has_slack_installation: Boolean_comparison_exp
   id: uuid_comparison_exp
   invitations: team_invitation_bool_exp
   memberships: team_member_bool_exp
@@ -10354,6 +10311,11 @@ type team_slack_installation {
     """
     path: String
   ): jsonb!
+
+  """
+  An object relationship
+  """
+  team: team!
   team_id: uuid!
 }
 
@@ -10389,6 +10351,7 @@ input team_slack_installation_bool_exp {
   _not: team_slack_installation_bool_exp
   _or: [team_slack_installation_bool_exp!]
   data: jsonb_comparison_exp
+  team: team_bool_exp
   team_id: uuid_comparison_exp
 }
 
@@ -10428,6 +10391,7 @@ input type for inserting data into table "team_slack_installation"
 """
 input team_slack_installation_insert_input {
   data: jsonb
+  team: team_obj_rel_insert_input
   team_id: uuid
 }
 
@@ -10486,6 +10450,7 @@ Ordering options when selecting data from "team_slack_installation".
 """
 input team_slack_installation_order_by {
   data: order_by
+  team: team_order_by
   team_id: order_by
 }
 

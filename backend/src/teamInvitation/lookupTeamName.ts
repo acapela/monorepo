@@ -42,6 +42,7 @@ export const lookupTeamName: ActionHandler<
     return {
       team_name: teamInvitation.team.name,
       inviter_name: getNormalizedUserName(teamInvitation.user),
+      email: teamInvitation.email,
     };
   },
 };

@@ -1,4 +1,4 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import React, { Fragment } from "react";
 import styled from "styled-components";
 
@@ -22,7 +22,7 @@ export const Breadcrumbs = () => {
 
   const spaceId = assertDefined(usePathParameter("spaceId"), "space id is required");
   const roomId = usePathParameter("roomId");
-  const { data: result } = useSubscription<BreadcrumbQuery, BreadcrumbQueryVariables>(
+  const { data: result } = useQuery<BreadcrumbQuery, BreadcrumbQueryVariables>(
     gql`
       query Breadcrumb($spaceId: uuid!, $roomId: uuid) {
         space: space_by_pk(id: $spaceId) {

@@ -14,3 +14,9 @@ export const isTopicClosed = withFragments(
   },
   (topic: IsTopicClosed_TopicFragment) => Boolean(topic.closed_at && topic.closed_by_user_id)
 );
+
+export function byIndexAscending(a: { index: string }, b: { index: string }) {
+  if (a.index < b.index) return -1;
+  if (a.index > b.index) return 1;
+  return 0;
+}

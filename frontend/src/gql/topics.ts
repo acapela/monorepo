@@ -2,8 +2,6 @@
 import { gql } from "@apollo/client";
 
 import {
-  CreateTopicMutation,
-  CreateTopicMutationVariables,
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
   SingleTopicQuery,
@@ -15,18 +13,11 @@ import {
   TopicsQueryVariables,
   UpdateLastSeenMessageMutationVariables,
 } from "~gql";
-import { assert } from "~shared/assert";
-import { slugify } from "~shared/slugify";
-import { getUUID } from "~shared/uuid";
 
 import { MessageFeedInfoFragment } from "./messages";
-import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
+import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
-
-function optimisticallySortTopics(topics: TopicDetailedInfoFragmentType[]) {
-  topics.sort((t1, t2) => (t1.index > t2.index ? 1 : -1));
-}
 
 export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
   () => gql`
@@ -63,67 +54,6 @@ export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmen
       }
     }
   `
-);
-
-export const [useCreateTopicMutation, { mutate: createTopic }] = createMutation<
-  CreateTopicMutation,
-  CreateTopicMutationVariables
->(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-    mutation CreateTopic($input: topic_insert_input!) {
-      topic: insert_topic_one(object: $input) {
-        ...TopicDetailedInfo
-      }
-    }
-  `,
-  {
-    defaultVariables() {
-      return {
-        input: {
-          id: getUUID(),
-        },
-      };
-    },
-    inputMapper({ input }) {
-      if (input.name && !input.slug) {
-        input.slug = slugify(input.name);
-      }
-    },
-    optimisticResponse({ input }) {
-      assert(input.owner_id, "No owner id");
-
-      return {
-        __typename: "mutation_root",
-        topic: {
-          __typename: "topic",
-          id: input.id!,
-          index: input.index!,
-          owner: UserBasicInfoFragment.assertRead(input.owner_id),
-          lastMessage: {
-            __typename: "message_aggregate",
-            aggregate: {
-              __typename: "message_aggregate_fields",
-              max: null,
-            },
-          },
-          members: [],
-          room: RoomBasicInfoFragment.assertRead(input.room_id!),
-          name: input.name!,
-          slug: input.slug!,
-          closed_at: null,
-          closed_by_user: null,
-          closing_summary: null,
-        },
-      };
-    },
-    onOptimisticOrActualResponse(topic, variables) {
-      RoomDetailedInfoFragment.update(variables.input.room_id!, (data) => {
-        data.topics.push(topic);
-        optimisticallySortTopics(data.topics);
-      });
-    },
-  }
 );
 
 export const [useRoomTopicsQuery] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(

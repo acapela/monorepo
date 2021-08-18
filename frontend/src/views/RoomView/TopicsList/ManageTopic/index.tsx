@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -7,29 +7,62 @@ import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserT
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { useUpdateTopic } from "~frontend/views/RoomView/shared";
 import { useDeleteTopic } from "~frontend/views/RoomView/TopicsList/shared";
-import { ManageTopic_TopicFragment } from "~gql";
+import {
+  ManageTopic_RoomFragment,
+  ManageTopic_TopicFragment,
+  UpdateTopicNameMutation,
+  UpdateTopicNameMutationVariables,
+} from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
+const useUpdateTopicName = () =>
+  useMutation<UpdateTopicNameMutation, UpdateTopicNameMutationVariables>(
+    gql`
+      mutation UpdateTopicName($id: uuid!, $name: String!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    {
+      optimisticResponse: ({ id, name }) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id, name },
+      }),
+    }
+  );
+
 const fragments = {
+  room: gql`
+    ${useIsCurrentUserTopicManager.fragments.room}
+
+    fragment ManageTopic_room on room {
+      ...IsCurrentUserTopicManager_room
+    }
+  `,
   topic: gql`
+    ${useIsCurrentUserTopicManager.fragments.topic}
+
     fragment ManageTopic_topic on topic {
       id
       name
+      ...IsCurrentUserTopicManager_topic
     }
   `,
 };
 
 interface Props {
+  room: ManageTopic_RoomFragment;
   topic: ManageTopic_TopicFragment;
   onRenameRequest?: () => void;
 }
 
-export const ManageTopic = withFragments(fragments, ({ topic, onRenameRequest }: Props) => {
-  const [updateTopic] = useUpdateTopic();
+export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequest }: Props) => {
+  const [updateTopicName] = useUpdateTopicName();
   const [deleteTopic] = useDeleteTopic();
 
   const handleDeleteSelect = useCallback(async () => {
@@ -57,12 +90,12 @@ export const ManageTopic = withFragments(fragments, ({ topic, onRenameRequest }:
     if (!name?.trim()) {
       return;
     }
-    await updateTopic({ variables: { id: topic.id, input: { name } } });
+    await updateTopicName({ variables: { id: topic.id, name } });
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: name, oldTopicName: topic.name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
-  const isTopicManager = useIsCurrentUserTopicManager(topic);
+  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
 
   const options = [];
   if (isTopicManager) {

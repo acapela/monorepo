@@ -28,9 +28,10 @@ import { RoomOwner } from "./RoomOwner";
 
 const fragments = {
   room: gql`
-    ${isCurrentUserRoomMember.fragments.room}
+    ${useIsCurrentUserRoomMember.fragments.room}
     ${openLastPrivateRoomMemberDeletionPrompt.fragments.room}
     ${MembersManagerModal.fragments.user}
+    ${RoomOwner.fragments.room}
 
     fragment ManageRoomMembers_room on room {
       id
@@ -48,6 +49,7 @@ const fragments = {
       }
       ...IsCurrentUserRoomMember_room
       ...PrivateRoomDeletionPrompt_room
+      ...RoomOwner_room
     }
   `,
 };

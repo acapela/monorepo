@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 
 import { useAttachmentQuery } from "~frontend/gql/attachments";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
-import { IconTrash } from "~ui/icons";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { IconCross } from "~ui/icons";
 
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
@@ -19,18 +19,18 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
 
   return (
     <UIHolder>
+      {<MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment as any} />}
+
       {!!onRemoveRequest && (
         <UIRemoveButtonHolder>
-          <WideIconButton
-            tooltip="Remove attachment"
+          <CircleIconButton
+            tooltip="Remove file"
             kind="primary"
-            icon={<IconTrash />}
+            icon={<IconCross />}
             onClick={() => onRemoveRequest(id)}
           />
         </UIRemoveButtonHolder>
       )}
-
-      {<MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment} />}
     </UIHolder>
   );
 };
@@ -38,10 +38,11 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
 const UIHolder = styled.div<{}>`
   display: flex;
   position: relative;
+  height: 120px;
 `;
 
 const UIRemoveButtonHolder = styled.div<{}>`
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 4px;
+  right: 4px;
 `;

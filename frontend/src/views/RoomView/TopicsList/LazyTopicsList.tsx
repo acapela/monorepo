@@ -1,8 +1,8 @@
-import { gql } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import React, { Suspense } from "react";
 
 import { withFragments } from "~frontend/gql/utils";
-import { LazyTopicList_RoomFragment } from "~gql";
+import { LazyTopicList_RoomFragment, TopicListSubscription, TopicListSubscriptionVariables } from "~gql";
 import { namedLazy } from "~shared/namedLazy";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
@@ -13,6 +13,7 @@ const SortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "Sort
 interface Props {
   room: LazyTopicList_RoomFragment;
   activeTopicId: string | null;
+  isStatic: boolean;
   isDisabled?: boolean;
 }
 
@@ -20,18 +21,38 @@ export const LazyTopicsList = withFragments(
   {
     room: gql`
       ${StaticTopicsList.fragments.room}
+
       fragment LazyTopicList_room on room {
+        id
         ...StaticTopicList_room
       }
     `,
   },
-  ({ room, activeTopicId, isDisabled }: Props) => {
+  ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
+    useSubscription<TopicListSubscription, TopicListSubscriptionVariables>(
+      gql`
+        subscription TopicList($roomId: uuid!) {
+          topics: topic(where: { room_id: { _eq: $roomId } }) {
+            id
+            index
+          }
+        }
+      `,
+      { variables: { roomId: room.id } }
+    );
+
+    const staticTopicsList = <StaticTopicsList {...{ room, activeTopicId }} />;
+
+    if (isStatic) {
+      return staticTopicsList;
+    }
+
     SortableTopicsList.preload();
 
     return (
-      <ClientSideOnly fallback={<StaticTopicsList room={room} activeTopicId={activeTopicId} />}>
-        <Suspense fallback={<StaticTopicsList room={room} activeTopicId={activeTopicId} />}>
-          <SortableTopicsList room={room} activeTopicId={activeTopicId} isDisabled={isDisabled} />
+      <ClientSideOnly fallback={staticTopicsList}>
+        <Suspense fallback={staticTopicsList}>
+          <SortableTopicsList {...{ room, activeTopicId, isDisabled }} />
         </Suspense>
       </ClientSideOnly>
     );

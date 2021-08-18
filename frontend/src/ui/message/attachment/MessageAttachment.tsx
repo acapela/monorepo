@@ -68,6 +68,7 @@ const _MessageAttachment = styled<Props>(({ message, attachment, className, onAt
 export const MessageAttachment = withFragments(fragments, _MessageAttachment);
 
 const UIInlineAttachmentHolder = styled.div<{}>`
+  height: 100%;
   display: flex;
   position: relative;
   ${theme.borderRadius.item}

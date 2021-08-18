@@ -10,7 +10,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { useStartCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { TopicList_RoomFragment } from "~gql";
 import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
@@ -26,8 +26,7 @@ import { StaticTopicsList } from "./StaticTopicsList";
 
 const fragments = {
   room: gql`
-    ${isCurrentUserRoomMember.fragments.room}
-    ${LazyTopicsList.fragments.room}
+    ${useIsCurrentUserRoomMember.fragments.room}
     ${StaticTopicsList.fragments.room}
 
     fragment TopicList_room on room {
@@ -38,7 +37,6 @@ const fragments = {
         index
       }
       ...IsCurrentUserRoomMember_room
-      ...LazyTopicList_room
       ...StaticTopicList_room
     }
   `,
@@ -70,12 +68,13 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
+  const startCreateNewTopicFlow = useStartCreateNewTopicFlow();
 
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
-    const newTopic = await startCreateNewTopicFlow({
+    const isCreated = await startCreateNewTopicFlow({
       topicId,
       ownerId: user.id,
       name: "New topic",
@@ -90,15 +89,15 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
       roomContext.editingNameTopicId = topicId;
     });
 
-    if (newTopic) {
-      routes.spaceRoomTopic.push({ topicId: newTopic.id, spaceId, roomId });
+    if (isCreated) {
+      routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
     }
   }
 
   return (
     <CollapsePanel
       persistanceKey={`room-topics-${room.id}`}
-      initialIsOpened={true}
+      isInitiallyOpen
       headerNode={
         <UIHeader>
           <TextH6 spezia semibold>
@@ -115,8 +114,12 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
       }
     >
       <UIHolder>
-        {amIMember && <LazyTopicsList room={room} activeTopicId={activeTopicId} isDisabled={isEditingAnyMessage} />}
-        {!amIMember && <StaticTopicsList room={room} activeTopicId={activeTopicId} />}
+        <LazyTopicsList
+          room={room}
+          activeTopicId={activeTopicId}
+          isDisabled={isEditingAnyMessage}
+          isStatic={!amIMember}
+        />
         {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
 
         <VStack alignItems="center" justifyContent="start">

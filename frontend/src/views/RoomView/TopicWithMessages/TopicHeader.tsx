@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import styled, { css } from "styled-components";
 
@@ -10,7 +10,7 @@ import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserT
 import { isTopicClosed } from "~frontend/topics/utils";
 import { useUpdateTopic } from "~frontend/views/RoomView/shared";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
-import { TopicHeader_RoomFragment, TopicHeader_TopicFragment } from "~gql";
+import { TopicHeader_RoomFragment, TopicHeader_TopicSubscription, TopicHeader_TopicSubscriptionVariables } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -21,37 +21,55 @@ import { CloseTopicModal } from "./CloseTopicModal";
 const fragments = {
   room: gql`
     ${useIsCurrentUserRoomMember.fragments.room}
+    ${useIsCurrentUserTopicManager.fragments.room}
+    ${ManageTopic.fragments.room}
 
     fragment TopicHeader_room on room {
       id
       finished_at
       ...IsCurrentUserRoomMember_room
-    }
-  `,
-  topic: gql`
-    ${isTopicClosed.fragments.topic}
-
-    fragment TopicHeader_topic on topic {
-      id
-      name
-      ...IsTopicClosed_topic
+      ...IsCurrentUserTopicManager_room
+      ...ManageTopic_room
     }
   `,
 };
 
 interface Props {
   room: TopicHeader_RoomFragment;
-  topic: TopicHeader_TopicFragment;
+  topicId: string;
   className?: string;
 }
 
-const _TopicHeader = ({ room, topic }: Props) => {
+const _TopicHeader = ({ room, topicId }: Props) => {
+  const { data } = useSubscription<TopicHeader_TopicSubscription, TopicHeader_TopicSubscriptionVariables>(
+    gql`
+      ${isTopicClosed.fragments.topic}
+      ${useIsCurrentUserTopicManager.fragments.topic}
+      ${ManageTopic.fragments.topic}
+
+      subscription TopicHeader_topic($id: uuid!) {
+        topic: topic_by_pk(id: $id) {
+          id
+          name
+          ...IsTopicClosed_topic
+          ...IsCurrentUserTopicManager_topic
+          ...ManageTopic_topic
+        }
+      }
+    `,
+    { variables: { id: topicId } }
+  );
+  const topic = data?.topic;
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const user = useAssertCurrentUser();
   const isMember = useIsCurrentUserRoomMember(room);
   const [updateTopic] = useUpdateTopic();
-  const isClosed = isTopicClosed(topic);
-  const isTopicManager = useIsCurrentUserTopicManager(topic);
+  const isClosed = Boolean(topic && isTopicClosed(topic));
+  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+
+  if (!topic) {
+    return null;
+  }
 
   return (
     <UIHolder>
@@ -78,7 +96,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
               Close Topic
             </UIToggleCloseButton>
           )}
-          {isMember && <ManageTopic topic={topic} />}
+          {isMember && <ManageTopic room={room} topic={topic} />}
         </UIActions>
       )}
       <AnimatePresence>

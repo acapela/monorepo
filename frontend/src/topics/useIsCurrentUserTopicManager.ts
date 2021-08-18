@@ -1,9 +1,26 @@
+import { gql } from "@apollo/client";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TopicDetailedInfoFragment } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { IsCurrentUserTopicManager_RoomFragment, IsCurrentUserTopicManager_TopicFragment } from "~gql";
 
-export const useIsCurrentUserTopicManager = (topic: TopicDetailedInfoFragment): boolean => {
-  const user = useAssertCurrentUser();
+export const useIsCurrentUserTopicManager = withFragments(
+  {
+    room: gql`
+      fragment IsCurrentUserTopicManager_room on room {
+        owner_id
+      }
+    `,
+    topic: gql`
+      fragment IsCurrentUserTopicManager_topic on topic {
+        owner_id
+      }
+    `,
+  },
+  (room: IsCurrentUserTopicManager_RoomFragment, topic: IsCurrentUserTopicManager_TopicFragment | null) => {
+    const user = useAssertCurrentUser();
 
-  // if the topic has an owner - only the topic owner or room owner can modify the topic
-  return [topic.owner.id, topic.room.owner.id].includes(user.id);
-};
+    // if the topic has an owner - only the topic owner or room owner can modify the topic
+    return Boolean(topic && [topic.owner_id, room.owner_id].includes(user.id));
+  }
+);

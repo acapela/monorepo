@@ -1,8 +1,10 @@
+import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { TopicDetailedInfoFragment } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { TopicDetailedInfoFragment, TopicSummary_TopicFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
@@ -10,11 +12,25 @@ import { Modifiers } from "~ui/theme/colors/createColor";
 
 import { formatDate, useUpdateTopic } from "../shared";
 
+const fragments = {
+  topic: gql`
+    fragment TopicSummary_topic on topic {
+      id
+      name
+      closing_summary
+      closed_at
+      closed_by_user {
+        name
+      }
+    }
+  `,
+};
+
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  topic: TopicSummary_TopicFragment;
 }
 
-export const TopicSummary = ({ topic }: Props) => {
+export const TopicSummary = withFragments(fragments, ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
@@ -22,7 +38,7 @@ export const TopicSummary = ({ topic }: Props) => {
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateTopic({ variables: { id: topic.id, input: { summary: summary.trim() } } });
+      updateTopic({ variables: { id: topic.id, input: { closing_summary: summary.trim() } } });
       trackEvent("Updated Topic Summary", { topicId: topic.id });
     }
   }
@@ -46,7 +62,7 @@ export const TopicSummary = ({ topic }: Props) => {
       />
     </UITopicSummary>
   );
-};
+});
 
 const UITopicSummary = styled.div<{}>`
   display: grid;
