@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash";
+import { uniq, uniqBy } from "lodash";
 
 import { Message, Notification, PrismaPromise, db } from "~db";
 import { Message_Type_Enum } from "~gql";
@@ -53,25 +53,27 @@ function getNewMentionNodesFromMessage(message: Message, messageBefore: Message 
   return newMentionNodes;
 }
 
-async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
+function getMentionedUserIdsFromMessage(message: Message, messageBefore: Message | null): string[] {
   const mentionNodes = getNewMentionNodesFromMessage(message, messageBefore);
 
   if (mentionNodes.length === 0) {
     // no mentions in message
-    return;
+    return [];
   }
+
+  /**
+   * Avoid situation where multiple mentions of same user in the same message
+   */
+  const allUserIds = mentionNodes.map((mention) => mention.attrs.data.userId);
+  return uniq(allUserIds);
+}
+
+async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
+  const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
 
   const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
 
-  /**
-   * Avoid situation where multiple mentions of same user in the same message would result in multiple notifications
-   * being created.
-   */
-  const userUniqueMentionNodes = uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
-
-  for (const mentionNode of userUniqueMentionNodes) {
-    const mentionedUserId = mentionNode.attrs.data.userId;
-
+  for (const mentionedUserId of mentionedUserIds) {
     const isUserMentioningSelf = mentionedUserId === message.user_id;
 
     // Don't create notification if user is mentioning self in the message.
@@ -82,7 +84,7 @@ async function createMessageMentionNotifications(message: Message, messageBefore
     const createNotificationPromise = createNotification({
       type: "topicMention",
       payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
-      userId: mentionNode.attrs.data.userId,
+      userId: mentionedUserId,
     });
 
     createNotificationPromises.push(createNotificationPromise);
