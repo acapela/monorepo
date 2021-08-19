@@ -15,7 +15,6 @@ import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
-import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
 import { TextH6 } from "~ui/typo";
@@ -78,36 +77,36 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
   }
 
   return (
-    <CollapsePanel
-      persistanceKey={`room-topics-${room.id}`}
-      isInitiallyOpen
-      headerNode={
-        <UIHeader>
-          <TextH6 spezia semibold>
-            Topics
-          </TextH6>
-          {!isRoomOpen && (
-            <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
-              <Button size="small" kind="secondary" ref={buttonRef}>
-                Room summary
-              </Button>
-            </RouteLink>
-          )}
-        </UIHeader>
-      }
-    >
-      <UIHolder>
-        {amIMember && (
-          <LazyTopicsList
-            topics={topics}
-            activeTopicId={activeTopicId}
-            isDisabled={isEditingAnyMessage}
-            onMoveBetween={moveBetween}
-            onMoveToStart={moveToStart}
-            onMoveToEnd={moveToEnd}
-          />
+    <UIHolder>
+      <UIHeader>
+        <TextH6 spezia semibold>
+          Topics
+        </TextH6>
+        {!isRoomOpen && (
+          <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
+            <Button size="small" kind="secondary" ref={buttonRef}>
+              Room summary
+            </Button>
+          </RouteLink>
         )}
-        {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
+      </UIHeader>
+      <UIBody>
+        {topics.length > 0 && (
+          <UITopicsListHolder>
+            {amIMember && (
+              <LazyTopicsList
+                topics={topics}
+                activeTopicId={activeTopicId}
+                isDisabled={isEditingAnyMessage}
+                onMoveBetween={moveBetween}
+                onMoveToStart={moveToStart}
+                onMoveToEnd={moveToEnd}
+              />
+            )}
+            {!amIMember && <StaticTopicsList topics={topics} activeTopicId={activeTopicId} />}
+          </UITopicsListHolder>
+        )}
+
         {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
 
         <VStack alignItems="center" justifyContent="start">
@@ -125,25 +124,39 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
             New Topic
           </UINewTopicButton>
         </VStack>
-      </UIHolder>
-    </CollapsePanel>
+      </UIBody>
+    </UIHolder>
   );
 });
 
-const UIHolder = styled.div<{}>`
-  overflow-y: hidden;
-  margin-top: 16px;
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const UIBody = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const UITopicsListHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 const UIHeader = styled.div<{}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
 `;
 
 const UINoTopicsMessage = styled.div<{}>``;
 
 const UINewTopicButton = styled(Button)`
-  margin-top: 8px;
+  margin-top: 16px;
   padding: 8px 48px;
 `;

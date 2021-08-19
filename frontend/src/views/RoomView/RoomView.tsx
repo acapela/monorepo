@@ -3,12 +3,13 @@ import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { updateRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { getRoomManagePopoverOptions } from "~frontend/rooms/editOptions";
+import { getRoomManagePopoverOptions, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
 import { RoomDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
@@ -48,11 +49,15 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
     trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
 
+  async function handleCloseRoomClick() {
+    await handleToggleCloseRoom(room);
+  }
+
   return (
     <>
       <PageMeta title={room.name} />
       <UIHolder>
-        <UIRoomInfo>
+        <UISidebar>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
             isInitiallyOpen
@@ -91,10 +96,11 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
             <RoomSidebarInfo room={room} />
           </CollapsePanel>
 
-          <CardBase>
+          <UITopicsCard>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
-          </CardBase>
-        </UIRoomInfo>
+          </UITopicsCard>
+          <CloseRoomButton onClick={handleCloseRoomClick}>Close Room</CloseRoomButton>
+        </UISidebar>
 
         <UIContentHolder>{children}</UIContentHolder>
       </UIHolder>
@@ -110,13 +116,13 @@ const UIHolder = styled.div<{}>`
   min-height: 0;
 `;
 
-const UIRoomInfo = styled.div<{}>`
+const UISidebar = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   gap: 24px;
   padding: 32px;
-  overflow-y: auto;
 `;
 
 const UIContentHolder = styled.div<{}>`
@@ -133,6 +139,7 @@ const UIRoomHead = styled(TextH4)<{}>`
 
 const UIRoomTitle = styled.div<{}>`
   padding-right: 16px;
+  display: flex;
   ${(props) =>
     props.onClick &&
     css`
@@ -145,4 +152,14 @@ const UIRoomTags = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+const CloseRoomButton = styled(Button)`
+  align-self: center;
+`;
+
+const UITopicsCard = styled(CardBase)`
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 `;

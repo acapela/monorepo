@@ -2,7 +2,7 @@ import React from "react";
 
 import { TopicDetailedInfoFragment } from "~gql";
 
-import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
+import { UITopic, UITopicsList } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
@@ -11,13 +11,11 @@ interface Props {
 }
 
 export const StaticTopicsList = ({ topics, activeTopicId }: Props) => (
-  <UIScrollContainer>
-    <UITopicsList>
-      {topics.map((topic) => (
-        <UITopic key={topic.id}>
-          <TopicMenuItem topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled={true} />
-        </UITopic>
-      ))}
-    </UITopicsList>
-  </UIScrollContainer>
+  <UITopicsList>
+    {topics.map((topic) => (
+      <UITopic key={topic.id}>
+        <TopicMenuItem topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled={true} />
+      </UITopic>
+    ))}
+  </UITopicsList>
 );
