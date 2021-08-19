@@ -9034,9 +9034,27 @@ export type IsTopicClosed_TopicFragment = (
   & Pick<Topic, 'closed_at' | 'closed_by_user_id'>
 );
 
+export type MissingTeamMembersQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+  userIds?: Maybe<Array<Scalars['uuid']> | Scalars['uuid']>;
+}>;
+
+
+export type MissingTeamMembersQuery = (
+  { __typename?: 'query_root' }
+  & { missingTeamMembers: Array<(
+    { __typename?: 'team_member' }
+    & { user: (
+      { __typename?: 'user' }
+      & Pick<User, 'id' | 'name' | 'email' | 'avatar_url'>
+    ) }
+  )> }
+);
+
 export type MembersManagerModal_UserFragment = (
   { __typename?: 'user' }
   & Pick<User, 'id'>
+  & UserBasicInfo_UserFragment
 );
 
 export type MessageAttachment_MessageFragment = (
@@ -9192,16 +9210,22 @@ export type RoomOwner_RoomFragment = (
   ) }
 );
 
+export type ManageRoomMembers_MemberFragment = (
+  { __typename?: 'room_member' }
+  & { user: (
+    { __typename?: 'user' }
+    & Pick<User, 'id' | 'email'>
+    & MembersManagerModal_UserFragment
+    & AvatarList_UserFragment
+  ) }
+);
+
 export type ManageRoomMembers_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'is_private' | 'owner_id'>
   & { members: Array<(
     { __typename?: 'room_member' }
-    & { user: (
-      { __typename?: 'user' }
-      & Pick<User, 'email'>
-      & MembersManagerModal_UserFragment
-    ) }
+    & ManageRoomMembers_MemberFragment
   )>, invitations: Array<(
     { __typename?: 'room_invitation' }
     & Pick<Room_Invitation, 'id' | 'email'>
@@ -9209,6 +9233,36 @@ export type ManageRoomMembers_RoomFragment = (
   & IsCurrentUserRoomMember_RoomFragment
   & PrivateRoomDeletionPrompt_RoomFragment
   & RoomOwner_RoomFragment
+);
+
+export type ManageRoomMembers_InvitationsQueryVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type ManageRoomMembers_InvitationsQuery = (
+  { __typename?: 'query_root' }
+  & { invitations: Array<(
+    { __typename?: 'team_invitation' }
+    & Pick<Team_Invitation, 'email'>
+  )> }
+);
+
+export type ManageRoomMembers_MembersSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type ManageRoomMembers_MembersSubscription = (
+  { __typename?: 'subscription_root' }
+  & { room_by_pk?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id'>
+    & { members: Array<(
+      { __typename?: 'room_member' }
+      & ManageRoomMembers_MemberFragment
+    )> }
+  )> }
 );
 
 export type AddRoomMemberMutationVariables = Exact<{

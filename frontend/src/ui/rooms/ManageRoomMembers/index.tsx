@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import styled from "styled-components";
@@ -7,14 +7,21 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
 import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { useCurrentTeamDetails } from "~frontend/gql/teams";
 import { withFragments } from "~frontend/gql/utils";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { MembersManagerModal } from "~frontend/ui/MembersManager/MembersManagerModal";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { WarningModal } from "~frontend/utils/warningModal";
-import { ManageRoomMembers_RoomFragment, RemoveRoomMemberMutation, RemoveRoomMemberMutationVariables } from "~gql";
+import {
+  ManageRoomMembers_InvitationsQuery,
+  ManageRoomMembers_InvitationsQueryVariables,
+  ManageRoomMembers_MembersSubscription,
+  ManageRoomMembers_MembersSubscriptionVariables,
+  ManageRoomMembers_RoomFragment,
+  RemoveRoomMemberMutation,
+  RemoveRoomMemberMutationVariables,
+} from "~gql";
 import { assertDefined } from "~shared/assert";
 import { handleWithStopPropagation } from "~shared/events";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -26,11 +33,25 @@ import { addToast } from "~ui/toasts/data";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 import { RoomOwner } from "./RoomOwner";
 
+const roomMemberFragment = gql`
+  ${MembersManagerModal.fragments.user}
+  ${AvatarList.fragments.user}
+
+  fragment ManageRoomMembers_member on room_member {
+    user {
+      id
+      email
+      ...MembersManagerModal_user
+      ...AvatarList_user
+    }
+  }
+`;
+
 const fragments = {
   room: gql`
     ${useIsCurrentUserRoomMember.fragments.room}
     ${openLastPrivateRoomMemberDeletionPrompt.fragments.room}
-    ${MembersManagerModal.fragments.user}
+    ${roomMemberFragment}
     ${RoomOwner.fragments.room}
 
     fragment ManageRoomMembers_room on room {
@@ -38,10 +59,7 @@ const fragments = {
       is_private
       owner_id
       members {
-        user {
-          email
-          ...MembersManagerModal_user
-        }
+        ...ManageRoomMembers_member
       }
       invitations {
         id
@@ -61,7 +79,33 @@ interface Props {
 
 export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUserLeave }: Props) => {
   const teamId = useAssertCurrentTeamId();
-  const [team] = useCurrentTeamDetails();
+  const { data: invitationResult } = useQuery<
+    ManageRoomMembers_InvitationsQuery,
+    ManageRoomMembers_InvitationsQueryVariables
+  >(gql`
+    query ManageRoomMembers_invitations($teamId: uuid!) {
+      invitations: team_invitation(where: { team_id: { _eq: $teamId } }) {
+        email
+      }
+    }
+  `);
+
+  useSubscription<ManageRoomMembers_MembersSubscription, ManageRoomMembers_MembersSubscriptionVariables>(
+    gql`
+      ${roomMemberFragment}
+
+      subscription ManageRoomMembers_members($roomId: uuid!) {
+        room_by_pk(id: $roomId) {
+          id
+          members {
+            ...ManageRoomMembers_member
+          }
+        }
+      }
+    `,
+    { variables: { roomId: room.id } }
+  );
+
   const currentUser = useCurrentUser();
   const members = room.members.map((m) => m.user);
   const amIMember = useIsCurrentUserRoomMember(room);
@@ -166,8 +210,7 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
   function handleInviteByEmailRequest(email: string) {
     requestedEmail.current = email;
 
-    const teamInvitationsEmails = new Set(team?.invitations.map(({ email }) => email));
-    if (teamInvitationsEmails.has(email)) {
+    if (invitationResult?.invitations.some((invitation) => invitation.email == email)) {
       handleInviteByEmail();
     } else {
       setShouldShowWarning(true);

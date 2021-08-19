@@ -1,8 +1,6 @@
 import { gql } from "@apollo/client";
-import { useMemo } from "react";
 import styled from "styled-components";
 
-import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { withFragments } from "~frontend/gql/utils";
 import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
@@ -23,8 +21,11 @@ interface Invitation {
 export const MembersManagerModal = withFragments(
   {
     user: gql`
+      ${UserBasicInfo.fragments.user}
+
       fragment MembersManagerModal_user on user {
         id
+        ...UserBasicInfo_user
       }
     `,
   },
@@ -49,19 +50,16 @@ export const MembersManagerModal = withFragments(
     invitations?: Invitation[];
     onRemoveInvitation?: (invitationId: string) => void;
   }) {
-    const teamMembers = useCurrentTeamMembers();
-
-    const potentialUsers = useMemo(() => {
-      const currentUsersIdsSet = new Set<string>(currentUsers.map(({ id }) => id));
-      return teamMembers.filter(({ id }) => !currentUsersIdsSet.has(id));
-    }, [teamMembers, currentUsers]);
-
     return (
       <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
         <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>
           <PanelWithTopbarAndCloseButton title={title} onClose={onCloseRequest}>
             <UIHolder>
-              <AddMemberInlineForm users={potentialUsers} onAddMember={onAddUser} onInviteByEmail={onInviteByEmail} />
+              <AddMemberInlineForm
+                memberUserIds={currentUsers.map((u) => u.id)}
+                onAddMember={onAddUser}
+                onInviteByEmail={onInviteByEmail}
+              />
               {currentUsers.length > 0 && (
                 <UISelectGridContainer>
                   {currentUsers.map((user) => (
