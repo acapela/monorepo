@@ -9462,6 +9462,23 @@ export type LazyTopicList_RoomFragment = (
   & StaticTopicList_RoomFragment
 );
 
+export type TopicList_RoomSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type TopicList_RoomSubscription = (
+  { __typename?: 'subscription_root' }
+  & { room_by_pk?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id'>
+    & { topics: Array<(
+      { __typename?: 'topic' }
+      & Pick<Topic, 'id' | 'index'>
+    )> }
+  )> }
+);
+
 export type ManageTopic_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id'>
