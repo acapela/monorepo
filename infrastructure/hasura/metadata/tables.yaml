@@ -1105,6 +1105,9 @@
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
+    name: team_member_slack_installation
+- table:
+    schema: public
     name: team_slack_installation
   object_relationships:
     - name: team

@@ -14,7 +14,9 @@ import { isDev } from "~shared/dev";
 import { setupSlackCommands } from "./commands";
 import { setupSlackEvents } from "./events";
 
-const scopes = ["im:write"];
+const botScopes = ["channels:read", "commands", "users.profile:read", "users:read", "users:read.email"];
+
+const userScopes = ["groups:read", "im:read", "mpim:read"];
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
@@ -32,9 +34,6 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: crypto.randomBytes(64).toString("hex"),
-
-  scopes,
-
   installationStore: {
     async storeInstallation(installation) {
       const { teamId } = parseMetadata(installation);
@@ -73,7 +72,8 @@ const slackReceiver = new SlackBolt.ExpressReceiver({
 const getSlackInstallURL = async (state?: unknown) => {
   const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
   return slackReceiver.installer?.generateInstallUrl({
-    scopes,
+    userScopes,
+    scopes: botScopes,
     redirectUri: basePath + "/slack/oauth_redirect",
     metadata: JSON.stringify(state),
   });
@@ -85,7 +85,7 @@ export const slackApp = new SlackBolt.App({
   developerMode: isDev(),
 });
 
-export const slackChat = slackApp.client.chat;
+export const slackClient = slackApp.client;
 
 export const getTeamSlackInstallationURL: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },
