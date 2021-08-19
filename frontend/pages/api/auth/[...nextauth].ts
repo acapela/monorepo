@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
 import { AdapterInstance } from "next-auth/adapters";
-import Providers from "next-auth/providers";
+import Providers, { EmailConfig } from "next-auth/providers";
 
 import { initializeSecrets } from "~config";
 import { Account, User, db } from "~db";
@@ -174,6 +174,14 @@ const authAdapterProvider = {
         // We're using JWT so sessions are not needed.
         // throw new SessionsNotSupportedError();
       },
+      async createVerificationRequest(identifier, url, token, secret, provider) {
+        const { sendVerificationRequest } = provider;
+        const ONE_DAY = 1000 * 24 * 60 * 60;
+        const expires = new Date(Date.now() + ONE_DAY);
+        await db.verification_requests.create({ data: { identifier, token, expires } });
+        await sendVerificationRequest({ identifier, url } as VerificationRequestParams);
+        return;
+      },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async getVerificationRequest(identifier, token, secret, provider) {
         return await db.verification_requests.findFirst({ where: { identifier, token } });
@@ -189,9 +197,9 @@ const authAdapterProvider = {
 interface VerificationRequestParams {
   identifier: string;
   url: string;
-  // baseUrl: string;
-  // token: string;
-  // provider: ProviderEmailOptions;
+  baseUrl: string;
+  token: string;
+  provider: EmailConfig;
 }
 
 async function sendVerificationRequest({ identifier: email, url }: VerificationRequestParams) {
