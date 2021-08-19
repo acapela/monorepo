@@ -37,10 +37,12 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   installationStore: {
     async storeInstallation(installation) {
       const { teamId } = parseMetadata(installation);
-      await db.team_slack_installation.create({ data: { team_id: teamId, data: installation as never } });
+      await db.team_slack_installation.create({
+        data: { team_id: teamId, data: installation as never, slack_team_id: installation.team?.id },
+      });
     },
     async fetchInstallation(query) {
-      const slackInstallation = await db.team_slack_installation.findFirst({});
+      const slackInstallation = await db.team_slack_installation.findFirst({ where: { slack_team_id: query.teamId } });
       assert(
         slackInstallation?.data,
         new UnprocessableEntityError(`No Slack installation found for query ${JSON.stringify(query)}`)
@@ -48,7 +50,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       return slackInstallation.data as unknown as SlackBolt.Installation;
     },
     async deleteInstallation(query) {
-      await db.team_slack_installation.deleteMany({ where: { data: { path: ["teamId"], equals: query.teamId } } });
+      await db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } });
     },
   },
 

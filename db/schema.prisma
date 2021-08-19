@@ -299,7 +299,8 @@ model room_invitation {
 }
 
 model team_slack_installation {
-  team_id String @id @db.Uuid
-  data    Json
-  team    team   @relation(fields: [team_id], references: [id])
+  team_id       String  @id @db.Uuid
+  data          Json
+  slack_team_id String?
+  team          team    @relation(fields: [team_id], references: [id])
 }
