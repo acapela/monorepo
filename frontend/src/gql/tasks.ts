@@ -18,6 +18,15 @@ export const TaskBasicInfoFragment = createFragment<TaskBasicInfoFragmentType>(
       }
       message {
         ...MessageBasicInfo
+        topic {
+          id
+          room {
+            id
+            space {
+              id
+            }
+          }
+        }
       }
       created_at
       done_at

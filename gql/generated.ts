@@ -9597,6 +9597,18 @@ export type TaskBasicInfoFragment = (
     & UserBasicInfoFragment
   ), message: (
     { __typename?: 'message' }
+    & { topic: (
+      { __typename?: 'topic' }
+      & Pick<Topic, 'id'>
+      & { room: (
+        { __typename?: 'room' }
+        & Pick<Room, 'id'>
+        & { space: (
+          { __typename?: 'space' }
+          & Pick<Space, 'id'>
+        ) }
+      ) }
+    ) }
     & MessageBasicInfoFragment
   ) }
 );
