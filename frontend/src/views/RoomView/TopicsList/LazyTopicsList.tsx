@@ -29,20 +29,20 @@ export const LazyTopicsList = withFragments(
     `,
   },
   ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
-    // useSubscription<TopicListSubscription, TopicListSubscriptionVariables>(
-    //   gql`
-    //     subscription TopicList_room($roomId: uuid!) {
-    //       room_by_pk(id: $roomId) {
-    //         id
-    //         topics {
-    //           id
-    //           index
-    //         }
-    //       }
-    //     }
-    //   `,
-    //   { variables: { roomId: room.id } }
-    // );
+    useSubscription<TopicListSubscription, TopicListSubscriptionVariables>(
+      gql`
+        subscription TopicList_room($roomId: uuid!) {
+          room_by_pk(id: $roomId) {
+            id
+            topics {
+              id
+              index
+            }
+          }
+        }
+      `,
+      { variables: { roomId: room.id } }
+    );
 
     const staticTopicsList = <StaticTopicsList {...{ room, activeTopicId }} />;
 

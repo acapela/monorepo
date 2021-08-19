@@ -41,8 +41,7 @@ export const useDeleteTopic = () =>
     `,
     {
       optimisticResponse: ({ id, roomId }) => ({
-        __typename: "mutation_root",
-        topic: { __typename: "topic", id, room_id: roomId || "whatever" },
+        topic: { __typename: "topic", id, room_id: roomId },
       }),
       update(cache, { data }) {
         if (!data || !data.topic) {
