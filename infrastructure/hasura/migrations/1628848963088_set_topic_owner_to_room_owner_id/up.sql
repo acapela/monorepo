@@ -1,3 +1,17 @@
+UPDATE
+  topic
+SET
+  owner_id = (
+    SELECT
+      creator_id
+    FROM
+      room
+    WHERE
+        topic.room_id = room.id
+  )
+WHERE
+  owner_id IS NULL;
+
 ALTER TABLE
    "public"."topic"
 ALTER COLUMN

@@ -51,7 +51,6 @@ interface Session {}
 type AuthAdapter = AdapterInstance<User, Profile, Session>;
 
 async function checkWhitelist(profile: Profile) {
-  return;
   const email = profile.email.toLocaleLowerCase();
 
   const teamInviteEntry = await db.team_invitation.findFirst({ where: { email } });
