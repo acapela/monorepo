@@ -25,6 +25,7 @@ import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
+import { MessageTasks } from "./MessageTasks";
 
 interface Props extends MotionProps {
   message: MessageFeedInfoFragment;
@@ -129,6 +130,8 @@ export const Message = styled<Props>(
                 <MessageReactions message={message} />
               </UIMessageContent>
             )}
+
+            {message.tasks.length > 0 && <MessageTasks tasksAuthor={message.user} tasks={message.tasks} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
@@ -149,4 +152,8 @@ const UIMessageContent = styled.div<{}>`
   gap: 16px;
 `;
 
-const UIMessageBody = styled.div<{}>``;
+const UIMessageBody = styled.div<{}>`
+  ${MessageTasks} {
+    margin-top: 24px;
+  }
+`;

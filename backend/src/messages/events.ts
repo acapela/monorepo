@@ -1,6 +1,6 @@
-import { uniqBy } from "lodash";
+import { uniq, uniqBy } from "lodash";
 
-import { Message, Notification, PrismaPromise, db } from "~db";
+import { Message, Notification, PrismaPromise, Task, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
@@ -53,42 +53,56 @@ function getNewMentionNodesFromMessage(message: Message, messageBefore: Message 
   return newMentionNodes;
 }
 
-async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
+function getMentionedUserIdsFromMessage(message: Message, messageBefore: Message | null): string[] {
   const mentionNodes = getNewMentionNodesFromMessage(message, messageBefore);
 
   if (mentionNodes.length === 0) {
     // no mentions in message
-    return;
+    return [];
   }
+
+  /**
+   * Avoid situation where multiple mentions of same user in the same message
+   */
+  const allUserIds = mentionNodes.map((mention) => mention.attrs.data.userId);
+  const uniqueUserIds = uniq(allUserIds);
+
+  const userIdsExcludingMessageAuthor = uniqueUserIds.filter((userId) => userId != message.user_id);
+
+  return userIdsExcludingMessageAuthor;
+}
+
+async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
+  const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
 
   const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
 
-  /**
-   * Avoid situation where multiple mentions of same user in the same message would result in multiple notifications
-   * being created.
-   */
-  const userUniqueMentionNodes = uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
-
-  for (const mentionNode of userUniqueMentionNodes) {
-    const mentionedUserId = mentionNode.attrs.data.userId;
-
-    const isUserMentioningSelf = mentionedUserId === message.user_id;
-
-    // Don't create notification if user is mentioning self in the message.
-    if (isUserMentioningSelf) {
-      continue;
-    }
-
+  for (const mentionedUserId of mentionedUserIds) {
     const createNotificationPromise = createNotification({
       type: "topicMention",
       payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
-      userId: mentionNode.attrs.data.userId,
+      userId: mentionedUserId,
     });
 
     createNotificationPromises.push(createNotificationPromise);
   }
 
   return await db.$transaction(createNotificationPromises);
+}
+
+async function createMessageMentionTasks(message: Message, messageBefore: Message | null) {
+  const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
+  const createTasksPromises: Array<PrismaPromise<Task>> = [];
+
+  for (const mentionedUserId of mentionedUserIds) {
+    createTasksPromises.push(
+      db.task.create({
+        data: { message_id: message.id, user_id: mentionedUserId },
+      })
+    );
+  }
+
+  return await db.$transaction(createTasksPromises);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,5 +118,6 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
     createMessageMentionNotifications(event.item, event.itemBefore),
+    createMessageMentionTasks(event.item, event.itemBefore),
   ]);
 }

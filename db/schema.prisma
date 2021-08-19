@@ -69,6 +69,7 @@ model message {
   last_seen_message     last_seen_message[]
   other_message         message[]           @relation("messageTomessage_replied_to_message_id")
   message_reaction      message_reaction[]
+  task                  task[]
 }
 
 model message_type {
@@ -237,6 +238,7 @@ model user {
   room_invitation_room_invitation_used_by_user_idTouser  room_invitation[]   @relation("room_invitation_used_by_user_idTouser")
   room_member                                            room_member[]
   space_member                                           space_member[]
+  task                                                   task[]
   team_team_owner_idTouser                               team[]              @relation("team_owner_idTouser")
   team_invitation                                        team_invitation[]
   team_invitation_team_invitation_used_by_user_idTouser  team_invitation[]   @relation("team_invitation_used_by_user_idTouser")
@@ -302,4 +304,14 @@ model team_slack_installation {
   team_id String @id @db.Uuid
   data    Json
   team    team   @relation(fields: [team_id], references: [id])
+}
+
+model task {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message_id String    @db.Uuid
+  user_id    String    @db.Uuid
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  done_at    DateTime? @db.Timestamptz(6)
+  message    message   @relation(fields: [message_id], references: [id])
+  user       user      @relation(fields: [user_id], references: [id])
 }
