@@ -1,10 +1,33 @@
 import { gql, useMutation } from "@apollo/client";
 import styled from "styled-components";
 
-import { DeleteTopicMutation, DeleteTopicMutationVariables } from "~gql";
+import {
+  DeleteTopicMutation,
+  DeleteTopicMutationVariables,
+  UpdateTopicNameMutation,
+  UpdateTopicNameMutationVariables,
+} from "~gql";
 import { addToast } from "~ui/toasts/data";
 
 import { TopicMenuItem } from "./TopicMenuItem";
+
+export const useUpdateTopicName = () =>
+  useMutation<UpdateTopicNameMutation, UpdateTopicNameMutationVariables>(
+    gql`
+      mutation UpdateTopicName($id: uuid!, $name: String!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    {
+      optimisticResponse: ({ id, name }) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id, name },
+      }),
+    }
+  );
 
 export const useDeleteTopic = () =>
   useMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(

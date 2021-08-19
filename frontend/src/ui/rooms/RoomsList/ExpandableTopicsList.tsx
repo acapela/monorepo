@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { useStartCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
@@ -24,6 +24,7 @@ const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
 export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topics, isAbleToAddTopic, roomId }: Props) {
   const user = useAssertCurrentUser();
+  const startCreateNewTopicFlow = useStartCreateNewTopicFlow();
 
   const detailedRoomMessagesCount = useDetailedRoomMessagesCount(roomId);
 

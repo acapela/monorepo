@@ -1,16 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
-import {
-  DndContext,
-  DragEndEvent,
-  DragStartEvent,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import { withFragments } from "~frontend/gql/utils";
 import {
@@ -20,6 +12,7 @@ import {
 } from "~frontend/rooms/order";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { SortableTopicList_RoomFragment, UpdateTopicIndexMutation, UpdateTopicIndexMutationVariables } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
 
 import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
 import { SortableTopicMenuItem } from "./TopicMenuItem";
@@ -68,6 +61,7 @@ type Props = {
 export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicId, isDisabled }: Props) => {
   const { topics } = room;
   const [updateTopicIndex] = useUpdateTopicIndex();
+  const [isDragging, { set: startDragging, unset: stopDragging }] = useBoolean(false);
 
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor));
@@ -95,6 +89,7 @@ export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicI
       }
       updateTopicIndex({ variables: { id: sortedTopics[activeIndex].id, index: newIndex } });
     }
+    stopDragging();
   }
 
   return (
@@ -103,6 +98,7 @@ export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicI
         sensors={sensors}
         modifiers={[restrictToFirstScrollableAncestor]}
         collisionDetection={closestCenter}
+        onDragStart={() => startDragging()}
         onDragEnd={handleDragEnd}
       >
         <UITopicsList>
@@ -114,6 +110,7 @@ export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicI
                   room={room}
                   topic={topic}
                   isActive={activeTopicId === topic.id}
+                  isDragging={isDragging}
                 />
               </UITopic>
             ))}

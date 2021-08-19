@@ -10,7 +10,6 @@ import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { useUpdateTopic } from "~frontend/views/RoomView/shared";
 import {
   TopicMenuItemSubscription,
   TopicMenuItemSubscriptionVariables,
@@ -26,7 +25,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
 
-import { useDeleteTopic } from ".//shared";
+import { useDeleteTopic, useUpdateTopicName } from ".//shared";
 import { ManageTopic } from "./ManageTopic";
 import { TopicOwner } from "./TopicOwner";
 
@@ -62,6 +61,7 @@ type Props = {
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
+  isDragging?: boolean;
   rootProps?: React.HTMLAttributes<HTMLDivElement>;
 };
 
@@ -84,7 +84,7 @@ export const SortableTopicMenuItem = withFragments(
 );
 
 const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
-  { room, topic, isActive, className, isEditingDisabled, rootProps },
+  { room, topic, isActive, className, isEditingDisabled, isDragging, rootProps },
   ref
 ) {
   useSubscription<TopicMenuItemSubscription, TopicMenuItemSubscriptionVariables>(
@@ -100,7 +100,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
     { variables: { topicId: topic.id } }
   );
   const roomContext = useRoomStoreContext();
-  const [updateTopic] = useUpdateTopic();
+  const [updateTopicName] = useUpdateTopicName();
   const [deleteTopic] = useDeleteTopic();
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
@@ -116,7 +116,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   // We need to disable the Link while editing, so that selection does not trigger navigation
   const NameWrap = useCallback(
     (props: { children: React.ReactChild }) =>
-      isInEditMode ? (
+      isInEditMode || isDragging ? (
         <React.Fragment {...props} />
       ) : (
         <RouteLink
@@ -131,7 +131,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
 
   const handleNewTopicName = (newName: string) => {
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: newName, oldTopicName: topic.name });
-    updateTopic({ variables: { id: topic.id, input: { name: newName } } });
+    updateTopicName({ variables: { id: topic.id, name: newName } });
 
     roomContext.editingNameTopicId = null;
 

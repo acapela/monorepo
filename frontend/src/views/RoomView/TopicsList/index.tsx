@@ -77,7 +77,6 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
     const isCreated = await startCreateNewTopicFlow({
       topicId,
       ownerId: user.id,
-      name: "New topic",
       slug: `new-topic-${generateId(5)}`,
       roomId,
       navigateAfterCreation: true,

@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
-import { TopicDetailedInfoFragment, TopicSummary_TopicFragment } from "~gql";
+import { TopicSummary_TopicFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";

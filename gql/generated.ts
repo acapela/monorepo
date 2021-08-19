@@ -9298,6 +9298,19 @@ export type DeadlineManager_RoomFragment = (
   & Pick<Room, 'id' | 'deadline'>
 );
 
+export type DeadlineManagerSubscriptionVariables = Exact<{
+  roomId: Scalars['uuid'];
+}>;
+
+
+export type DeadlineManagerSubscription = (
+  { __typename?: 'subscription_root' }
+  & { room_by_pk?: Maybe<(
+    { __typename?: 'room' }
+    & DeadlineManager_RoomFragment
+  )> }
+);
+
 export type RoomCloseModal_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id'>
@@ -9396,20 +9409,12 @@ export type TopicHeader_RoomFragment = (
   & ManageTopic_RoomFragment
 );
 
-export type TopicHeader_TopicSubscriptionVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type TopicHeader_TopicSubscription = (
-  { __typename?: 'subscription_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'name'>
-    & IsTopicClosed_TopicFragment
-    & IsCurrentUserTopicManager_TopicFragment
-    & ManageTopic_TopicFragment
-  )> }
+export type TopicHeader_TopicFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'name'>
+  & IsTopicClosed_TopicFragment
+  & IsCurrentUserTopicManager_TopicFragment
+  & ManageTopic_TopicFragment
 );
 
 export type TopicSummaryMessage_TopicFragment = (
@@ -9432,6 +9437,7 @@ export type TopicWithMessages_TopicFragment = (
   & Pick<Topic, 'id'>
   & IsTopicClosed_TopicFragment
   & TopicSummaryMessage_TopicFragment
+  & TopicHeader_TopicFragment
 );
 
 export type TopicMessagesAscSubscriptionVariables = Exact<{
@@ -9466,20 +9472,6 @@ export type TopicListSubscription = (
   & { topics: Array<(
     { __typename?: 'topic' }
     & Pick<Topic, 'id' | 'index'>
-  )> }
-);
-
-export type UpdateTopicNameMutationVariables = Exact<{
-  id: Scalars['uuid'];
-  name: Scalars['String'];
-}>;
-
-
-export type UpdateTopicNameMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'name'>
   )> }
 );
 
@@ -9588,6 +9580,20 @@ export type TopicList_RoomFragment = (
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment
+);
+
+export type UpdateTopicNameMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  name: Scalars['String'];
+}>;
+
+
+export type UpdateTopicNameMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'name'>
+  )> }
 );
 
 export type DeleteTopicMutationVariables = Exact<{

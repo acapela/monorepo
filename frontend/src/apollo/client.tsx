@@ -31,6 +31,20 @@ import { createDateParseLink } from "./dateStringParseLink";
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
 const typePolicies: TypedTypePolicies = {
+  Query: {
+    fields: {
+      topic: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  Subscription: {
+    fields: {
+      topic: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
   space_member: {
     keyFields: ["space_id", "user_id"],
     merge: mergeUsingIncoming,
@@ -39,6 +53,20 @@ const typePolicies: TypedTypePolicies = {
     fields: {
       members: {
         keyArgs: ["user_id"],
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  room: {
+    fields: {
+      topics: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  topic: {
+    fields: {
+      messages: {
         merge: mergeUsingIncoming,
       },
     },
