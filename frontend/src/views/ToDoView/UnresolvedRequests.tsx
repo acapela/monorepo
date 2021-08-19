@@ -25,7 +25,7 @@ export const UnresolvedRequests = () => {
   });
 
   return (
-    <ToDoSection title={`Mentions of you (${tasks?.length || 0})`}>
+    <ToDoSection title={`Requests of your input (${tasks?.length || 0})`}>
       {tasks?.map(({ message, id }) => {
         const { topic } = message;
         return (

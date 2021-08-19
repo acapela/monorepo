@@ -9,8 +9,8 @@ export const ToDoView = () => {
   return (
     <SpacedAppLayoutContainer isNarrow topSpaceSize="large">
       <UIContent>
-        <OpenTopics />
         <UnresolvedRequests />
+        <OpenTopics />
       </UIContent>
     </SpacedAppLayoutContainer>
   );
