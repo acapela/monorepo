@@ -35,6 +35,7 @@ services:
       HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_ACTION_SECRET}
       HASURA_EVENTS_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/events
       HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_EVENT_SECRET}
+      HASURA_CRON_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/cron
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
 volumes:
   db_data:

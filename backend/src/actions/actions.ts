@@ -48,7 +48,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   }
 });
 
-function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
+export function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
   const token = extractAndAssertBearerToken(req.get("Authorization") || "");
 
   if (!token) {
