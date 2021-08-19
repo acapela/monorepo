@@ -15,7 +15,8 @@
     "axios": "*",
     "express": "*",
     "hasura-cli": "*",
-    "typescript": "*"
+    "typescript": "*",
+    "date-fns": "*"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.8.0",

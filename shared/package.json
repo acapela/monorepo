@@ -2,6 +2,9 @@
   "name": "~shared",
   "version": "0.1.0",
   "license": "UNLICENSED",
+  "peerDependencies": {
+    "date-fns": "*"
+  },
   "dependencies": {
     "@sendgrid/mail": "^7.4.4",
     "analytics-node": "^4.0.1",
