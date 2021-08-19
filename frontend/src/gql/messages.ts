@@ -16,6 +16,7 @@ import { getUUID } from "~shared/uuid";
 
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
+import { TaskBasicInfoFragment } from "./tasks";
 import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
 import { UserBasicInfoFragment, convertUserTokenDataToInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
@@ -40,6 +41,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
     ${MessageBasicInfoFragment()}
     ${AttachmentDetailedInfoFragment()}
     ${ReactionBasicInfoFragment()}
+    ${TaskBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
       ...MessageBasicInfo
@@ -49,6 +51,10 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
       }
       message_reactions {
         ...ReactionBasicInfo
+      }
+
+      tasks {
+        ...TaskBasicInfo
       }
     }
   `

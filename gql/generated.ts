@@ -845,6 +845,10 @@ export interface Message {
   /** An object relationship */
   replied_to_message?: Maybe<Message>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
+  /** An array relationship */
+  tasks: Array<Task>;
+  /** An aggregate relationship */
+  tasks_aggregate: Task_Aggregate;
   /** An object relationship */
   topic: Topic;
   topic_id: Scalars['uuid'];
@@ -899,6 +903,26 @@ export interface MessageMessage_Reactions_AggregateArgs {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Reaction_Order_By>>;
   where?: Maybe<Message_Reaction_Bool_Exp>;
+}
+
+
+/** columns and relationships of "message" */
+export interface MessageTasksArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+/** columns and relationships of "message" */
+export interface MessageTasks_AggregateArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
 }
 
 /** aggregated selection of "message" */
@@ -957,6 +981,7 @@ export interface Message_Bool_Exp {
   message_type?: Maybe<Message_Type_Bool_Exp>;
   replied_to_message?: Maybe<Message_Bool_Exp>;
   replied_to_message_id?: Maybe<Uuid_Comparison_Exp>;
+  tasks?: Maybe<Task_Bool_Exp>;
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
@@ -999,6 +1024,7 @@ export interface Message_Insert_Input {
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
   replied_to_message?: Maybe<Message_Obj_Rel_Insert_Input>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
+  tasks?: Maybe<Task_Arr_Rel_Insert_Input>;
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
@@ -1088,6 +1114,7 @@ export interface Message_Order_By {
   message_type?: Maybe<Message_Type_Order_By>;
   replied_to_message?: Maybe<Message_Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
+  tasks_aggregate?: Maybe<Task_Aggregate_Order_By>;
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
@@ -5859,6 +5886,20 @@ export interface Task_Aggregate_FieldsCountArgs {
   distinct?: Maybe<Scalars['Boolean']>;
 }
 
+/** order by aggregate values of table "task" */
+export interface Task_Aggregate_Order_By {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Task_Max_Order_By>;
+  min?: Maybe<Task_Min_Order_By>;
+}
+
+/** input type for inserting array relation for remote table "task" */
+export interface Task_Arr_Rel_Insert_Input {
+  data: Array<Task_Insert_Input>;
+  /** on conflict condition */
+  on_conflict?: Maybe<Task_On_Conflict>;
+}
+
 /** Boolean expression to filter rows from the table "task". All fields are combined with a logical 'AND'. */
 export interface Task_Bool_Exp {
   _and?: Maybe<Array<Task_Bool_Exp>>;
@@ -5899,6 +5940,15 @@ export interface Task_Max_Fields {
   user_id?: Maybe<Scalars['uuid']>;
 }
 
+/** order by max() on columns of table "task" */
+export interface Task_Max_Order_By {
+  created_at?: Maybe<Order_By>;
+  done_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
 /** aggregate min on columns */
 export interface Task_Min_Fields {
   __typename?: 'task_min_fields';
@@ -5907,6 +5957,15 @@ export interface Task_Min_Fields {
   id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by min() on columns of table "task" */
+export interface Task_Min_Order_By {
+  created_at?: Maybe<Order_By>;
+  done_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
 }
 
 /** response of any mutation on the table "task" */
@@ -8433,6 +8492,9 @@ export type MessageDetailedInfoFragment = (
   )>, message_reactions: Array<(
     { __typename?: 'message_reaction' }
     & ReactionBasicInfoFragment
+  )>, tasks: Array<(
+    { __typename?: 'task' }
+    & TaskBasicInfoFragment
   )> }
   & MessageBasicInfoFragment
 );
@@ -9709,7 +9771,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'topic' | 'topic_id' | 'type' | 'updated_at' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'updated_at' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -9723,6 +9785,8 @@ export type messageFieldPolicy = {
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	tasks?: FieldPolicy<any> | FieldReadFunction<any>,
+	tasks_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,

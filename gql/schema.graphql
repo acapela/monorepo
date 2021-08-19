@@ -1283,6 +1283,66 @@ type message {
   replied_to_message_id: uuid
 
   """
+  An array relationship
+  """
+  tasks(
+    """
+    distinct select on columns
+    """
+    distinct_on: [task_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [task_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: task_bool_exp
+  ): [task!]!
+
+  """
+  An aggregate relationship
+  """
+  tasks_aggregate(
+    """
+    distinct select on columns
+    """
+    distinct_on: [task_select_column!]
+
+    """
+    limit the number of rows returned
+    """
+    limit: Int
+
+    """
+    skip the first n rows. Use only with order_by
+    """
+    offset: Int
+
+    """
+    sort the rows by one or more columns
+    """
+    order_by: [task_order_by!]
+
+    """
+    filter the rows returned
+    """
+    where: task_bool_exp
+  ): task_aggregate!
+
+  """
   An object relationship
   """
   topic: topic!
@@ -1359,6 +1419,7 @@ input message_bool_exp {
   message_type: message_type_bool_exp
   replied_to_message: message_bool_exp
   replied_to_message_id: uuid_comparison_exp
+  tasks: task_bool_exp
   topic: topic_bool_exp
   topic_id: uuid_comparison_exp
   type: message_type_enum_comparison_exp
@@ -1417,6 +1478,7 @@ input message_insert_input {
   message_type: message_type_obj_rel_insert_input
   replied_to_message: message_obj_rel_insert_input
   replied_to_message_id: uuid
+  tasks: task_arr_rel_insert_input
   topic: topic_obj_rel_insert_input
   topic_id: uuid
   type: message_type_enum
@@ -1527,6 +1589,7 @@ input message_order_by {
   message_type: message_type_order_by
   replied_to_message: message_order_by
   replied_to_message_id: order_by
+  tasks_aggregate: task_aggregate_order_by
   topic: topic_order_by
   topic_id: order_by
   type: order_by
@@ -9661,6 +9724,27 @@ type task_aggregate_fields {
 }
 
 """
+order by aggregate values of table "task"
+"""
+input task_aggregate_order_by {
+  count: order_by
+  max: task_max_order_by
+  min: task_min_order_by
+}
+
+"""
+input type for inserting array relation for remote table "task"
+"""
+input task_arr_rel_insert_input {
+  data: [task_insert_input!]!
+
+  """
+  on conflict condition
+  """
+  on_conflict: task_on_conflict
+}
+
+"""
 Boolean expression to filter rows from the table "task". All fields are combined with a logical 'AND'.
 """
 input task_bool_exp {
@@ -9711,6 +9795,17 @@ type task_max_fields {
 }
 
 """
+order by max() on columns of table "task"
+"""
+input task_max_order_by {
+  created_at: order_by
+  done_at: order_by
+  id: order_by
+  message_id: order_by
+  user_id: order_by
+}
+
+"""
 aggregate min on columns
 """
 type task_min_fields {
@@ -9719,6 +9814,17 @@ type task_min_fields {
   id: uuid
   message_id: uuid
   user_id: uuid
+}
+
+"""
+order by min() on columns of table "task"
+"""
+input task_min_order_by {
+  created_at: order_by
+  done_at: order_by
+  id: order_by
+  message_id: order_by
+  user_id: order_by
 }
 
 """
