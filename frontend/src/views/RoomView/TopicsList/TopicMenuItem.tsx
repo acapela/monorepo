@@ -6,6 +6,8 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { useIsElementOrChildHovered } from "~frontend/../../shared/hooks/useIsElementOrChildHovered";
+import { useSharedRef } from "~frontend/../../shared/hooks/useSharedRef";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
@@ -32,6 +34,7 @@ type Props = {
 
   rootProps?: React.HTMLAttributes<HTMLDivElement>;
   listeners?: DraggableSyntheticListeners;
+  isDragged?: boolean;
 };
 
 export function SortableTopicMenuItem({
@@ -58,16 +61,18 @@ export function SortableTopicMenuItem({
 export const TopicMenuItem = styled<Props>(
   observer(
     React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
-      { topic, isActive, className, isEditingDisabled, listeners, rootProps },
+      { topic, isActive, className, isEditingDisabled, listeners, rootProps, isDragged = false },
       ref
     ) {
+      const innerRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
       const roomContext = useRoomStoreContext();
       const { deleteTopic } = useTopic(topic);
       const unreadCount = useTopicUnreadMessagesCount(topic.id);
       const hasUnreadMessaged = !isActive && unreadCount > 0;
 
-      const [isShowingDragIcon, { set: showDragIcon, unset: hideDragIcon }] = useBoolean(false);
       const anchorRef = useRef<HTMLAnchorElement | null>(null);
+
+      const isHovered = useIsElementOrChildHovered(innerRef);
 
       const isNewTopic = select(() => roomContext.newTopicId === topic.id);
       const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
@@ -101,17 +106,9 @@ export const TopicMenuItem = styled<Props>(
       );
 
       return (
-        <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
+        <UIFlyingTooltipWrapper ref={innerRef} {...rootProps} isDragged={isDragged}>
           <NameWrap>
-            <UIHolder
-              {...listeners}
-              ref={anchorRef}
-              className={className}
-              isActive={isActive}
-              isClosed={!!topic.closed_at}
-              onMouseEnter={showDragIcon}
-              onMouseLeave={hideDragIcon}
-            >
+            <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
               {hasUnreadMessaged && <UIUnreadMessagesNotification />}
               <EditableText
                 value={topic.name ?? ""}
@@ -156,8 +153,8 @@ export const TopicMenuItem = styled<Props>(
           )}
           <AnimatePresence></AnimatePresence>
 
-          {isShowingDragIcon && !isEditingDisabled && (
-            <UIDragIndicatorHolder>
+          {isHovered && !isEditingDisabled && (
+            <UIDragIndicatorHolder {...listeners}>
               <IconDragAndDrop />
             </UIDragIndicatorHolder>
           )}
@@ -216,7 +213,7 @@ const UIManageTopicWrapper = styled.div<{}>`
   }
 `;
 
-const UIFlyingTooltipWrapper = styled.div<{}>`
+const UIFlyingTooltipWrapper = styled.div<{ isDragged?: boolean }>`
   width: 100%;
   position: relative;
   display: flex;
@@ -225,6 +222,16 @@ const UIFlyingTooltipWrapper = styled.div<{}>`
   :focus {
     outline: none;
   }
+
+  ${(props) =>
+    props.isDragged &&
+    css`
+      cursor: grabbing;
+
+      * {
+        pointer-events: none;
+      }
+    `}
 
   @media (hover) {
     &:hover ${UIManageTopicWrapper} {
@@ -252,5 +259,7 @@ const UIDragIndicatorHolder = styled(PopPresenceAnimator)`
   display: flex;
   align-items: center;
   padding-left: 3px;
-  pointer-events: none;
+  padding-right: 8px;
+  cursor: grab;
+  z-index: 2;
 `;

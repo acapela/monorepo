@@ -49,7 +49,7 @@ export const SortableTopicsList = ({
   const draggedTopic = topics.find((topic) => topic.id === draggedTopicId);
 
   // Sensors can be used to support multiple input modalities for drag-and-drop
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 200 } }));
 
   function handleDragStart({ active }: DragStartEvent) {
     setDraggedId(active.id);
@@ -100,7 +100,9 @@ export const SortableTopicsList = ({
       </UITopicsList>
       <BodyPortal>
         <DragOverlay>
-          {draggedTopic && <TopicMenuItem topic={draggedTopic} isActive={activeTopicId === draggedTopic.id} />}
+          {draggedTopic && (
+            <TopicMenuItem topic={draggedTopic} isActive={activeTopicId === draggedTopic.id} isDragged />
+          )}
         </DragOverlay>
       </BodyPortal>
     </DndContext>
