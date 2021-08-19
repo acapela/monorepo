@@ -26,10 +26,11 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS512", "key": "${AUTH_JWT_TOKEN_SECRET}"}'
       HASURA_GRAPHQL_ADMIN_SECRET: "${HASURA_API_SECRET}"
-      HASURA_ACTIONS_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/actions
+      HASURA_ACTIONS_WEBHOOK_URL: http://172.17.0.1:1337/api/v1/actions
       HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_ACTION_SECRET}
-      HASURA_EVENTS_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/events
+      HASURA_EVENTS_WEBHOOK_URL: http://172.17.0.1:1337/api/v1/events
       HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_EVENT_SECRET}
+      HASURA_CRON_WEBHOOK_URL: http://172.17.0.1:1337/api/v1/cron
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
 volumes:
   db_data:
