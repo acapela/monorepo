@@ -180,7 +180,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
                 size="small"
                 icon={<IconCross />}
                 onClick={() => {
-                  deleteTopic({ variables: { id: topic.id } });
+                  deleteTopic({ variables: { id: topic.id, roomId: room.id } });
                   trackEvent("Deleted Topic", { topicId: topic.id });
                 }}
               />

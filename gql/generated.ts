@@ -9462,21 +9462,9 @@ export type LazyTopicList_RoomFragment = (
   & StaticTopicList_RoomFragment
 );
 
-export type TopicListSubscriptionVariables = Exact<{
-  roomId: Scalars['uuid'];
-}>;
-
-
-export type TopicListSubscription = (
-  { __typename?: 'subscription_root' }
-  & { topics: Array<(
-    { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'index'>
-  )> }
-);
-
 export type ManageTopic_RoomFragment = (
   { __typename?: 'room' }
+  & Pick<Room, 'id'>
   & IsCurrentUserTopicManager_RoomFragment
 );
 
@@ -9605,7 +9593,7 @@ export type DeleteTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'room_id'>
   )> }
 );
 

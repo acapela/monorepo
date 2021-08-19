@@ -66,8 +66,7 @@ export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicI
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const sortedTopics =
-    topics.slice().sort(byIndexAscending) || useMemo(() => topics.slice().sort(byIndexAscending), [topics]);
+  const sortedTopics = useMemo(() => topics.slice().sort(byIndexAscending), [topics]);
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (over && active.id !== over.id) {

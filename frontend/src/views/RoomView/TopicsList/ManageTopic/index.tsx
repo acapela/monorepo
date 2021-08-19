@@ -18,6 +18,7 @@ const fragments = {
     ${useIsCurrentUserTopicManager.fragments.room}
 
     fragment ManageTopic_room on room {
+      id
       ...IsCurrentUserTopicManager_room
     }
   `,
@@ -49,7 +50,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
       confirmLabel: "Delete",
     });
     if (isDeleteConfirmed) {
-      await deleteTopic({ variables: { id: topic.id } });
+      await deleteTopic({ variables: { id: topic.id, roomId: room.id } });
       trackEvent("Deleted Topic", { topicId: topic.id });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

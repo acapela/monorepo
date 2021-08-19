@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { Reference, gql, useMutation } from "@apollo/client";
 import styled from "styled-components";
 
 import {
@@ -30,15 +30,33 @@ export const useUpdateTopicName = () =>
   );
 
 export const useDeleteTopic = () =>
-  useMutation<DeleteTopicMutation, DeleteTopicMutationVariables>(
+  useMutation<DeleteTopicMutation, DeleteTopicMutationVariables & { roomId: string }>(
     gql`
       mutation DeleteTopic($id: uuid!) {
         topic: delete_topic_by_pk(id: $id) {
           id
+          room_id
         }
       }
     `,
     {
+      optimisticResponse: ({ id, roomId }) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id, room_id: roomId || "whatever" },
+      }),
+      update(cache, { data }) {
+        if (!data || !data.topic) {
+          return;
+        }
+        const { topic } = data;
+        const topicRef = cache.identify(topic);
+        cache.modify({
+          id: cache.identify({ __typename: "room", id: topic.room_id }),
+          fields: {
+            topics: (existing: Reference[]) => existing.filter((t) => cache.identify(t) !== topicRef),
+          },
+        });
+      },
       onCompleted() {
         addToast({ type: "success", title: "Topic was removed" });
       },
