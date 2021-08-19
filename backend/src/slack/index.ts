@@ -12,6 +12,7 @@ import { assert, assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
 import { setupSlackCommands } from "./commands";
+import { setupSlackEvents } from "./events";
 
 const scopes = ["im:write"];
 
@@ -64,7 +65,10 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   },
 };
 
-const slackReceiver = new SlackBolt.ExpressReceiver({ ...sharedOptions, endpoints: { commands: "/slack/commands" } });
+const slackReceiver = new SlackBolt.ExpressReceiver({
+  ...sharedOptions,
+  endpoints: { events: "/slack/events", commands: "/slack/commands" },
+});
 
 const getSlackInstallURL = async (state?: unknown) => {
   const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
@@ -98,6 +102,7 @@ export const getTeamSlackInstallationURL: ActionHandler<
   },
 };
 
+setupSlackEvents(slackApp);
 setupSlackCommands(slackApp);
 
 export function setupSlackBoltRoutes(app: Express) {
