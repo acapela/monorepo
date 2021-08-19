@@ -62,12 +62,10 @@ export const useDeleteTopic = () =>
     }
   );
 
-export const UIScrollContainer = styled.div<{}>`
-  height: 100%;
+export const UITopicsList = styled.div<{}>`
+  min-height: 0;
   overflow-y: auto;
 `;
-
-export const UITopicsList = styled.div<{}>``;
 
 export const UITopic = styled.div`
   position: relative;

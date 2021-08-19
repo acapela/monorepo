@@ -1,16 +1,24 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { getRoomManagePopoverOptions } from "~frontend/views/RoomView/editOptions";
-import { RoomView_RoomFragment } from "~gql";
+import { usePopoverEditMenuOptions } from "~frontend/views/RoomView/editOptions";
+import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
+import {
+  RoomView_RoomFragment,
+  UpdateRoomFinishedAtMutation,
+  UpdateRoomFinishedAtMutationVariables,
+  UpdateRoomNameMutation,
+  UpdateRoomNameMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
@@ -20,13 +28,12 @@ import { PrivateTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
-import { useUpdateRoom } from "./shared";
 import { TopicsList } from "./TopicsList";
 
 const fragments = {
   room: gql`
     ${useIsCurrentUserRoomMember.fragments.room}
-    ${getRoomManagePopoverOptions.fragments.room}
+    ${usePopoverEditMenuOptions.fragments.room}
     ${RoomSidebarInfo.fragments.room}
     ${TopicsList.fragments.room}
 
@@ -64,22 +71,75 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
   const amIMember = useIsCurrentUserRoomMember(room);
 
-  const [updateRoom] = useUpdateRoom();
-  const [deleteRoom] = useDeleteRoom();
-
-  const isRoomOpen = !room.finished_at;
+  const [updateRoomFinishedAt] = useMutation<UpdateRoomFinishedAtMutation, UpdateRoomFinishedAtMutationVariables>(
+    gql`
+      mutation UpdateRoomFinishedAt($id: uuid!, $finishedAt: timestamptz) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { finished_at: $finishedAt }) {
+          id
+          finished_at
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        room: { __typename: "room", id: vars.id, finished_at: vars.finishedAt },
+      }),
+    }
+  );
+  const [updateRoomName] = useMutation<UpdateRoomNameMutation, UpdateRoomNameMutationVariables>(
+    gql`
+      mutation UpdateRoomName($id: uuid!, $name: String!) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+    }
+  );
 
   async function handleRoomNameChange(newName: string) {
     const oldRoomName = room.name;
-    await updateRoom({ variables: { id: room.id, input: { name: newName } } });
+    await updateRoomName({ variables: { id: room.id, name: newName } });
     trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
+
+  async function handleCloseRoom() {
+    const roomId = room.id;
+
+    if (room.finished_at) {
+      updateRoomFinishedAt({ variables: { id: roomId, finishedAt: null } });
+      trackEvent("Reopened Room", { roomId });
+      return;
+    }
+    const openTopics = room.topics.filter((topic) => !topic.closed_at);
+
+    if (openTopics.length > 0) {
+      const canCloseRoom = await closeOpenTopicsPrompt(room);
+      if (!canCloseRoom) {
+        return;
+      }
+    }
+
+    updateRoomFinishedAt({ variables: { id: roomId, finishedAt: new Date().toISOString() } });
+    trackEvent("Closed Room", { roomId, hasRoomOpenTopics: openTopics.length > 0 });
+  }
+
+  const editOptions = usePopoverEditMenuOptions({
+    room,
+    onEditRoomNameRequest: () => enterNameEditMode(),
+    onCloseRoom: handleCloseRoom,
+  });
+
+  const isRoomOpen = !room.finished_at;
 
   return (
     <>
       <PageMeta title={room.name} />
       <UIHolder>
-        <UIRoomInfo>
+        <UISidebar>
           <CollapsePanel
             persistanceKey={`room-info-${room.id}`}
             isInitiallyOpen
@@ -104,14 +164,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                 </UIRoomTitle>
 
                 {amIMember && (
-                  <PopoverMenuTrigger
-                    options={getRoomManagePopoverOptions({
-                      room,
-                      onEditRoomNameRequest: () => enterNameEditMode(),
-                      onUpdateRoom: (variables) => updateRoom({ variables }),
-                      onDeleteRoom: (variables) => deleteRoom({ variables }),
-                    })}
-                  >
+                  <PopoverMenuTrigger options={editOptions}>
                     <CircleOptionsButton />
                   </PopoverMenuTrigger>
                 )}
@@ -121,10 +174,11 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
             <RoomSidebarInfo room={room} />
           </CollapsePanel>
 
-          <CardBase>
+          <UITopicsCard>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
-          </CardBase>
-        </UIRoomInfo>
+          </UITopicsCard>
+          <CloseRoomButton onClick={handleCloseRoom}>Close Room</CloseRoomButton>
+        </UISidebar>
 
         <UIContentHolder>{children}</UIContentHolder>
       </UIHolder>
@@ -140,13 +194,13 @@ const UIHolder = styled.div<{}>`
   min-height: 0;
 `;
 
-const UIRoomInfo = styled.div<{}>`
+const UISidebar = styled.div<{}>`
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   gap: 24px;
   padding: 32px;
-  overflow-y: auto;
 `;
 
 const UIContentHolder = styled.div<{}>`
@@ -163,6 +217,7 @@ const UIRoomHead = styled(TextH4)<{}>`
 
 const UIRoomTitle = styled.div<{}>`
   padding-right: 16px;
+  display: flex;
   ${(props) =>
     props.onClick &&
     css`
@@ -175,4 +230,14 @@ const UIRoomTags = styled.div<{}>`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+const CloseRoomButton = styled(Button)`
+  align-self: center;
+`;
+
+const UITopicsCard = styled(CardBase)`
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 `;

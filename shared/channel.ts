@@ -66,7 +66,7 @@ export function createChannel<T>(): Channel<T> {
     const [value, setValue] = useState(getLastValue);
 
     useEffect(() => {
-      return subscribe(setValue);
+      return subscribe(setValue, false);
     });
 
     return value;
@@ -79,15 +79,15 @@ export function createChannel<T>(): Channel<T> {
 
     useSubscribe((newValue) => {
       setSelectedValue(selector(newValue));
-    });
+    }, false);
 
     return selectedValue;
   }
 
-  function useSubscribe(subscriber: Subscriber<T>) {
+  function useSubscribe(subscriber: Subscriber<T>, includeLastValue = true) {
     useEffect(() => {
-      return subscribe(subscriber);
-    });
+      return subscribe(subscriber, includeLastValue);
+    }, [includeLastValue]);
   }
 
   return {

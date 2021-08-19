@@ -8682,6 +8682,9 @@ export type TeamDetailedInfoFragment = (
       { __typename?: 'user' }
       & UserBasicInfoFragment
     ) }
+  )>, slack_installation?: Maybe<(
+    { __typename?: 'team_slack_installation' }
+    & Pick<Team_Slack_Installation, 'team_id'>
   )> }
 );
 
@@ -9298,6 +9301,20 @@ export type DeadlineManager_RoomFragment = (
   & Pick<Room, 'id' | 'deadline'>
 );
 
+export type UpdateRoomDeadlineMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  deadline: Scalars['timestamptz'];
+}>;
+
+
+export type UpdateRoomDeadlineMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'deadline'>
+  )> }
+);
+
 export type DeadlineManagerSubscriptionVariables = Exact<{
   roomId: Scalars['uuid'];
 }>;
@@ -9367,6 +9384,20 @@ export type RoomSummaryView_RoomFragment = (
   & ConvertRoom_RoomFragment
 );
 
+export type UpdateRoomSummaryMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  summary: Scalars['String'];
+}>;
+
+
+export type UpdateRoomSummaryMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'deadline'>
+  )> }
+);
+
 export type RoomTopicView_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'space_id'>
@@ -9390,6 +9421,34 @@ export type RoomView_RoomFragment = (
   & EditOptions_RoomFragment
   & RoomSidebarInfo_RoomFragment
   & TopicList_RoomFragment
+);
+
+export type UpdateRoomFinishedAtMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  finishedAt?: Maybe<Scalars['timestamptz']>;
+}>;
+
+
+export type UpdateRoomFinishedAtMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'finished_at'>
+  )> }
+);
+
+export type UpdateRoomNameMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  name: Scalars['String'];
+}>;
+
+
+export type UpdateRoomNameMutation = (
+  { __typename?: 'mutation_root' }
+  & { room?: Maybe<(
+    { __typename?: 'room' }
+    & Pick<Room, 'id' | 'name'>
+  )> }
 );
 
 export type TopicSummary_TopicFragment = (
@@ -9624,17 +9683,17 @@ export type EditOptions_RoomFragment = (
   & RoomCloseModal_RoomFragment
 );
 
-export type UpdateRoomMutationVariables = Exact<{
+export type UpdateRoomIsPrivateMutationVariables = Exact<{
   id: Scalars['uuid'];
-  input: Room_Set_Input;
+  isPrivate: Scalars['Boolean'];
 }>;
 
 
-export type UpdateRoomMutation = (
+export type UpdateRoomIsPrivateMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
-    & Pick<Room, 'id'>
+    & Pick<Room, 'id' | 'is_private'>
   )> }
 );
 
@@ -9684,6 +9743,38 @@ export type SpacesListQuery = (
       ) }
     )> }
     & SpaceCard_SpaceFragment
+  )> }
+);
+
+export type GetSlackInstallationUrlQueryVariables = Exact<{
+  input: GetTeamSlackInstallationUrlInput;
+}>;
+
+
+export type GetSlackInstallationUrlQuery = (
+  { __typename?: 'query_root' }
+  & { get_team_slack_installation_url?: Maybe<(
+    { __typename?: 'GetTeamSlackInstallationURLOutput' }
+    & Pick<GetTeamSlackInstallationUrlOutput, 'url'>
+  )> }
+);
+
+export type DeleteSlackInstallationMutationVariables = Exact<{
+  teamId: Scalars['uuid'];
+}>;
+
+
+export type DeleteSlackInstallationMutation = (
+  { __typename?: 'mutation_root' }
+  & { delete_team_slack_installation_by_pk?: Maybe<(
+    { __typename?: 'team_slack_installation' }
+    & { team: (
+      { __typename?: 'team' }
+      & { slack_installation?: Maybe<(
+        { __typename?: 'team_slack_installation' }
+        & Pick<Team_Slack_Installation, 'team_id'>
+      )> }
+    ) }
   )> }
 );
 

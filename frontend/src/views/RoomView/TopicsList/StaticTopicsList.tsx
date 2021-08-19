@@ -5,7 +5,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { StaticTopicList_RoomFragment } from "~gql";
 
-import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
+import { UITopic, UITopicsList } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
 export const StaticTopicsList = withFragments(
@@ -25,17 +25,15 @@ export const StaticTopicsList = withFragments(
     `,
   },
   ({ room, activeTopicId }: { room: StaticTopicList_RoomFragment; activeTopicId: string | null }) => (
-    <UIScrollContainer>
-      <UITopicsList>
-        {room.topics
-          .slice()
-          .sort(byIndexAscending)
-          .map((topic) => (
-            <UITopic key={topic.id}>
-              <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
-            </UITopic>
-          ))}
-      </UITopicsList>
-    </UIScrollContainer>
+    <UITopicsList>
+      {room.topics
+        .slice()
+        .sort(byIndexAscending)
+        .map((topic) => (
+          <UITopic key={topic.id}>
+            <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
+          </UITopic>
+        ))}
+    </UITopicsList>
   )
 );

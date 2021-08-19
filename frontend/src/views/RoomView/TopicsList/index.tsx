@@ -16,7 +16,6 @@ import { generateId } from "~shared/id";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
-import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
 import { TextH6 } from "~ui/typo";
@@ -94,31 +93,31 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
   }
 
   return (
-    <CollapsePanel
-      persistanceKey={`room-topics-${room.id}`}
-      isInitiallyOpen
-      headerNode={
-        <UIHeader>
-          <TextH6 spezia semibold>
-            Topics
-          </TextH6>
-          {!isRoomOpen && (
-            <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
-              <Button size="small" kind="secondary" ref={buttonRef}>
-                Room summary
-              </Button>
-            </RouteLink>
-          )}
-        </UIHeader>
-      }
-    >
-      <UIHolder>
-        <LazyTopicsList
-          room={room}
-          activeTopicId={activeTopicId}
-          isDisabled={isEditingAnyMessage}
-          isStatic={!amIMember}
-        />
+    <UIHolder>
+      <UIHeader>
+        <TextH6 spezia semibold>
+          Topics
+        </TextH6>
+        {!isRoomOpen && (
+          <RouteLink route={routes.spaceRoomSummary} params={{ roomId, spaceId }}>
+            <Button size="small" kind="secondary" ref={buttonRef}>
+              Room summary
+            </Button>
+          </RouteLink>
+        )}
+      </UIHeader>
+      <UIBody>
+        {topics.length > 0 && (
+          <UITopicsListHolder>
+            <LazyTopicsList
+              room={room}
+              activeTopicId={activeTopicId}
+              isDisabled={isEditingAnyMessage}
+              isStatic={!amIMember}
+            />
+          </UITopicsListHolder>
+        )}
+
         {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
 
         <VStack alignItems="center" justifyContent="start">
@@ -136,27 +135,41 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             New Topic
           </UINewTopicButton>
         </VStack>
-      </UIHolder>
-    </CollapsePanel>
+      </UIBody>
+    </UIHolder>
   );
 });
 
 export const TopicsList = withFragments(fragments, _TopicsList);
 
-const UIHolder = styled.div<{}>`
-  overflow-y: hidden;
-  margin-top: 16px;
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const UIBody = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+`;
+
+const UITopicsListHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 const UIHeader = styled.div<{}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
 `;
 
 const UINoTopicsMessage = styled.div<{}>``;
 
 const UINewTopicButton = styled(Button)`
-  margin-top: 8px;
+  margin-top: 16px;
   padding: 8px 48px;
 `;

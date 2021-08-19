@@ -1,11 +1,11 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import * as clipboard from "clipboard-polyfill";
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
-import { RoomSummaryView_RoomFragment } from "~gql";
+import { RoomSummaryView_RoomFragment, UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables } from "~gql";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
 import { TextArea } from "~ui/forms/TextArea";
@@ -15,7 +15,7 @@ import { addToast } from "~ui/toasts/data";
 
 import { convertRoomFragment, convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
 import { RoomView } from "./RoomView";
-import { formatDate, useUpdateRoom } from "./shared";
+import { formatDate } from "./shared";
 import { TopicSummary } from "./TopicSummary";
 
 const fragments = {
@@ -44,19 +44,23 @@ const AUTO_SAVE_DEBOUNCE_DELAY_MS = 400;
 export const RoomSummaryView = withFragments(fragments, function RoomSummaryView({ room }: Props) {
   const [roomSummary, setRoomSummary] = useState(room.summary ?? "");
 
-  const [updateRoom] = useUpdateRoom();
+  const [updateRoomSummary] = useMutation<UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables>(
+    gql`
+      mutation UpdateRoomSummary($id: uuid!, $summary: String!) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { summary: $summary }) {
+          id
+          deadline
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+    }
+  );
 
   useDebounce(
     () => {
-      room &&
-        updateRoom({
-          variables: {
-            id: room.id,
-            input: {
-              summary: roomSummary,
-            },
-          },
-        });
+      room && updateRoomSummary({ variables: { id: room.id, summary: roomSummary } });
     },
     AUTO_SAVE_DEBOUNCE_DELAY_MS,
     [roomSummary]

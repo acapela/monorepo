@@ -1,10 +1,15 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import React from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
-import { useUpdateRoom } from "~frontend/views/RoomView/shared";
-import { DeadlineManagerSubscription, DeadlineManagerSubscriptionVariables, DeadlineManager_RoomFragment } from "~gql";
+import {
+  DeadlineManagerSubscription,
+  DeadlineManagerSubscriptionVariables,
+  DeadlineManager_RoomFragment,
+  UpdateRoomDeadlineMutation,
+  UpdateRoomDeadlineMutationVariables,
+} from "~gql";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
 
 const fragments = {
@@ -19,7 +24,19 @@ const fragments = {
 export const DeadlineManager = withFragments(
   fragments,
   ({ room, isReadonly }: { room: DeadlineManager_RoomFragment; isReadonly?: boolean }) => {
-    const [updateRoom] = useUpdateRoom();
+    const [updateRoomDeadline] = useMutation<UpdateRoomDeadlineMutation, UpdateRoomDeadlineMutationVariables>(
+      gql`
+        mutation UpdateRoomDeadline($id: uuid!, $deadline: timestamptz!) {
+          room: update_room_by_pk(pk_columns: { id: $id }, _set: { deadline: $deadline }) {
+            id
+            deadline
+          }
+        }
+      `,
+      {
+        optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      }
+    );
     useSubscription<DeadlineManagerSubscription, DeadlineManagerSubscriptionVariables>(
       gql`
         ${fragments.room}
@@ -38,8 +55,8 @@ export const DeadlineManager = withFragments(
         value={new Date(room.deadline)}
         onChange={async (deadline: Date) => {
           const oldDeadline = new Date(room.deadline);
-          await updateRoom({ variables: { id: room.id, input: { deadline: deadline.toISOString() } } });
-          trackEvent("Updated Room Deadline", { roomId: room.id, newDeadline: date, oldDeadline });
+          await updateRoomDeadline({ variables: { id: room.id, deadline: deadline.toISOString() } });
+          trackEvent("Updated Room Deadline", { roomId: room.id, newDeadline: deadline, oldDeadline });
         }}
       />
     );

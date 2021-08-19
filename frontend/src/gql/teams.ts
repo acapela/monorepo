@@ -74,6 +74,9 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
           ...UserBasicInfo
         }
       }
+      slack_installation {
+        team_id
+      }
     }
   `
 );
