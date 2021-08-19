@@ -109,24 +109,27 @@ export const TopicMenuItem = styled<Props>(
         <UIFlyingTooltipWrapper ref={innerRef} {...rootProps} isDragged={isDragged}>
           <NameWrap>
             <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-              {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-              <EditableText
-                value={topic.name ?? ""}
-                isInEditMode={isInEditMode}
-                focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                onEditModeRequest={() => {
-                  roomContext.editingNameTopicId = topic.id;
-                }}
-                onExitEditModeChangeRequest={() => {
-                  if (roomContext.editingNameTopicId === topic.id) {
-                    roomContext.editingNameTopicId = null;
+              <UITopicNameHolder>
+                {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+                <EditableText
+                  value={topic.name ?? ""}
+                  isInEditMode={isInEditMode}
+                  focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+                  onEditModeRequest={() => {
+                    roomContext.editingNameTopicId = topic.id;
+                  }}
+                  onExitEditModeChangeRequest={() => {
+                    if (roomContext.editingNameTopicId === topic.id) {
+                      roomContext.editingNameTopicId = null;
+                    }
+                  }}
+                  onValueSubmit={handleNewTopicName}
+                  checkPreventClickAway={(event) =>
+                    Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
                   }
-                }}
-                onValueSubmit={handleNewTopicName}
-                checkPreventClickAway={(event) =>
-                  Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
-                }
-              />
+                />
+              </UITopicNameHolder>
+
               <TopicOwner topic={topic} />
             </UIHolder>
           </NameWrap>
@@ -203,6 +206,12 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   }
 `;
 
+const UITopicNameHolder = styled.div<{}>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 const UIManageTopicWrapper = styled.div<{}>`
   position: absolute;
   right: ${PADDING};
@@ -241,9 +250,6 @@ const UIFlyingTooltipWrapper = styled.div<{ isDragged?: boolean }>`
 `;
 
 const UIUnreadMessagesNotification = styled.div<{}>`
-  position: absolute;
-  left: 8px;
-
   height: 8px;
   width: 8px;
   ${theme.borderRadius.item}
