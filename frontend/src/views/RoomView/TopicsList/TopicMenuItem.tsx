@@ -163,6 +163,7 @@ const UIHolder = styled.a<{ isActive: boolean; isClosed: boolean }>`
   flex-direction: column;
   gap: 4px;
   width: 100%;
+  touch-action: none;
 
   ${theme.borderRadius.button}
 

@@ -13,7 +13,7 @@ import React, { useMemo, useState } from "react";
 
 import { TopicDetailedInfoFragment } from "~gql";
 
-import { UIScrollContainer, UITopic, UITopicsList } from "./shared";
+import { UITopic, UITopicsList } from "./shared";
 import { SortableTopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
@@ -78,24 +78,22 @@ export const SortableTopicsList = ({
   }
 
   return (
-    <UIScrollContainer>
-      <DndContext
-        sensors={sensors}
-        modifiers={[restrictToFirstScrollableAncestor]}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <UITopicsList>
-          <SortableContext items={topics.map((topic) => topic.id)} strategy={verticalListSortingStrategy}>
-            {topics.map((topic) => (
-              <UITopic key={topic.id}>
-                <SortableTopicMenuItem isDisabled={isDisabled} topic={topic} isActive={activeTopicId === topic.id} />
-              </UITopic>
-            ))}
-          </SortableContext>
-        </UITopicsList>
-      </DndContext>
-    </UIScrollContainer>
+    <DndContext
+      sensors={sensors}
+      modifiers={[restrictToFirstScrollableAncestor]}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <UITopicsList>
+        <SortableContext items={topics.map((topic) => topic.id)} strategy={verticalListSortingStrategy}>
+          {topics.map((topic) => (
+            <UITopic key={topic.id}>
+              <SortableTopicMenuItem isDisabled={isDisabled} topic={topic} isActive={activeTopicId === topic.id} />
+            </UITopic>
+          ))}
+        </SortableContext>
+      </UITopicsList>
+    </DndContext>
   );
 };
