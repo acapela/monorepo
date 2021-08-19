@@ -6,15 +6,14 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useIsElementOrChildHovered } from "~frontend/../../shared/hooks/useIsElementOrChildHovered";
-import { useSharedRef } from "~frontend/../../shared/hooks/useSharedRef";
 import { updateTopic } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useTopic } from "~frontend/topics/useTopic";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
+import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { select } from "~shared/sharedState";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
@@ -267,5 +266,4 @@ const UIDragIndicatorHolder = styled(PopPresenceAnimator)`
   padding-left: 3px;
   padding-right: 8px;
   cursor: grab;
-  z-index: 2;
 `;

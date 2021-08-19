@@ -84,10 +84,10 @@ export function createChannel<T>(): Channel<T> {
     return selectedValue;
   }
 
-  function useSubscribe(subscriber: Subscriber<T>, inclideLastValue = true) {
+  function useSubscribe(subscriber: Subscriber<T>, includeLastValue = true) {
     useEffect(() => {
-      return subscribe(subscriber, inclideLastValue);
-    }, [inclideLastValue]);
+      return subscribe(subscriber, includeLastValue);
+    }, [includeLastValue]);
   }
 
   return {
