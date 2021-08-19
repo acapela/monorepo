@@ -1,6 +1,7 @@
 import { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
@@ -13,10 +14,10 @@ import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { TopicDetailedInfoFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { select } from "~shared/sharedState";
+import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EditableText } from "~ui/forms/EditableText";
 import { IconCross, IconDragAndDrop } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
 
@@ -153,10 +154,12 @@ export const TopicMenuItem = styled<Props>(
               )}
             </UIManageTopicWrapper>
           )}
+          <AnimatePresence></AnimatePresence>
+
           {isShowingDragIcon && !isEditingDisabled && (
-            <Popover anchorRef={anchorRef} placement={"left"}>
+            <UIDragIndicatorHolder>
               <IconDragAndDrop />
-            </Popover>
+            </UIDragIndicatorHolder>
           )}
         </UIFlyingTooltipWrapper>
       );
@@ -239,4 +242,15 @@ const UIUnreadMessagesNotification = styled.div<{}>`
   ${theme.borderRadius.item}
 
   background-color: ${theme.colors.interactive.notification()};
+`;
+
+const UIDragIndicatorHolder = styled(PopPresenceAnimator)`
+  position: absolute;
+  left: 0px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 3px;
+  pointer-events: none;
 `;
