@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+import { defineEntity, EntityFromDefinition } from "~clientdb";
 import { RoomFragment, UpdatedRoomsQuery, UpdatedRoomsQueryVariables } from "~frontend/../../gql";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
@@ -79,3 +79,5 @@ export const roomEntity = defineEntity(
     };
   }
 );
+
+export type RoomEntity = EntityFromDefinition<typeof roomEntity>;

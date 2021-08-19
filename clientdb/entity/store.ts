@@ -1,6 +1,6 @@
 import { EntityDefinition } from "./definition";
 import { EntityDraft } from "./draft";
-import { computed, IObservableArray, makeObservable, observable } from "mobx";
+import { computed, IObservableArray, makeObservable, observable, runInAction } from "mobx";
 import { createEntityQuery, EntityQuery, EntityQueryConfig } from "./query";
 import { Entity } from "./entity";
 
@@ -16,17 +16,21 @@ export function createEntityStore<Data, Connections>(
   definition: EntityDefinition<Data, Connections>
 ): EntityStore<Data & Connections> {
   type FullData = Data & Connections;
-  type StoreEntity = Entity<FullData>;
+  type StoreEntity = Entity<Data, Connections>;
   const { config } = definition;
   const items = observable.array<StoreEntity>([]);
-  const itemsMap = observable.object<Record<string, Entity<FullData>>>({});
+  const itemsMap = observable.object<Record<string, Entity<Data, Connections>>>({});
 
   const store: EntityStore<FullData> = {
     items,
     add(entity) {
       const id = config.getId(entity);
-      items.push(entity);
-      itemsMap[id] = entity;
+
+      runInAction(() => {
+        items.push(entity);
+        itemsMap[id] = entity;
+      });
+
       return entity;
     },
     findById(id) {

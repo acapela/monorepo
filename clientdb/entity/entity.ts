@@ -1,10 +1,8 @@
-import { EntityDefinition } from "./definition";
-import { EntityClient } from "./client";
-import { createEntityDraft, EntityDraft } from "./draft";
-import { EntitySyncConfig } from "./sync";
 import { makeAutoObservable } from "mobx";
-import { EntitiesConnectionsConfig } from "./entitiesConnections";
 import { typedKeys } from "~shared/object";
+import { EntityDefinition } from "./definition";
+import { createEntityDraft, EntityDraft } from "./draft";
+import { EntitiesConnectionsConfig } from "./entitiesConnections";
 
 export type Entity<Data, Connections> = Data &
   Connections & {
@@ -12,6 +10,13 @@ export type Entity<Data, Connections> = Data &
     clone(): Entity<Data, Connections>;
     update(data: Partial<Data>): void;
   };
+
+export type EntityFromDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
+  infer Data,
+  infer Connections
+>
+  ? Entity<Data, Connections>
+  : never;
 
 export function createEntity<D, C>(
   data: D,

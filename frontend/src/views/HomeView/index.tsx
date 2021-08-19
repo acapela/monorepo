@@ -14,26 +14,25 @@ export const HomeView = observer(function HomeView() {
     <div>
       All rooms
       {rooms.map((room) => {
-        console.log("elko", room.name);
         return (
           <div key={room.id}>
             Room:
-            {room.name} (owner {room.owner?.name} - {room.owner?.id})
+            {room.name}
+            (owner {room.owner?.name} - {room.owner?.id})
             <div>
               Topics
               <div>
                 {room.topics.all.map((topic) => {
-                  console.log(topic.messages.all);
                   return (
                     <div>
                       Topic name: {topic.name}
                       <div>
                         <div>messages:</div>
                         {topic.messages.all.map((message) => {
-                          console.log(message.user, message.user_id);
                           return (
                             <div>
-                              Message by {message.user?.email} ({JSON.stringify(message.content)})
+                              Message by {message.user?.email}
+                              <pre>{JSON.stringify(message.content)}</pre>
                             </div>
                           );
                         })}
@@ -59,7 +58,12 @@ export const HomeView = observer(function HomeView() {
   );
 });
 
-const UIHolder = styled(SpacedAppLayoutContainer)<{}>``;
+const UIHolder = styled(SpacedAppLayoutContainer)<{}>`
+  pre {
+    font-family: monospace !important;
+    font-size: 10px;
+  }
+`;
 
 const UIContent = styled.div<{}>`
   display: flex;
