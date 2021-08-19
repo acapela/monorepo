@@ -262,7 +262,7 @@ export const [useTopicsQuery] = createQuery<TopicsQuery, TopicsQueryVariables>(
   () => gql`
     ${TopicDetailedInfoFragment()}
 
-    query Topics($limit: Int = 10, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
+    query Topics($limit: Int, $orderBy: [topic_order_by!], $where: topic_bool_exp) {
       topics: topic(where: $where, limit: $limit, order_by: $orderBy) {
         ...TopicDetailedInfo
       }
