@@ -1,3 +1,4 @@
+import { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { observer } from "mobx-react";
@@ -27,31 +28,36 @@ type Props = {
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
+
   rootProps?: React.HTMLAttributes<HTMLDivElement>;
+  listeners?: DraggableSyntheticListeners;
 };
 
 export function SortableTopicMenuItem({
   isDisabled,
   ...props
 }: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
     id: props.topic.id,
     disabled: isDisabled,
   });
+
+  const isDragged = active?.id === props.topic.id;
 
   const style = {
     // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
     transform: CSS.Transform.toString(transform),
     transition: transition ?? undefined,
+    opacity: isDragged ? 0 : undefined,
   };
 
-  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, ...listeners, style }} />;
+  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, style }} listeners={listeners} />;
 }
 
 export const TopicMenuItem = styled<Props>(
   observer(
     React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
-      { topic, isActive, className, isEditingDisabled, rootProps },
+      { topic, isActive, className, isEditingDisabled, listeners, rootProps },
       ref
     ) {
       const roomContext = useRoomStoreContext();
@@ -94,60 +100,65 @@ export const TopicMenuItem = styled<Props>(
       );
 
       return (
-        <>
-          <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
-            <NameWrap>
-              <UIHolder
-                ref={anchorRef}
-                className={className}
-                isActive={isActive}
-                isClosed={!!topic.closed_at}
-                onMouseEnter={showDragIcon}
-                onMouseLeave={hideDragIcon}
-              >
-                {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-                <EditableText
-                  value={topic.name ?? ""}
-                  isInEditMode={isInEditMode}
-                  focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                  onEditModeRequest={() => {
-                    roomContext.editingNameTopicId = topic.id;
-                  }}
-                  onExitEditModeChangeRequest={() => {
-                    if (roomContext.editingNameTopicId === topic.id) {
-                      roomContext.editingNameTopicId = null;
-                    }
-                  }}
-                  onValueSubmit={handleNewTopicName}
-                  checkPreventClickAway={(event) =>
-                    Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
+        <UIFlyingTooltipWrapper ref={ref} {...rootProps}>
+          <NameWrap>
+            <UIHolder
+              {...listeners}
+              ref={anchorRef}
+              className={className}
+              isActive={isActive}
+              isClosed={!!topic.closed_at}
+              onMouseEnter={showDragIcon}
+              onMouseLeave={hideDragIcon}
+            >
+              {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+              <EditableText
+                value={topic.name ?? ""}
+                isInEditMode={isInEditMode}
+                focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+                onEditModeRequest={() => {
+                  roomContext.editingNameTopicId = topic.id;
+                }}
+                onExitEditModeChangeRequest={() => {
+                  if (roomContext.editingNameTopicId === topic.id) {
+                    roomContext.editingNameTopicId = null;
                   }
+                }}
+                onValueSubmit={handleNewTopicName}
+                checkPreventClickAway={(event) =>
+                  Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
+                }
+              />
+              <TopicOwner topic={topic} />
+            </UIHolder>
+          </NameWrap>
+          {!isEditingDisabled && (
+            <UIManageTopicWrapper
+              ref={manageWrapperRef}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
+              {isNewTopic ? (
+                <CircleIconButton
+                  size="small"
+                  icon={<IconCross />}
+                  onClick={() => {
+                    deleteTopic();
+                  }}
                 />
-                <TopicOwner topic={topic} />
-              </UIHolder>
-            </NameWrap>
-            {!isEditingDisabled && (
-              <UIManageTopicWrapper ref={manageWrapperRef}>
-                {isNewTopic ? (
-                  <CircleIconButton
-                    size="small"
-                    icon={<IconCross />}
-                    onClick={() => {
-                      deleteTopic();
-                    }}
-                  />
-                ) : (
-                  <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
-                )}
-              </UIManageTopicWrapper>
-            )}
-          </UIFlyingTooltipWrapper>
+              ) : (
+                <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
+              )}
+            </UIManageTopicWrapper>
+          )}
           {isShowingDragIcon && !isEditingDisabled && (
             <Popover anchorRef={anchorRef} placement={"left"}>
               <IconDragAndDrop />
             </Popover>
           )}
-        </>
+        </UIFlyingTooltipWrapper>
       );
     })
   )

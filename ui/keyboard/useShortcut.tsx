@@ -57,8 +57,8 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  * By default in DOM - who is first to add listener is first to be called
  *
  * eg
- * body.addEventListener('click', () => console.log('a'));
- * body.addEventListener('click', () => console.log('b'));
+ * body.addEventListener('click', () => console.info('a'));
+ * body.addEventListener('click', () => console.info('b'));
  *
  * // Click!
  * // Output in the console: a, b
@@ -66,7 +66,7 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  * With shortcuts we want it in reverse order - who is last to add shortcut is the first to handle it (and potentially prevent propagation to other handlers).
  *
  * useShortcut('Enter', () => {
- *   console.log('foo')
+ *   console.info('foo')
  * });
  *
  * useShortcut('Enter', () => {

@@ -1,6 +1,7 @@
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
   DragStartEvent,
   PointerSensor,
   closestCenter,
@@ -12,9 +13,10 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import React, { useMemo, useState } from "react";
 
 import { TopicDetailedInfoFragment } from "~gql";
+import { BodyPortal } from "~ui/BodyPortal";
 
 import { UITopic, UITopicsList } from "./shared";
-import { SortableTopicMenuItem } from "./TopicMenuItem";
+import { SortableTopicMenuItem, TopicMenuItem } from "./TopicMenuItem";
 
 interface Props {
   topics: TopicDetailedInfoFragment[];
@@ -44,6 +46,8 @@ export const SortableTopicsList = ({
     [draggedTopicId]
   );
 
+  const draggedTopic = topics.find((topic) => topic.id === draggedTopicId);
+
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -52,29 +56,29 @@ export const SortableTopicsList = ({
   }
 
   function handleDragEnd({ active, over }: DragEndEvent) {
-    if (over && active.id !== over.id) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const overIndex = topics.findIndex((topic) => topic.id == over.id)!;
-      if (overIndex === 0) {
-        moveToStart(topics[draggedTopicIndex]);
-        return;
-      }
-
-      if (overIndex === topics.length - 1) {
-        moveToEnd(topics[draggedTopicIndex]);
-        return;
-      }
-
-      // overTopic indexes differ depending if the draggedTopic comes before/after item
-      const { start, end } =
-        overIndex > draggedTopicIndex
-          ? { start: overIndex, end: overIndex + 1 }
-          : { start: overIndex - 1, end: overIndex };
-
-      moveBetween(topics[draggedTopicIndex], topics[start], topics[end]);
+    setDraggedId(null);
+    if (!over || active.id === over.id) {
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const overIndex = topics.findIndex((topic) => topic.id == over.id)!;
+    if (overIndex === 0) {
+      moveToStart(topics[draggedTopicIndex]);
+      return;
     }
 
-    setDraggedId(null);
+    if (overIndex === topics.length - 1) {
+      moveToEnd(topics[draggedTopicIndex]);
+      return;
+    }
+
+    // overTopic indexes differ depending if the draggedTopic comes before/after item
+    const { start, end } =
+      overIndex > draggedTopicIndex
+        ? { start: overIndex, end: overIndex + 1 }
+        : { start: overIndex - 1, end: overIndex };
+
+    moveBetween(topics[draggedTopicIndex], topics[start], topics[end]);
   }
 
   return (
@@ -94,6 +98,11 @@ export const SortableTopicsList = ({
           ))}
         </SortableContext>
       </UITopicsList>
+      <BodyPortal>
+        <DragOverlay>
+          {draggedTopic && <TopicMenuItem topic={draggedTopic} isActive={activeTopicId === draggedTopic.id} />}
+        </DragOverlay>
+      </BodyPortal>
     </DndContext>
   );
 };
