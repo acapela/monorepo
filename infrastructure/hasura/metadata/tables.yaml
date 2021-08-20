@@ -880,11 +880,12 @@
     - role: user
       permission:
         columns:
-          - id
-          - message_id
-          - user_id
           - created_at
           - done_at
+          - id
+          - message_id
+          - seen_at
+          - user_id
         filter:
           message:
             topic:
@@ -892,6 +893,16 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - done_at
+          - seen_at
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+        check: null
 - table:
     schema: public
     name: team
