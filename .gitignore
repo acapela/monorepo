@@ -124,3 +124,5 @@ credentials.json
 kustomize
 .envrc
 nohup.out
+
+buildinfo.tsbuild
