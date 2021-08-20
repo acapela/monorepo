@@ -65,13 +65,13 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
     if (!room) return;
     trackEvent("Created Room", {
       roomId: room.id,
-      roomName: room.name,
-      roomDeadline: new Date(room.deadline),
-      spaceId: room.space_id,
-      numberOfInitialMembers: room.members.length,
+      roomName: createRoomInput.name,
+      roomDeadline: new Date(createRoomInput.deadline),
+      spaceId: createRoomInput.spaceId,
+      numberOfInitialMembers: createRoomInput.participantsIds.length,
       isCalendarEvent: true,
     });
-    routes.spaceRoom.push({ spaceId: room.space_id, roomId: room.id });
+    routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId: room.id });
   }
 
   return (

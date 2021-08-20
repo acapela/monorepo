@@ -1,7 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { updateHomeviewQuery } from "~frontend/views/HomeView/query";
 import {
   CreateRoomMutation,
   CreateRoomMutationVariables,
@@ -20,12 +19,10 @@ import {
   SingleRoomQuery,
   SingleRoomQueryVariables,
 } from "~gql";
-import { assert } from "~shared/assert";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 
 import { RoomInvitationBasicInfoFragment } from "./roomInvitations";
-import { SpaceDetailedInfoFragment } from "./spaces";
 import { TopicDetailedInfoFragment } from "./topics";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery, withFragments } from "./utils";
@@ -171,11 +168,9 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
   CreateRoomMutationVariables
 >(
   () => gql`
-    ${RoomDetailedInfoFragment()}
-
     mutation CreateRoom($input: room_insert_input!) {
       room: insert_room_one(object: $input) {
-        ...RoomDetailedInfo
+        id
       }
     }
   `,
@@ -190,47 +185,14 @@ export const [useCreateRoomMutation, { mutate: createRoom }] = createMutation<
         input.slug = slugify(input.name);
       }
     },
-    onOptimisticOrActualResponse(room, variables) {
-      if (!room || !variables.input.space_id) return;
-
-      SpaceDetailedInfoFragment.update(variables.input.space_id, (space) => {
-        space.rooms.push(room);
-      });
-
-      updateHomeviewQuery((result) => {
-        result.rooms.push(room);
-      });
-    },
-    optimisticResponse({ input }) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const spaceId = input.space_id!;
-
-      assert(input.owner_id, "No owner id");
-
-      return {
-        __typename: "mutation_root",
-        room: {
-          __typename: "room",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          deadline: input.deadline!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          id: input.id!,
-          owner: UserBasicInfoFragment.assertRead(input.owner_id),
-          members: [],
-          invitations: [],
-          space: SpaceDetailedInfoFragment.assertRead(spaceId),
-          topics: [],
-          last_activity_at: null,
-          is_private: input.is_private ?? false,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          name: input.name!,
-          space_id: spaceId,
-          finished_at: null,
-          source_google_calendar_event_id: input.source_google_calendar_event_id ?? null,
-          summary: input.summary ?? null,
-        },
-      };
-    },
+    optimisticResponse: ({ input }) => ({
+      __typename: "mutation_root",
+      room: {
+        __typename: "room",
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        id: input.id!,
+      },
+    }),
   }
 );
 

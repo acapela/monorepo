@@ -8434,7 +8434,7 @@ export type CreateRoomMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
-    & RoomDetailedInfoFragment
+    & Pick<Room, 'id'>
   )> }
 );
 
