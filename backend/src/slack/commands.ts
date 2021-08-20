@@ -1,13 +1,20 @@
 import * as SlackBolt from "@slack/bolt";
+import { ConversationsMembersResponse } from "@slack/web-api";
 
 import { db } from "~db";
 import { isNotNullish } from "~shared/nullish";
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
-  slackApp.command("/acapela", async ({ command, ack, respond, client }) => {
+  slackApp.command("/acapela", async ({ command, ack, respond, client, context }) => {
     // Acknowledge command request
     await ack();
-    const roomNameInput = command.text || "Slack Conversation";
+    let roomNameInput = command.text;
+    if (!roomNameInput) {
+      respond(
+        `You can set a room name by writing it after the /acapela command (eg "/acapela Quick tech discussion") `
+      );
+      roomNameInput = `Slack Conversation with ${command.user_name}`;
+    }
     const teamSlackInstallation = await db.team_slack_installation.findFirst({
       where: { slack_team_id: command.team_id },
       include: { team: true },
@@ -20,12 +27,19 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     if (!space) {
       return await respond("No space found");
     }
-    console.info(command.channel_id);
-    const conversationMemberResponse = await client.conversations.members({
-      channel: command.channel_id,
-    });
-    if (!conversationMemberResponse.members) {
-      return await respond("No conversation members found");
+    let conversationMemberResponse: ConversationsMembersResponse | undefined = undefined;
+    try {
+      conversationMemberResponse = await client.conversations.members({
+        channel: command.channel_id,
+        token: context.userToken,
+      });
+      if (!conversationMemberResponse || !conversationMemberResponse.members) {
+        return await respond("No members found");
+      }
+    } catch (error) {
+      return await respond(
+        `/acapela command needs Slack integration in order to work in private conversations. Please connect Acapela with Slack here ${process.env.FRONTEND_URL}/team before using the command again`
+      );
     }
     const memberQueries = conversationMemberResponse.members.map((memberId) =>
       client.users.profile.get({ user: memberId })

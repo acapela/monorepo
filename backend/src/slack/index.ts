@@ -47,6 +47,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       const { teamId, userId } = parseMetadata(installation);
       const slackTeamId = installation.team!.id;
       const slackUserId = installation.user.id;
+      // do we want to use upsert here to avoid the call failing?
       await db.team_slack_installation.create({
         data: { team_id: teamId, data: installation as never, slack_team_id: slackTeamId },
       });
