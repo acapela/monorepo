@@ -50,6 +50,7 @@ export const MessageTask = styled(function MessageTask({ task, taskAssignee, cla
         </UIIconHolder>
       )}
       {taskStatus === "seen" && (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         <UIIconHolder data-tooltip={`Seen by ${taskAssignee.name} at ${niceFormatDateTime(new Date(task.seen_at!))} `}>
           <IconUserCheck />
         </UIIconHolder>
