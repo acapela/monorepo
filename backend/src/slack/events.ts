@@ -9,7 +9,7 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
       await ack();
       // console.info(shortcut);
       // Call the views.open method using one of the built-in WebClients
-      const result = await client.views.open({
+      await client.views.open({
         trigger_id: shortcut.trigger_id,
         view: {
           type: "modal",
