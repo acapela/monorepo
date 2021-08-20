@@ -1,13 +1,13 @@
 import * as SlackBolt from "@slack/bolt";
 
-import { db } from "~db";
+// import { db } from "~db";
 
 export function setupSlackEvents(slackApp: SlackBolt.App) {
   slackApp.shortcut({ callback_id: "message_acapela", type: "message_action" }, async ({ shortcut, ack, client }) => {
     try {
       // Acknowledge shortcut request
       await ack();
-      console.info(shortcut);
+      // console.info(shortcut);
       // Call the views.open method using one of the built-in WebClients
       const result = await client.views.open({
         trigger_id: shortcut.trigger_id,

@@ -45,6 +45,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   installationStore: {
     async storeInstallation(installation) {
       const { teamId, userId } = parseMetadata(installation);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const slackTeamId = installation.team!.id;
       const slackUserId = installation.user.id;
       // do we want to use upsert here to avoid the call failing?
