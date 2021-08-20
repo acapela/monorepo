@@ -9449,7 +9449,7 @@ export type UpdateRoomSummaryMutation = (
   { __typename?: 'mutation_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
-    & Pick<Room, 'id' | 'deadline'>
+    & Pick<Room, 'id' | 'summary'>
   )> }
 );
 

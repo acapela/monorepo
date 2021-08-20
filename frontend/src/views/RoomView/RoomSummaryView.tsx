@@ -49,7 +49,7 @@ export const RoomSummaryView = withFragments(fragments, function RoomSummaryView
       mutation UpdateRoomSummary($id: uuid!, $summary: String!) {
         room: update_room_by_pk(pk_columns: { id: $id }, _set: { summary: $summary }) {
           id
-          deadline
+          summary
         }
       }
     `,
