@@ -38,6 +38,7 @@ export const PopoverMenuTrigger = styled<Props>(
           ref={anchorRef}
           onClick={(event) => {
             event.stopPropagation();
+            event.preventDefault();
             togglePopover();
           }}
           className={className}
