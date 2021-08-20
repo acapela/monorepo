@@ -122,6 +122,7 @@ export const [useCreateMessageMutation, { mutate: createMessage }] = createMutat
           createdAt: new Date().toISOString(),
           message_attachments: [],
           type: vars.type,
+          tasks: [],
           message_reactions: [],
           transcription: null,
           user: convertUserTokenDataToInfoFragment(userData),
