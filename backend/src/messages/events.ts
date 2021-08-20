@@ -90,7 +90,7 @@ async function createMessageMentionNotifications(message: Message, messageBefore
   return await db.$transaction(createNotificationPromises);
 }
 
-async function createMessageMentionTasks(message: Message, messageBefore: Message | null) {
+async function createTasksFromNewMentions(message: Message, messageBefore: Message | null) {
   const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
   const createTasksPromises: Array<PrismaPromise<Task>> = [];
 
@@ -103,6 +103,27 @@ async function createMessageMentionTasks(message: Message, messageBefore: Messag
   }
 
   return await db.$transaction(createTasksPromises);
+}
+
+async function markPendingTasksAsDone(message: Message) {
+  const { topic_id, user_id } = message;
+
+  /**
+   * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
+   */
+
+  await db.task.updateMany({
+    where: {
+      message: {
+        topic_id,
+      },
+      user_id,
+      done_at: null,
+    },
+    data: {
+      done_at: new Date(),
+    },
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -118,6 +139,7 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
     createMessageMentionNotifications(event.item, event.itemBefore),
-    createMessageMentionTasks(event.item, event.itemBefore),
+    createTasksFromNewMentions(event.item, event.itemBefore),
+    markPendingTasksAsDone(event.item),
   ]);
 }

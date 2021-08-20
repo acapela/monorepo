@@ -5,6 +5,8 @@ import { useTasksQuery } from "~frontend/gql/tasks";
 import { routes } from "~frontend/router";
 import { fillParamsInUrl } from "~frontend/router/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
+import { IconCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { ToDoItem } from "./ToDoItem";
@@ -26,6 +28,9 @@ export const UnresolvedRequests = () => {
 
   return (
     <ToDoSection title={`Requests of your input (${tasks?.length || 0})`}>
+      {tasks?.length === 0 && (
+        <EmptyStatePlaceholder icon={<IconCheck />} description="There are no pending tasks for you" />
+      )}
       {tasks?.map(({ message, id }) => {
         const { topic } = message;
         return (
