@@ -1,4 +1,4 @@
-FROM node:15-buster
+FROM node:16-buster
 
 RUN wget https://storage.googleapis.com/berglas/main/linux_amd64/berglas -O /bin/berglas && chmod +x /bin/berglas
 RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
