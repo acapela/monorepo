@@ -5859,6 +5859,7 @@ export interface Task {
   /** An object relationship */
   message: Message;
   message_id: Scalars['uuid'];
+  seen_at?: Maybe<Scalars['timestamptz']>;
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
@@ -5910,6 +5911,7 @@ export interface Task_Bool_Exp {
   id?: Maybe<Uuid_Comparison_Exp>;
   message?: Maybe<Message_Bool_Exp>;
   message_id?: Maybe<Uuid_Comparison_Exp>;
+  seen_at?: Maybe<Timestamptz_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
 }
@@ -5926,6 +5928,7 @@ export interface Task_Insert_Input {
   id?: Maybe<Scalars['uuid']>;
   message?: Maybe<Message_Obj_Rel_Insert_Input>;
   message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
 }
@@ -5937,6 +5940,7 @@ export interface Task_Max_Fields {
   done_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -5946,6 +5950,7 @@ export interface Task_Max_Order_By {
   done_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -5956,6 +5961,7 @@ export interface Task_Min_Fields {
   done_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -5965,6 +5971,7 @@ export interface Task_Min_Order_By {
   done_at?: Maybe<Order_By>;
   id?: Maybe<Order_By>;
   message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -5991,6 +5998,7 @@ export interface Task_Order_By {
   id?: Maybe<Order_By>;
   message?: Maybe<Message_Order_By>;
   message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
 }
@@ -6011,6 +6019,8 @@ export type Task_Select_Column =
   /** column name */
   | 'message_id'
   /** column name */
+  | 'seen_at'
+  /** column name */
   | 'user_id';
 
 /** input type for updating data in table "task" */
@@ -6019,6 +6029,7 @@ export interface Task_Set_Input {
   done_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -6032,6 +6043,8 @@ export type Task_Update_Column =
   | 'id'
   /** column name */
   | 'message_id'
+  /** column name */
+  | 'seen_at'
   /** column name */
   | 'user_id';
 
@@ -9115,7 +9128,7 @@ export type RemoveSpaceMemberMutation = (
 
 export type TaskBasicInfoFragment = (
   { __typename?: 'task' }
-  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'created_at' | 'done_at'>
+  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'created_at' | 'seen_at' | 'done_at'>
 );
 
 export type TaskDetailedInfoFragment = (
@@ -9154,6 +9167,20 @@ export type TasksQuery = (
   & { tasks: Array<(
     { __typename?: 'task' }
     & TaskDetailedInfoFragment
+  )> }
+);
+
+export type UpdateTaskMutationVariables = Exact<{
+  taskId: Scalars['uuid'];
+  input: Task_Set_Input;
+}>;
+
+
+export type UpdateTaskMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_task_by_pk?: Maybe<(
+    { __typename?: 'task' }
+    & TaskBasicInfoFragment
   )> }
 );
 
@@ -10535,13 +10562,14 @@ export type subscription_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type taskKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message' | 'message_id' | 'user' | 'user_id' | taskKeySpecifier)[];
+export type taskKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message' | 'message_id' | 'seen_at' | 'user' | 'user_id' | taskKeySpecifier)[];
 export type taskFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -10556,20 +10584,22 @@ export type task_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type task_max_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'user_id' | task_max_fieldsKeySpecifier)[];
+export type task_max_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'seen_at' | 'user_id' | task_max_fieldsKeySpecifier)[];
 export type task_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type task_min_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'user_id' | task_min_fieldsKeySpecifier)[];
+export type task_min_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'seen_at' | 'user_id' | task_min_fieldsKeySpecifier)[];
 export type task_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type task_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | task_mutation_responseKeySpecifier)[];

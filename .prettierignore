@@ -1,8 +1,14 @@
+.yarn/**/*.*
+
 backend/dist
+
 frontend/.next
 frontend/dist
+
 gql/generated.ts
+gql/schema.graphql
+
 tooling/schema.graphql
-.yarn/**/*.*
+
 infrastructure/hasura/metadata/*.yaml
 infrastructure/kubernetes
