@@ -95,7 +95,9 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
       index: getIndexBetweenCurrentAndLast(topics[topics.length - 1]?.index ?? ""),
     });
     const room = RoomBasicInfoFragment.read(roomId);
-    routes.spaceRoomTopic.push({ topicId, spaceId: room.space_id, roomId: room.id });
+    if (room) {
+      routes.spaceRoomTopic.push({ topicId, spaceId: room.space_id, roomId: room.id });
+    }
   }
 
   return (
