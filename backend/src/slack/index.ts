@@ -14,13 +14,21 @@ import { isDev } from "~shared/dev";
 import { setupSlackCommands } from "./commands";
 import { setupSlackEvents } from "./events";
 
-const botScopes = ["channels:read", "commands", "users.profile:read", "users:read", "users:read.email"];
+const botScopes = [
+  "channels:read",
+  "commands",
+  "users.profile:read",
+  "users:read",
+  "users:read.email",
+  "im:write",
+  "chat:write",
+];
 
 const userScopes = ["groups:read", "im:read", "mpim:read"];
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
 
-type Metadata = { teamId: string; redirectURL: string };
+type Metadata = { teamId: string; redirectURL: string; userId: string };
 
 function parseMetadata({ metadata }: SlackBolt.Installation): Metadata {
   if (!metadata) {
@@ -36,21 +44,56 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   stateSecret: crypto.randomBytes(64).toString("hex"),
   installationStore: {
     async storeInstallation(installation) {
-      const { teamId } = parseMetadata(installation);
+      const { teamId, userId } = parseMetadata(installation);
+      const slackTeamId = installation.team!.id;
+      const slackUserId = installation.user.id;
       await db.team_slack_installation.create({
-        data: { team_id: teamId, data: installation as never, slack_team_id: installation.team?.id },
+        data: { team_id: teamId, data: installation as never, slack_team_id: slackTeamId },
       });
+      const teamMember = await db.team_member.findFirst({ where: { user_id: userId, team_id: teamId } });
+      if (teamMember) {
+        await db.team_member_slack_installation.create({
+          data: {
+            team_member_id: teamMember.id,
+            data: installation as never,
+            slack_team_id: slackTeamId,
+            slack_user_id: slackUserId,
+          },
+        });
+      }
     },
     async fetchInstallation(query) {
-      const slackInstallation = await db.team_slack_installation.findFirst({ where: { slack_team_id: query.teamId } });
-      assert(
-        slackInstallation?.data,
-        new UnprocessableEntityError(`No Slack installation found for query ${JSON.stringify(query)}`)
-      );
-      return slackInstallation.data as unknown as SlackBolt.Installation;
+      const individualSlackInstallation = await db.team_member_slack_installation.findFirst({
+        where: { slack_user_id: query.userId },
+      });
+      if (individualSlackInstallation) {
+        assert(
+          individualSlackInstallation.data,
+          new UnprocessableEntityError(`No user Slack installation found for query ${JSON.stringify(query)}`)
+        );
+        return individualSlackInstallation.data as unknown as SlackBolt.Installation;
+      } else {
+        const slackInstallation = await db.team_slack_installation.findFirst({
+          where: { slack_team_id: query.teamId },
+        });
+        assert(
+          slackInstallation?.data,
+          new UnprocessableEntityError(`No team Slack installation found for query ${JSON.stringify(query)}`)
+        );
+        return slackInstallation.data as unknown as SlackBolt.Installation;
+      }
     },
     async deleteInstallation(query) {
-      await db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } });
+      const SlackUserId = query.userId;
+      if (SlackUserId) {
+        await db.team_member_slack_installation.deleteMany({ where: { slack_user_id: query.userId } });
+        const remainingTeamInstallations = await db.team_member_slack_installation.count({
+          where: { slack_team_id: query.teamId },
+        });
+        if (remainingTeamInstallations === 0) {
+          await db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } });
+        }
+      }
     },
   },
 
@@ -94,9 +137,12 @@ export const getTeamSlackInstallationURL: ActionHandler<
   actionName: "get_team_slack_installation_url",
 
   async handle(userId, { input: { teamId, redirectURL } }) {
-    const team = await db.team.findFirst({ where: { id: teamId, owner_id: userId } });
-    assert(team, new UnprocessableEntityError(`Team ${teamId} for owner ${userId} not found`));
-    const url = await getSlackInstallURL({ teamId, redirectURL });
+    const team = await db.team.findFirst({
+      where: { id: teamId, team_member: { some: { user_id: userId } } },
+      include: { team_member: true },
+    });
+    assert(team, new UnprocessableEntityError(`Team ${teamId} for member ${userId} not found`));
+    const url = await getSlackInstallURL({ teamId, redirectURL, userId });
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
     return { url };
   },
