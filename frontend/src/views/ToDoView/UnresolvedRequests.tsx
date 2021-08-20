@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -7,8 +7,10 @@ import { routes } from "~frontend/router";
 import { fillParamsInUrl } from "~frontend/router/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
+import { TaskBasicInfoFragment } from "~gql";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCheck } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
@@ -18,7 +20,7 @@ import { ToDoSection } from "./ToDoSection";
 export const UnresolvedRequests = () => {
   const user = useAssertCurrentUser();
 
-  const [tasks] = useTasksQuery({
+  const [tasks = []] = useTasksQuery({
     where: {
       user_id: {
         _eq: user.id,
@@ -29,17 +31,38 @@ export const UnresolvedRequests = () => {
     },
   });
 
+  function getMenuOptions(task: TaskBasicInfoFragment): PopoverMenuOption[] {
+    const options: PopoverMenuOption[] = [];
+
+    if (task.seen_at) {
+      options.push({
+        label: "Mark as unread",
+        onSelect: () => updateTask({ taskId: task.id, input: { seen_at: null } }),
+      });
+    }
+
+    if (!task.seen_at) {
+      options.push({
+        label: "Mark as read",
+        onSelect: () => updateTask({ taskId: task.id, input: { seen_at: new Date().toISOString() } }),
+      });
+    }
+
+    return options;
+  }
+
   return (
     <ToDoSection title={`Requests of your input (${tasks?.length || 0})`}>
-      {tasks?.length === 0 && (
+      {tasks.length === 0 && (
         <EmptyStatePlaceholder icon={<IconCheck />} description="There are no pending tasks for you" />
       )}
-      {tasks?.map(({ message, id }) => {
+      {tasks.map((task) => {
+        const { message, id } = task;
         const { topic } = message;
+
         return (
-          <>
+          <Fragment key={id}>
             <ToDoItem
-              key={id}
               href={fillParamsInUrl(routes.spaceRoomTopic.path, {
                 topicId: topic.id,
                 roomId: topic.room.id,
@@ -47,18 +70,11 @@ export const UnresolvedRequests = () => {
               })}
             >
               <UIMessageText message={message} />
-              <PopoverMenuTrigger
-                options={[
-                  {
-                    label: "Mark as seen",
-                    onSelect: () => updateTask({ taskId: id, input: { seen_at: new Date().toISOString() } }),
-                  },
-                ]}
-              >
+              <PopoverMenuTrigger options={getMenuOptions(task)}>
                 <CircleOptionsButton />
               </PopoverMenuTrigger>
             </ToDoItem>
-          </>
+          </Fragment>
         );
       })}
     </ToDoSection>
@@ -72,4 +88,5 @@ const UIMessageText = styled(MessageText)`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-grow: 1;
 `;
