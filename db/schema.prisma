@@ -28,8 +28,8 @@ model attachment {
   original_name    String
   mime_type        String
   message_id       String?        @db.Uuid
-  transcription_id String?        @db.Uuid
   user_id          String?        @db.Uuid
+  transcription_id String?        @db.Uuid
   message          message?       @relation(fields: [message_id], references: [id])
   transcription    transcription? @relation(fields: [transcription_id], references: [id])
   user             user?          @relation(fields: [user_id], references: [id])
@@ -312,6 +312,7 @@ model task {
   user_id    String    @db.Uuid
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   done_at    DateTime? @db.Timestamptz(6)
+  seen_at    DateTime? @db.Timestamptz(6)
   message    message   @relation(fields: [message_id], references: [id])
   user       user      @relation(fields: [user_id], references: [id])
 }

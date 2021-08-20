@@ -1,12 +1,15 @@
+import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useTasksQuery } from "~frontend/gql/tasks";
+import { updateTask, useTasksQuery } from "~frontend/gql/tasks";
 import { routes } from "~frontend/router";
 import { fillParamsInUrl } from "~frontend/router/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
+import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCheck } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { theme } from "~ui/theme";
 
 import { ToDoItem } from "./ToDoItem";
@@ -34,16 +37,28 @@ export const UnresolvedRequests = () => {
       {tasks?.map(({ message, id }) => {
         const { topic } = message;
         return (
-          <ToDoItem
-            key={id}
-            href={fillParamsInUrl(routes.spaceRoomTopic.path, {
-              topicId: topic.id,
-              roomId: topic.room.id,
-              spaceId: topic.room.space.id,
-            })}
-          >
-            <UIMessageText message={message} />
-          </ToDoItem>
+          <>
+            <ToDoItem
+              key={id}
+              href={fillParamsInUrl(routes.spaceRoomTopic.path, {
+                topicId: topic.id,
+                roomId: topic.room.id,
+                spaceId: topic.room.space.id,
+              })}
+            >
+              <UIMessageText message={message} />
+              <PopoverMenuTrigger
+                options={[
+                  {
+                    label: "Mark as seen",
+                    onSelect: () => updateTask({ taskId: id, input: { seen_at: new Date().toISOString() } }),
+                  },
+                ]}
+              >
+                <CircleOptionsButton />
+              </PopoverMenuTrigger>
+            </ToDoItem>
+          </>
         );
       })}
     </ToDoSection>
