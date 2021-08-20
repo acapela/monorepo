@@ -25,7 +25,7 @@ const Page = () => {
   );
   useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom: Boolean(data && data.room), loading });
 
-  if (!data) {
+  if (!data || !data.room) {
     return null; // Left blank on purpose. Won't render for clients.
   }
 

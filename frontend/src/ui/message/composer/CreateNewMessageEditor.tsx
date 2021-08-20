@@ -1,20 +1,24 @@
+import { Reference, gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
-import { useCreateMessageMutation } from "~frontend/gql/messages";
+import { updateLastSeenMessage } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { Message } from "~frontend/ui/message/messagesFeed/Message";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { Message_Type_Enum } from "~gql";
+import { CreateMessageMutation, CreateMessageMutationVariables, Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
+import { getUUID } from "~shared/uuid";
 
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
@@ -30,6 +34,83 @@ interface SubmitMessageParams {
   content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
 }
+
+const useCreateMessageMutation = () =>
+  useMutation<CreateMessageMutation, CreateMessageMutationVariables>(
+    gql`
+      ${Message.fragments.message}
+
+      mutation CreateMessage(
+        $id: uuid!
+        $topicId: uuid!
+        $content: jsonb!
+        $type: message_type_enum!
+        $replied_to_message_id: uuid
+      ) {
+        message: insert_message_one(
+          object: {
+            id: $id
+            content: $content
+            topic_id: $topicId
+            type: $type
+            replied_to_message_id: $replied_to_message_id
+          }
+        ) {
+          id
+          topic_id
+          ...Message_message
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => {
+        const userData = assertReadUserDataFromCookie();
+        return {
+          __typename: "mutation_root",
+          message: {
+            __typename: "message",
+            id: vars.id,
+            topic_id: vars.topicId,
+            created_at: new Date().toISOString(),
+            message_attachments: [],
+            type: vars.type,
+            message_reactions: [],
+            transcription: null,
+            user_id: userData.id,
+            user: {
+              __typename: "user",
+              id: userData.id,
+              avatar_url: userData.picture,
+              email: userData.email,
+              name: userData.name,
+            },
+            content: vars.content,
+            replied_to_message_id: vars.replied_to_message_id,
+          },
+        };
+      },
+      update(cache, result) {
+        const message = result.data?.message;
+        if (!message) {
+          return;
+        }
+        const newMessageRef = cache.writeFragment({
+          data: message,
+          fragment: Message.fragments.message,
+          fragmentName: "Message_message",
+        });
+        if (!newMessageRef) {
+          return;
+        }
+        cache.modify({
+          id: cache.identify({ __typename: "topic", id: message.topic_id }),
+          fields: {
+            messages: (existing: Reference[]) => existing.concat(newMessageRef),
+          },
+        });
+      },
+    }
+  );
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
@@ -76,14 +157,20 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
   }
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
-    const [message] = await createMessage({
-      topicId,
-      type,
-      content,
-      replied_to_message_id: topicContext.currentlyReplyingToMessageId,
+    const messageId = getUUID();
+    const { data } = await createMessage({
+      variables: {
+        id: messageId,
+        topicId,
+        type,
+        content,
+        replied_to_message_id: topicContext.currentlyReplyingToMessageId,
+      },
     });
 
-    if (message) {
+    updateLastSeenMessage({ messageId, topicId });
+
+    if (data) {
       trackEvent("Sent Message", {
         messageType: type,
         isReply: !!topicContext.currentlyReplyingToMessageId,
@@ -91,7 +178,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
       });
       await Promise.all(
         bindAttachmentsToMessage(
-          message.id,
+          messageId,
           attachments.map(({ uuid }) => uuid)
         )
       );

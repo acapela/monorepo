@@ -8107,23 +8107,6 @@ export type MessageFeedInfoFragment = (
   & MessageDetailedInfoFragment
 );
 
-export type CreateMessageMutationVariables = Exact<{
-  id?: Maybe<Scalars['uuid']>;
-  topicId: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  type: Message_Type_Enum;
-  replied_to_message_id?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & MessageFeedInfoFragment
-  )> }
-);
-
 export type UpdateTextMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
   content: Scalars['jsonb'];
@@ -9071,6 +9054,24 @@ export type MessageAttachment_AttachmentFragment = (
 export type MessageAttachmentDisplayer_AttachmentFragment = (
   { __typename?: 'attachment' }
   & Pick<Attachment, 'mime_type' | 'original_name'>
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'topic_id'>
+    & Message_MessageFragment
+  )> }
 );
 
 export type EditMessageEditor_MessageFragment = (
