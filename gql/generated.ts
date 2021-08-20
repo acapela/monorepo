@@ -8989,19 +8989,6 @@ export type SpaceManager_SpaceFragment = (
   & SpaceWithMembersFragment
 );
 
-export type CreateTopicMutationVariables = Exact<{
-  input: Topic_Insert_Input;
-}>;
-
-
-export type CreateTopicMutation = (
-  { __typename?: 'mutation_root' }
-  & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
-  )> }
-);
-
 export type IsCurrentUserTopicManager_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'owner_id'>
@@ -9297,6 +9284,19 @@ export type RemoveRoomMemberMutation = (
 export type PrivateRoomDeletionPrompt_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'space_id'>
+);
+
+export type CreateTopicMutationVariables = Exact<{
+  input: Topic_Insert_Input;
+}>;
+
+
+export type CreateTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_topic_one?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id'>
+  )> }
 );
 
 export type SpacePickerQueryVariables = Exact<{
@@ -9699,6 +9699,41 @@ export type TopicList_RoomFragment = (
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment
+);
+
+export type CreateRoomViewTopicMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  index: Scalars['String'];
+  room_id: Scalars['uuid'];
+  owner_id: Scalars['uuid'];
+}>;
+
+
+export type CreateRoomViewTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'room_id'>
+    & TopicMenuItem_TopicFragment
+    & RoomTopicView_TopicFragment
+  )> }
+);
+
+export type RoomViewTopicQueryVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type RoomViewTopicQuery = (
+  { __typename?: 'query_root' }
+  & { topics: Array<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'room_id'>
+    & TopicMenuItem_TopicFragment
+    & RoomTopicView_TopicFragment
+  )> }
 );
 
 export type UpdateTopicNameMutationVariables = Exact<{

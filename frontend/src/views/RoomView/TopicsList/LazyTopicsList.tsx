@@ -2,7 +2,7 @@ import { gql, useSubscription } from "@apollo/client";
 import React, { Suspense } from "react";
 
 import { withFragments } from "~frontend/gql/utils";
-import { LazyTopicList_RoomFragment, TopicListSubscription, TopicListSubscriptionVariables } from "~gql";
+import { LazyTopicList_RoomFragment, TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables } from "~gql";
 import { namedLazy } from "~shared/namedLazy";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
@@ -29,7 +29,7 @@ export const LazyTopicsList = withFragments(
     `,
   },
   ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
-    useSubscription<TopicListSubscription, TopicListSubscriptionVariables>(
+    useSubscription<TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables>(
       gql`
         subscription TopicList_room($roomId: uuid!) {
           room_by_pk(id: $roomId) {

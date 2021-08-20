@@ -1,18 +1,26 @@
-import { gql } from "@apollo/client";
+import { Reference, gql, useMutation } from "@apollo/client";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
-import { useStartCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
-import { TopicList_RoomFragment } from "~gql";
-import { generateId } from "~shared/id";
+import { byIndexAscending } from "~frontend/topics/utils";
+import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
+import { TopicMenuItem } from "~frontend/views/RoomView/TopicsList/TopicMenuItem";
+import {
+  CreateRoomViewTopicMutation,
+  CreateRoomViewTopicMutationVariables,
+  RoomViewTopicQuery,
+  RoomViewTopicQueryVariables,
+  TopicList_RoomFragment,
+} from "~gql";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
@@ -48,17 +56,98 @@ interface Props {
 }
 
 function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicId: string | null) {
-  const activeTopicNumIndex = topics.findIndex((t) => t.id == activeTopicId);
+  const sortedTopics = topics.sort(byIndexAscending);
+  const activeTopicNumIndex = sortedTopics.findIndex((t) => t.id == activeTopicId);
   if (activeTopicNumIndex == -1) {
-    return createLastItemIndex(topics[topics.length - 1]?.index ?? "");
+    return createLastItemIndex(sortedTopics[sortedTopics.length - 1]?.index ?? "");
   }
-  const activeTopicIndex = topics[activeTopicNumIndex].index;
-  const nextTopic = topics[activeTopicNumIndex + 1];
+  const activeTopicIndex = sortedTopics[activeTopicNumIndex].index;
+  const nextTopic = sortedTopics[activeTopicNumIndex + 1];
   if (!nextTopic) {
     return getIndexBetweenCurrentAndLast(activeTopicIndex);
   }
   return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
+
+const useCreateTopic = () =>
+  useMutation<CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables>(
+    gql`
+      ${TopicMenuItem.fragments.topic}
+      ${RoomTopicView.fragments.topic}
+
+      mutation CreateRoomViewTopic(
+        $id: uuid!
+        $name: String!
+        $slug: String!
+        $index: String!
+        $room_id: uuid!
+        $owner_id: uuid!
+      ) {
+        topic: insert_topic_one(
+          object: { id: $id, name: $name, slug: $slug, index: $index, room_id: $room_id, owner_id: $owner_id }
+        ) {
+          id
+          room_id
+          ...TopicMenuItem_topic
+          ...RoomTopicView_topic
+        }
+      }
+    `,
+    {
+      optimisticResponse(vars) {
+        const userData = assertReadUserDataFromCookie();
+        return {
+          __typename: "mutation_root",
+          topic: {
+            __typename: "topic",
+            ...vars,
+            owner: {
+              __typename: "user",
+              ...userData,
+              avatar_url: userData.picture,
+            },
+          },
+        };
+      },
+      update(cache, result) {
+        const topic = result.data?.topic;
+        if (!topic) {
+          return;
+        }
+        const newTopicRef = cache.writeFragment({
+          data: topic,
+          fragment: TopicMenuItem.fragments.topic,
+          fragmentName: "TopicMenuItem_topic",
+        });
+        if (!newTopicRef) {
+          return;
+        }
+        cache.modify({
+          id: cache.identify({ __typename: "topic", id: topic.room_id }),
+          fields: {
+            topics: (existing: Reference[]) => existing.concat(newTopicRef),
+          },
+        });
+        cache.writeQuery<RoomViewTopicQuery, RoomViewTopicQueryVariables>({
+          query: gql`
+            ${TopicMenuItem.fragments.topic}
+            ${RoomTopicView.fragments.topic}
+
+            query RoomViewTopic($id: uuid!) {
+              topics: topic(where: { id: { _eq: $id } }) {
+                id
+                room_id
+                ...TopicMenuItem_topic
+                ...RoomTopicView_topic
+              }
+            }
+          `,
+          data: { topics: [topic] },
+          variables: { id: topic.id },
+        });
+      },
+    }
+  );
 
 const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
   const user = useAssertCurrentUser();
@@ -67,19 +156,21 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
-  const startCreateNewTopicFlow = useStartCreateNewTopicFlow();
-
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
+
+  const [createTopic] = useCreateTopic();
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
-    const isCreated = await startCreateNewTopicFlow({
-      topicId,
-      ownerId: user.id,
-      slug: `new-topic-${generateId(5)}`,
-      roomId,
-      navigateAfterCreation: true,
-      index: getNewTopicIndex(topics, activeTopicId),
+    const { data } = await createTopic({
+      variables: {
+        id: topicId,
+        name: "New Topic",
+        slug: "new-topic",
+        owner_id: user.id,
+        room_id: roomId,
+        index: getNewTopicIndex(topics, activeTopicId),
+      },
     });
 
     runInAction(() => {
@@ -87,7 +178,7 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
       roomContext.editingNameTopicId = topicId;
     });
 
-    if (isCreated) {
+    if (data) {
       routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
     }
   }
