@@ -1,4 +1,5 @@
 import { GetSignedUrlConfig, Storage } from "@google-cloud/storage";
+import mime from "mime-types";
 
 import { assertDefined } from "~shared/assert";
 
@@ -8,10 +9,8 @@ const directory = "attachments";
 
 /* We can have topic subdirectories if needed */
 function getFilePath(fileId: string, mimeType: string) {
-  const [, extension] = mimeType.split("/");
-
   /* Having extension is critical for Sonix to get the file type right */
-  return `${directory}/${fileId}.${extension}`;
+  return `${directory}/${fileId}.${mime.extension(mimeType)}`;
 }
 
 export async function getSignedUploadUrl(uuid: string, mimeType: string): Promise<string> {
