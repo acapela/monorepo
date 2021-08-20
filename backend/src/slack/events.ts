@@ -41,8 +41,6 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
           ],
         },
       });
-
-      console.log(result);
     } catch (error) {
       console.error(error);
     }
