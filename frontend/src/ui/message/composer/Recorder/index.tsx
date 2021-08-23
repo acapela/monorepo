@@ -49,27 +49,32 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [error, setError] = useState<RecorderError | null>(null);
 
-  const resetRecorder = () => {
-    mediaSource.current = null;
+  const stopRecorder = () => {
     mediaRecorder.current?.stop();
     mediaStream.current?.getTracks().forEach((track) => track.stop());
+  };
+
+  const resetRecorder = () => {
+    mediaSource.current = null;
+
     mediaChunks.current = [];
-    mediaRecorder.current = null;
     setIsRecording(false);
   };
 
   const finishRecording = useCallback(() => {
     if (!mediaRecorder.current) return;
 
-    const [chunk] = mediaChunks.current;
-    const blob = new Blob(mediaChunks.current, { type: chunk.type });
+    stopRecorder();
+    const blob = new Blob(mediaChunks.current, { type: mediaChunks.current[0].type });
+    resetRecorder();
+
     const file = recordingBlobToFile(blob);
     onRecordingReady(file);
-    resetRecorder();
   }, [onRecordingReady]);
 
   const cancelRecording = () => {
     dismissCountdown();
+    stopRecorder();
     resetRecorder();
   };
 
@@ -126,7 +131,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
             ? "video/webm;codecs=opus"
             : "audio/webm;codecs=opus",
       });
-      mediaRecorder.current.ondataavailable = onRecordingActive;
+      mediaRecorder.current.ondataavailable = ({ data }: BlobEvent) => {
+        mediaChunks.current.push(data);
+      };
       mediaRecorder.current.onstop = finishRecording;
       mediaRecorder.current.onerror = () => {
         setError(RecorderError.NoRecorder);
@@ -134,10 +141,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       mediaRecorder.current.start();
       setIsRecording(true);
     }
-  };
-
-  const onRecordingActive = ({ data }: BlobEvent) => {
-    mediaChunks.current.push(data);
   };
 
   const previewStream = mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null;
