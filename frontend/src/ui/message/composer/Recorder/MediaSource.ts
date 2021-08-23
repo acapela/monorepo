@@ -1,5 +1,5 @@
 export enum MediaSource {
-  SCREEN = "screen",
-  CAMERA = "camera",
-  MICROPHONE = "microphone",
+  Screen = "screen",
+  Camera = "camera",
+  Microphone = "microphone",
 }

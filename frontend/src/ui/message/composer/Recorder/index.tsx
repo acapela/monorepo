@@ -30,6 +30,22 @@ function recordingBlobToFile(blob: Blob): File {
   return file;
 }
 
+export enum RecorderStatus {
+  PermissionDenied = "permission_denied",
+  Idle = "idle",
+  AcquiringMedia = "acquiring_media",
+  Recording = "recording",
+  Stopping = "stopping",
+  Stopped = "stopped",
+}
+
+export enum RecorderError {
+  PermissionDenied = "permission_denied",
+  NoRecorder = "recorder_error",
+  ScreenCaptureUnsupported = "screen_capture_unsupported",
+  UnsupportedBrowser = "unsupported_browser",
+}
+
 const COUNTDOWN_IN_SECONS = 3;
 
 const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
@@ -39,15 +55,113 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const popoverHandlerRef = useRef<HTMLDivElement>(null);
 
-  const { status, startRecording, stopRecording, previewStream, getMediaStream, error, mediaSource, setMediaSource } =
-    useReactMediaRecorder({
-      acquireMediaOnDemand: true,
-      onStop: (_url: string, blob: Blob) => setBlob(blob),
-    });
+  const onStop = (_url: string, blob: Blob) => setBlob(blob);
+
+  const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const mediaChunks = useRef<Blob[]>([]);
+  const mediaStream = useRef<MediaStream | null>(null);
+  const [status, setStatus] = useState<RecorderStatus>(RecorderStatus.Idle);
+  const [error, setError] = useState<RecorderError | null>(null);
+
+  const getMediaStream = async (): Promise<boolean> => {
+    setStatus(RecorderStatus.AcquiringMedia);
+
+    const requiredMedia: MediaStreamConstraints = {
+      audio: true,
+      video: mediaSource === MediaSource.Camera,
+    };
+
+    try {
+      const audioStream = await window.navigator.mediaDevices.getUserMedia(requiredMedia);
+
+      if (mediaSource === MediaSource.Screen) {
+        if (!window.navigator.mediaDevices.getDisplayMedia) {
+          setError(RecorderError.ScreenCaptureUnsupported);
+          return false;
+        }
+
+        const stream = (await window.navigator.mediaDevices.getDisplayMedia({
+          video: false,
+        })) as MediaStream;
+
+        audioStream.getAudioTracks().forEach((audioTrack) => stream.addTrack(audioTrack));
+        mediaStream.current = stream;
+      } else {
+        mediaStream.current = audioStream;
+      }
+
+      return true;
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
+      return false;
+    } finally {
+      setStatus(RecorderStatus.Idle);
+    }
+  };
+
+  useEffect(() => {
+    if (!window.MediaRecorder) {
+      return setError(RecorderError.UnsupportedBrowser);
+    }
+  }, []);
+
+  // Media Recorder Handlers
+
+  const startRecording = async () => {
+    setError(null);
+
+    if (!mediaSource) return;
+
+    if (mediaStream.current) {
+      // User can stop the stream using browser's own built-in 'Stop sharing' button.
+      mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
+      mediaRecorder.current = new MediaRecorder(mediaStream.current, {
+        mimeType:
+          mediaSource === MediaSource.Camera || mediaSource === MediaSource.Screen
+            ? "video/webm;codecs=opus"
+            : "audio/webm;codecs=opus",
+      });
+      mediaRecorder.current.ondataavailable = onRecordingActive;
+      mediaRecorder.current.onstop = onRecordingStop;
+      mediaRecorder.current.onerror = () => {
+        setError(RecorderError.NoRecorder);
+        setStatus(RecorderStatus.Idle);
+      };
+      mediaRecorder.current.start();
+      setStatus(RecorderStatus.Recording);
+    }
+  };
+
+  const onRecordingActive = ({ data }: BlobEvent) => {
+    mediaChunks.current.push(data);
+  };
+
+  const onRecordingStop = () => {
+    const [chunk] = mediaChunks.current;
+    const blob = new Blob(mediaChunks.current, { type: chunk.type });
+    const url = URL.createObjectURL(blob);
+    setStatus(RecorderStatus.Stopped);
+    onStop(url, blob);
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder.current) {
+      if (mediaRecorder.current.state !== "inactive") {
+        setStatus(RecorderStatus.Stopping);
+        mediaRecorder.current.stop();
+        mediaStream.current?.getTracks().forEach((track) => track.stop());
+        mediaChunks.current = [];
+      }
+    }
+  };
+
+  const previewStream = mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null;
 
   const isRecording = !!mediaSource && status === "recording";
   const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
-  const isUnsupportedBrowser = error === "unsupported_browser";
+  const isUnsupportedBrowser = error === RecorderError.UnsupportedBrowser;
 
   const doCancelRecording = () => {
     dismissCountdown();
@@ -65,14 +179,14 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
     const isRecordingEnabled = await getMediaStream();
     if (!isRecordingEnabled) {
-      if (mediaSource === MediaSource.SCREEN) {
+      if (mediaSource === MediaSource.Screen) {
         setMediaSource(null);
       }
 
       return;
     }
 
-    if (mediaSource === MediaSource.MICROPHONE) {
+    if (mediaSource === MediaSource.Microphone) {
       dismissCountdown();
       startRecording();
     } else {
@@ -91,12 +205,12 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   };
 
   const onAudioButtonClick = () => {
-    if (mediaSource === MediaSource.MICROPHONE && isRecording) {
+    if (mediaSource === MediaSource.Microphone && isRecording) {
       return doCancelRecording();
     }
 
     doCancelRecording();
-    setMediaSource(MediaSource.MICROPHONE);
+    setMediaSource(MediaSource.Microphone);
   };
 
   const onRecorded = async (blob: Blob) => {
@@ -130,7 +244,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   useEffect(() => {
     if (mediaSource && error) {
       /* This state is recoverable, no need to block the UI */
-      if (mediaSource === MediaSource.SCREEN && error === "permission_denied") {
+      if (mediaSource === MediaSource.Screen && error === RecorderError.PermissionDenied) {
         return;
       }
 
@@ -157,18 +271,18 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           {
             label: "Record screen",
             icon: <IconMonitor />,
-            onSelect: () => startVideoRecording(MediaSource.SCREEN),
+            onSelect: () => startVideoRecording(MediaSource.Screen),
           },
           {
             label: "Record with camera",
             icon: <IconCamera />,
-            onSelect: () => startVideoRecording(MediaSource.CAMERA),
+            onSelect: () => startVideoRecording(MediaSource.Camera),
           },
         ]}
       >
         <RecordButton
           onClick={onVideoButtonClick}
-          disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
+          disabled={!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera)}
         >
           <IconVideoCamera />
         </RecordButton>
@@ -176,8 +290,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       <RecordButton
         onClick={onAudioButtonClick}
         tooltipLabel={isRecording ? undefined : "Start recording audio"}
-        disabled={!!getRecorderError(MediaSource.MICROPHONE)}
-        title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
+        disabled={!!getRecorderError(MediaSource.Microphone)}
+        title={getRecorderError(MediaSource.Microphone) ?? ""}
       >
         <IconMic />
       </RecordButton>
@@ -191,9 +305,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           handlerRef={popoverHandlerRef}
           onStop={doStopRecording}
           onCancel={doCancelRecording}
-          previewStream={mediaSource === MediaSource.MICROPHONE ? null : previewStream}
-          flipVideoPreview={mediaSource === MediaSource.CAMERA}
-          showInCorner={mediaSource !== MediaSource.MICROPHONE}
+          previewStream={mediaSource === MediaSource.Microphone ? null : previewStream}
+          flipVideoPreview={mediaSource === MediaSource.Camera}
+          showInCorner={mediaSource !== MediaSource.Microphone}
         />
       )}
     </div>
