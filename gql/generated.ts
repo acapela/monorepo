@@ -832,6 +832,10 @@ export interface Message {
   /** An object relationship */
   replied_to_message?: Maybe<Message>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
+  /** An array relationship */
+  tasks: Array<Task>;
+  /** An aggregate relationship */
+  tasks_aggregate: Task_Aggregate;
   /** An object relationship */
   topic: Topic;
   topic_id: Scalars['uuid'];
@@ -885,6 +889,26 @@ export interface MessageMessage_Reactions_AggregateArgs {
   offset?: Maybe<Scalars['Int']>;
   order_by?: Maybe<Array<Message_Reaction_Order_By>>;
   where?: Maybe<Message_Reaction_Bool_Exp>;
+}
+
+
+/** columns and relationships of "message" */
+export interface MessageTasksArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+/** columns and relationships of "message" */
+export interface MessageTasks_AggregateArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
 }
 
 /** aggregated selection of "message" */
@@ -943,6 +967,7 @@ export interface Message_Bool_Exp {
   message_type?: Maybe<Message_Type_Bool_Exp>;
   replied_to_message?: Maybe<Message_Bool_Exp>;
   replied_to_message_id?: Maybe<Uuid_Comparison_Exp>;
+  tasks?: Maybe<Task_Bool_Exp>;
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
@@ -984,6 +1009,7 @@ export interface Message_Insert_Input {
   message_type?: Maybe<Message_Type_Obj_Rel_Insert_Input>;
   replied_to_message?: Maybe<Message_Obj_Rel_Insert_Input>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
+  tasks?: Maybe<Task_Arr_Rel_Insert_Input>;
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
@@ -1068,6 +1094,7 @@ export interface Message_Order_By {
   message_type?: Maybe<Message_Type_Order_By>;
   replied_to_message?: Maybe<Message_Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
+  tasks_aggregate?: Maybe<Task_Aggregate_Order_By>;
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
@@ -1482,6 +1509,10 @@ export interface Mutation_Root {
   delete_space_member?: Maybe<Space_Member_Mutation_Response>;
   /** delete single row from the table: "space_member" */
   delete_space_member_by_pk?: Maybe<Space_Member>;
+  /** delete data from the table: "task" */
+  delete_task?: Maybe<Task_Mutation_Response>;
+  /** delete single row from the table: "task" */
+  delete_task_by_pk?: Maybe<Task>;
   /** delete data from the table: "team" */
   delete_team?: Maybe<Team_Mutation_Response>;
   /** delete single row from the table: "team" */
@@ -1574,6 +1605,10 @@ export interface Mutation_Root {
   insert_space_member_one?: Maybe<Space_Member>;
   /** insert a single row into the table: "space" */
   insert_space_one?: Maybe<Space>;
+  /** insert data into the table: "task" */
+  insert_task?: Maybe<Task_Mutation_Response>;
+  /** insert a single row into the table: "task" */
+  insert_task_one?: Maybe<Task>;
   /** insert data into the table: "team" */
   insert_team?: Maybe<Team_Mutation_Response>;
   /** insert data into the table: "team_invitation" */
@@ -1667,6 +1702,10 @@ export interface Mutation_Root {
   update_space_member?: Maybe<Space_Member_Mutation_Response>;
   /** update single row of the table: "space_member" */
   update_space_member_by_pk?: Maybe<Space_Member>;
+  /** update data of the table: "task" */
+  update_task?: Maybe<Task_Mutation_Response>;
+  /** update single row of the table: "task" */
+  update_task_by_pk?: Maybe<Task>;
   /** update data of the table: "team" */
   update_team?: Maybe<Team_Mutation_Response>;
   /** update single row of the table: "team" */
@@ -1869,6 +1908,18 @@ export interface Mutation_RootDelete_Space_MemberArgs {
 export interface Mutation_RootDelete_Space_Member_By_PkArgs {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+}
+
+
+/** mutation root */
+export interface Mutation_RootDelete_TaskArgs {
+  where: Task_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootDelete_Task_By_PkArgs {
+  id: Scalars['uuid'];
 }
 
 
@@ -2173,6 +2224,20 @@ export interface Mutation_RootInsert_Space_Member_OneArgs {
 export interface Mutation_RootInsert_Space_OneArgs {
   object: Space_Insert_Input;
   on_conflict?: Maybe<Space_On_Conflict>;
+}
+
+
+/** mutation root */
+export interface Mutation_RootInsert_TaskArgs {
+  objects: Array<Task_Insert_Input>;
+  on_conflict?: Maybe<Task_On_Conflict>;
+}
+
+
+/** mutation root */
+export interface Mutation_RootInsert_Task_OneArgs {
+  object: Task_Insert_Input;
+  on_conflict?: Maybe<Task_On_Conflict>;
 }
 
 
@@ -2521,6 +2586,20 @@ export interface Mutation_RootUpdate_Space_MemberArgs {
 export interface Mutation_RootUpdate_Space_Member_By_PkArgs {
   _set?: Maybe<Space_Member_Set_Input>;
   pk_columns: Space_Member_Pk_Columns_Input;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_TaskArgs {
+  _set?: Maybe<Task_Set_Input>;
+  where: Task_Bool_Exp;
+}
+
+
+/** mutation root */
+export interface Mutation_RootUpdate_Task_By_PkArgs {
+  _set?: Maybe<Task_Set_Input>;
+  pk_columns: Task_Pk_Columns_Input;
 }
 
 
@@ -3006,6 +3085,12 @@ export interface Query_Root {
   space_member_aggregate: Space_Member_Aggregate;
   /** fetch data from the table: "space_member" using primary key columns */
   space_member_by_pk?: Maybe<Space_Member>;
+  /** fetch data from the table: "task" */
+  task: Array<Task>;
+  /** fetch aggregated fields from the table: "task" */
+  task_aggregate: Task_Aggregate;
+  /** fetch data from the table: "task" using primary key columns */
+  task_by_pk?: Maybe<Task>;
   /** fetch data from the table: "team" */
   team: Array<Team>;
   /** fetch aggregated fields from the table: "team" */
@@ -3413,6 +3498,29 @@ export interface Query_RootSpace_Member_AggregateArgs {
 export interface Query_RootSpace_Member_By_PkArgs {
   space_id: Scalars['uuid'];
   user_id: Scalars['uuid'];
+}
+
+
+export interface Query_RootTaskArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+export interface Query_RootTask_AggregateArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+export interface Query_RootTask_By_PkArgs {
+  id: Scalars['uuid'];
 }
 
 
@@ -5023,6 +5131,12 @@ export interface Subscription_Root {
   space_member_aggregate: Space_Member_Aggregate;
   /** fetch data from the table: "space_member" using primary key columns */
   space_member_by_pk?: Maybe<Space_Member>;
+  /** fetch data from the table: "task" */
+  task: Array<Task>;
+  /** fetch aggregated fields from the table: "task" */
+  task_aggregate: Task_Aggregate;
+  /** fetch data from the table: "task" using primary key columns */
+  task_by_pk?: Maybe<Task>;
   /** fetch data from the table: "team" */
   team: Array<Team>;
   /** fetch aggregated fields from the table: "team" */
@@ -5412,6 +5526,29 @@ export interface Subscription_RootSpace_Member_By_PkArgs {
 }
 
 
+export interface Subscription_RootTaskArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+export interface Subscription_RootTask_AggregateArgs {
+  distinct_on?: Maybe<Array<Task_Select_Column>>;
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+  order_by?: Maybe<Array<Task_Order_By>>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+
+export interface Subscription_RootTask_By_PkArgs {
+  id: Scalars['uuid'];
+}
+
+
 export interface Subscription_RootTeamArgs {
   distinct_on?: Maybe<Array<Team_Select_Column>>;
   limit?: Maybe<Scalars['Int']>;
@@ -5660,6 +5797,204 @@ export interface Subscription_RootWhitelist_AggregateArgs {
 export interface Subscription_RootWhitelist_By_PkArgs {
   email: Scalars['String'];
 }
+
+/** columns and relationships of "task" */
+export interface Task {
+  __typename?: 'task';
+  created_at: Scalars['timestamptz'];
+  done_at?: Maybe<Scalars['timestamptz']>;
+  id: Scalars['uuid'];
+  /** An object relationship */
+  message: Message;
+  message_id: Scalars['uuid'];
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  /** An object relationship */
+  user: User;
+  user_id: Scalars['uuid'];
+}
+
+/** aggregated selection of "task" */
+export interface Task_Aggregate {
+  __typename?: 'task_aggregate';
+  aggregate?: Maybe<Task_Aggregate_Fields>;
+  nodes: Array<Task>;
+}
+
+/** aggregate fields of "task" */
+export interface Task_Aggregate_Fields {
+  __typename?: 'task_aggregate_fields';
+  count: Scalars['Int'];
+  max?: Maybe<Task_Max_Fields>;
+  min?: Maybe<Task_Min_Fields>;
+}
+
+
+/** aggregate fields of "task" */
+export interface Task_Aggregate_FieldsCountArgs {
+  columns?: Maybe<Array<Task_Select_Column>>;
+  distinct?: Maybe<Scalars['Boolean']>;
+}
+
+/** order by aggregate values of table "task" */
+export interface Task_Aggregate_Order_By {
+  count?: Maybe<Order_By>;
+  max?: Maybe<Task_Max_Order_By>;
+  min?: Maybe<Task_Min_Order_By>;
+}
+
+/** input type for inserting array relation for remote table "task" */
+export interface Task_Arr_Rel_Insert_Input {
+  data: Array<Task_Insert_Input>;
+  /** on conflict condition */
+  on_conflict?: Maybe<Task_On_Conflict>;
+}
+
+/** Boolean expression to filter rows from the table "task". All fields are combined with a logical 'AND'. */
+export interface Task_Bool_Exp {
+  _and?: Maybe<Array<Task_Bool_Exp>>;
+  _not?: Maybe<Task_Bool_Exp>;
+  _or?: Maybe<Array<Task_Bool_Exp>>;
+  created_at?: Maybe<Timestamptz_Comparison_Exp>;
+  done_at?: Maybe<Timestamptz_Comparison_Exp>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  message?: Maybe<Message_Bool_Exp>;
+  message_id?: Maybe<Uuid_Comparison_Exp>;
+  seen_at?: Maybe<Timestamptz_Comparison_Exp>;
+  user?: Maybe<User_Bool_Exp>;
+  user_id?: Maybe<Uuid_Comparison_Exp>;
+}
+
+/** unique or primary key constraints on table "task" */
+export type Task_Constraint =
+  /** unique or primary key constraint */
+  | 'task_pkey';
+
+/** input type for inserting data into table "task" */
+export interface Task_Insert_Input {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  done_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  message?: Maybe<Message_Obj_Rel_Insert_Input>;
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  user?: Maybe<User_Obj_Rel_Insert_Input>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** aggregate max on columns */
+export interface Task_Max_Fields {
+  __typename?: 'task_max_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  done_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by max() on columns of table "task" */
+export interface Task_Max_Order_By {
+  created_at?: Maybe<Order_By>;
+  done_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** aggregate min on columns */
+export interface Task_Min_Fields {
+  __typename?: 'task_min_fields';
+  created_at?: Maybe<Scalars['timestamptz']>;
+  done_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** order by min() on columns of table "task" */
+export interface Task_Min_Order_By {
+  created_at?: Maybe<Order_By>;
+  done_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** response of any mutation on the table "task" */
+export interface Task_Mutation_Response {
+  __typename?: 'task_mutation_response';
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars['Int'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Task>;
+}
+
+/** on conflict condition type for table "task" */
+export interface Task_On_Conflict {
+  constraint: Task_Constraint;
+  update_columns?: Array<Task_Update_Column>;
+  where?: Maybe<Task_Bool_Exp>;
+}
+
+/** Ordering options when selecting data from "task". */
+export interface Task_Order_By {
+  created_at?: Maybe<Order_By>;
+  done_at?: Maybe<Order_By>;
+  id?: Maybe<Order_By>;
+  message?: Maybe<Message_Order_By>;
+  message_id?: Maybe<Order_By>;
+  seen_at?: Maybe<Order_By>;
+  user?: Maybe<User_Order_By>;
+  user_id?: Maybe<Order_By>;
+}
+
+/** primary key columns input for table: task */
+export interface Task_Pk_Columns_Input {
+  id: Scalars['uuid'];
+}
+
+/** select columns of table "task" */
+export type Task_Select_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'done_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'message_id'
+  /** column name */
+  | 'seen_at'
+  /** column name */
+  | 'user_id';
+
+/** input type for updating data in table "task" */
+export interface Task_Set_Input {
+  created_at?: Maybe<Scalars['timestamptz']>;
+  done_at?: Maybe<Scalars['timestamptz']>;
+  id?: Maybe<Scalars['uuid']>;
+  message_id?: Maybe<Scalars['uuid']>;
+  seen_at?: Maybe<Scalars['timestamptz']>;
+  user_id?: Maybe<Scalars['uuid']>;
+}
+
+/** update columns of table "task" */
+export type Task_Update_Column =
+  /** column name */
+  | 'created_at'
+  /** column name */
+  | 'done_at'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'message_id'
+  /** column name */
+  | 'seen_at'
+  /** column name */
+  | 'user_id';
 
 /** columns and relationships of "team" */
 export interface Team {
@@ -8094,6 +8429,9 @@ export type MessageDetailedInfoFragment = (
   )>, message_reactions: Array<(
     { __typename?: 'message_reaction' }
     & ReactionBasicInfoFragment
+  )>, tasks: Array<(
+    { __typename?: 'task' }
+    & TaskBasicInfoFragment
   )> }
   & MessageBasicInfoFragment
 );
@@ -8105,6 +8443,23 @@ export type MessageFeedInfoFragment = (
     & MessageDetailedInfoFragment
   )> }
   & MessageDetailedInfoFragment
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  id?: Maybe<Scalars['uuid']>;
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & MessageFeedInfoFragment
+  )> }
 );
 
 export type UpdateTextMessageMutationVariables = Exact<{
@@ -8640,6 +8995,64 @@ export type RemoveSpaceMemberMutation = (
   )> }
 );
 
+export type TaskBasicInfoFragment = (
+  { __typename?: 'task' }
+  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'created_at' | 'seen_at' | 'done_at'>
+);
+
+export type TaskDetailedInfoFragment = (
+  { __typename?: 'task' }
+  & { user: (
+    { __typename?: 'user' }
+    & UserBasicInfoFragment
+  ), message: (
+    { __typename?: 'message' }
+    & { topic: (
+      { __typename?: 'topic' }
+      & Pick<Topic, 'id'>
+      & { room: (
+        { __typename?: 'room' }
+        & Pick<Room, 'id'>
+        & { space: (
+          { __typename?: 'space' }
+          & Pick<Space, 'id'>
+        ) }
+      ) }
+    ) }
+    & MessageBasicInfoFragment
+  ) }
+  & TaskBasicInfoFragment
+);
+
+export type TasksQueryVariables = Exact<{
+  limit?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Array<Task_Order_By> | Task_Order_By>;
+  where?: Maybe<Task_Bool_Exp>;
+}>;
+
+
+export type TasksQuery = (
+  { __typename?: 'query_root' }
+  & { tasks: Array<(
+    { __typename?: 'task' }
+    & TaskDetailedInfoFragment
+  )> }
+);
+
+export type UpdateTaskMutationVariables = Exact<{
+  taskId: Scalars['uuid'];
+  input: Task_Set_Input;
+}>;
+
+
+export type UpdateTaskMutation = (
+  { __typename?: 'mutation_root' }
+  & { update_task_by_pk?: Maybe<(
+    { __typename?: 'task' }
+    & TaskBasicInfoFragment
+  )> }
+);
+
 export type TeamBasicInfoFragment = (
   { __typename?: 'team' }
   & Pick<Team, 'id' | 'name' | 'slug'>
@@ -9043,7 +9456,7 @@ export type MessageAttachmentDisplayer_AttachmentFragment = (
   & Pick<Attachment, 'mime_type' | 'original_name'>
 );
 
-export type CreateMessageMutationVariables = Exact<{
+export type CreateNewMessageMutationVariables = Exact<{
   id: Scalars['uuid'];
   topicId: Scalars['uuid'];
   content: Scalars['jsonb'];
@@ -9052,7 +9465,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = (
+export type CreateNewMessageMutation = (
   { __typename?: 'mutation_root' }
   & { message?: Maybe<(
     { __typename?: 'message' }
@@ -9100,7 +9513,10 @@ export type Message_MessageFragment = (
     { __typename?: 'user' }
     & Pick<User, 'id'>
     & MessageLikeContent_UserFragment
-  ) }
+  ), tasks: Array<(
+    { __typename?: 'task' }
+    & MessageTask_MessageFragment
+  )> }
   & MakeReactionButton_MessageFragment
   & MessageText_MessageFragment
   & MessageMedia_MessageFragment
@@ -9119,6 +9535,11 @@ export type MessageMetaData_UserFragment = (
   { __typename?: 'user' }
   & Pick<User, 'name'>
   & UserAvatar_UserFragment
+);
+
+export type MessageTask_MessageFragment = (
+  { __typename?: 'task' }
+  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'seen_at' | 'done_at'>
 );
 
 export type MakeReactionButton_MessageFragment = (
@@ -10066,7 +10487,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'topic' | 'topic_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10080,6 +10501,8 @@ export type messageFieldPolicy = {
 	message_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	tasks?: FieldPolicy<any> | FieldReadFunction<any>,
+	tasks_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10184,7 +10607,7 @@ export type message_type_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
+export type mutation_rootKeySpecifier = ('delete_account' | 'delete_account_by_pk' | 'delete_attachment' | 'delete_attachment_by_pk' | 'delete_last_seen_message' | 'delete_last_seen_message_by_pk' | 'delete_membership_status' | 'delete_membership_status_by_pk' | 'delete_message' | 'delete_message_by_pk' | 'delete_message_reaction' | 'delete_message_reaction_by_pk' | 'delete_message_type' | 'delete_message_type_by_pk' | 'delete_notification' | 'delete_notification_by_pk' | 'delete_room' | 'delete_room_by_pk' | 'delete_room_invitation' | 'delete_room_invitation_by_pk' | 'delete_room_member' | 'delete_room_member_by_pk' | 'delete_space' | 'delete_space_by_pk' | 'delete_space_member' | 'delete_space_member_by_pk' | 'delete_task' | 'delete_task_by_pk' | 'delete_team' | 'delete_team_by_pk' | 'delete_team_invitation' | 'delete_team_invitation_by_pk' | 'delete_team_member' | 'delete_team_member_by_pk' | 'delete_team_slack_installation' | 'delete_team_slack_installation_by_pk' | 'delete_topic' | 'delete_topic_by_pk' | 'delete_topic_member' | 'delete_topic_member_by_pk' | 'delete_transcription' | 'delete_transcription_by_pk' | 'delete_transcription_status' | 'delete_transcription_status_by_pk' | 'delete_user' | 'delete_user_by_pk' | 'delete_whitelist' | 'delete_whitelist_by_pk' | 'insert_account' | 'insert_account_one' | 'insert_attachment' | 'insert_attachment_one' | 'insert_last_seen_message' | 'insert_last_seen_message_one' | 'insert_membership_status' | 'insert_membership_status_one' | 'insert_message' | 'insert_message_one' | 'insert_message_reaction' | 'insert_message_reaction_one' | 'insert_message_type' | 'insert_message_type_one' | 'insert_notification' | 'insert_notification_one' | 'insert_room' | 'insert_room_invitation' | 'insert_room_invitation_one' | 'insert_room_member' | 'insert_room_member_one' | 'insert_room_one' | 'insert_space' | 'insert_space_member' | 'insert_space_member_one' | 'insert_space_one' | 'insert_task' | 'insert_task_one' | 'insert_team' | 'insert_team_invitation' | 'insert_team_invitation_one' | 'insert_team_member' | 'insert_team_member_one' | 'insert_team_one' | 'insert_team_slack_installation' | 'insert_team_slack_installation_one' | 'insert_topic' | 'insert_topic_member' | 'insert_topic_member_one' | 'insert_topic_one' | 'insert_transcription' | 'insert_transcription_one' | 'insert_transcription_status' | 'insert_transcription_status_one' | 'insert_user' | 'insert_user_one' | 'insert_whitelist' | 'insert_whitelist_one' | 'resend_invitation' | 'update_account' | 'update_account_by_pk' | 'update_attachment' | 'update_attachment_by_pk' | 'update_last_seen_message' | 'update_last_seen_message_by_pk' | 'update_membership_status' | 'update_membership_status_by_pk' | 'update_message' | 'update_message_by_pk' | 'update_message_reaction' | 'update_message_reaction_by_pk' | 'update_message_type' | 'update_message_type_by_pk' | 'update_notification' | 'update_notification_by_pk' | 'update_room' | 'update_room_by_pk' | 'update_room_invitation' | 'update_room_invitation_by_pk' | 'update_room_member' | 'update_room_member_by_pk' | 'update_space' | 'update_space_by_pk' | 'update_space_member' | 'update_space_member_by_pk' | 'update_task' | 'update_task_by_pk' | 'update_team' | 'update_team_by_pk' | 'update_team_invitation' | 'update_team_invitation_by_pk' | 'update_team_member' | 'update_team_member_by_pk' | 'update_team_slack_installation' | 'update_team_slack_installation_by_pk' | 'update_topic' | 'update_topic_by_pk' | 'update_topic_member' | 'update_topic_member_by_pk' | 'update_transcription' | 'update_transcription_by_pk' | 'update_transcription_status' | 'update_transcription_status_by_pk' | 'update_user' | 'update_user_by_pk' | 'update_whitelist' | 'update_whitelist_by_pk' | 'upgrade_current_user' | mutation_rootKeySpecifier)[];
 export type mutation_rootFieldPolicy = {
 	delete_account?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_account_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10212,6 +10635,8 @@ export type mutation_rootFieldPolicy = {
 	delete_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_task?: FieldPolicy<any> | FieldReadFunction<any>,
+	delete_task_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_team?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	delete_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10258,6 +10683,8 @@ export type mutation_rootFieldPolicy = {
 	insert_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_space_member_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_space_one?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_task?: FieldPolicy<any> | FieldReadFunction<any>,
+	insert_task_one?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_team?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
 	insert_team_invitation_one?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10305,6 +10732,8 @@ export type mutation_rootFieldPolicy = {
 	update_space_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_space_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_task?: FieldPolicy<any> | FieldReadFunction<any>,
+	update_task_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_team?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	update_team_invitation?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10369,7 +10798,7 @@ export type notification_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_team_slack_installation_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'team_slack_installation' | 'team_slack_installation_aggregate' | 'team_slack_installation_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
+export type query_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'get_team_slack_installation_url' | 'get_upload_url' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'lookup_team_name' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_invitation_view' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'task' | 'task_aggregate' | 'task_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'team_slack_installation' | 'team_slack_installation_aggregate' | 'team_slack_installation_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | query_rootKeySpecifier)[];
 export type query_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10416,6 +10845,9 @@ export type query_rootFieldPolicy = {
 	space_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	task?: FieldPolicy<any> | FieldReadFunction<any>,
+	task_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	task_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10719,7 +11151,7 @@ export type space_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'team_slack_installation' | 'team_slack_installation_aggregate' | 'team_slack_installation_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
+export type subscription_rootKeySpecifier = ('account' | 'account_aggregate' | 'account_by_pk' | 'attachment' | 'attachment_aggregate' | 'attachment_by_pk' | 'last_seen_message' | 'last_seen_message_aggregate' | 'last_seen_message_by_pk' | 'membership_status' | 'membership_status_aggregate' | 'membership_status_by_pk' | 'message' | 'message_aggregate' | 'message_by_pk' | 'message_reaction' | 'message_reaction_aggregate' | 'message_reaction_by_pk' | 'message_type' | 'message_type_aggregate' | 'message_type_by_pk' | 'notification' | 'notification_aggregate' | 'notification_by_pk' | 'room' | 'room_aggregate' | 'room_by_pk' | 'room_invitation' | 'room_invitation_aggregate' | 'room_invitation_by_pk' | 'room_last_posted_message' | 'room_last_posted_message_aggregate' | 'room_member' | 'room_member_aggregate' | 'room_member_by_pk' | 'space' | 'space_aggregate' | 'space_by_pk' | 'space_member' | 'space_member_aggregate' | 'space_member_by_pk' | 'task' | 'task_aggregate' | 'task_by_pk' | 'team' | 'team_aggregate' | 'team_by_pk' | 'team_invitation' | 'team_invitation_aggregate' | 'team_invitation_by_pk' | 'team_member' | 'team_member_aggregate' | 'team_member_by_pk' | 'team_slack_installation' | 'team_slack_installation_aggregate' | 'team_slack_installation_by_pk' | 'topic' | 'topic_aggregate' | 'topic_by_pk' | 'topic_member' | 'topic_member_aggregate' | 'topic_member_by_pk' | 'transcription' | 'transcription_aggregate' | 'transcription_by_pk' | 'transcription_status' | 'transcription_status_aggregate' | 'transcription_status_by_pk' | 'unread_messages' | 'unread_messages_aggregate' | 'user' | 'user_aggregate' | 'user_by_pk' | 'whitelist' | 'whitelist_aggregate' | 'whitelist_by_pk' | subscription_rootKeySpecifier)[];
 export type subscription_rootFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	account_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10762,6 +11194,9 @@ export type subscription_rootFieldPolicy = {
 	space_member?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_member_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_member_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
+	task?: FieldPolicy<any> | FieldReadFunction<any>,
+	task_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	task_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
 	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_by_pk?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10794,6 +11229,51 @@ export type subscription_rootFieldPolicy = {
 	whitelist?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type taskKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message' | 'message_id' | 'seen_at' | 'user' | 'user_id' | taskKeySpecifier)[];
+export type taskFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type task_aggregateKeySpecifier = ('aggregate' | 'nodes' | task_aggregateKeySpecifier)[];
+export type task_aggregateFieldPolicy = {
+	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	nodes?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type task_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | task_aggregate_fieldsKeySpecifier)[];
+export type task_aggregate_fieldsFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type task_max_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'seen_at' | 'user_id' | task_max_fieldsKeySpecifier)[];
+export type task_max_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type task_min_fieldsKeySpecifier = ('created_at' | 'done_at' | 'id' | 'message_id' | 'seen_at' | 'user_id' | task_min_fieldsKeySpecifier)[];
+export type task_min_fieldsFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	done_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	message_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	seen_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	user_id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type task_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | task_mutation_responseKeySpecifier)[];
+export type task_mutation_responseFieldPolicy = {
+	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
 export type teamFieldPolicy = {
@@ -11655,6 +12135,30 @@ export type TypedTypePolicies = TypePolicies & {
 	subscription_root?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | subscription_rootKeySpecifier | (() => undefined | subscription_rootKeySpecifier),
 		fields?: subscription_rootFieldPolicy,
+	},
+	task?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | taskKeySpecifier | (() => undefined | taskKeySpecifier),
+		fields?: taskFieldPolicy,
+	},
+	task_aggregate?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | task_aggregateKeySpecifier | (() => undefined | task_aggregateKeySpecifier),
+		fields?: task_aggregateFieldPolicy,
+	},
+	task_aggregate_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | task_aggregate_fieldsKeySpecifier | (() => undefined | task_aggregate_fieldsKeySpecifier),
+		fields?: task_aggregate_fieldsFieldPolicy,
+	},
+	task_max_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | task_max_fieldsKeySpecifier | (() => undefined | task_max_fieldsKeySpecifier),
+		fields?: task_max_fieldsFieldPolicy,
+	},
+	task_min_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | task_min_fieldsKeySpecifier | (() => undefined | task_min_fieldsKeySpecifier),
+		fields?: task_min_fieldsFieldPolicy,
+	},
+	task_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | task_mutation_responseKeySpecifier | (() => undefined | task_mutation_responseKeySpecifier),
+		fields?: task_mutation_responseFieldPolicy,
 	},
 	team?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | teamKeySpecifier | (() => undefined | teamKeySpecifier),

@@ -12,7 +12,9 @@ import {
 
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
-import { UserBasicInfoFragment } from "./user";
+import { TaskBasicInfoFragment } from "./tasks";
+import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
+import { UserBasicInfoFragment, convertUserTokenDataToInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
 export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(
@@ -35,6 +37,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
     ${MessageBasicInfoFragment()}
     ${AttachmentDetailedInfoFragment()}
     ${ReactionBasicInfoFragment()}
+    ${TaskBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
       ...MessageBasicInfo
@@ -44,6 +47,10 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
       }
       message_reactions {
         ...ReactionBasicInfo
+      }
+
+      tasks {
+        ...TaskBasicInfo
       }
     }
   `
@@ -60,6 +67,81 @@ export const MessageFeedInfoFragment = createFragment<MessageFeedInfoFragmentTyp
       }
     }
   `
+);
+
+export const [useCreateMessageMutation, { mutate: createMessage }] = createMutation<
+  CreateMessageMutation,
+  CreateMessageMutationVariables
+>(
+  () => gql`
+    ${MessageFeedInfoFragment()}
+
+    mutation CreateMessage(
+      $id: uuid
+      $topicId: uuid!
+      $content: jsonb!
+      $type: message_type_enum!
+      $replied_to_message_id: uuid
+    ) {
+      message: insert_message_one(
+        object: {
+          id: $id
+          content: $content
+          topic_id: $topicId
+          type: $type
+          replied_to_message_id: $replied_to_message_id
+          is_draft: false
+        }
+      ) {
+        ...MessageFeedInfo
+      }
+    }
+  `,
+  {
+    defaultVariables() {
+      return { id: getUUID() };
+    },
+    optimisticResponse(vars) {
+      const userData = assertReadUserDataFromCookie();
+
+      function getRepliedMessageFragmentData() {
+        if (!vars.replied_to_message_id) {
+          return null;
+        }
+        return MessageDetailedInfoFragment.read(vars.replied_to_message_id);
+      }
+
+      return {
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          createdAt: new Date().toISOString(),
+          message_attachments: [],
+          type: vars.type,
+          tasks: [],
+          message_reactions: [],
+          transcription: null,
+          user: convertUserTokenDataToInfoFragment(userData),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: vars.id!,
+          content: vars.content,
+          replied_to_message: getRepliedMessageFragmentData(),
+        },
+      };
+    },
+    onOptimisticOrActualResponse: (message, variables) => {
+      topicMessagesQueryManager.update({ topicId: variables.topicId }, (current) => {
+        if (!message) {
+          return;
+        }
+        current.messages.push(message);
+      });
+    },
+    onActualResponse: (message, variables) => {
+      // Each time user sends a new message, automatically mark it as read
+      updateLastSeenMessage({ messageId: message.id, topicId: variables.topicId });
+    },
+  }
 );
 
 export const [useUpdateTextMessageMutation, { mutate: updateTextMessage }] = createMutation<

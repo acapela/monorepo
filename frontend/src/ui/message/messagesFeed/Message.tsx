@@ -27,6 +27,8 @@ import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
+import { MessageTask } from "./MessageTask";
+import { MessageTasks } from "./MessageTasks";
 
 const fragments = {
   message: gql`
@@ -38,22 +40,30 @@ const fragments = {
     ${MessageLinksPreviews.fragments.message}
     ${EditMessageEditor.fragments.message}
     ${MessageReactions.fragments.message}
+    ${MessageTask.fragments.task}
 
     fragment Message_message on message {
       id
       created_at
       ...MakeReactionButton_message
+
       replied_to_message {
         ...ReplyingToMessage_message
       }
+
       ...MessageText_message
       ...MessageMedia_message
       ...MessageLinksPreviews_message
       ...EditMessageEditor_message
       ...MessageReactions_message
+
       user {
         id
         ...MessageLikeContent_user
+      }
+
+      tasks {
+        ...MessageTask_message
       }
     }
   `,
@@ -162,6 +172,8 @@ const _Message = styled<Props>(
                 <MessageReactions message={message} />
               </UIMessageContent>
             )}
+
+            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
@@ -184,4 +196,8 @@ const UIMessageContent = styled.div<{}>`
   gap: 16px;
 `;
 
-const UIMessageBody = styled.div<{}>``;
+const UIMessageBody = styled.div<{}>`
+  ${MessageTasks} {
+    margin-top: 24px;
+  }
+`;

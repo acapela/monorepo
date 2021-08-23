@@ -40,7 +40,7 @@ const useCreateMessageMutation = () =>
     gql`
       ${Message.fragments.message}
 
-      mutation CreateMessage(
+      mutation CreateNewMessage(
         $id: uuid!
         $topicId: uuid!
         $content: jsonb!
@@ -77,6 +77,7 @@ const useCreateMessageMutation = () =>
             message_reactions: [],
             transcription: null,
             user_id: userData.id,
+            tasks: [],
             user: {
               __typename: "user",
               id: userData.id,
