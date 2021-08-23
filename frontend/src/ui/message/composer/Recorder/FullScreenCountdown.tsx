@@ -9,18 +9,13 @@ import { theme } from "~ui/theme";
 
 interface CountdownParams {
   seconds: number;
-  onFinished: () => void;
   onCancelled: () => void;
 }
 
-export const FullScreenCountdown = ({ seconds: startFrom, onFinished, onCancelled }: CountdownParams) => {
+export const FullScreenCountdown = ({ seconds: startFrom, onCancelled }: CountdownParams) => {
   const [seconds, setSeconds] = useState(startFrom);
 
   useEffect(() => {
-    if (seconds === 0) {
-      onFinished();
-    }
-
     return createTimeout(() => {
       setSeconds((seconds) => seconds - 1);
     }, 1000);

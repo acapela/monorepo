@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+import { createTimeout } from "~frontend/../../shared/time";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -29,28 +30,24 @@ function recordingBlobToFile(blob: Blob): File {
   return file;
 }
 
+const COUNTDOWN_IN_SECONS = 3;
+
 const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
   const [blob, setBlob] = useState<Blob | null>(null);
-  const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
 
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const popoverHandlerRef = useRef<HTMLDivElement>(null);
-  const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({
-    video: mediaSource === MediaSource.CAMERA,
-    screen: mediaSource === MediaSource.SCREEN,
-    audio: !!mediaSource,
-    acquireMediaOnDemand: true,
-    onStop: (_url: string, blob: Blob) => setBlob(blob),
-  });
+
+  const { status, startRecording, stopRecording, previewStream, getMediaStream, error, mediaSource, setMediaSource } =
+    useReactMediaRecorder({
+      acquireMediaOnDemand: true,
+      onStop: (_url: string, blob: Blob) => setBlob(blob),
+    });
+
   const isRecording = !!mediaSource && status === "recording";
   const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
   const isUnsupportedBrowser = error === "unsupported_browser";
-
-  const doStartRecording = () => {
-    dismissCountdown();
-    startRecording();
-  };
 
   const doCancelRecording = () => {
     dismissCountdown();
@@ -65,6 +62,28 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   /* Handle Video Source Picker */
   const startVideoRecording = async (source: MediaSource) => {
     setMediaSource(source);
+
+    const isRecordingEnabled = await getMediaStream(source);
+    if (!isRecordingEnabled) {
+      if (mediaSource === MediaSource.SCREEN) {
+        setMediaSource(null);
+      }
+
+      return;
+    }
+
+    if (mediaSource === MediaSource.MICROPHONE) {
+      dismissCountdown();
+      startRecording();
+    } else {
+      startCountdown();
+      createTimeout(() => {
+        dismissCountdown();
+        if (mediaSource) {
+          startRecording();
+        }
+      }, COUNTDOWN_IN_SECONS * 1000);
+    }
   };
 
   const onVideoButtonClick = () => {
@@ -95,25 +114,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
     clearDismissedStatus();
     setBlob(null);
-
-    getMediaStream().then((success) => {
-      if (!success) {
-        /* This state is recoverable, possible to retry */
-        if (mediaSource === MediaSource.SCREEN) {
-          setMediaSource(null);
-        }
-
-        return;
-      }
-
-      if (mediaSource === MediaSource.MICROPHONE) {
-        doStartRecording();
-      } else {
-        startCountdown();
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaSource]);
+  }, [clearDismissedStatus, mediaSource, stopRecording]);
 
   useEffect(() => {
     if (!isDismissed && blob) {
@@ -184,9 +185,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       </RecordButton>
 
       <AnimatePresence>
-        {isCountdownStarted && (
-          <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
-        )}
+        {isCountdownStarted && <FullScreenCountdown seconds={COUNTDOWN_IN_SECONS} onCancelled={doCancelRecording} />}
       </AnimatePresence>
 
       {isRecording && (
