@@ -79,9 +79,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       startCountdown();
       createTimeout(() => {
         dismissCountdown();
-        if (mediaSource) {
-          startRecording();
-        }
+        startRecording();
       }, COUNTDOWN_IN_SECONS * 1000);
     }
   };
