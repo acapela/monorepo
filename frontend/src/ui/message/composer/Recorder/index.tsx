@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useCallback } from "react";
 import styled from "styled-components";
 
-import { createTimeout } from "~frontend/../../shared/time";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
@@ -30,15 +29,6 @@ function recordingBlobToFile(blob: Blob): File {
   return file;
 }
 
-export enum RecorderStatus {
-  PermissionDenied = "permission_denied",
-  Idle = "idle",
-  AcquiringMedia = "acquiring_media",
-  Recording = "recording",
-  Stopping = "stopping",
-  Stopped = "stopped",
-}
-
 export enum RecorderError {
   PermissionDenied = "permission_denied",
   NoRecorder = "recorder_error",
@@ -56,29 +46,25 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const mediaChunks = useRef<Blob[]>([]);
   const mediaStream = useRef<MediaStream | null>(null);
-  const [status, setStatus] = useState<RecorderStatus>(RecorderStatus.Idle);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
   const [error, setError] = useState<RecorderError | null>(null);
 
   const resetRecorder = () => {
+    mediaSource.current = null;
     mediaRecorder.current?.stop();
     mediaStream.current?.getTracks().forEach((track) => track.stop());
     mediaChunks.current = [];
+    mediaRecorder.current = null;
+    setIsRecording(false);
   };
 
   const finishRecording = useCallback(() => {
     if (!mediaRecorder.current) return;
 
-    if (mediaRecorder.current.state === "inactive") return;
-
-    mediaSource.current = null;
-
     const [chunk] = mediaChunks.current;
     const blob = new Blob(mediaChunks.current, { type: chunk.type });
-    setStatus(RecorderStatus.Stopped);
     const file = recordingBlobToFile(blob);
     onRecordingReady(file);
-
-    setStatus(RecorderStatus.Stopping);
     resetRecorder();
   }, [onRecordingReady]);
 
@@ -88,8 +74,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   };
 
   const getMediaStream = async (): Promise<boolean> => {
-    setStatus(RecorderStatus.AcquiringMedia);
-
     const constraints: MediaStreamConstraints = {
       audio: true,
       video: mediaSource.current === MediaSource.Camera,
@@ -119,8 +103,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       setError(error?.name);
 
       return false;
-    } finally {
-      setStatus(RecorderStatus.Idle);
     }
   };
 
@@ -148,10 +130,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       mediaRecorder.current.onstop = finishRecording;
       mediaRecorder.current.onerror = () => {
         setError(RecorderError.NoRecorder);
-        setStatus(RecorderStatus.Idle);
       };
       mediaRecorder.current.start();
-      setStatus(RecorderStatus.Recording);
+      setIsRecording(true);
     }
   };
 
@@ -161,7 +142,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   const previewStream = mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null;
 
-  const isRecording = !!mediaSource.current && status === "recording";
   const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
   const isUnsupportedBrowser = error === RecorderError.UnsupportedBrowser;
 
@@ -177,9 +157,11 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       startRecording();
     } else {
       startCountdown();
-      createTimeout(() => {
+      setTimeout(() => {
         dismissCountdown();
-        startRecording();
+        if (mediaSource.current) {
+          startRecording();
+        }
       }, COUNTDOWN_IN_SECONS * 1000);
     }
   };
