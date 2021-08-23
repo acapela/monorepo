@@ -11,7 +11,7 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
       await ack();
       // console.info(shortcut);
       // Call the views.open method using one of the built-in WebClients
-      const result = await client.views.open({
+      await client.views.open({
         trigger_id: shortcut.trigger_id,
         view: {
           type: "modal",
@@ -124,14 +124,14 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
       console.error(error);
     }
   });
-  slackApp.view("create_room_modal", async ({ ack, view, client, body, context }) => {
+  slackApp.view("create_room_modal", async ({ ack, view, client, body }) => {
     // get the email value from the input block with `email_address` as the block_id
     const spaceId = view.state.values["space_block"]["select_space"].selected_option?.value;
     const roomName = view.state.values["room_block"]["room_name"].value;
     const topicName = view.state.values["topic_block"]["topic_name"].value;
     const topicMessage = view.state.values["message_block"]["topic_message"].value;
     const roomMembers = view.state.values["members_block"]["members_select"].selected_users;
-    const { channelId, threadId, responseUrl } = JSON.parse(view.private_metadata);
+    const { threadId, responseUrl } = JSON.parse(view.private_metadata);
 
     // if it’s valid input, accept the submission
     if (spaceId && roomName && topicName && topicMessage && roomMembers) {
