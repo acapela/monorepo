@@ -22,6 +22,8 @@ interface NotificationTypeComponentProps<T extends NotificationType> {
   payload: NotificationTypesMap[T];
 }
 
+// TODO: Move `useSingleTopicQuery` to fragments here!
+
 export function NotificationLabel({ notification }: Props) {
   const notificationData = notification.data as AnyNotificationData;
   if (isNotificationDataOfType(notificationData, "topicMention")) {

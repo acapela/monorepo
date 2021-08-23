@@ -13,7 +13,7 @@ import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { CreateMessageMutation, CreateMessageMutationVariables, Message_Type_Enum } from "~gql";
+import { CreateNewMessageMutation, CreateNewMessageMutationVariables, Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
@@ -36,7 +36,7 @@ interface SubmitMessageParams {
 }
 
 const useCreateMessageMutation = () =>
-  useMutation<CreateMessageMutation, CreateMessageMutationVariables>(
+  useMutation<CreateNewMessageMutation, CreateNewMessageMutationVariables>(
     gql`
       ${Message.fragments.message}
 

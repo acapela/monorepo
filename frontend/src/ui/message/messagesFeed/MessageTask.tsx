@@ -77,7 +77,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
       Input from&nbsp;
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
-      <UIUserNameLabel>{taskAssignee.name}`s</UIUserNameLabel>
+      <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
       &nbsp;was requested.&nbsp;
       {isCurrentUserTask && (
         <>
@@ -119,13 +119,7 @@ const UITextButton = styled.span<{}>`
   cursor: pointer;
 `;
 
-const UIIconHolder = styled.span<{ horizontalFlip?: boolean }>`
+const UIIconHolder = styled.span<{}>`
   font-size: 1.5em;
   margin-right: 8px;
-
-  ${(props) =>
-    props.horizontalFlip &&
-    css`
-      transform: scaleX(-1);
-    `}
 `;

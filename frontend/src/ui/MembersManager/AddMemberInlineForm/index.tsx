@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";

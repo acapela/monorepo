@@ -1,6 +1,8 @@
 import { gql } from "@apollo/client";
 
 import {
+  CreateMessageMutation,
+  CreateMessageMutationVariables,
   DeleteTextMessageMutation,
   DeleteTextMessageMutationVariables,
   MessageBasicInfoFragment as MessageBasicInfoFragmentType,

@@ -9,8 +9,6 @@ import {
 } from "~gql";
 import { addToast } from "~ui/toasts/data";
 
-import { TopicMenuItem } from "./TopicMenuItem";
-
 export const useUpdateTopicName = () =>
   useMutation<UpdateTopicNameMutation, UpdateTopicNameMutationVariables>(
     gql`

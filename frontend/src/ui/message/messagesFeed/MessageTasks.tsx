@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import styled from "styled-components";
 
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
@@ -22,7 +21,7 @@ export const MessageTasks = styled(function MessageTasks({ tasks, className }: P
           return;
         }
 
-        return <MessageTask task={task} taskAssignee={taskAssignee} />;
+        return <MessageTask key={task.id} task={task} taskAssignee={taskAssignee} />;
       })}
     </UITasks>
   );
