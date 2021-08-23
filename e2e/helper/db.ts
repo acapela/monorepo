@@ -84,13 +84,9 @@ export async function setupDatabase() {
       team,
     },
     async cleanup() {
-      const team_id = { in: [team.id] };
-      await db.team_member.deleteMany({ where: { team_id } });
-      await db.room_member.deleteMany({ where: { room: { space: { team_id } } } });
-      await db.room.deleteMany({ where: { space: { team_id } } });
-      await db.space.deleteMany({ where: { team_id } });
       await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
-      await db.team.deleteMany({ where: { id: team_id } });
+      // Prisma does its own constraint checking, so we have to go raw SQL to make deletion cascade
+      await db.$executeRaw`DELETE FROM team where id = ${team.id}`;
       await db.user.deleteMany({ where: { id: { in: [user1.id, user2.id] } } });
     },
   };
