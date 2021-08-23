@@ -65,7 +65,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     }
     await respond({
       response_type: "in_channel",
-      text: `You can find the Acapela room here: ${process.env.FRONTEND_URL}/space/${space.id}/${room.id}`,
+      text: `Please continue the discussion here: ${process.env.FRONTEND_URL}/space/${space.id}/${room.id}`,
     });
   });
 }

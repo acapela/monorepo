@@ -13,6 +13,7 @@ import { isDev } from "~shared/dev";
 
 import { setupSlackCommands } from "./commands";
 import { setupSlackEvents } from "./events";
+import { setupSlackOptions } from "./options";
 
 const botScopes = [
   "channels:read",
@@ -111,7 +112,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
 
 const slackReceiver = new SlackBolt.ExpressReceiver({
   ...sharedOptions,
-  endpoints: { events: "/slack/events", commands: "/slack/commands" },
+  endpoints: { events: "/slack/events", commands: "/slack/commands", options: "/slack/options" },
 });
 
 const getSlackInstallURL = async (state?: unknown) => {
@@ -152,6 +153,7 @@ export const getTeamSlackInstallationURL: ActionHandler<
 
 setupSlackEvents(slackApp);
 setupSlackCommands(slackApp);
+setupSlackOptions(slackApp);
 
 export function setupSlackBoltRoutes(app: Express) {
   app.use("/api", slackReceiver.router);
