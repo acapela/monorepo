@@ -2263,7 +2263,7 @@ type mutation_root {
   """
   delete single row from the table: "team_member"
   """
-  delete_team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  delete_team_member_by_pk(id: uuid!): team_member
 
   """
   delete data from the table: "team_slack_installation"
@@ -5303,7 +5303,7 @@ type query_root {
   """
   fetch data from the table: "team_member" using primary key columns
   """
-  team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  team_member_by_pk(id: uuid!): team_member
 
   """
   fetch data from the table: "team_slack_installation"
@@ -8827,7 +8827,7 @@ type subscription_root {
   """
   fetch data from the table: "team_member" using primary key columns
   """
-  team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  team_member_by_pk(id: uuid!): team_member
 
   """
   fetch data from the table: "team_slack_installation"
@@ -9992,6 +9992,10 @@ input team_max_order_by {
 columns and relationships of "team_member"
 """
 type team_member {
+  id: uuid!
+  notify_email: Boolean!
+  notify_slack: Boolean!
+
   """
   An object relationship
   """
@@ -10050,6 +10054,9 @@ input team_member_bool_exp {
   _and: [team_member_bool_exp!]
   _not: team_member_bool_exp
   _or: [team_member_bool_exp!]
+  id: uuid_comparison_exp
+  notify_email: Boolean_comparison_exp
+  notify_slack: Boolean_comparison_exp
   team: team_bool_exp
   team_id: uuid_comparison_exp
   user: user_bool_exp
@@ -10063,6 +10070,11 @@ enum team_member_constraint {
   """
   unique or primary key constraint
   """
+  team_member_id_key
+
+  """
+  unique or primary key constraint
+  """
   team_membership_pkey
 }
 
@@ -10070,6 +10082,9 @@ enum team_member_constraint {
 input type for inserting data into table "team_member"
 """
 input team_member_insert_input {
+  id: uuid
+  notify_email: Boolean
+  notify_slack: Boolean
   team: team_obj_rel_insert_input
   team_id: uuid
   user: user_obj_rel_insert_input
@@ -10080,6 +10095,7 @@ input team_member_insert_input {
 aggregate max on columns
 """
 type team_member_max_fields {
+  id: uuid
   team_id: uuid
   user_id: uuid
 }
@@ -10088,6 +10104,7 @@ type team_member_max_fields {
 order by max() on columns of table "team_member"
 """
 input team_member_max_order_by {
+  id: order_by
   team_id: order_by
   user_id: order_by
 }
@@ -10096,6 +10113,7 @@ input team_member_max_order_by {
 aggregate min on columns
 """
 type team_member_min_fields {
+  id: uuid
   team_id: uuid
   user_id: uuid
 }
@@ -10104,6 +10122,7 @@ type team_member_min_fields {
 order by min() on columns of table "team_member"
 """
 input team_member_min_order_by {
+  id: order_by
   team_id: order_by
   user_id: order_by
 }
@@ -10136,6 +10155,9 @@ input team_member_on_conflict {
 Ordering options when selecting data from "team_member".
 """
 input team_member_order_by {
+  id: order_by
+  notify_email: order_by
+  notify_slack: order_by
   team: team_order_by
   team_id: order_by
   user: user_order_by
@@ -10146,14 +10168,28 @@ input team_member_order_by {
 primary key columns input for table: team_member
 """
 input team_member_pk_columns_input {
-  team_id: uuid!
-  user_id: uuid!
+  id: uuid!
 }
 
 """
 select columns of table "team_member"
 """
 enum team_member_select_column {
+  """
+  column name
+  """
+  id
+
+  """
+  column name
+  """
+  notify_email
+
+  """
+  column name
+  """
+  notify_slack
+
   """
   column name
   """
@@ -10169,6 +10205,9 @@ enum team_member_select_column {
 input type for updating data in table "team_member"
 """
 input team_member_set_input {
+  id: uuid
+  notify_email: Boolean
+  notify_slack: Boolean
   team_id: uuid
   user_id: uuid
 }
@@ -10177,6 +10216,21 @@ input team_member_set_input {
 update columns of table "team_member"
 """
 enum team_member_update_column {
+  """
+  column name
+  """
+  id
+
+  """
+  column name
+  """
+  notify_email
+
+  """
+  column name
+  """
+  notify_slack
+
   """
   column name
   """
@@ -10311,6 +10365,7 @@ type team_slack_installation {
     """
     path: String
   ): jsonb!
+  slack_team_id: String!
 
   """
   An object relationship
@@ -10351,6 +10406,7 @@ input team_slack_installation_bool_exp {
   _not: team_slack_installation_bool_exp
   _or: [team_slack_installation_bool_exp!]
   data: jsonb_comparison_exp
+  slack_team_id: String_comparison_exp
   team: team_bool_exp
   team_id: uuid_comparison_exp
 }
@@ -10363,6 +10419,11 @@ enum team_slack_installation_constraint {
   unique or primary key constraint
   """
   team_slack_installation_pkey
+
+  """
+  unique or primary key constraint
+  """
+  team_slack_installation_slack_team_id_key
 }
 
 """
@@ -10391,6 +10452,7 @@ input type for inserting data into table "team_slack_installation"
 """
 input team_slack_installation_insert_input {
   data: jsonb
+  slack_team_id: String
   team: team_obj_rel_insert_input
   team_id: uuid
 }
@@ -10399,6 +10461,7 @@ input team_slack_installation_insert_input {
 aggregate max on columns
 """
 type team_slack_installation_max_fields {
+  slack_team_id: String
   team_id: uuid
 }
 
@@ -10406,6 +10469,7 @@ type team_slack_installation_max_fields {
 aggregate min on columns
 """
 type team_slack_installation_min_fields {
+  slack_team_id: String
   team_id: uuid
 }
 
@@ -10450,6 +10514,7 @@ Ordering options when selecting data from "team_slack_installation".
 """
 input team_slack_installation_order_by {
   data: order_by
+  slack_team_id: order_by
   team: team_order_by
   team_id: order_by
 }
@@ -10480,6 +10545,11 @@ enum team_slack_installation_select_column {
   """
   column name
   """
+  slack_team_id
+
+  """
+  column name
+  """
   team_id
 }
 
@@ -10488,6 +10558,7 @@ input type for updating data in table "team_slack_installation"
 """
 input team_slack_installation_set_input {
   data: jsonb
+  slack_team_id: String
   team_id: uuid
 }
 
@@ -10499,6 +10570,11 @@ enum team_slack_installation_update_column {
   column name
   """
   data
+
+  """
+  column name
+  """
+  slack_team_id
 
   """
   column name

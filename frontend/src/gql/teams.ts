@@ -218,8 +218,10 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
 >(
   () => gql`
     mutation RemoveTeamMember($teamId: uuid!, $userId: uuid!) {
-      delete_team_member_by_pk(team_id: $teamId, user_id: $userId) {
-        user_id
+      delete_team_member(where: { team_id: { _eq: $teamId }, user_id: { _eq: $userId } }) {
+        returning {
+          user_id
+        }
       }
     }
   `,

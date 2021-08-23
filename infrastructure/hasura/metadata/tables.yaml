@@ -1069,6 +1069,9 @@
     - role: user
       permission:
         columns:
+          - id
+          - notify_email
+          - notify_slack
           - team_id
           - user_id
         filter:
@@ -1076,6 +1079,16 @@
             memberships:
               user_id:
                 _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - notify_email
+          - notify_slack
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+        check: null
   delete_permissions:
     - role: user
       permission:
@@ -1105,9 +1118,6 @@
           value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
 - table:
     schema: public
-    name: team_member_slack_installation
-- table:
-    schema: public
     name: team_slack_installation
   object_relationships:
     - name: team
@@ -1120,8 +1130,9 @@
           - team_id
         filter:
           team:
-            owner_id:
-              _eq: X-Hasura-User-Id
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
   delete_permissions:
     - role: user
       permission:

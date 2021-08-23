@@ -30,7 +30,9 @@ type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters
 
 type Metadata = { teamId: string; redirectURL: string; userId: string };
 
-function parseMetadata({ metadata }: SlackBolt.Installation): Metadata {
+export type SlackInstallation = SlackBolt.Installation;
+
+function parseMetadata({ metadata }: SlackInstallation): Metadata {
   if (!metadata) {
     throw new Error("Missing metadata");
   }
@@ -73,7 +75,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           individualSlackInstallation.data,
           new UnprocessableEntityError(`No user Slack installation found for query ${JSON.stringify(query)}`)
         );
-        return individualSlackInstallation.data as unknown as SlackBolt.Installation;
+        return individualSlackInstallation.data as unknown as SlackInstallation;
       } else {
         const slackInstallation = await db.team_slack_installation.findFirst({
           where: { slack_team_id: query.teamId },
@@ -82,7 +84,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
           slackInstallation?.data,
           new UnprocessableEntityError(`No team Slack installation found for query ${JSON.stringify(query)}`)
         );
-        return slackInstallation.data as unknown as SlackBolt.Installation;
+        return slackInstallation.data as unknown as SlackInstallation;
       }
     },
     async deleteInstallation(query) {
