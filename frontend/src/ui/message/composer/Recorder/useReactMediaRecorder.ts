@@ -4,18 +4,11 @@ import { MediaSource } from "./MediaSource";
 
 export type ReactMediaRecorderRenderProps = {
   error: string;
-  muteAudio: () => void;
-  unMuteAudio: () => void;
   startRecording: () => void;
-  pauseRecording: () => void;
-  resumeRecording: () => void;
   stopRecording: () => void;
-  mediaBlobUrl: null | string;
   status: StatusMessages;
-  isAudioMuted: boolean;
   previewStream: MediaStream | null;
-  clearBlobUrl: () => void;
-  getMediaStream: (source: MediaSource) => Promise<boolean>;
+  getMediaStream: () => Promise<boolean>;
   mediaSource: MediaSource | null;
   setMediaSource: (source: MediaSource | null) => void;
 };
@@ -74,11 +67,9 @@ export function useReactMediaRecorder({
   const mediaChunks = useRef<Blob[]>([]);
   const mediaStream = useRef<MediaStream | null>(null);
   const [status, setStatus] = useState<StatusMessages>("idle");
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
-  const [mediaBlobUrl, setMediaBlobUrl] = useState<string | null>(null);
   const [error, setError] = useState<keyof typeof RecorderErrors>("NONE");
 
-  const getMediaStream = useCallback(async (mediaSource: MediaSource): Promise<boolean> => {
+  const getMediaStream = useCallback(async (): Promise<boolean> => {
     setStatus("acquiring_media");
 
     const requiredMedia: MediaStreamConstraints = {
@@ -113,7 +104,7 @@ export function useReactMediaRecorder({
     } finally {
       setStatus("idle");
     }
-  }, []);
+  }, [mediaSource]);
 
   useEffect(() => {
     if (!window.MediaRecorder) {
@@ -164,26 +155,7 @@ export function useReactMediaRecorder({
     const blob = new Blob(mediaChunks.current, blobProperty);
     const url = URL.createObjectURL(blob);
     setStatus("stopped");
-    setMediaBlobUrl(url);
     onStop(url, blob);
-  };
-
-  const muteAudio = (mute: boolean) => {
-    setIsAudioMuted(mute);
-    if (mediaStream.current) {
-      mediaStream.current.getAudioTracks().forEach((audioTrack) => (audioTrack.enabled = !mute));
-    }
-  };
-
-  const pauseRecording = () => {
-    if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
-      mediaRecorder.current.pause();
-    }
-  };
-  const resumeRecording = () => {
-    if (mediaRecorder.current && mediaRecorder.current.state === "paused") {
-      mediaRecorder.current.resume();
-    }
   };
 
   const stopRecording = () => {
@@ -199,18 +171,11 @@ export function useReactMediaRecorder({
 
   return {
     error: RecorderErrors[error],
-    muteAudio: () => muteAudio(true),
-    unMuteAudio: () => muteAudio(false),
     getMediaStream,
     startRecording,
-    pauseRecording,
-    resumeRecording,
     stopRecording,
-    mediaBlobUrl,
     status,
-    isAudioMuted,
     previewStream: mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null,
-    clearBlobUrl: () => setMediaBlobUrl(null),
     mediaSource,
     setMediaSource,
   };

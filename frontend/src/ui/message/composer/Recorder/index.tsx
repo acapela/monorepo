@@ -63,7 +63,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const startVideoRecording = async (source: MediaSource) => {
     setMediaSource(source);
 
-    const isRecordingEnabled = await getMediaStream(source);
+    const isRecordingEnabled = await getMediaStream();
     if (!isRecordingEnabled) {
       if (mediaSource === MediaSource.SCREEN) {
         setMediaSource(null);
