@@ -8,6 +8,7 @@ export async function handleUserCreated({ item: user }: HasuraEvent<User>) {
 }
 
 async function acceptAllNewUserInvitations(user: User) {
+  console.log("ufuckingwithme");
   const userEmail = user.email;
 
   if (!userEmail) return;
