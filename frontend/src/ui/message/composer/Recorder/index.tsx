@@ -1,10 +1,9 @@
-import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
@@ -72,7 +71,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   const cancelRecording = () => {
     if (mediaRecorder.current) {
-      mediaRecorder.current.onstop = (() => null)
+      mediaRecorder.current.onstop = () => null;
     }
 
     dismissCountdown();
@@ -80,36 +79,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     resetRecorder();
   };
 
-  const getMediaStream = async (): Promise<boolean> => {
-    const constraints: MediaStreamConstraints = {
-      audio: true,
-      video: mediaSource.current === MediaSource.Camera,
-    };
-
-    try {
-      const audioStream = await window.navigator.mediaDevices.getUserMedia(constraints);
-
-      if (mediaSource.current === MediaSource.Screen) {
-        if (!window.navigator.mediaDevices.getDisplayMedia) {
-          setError(RecorderError.ScreenCaptureUnsupported);
-          return false;
-        }
-
-        const stream = await window.navigator.mediaDevices.getDisplayMedia({
-          video: false,
-        });
-
-        audioStream.getAudioTracks().forEach((audioTrack) => stream.addTrack(audioTrack));
-        mediaStream.current = stream;
-      } else {
-        mediaStream.current = audioStream;
-      }
-
-      return true;
-    } catch (error) {
-      setError(error?.name);
-      return false;
-    }
+  const mediaStreamConstraints = {
+    audio: true,
+    video: mediaSource.current === MediaSource.Camera,
   };
 
   useEffect(() => {
@@ -122,21 +94,20 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     setError(null);
 
     if (!mediaSource.current) return;
+    if (!mediaStream.current) return;
 
-    if (mediaStream.current) {
-      // User can stop the stream using browser's own built-in 'Stop sharing' button.
-      mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
-      mediaRecorder.current = new MediaRecorder(mediaStream.current);
-      mediaRecorder.current.ondataavailable = ({ data }: BlobEvent) => {
-        mediaChunks.current.push(data);
-      };
-      mediaRecorder.current.onstop = finishRecording;
-      mediaRecorder.current.onerror = () => {
-        setError(RecorderError.NoRecorder);
-      };
-      mediaRecorder.current.start();
-      setIsRecording(true);
-    }
+    // User can stop the stream using browser's own built-in 'Stop sharing' button.
+    mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
+    mediaRecorder.current = new MediaRecorder(mediaStream.current);
+    mediaRecorder.current.ondataavailable = ({ data }: BlobEvent) => {
+      mediaChunks.current.push(data);
+    };
+    mediaRecorder.current.onstop = finishRecording;
+    mediaRecorder.current.onerror = () => {
+      setError(RecorderError.NoRecorder);
+    };
+    mediaRecorder.current.start();
+    setIsRecording(true);
   };
 
   const previewStream = mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null;
@@ -148,28 +119,44 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const startVideoRecording = async (source: MediaSource) => {
     mediaSource.current = source;
 
-    const isRecordingEnabled = await getMediaStream();
-    if (!isRecordingEnabled) return;
-
-    if (source === MediaSource.Microphone) {
-      dismissCountdown();
-      startRecording();
-    } else {
-      startCountdown();
-      setTimeout(() => {
-        dismissCountdown();
-        if (mediaSource.current) {
-          startRecording();
+    try {
+      if (mediaSource.current === MediaSource.Screen) {
+        if (!window.navigator.mediaDevices.getDisplayMedia) {
+          setError(RecorderError.ScreenCaptureUnsupported);
+          return;
         }
-      }, COUNTDOWN_IN_SECONS * 1000);
+
+        const stream = await window.navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+
+        mediaStream.current = stream;
+      } else {
+        mediaStream.current = await window.navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
+      }
+    } catch (error) {
+      setError(error?.name);
+      return;
     }
+
+    startCountdown();
+    setTimeout(() => {
+      dismissCountdown();
+      if (mediaSource.current) {
+        startRecording();
+      }
+    }, COUNTDOWN_IN_SECONS * 1000);
   };
 
   const onAudioButtonClick = async () => {
     mediaSource.current = MediaSource.Microphone;
 
-    const isRecordingEnabled = await getMediaStream();
-    if (!isRecordingEnabled) return;
+    try {
+      mediaStream.current = await window.navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
+    } catch (error) {
+      setError(error?.name);
+      return;
+    }
 
     startRecording();
   };
@@ -183,7 +170,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
       setRecorderError(mediaSource.current, error);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   if (isUnsupportedBrowser) {
