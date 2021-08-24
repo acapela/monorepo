@@ -99,7 +99,7 @@ export function MultipleOptionsDropdown<I>({
         <AnimatePresence>
           {isOpen && (
             <Popover anchorRef={openerRef} placement="bottom-start">
-              <UIDropdownHolder style={{ width: `${menuOpenerWidth}px` }}>
+              <UIDropdownHolder role="listbox" style={{ width: `${menuOpenerWidth}px` }}>
                 <ItemsDropdown
                   items={items}
                   keyGetter={keyGetter}
