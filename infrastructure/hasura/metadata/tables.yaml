@@ -1513,11 +1513,20 @@
       - id
       - name
       filter:
-        team_memberships:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
+        _or:
+        - team_memberships:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        - messages:
+            topic:
+              room:
+                space:
+                  team:
+                    memberships:
+                      user_id:
+                        _eq: X-Hasura-User-Id
   update_permissions:
   - role: user
     permission:
