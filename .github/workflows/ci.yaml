@@ -116,8 +116,7 @@ jobs:
           tar -xf node_modules.tar && rm node_modules.tar
       - name: Migrate postgres using hasura migrations
         run: |
-          yarn hasura:migrations
-          yarn hasura:seeds
+          yarn hasura:update
       - name: Setup dotenv
         run: cp .env.sample .env
       - run: yarn run backend:test
@@ -157,9 +156,7 @@ jobs:
       - name: Run hasura migrations
         run: |
           sleep 5
-          yarn hasura:migrations
-          yarn hasura:seeds
-          yarn hasura:meta
+          yarn hasura:update
       - name: Start backend
         run: yarn workspace ~backend start:ci
       - name: Start frontend
