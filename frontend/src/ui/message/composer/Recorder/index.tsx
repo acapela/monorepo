@@ -171,12 +171,13 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     }
   };
 
-  const onAudioButtonClick = () => {
-    cancelRecording();
-    if (mediaSource.current !== MediaSource.Microphone && !isRecording) {
-      mediaSource.current = MediaSource.Microphone;
-      startRecording();
-    }
+  const onAudioButtonClick = async () => {
+    mediaSource.current = MediaSource.Microphone;
+
+    const isRecordingEnabled = await getMediaStream();
+    if (!isRecordingEnabled) return;
+
+    startRecording();
   };
 
   useEffect(() => {
@@ -220,7 +221,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       >
         <RecordButton
           onClick={cancelRecording}
-          disabled={!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera)}
+          disabled={isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))}
         >
           <IconVideoCamera />
         </RecordButton>
