@@ -1,4 +1,4 @@
-import { SlackInstallation, slackClient } from "~backend/src/slack";
+import { SlackInstallation, slackClient } from "~backend/src/slack/app";
 import { TeamMember, User, db } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";

@@ -4,6 +4,8 @@ import { ConversationsMembersResponse } from "@slack/web-api";
 import { db } from "~db";
 import { isNotNullish } from "~shared/nullish";
 
+import { getSlackInstallURL } from "./install";
+
 export function setupSlackCommands(slackApp: SlackBolt.App) {
   slackApp.command("/acapela", async ({ command, ack, respond, client, context }) => {
     // Acknowledge command request
@@ -38,7 +40,10 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       }
     } catch (error) {
       return await respond(
-        `/acapela command needs Slack integration in order to work in private conversations. Please connect Acapela with Slack here ${process.env.FRONTEND_URL}/team before using the command again`
+        `/acapela command needs Slack integration in order to work in private conversations. ` +
+          `Please connect Acapela with your Slack here ${await getSlackInstallURL({
+            withBot: false,
+          })} before using the command again`
       );
     }
     const memberQueries = conversationMemberResponse.members.map((memberId) =>

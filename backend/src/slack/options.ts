@@ -11,7 +11,10 @@ export function setupSlackOptions(slackApp: SlackBolt.App) {
     }
     try {
       const spaces = await db.space.findMany({
-        where: { team: { team_slack_installation: { slack_team_id: options.team.id } } },
+        where: {
+          team: { team_slack_installation: { slack_team_id: options.team.id } },
+          name: { contains: options.value, mode: "insensitive" },
+        },
       });
 
       const spaceOptions: SlackBolt.Option[] = spaces.map((space) => {

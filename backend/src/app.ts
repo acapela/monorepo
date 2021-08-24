@@ -18,14 +18,14 @@ import { router as authenticationRoutes } from "./authentication";
 import { router as calendarRoutes } from "./calendar/calendar";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
-import { setupSlackBoltRoutes } from "./slack";
+import { setupSlack } from "./slack/setup";
 import { router as transcriptionRoutes } from "./transcriptions/router";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
   const app = express();
   // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
-  setupSlackBoltRoutes(app);
+  setupSlack(app);
   setupMiddleware(app);
   setupRoutes(app);
   addErrorHandlersToApp(app);
