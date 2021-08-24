@@ -1,6 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import { useCallback } from "react";
 import styled from "styled-components";
 
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -49,32 +48,35 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [error, setError] = useState<RecorderError | null>(null);
 
-  const stopRecorder = () => {
-    mediaRecorder.current?.stop();
+  const stopRecording = () => {
+    if (mediaRecorder.current && mediaRecorder.current?.state !== "inactive") {
+      mediaRecorder.current?.stop();
+    }
+
     mediaStream.current?.getTracks().forEach((track) => track.stop());
   };
 
   const resetRecorder = () => {
     mediaSource.current = null;
-
     mediaChunks.current = [];
     setIsRecording(false);
   };
 
-  const finishRecording = useCallback(() => {
-    if (!mediaRecorder.current) return;
-
-    stopRecorder();
+  const finishRecording = () => {
     const blob = new Blob(mediaChunks.current, { type: mediaChunks.current[0].type });
     resetRecorder();
 
     const file = recordingBlobToFile(blob);
     onRecordingReady(file);
-  }, [onRecordingReady]);
+  };
 
   const cancelRecording = () => {
+    if (mediaRecorder.current) {
+      mediaRecorder.current.onstop = (() => null)
+    }
+
     dismissCountdown();
-    stopRecorder();
+    stopRecording();
     resetRecorder();
   };
 
@@ -124,7 +126,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
     if (mediaStream.current) {
       // User can stop the stream using browser's own built-in 'Stop sharing' button.
-      mediaStream.current.getVideoTracks().forEach((track) => (track.onended = finishRecording));
+      mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
       mediaRecorder.current = new MediaRecorder(mediaStream.current, {
         mimeType:
           mediaSource.current === MediaSource.Camera || mediaSource.current === MediaSource.Screen
@@ -186,7 +188,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
       setRecorderError(mediaSource.current, error);
     }
-  }, [error, setRecorderError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   if (isUnsupportedBrowser) {
     return (
@@ -238,7 +241,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       {isRecording && (
         <RecorderControls
           handlerRef={popoverHandlerRef}
-          onStop={finishRecording}
+          onStop={stopRecording}
           onCancel={cancelRecording}
           previewStream={mediaSource.current === MediaSource.Microphone ? null : previewStream}
           flipVideoPreview={mediaSource.current === MediaSource.Camera}
