@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
+import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
 import { CreateTopicMutation, CreateTopicMutationVariables, TopicDetailedInfoFragment } from "~gql";
@@ -15,7 +16,6 @@ import { Button } from "~ui/buttons/Button";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
 
-import { routes } from "../../../../router";
 import { TopicCard } from "./TopicCard";
 import { useExpandableListToggle } from "./useExpandableListToggle";
 

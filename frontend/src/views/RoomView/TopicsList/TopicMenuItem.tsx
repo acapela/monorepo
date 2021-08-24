@@ -28,8 +28,8 @@ import { IconCross, IconDragAndDrop } from "~ui/icons";
 import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
 
-import { useDeleteTopic, useUpdateTopicName } from ".//shared";
 import { ManageTopic } from "./ManageTopic";
+import { useDeleteTopic, useUpdateTopicName } from "./shared";
 import { TopicOwner } from "./TopicOwner";
 
 const fragments = {
