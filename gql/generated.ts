@@ -10004,6 +10004,7 @@ export type TopicSummaryMessage_TopicFragment = (
   & { closed_by_user?: Maybe<(
     { __typename?: 'user' }
     & Pick<User, 'id' | 'name' | 'email'>
+    & MessageLikeContent_UserFragment
   )> }
 );
 

@@ -11,6 +11,8 @@ import { borderRadius } from "~ui/baseStyles";
 
 const fragments = {
   topic: gql`
+    ${MessageLikeContent.fragments.user}
+
     fragment TopicSummaryMessage_topic on topic {
       closed_at
       closing_summary
@@ -18,6 +20,7 @@ const fragments = {
         id
         name
         email
+        ...MessageLikeContent_user
       }
     }
   `,
