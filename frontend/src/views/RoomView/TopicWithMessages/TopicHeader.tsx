@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import styled, { css } from "styled-components";
 
@@ -8,9 +8,13 @@ import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { isTopicClosed } from "~frontend/topics/utils";
-import { useCloseTopic } from "~frontend/views/RoomView/shared";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
-import { TopicHeader_RoomFragment, TopicHeader_TopicFragment } from "~gql";
+import {
+  CloseTopicMutation,
+  CloseTopicMutationVariables,
+  TopicHeader_RoomFragment,
+  TopicHeader_TopicFragment,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -52,6 +56,29 @@ interface Props {
   topic: TopicHeader_TopicFragment;
   className?: string;
 }
+
+const useCloseTopic = () =>
+  useMutation<CloseTopicMutation, CloseTopicMutationVariables>(
+    gql`
+      mutation CloseTopic($id: uuid!, $closed_at: timestamp, $closed_by_user_id: uuid, $closing_summary: String) {
+        topic: update_topic_by_pk(
+          pk_columns: { id: $id }
+          _set: { closed_at: $closed_at, closed_by_user_id: $closed_by_user_id, closing_summary: $closing_summary }
+        ) {
+          id
+          closed_at
+          closed_by_user_id
+          closing_summary
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", ...vars },
+      }),
+    }
+  );
 
 const _TopicHeader = ({ room, topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);

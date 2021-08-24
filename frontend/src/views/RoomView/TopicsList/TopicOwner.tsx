@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
@@ -7,8 +7,14 @@ import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
-import { useUpdateTopic } from "~frontend/views/RoomView/shared";
-import { TopicOwner_RoomFragment, TopicOwner_TopicFragment } from "~gql";
+import {
+  TopicOwner_RoomFragment,
+  TopicOwner_TopicFragment,
+  TopicOwner_TopicSubscription,
+  TopicOwner_TopicSubscriptionVariables,
+  UpdateTopicOwnerMutation,
+  UpdateTopicOwnerMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { IconChevronDown } from "~ui/icons";
@@ -48,15 +54,51 @@ const fragments = {
 
 type Props = { room: TopicOwner_RoomFragment; topic: TopicOwner_TopicFragment };
 
+type Owner = TopicOwner_TopicFragment["owner"];
+
+const useUpdateTopicOwner = () =>
+  useMutation<UpdateTopicOwnerMutation, UpdateTopicOwnerMutationVariables & { owner: Owner }>(
+    gql`
+      ${fragments.topic}
+
+      mutation UpdateTopicOwner($id: uuid!, $ownerId: uuid!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { owner_id: $ownerId }) {
+          id
+          ...TopicOwner_topic
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, owner_id: vars.ownerId, owner: vars.owner },
+      }),
+    }
+  );
+
 export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
+  useSubscription<TopicOwner_TopicSubscription, TopicOwner_TopicSubscriptionVariables>(
+    gql`
+      ${fragments.topic}
+
+      subscription TopicOwner_topic($id: uuid!) {
+        topic_by_pk(id: $id) {
+          id
+          ...TopicOwner_topic
+        }
+      }
+    `,
+    { variables: { id: topic.id } }
+  );
+
   const isTopicManager = useIsCurrentUserTopicManager(room, topic);
-  const [updateTopic] = useUpdateTopic();
+  const [updateTopicOwner] = useUpdateTopicOwner();
 
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
-  const onOwnerSelect = (user: { id: string }) => {
-    updateTopic({ variables: { id: topic.id, input: { owner_id: user.id } } });
+  const onOwnerSelect = (user: Owner) => {
+    updateTopicOwner({ variables: { id: topic.id, ownerId: user.id, owner: user } });
     closeMenu();
   };
 

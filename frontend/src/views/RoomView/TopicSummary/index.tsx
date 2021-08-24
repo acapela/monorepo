@@ -1,16 +1,16 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
-import { TopicSummary_TopicFragment } from "~gql";
+import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSummaryMutationVariables } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
 
-import { formatDate, useUpdateTopic } from "../shared";
+import { formatDate } from "../shared";
 
 const fragments = {
   topic: gql`
@@ -34,11 +34,29 @@ export const TopicSummary = withFragments(fragments, ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
-  const [updateTopic, { loading }] = useUpdateTopic();
+  const [updateTopicSummary, { loading }] = useMutation<
+    UpdateTopicSummaryMutation,
+    UpdateTopicSummaryMutationVariables
+  >(
+    gql`
+      mutation UpdateTopicSummary($id: uuid!, $closingSummary: String!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { closing_summary: $closingSummary }) {
+          id
+          closing_summary
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, closing_summary: vars.closingSummary },
+      }),
+    }
+  );
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateTopic({ variables: { id: topic.id, input: { closing_summary: summary.trim() } } });
+      updateTopicSummary({ variables: { id: topic.id, closingSummary: summary.trim() } });
       trackEvent("Updated Topic Summary", { topicId: topic.id });
     }
   }
