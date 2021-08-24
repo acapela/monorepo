@@ -9560,7 +9560,7 @@ export type Message_MessageFragment = (
     & MessageLikeContent_UserFragment
   ), tasks: Array<(
     { __typename?: 'task' }
-    & MessageTask_MessageFragment
+    & MessageTask_TaskFragment
   )> }
   & MakeReactionButton_MessageFragment
   & MessageText_MessageFragment
@@ -9582,7 +9582,7 @@ export type MessageMetaData_UserFragment = (
   & UserAvatar_UserFragment
 );
 
-export type MessageTask_MessageFragment = (
+export type MessageTask_TaskFragment = (
   { __typename?: 'task' }
   & Pick<Task, 'id' | 'user_id' | 'message_id' | 'seen_at' | 'done_at'>
 );

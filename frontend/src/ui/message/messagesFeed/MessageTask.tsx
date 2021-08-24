@@ -18,7 +18,7 @@ interface Props {
 
 const fragments = {
   task: gql`
-    fragment MessageTask_message on task {
+    fragment MessageTask_task on task {
       id
       user_id
       message_id

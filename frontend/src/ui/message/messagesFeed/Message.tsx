@@ -63,7 +63,7 @@ const fragments = {
       }
 
       tasks {
-        ...MessageTask_message
+        ...MessageTask_task
       }
     }
   `,
