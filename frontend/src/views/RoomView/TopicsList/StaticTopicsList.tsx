@@ -8,18 +8,26 @@ import { StaticTopicList_RoomFragment } from "~gql";
 import { UITopic, UITopicsList } from "./shared";
 import { TopicMenuItem } from "./TopicMenuItem";
 
+export const topicListTopicFragment = gql`
+  ${TopicMenuItem.fragments.topic}
+
+  fragment TopicList_topic on topic {
+    id
+    index
+    ...TopicMenuItem_topic
+  }
+`;
+
 export const StaticTopicsList = withFragments(
   {
     room: gql`
       ${TopicMenuItem.fragments.room}
-      ${TopicMenuItem.fragments.topic}
+      ${topicListTopicFragment}
 
       fragment StaticTopicList_room on room {
         ...TopicMenuItem_room
         topics {
-          id
-          index
-          ...TopicMenuItem_topic
+          ...TopicList_topic
         }
       }
     `,

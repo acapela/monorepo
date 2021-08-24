@@ -8,7 +8,12 @@ import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
-import { createLastItemIndex, getIndexBetweenCurrentAndLast, getIndexBetweenItems } from "~frontend/rooms/order";
+import {
+  createLastItemIndex,
+  getIndexBetweenCurrentAndLast,
+  getIndexBetweenItems,
+  getInitialIndexes,
+} from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
@@ -29,7 +34,7 @@ import { VStack } from "~ui/Stack";
 import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
-import { StaticTopicsList } from "./StaticTopicsList";
+import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
 
 const fragments = {
   room: gql`
@@ -55,11 +60,14 @@ interface Props {
   isRoomOpen: boolean;
 }
 
-function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicId: string | null) {
+function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicId: string | null): string {
+  if (topics.length == 0) {
+    return getInitialIndexes(1)[0];
+  }
   const sortedTopics = topics.sort(byIndexAscending);
   const activeTopicNumIndex = sortedTopics.findIndex((t) => t.id == activeTopicId);
   if (activeTopicNumIndex == -1) {
-    return createLastItemIndex(sortedTopics[sortedTopics.length - 1]?.index ?? "");
+    return createLastItemIndex(sortedTopics[sortedTopics.length - 1].index ?? "");
   }
   const activeTopicIndex = sortedTopics[activeTopicNumIndex].index;
   const nextTopic = sortedTopics[activeTopicNumIndex + 1];
@@ -72,7 +80,7 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
 const useCreateTopic = () =>
   useMutation<CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables>(
     gql`
-      ${TopicMenuItem.fragments.topic}
+      ${topicListTopicFragment}
       ${RoomTopicView.fragments.topic}
 
       mutation CreateRoomViewTopic(
@@ -88,7 +96,7 @@ const useCreateTopic = () =>
         ) {
           id
           room_id
-          ...TopicMenuItem_topic
+          ...TopicList_topic
           ...RoomTopicView_topic
         }
       }
@@ -106,38 +114,42 @@ const useCreateTopic = () =>
               ...userData,
               avatar_url: userData.picture,
             },
+            closed_at: null,
+            closed_by_user_id: null,
+            closed_by_user: null,
+            closing_summary: null,
           },
         };
       },
-      update(cache, result) {
+      update: function (cache, result) {
         const topic = result.data?.topic;
         if (!topic) {
           return;
         }
         const newTopicRef = cache.writeFragment({
           data: topic,
-          fragment: TopicMenuItem.fragments.topic,
-          fragmentName: "TopicMenuItem_topic",
+          fragment: topicListTopicFragment,
+          fragmentName: "TopicList_topic",
         });
         if (!newTopicRef) {
           return;
         }
         cache.modify({
-          id: cache.identify({ __typename: "topic", id: topic.room_id }),
+          id: cache.identify({ __typename: "room", id: topic.room_id }),
           fields: {
             topics: (existing: Reference[]) => existing.concat(newTopicRef),
           },
         });
         cache.writeQuery<RoomViewTopicQuery, RoomViewTopicQueryVariables>({
           query: gql`
-            ${TopicMenuItem.fragments.topic}
+            ${topicListTopicFragment}
             ${RoomTopicView.fragments.topic}
 
             query RoomViewTopic($id: uuid!) {
               topics: topic(where: { id: { _eq: $id } }) {
                 id
                 room_id
-                ...TopicMenuItem_topic
+                ...TopicList_topic
                 ...RoomTopicView_topic
               }
             }

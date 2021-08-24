@@ -109,3 +109,11 @@ export function createLastItemIndex(currentLastIndex?: string) {
 
   return nextAllottedIndex ?? getIndexBetweenCurrentAndLast(currentLastIndex);
 }
+
+export function getInitialIndexes(amount: number): string[] {
+  if (amount < PREALLOTTED_INDEXES.length) {
+    return PREALLOTTED_INDEXES.slice(0, amount);
+  }
+  // If this room already has a large amount of topics, this will be more optimized
+  return mudder.alphabet.mudder("", "", amount);
+}
