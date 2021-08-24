@@ -18,7 +18,7 @@ import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
-import { TopicMenuItem } from "~frontend/views/RoomView/TopicsList/TopicMenuItem";
+import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
 import {
   CreateRoomViewTopicMutation,
   CreateRoomViewTopicMutationVariables,
@@ -77,11 +77,22 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
   return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
 
+const createTopicFragment = gql`
+  ${topicListTopicFragment}
+  ${TopicWithMessages.fragments.topic}
+
+  fragment TopicListCreateTopic on topic {
+    id
+    room_id
+    ...TopicList_topic
+    ...TopicWithMessages_topic
+  }
+`;
+
 const useCreateTopic = () =>
   useMutation<CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables>(
     gql`
-      ${topicListTopicFragment}
-      ${RoomTopicView.fragments.topic}
+      ${createTopicFragment}
 
       mutation CreateRoomViewTopic(
         $id: uuid!
@@ -94,10 +105,7 @@ const useCreateTopic = () =>
         topic: insert_topic_one(
           object: { id: $id, name: $name, slug: $slug, index: $index, room_id: $room_id, owner_id: $owner_id }
         ) {
-          id
-          room_id
-          ...TopicList_topic
-          ...RoomTopicView_topic
+          ...TopicListCreateTopic
         }
       }
     `,
@@ -142,15 +150,11 @@ const useCreateTopic = () =>
         });
         cache.writeQuery<RoomViewTopicQuery, RoomViewTopicQueryVariables>({
           query: gql`
-            ${topicListTopicFragment}
-            ${RoomTopicView.fragments.topic}
+            ${createTopicFragment}
 
             query RoomViewTopic($id: uuid!) {
               topics: topic(where: { id: { _eq: $id } }) {
-                id
-                room_id
-                ...TopicList_topic
-                ...RoomTopicView_topic
+                ...TopicListCreateTopic
               }
             }
           `,

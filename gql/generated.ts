@@ -10173,6 +10173,13 @@ export type TopicList_RoomFragment = (
   & StaticTopicList_RoomFragment
 );
 
+export type TopicListCreateTopicFragment = (
+  { __typename?: 'topic' }
+  & Pick<Topic, 'id' | 'room_id'>
+  & TopicList_TopicFragment
+  & TopicWithMessages_TopicFragment
+);
+
 export type CreateRoomViewTopicMutationVariables = Exact<{
   id: Scalars['uuid'];
   name: Scalars['String'];
@@ -10187,9 +10194,7 @@ export type CreateRoomViewTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'room_id'>
-    & TopicList_TopicFragment
-    & RoomTopicView_TopicFragment
+    & TopicListCreateTopicFragment
   )> }
 );
 
@@ -10202,9 +10207,7 @@ export type RoomViewTopicQuery = (
   { __typename?: 'query_root' }
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'room_id'>
-    & TopicList_TopicFragment
-    & RoomTopicView_TopicFragment
+    & TopicListCreateTopicFragment
   )> }
 );
 
