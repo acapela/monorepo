@@ -35,22 +35,12 @@ test("create a room", async ({ page, db, auth }) => {
   await createAndNavigateToRoom(page, { spaceName: db.space.name, roomName: "Roomba" });
 });
 
-function whenFocusInContentEditable() {
-  return new Promise<void>((resolve) => {
-    const handleFocusIn = ({ target }: FocusEvent) => {
-      if (target instanceof HTMLElement && target.contentEditable) {
-        document.removeEventListener("focusin", handleFocusIn);
-        resolve();
-      }
-    };
-    document.addEventListener("focusin", handleFocusIn);
-  });
-}
-
 async function createTopic(page: Page, { topicName, ...roomProps }: { topicName: string } & RoomProps) {
   await createAndNavigateToRoom(page, roomProps);
   await page.click("text=New Topic");
-  await page.waitForFunction(whenFocusInContentEditable);
+  await page.waitForFunction(
+    () => document.activeElement instanceof HTMLElement && document.activeElement.contentEditable
+  );
 
   // playwright can be faster in picking up focus than our app in handling keystrokes, so we wait
   await wait(1000);
