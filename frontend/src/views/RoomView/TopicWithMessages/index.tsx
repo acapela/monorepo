@@ -13,6 +13,8 @@ import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewM
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import {
+  TopicClosureSubscription,
+  TopicClosureSubscriptionVariables,
   TopicMessagesAscSubscription,
   TopicMessagesAscSubscriptionVariables,
   TopicWithMessages_RoomFragment,
@@ -106,6 +108,20 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     `,
     topic ? { variables: { topicId: topic.id } } : { skip: true }
   );
+
+  useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
+    gql`
+      ${TopicSummaryMessage.fragments.topic}
+
+      subscription TopicClosure($topicId: uuid!) {
+        topic_by_pk(id: $topicId) {
+          ...TopicSummaryMessage_topic
+        }
+      }
+    `,
+    topic ? { variables: { topicId: topic.id } } : { skip: true }
+  );
+
   const isMember = useIsCurrentUserRoomMember(room);
 
   useMarkTopicAsRead(topic?.id ?? null, data ? data.messages : []);

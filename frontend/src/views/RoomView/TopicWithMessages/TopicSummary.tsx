@@ -14,6 +14,7 @@ const fragments = {
     ${MessageLikeContent.fragments.user}
 
     fragment TopicSummaryMessage_topic on topic {
+      id
       closed_at
       closing_summary
       closed_by_user {

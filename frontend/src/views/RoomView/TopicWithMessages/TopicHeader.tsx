@@ -8,7 +8,7 @@ import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { isTopicClosed } from "~frontend/topics/utils";
-import { useUpdateTopic } from "~frontend/views/RoomView/shared";
+import { useCloseTopic } from "~frontend/views/RoomView/shared";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
 import { TopicHeader_RoomFragment, TopicHeader_TopicFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -57,7 +57,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const user = useAssertCurrentUser();
   const isMember = useIsCurrentUserRoomMember(room);
-  const [updateTopic] = useUpdateTopic();
+  const [closeTopic] = useCloseTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
   const isTopicManager = useIsCurrentUserTopicManager(room, topic);
 
@@ -70,7 +70,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
           {isClosed && (
             <UIToggleCloseButton
               onClick={() => {
-                updateTopic({ variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null } } });
+                closeTopic({ variables: { id: topic.id, closed_at: null, closed_by_user_id: null } });
                 trackEvent("Reopened Topic");
               }}
               isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
@@ -96,14 +96,12 @@ const _TopicHeader = ({ room, topic }: Props) => {
             topicId={topic.id}
             onDismissRequest={() => closeClosingModal()}
             onTopicClosed={(topicSummary) => {
-              updateTopic({
+              closeTopic({
                 variables: {
                   id: topic.id,
-                  input: {
-                    closed_at: new Date().toISOString(),
-                    closed_by_user_id: user.id,
-                    closing_summary: topicSummary,
-                  },
+                  closed_at: new Date().toISOString(),
+                  closed_by_user_id: user.id,
+                  closing_summary: topicSummary,
                 },
               });
               trackEvent("Closed Topic", { topicId: topic.id });
