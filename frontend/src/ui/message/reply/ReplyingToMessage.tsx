@@ -30,37 +30,12 @@ const fragments = {
   `,
 };
 
-type Props = (
-  | { message: ReplyingToMessage_MessageFragment }
-  | {
-      messageId: string;
-    }
-) & {
+type Props = {
+  message: ReplyingToMessage_MessageFragment;
   onRemove?: () => void;
 };
 
-export const ReplyingToMessage = withFragments(fragments, ({ onRemove, ...props }: Props) => {
-  let message = "message" in props ? props.message : null;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const messageId = "messageId" in props ? props.messageId : message!.id;
-  const { data } = useQuery<ReplyingToMessageQuery, ReplyingToMessageQueryVariables>(
-    gql`
-      ${fragments.message}
-
-      query ReplyingToMessage($messageId: uuid!) {
-        message: message_by_pk(id: $messageId) {
-          ...ReplyingToMessage_message
-        }
-      }
-    `,
-    message ? { skip: true } : { variables: { messageId } }
-  );
-  if (!message && data && data.message) {
-    message = data.message;
-  }
-  if (!message) {
-    return null;
-  }
+export const ReplyingToMessage = withFragments(fragments, ({ onRemove, message }: Props) => {
   const handleClick = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const messageTextElement = document.getElementById(message!.id);
@@ -90,6 +65,26 @@ export const ReplyingToMessage = withFragments(fragments, ({ onRemove, ...props 
     </UIHolder>
   );
 });
+
+export function ReplyingToMessageById({ messageId, ...props }: { messageId: string } & Omit<Props, "message">) {
+  const { data } = useQuery<ReplyingToMessageQuery, ReplyingToMessageQueryVariables>(
+    gql`
+      ${fragments.message}
+
+      query ReplyingToMessage($messageId: uuid!) {
+        message: message_by_pk(id: $messageId) {
+          ...ReplyingToMessage_message
+        }
+      }
+    `,
+    { variables: { messageId } }
+  );
+  const message = data?.message;
+  if (!message) {
+    return null;
+  }
+  return <ReplyingToMessage message={message} {...props} />;
+}
 
 const UIHolder = styled.div<{}>`
   display: flex;

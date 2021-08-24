@@ -11,7 +11,7 @@ import { updateLastSeenMessage } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
-import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
+import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { CreateNewMessageMutation, CreateNewMessageMutationVariables, Message_Type_Enum } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -236,7 +236,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
         }}
         additionalContent={
           topicContext.currentlyReplyingToMessageId && (
-            <ReplyingToMessage
+            <ReplyingToMessageById
               onRemove={handleStopReplyingToMessage}
               messageId={topicContext.currentlyReplyingToMessageId}
             />
