@@ -69,9 +69,11 @@ type Props = {
   isDragged?: boolean;
 };
 
+type SortableTopicMenuItemProps = { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>;
+
 export const SortableTopicMenuItem = withFragments(
   fragments,
-  ({ isDisabled, ...props }: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) => {
+  ({ isDisabled, ...props }: SortableTopicMenuItemProps) => {
     const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
       id: props.topic.id,
       disabled: isDisabled,

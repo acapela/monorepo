@@ -18,17 +18,30 @@ interface Invitation {
   id: string;
 }
 
-export const MembersManagerModal = withFragments(
-  {
-    user: gql`
-      ${UserBasicInfo.fragments.user}
+const fragments = {
+  user: gql`
+    ${UserBasicInfo.fragments.user}
 
-      fragment MembersManagerModal_user on user {
-        id
-        ...UserBasicInfo_user
-      }
-    `,
-  },
+    fragment MembersManagerModal_user on user {
+      id
+      ...UserBasicInfo_user
+    }
+  `,
+};
+type Props = {
+  title: string;
+  currentUsers: MembersManagerModal_UserFragment[];
+  onCloseRequest: () => void;
+  onAddUser: (userId: string) => void;
+  onRemoveUser: (userId: string) => void;
+
+  onInviteByEmail?: (email: string) => void;
+  invitations?: Invitation[];
+  onRemoveInvitation?: (invitationId: string) => void;
+};
+
+export const MembersManagerModal = withFragments(
+  fragments,
   function MembersManagerModal({
     currentUsers,
     onCloseRequest,
@@ -39,17 +52,7 @@ export const MembersManagerModal = withFragments(
     onInviteByEmail,
     invitations = [],
     onRemoveInvitation,
-  }: {
-    title: string;
-    currentUsers: MembersManagerModal_UserFragment[];
-    onCloseRequest: () => void;
-    onAddUser: (userId: string) => void;
-    onRemoveUser: (userId: string) => void;
-
-    onInviteByEmail?: (email: string) => void;
-    invitations?: Invitation[];
-    onRemoveInvitation?: (invitationId: string) => void;
-  }) {
+  }: Props) {
     return (
       <ScreenCover isTransparent={false} onCloseRequest={onCloseRequest}>
         <PopPresenceAnimator onClick={(event) => event.stopPropagation()}>

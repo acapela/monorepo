@@ -17,47 +17,45 @@ interface Props {
   isDisabled?: boolean;
 }
 
-export const LazyTopicsList = withFragments(
-  {
-    room: gql`
-      ${StaticTopicsList.fragments.room}
+const fragments = {
+  room: gql`
+    ${StaticTopicsList.fragments.room}
 
-      fragment LazyTopicList_room on room {
-        id
-        ...StaticTopicList_room
-      }
-    `,
-  },
-  ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
-    useSubscription<TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables>(
-      gql`
-        subscription TopicList_room($roomId: uuid!) {
-          room_by_pk(id: $roomId) {
+    fragment LazyTopicList_room on room {
+      id
+      ...StaticTopicList_room
+    }
+  `,
+};
+export const LazyTopicsList = withFragments(fragments, ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
+  useSubscription<TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables>(
+    gql`
+      subscription TopicList_room($roomId: uuid!) {
+        room_by_pk(id: $roomId) {
+          id
+          topics {
             id
-            topics {
-              id
-              index
-            }
+            index
           }
         }
-      `,
-      { variables: { roomId: room.id } }
-    );
+      }
+    `,
+    { variables: { roomId: room.id } }
+  );
 
-    const staticTopicsList = <StaticTopicsList {...{ room, activeTopicId }} />;
+  const staticTopicsList = <StaticTopicsList {...{ room, activeTopicId }} />;
 
-    if (isStatic) {
-      return staticTopicsList;
-    }
-
-    SortableTopicsList.preload();
-
-    return (
-      <ClientSideOnly fallback={staticTopicsList}>
-        <Suspense fallback={staticTopicsList}>
-          <SortableTopicsList {...{ room, activeTopicId, isDisabled }} />
-        </Suspense>
-      </ClientSideOnly>
-    );
+  if (isStatic) {
+    return staticTopicsList;
   }
-);
+
+  SortableTopicsList.preload();
+
+  return (
+    <ClientSideOnly fallback={staticTopicsList}>
+      <Suspense fallback={staticTopicsList}>
+        <SortableTopicsList {...{ room, activeTopicId, isDisabled }} />
+      </Suspense>
+    </ClientSideOnly>
+  );
+});

@@ -5,21 +5,19 @@ import { GroupReactionsByEmoji_ReactionFragment } from "~gql";
 
 type Reaction = GroupReactionsByEmoji_ReactionFragment;
 
-export const groupReactionsByEmoji = withFragments(
-  {
-    message_reaction: gql`
-      fragment GroupReactionsByEmoji_reaction on message_reaction {
-        emoji
-      }
-    `,
-  },
-  (reactions: Reaction[]): Record<string, Reaction[]> => {
-    return reactions.reduce((acc: Record<string, Reaction[]>, reaction) => {
-      acc[reaction.emoji] = acc[reaction.emoji] || [];
+const fragments = {
+  message_reaction: gql`
+    fragment GroupReactionsByEmoji_reaction on message_reaction {
+      emoji
+    }
+  `,
+};
+export const groupReactionsByEmoji = withFragments(fragments, (reactions: Reaction[]): Record<string, Reaction[]> => {
+  return reactions.reduce((acc: Record<string, Reaction[]>, reaction) => {
+    acc[reaction.emoji] = acc[reaction.emoji] || [];
 
-      acc[reaction.emoji].push(reaction);
+    acc[reaction.emoji].push(reaction);
 
-      return acc;
-    }, {});
-  }
-);
+    return acc;
+  }, {});
+});

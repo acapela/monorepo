@@ -20,18 +20,19 @@ interface Props {
   size?: AvatarSize;
 }
 
-export const AvatarList = withFragments(
-  {
-    user: gql`
-      ${UserAvatar.fragments.user}
+const fragments = {
+  user: gql`
+    ${UserAvatar.fragments.user}
 
-      fragment AvatarList_user on user {
-        id
-        name
-        ...UserAvatar_user
-      }
-    `,
-  },
+    fragment AvatarList_user on user {
+      id
+      name
+      ...UserAvatar_user
+    }
+  `,
+};
+export const AvatarList = withFragments(
+  fragments,
   styled(function AvatarList({ users, className, maxVisibleCount = 3, size = "small" }: Props) {
     const [visibleAvatars, avatarsInPopover] = groupByFilter(users, (user, index) => index < maxVisibleCount);
     const holderRef = useRef<HTMLDivElement>(null);

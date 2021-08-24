@@ -82,13 +82,16 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
   const { data: invitationResult } = useQuery<
     ManageRoomMembers_InvitationsQuery,
     ManageRoomMembers_InvitationsQueryVariables
-  >(gql`
-    query ManageRoomMembers_invitations($teamId: uuid!) {
-      invitations: team_invitation(where: { team_id: { _eq: $teamId } }) {
-        email
+  >(
+    gql`
+      query ManageRoomMembers_invitations($teamId: uuid!) {
+        invitations: team_invitation(where: { team_id: { _eq: $teamId } }) {
+          email
+        }
       }
-    }
-  `);
+    `,
+    { variables: { teamId } }
+  );
 
   useSubscription<ManageRoomMembers_MembersSubscription, ManageRoomMembers_MembersSubscriptionVariables>(
     gql`

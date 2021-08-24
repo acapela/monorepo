@@ -1,5 +1,7 @@
 import { gql } from "@apollo/client";
 
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
+import { topicMessagesQueryManager, updateLastSeenMessage } from "~frontend/gql/topics";
 import {
   CreateMessageMutation,
   CreateMessageMutationVariables,
@@ -11,11 +13,11 @@ import {
   UpdateTextMessageMutation,
   UpdateTextMessageMutationVariables,
 } from "~gql";
+import { getUUID } from "~shared/uuid";
 
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
 import { TaskBasicInfoFragment } from "./tasks";
-import { topicMessagesQueryManager, updateLastSeenMessage } from "./topics";
 import { UserBasicInfoFragment, convertUserTokenDataToInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 

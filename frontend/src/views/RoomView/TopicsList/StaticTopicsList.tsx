@@ -18,30 +18,31 @@ export const topicListTopicFragment = gql`
   }
 `;
 
-export const StaticTopicsList = withFragments(
-  {
-    room: gql`
-      ${TopicMenuItem.fragments.room}
-      ${topicListTopicFragment}
+const fragments = {
+  room: gql`
+    ${TopicMenuItem.fragments.room}
+    ${topicListTopicFragment}
 
-      fragment StaticTopicList_room on room {
-        ...TopicMenuItem_room
-        topics {
-          ...TopicList_topic
-        }
+    fragment StaticTopicList_room on room {
+      ...TopicMenuItem_room
+      topics {
+        ...TopicList_topic
       }
-    `,
-  },
-  ({ room, activeTopicId }: { room: StaticTopicList_RoomFragment; activeTopicId: string | null }) => (
-    <UITopicsList>
-      {room.topics
-        .slice()
-        .sort(byIndexAscending)
-        .map((topic) => (
-          <UITopic key={topic.id}>
-            <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
-          </UITopic>
-        ))}
-    </UITopicsList>
-  )
-);
+    }
+  `,
+};
+
+type Props = { room: StaticTopicList_RoomFragment; activeTopicId: string | null };
+
+export const StaticTopicsList = withFragments(fragments, ({ room, activeTopicId }: Props) => (
+  <UITopicsList>
+    {room.topics
+      .slice()
+      .sort(byIndexAscending)
+      .map((topic) => (
+        <UITopic key={topic.id}>
+          <TopicMenuItem room={room} topic={topic} isActive={activeTopicId === topic.id} isEditingDisabled />
+        </UITopic>
+      ))}
+  </UITopicsList>
+));

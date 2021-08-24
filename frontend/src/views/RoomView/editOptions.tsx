@@ -11,33 +11,33 @@ import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 
 import { closeOpenTopicsPrompt } from "./RoomCloseModal";
 
-export const usePopoverEditMenuOptions = withFragments(
-  {
-    room: gql`
-      ${closeOpenTopicsPrompt.fragments.room}
+const fragments = {
+  room: gql`
+    ${closeOpenTopicsPrompt.fragments.room}
 
-      fragment EditOptions_room on room {
-        id
-        name
-        finished_at
-        is_private
-        space_id
-        topics {
-          closed_at
-        }
-        ...RoomCloseModal_room
+    fragment EditOptions_room on room {
+      id
+      name
+      finished_at
+      is_private
+      space_id
+      topics {
+        closed_at
       }
-    `,
-  },
-  ({
-    room,
-    onEditRoomNameRequest,
-    onCloseRoom,
-  }: {
-    room: EditOptions_RoomFragment;
-    onEditRoomNameRequest: () => void;
-    onCloseRoom: () => void;
-  }): PopoverMenuOption[] => {
+      ...RoomCloseModal_room
+    }
+  `,
+};
+
+type Props = {
+  room: EditOptions_RoomFragment;
+  onEditRoomNameRequest: () => void;
+  onCloseRoom: () => void;
+};
+
+export const usePopoverEditMenuOptions = withFragments(
+  fragments,
+  ({ room, onEditRoomNameRequest, onCloseRoom }: Props): PopoverMenuOption[] => {
     const [deleteRoom] = useDeleteRoom();
     const [updateRoomIsPrivate] = useMutation<UpdateRoomIsPrivateMutation, UpdateRoomIsPrivateMutationVariables>(
       gql`

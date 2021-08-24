@@ -22,17 +22,14 @@ async function isRoomPrivate(roomId: string) {
   return privateRoom?.is_private ?? false;
 }
 
-export const useRoomWithClientErrorRedirects = ({
-  roomId,
-  spaceId,
-  hasRoom,
-  loading,
-}: {
+type Props = {
   roomId: string;
   spaceId: string;
   hasRoom: boolean;
   loading: boolean;
-}) => {
+};
+
+export const useRoomWithClientErrorRedirects = ({ roomId, spaceId, hasRoom, loading }: Props) => {
   useEffect(() => {
     async function redirectOnClientError() {
       if (hasRoom) {

@@ -9,24 +9,28 @@ import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
 import { borderRadius } from "~ui/baseStyles";
 
-export const TopicSummaryMessage = withFragments(
-  {
-    topic: gql`
-      fragment TopicSummaryMessage_topic on topic {
-        closed_at
-        closing_summary
-        closed_by_user {
-          id
-          name
-          email
-        }
+const fragments = {
+  topic: gql`
+    fragment TopicSummaryMessage_topic on topic {
+      closed_at
+      closing_summary
+      closed_by_user {
+        id
+        name
+        email
       }
-    `,
-  },
-  styled<{
-    topic: TopicSummaryMessage_TopicFragment;
-    className?: string;
-  }>(({ topic, className }) => {
+    }
+  `,
+};
+
+type Props = {
+  topic: TopicSummaryMessage_TopicFragment;
+  className?: string;
+};
+
+export const TopicSummaryMessage = withFragments(
+  fragments,
+  styled<Props>(({ topic, className }) => {
     const { closed_by_user, closed_at, closing_summary } = topic;
 
     if (!closed_by_user || !closed_at) {

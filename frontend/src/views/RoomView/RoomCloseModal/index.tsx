@@ -31,18 +31,20 @@ function splitTopicsIntoColumns(topics: Topics): Topics[] {
   return columns;
 }
 
-export const closeOpenTopicsPrompt = withFragments(
-  {
-    room: gql`
-      fragment RoomCloseModal_room on room {
+const fragments = {
+  room: gql`
+    fragment RoomCloseModal_room on room {
+      id
+      topics {
         id
-        topics {
-          id
-          name
-        }
+        name
       }
-    `,
-  },
+    }
+  `,
+};
+
+export const closeOpenTopicsPrompt = withFragments(
+  fragments,
   createPromiseUI<RoomCloseModal_RoomFragment, RoomCloseModalResult>((room, resolve) => {
     const { id: closedByUserId } = useAssertCurrentUser();
 

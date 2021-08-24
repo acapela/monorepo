@@ -13,22 +13,23 @@ import { createPromiseUI } from "~ui/createPromiseUI";
 
 type PromptResult = void;
 
+const fragments = {
+  room: gql`
+    fragment PrivateRoomDeletionPrompt_room on room {
+      id
+      space_id
+    }
+  `,
+};
+
+type Props = {
+  room: PrivateRoomDeletionPrompt_RoomFragment;
+  onDeleteRoom: (variables: DeleteRoomMutationVariables) => void;
+};
+
 export const openLastPrivateRoomMemberDeletionPrompt = withFragments(
-  {
-    room: gql`
-      fragment PrivateRoomDeletionPrompt_room on room {
-        id
-        space_id
-      }
-    `,
-  },
-  createPromiseUI<
-    {
-      room: PrivateRoomDeletionPrompt_RoomFragment;
-      onDeleteRoom: (variables: DeleteRoomMutationVariables) => void;
-    },
-    PromptResult
-  >(({ room, onDeleteRoom }, resolve) => {
+  fragments,
+  createPromiseUI<Props, PromptResult>(({ room, onDeleteRoom }, resolve) => {
     const [isDeletingRoom, { set: setRoomOngoingDeletion }] = useBoolean(false);
 
     function handleCancel() {

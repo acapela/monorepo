@@ -20,6 +20,7 @@ const fragments = {
         id
       }
       ...RoomView_room
+      ...TopicWithMessages_room
     }
   `,
   topic: gql`

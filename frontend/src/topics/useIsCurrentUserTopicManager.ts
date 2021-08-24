@@ -4,19 +4,20 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
 import { IsCurrentUserTopicManager_RoomFragment, IsCurrentUserTopicManager_TopicFragment } from "~gql";
 
+const fragments = {
+  room: gql`
+    fragment IsCurrentUserTopicManager_room on room {
+      owner_id
+    }
+  `,
+  topic: gql`
+    fragment IsCurrentUserTopicManager_topic on topic {
+      owner_id
+    }
+  `,
+};
 export const useIsCurrentUserTopicManager = withFragments(
-  {
-    room: gql`
-      fragment IsCurrentUserTopicManager_room on room {
-        owner_id
-      }
-    `,
-    topic: gql`
-      fragment IsCurrentUserTopicManager_topic on topic {
-        owner_id
-      }
-    `,
-  },
+  fragments,
   (room: IsCurrentUserTopicManager_RoomFragment, topic: IsCurrentUserTopicManager_TopicFragment | null) => {
     const user = useAssertCurrentUser();
 

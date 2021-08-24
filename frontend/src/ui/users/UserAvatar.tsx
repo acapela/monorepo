@@ -14,15 +14,17 @@ interface Props {
   disableNameTooltip?: boolean;
 }
 
+const fragments = {
+  user: gql`
+    fragment UserAvatar_user on user {
+      name
+      avatar_url
+    }
+  `,
+};
+
 export const UserAvatar = withFragments(
-  {
-    user: gql`
-      fragment UserAvatar_user on user {
-        name
-        avatar_url
-      }
-    `,
-  },
+  fragments,
   styled<Props>(({ user, className, size = "regular", disableNameTooltip }) => (
     <Avatar
       name={user.name}
