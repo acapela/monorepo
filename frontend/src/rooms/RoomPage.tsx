@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { data, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
+  const { data, previousData, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
     gql`
       ${RoomTopicView.fragments.room}
       ${RoomTopicView.fragments.topic}
@@ -32,9 +32,16 @@ export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
     { variables: { roomId, topicId: topicId, hasTopicId: !!topicId } }
   );
 
-  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom: Boolean(data && data.room), loading });
+  const hasRoom = Boolean(data && data.room);
 
-  if (!data) {
+  useRoomWithClientErrorRedirects({
+    spaceId,
+    roomId,
+    hasRoom,
+    loading,
+  });
+
+  if (!data || !data.room) {
     return null; // Left blank on purpose. Won't render for clients.
   }
 
@@ -43,8 +50,7 @@ export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
 
   return (
     <AppLayout>
-      {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-      <RoomTopicView room={room!} topic={topic} />
+      <RoomTopicView room={room} topic={topic} />
     </AppLayout>
   );
 };
