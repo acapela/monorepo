@@ -17,7 +17,6 @@ import {
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
-import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
 import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
 import {
   CreateRoomViewTopicMutation,
@@ -145,7 +144,8 @@ const useCreateTopic = () =>
         cache.modify({
           id: cache.identify({ __typename: "room", id: topic.room_id }),
           fields: {
-            topics: (existing: Reference[]) => existing.concat(newTopicRef),
+            topics: (existing: Reference[]) =>
+              existing.some((ref) => ref.__ref == newTopicRef.__ref) ? existing : existing.concat(newTopicRef),
           },
         });
         cache.writeQuery<RoomViewTopicQuery, RoomViewTopicQueryVariables>({
@@ -174,7 +174,7 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
   const amIMember = useIsCurrentUserRoomMember(room);
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
-  const [createTopic, { loading: isCreating }] = useCreateTopic();
+  const [createTopic] = useCreateTopic();
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
@@ -232,9 +232,7 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             kind="secondary"
             onClick={handleCreateNewTopic}
             isDisabled={
-              isCreating
-                ? { reason: "A new topic is being created" }
-                : isRoomOpen
+              isRoomOpen
                 ? !amIMember && { reason: "You have to be room member to open a topic" }
                 : { reason: "You can not create topics in closed rooms" }
             }
