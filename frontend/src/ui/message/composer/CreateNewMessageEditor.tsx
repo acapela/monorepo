@@ -106,7 +106,8 @@ const useCreateMessageMutation = () =>
         cache.modify({
           id: cache.identify({ __typename: "topic", id: message.topic_id }),
           fields: {
-            messages: (existing: Reference[]) => existing.concat(newMessageRef),
+            messages: (existing: Reference[]) =>
+              existing.some((ref) => ref.__ref == newMessageRef.__ref) ? existing : existing.concat(newMessageRef),
           },
         });
       },
