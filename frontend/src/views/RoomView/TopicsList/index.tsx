@@ -174,7 +174,7 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
   const amIMember = useIsCurrentUserRoomMember(room);
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
-  const [createTopic] = useCreateTopic();
+  const [createTopic, { loading: isCreating }] = useCreateTopic();
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
@@ -232,7 +232,9 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             kind="secondary"
             onClick={handleCreateNewTopic}
             isDisabled={
-              isRoomOpen
+              isCreating
+                ? { reason: "A new topic is being created" }
+                : isRoomOpen
                 ? !amIMember && { reason: "You have to be room member to open a topic" }
                 : { reason: "You can not create topics in closed rooms" }
             }
