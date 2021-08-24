@@ -5,13 +5,13 @@ import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { MessageTask_MessageFragment, UserBasicInfoFragment } from "~gql";
+import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 interface Props {
-  task: MessageTask_MessageFragment;
+  task: MessageTask_TaskFragment;
   taskAssignee: UserBasicInfoFragment;
   className?: string;
 }
