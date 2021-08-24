@@ -95,9 +95,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           return false;
         }
 
-        const stream = (await window.navigator.mediaDevices.getDisplayMedia({
+        const stream = await window.navigator.mediaDevices.getDisplayMedia({
           video: false,
-        })) as MediaStream;
+        });
 
         audioStream.getAudioTracks().forEach((audioTrack) => stream.addTrack(audioTrack));
         mediaStream.current = stream;
@@ -108,7 +108,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       return true;
     } catch (error) {
       setError(error?.name);
-
       return false;
     }
   };
@@ -127,12 +126,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     if (mediaStream.current) {
       // User can stop the stream using browser's own built-in 'Stop sharing' button.
       mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
-      mediaRecorder.current = new MediaRecorder(mediaStream.current, {
-        mimeType:
-          mediaSource.current === MediaSource.Camera || mediaSource.current === MediaSource.Screen
-            ? "video/webm;codecs=opus"
-            : "audio/webm;codecs=opus",
-      });
+      mediaRecorder.current = new MediaRecorder(mediaStream.current);
       mediaRecorder.current.ondataavailable = ({ data }: BlobEvent) => {
         mediaChunks.current.push(data);
       };
