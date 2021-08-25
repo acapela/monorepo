@@ -1,7 +1,8 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { gql, useSubscription } from "@apollo/client";
+import { PropsWithChildren } from "react";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { userDetailedInfoQuery } from "~frontend/gql/user";
+import { CurrentTeamSubscription, CurrentTeamSubscriptionVariables } from "~gql";
 
 import { CurrentTeamIdContext } from "./CurrentTeamIdContext";
 
@@ -11,17 +12,25 @@ Instead, we take the current_team_id from the session on the server-side, and on
 */
 export function CurrentTeamIdProvider({ children }: PropsWithChildren<{}>) {
   const user = useCurrentUser();
+  const { data } = useSubscription<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>(
+    gql`
+      subscription CurrentTeam($userId: uuid!) {
+        user: user_by_pk(id: $userId) {
+          current_team {
+            id
+          }
+        }
+      }
+    `,
+    user ? { variables: { userId: user.id } } : { skip: true }
+  );
+  const liveUser = data?.user ?? null;
 
-  const [teamId, setTeamId] = useState(user?.currentTeamId ?? null);
-
-  useEffect(() => {
-    if (!user) return;
-
-    return userDetailedInfoQuery.subscribe({ id: user.id }, (newUserInfo) => {
-      setTeamId(newUserInfo.user_by_pk?.current_team?.id ?? null);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  return <CurrentTeamIdContext.Provider value={teamId}>{children}</CurrentTeamIdContext.Provider>;
+  return (
+    <CurrentTeamIdContext.Provider
+      value={liveUser?.current_team ? liveUser.current_team.id : null ?? user?.currentTeamId ?? null}
+    >
+      {children}
+    </CurrentTeamIdContext.Provider>
+  );
 }

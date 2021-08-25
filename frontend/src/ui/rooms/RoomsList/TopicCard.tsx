@@ -3,12 +3,12 @@ import styled, { css } from "styled-components";
 
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { RouteLink, routes } from "~frontend/router";
-import { useTopic } from "~frontend/topics/useTopic";
+import { isTopicClosed } from "~frontend/topics/utils";
+import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { MessageBasicInfoFragment, TopicDetailedInfoFragment } from "~gql";
-import { convertRichEditorContentToHtml } from "~richEditor/content/html";
-import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
+import { TopicDetailedInfoFragment } from "~gql";
+import { theme } from "~ui/theme";
 import { TextH6 } from "~ui/typo";
 
 import { UICardListItem } from "./shared";
@@ -18,23 +18,11 @@ interface Props {
   className?: string;
 }
 
-function renderMessageContent(message: MessageBasicInfoFragment) {
-  try {
-    const htmlContent = convertRichEditorContentToHtml(message.content);
-
-    const strippedHtml = htmlContent.replace(/<[^>]+>/g, " ");
-
-    return <span id="UILastMessageContent__message" dangerouslySetInnerHTML={{ __html: strippedHtml }}></span>;
-  } catch (error) {
-    return <div>😢 Failed to display message content</div>;
-  }
-}
-
 export const TopicCard = styled(function TopicCard({ topic, className }: Props) {
   const topicId = topic.id;
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
-  const { isClosed } = useTopic(topic);
+  const isClosed = isTopicClosed(topic);
 
   const [lastMessageWrapped = [], { loading: isLastMessageLoading }] = useTopicMessagesQuery({
     topicId,
@@ -60,18 +48,18 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
           </UITopicTitle>
           {isLastMessageLoading && (
             <UILastMessage>
-              <UILastMessageContent>Loading...</UILastMessageContent>
+              <UIMessagePlaceholder>Loading...</UIMessagePlaceholder>
             </UILastMessage>
           )}
           {lastMessage && !isLastMessageLoading && (
             <UILastMessage>
               <UILastMessageSender size="inherit" user={lastMessage.user} />
-              <UILastMessageContent>{renderMessageContent(lastMessage)}</UILastMessageContent>
+              <UIMessageText message={lastMessage} />
             </UILastMessage>
           )}
           {!lastMessage && !isLastMessageLoading && (
             <UILastMessage>
-              <UILastMessageContent>No messages in topic</UILastMessageContent>
+              <UIMessagePlaceholder>No messages in topic</UIMessagePlaceholder>
             </UILastMessage>
           )}
         </UIInfo>
@@ -106,7 +94,7 @@ const UIUnreadMessagesNotification = styled.div<{}>`
   width: 8px;
   border-radius: 8px;
 
-  background-color: ${NOTIFICATION_COLOR};
+  background-color: ${theme.colors.interactive.notification()};
 `;
 
 const UILastMessage = styled.div<{}>`
@@ -119,14 +107,18 @@ const UILastMessage = styled.div<{}>`
 
 const UILastMessageSender = styled(UserAvatar)<{}>``;
 
-const UILastMessageContent = styled.div<{}>`
+const UIMessagePlaceholder = styled.div<{}>`
   display: grid;
   opacity: 0.5;
   line-height: 1.5rem;
+`;
 
-  #UILastMessageContent__message {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+const UIMessageText = styled(MessageText)`
+  ${theme.font.body14.build()}
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
 `;

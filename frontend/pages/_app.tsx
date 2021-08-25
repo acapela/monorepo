@@ -73,10 +73,10 @@ export default function App({
       <CommonMetadata />
       <AnalyticsManager />
       <SessionProvider session={session}>
-        <CurrentTeamIdProvider>
-          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-            <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-              <ThemeProvider theme={getTheme("default")}>
+        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+            <ThemeProvider theme={getTheme("default")}>
+              <CurrentTeamIdProvider>
                 <PromiseUIRenderer />
                 <TooltipsRenderer />
                 <ToastsRenderer />
@@ -85,10 +85,10 @@ export default function App({
                     {renderWithPageLayout(Component, pageProps)}
                   </PresenceAnimator>
                 </AnimatePresence>
-              </ThemeProvider>
-            </ApolloProvider>
-          </MotionConfig>
-        </CurrentTeamIdProvider>
+              </CurrentTeamIdProvider>
+            </ThemeProvider>
+          </ApolloProvider>
+        </MotionConfig>
       </SessionProvider>
     </>
   );

@@ -1,29 +1,40 @@
+import { gql } from "@apollo/client";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
+import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { UserBasicInfoFragment } from "~gql";
+import { MessageMetaData_UserFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
+const fragments = {
+  user: gql`
+    ${UserAvatar.fragments.user}
+
+    fragment MessageMetaData_user on user {
+      name
+      ...UserAvatar_user
+    }
+  `,
+};
+
 interface Props {
-  user: UserBasicInfoFragment;
+  user: MessageMetaData_UserFragment;
   date: Date;
   children: ReactNode;
 }
 
-export const MessageMetaData = ({ user, date, children }: Props) => {
-  return (
-    <UIHolder>
-      <UserAvatar user={user} size="small" />
-      <UIHead>
-        {getUserOrGuestName(user)} <TimeLabelWithDateTooltip date={date} />
-      </UIHead>
-      <div />
-      {children}
-    </UIHolder>
-  );
-};
+export const MessageMetaData = withFragments(fragments, ({ user, date, children }: Props) => (
+  <UIHolder>
+    <UserAvatar user={user} size="small" />
+    <UIHead>
+      {user.name || "Guest"} <TimeLabelWithDateTooltip date={date} />
+    </UIHead>
+    <div />
+    {children}
+  </UIHolder>
+));
 
 const UIHolder = styled.div<{}>`
   display: grid;
@@ -44,7 +55,3 @@ const UIHead = styled.div<{}>`
     font-weight: 400;
   }
 `;
-
-function getUserOrGuestName(user: UserBasicInfoFragment): string {
-  return user?.name || "Guest";
-}

@@ -32,6 +32,7 @@ export const DropdownItem = styled(function DropdownItem({
 }: Props) {
   return (
     <UIOption
+      role="option"
       className={className}
       isHighlighted={isHighlighted}
       onMouseEnter={onHighlightRequest}

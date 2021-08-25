@@ -34,6 +34,7 @@ const UIHolder = styled.div<{}>`
   align-items: center;
 
   background-color: ${theme.colors.layout.background()};
+  border: 1px solid ${theme.colors.layout.softLine()};
   ${theme.borderRadius.card}
 `;
 

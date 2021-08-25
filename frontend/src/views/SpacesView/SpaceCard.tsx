@@ -1,21 +1,46 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useIsCurrentUserSpaceMember } from "~frontend/gql/spaces";
+import { withFragments } from "~frontend/gql/utils";
 import { RouteLink, routes } from "~frontend/router";
 import { useSpaceManager } from "~frontend/spaces/useSpaceManager";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { CornerOptionsMenu } from "~frontend/ui/options/CornerOptionsMenu";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
-import { SpaceBasicInfoFragment } from "~gql";
+import { SpaceCard_SpaceFragment } from "~gql";
 import { CardBase } from "~ui/card/Base";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { EntityKindLabel, PrimaryItemTitle } from "~ui/theme/functional";
 
+const fragments = {
+  space: gql`
+    ${useIsCurrentUserSpaceMember.fragments.space}
+    ${AvatarList.fragments.user}
+
+    fragment SpaceCard_space on space {
+      id
+      name
+
+      ...IsCurrentUserSpaceMember_space
+
+      members {
+        space_id
+        user_id
+        user {
+          ...AvatarList_user
+        }
+      }
+    }
+  `,
+};
+
 interface Props {
-  space: SpaceBasicInfoFragment;
+  space: SpaceCard_SpaceFragment;
 }
 
-export function SpaceCard({ space }: Props) {
+export const SpaceCard = withFragments(fragments, function SpaceCard({ space }: Props) {
   const { editNameWithModal, isCurrentUserMember, join, leave, remove } = useSpaceManager(space);
 
   const user = useAssertCurrentUser();
@@ -54,7 +79,7 @@ export function SpaceCard({ space }: Props) {
       </UIHolder>
     </RouteLink>
   );
-}
+});
 
 const UIHolder = styled(CardBase)<{}>`
   cursor: pointer;

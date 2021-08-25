@@ -1,16 +1,16 @@
 UPDATE
-   topic
+  topic
 SET
-   owner_id = (
-      SELECT
-         creator_id
-      FROM
-         room
-      WHERE
-         topic.room_id = room.id
-   )
+  owner_id = (
+    SELECT
+      creator_id
+    FROM
+      room
+    WHERE
+        topic.room_id = room.id
+  )
 WHERE
-   owner_id IS NULL;
+  owner_id IS NULL;
 
 ALTER TABLE
    "public"."topic"

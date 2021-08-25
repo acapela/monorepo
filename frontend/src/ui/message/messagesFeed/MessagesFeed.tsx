@@ -2,7 +2,8 @@ import { isSameDay } from "date-fns";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
 
-import { MessageFeedInfoFragment } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { Message_MessageFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 
@@ -10,20 +11,20 @@ import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
-  messages: MessageFeedInfoFragment[];
+  messages: Message_MessageFragment[];
   isReadonly?: boolean;
 }
 
-export function MessagesFeed({ messages, isReadonly }: Props) {
+export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
-  function renderMessageHeader(message: MessageFeedInfoFragment, previousMessage: MessageFeedInfoFragment | null) {
+  function renderMessageHeader(message: Message_MessageFragment, previousMessage: Message_MessageFragment | null) {
     if (!previousMessage) {
-      return <DateHeader date={new Date(message.createdAt)} />;
+      return <DateHeader date={new Date(message.created_at)} />;
     }
 
-    const currentDate = new Date(message.createdAt);
-    const previousDate = new Date(previousMessage.createdAt);
+    const currentDate = new Date(message.created_at);
+    const previousDate = new Date(previousMessage.created_at);
 
     if (isSameDay(currentDate, previousDate)) {
       return null;
@@ -46,7 +47,7 @@ export function MessagesFeed({ messages, isReadonly }: Props) {
       })}
     </UIHolder>
   );
-}
+});
 
 function DateHeader({ date }: { date: Date }) {
   return <UIDateHeader>{niceFormatDate(date, { showWeekDay: "long" })}</UIDateHeader>;

@@ -1,18 +1,35 @@
+import { gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
-import { RoomDetailedInfoFragment } from "~gql";
+import { RoomSidebarInfo_RoomFragment } from "~gql";
 import { TextBody12 } from "~ui/typo";
 
 import { DeadlineManager } from "./DeadlineManager";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+    ${ManageRoomMembers.fragments.room}
+    ${DeadlineManager.fragments.room}
+
+    fragment RoomSidebarInfo_room on room {
+      space_id
+      ...IsCurrentUserRoomMember_room
+      ...ManageRoomMembers_room
+      ...DeadlineManager_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: RoomSidebarInfo_RoomFragment;
 }
 
-export function RoomSidebarInfo({ room }: Props) {
+export const RoomSidebarInfo = withFragments(fragments, function RoomSidebarInfo({ room }: Props) {
   const router = useRouter();
 
   const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
@@ -35,7 +52,7 @@ export function RoomSidebarInfo({ room }: Props) {
       </UIManageSections>
     </UIRoomInfo>
   );
-}
+});
 
 const UIRoomInfo = styled.div<{}>`
   position: relative;

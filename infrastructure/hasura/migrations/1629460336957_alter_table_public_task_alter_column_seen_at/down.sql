@@ -1,0 +1,1 @@
+ALTER TABLE ONLY "public"."task" ALTER COLUMN "seen_at" DROP DEFAULT;

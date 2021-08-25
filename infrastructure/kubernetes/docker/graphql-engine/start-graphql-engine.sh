@@ -3,11 +3,6 @@
 set -e
 
 export HASURA_GRAPHQL_JWT_SECRET="{\"type\":\"HS256\", \"key\": \"${NEXT_AUTH_JWT_SECRET}\"}"
+export HASURA_GRAPHQL_DATABASE_URL="postgres://${POSTGRES_DB_USER}:$(echo "$POSTGRES_DB_PASSWORD" | sed 's/\//%2F/g')@${POSTGRES_DB_HOST}:${POSTGRES_DB_PORT}/${POSTGRES_DB_NAME}"
 
-exec graphql-engine \
-  --user ${POSTGRES_DB_USER} \
-  --password ${POSTGRES_DB_PASSWORD} \
-  --dbname ${POSTGRES_DB_NAME} \
-  --host ${POSTGRES_DB_HOST} \
-  --port ${POSTGRES_DB_PORT} \
-  serve
+exec graphql-engine serve

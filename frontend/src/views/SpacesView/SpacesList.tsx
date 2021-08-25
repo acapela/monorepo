@@ -1,22 +1,43 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useTeamSpacesQuery } from "~frontend/gql/spaces";
+import { createQuery } from "~frontend/gql/utils";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { NoticeLabel } from "~frontend/ui/NoticeLabel";
-import { SpaceCard } from "~frontend/ui/spaces/SpaceCard";
+import { SpaceCard } from "~frontend/views/SpacesView/SpaceCard";
+import { SpacesListQuery, SpacesListQueryVariables } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
 import { CategoryNameLabel } from "~ui/theme/functional";
 import { TextBody14, TextH3 } from "~ui/typo";
 
+const [useSpaceListQuery] = createQuery<SpacesListQuery, SpacesListQueryVariables>(
+  () => gql`
+    ${SpaceCard.fragments.space}
+
+    query SpacesList($teamId: uuid!) {
+      spaces: space(where: { team_id: { _eq: $teamId } }) {
+        members {
+          space_id
+          user_id
+          user {
+            id
+          }
+        }
+        ...SpaceCard_space
+      }
+    }
+  `
+);
+
 export function SpacesList() {
   const teamId = useAssertCurrentTeamId();
-  const [spacesList = [], { loading }] = useTeamSpacesQuery({ teamId });
+  const [spaces = [], { loading }] = useSpaceListQuery({ teamId });
   const user = useAssertCurrentUser();
 
-  const hasNoSpaces = !loading && spacesList.length === 0;
+  const hasNoSpaces = !loading && spaces.length === 0;
 
-  const [mySpaces, notJoinedSpaces] = groupByFilter(spacesList, (space) =>
+  const [mySpaces, notJoinedSpaces] = groupByFilter(spaces, (space) =>
     space.members.some((member) => member.user.id === user.id)
   );
 
@@ -28,9 +49,9 @@ export function SpacesList() {
           <CategoryNameLabel>Joined spaces</CategoryNameLabel>
 
           <UISpaces>
-            {mySpaces.map((space) => {
-              return <SpaceCard key={space.id} space={space} />;
-            })}
+            {mySpaces.map((space) => (
+              <SpaceCard key={space.id} space={space} />
+            ))}
           </UISpaces>
         </UISpacesGroup>
       )}
@@ -38,9 +59,9 @@ export function SpacesList() {
         <UISpacesGroup key="to-join">
           <CategoryNameLabel>Other spaces</CategoryNameLabel>
           <UISpaces>
-            {notJoinedSpaces.map((space) => {
-              return <SpaceCard key={space.id} space={space} />;
-            })}
+            {notJoinedSpaces.map((space) => (
+              <SpaceCard key={space.id} space={space} />
+            ))}
           </UISpaces>
         </UISpacesGroup>
       )}

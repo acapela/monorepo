@@ -2,19 +2,18 @@ import { observer } from "mobx-react";
 import React from "react";
 
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
-import { MessageDetailedInfoFragment } from "~gql";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { IconReply } from "~ui/icons";
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  messageId: string;
 }
 
-export const ReplyButton = observer(({ message }: Props) => {
+export const ReplyButton = observer(({ messageId }: Props) => {
   const topicContext = useTopicStoreContext();
 
   async function handleMarkAsBeingRepliedTo() {
-    topicContext.currentlyReplyingToMessage = message;
+    topicContext.currentlyReplyingToMessageId = messageId;
   }
 
   return <WideIconButton kind="secondary" tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;
