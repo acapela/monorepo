@@ -8333,17 +8333,6 @@ export type RoomSummaryPageQuery = (
   )> }
 );
 
-export type RoomsTestQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type RoomsTestQueryQuery = (
-  { __typename?: 'query_root' }
-  & { room: Array<(
-    { __typename?: 'room' }
-    & Pick<Room, 'id'>
-  )> }
-);
-
 export type AttachmentDetailedInfoFragment = (
   { __typename?: 'attachment' }
   & Pick<Attachment, 'id'>
@@ -8678,19 +8667,6 @@ export type RoomDetailedInfoFragment = (
     & RoomInvitationBasicInfoFragment
   )> }
   & RoomBasicInfoFragment
-);
-
-export type RoomsInSpaceQueryVariables = Exact<{
-  spaceId: Scalars['uuid'];
-}>;
-
-
-export type RoomsInSpaceQuery = (
-  { __typename?: 'query_root' }
-  & { room: Array<(
-    { __typename?: 'room' }
-    & RoomBasicInfoFragment
-  )> }
 );
 
 export type RoomsQueryVariables = Exact<{
@@ -9315,19 +9291,6 @@ export type TeamMembersQuery = (
   )> }
 );
 
-export type UserDetailedQueryVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type UserDetailedQuery = (
-  { __typename?: 'query_root' }
-  & { user_by_pk?: Maybe<(
-    { __typename?: 'user' }
-    & UserDetailedInfoFragment
-  )> }
-);
-
 export type BreadcrumbQueryVariables = Exact<{
   spaceId: Scalars['uuid'];
   roomId?: Maybe<Scalars['uuid']>;
@@ -9368,6 +9331,19 @@ export type SpaceManager_SpaceFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
   & SpaceWithMembersFragment
+);
+
+export type CurrentTeamSubscriptionVariables = Exact<{
+  userId: Scalars['uuid'];
+}>;
+
+
+export type CurrentTeamSubscription = (
+  { __typename?: 'subscription_root' }
+  & { user?: Maybe<(
+    { __typename?: 'user' }
+    & Pick<User, 'current_team_id'>
+  )> }
 );
 
 export type IsCurrentUserTopicManager_RoomFragment = (

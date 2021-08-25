@@ -78,28 +78,3 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
 
   return teamMembers;
 }
-
-export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData): UserBasicInfoFragmentType {
-  return {
-    id: userTokenData.id,
-    __typename: "user",
-    avatar_url: userTokenData.picture,
-    email: userTokenData.email,
-    name: userTokenData.name,
-  };
-}
-
-export const [useUserDetailedInfoQuery, userDetailedInfoQuery] = createQuery<
-  UserDetailedQuery,
-  UserDetailedQueryVariables
->(
-  () => gql`
-    ${UserDetailedInfoFragment()}
-
-    query UserDetailed($id: uuid!) {
-      user_by_pk(id: $id) {
-        ...UserDetailedInfo
-      }
-    }
-  `
-);

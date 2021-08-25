@@ -91,18 +91,6 @@ export const RoomDetailedInfoFragment = createFragment<RoomDetailedInfoFragmentT
   `
 );
 
-export const [useSpaceRoomsQuery] = createQuery<RoomsInSpaceQuery, RoomsInSpaceQueryVariables>(
-  () => gql`
-    ${RoomBasicInfoFragment()}
-
-    query RoomsInSpace($spaceId: uuid!) {
-      room(where: { space_id: { _eq: $spaceId } }) {
-        ...RoomBasicInfo
-      }
-    }
-  `
-);
-
 export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQueryVariables>(
   () => gql`
     ${RoomDetailedInfoFragment()}

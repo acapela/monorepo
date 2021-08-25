@@ -109,7 +109,7 @@ export function usePreferredSpaces(limit = 10) {
   return [...mySpaces, ...otherSpaces].slice(0, limit);
 }
 
-export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
+export const [useSingleSpaceQuery] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 

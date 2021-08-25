@@ -8,10 +8,6 @@ export async function getSpaceHasMember(spaceId: string, memberId: string): Prom
   return !!entry;
 }
 
-export async function findSpaceById(spaceId: string) {
-  return db.space.findUnique({ where: { id: spaceId } });
-}
-
 export async function addSpaceMember(spaceId: string, userId: string): Promise<SpaceMember> {
   return await db.space_member.create({
     data: {
