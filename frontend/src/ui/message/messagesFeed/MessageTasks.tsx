@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
-import { TaskBasicInfoFragment } from "~gql";
+import { MessageTask_TaskFragment } from "~gql";
 
 import { MessageTask } from "./MessageTask";
 
 interface Props {
-  tasks: TaskBasicInfoFragment[];
+  tasks: MessageTask_TaskFragment[];
   className?: string;
 }
 
@@ -21,7 +21,7 @@ export const MessageTasks = styled(function MessageTasks({ tasks, className }: P
           return;
         }
 
-        return <MessageTask task={task} taskAssignee={taskAssignee} />;
+        return <MessageTask key={task.id} task={task} taskAssignee={taskAssignee} />;
       })}
     </UITasks>
   );

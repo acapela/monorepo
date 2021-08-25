@@ -134,7 +134,7 @@ export const [useMarkAllNotificationsAsRead, { mutate: markAllNotificationsAsRea
   }
 );
 
-export const [useDeleteAllReadNotifications, { mutate: deleteAllReadNotifications }] = createMutation<
+export const [, { mutate: deleteAllReadNotifications }] = createMutation<
   DeleteAllReadNotificationsMutation,
   DeleteAllReadNotificationsMutationVariables
 >(
@@ -148,7 +148,7 @@ export const [useDeleteAllReadNotifications, { mutate: deleteAllReadNotification
   `
 );
 
-export const [useMarkNotificationAsUnread, { mutate: markNotificationAsUnread }] = createMutation<
+export const [, { mutate: markNotificationAsUnread }] = createMutation<
   MarkNotificationAsReadMutation,
   MarkNotificationAsReadMutationVariables
 >(

@@ -1,12 +1,17 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
-import { startCreateNewTopicFlow } from "~frontend/topics/startCreateNewTopicFlow";
+import { routes } from "~frontend/router";
+import { openUIPrompt } from "~frontend/utils/prompt";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
-import { TopicDetailedInfoFragment } from "~gql";
+import { CreateTopicMutation, CreateTopicMutationVariables, TopicDetailedInfoFragment } from "~gql";
 import { groupByFilter } from "~shared/groupByFilter";
+import { getUUID } from "~shared/uuid";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { Button } from "~ui/buttons/Button";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconChevronDown, IconChevronUp, IconPlusSquare } from "~ui/icons";
@@ -22,8 +27,43 @@ interface Props {
 }
 const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
+function useStartCreateNewTopicFlow() {
+  const [createTopic] = useMutation<CreateTopicMutation, CreateTopicMutationVariables>(gql`
+    mutation CreateTopic($input: topic_insert_input!) {
+      insert_topic_one(object: $input) {
+        id
+      }
+    }
+  `);
+  return async function startCreateNewTopicFlow(
+    input: Pick<CreateTopicMutationVariables["input"], "id" | "index" | "room_id" | "owner_id">
+  ) {
+    const name = await openUIPrompt({
+      title: "New topic name",
+      submitLabel: "Create topic",
+      placeholder: "eg. Our brand colors",
+      validateInput: createLengthValidator("Topic name", 3),
+    });
+
+    if (!name?.trim()) {
+      return;
+    }
+
+    return createTopic({
+      variables: {
+        input: {
+          name,
+          slug: name.split(" ").join("-").toLowerCase(),
+          ...input,
+        },
+      },
+    });
+  };
+}
+
 export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topics, isAbleToAddTopic, roomId }: Props) {
   const user = useAssertCurrentUser();
+  const startCreateNewTopicFlow = useStartCreateNewTopicFlow();
 
   const detailedRoomMessagesCount = useDetailedRoomMessagesCount(roomId);
 
@@ -47,12 +87,17 @@ export const ExpandableTopicsList = styled(function ExpandableTopicsList({ topic
   } = useExpandableListToggle({ originalList: orderedTopics, minimizedLimit: MINIMIZED_TOPICS_SHOWN_LIMIT });
 
   async function handleCreateTopic() {
+    const topicId = getUUID();
     await startCreateNewTopicFlow({
-      roomId: roomId,
-      ownerId: user.id,
-      navigateAfterCreation: true,
+      id: topicId,
+      room_id: roomId,
+      owner_id: user.id,
       index: getIndexBetweenCurrentAndLast(topics[topics.length - 1]?.index ?? ""),
     });
+    const room = RoomBasicInfoFragment.read(roomId);
+    if (room) {
+      routes.spaceRoomTopic.push({ topicId, spaceId: room.space_id, roomId: room.id });
+    }
   }
 
   return (

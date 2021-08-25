@@ -1,8 +1,10 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import { useTopic } from "~frontend/topics/useTopic";
-import { TopicDetailedInfoFragment } from "~gql";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
+import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSummaryMutationVariables } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
@@ -10,19 +12,52 @@ import { Modifiers } from "~ui/theme/colors/createColor";
 
 import { formatDate } from "../shared";
 
+const fragments = {
+  topic: gql`
+    fragment TopicSummary_topic on topic {
+      id
+      name
+      closing_summary
+      closed_at
+      closed_by_user {
+        name
+      }
+    }
+  `,
+};
+
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  topic: TopicSummary_TopicFragment;
 }
 
-export const TopicSummary = ({ topic }: Props) => {
+export const TopicSummary = withFragments(fragments, ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
-  const { loading, updateSummary } = useTopic(topic);
+  const [updateTopicSummary, { loading }] = useMutation<
+    UpdateTopicSummaryMutation,
+    UpdateTopicSummaryMutationVariables
+  >(
+    gql`
+      mutation UpdateTopicSummary($id: uuid!, $closingSummary: String!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { closing_summary: $closingSummary }) {
+          id
+          closing_summary
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, closing_summary: vars.closingSummary },
+      }),
+    }
+  );
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateSummary(summary.trim());
+      updateTopicSummary({ variables: { id: topic.id, closingSummary: summary.trim() } });
+      trackEvent("Updated Topic Summary", { topicId: topic.id });
     }
   }
 
@@ -45,7 +80,7 @@ export const TopicSummary = ({ topic }: Props) => {
       />
     </UITopicSummary>
   );
-};
+});
 
 const UITopicSummary = styled.div<{}>`
   display: grid;

@@ -1,20 +1,34 @@
+import { gql } from "@apollo/client";
 import styled, { css } from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask } from "~frontend/gql/tasks";
+import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { TaskBasicInfoFragment, UserBasicInfoFragment } from "~gql";
+import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 interface Props {
-  task: TaskBasicInfoFragment;
+  task: MessageTask_TaskFragment;
   taskAssignee: UserBasicInfoFragment;
   className?: string;
 }
 
-export const MessageTask = styled(function MessageTask({ task, taskAssignee, className }: Props) {
+const fragments = {
+  task: gql`
+    fragment MessageTask_task on task {
+      id
+      user_id
+      message_id
+      seen_at
+      done_at
+    }
+  `,
+};
+
+const _MessageTask = styled(function MessageTask({ task, taskAssignee, className }: Props) {
   const currentUser = useCurrentUser();
 
   const isCurrentUserTask = currentUser?.id === taskAssignee.id;
@@ -63,7 +77,7 @@ export const MessageTask = styled(function MessageTask({ task, taskAssignee, cla
       Input from&nbsp;
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
-      <UIUserNameLabel>{taskAssignee.name}`s</UIUserNameLabel>
+      <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
       &nbsp;was requested.&nbsp;
       {isCurrentUserTask && (
         <>
@@ -74,6 +88,8 @@ export const MessageTask = styled(function MessageTask({ task, taskAssignee, cla
     </UISingleTask>
   );
 })``;
+
+export const MessageTask = withFragments(fragments, _MessageTask);
 
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;
@@ -103,13 +119,7 @@ const UITextButton = styled.span<{}>`
   cursor: pointer;
 `;
 
-const UIIconHolder = styled.span<{ horizontalFlip?: boolean }>`
+const UIIconHolder = styled.span<{}>`
   font-size: 1.5em;
   margin-right: 8px;
-
-  ${(props) =>
-    props.horizontalFlip &&
-    css`
-      transform: scaleX(-1);
-    `}
 `;

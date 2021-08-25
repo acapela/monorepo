@@ -1,11 +1,13 @@
+import { gql, useQuery } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { Avatar } from "~frontend/ui/users/Avatar";
-import { UserBasicInfoFragment } from "~gql";
+import { MissingTeamMembersQuery, MissingTeamMembersQueryVariables } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { useSearch } from "~shared/search";
@@ -17,13 +19,30 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 
 interface Props {
-  users: UserBasicInfoFragment[];
+  memberUserIds: string[];
   onAddMember: (userId: string) => void;
   onInviteByEmail?: (email: string) => void;
 }
 
-export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Props) => {
+export const AddMemberInlineForm = ({ memberUserIds, onAddMember, onInviteByEmail }: Props) => {
   const canInviteByEmail = Boolean(onInviteByEmail);
+  const teamId = useAssertCurrentTeamId();
+  const { data } = useQuery<MissingTeamMembersQuery, MissingTeamMembersQueryVariables>(
+    gql`
+      query MissingTeamMembers($teamId: uuid!, $userIds: [uuid!]) {
+        missingTeamMembers: team_member(where: { team_id: { _eq: $teamId }, user_id: { _nin: $userIds } }) {
+          user {
+            id
+            name
+            email
+            avatar_url
+          }
+        }
+      }
+    `,
+    { variables: { teamId, userIds: memberUserIds } }
+  );
+  const users = (data?.missingTeamMembers ?? []).map((t) => t.user);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 

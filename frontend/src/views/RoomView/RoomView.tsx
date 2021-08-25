@@ -1,13 +1,22 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { updateRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { getRoomManagePopoverOptions, handleToggleCloseRoom } from "~frontend/rooms/editOptions";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { RoomDetailedInfoFragment } from "~gql";
+import { usePopoverEditMenuOptions } from "~frontend/views/RoomView/editOptions";
+import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
+import {
+  RoomView_RoomFragment,
+  UpdateRoomFinishedAtMutation,
+  UpdateRoomFinishedAtMutationVariables,
+  UpdateRoomNameMutation,
+  UpdateRoomNameMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
@@ -21,37 +30,110 @@ import { TextH4 } from "~ui/typo";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+    ${usePopoverEditMenuOptions.fragments.room}
+    ${RoomSidebarInfo.fragments.room}
+    ${TopicsList.fragments.room}
+
+    fragment RoomView_room on room {
+      id
+      name
+      finished_at
+      is_private
+      source_google_calendar_event_id
+      ...IsCurrentUserRoomMember_room
+      ...EditOptions_room
+      ...RoomSidebarInfo_room
+      ...TopicList_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: RoomView_RoomFragment;
   selectedTopicId: string | null;
   children: React.ReactNode;
 }
 
-export function RoomView(props: Props) {
+export const RoomView = withFragments(fragments, function RoomView(props: Props) {
   return (
     // Re-create context if re-rendered for a different room
     <RoomStoreContext key={props.room.id}>
       <RoomViewDisplayer {...props} />
     </RoomStoreContext>
   );
-}
+});
 
 function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
-  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
+  const amIMember = useIsCurrentUserRoomMember(room);
 
-  const isRoomOpen = !room.finished_at;
+  const [updateRoomFinishedAt] = useMutation<UpdateRoomFinishedAtMutation, UpdateRoomFinishedAtMutationVariables>(
+    gql`
+      mutation UpdateRoomFinishedAt($id: uuid!, $finishedAt: timestamptz) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { finished_at: $finishedAt }) {
+          id
+          finished_at
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        room: { __typename: "room", id: vars.id, finished_at: vars.finishedAt },
+      }),
+    }
+  );
+  const [updateRoomName] = useMutation<UpdateRoomNameMutation, UpdateRoomNameMutationVariables>(
+    gql`
+      mutation UpdateRoomName($id: uuid!, $name: String!) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+    }
+  );
 
   async function handleRoomNameChange(newName: string) {
     const oldRoomName = room.name;
-    await updateRoom({ roomId: room.id, input: { name: newName } });
+    await updateRoomName({ variables: { id: room.id, name: newName } });
     trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
   }
 
-  async function handleCloseRoomClick() {
-    await handleToggleCloseRoom(room);
+  async function handleCloseRoom() {
+    const roomId = room.id;
+
+    if (room.finished_at) {
+      updateRoomFinishedAt({ variables: { id: roomId, finishedAt: null } });
+      trackEvent("Reopened Room", { roomId });
+      return;
+    }
+    const openTopics = room.topics.filter((topic) => !topic.closed_at);
+
+    if (openTopics.length > 0) {
+      const canCloseRoom = await closeOpenTopicsPrompt(room);
+      if (!canCloseRoom) {
+        return;
+      }
+    }
+
+    updateRoomFinishedAt({ variables: { id: roomId, finishedAt: new Date().toISOString() } });
+    trackEvent("Closed Room", { roomId, hasRoomOpenTopics: openTopics.length > 0 });
   }
+
+  const editOptions = usePopoverEditMenuOptions({
+    room,
+    onEditRoomNameRequest: () => enterNameEditMode(),
+    onCloseRoom: handleCloseRoom,
+  });
+
+  const isRoomOpen = !room.finished_at;
 
   return (
     <>
@@ -82,11 +164,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
                 </UIRoomTitle>
 
                 {amIMember && (
-                  <PopoverMenuTrigger
-                    options={getRoomManagePopoverOptions(room, {
-                      onEditRoomNameRequest: () => enterNameEditMode(),
-                    })}
-                  >
+                  <PopoverMenuTrigger options={editOptions}>
                     <CircleOptionsButton />
                   </PopoverMenuTrigger>
                 )}
@@ -99,7 +177,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
           <UITopicsCard>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </UITopicsCard>
-          <CloseRoomButton onClick={handleCloseRoomClick}>Close Room</CloseRoomButton>
+          <CloseRoomButton onClick={handleCloseRoom}>Close Room</CloseRoomButton>
         </UISidebar>
 
         <UIContentHolder>{children}</UIContentHolder>

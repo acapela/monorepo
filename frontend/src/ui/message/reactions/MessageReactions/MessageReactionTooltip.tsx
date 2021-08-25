@@ -1,20 +1,33 @@
+import { gql } from "@apollo/client";
 import { Data as EmojiDataset, getEmojiDataFromNative } from "emoji-mart";
 import data from "emoji-mart/data/all.json";
 import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { ReactionBasicInfoFragment } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { MessageReactionTooltip_Message_ReactionFragment } from "~gql";
 import { WHITE } from "~ui/theme/colors/base";
+
+const fragments = {
+  message_reaction: gql`
+    fragment MessageReactionTooltip_message_reaction on message_reaction {
+      user {
+        id
+        name
+      }
+    }
+  `,
+};
 
 interface Props {
   emoji: string;
-  reactions: ReactionBasicInfoFragment[];
+  reactions: MessageReactionTooltip_Message_ReactionFragment[];
 }
 
 const MAX_VISIBLE_REACTED_USERS = 6;
 
-export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
+export const MessageReactionTooltip = withFragments(fragments, ({ reactions, emoji }: Props) => {
   const user = useAssertCurrentUser();
 
   const getTextThatShowsWhoReacted = () => {
@@ -38,7 +51,7 @@ export const MessageReactionTooltip = ({ reactions, emoji }: Props) => {
       <UIReacted>{getTextThatShowsWhoReacted()}</UIReacted> reacted with <UIEmojiName>:{emojiShortName}:</UIEmojiName>
     </UIContent>
   );
-};
+});
 
 const UIContent = styled.div<{}>`
   color: hsla(0, 0%, 100%, 60%);

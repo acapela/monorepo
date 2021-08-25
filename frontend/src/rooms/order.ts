@@ -20,11 +20,11 @@ import * as mudder from "mudder";
   This library has support for several "bases" likes:
   - base62: 0-9A-Za-z
   - base36: 0-9a-z
-  - alphabet: a-z 
+  - alphabet: a-z
 
   However we chose `alphabet` as, although not the most space efficient, it was the most stable implementation after
   doing considerable testing.
-  
+
   ## How it works
 
   ### Pre-allotted indexes
@@ -33,7 +33,7 @@ import * as mudder from "mudder";
   space for items in the list to move around, and helps use keep shorter strings.
 
   12 Preallocations will look like this:
-    --   a 
+    --   a
     --   b <- allocated
     --   c
     --   d <- allocated
@@ -62,7 +62,7 @@ import * as mudder from "mudder";
 
   ### Middle distance between indexes
 
-  The middle distance between strings algorithm is best explained here: 
+  The middle distance between strings algorithm is best explained here:
   https://stackoverflow.com/questions/38923376/return-a-new-string-that-sorts-between-two-given-strings/38927158#38927158
 
   Here's the gist of the happy paths:
@@ -74,7 +74,7 @@ import * as mudder from "mudder";
 
   start:   a
   end:     b
-  middle:  an  
+  middle:  an
   -- There's no space in the first char between 'a' and 'b'. We append 'n' is half-way between 'a_' and 'b_'
   -- Consider that a < aa < an < az < b
 

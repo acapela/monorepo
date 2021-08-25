@@ -32,11 +32,14 @@ export interface RichEditorProps {
  */
 export const RichContentRenderer = ({ content = getEmptyRichContent(), extensions = [] }: RichEditorProps) => {
   const finalExtensions = useMemo(() => [...richEditorExtensions, ...extensions], [extensions]);
-  const editor = useEditor({
-    extensions: finalExtensions,
-    content,
-    editable: false,
-  });
+  const editor = useEditor(
+    {
+      extensions: finalExtensions,
+      content,
+      editable: false,
+    },
+    [content]
+  );
 
   return <EditorContent editor={editor} />;
 };

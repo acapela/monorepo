@@ -1,25 +1,35 @@
+import { gql } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { deleteRoom } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { routes } from "~frontend/router";
-import { ModalAnchor } from "~frontend/ui/Modal";
 import { WarningModal } from "~frontend/utils/warningModal";
-import { RoomBasicInfoFragment } from "~gql";
+import { DeleteRoomMutationVariables, PrivateRoomDeletionPrompt_RoomFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
 
-interface PromptInput {
-  room: RoomBasicInfoFragment;
-  anchor?: ModalAnchor;
-}
-
 type PromptResult = void;
 
-export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInput, PromptResult>(
-  ({ anchor, room }, resolve) => {
+const fragments = {
+  room: gql`
+    fragment PrivateRoomDeletionPrompt_room on room {
+      id
+      space_id
+    }
+  `,
+};
+
+type Props = {
+  room: PrivateRoomDeletionPrompt_RoomFragment;
+  onDeleteRoom: (variables: DeleteRoomMutationVariables) => void;
+};
+
+export const openLastPrivateRoomMemberDeletionPrompt = withFragments(
+  fragments,
+  createPromiseUI<Props, PromptResult>(({ room, onDeleteRoom }, resolve) => {
     const [isDeletingRoom, { set: setRoomOngoingDeletion }] = useBoolean(false);
 
     function handleCancel() {
@@ -31,17 +41,17 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
     async function handleDeleteRoom() {
       setRoomOngoingDeletion();
 
+      await onDeleteRoom({ id: room.id });
       await routes.space.push({ spaceId: room.space_id });
 
-      await deleteRoom({ roomId: room.id });
       trackEvent("Deleted Room", { roomId: room.id });
+
       resolve();
     }
 
     return (
       <WarningModal
         title={"This private room will be deleted"}
-        anchor={anchor}
         description={
           "If you'd like to leave without deleting this room, you can either make the room public or keep the room private with at least 1 participant."
         }
@@ -58,7 +68,7 @@ export const openLastPrivateRoomMemberDeletionPrompt = createPromiseUI<PromptInp
         </UIActionButtons>
       </WarningModal>
     );
-  }
+  })
 );
 
 const UIActionButtons = styled.div<{}>`

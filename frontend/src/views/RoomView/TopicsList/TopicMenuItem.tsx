@@ -1,3 +1,4 @@
+import { gql, useSubscription } from "@apollo/client";
 import { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -6,12 +7,17 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { updateTopic } from "~frontend/gql/topics";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
-import { useTopic } from "~frontend/topics/useTopic";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { TopicDetailedInfoFragment } from "~gql";
+import {
+  TopicMenuItemSubscription,
+  TopicMenuItemSubscriptionVariables,
+  TopicMenuItem_RoomFragment,
+  TopicMenuItem_TopicFragment,
+} from "~gql";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { select } from "~shared/sharedState";
@@ -23,148 +29,199 @@ import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
 
 import { ManageTopic } from "./ManageTopic";
+import { useDeleteTopic, useUpdateTopicName } from "./shared";
 import { TopicOwner } from "./TopicOwner";
 
+const fragments = {
+  room: gql`
+    ${ManageTopic.fragments.room}
+    ${TopicOwner.fragments.room}
+
+    fragment TopicMenuItem_room on room {
+      id
+      space_id
+      ...ManageTopic_room
+      ...TopicOwner_room
+    }
+  `,
+  topic: gql`
+    ${ManageTopic.fragments.topic}
+    ${TopicOwner.fragments.topic}
+
+    fragment TopicMenuItem_topic on topic {
+      id
+      name
+      closed_at
+      ...ManageTopic_topic
+      ...TopicOwner_topic
+    }
+  `,
+};
+
 type Props = {
-  topic: TopicDetailedInfoFragment;
+  room: TopicMenuItem_RoomFragment;
+  topic: TopicMenuItem_TopicFragment;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
-
   rootProps?: React.HTMLAttributes<HTMLDivElement>;
   listeners?: DraggableSyntheticListeners;
   isDragged?: boolean;
 };
 
-export function SortableTopicMenuItem({
-  isDisabled,
-  ...props
-}: { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>) {
-  const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
-    id: props.topic.id,
-    disabled: isDisabled,
-  });
+type SortableTopicMenuItemProps = { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>;
 
-  const isDragged = active?.id === props.topic.id;
+export const SortableTopicMenuItem = withFragments(
+  fragments,
+  ({ isDisabled, ...props }: SortableTopicMenuItemProps) => {
+    const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
+      id: props.topic.id,
+      disabled: isDisabled,
+    });
 
-  const style = {
-    // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-    opacity: isDragged ? 0 : undefined,
-  };
+    const isDragged = active?.id === props.topic.id;
+    const style = {
+      // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
+      transform: CSS.Transform.toString(transform),
+      transition: transition ?? undefined,
+      opacity: isDragged ? 0 : undefined,
+    };
 
-  return <TopicMenuItem {...props} ref={setNodeRef} rootProps={{ ...attributes, style }} listeners={listeners} />;
-}
+    return (
+      <TopicMenuItem
+        {...props}
+        ref={setNodeRef}
+        rootProps={{ ...attributes, style }}
+        listeners={listeners}
+        isDragged={isDragged}
+      />
+    );
+  }
+);
 
-export const TopicMenuItem = styled<Props>(
-  observer(
-    React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
-      { topic, isActive, className, isEditingDisabled, listeners, rootProps, isDragged = false },
-      ref
-    ) {
-      const innerRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
-      const roomContext = useRoomStoreContext();
-      const { deleteTopic } = useTopic(topic);
-      const unreadCount = useTopicUnreadMessagesCount(topic.id);
-      const hasUnreadMessaged = !isActive && unreadCount > 0;
-
-      const anchorRef = useRef<HTMLAnchorElement | null>(null);
-
-      const isHovered = useIsElementOrChildHovered(innerRef);
-
-      const isNewTopic = select(() => roomContext.newTopicId === topic.id);
-      const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
-
-      const manageWrapperRef = useRef<HTMLDivElement | null>(null);
-
-      function handleNewTopicName(newName: string) {
-        updateTopic({ topicId: topic.id, input: { name: newName } });
-
-        roomContext.editingNameTopicId = null;
-
-        if (isNewTopic) {
-          roomContext.newTopicId = null;
+const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
+  { room, topic, isActive, className, isEditingDisabled, listeners, isDragged, rootProps },
+  ref
+) {
+  const innerRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
+  useSubscription<TopicMenuItemSubscription, TopicMenuItemSubscriptionVariables>(
+    gql`
+      subscription TopicMenuItem($topicId: uuid!) {
+        topic_by_pk(id: $topicId) {
+          id
+          name
+          closed_at
         }
       }
+    `,
+    { variables: { topicId: topic.id } }
+  );
+  const roomContext = useRoomStoreContext();
+  const [updateTopicName] = useUpdateTopicName();
+  const [deleteTopic] = useDeleteTopic();
+  const unreadCount = useTopicUnreadMessagesCount(topic.id);
+  const hasUnreadMessaged = !isActive && unreadCount > 0;
 
-      // We need to disable the Link while editing, so that selection does not trigger navigation
-      const NameWrap = useCallback(
-        (props: { children: React.ReactChild }) =>
-          isInEditMode ? (
-            <React.Fragment {...props} />
-          ) : (
-            <RouteLink
-              route={routes.spaceRoomTopic}
-              params={{ topicId: topic.id, roomId: topic.room.id, spaceId: topic.room.space_id }}
-              {...props}
-            />
-          ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isInEditMode]
-      );
+  const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-      return (
-        <UIFlyingTooltipWrapper ref={innerRef} {...rootProps} isDragged={isDragged}>
-          <NameWrap>
-            <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
-              <UITopicNameHolder>
-                {hasUnreadMessaged && <UIUnreadMessagesNotification />}
-                <EditableText
-                  value={topic.name ?? ""}
-                  isInEditMode={isInEditMode}
-                  focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
-                  onEditModeRequest={() => {
-                    roomContext.editingNameTopicId = topic.id;
-                  }}
-                  onExitEditModeChangeRequest={() => {
-                    if (roomContext.editingNameTopicId === topic.id) {
-                      roomContext.editingNameTopicId = null;
-                    }
-                  }}
-                  onValueSubmit={handleNewTopicName}
-                  checkPreventClickAway={(event) =>
-                    Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
-                  }
-                />
-              </UITopicNameHolder>
+  const isHovered = useIsElementOrChildHovered(innerRef);
+  const isNewTopic = select(() => roomContext.newTopicId === topic.id);
+  const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
-              <TopicOwner topic={topic} />
-            </UIHolder>
-          </NameWrap>
-          {!isEditingDisabled && (
-            <UIManageTopicWrapper
-              ref={manageWrapperRef}
-              onMouseDown={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
+  const manageWrapperRef = useRef<HTMLDivElement | null>(null);
+
+  // We need to disable the Link while editing, so that selection does not trigger navigation
+  const NameWrap = useCallback(
+    (props: { children: React.ReactChild }) =>
+      isInEditMode || isDragged ? (
+        <React.Fragment {...props} />
+      ) : (
+        <RouteLink
+          route={routes.spaceRoomTopic}
+          params={{ topicId: topic?.id, roomId: room.id, spaceId: room.space_id }}
+          {...props}
+        />
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isInEditMode]
+  );
+
+  const handleNewTopicName = (newName: string) => {
+    trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: newName, oldTopicName: topic.name });
+    updateTopicName({ variables: { id: topic.id, name: newName } });
+
+    roomContext.editingNameTopicId = null;
+
+    if (isNewTopic) {
+      roomContext.newTopicId = null;
+    }
+  };
+
+  return (
+    <UIFlyingTooltipWrapper ref={innerRef} {...rootProps} isDragged={isDragged}>
+      <NameWrap>
+        <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
+          <UITopicNameHolder>
+            {hasUnreadMessaged && <UIUnreadMessagesNotification />}
+            <EditableText
+              value={topic.name ?? ""}
+              isInEditMode={isInEditMode}
+              focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
+              onEditModeRequest={() => {
+                roomContext.editingNameTopicId = topic.id;
               }}
-            >
-              {isNewTopic ? (
-                <CircleIconButton
-                  size="small"
-                  icon={<IconCross />}
-                  onClick={() => {
-                    deleteTopic();
-                  }}
-                />
-              ) : (
-                <ManageTopic topic={topic} onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)} />
-              )}
-            </UIManageTopicWrapper>
-          )}
-          <AnimatePresence></AnimatePresence>
+              onExitEditModeChangeRequest={() => {
+                if (roomContext.editingNameTopicId === topic.id) {
+                  roomContext.editingNameTopicId = null;
+                }
+              }}
+              onValueSubmit={handleNewTopicName}
+              checkPreventClickAway={(event) =>
+                Boolean(event.target instanceof Node && manageWrapperRef.current?.contains(event.target))
+              }
+            />
+          </UITopicNameHolder>
 
-          {isHovered && !isEditingDisabled && (
-            <UIDragIndicatorHolder {...listeners}>
-              <IconDragAndDrop />
-            </UIDragIndicatorHolder>
+          <TopicOwner room={room} topic={topic} />
+        </UIHolder>
+      </NameWrap>
+      {!isEditingDisabled && (
+        <UIManageTopicWrapper
+          ref={manageWrapperRef}
+          onMouseDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
+          {isNewTopic ? (
+            <CircleIconButton
+              size="small"
+              icon={<IconCross />}
+              onClick={() => {
+                deleteTopic({ variables: { id: topic.id, roomId: room.id } });
+                trackEvent("Deleted Topic", { topicId: topic.id });
+              }}
+            />
+          ) : (
+            <ManageTopic
+              room={room}
+              topic={topic}
+              onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)}
+            />
           )}
-        </UIFlyingTooltipWrapper>
-      );
-    })
-  )
-)``;
+        </UIManageTopicWrapper>
+      )}
+      <AnimatePresence></AnimatePresence>
+      {isHovered && !isEditingDisabled && (
+        <UIDragIndicatorHolder {...listeners}>
+          <IconDragAndDrop />
+        </UIDragIndicatorHolder>
+      )}
+    </UIFlyingTooltipWrapper>
+  );
+});
+
+export const TopicMenuItem = withFragments(fragments, styled<Props>(observer(_TopicMenuItem))``);
 
 const PADDING = "12px";
 

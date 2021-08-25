@@ -1,30 +1,104 @@
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { updateTopic } from "~frontend/gql/topics";
+import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
-import { TopicDetailedInfoFragment, UserBasicInfoFragment } from "~gql";
+import {
+  TopicOwner_RoomFragment,
+  TopicOwner_TopicFragment,
+  TopicOwner_TopicSubscription,
+  TopicOwner_TopicSubscriptionVariables,
+  UpdateTopicOwnerMutation,
+  UpdateTopicOwnerMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { IconChevronDown } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
-interface Props {
-  topic: TopicDetailedInfoFragment;
-}
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserTopicManager.fragments.room}
 
-export const TopicOwner = ({ topic }: Props) => {
-  const isTopicManager = useIsCurrentUserTopicManager(topic);
+    fragment TopicOwner_room on room {
+      ...IsCurrentUserTopicManager_room
+      members {
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  `,
+  topic: gql`
+    ${useIsCurrentUserTopicManager.fragments.topic}
+    ${UserAvatar.fragments.user}
+
+    fragment TopicOwner_topic on topic {
+      id
+      ...IsCurrentUserTopicManager_topic
+      owner {
+        id
+        name
+        ...UserAvatar_user
+      }
+    }
+  `,
+};
+
+type Props = { room: TopicOwner_RoomFragment; topic: TopicOwner_TopicFragment };
+
+type Owner = TopicOwner_TopicFragment["owner"];
+
+const useUpdateTopicOwner = () =>
+  useMutation<UpdateTopicOwnerMutation, UpdateTopicOwnerMutationVariables & { owner: Owner }>(
+    gql`
+      ${fragments.topic}
+
+      mutation UpdateTopicOwner($id: uuid!, $ownerId: uuid!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { owner_id: $ownerId }) {
+          id
+          ...TopicOwner_topic
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, owner_id: vars.ownerId, owner: vars.owner },
+      }),
+    }
+  );
+
+export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
+  useSubscription<TopicOwner_TopicSubscription, TopicOwner_TopicSubscriptionVariables>(
+    gql`
+      ${fragments.topic}
+
+      subscription TopicOwner_topic($id: uuid!) {
+        topic_by_pk(id: $id) {
+          id
+          ...TopicOwner_topic
+        }
+      }
+    `,
+    { variables: { id: topic.id } }
+  );
+
+  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+  const [updateTopicOwner] = useUpdateTopicOwner();
 
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
-  const onOwnerSelect = (user: UserBasicInfoFragment) => {
-    updateTopic({ topicId: topic.id, input: { owner_id: user.id } });
+  const onOwnerSelect = (user: Owner) => {
+    updateTopicOwner({ variables: { id: topic.id, ownerId: user.id, owner: user } });
     closeMenu();
   };
 
@@ -39,7 +113,7 @@ export const TopicOwner = ({ topic }: Props) => {
         {isMenuOpen && (
           <Popover anchorRef={openerRef} placement="bottom-start" enableScreenCover>
             <ItemsDropdown
-              items={topic.room.members.map(({ user }) => user)}
+              items={room.members.map(({ user }) => user)}
               keyGetter={(user) => user.id}
               labelGetter={getUserDisplayName}
               onItemSelected={onOwnerSelect}
@@ -52,7 +126,7 @@ export const TopicOwner = ({ topic }: Props) => {
       </AnimatePresence>
     </>
   );
-};
+});
 
 const UIHolder = styled.div<{ isInteractive: boolean }>`
   display: flex;

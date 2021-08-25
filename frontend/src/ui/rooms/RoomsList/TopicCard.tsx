@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 import { useTopicMessagesQuery } from "~frontend/gql/topics";
 import { RouteLink, routes } from "~frontend/router";
-import { useTopic } from "~frontend/topics/useTopic";
+import { isTopicClosed } from "~frontend/topics/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -22,7 +22,7 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
   const topicId = topic.id;
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
 
-  const { isClosed } = useTopic(topic);
+  const isClosed = isTopicClosed(topic);
 
   const [lastMessageWrapped = [], { loading: isLastMessageLoading }] = useTopicMessagesQuery({
     topicId,

@@ -1,10 +1,11 @@
+import { gql, useMutation } from "@apollo/client";
 import * as clipboard from "clipboard-polyfill";
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
 
-import { useUpdateRoomMutation } from "~frontend/gql/rooms";
-import { RoomDetailedInfoFragment } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { RoomSummaryView_RoomFragment, UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables } from "~gql";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
 import { TextArea } from "~ui/forms/TextArea";
@@ -12,31 +13,54 @@ import { IconClipboardCheck, IconCopy } from "~ui/icons";
 import { theme } from "~ui/theme";
 import { addToast } from "~ui/toasts/data";
 
-import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
+import { convertRoomFragment, convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
 import { RoomView } from "./RoomView";
 import { formatDate } from "./shared";
 import { TopicSummary } from "./TopicSummary";
 
+const fragments = {
+  room: gql`
+    ${RoomView.fragments.room}
+    ${TopicSummary.fragments.topic}
+    ${convertRoomFragment}
+
+    fragment RoomSummaryView_room on room {
+      summary
+      ...RoomView_room
+      ...ConvertRoom_room
+      topics {
+        ...TopicSummary_topic
+      }
+    }
+  `,
+};
+
 interface Props {
-  room: RoomDetailedInfoFragment;
+  room: RoomSummaryView_RoomFragment;
 }
 
 const AUTO_SAVE_DEBOUNCE_DELAY_MS = 400;
 
-export function RoomSummaryView({ room }: Props) {
+export const RoomSummaryView = withFragments(fragments, function RoomSummaryView({ room }: Props) {
   const [roomSummary, setRoomSummary] = useState(room.summary ?? "");
 
-  const [updateRoom] = useUpdateRoomMutation();
+  const [updateRoomSummary] = useMutation<UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables>(
+    gql`
+      mutation UpdateRoomSummary($id: uuid!, $summary: String!) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { summary: $summary }) {
+          id
+          summary
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+    }
+  );
 
   useDebounce(
     () => {
-      room &&
-        updateRoom({
-          roomId: room.id,
-          input: {
-            summary: roomSummary,
-          },
-        });
+      room && updateRoomSummary({ variables: { id: room.id, summary: roomSummary } });
     },
     AUTO_SAVE_DEBOUNCE_DELAY_MS,
     [roomSummary]
@@ -68,7 +92,7 @@ export function RoomSummaryView({ room }: Props) {
         <UILine />
 
         <UITopicSummaries>
-          {room?.topics.map((topic) => (
+          {room.topics.map((topic) => (
             <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
@@ -89,7 +113,7 @@ export function RoomSummaryView({ room }: Props) {
       </UIHolder>
     </RoomView>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   padding: 32px 60px;
