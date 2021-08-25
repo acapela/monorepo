@@ -2,7 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { addToast } from "~frontend/../../ui/toasts/data";
+import { addToast } from "~ui/toasts/data";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
