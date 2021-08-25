@@ -10,4 +10,3 @@ alter table "public"."team_member_slack_installation" drop column "id";
 -- Please write an appropriate down migration for the SQL below:
 -- CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-alter table "public"."team_member_slack_installation" drop constraint "team_member_slack_installation_team_member_id_fkey";
