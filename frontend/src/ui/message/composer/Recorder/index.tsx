@@ -1,10 +1,11 @@
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
-import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
