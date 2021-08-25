@@ -7,26 +7,29 @@ async function restartRoom(room: Room) {
 
   const newDeadline = addDays(room.deadline, room.recurring_days);
   const timestamp = new Date();
-  await db.topic.updateMany({
-    where: {
-      NOT: {
-        closed_at: null,
+  await db.$transaction([
+    db.topic.updateMany({
+      where: {
+        room_id: room.id,
+        NOT: {
+          closed_at: null,
+        },
+        archived_at: null,
       },
-      archived_at: null,
-    },
-    data: {
-      archived_at: timestamp,
-    },
-  });
-  await db.room.update({
-    where: {
-      id: room.id,
-    },
-    data: {
-      deadline: newDeadline,
-      recurring_last_restart: timestamp,
-    },
-  });
+      data: {
+        archived_at: timestamp,
+      },
+    }),
+    db.room.update({
+      where: {
+        id: room.id,
+      },
+      data: {
+        deadline: newDeadline,
+        recurring_last_restart: timestamp,
+      },
+    }),
+  ]);
 }
 
 export async function recurringMeetingCronHandler() {
@@ -37,7 +40,6 @@ export async function recurringMeetingCronHandler() {
       },
     },
   });
-  if (rooms.length === 0) return;
   for (const room of rooms) {
     if (!isBefore(room.deadline, new Date())) continue;
     await restartRoom(room);
