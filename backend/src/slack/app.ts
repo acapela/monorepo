@@ -5,12 +5,14 @@ import _ from "lodash";
 
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { db } from "~db";
-import { assert, assertDefined } from "~shared/assert";
+import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
 import { parseMetadata } from "./metadata";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
+
+export type SlackInstallation = SlackBolt.Installation;
 
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
@@ -59,9 +61,9 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       const teamData = assertDefined(
         teamSlackInstallation?.data,
         new UnprocessableEntityError(`No team Slack installation found for query ${JSON.stringify(query)}`)
-      ) as unknown as SlackBolt.Installation;
+      ) as unknown as SlackInstallation;
       const memberData = teamMemberSlackInstallation?.data;
-      return { ...teamData, user: memberData ?? {} } as SlackBolt.Installation;
+      return { ...teamData, user: memberData ?? {} } as SlackInstallation;
     },
     async deleteInstallation(query) {
       const slackUserId = query.userId;
