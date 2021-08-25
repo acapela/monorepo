@@ -79,11 +79,6 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     resetRecorder();
   };
 
-  const mediaStreamConstraints = {
-    audio: true,
-    video: mediaSource.current === MediaSource.Camera,
-  };
-
   useEffect(() => {
     if (!window.MediaRecorder) {
       return setError(RecorderError.UnsupportedBrowser);
@@ -126,13 +121,19 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           return;
         }
 
-        const stream = await window.navigator.mediaDevices.getDisplayMedia({
-          video: true,
+        mediaStream.current = await window.navigator.mediaDevices.getDisplayMedia({
+          video: true
         });
 
-        mediaStream.current = stream;
+        const audioStream = await window.navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        audioStream.getAudioTracks().forEach((audioTrack) => mediaStream.current?.addTrack(audioTrack));
       } else {
-        mediaStream.current = await window.navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
+        mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
       }
     } catch (error) {
       setError(error?.name);
@@ -152,7 +153,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     mediaSource.current = MediaSource.Microphone;
 
     try {
-      mediaStream.current = await window.navigator.mediaDevices.getUserMedia(mediaStreamConstraints);
+      mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
     } catch (error) {
       setError(error?.name);
       return;
