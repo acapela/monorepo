@@ -1,4 +1,4 @@
-import { WebAPICallError } from "~node_modules/@slack/web-api";
+import { WebAPICallError } from "@slack/web-api";
 
 export function isChannelNotFoundError(error: unknown) {
   const webError = error as unknown as WebAPICallError;
