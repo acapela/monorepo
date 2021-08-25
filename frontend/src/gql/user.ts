@@ -8,10 +8,7 @@ import {
   TeamMembersQueryVariables,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
   UserDetailedInfoFragment as UserDetailedInfoFragmentType,
-  UserDetailedQuery,
-  UserDetailedQueryVariables,
 } from "~gql";
-import { UserTokenData } from "~shared/types/jwtAuth";
 
 import { TeamBasicInfoFragment } from "./teams";
 import { createFragment, createMutation, createQuery } from "./utils";
