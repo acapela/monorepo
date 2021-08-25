@@ -70,6 +70,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
     // more info: https://stackoverflow.com/questions/67682482/on-safari-14-0-2-mediarecorder-dataavailable-handler-captures-empty-blob
     if (!type) {
       addToast({ title: "Fail to record", type: "error" });
+      resetRecorder();
       return;
     }
 
