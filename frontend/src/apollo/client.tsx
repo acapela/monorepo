@@ -1,14 +1,6 @@
 import { IncomingMessage } from "http";
 
-import {
-  ApolloClient,
-  ApolloLink,
-  ApolloProvider,
-  FieldMergeFunction,
-  HttpLink,
-  InMemoryCache,
-  split as splitLinks,
-} from "@apollo/client";
+import { ApolloClient, ApolloLink, ApolloProvider, HttpLink, InMemoryCache, split as splitLinks } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -28,46 +20,44 @@ import { addToast } from "~ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
 
-const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
-
 const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
       topic: {
-        merge: mergeUsingIncoming,
+        merge: true,
       },
     },
   },
   Subscription: {
     fields: {
       topic: {
-        merge: mergeUsingIncoming,
+        merge: true,
       },
     },
   },
   space_member: {
     keyFields: ["space_id", "user_id"],
-    merge: mergeUsingIncoming,
+    merge: true,
   },
   space: {
     fields: {
       members: {
         keyArgs: ["user_id"],
-        merge: mergeUsingIncoming,
+        merge: true,
       },
     },
   },
   room: {
     fields: {
       topics: {
-        merge: mergeUsingIncoming,
+        merge: true,
       },
     },
   },
   topic: {
     fields: {
       messages: {
-        merge: mergeUsingIncoming,
+        merge: true,
       },
     },
   },

@@ -10,8 +10,6 @@ import {
   PrivateRoomInfoFragment as PrivateRoomInfoFragmentType,
   RoomBasicInfoFragment as RoomBasicInfoFragmentType,
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
-  RoomsInSpaceQuery,
-  RoomsInSpaceQueryVariables,
   RoomsQuery,
   RoomsQueryVariables,
   SinglePrivateRoomQuery,
