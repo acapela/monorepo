@@ -22,7 +22,7 @@ export class TeamInvitationNotification implements Notification {
     return [
       "Hey!",
       `${inviterName} has invited you to ${
-        roomName ? `collaborate on ${getInvitationUrl} room and ` : ""
+        roomName ? `collaborate on ${roomName} and ` : ""
       }join ${teamName} team on Acapela.`,
       `Follow this link to sign up and join the discussion: <a href="${link}">${link}</a>`,
     ].join("<br/>");
