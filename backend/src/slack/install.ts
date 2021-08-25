@@ -7,6 +7,7 @@ import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
 import { slackReceiver } from "./app";
+import { Metadata } from "./metadata";
 
 const botScopes = [
   "channels:read",
@@ -18,15 +19,15 @@ const botScopes = [
   "chat:write",
 ];
 
-const userScopes = ["groups:read", "im:read", "mpim:read"];
+const userScopes = ["groups:read", "im:read", "mpim:read", "chat:write"];
 
-export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, state?: unknown) => {
+export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, metadata: Metadata) => {
   const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
   return slackReceiver.installer?.generateInstallUrl({
     userScopes,
     scopes: withBot ? botScopes : [],
     redirectUri: basePath + "/slack/oauth_redirect",
-    metadata: JSON.stringify(state),
+    metadata: JSON.stringify(metadata),
   });
 };
 

@@ -165,14 +165,13 @@ model team_invitation {
 }
 
 model team_member {
-  team_id                        String                          @db.Uuid
-  user_id                        String                          @db.Uuid
-  id                             String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  notify_email                   Boolean                         @default(true)
-  notify_slack                   Boolean                         @default(true)
-  team                           team                            @relation(fields: [team_id], references: [id])
-  user                           user                            @relation(fields: [user_id], references: [id])
-  team_member_slack_installation team_member_slack_installation?
+  team_id      String  @db.Uuid
+  user_id      String  @db.Uuid
+  notify_email Boolean @default(true)
+  notify_slack Boolean @default(true)
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  team         team    @relation(fields: [team_id], references: [id])
+  user         user    @relation(fields: [user_id], references: [id])
 }
 
 model topic {
@@ -316,7 +315,17 @@ model team_member_slack_installation {
   slack_team_id           String
   slack_user_id           String
   team_slack_installation team_slack_installation @relation(fields: [slack_team_id], references: [slack_team_id])
-  team_member             team_member             @relation(fields: [team_member_id], references: [id])
+}
+
+model task {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message_id String    @db.Uuid
+  user_id    String    @db.Uuid
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  done_at    DateTime? @db.Timestamptz(6)
+  seen_at    DateTime? @db.Timestamptz(6)
+  message    message   @relation(fields: [message_id], references: [id])
+  user       user      @relation(fields: [user_id], references: [id])
 }
 
 model task {
