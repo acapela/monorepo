@@ -151,7 +151,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         });
       }
     } catch (error) {
-      setError(error?.name);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
       return;
     }
 
@@ -172,7 +173,8 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         audio: true,
       });
     } catch (error) {
-      setError(error?.name);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
       return;
     }
 
