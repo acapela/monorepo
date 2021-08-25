@@ -51,7 +51,7 @@ recorder.onstop = handleStop
 recorder.ondataavailable = handleAvailableData 
 
 handleAvailableData() will run after handleStop(), it means the stream data won't be available in handleStop().
-To cancel the recording we remove the handler from recorder.ondataavailable()
+To cancel the recording we remove the handler of recorder.ondataavailable
 */
 
 const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
