@@ -24,7 +24,7 @@ const fragments = {
     fragment SpaceManager_space on space {
       id
       name
-      ...SpaceWithMembers
+      ...IsCurrentUserSpaceMember_space
     }
   `,
 };

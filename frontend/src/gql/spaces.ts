@@ -11,13 +11,13 @@ import {
   DeleteSpaceMutationVariables,
   EditSpaceMutation,
   EditSpaceMutationVariables,
+  IsCurrentUserSpaceMember_SpaceFragment,
   RemoveSpaceMemberMutation,
   RemoveSpaceMemberMutationVariables,
   SingleSpaceQuery,
   SingleSpaceQueryVariables,
   SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
   SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
-  SpaceWithMembersFragment,
   SpacesQuery,
   SpacesQueryVariables,
   TeamSpacesQuery,
@@ -124,7 +124,7 @@ export const [useSingleSpaceQuery] = createQuery<SingleSpaceQuery, SingleSpaceQu
 export const useIsCurrentUserSpaceMember = withFragments(
   {
     space: gql`
-      fragment SpaceWithMembers on space {
+      fragment IsCurrentUserSpaceMember_space on space {
         members {
           space_id
           user_id
@@ -135,7 +135,7 @@ export const useIsCurrentUserSpaceMember = withFragments(
       }
     `,
   },
-  function useIsCurrentUserSpaceMember(space?: SpaceWithMembersFragment) {
+  function useIsCurrentUserSpaceMember(space?: IsCurrentUserSpaceMember_SpaceFragment) {
     const user = useAssertCurrentUser();
 
     return space?.members.some((member) => member.user.id === user.id) ?? false;

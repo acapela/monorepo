@@ -8856,7 +8856,7 @@ export type SingleSpaceQuery = (
   )> }
 );
 
-export type SpaceWithMembersFragment = (
+export type IsCurrentUserSpaceMember_SpaceFragment = (
   { __typename?: 'space' }
   & { members: Array<(
     { __typename?: 'space_member' }
@@ -9330,7 +9330,7 @@ export type RoomPageQuery = (
 export type SpaceManager_SpaceFragment = (
   { __typename?: 'space' }
   & Pick<Space, 'id' | 'name'>
-  & SpaceWithMembersFragment
+  & IsCurrentUserSpaceMember_SpaceFragment
 );
 
 export type CurrentTeamSubscriptionVariables = Exact<{
@@ -10259,7 +10259,7 @@ export type SpaceCard_SpaceFragment = (
       & AvatarList_UserFragment
     ) }
   )> }
-  & SpaceWithMembersFragment
+  & IsCurrentUserSpaceMember_SpaceFragment
 );
 
 export type SpacesListQueryVariables = Exact<{

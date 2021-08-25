@@ -23,7 +23,7 @@ const fragments = {
       id
       name
 
-      ...SpaceWithMembers
+      ...IsCurrentUserSpaceMember_space
 
       members {
         space_id
