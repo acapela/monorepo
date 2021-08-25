@@ -1,9 +1,11 @@
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+
+import { addToast } from "~frontend/../../ui/toasts/data";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
@@ -62,7 +64,16 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   };
 
   const finishRecording = () => {
-    const blob = new Blob(mediaChunks.current, { type: mediaChunks.current[0].type });
+    const { type } = mediaChunks.current[0];
+
+    // MediaRecorder doesn't properly work on old Safari
+    // more info: https://stackoverflow.com/questions/67682482/on-safari-14-0-2-mediarecorder-dataavailable-handler-captures-empty-blob
+    if (!type) {
+      addToast({ title: "Fail to record", type: "error" });
+      return;
+    }
+
+    const blob = new Blob(mediaChunks.current, { type });
     resetRecorder();
 
     const file = recordingBlobToFile(blob);
@@ -71,6 +82,9 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
   const cancelRecording = () => {
     if (mediaRecorder.current) {
+      // ondataavailable() runs after onstop()
+      // handler for ondataavailable() is finishRecording()
+      // to prevent saving recording we reset onstop()
       mediaRecorder.current.onstop = () => null;
     }
 
@@ -122,7 +136,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
         }
 
         mediaStream.current = await window.navigator.mediaDevices.getDisplayMedia({
-          video: true
+          video: true,
         });
 
         const audioStream = await window.navigator.mediaDevices.getUserMedia({
@@ -132,7 +146,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       } else {
         mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: true
+          audio: true,
         });
       }
     } catch (error) {
@@ -154,7 +168,7 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
 
     try {
       mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
-        audio: true
+        audio: true,
       });
     } catch (error) {
       setError(error?.name);
