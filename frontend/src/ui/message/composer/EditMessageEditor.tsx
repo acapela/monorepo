@@ -1,13 +1,16 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
-import { updateTextMessage } from "~frontend/gql/messages";
 import { withFragments } from "~frontend/gql/utils";
-import { EditMessageEditor_MessageFragment } from "~gql";
+import {
+  EditMessageEditor_MessageFragment,
+  UpdateMessageContentMutation,
+  UpdateMessageContentMutationVariables,
+} from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
 import { makePromiseVoidable } from "~shared/promises";
@@ -49,6 +52,26 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
 
+  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
+    gql`
+      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
+        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
+          id
+          content
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          ...vars,
+        },
+      }),
+    }
+  );
+
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
     handleSubmit();
@@ -77,10 +100,11 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
 
     // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
     const updatingMessagePromise = makePromiseVoidable(
-      updateTextMessage({
-        id: message.id,
-        isDraft: false,
-        content: content,
+      updateMessageContent({
+        variables: {
+          id: message.id,
+          content,
+        },
       })
     );
 
