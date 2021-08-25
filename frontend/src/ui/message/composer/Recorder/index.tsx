@@ -1,11 +1,10 @@
-import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-
-import { addToast } from "~ui/toasts/data";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { addToast } from "~ui/toasts/data";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
@@ -37,6 +36,23 @@ export enum RecorderError {
 }
 
 const COUNTDOWN_IN_SECONS = 3;
+
+/*
+Recorder components provide three ways of capturing media:
+1. Screen = Microphone + Screen = getUserMedia({ audio: true }) + getDisplayMedia({ video: true })
+2. Video = Camera + Microphone = getUserMedia({ audio: true, video: true })
+3. Microphone = getUserMedia({ audio: true })
+
+On Safari, we can't start recording without a user gesture, e. g. button click.
+
+const recorder = new MediaRecorder(mediaStream)
+recorder.start()
+recorder.onstop = handleStop
+recorder.ondataavailable = handleAvailableData 
+
+handleAvailableData() will run after handleStop(), it means the stream data won't be available in handleStop().
+To cancel the recording we remove the handler from recorder.ondataavailable()
+*/
 
 const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
