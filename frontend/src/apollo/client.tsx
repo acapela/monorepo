@@ -30,6 +30,10 @@ import { createDateParseLink } from "./dateStringParseLink";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
+/**
+ * Apollo wants to make sure that it does not lose data, so it emits warnings when there is no merge function for arrays
+ * from which elements might be removed. Hence we define these explicitly.
+ */
 const typePolicies: TypedTypePolicies = {
   Query: {
     fields: {
