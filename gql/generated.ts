@@ -1955,8 +1955,7 @@ export interface Mutation_RootDelete_Team_MemberArgs {
 
 /** mutation root */
 export interface Mutation_RootDelete_Team_Member_By_PkArgs {
-  team_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
+  id: Scalars['uuid'];
 }
 
 
@@ -3589,8 +3588,7 @@ export interface Query_RootTeam_Member_AggregateArgs {
 
 
 export interface Query_RootTeam_Member_By_PkArgs {
-  team_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
+  id: Scalars['uuid'];
 }
 
 
@@ -5614,8 +5612,7 @@ export interface Subscription_RootTeam_Member_AggregateArgs {
 
 
 export interface Subscription_RootTeam_Member_By_PkArgs {
-  team_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
+  id: Scalars['uuid'];
 }
 
 
@@ -6408,6 +6405,9 @@ export interface Team_Max_Order_By {
 /** columns and relationships of "team_member" */
 export interface Team_Member {
   __typename?: 'team_member';
+  id: Scalars['uuid'];
+  notify_email: Scalars['Boolean'];
+  notify_slack: Scalars['Boolean'];
   /** An object relationship */
   team: Team;
   team_id: Scalars['uuid'];
@@ -6457,6 +6457,9 @@ export interface Team_Member_Bool_Exp {
   _and?: Maybe<Array<Team_Member_Bool_Exp>>;
   _not?: Maybe<Team_Member_Bool_Exp>;
   _or?: Maybe<Array<Team_Member_Bool_Exp>>;
+  id?: Maybe<Uuid_Comparison_Exp>;
+  notify_email?: Maybe<Boolean_Comparison_Exp>;
+  notify_slack?: Maybe<Boolean_Comparison_Exp>;
   team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
@@ -6466,10 +6469,15 @@ export interface Team_Member_Bool_Exp {
 /** unique or primary key constraints on table "team_member" */
 export type Team_Member_Constraint =
   /** unique or primary key constraint */
+  | 'team_member_id_key'
+  /** unique or primary key constraint */
   | 'team_membership_pkey';
 
 /** input type for inserting data into table "team_member" */
 export interface Team_Member_Insert_Input {
+  id?: Maybe<Scalars['uuid']>;
+  notify_email?: Maybe<Scalars['Boolean']>;
+  notify_slack?: Maybe<Scalars['Boolean']>;
   team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
@@ -6479,12 +6487,14 @@ export interface Team_Member_Insert_Input {
 /** aggregate max on columns */
 export interface Team_Member_Max_Fields {
   __typename?: 'team_member_max_fields';
+  id?: Maybe<Scalars['uuid']>;
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
 /** order by max() on columns of table "team_member" */
 export interface Team_Member_Max_Order_By {
+  id?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
@@ -6492,12 +6502,14 @@ export interface Team_Member_Max_Order_By {
 /** aggregate min on columns */
 export interface Team_Member_Min_Fields {
   __typename?: 'team_member_min_fields';
+  id?: Maybe<Scalars['uuid']>;
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
 /** order by min() on columns of table "team_member" */
 export interface Team_Member_Min_Order_By {
+  id?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
@@ -6520,6 +6532,9 @@ export interface Team_Member_On_Conflict {
 
 /** Ordering options when selecting data from "team_member". */
 export interface Team_Member_Order_By {
+  id?: Maybe<Order_By>;
+  notify_email?: Maybe<Order_By>;
+  notify_slack?: Maybe<Order_By>;
   team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
@@ -6528,12 +6543,17 @@ export interface Team_Member_Order_By {
 
 /** primary key columns input for table: team_member */
 export interface Team_Member_Pk_Columns_Input {
-  team_id: Scalars['uuid'];
-  user_id: Scalars['uuid'];
+  id: Scalars['uuid'];
 }
 
 /** select columns of table "team_member" */
 export type Team_Member_Select_Column =
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'notify_email'
+  /** column name */
+  | 'notify_slack'
   /** column name */
   | 'team_id'
   /** column name */
@@ -6541,12 +6561,21 @@ export type Team_Member_Select_Column =
 
 /** input type for updating data in table "team_member" */
 export interface Team_Member_Set_Input {
+  id?: Maybe<Scalars['uuid']>;
+  notify_email?: Maybe<Scalars['Boolean']>;
+  notify_slack?: Maybe<Scalars['Boolean']>;
   team_id?: Maybe<Scalars['uuid']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
 /** update columns of table "team_member" */
 export type Team_Member_Update_Column =
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'notify_email'
+  /** column name */
+  | 'notify_slack'
   /** column name */
   | 'team_id'
   /** column name */
@@ -6633,6 +6662,7 @@ export interface Team_Set_Input {
 export interface Team_Slack_Installation {
   __typename?: 'team_slack_installation';
   data: Scalars['jsonb'];
+  slack_team_id: Scalars['String'];
   /** An object relationship */
   team: Team;
   team_id: Scalars['uuid'];
@@ -6677,6 +6707,7 @@ export interface Team_Slack_Installation_Bool_Exp {
   _not?: Maybe<Team_Slack_Installation_Bool_Exp>;
   _or?: Maybe<Array<Team_Slack_Installation_Bool_Exp>>;
   data?: Maybe<Jsonb_Comparison_Exp>;
+  slack_team_id?: Maybe<String_Comparison_Exp>;
   team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
 }
@@ -6684,7 +6715,9 @@ export interface Team_Slack_Installation_Bool_Exp {
 /** unique or primary key constraints on table "team_slack_installation" */
 export type Team_Slack_Installation_Constraint =
   /** unique or primary key constraint */
-  | 'team_slack_installation_pkey';
+  | 'team_slack_installation_pkey'
+  /** unique or primary key constraint */
+  | 'team_slack_installation_slack_team_id_key';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
 export interface Team_Slack_Installation_Delete_At_Path_Input {
@@ -6704,6 +6737,7 @@ export interface Team_Slack_Installation_Delete_Key_Input {
 /** input type for inserting data into table "team_slack_installation" */
 export interface Team_Slack_Installation_Insert_Input {
   data?: Maybe<Scalars['jsonb']>;
+  slack_team_id?: Maybe<Scalars['String']>;
   team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
 }
@@ -6711,12 +6745,14 @@ export interface Team_Slack_Installation_Insert_Input {
 /** aggregate max on columns */
 export interface Team_Slack_Installation_Max_Fields {
   __typename?: 'team_slack_installation_max_fields';
+  slack_team_id?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
 }
 
 /** aggregate min on columns */
 export interface Team_Slack_Installation_Min_Fields {
   __typename?: 'team_slack_installation_min_fields';
+  slack_team_id?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -6746,6 +6782,7 @@ export interface Team_Slack_Installation_On_Conflict {
 /** Ordering options when selecting data from "team_slack_installation". */
 export interface Team_Slack_Installation_Order_By {
   data?: Maybe<Order_By>;
+  slack_team_id?: Maybe<Order_By>;
   team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
 }
@@ -6765,11 +6802,14 @@ export type Team_Slack_Installation_Select_Column =
   /** column name */
   | 'data'
   /** column name */
+  | 'slack_team_id'
+  /** column name */
   | 'team_id';
 
 /** input type for updating data in table "team_slack_installation" */
 export interface Team_Slack_Installation_Set_Input {
   data?: Maybe<Scalars['jsonb']>;
+  slack_team_id?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -6777,6 +6817,8 @@ export interface Team_Slack_Installation_Set_Input {
 export type Team_Slack_Installation_Update_Column =
   /** column name */
   | 'data'
+  /** column name */
+  | 'slack_team_id'
   /** column name */
   | 'team_id';
 
@@ -9342,7 +9384,10 @@ export type CurrentTeamSubscription = (
   { __typename?: 'subscription_root' }
   & { user?: Maybe<(
     { __typename?: 'user' }
-    & Pick<User, 'current_team_id'>
+    & { current_team?: Maybe<(
+      { __typename?: 'team' }
+      & Pick<Team, 'id'>
+    )> }
   )> }
 );
 
@@ -11386,8 +11431,11 @@ export type team_max_fieldsFieldPolicy = {
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_memberKeySpecifier = ('team' | 'team_id' | 'user' | 'user_id' | team_memberKeySpecifier)[];
+export type team_memberKeySpecifier = ('id' | 'notify_email' | 'notify_slack' | 'team' | 'team_id' | 'user' | 'user_id' | team_memberKeySpecifier)[];
 export type team_memberFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	notify_email?: FieldPolicy<any> | FieldReadFunction<any>,
+	notify_slack?: FieldPolicy<any> | FieldReadFunction<any>,
 	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11404,13 +11452,15 @@ export type team_member_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_member_max_fieldsKeySpecifier = ('team_id' | 'user_id' | team_member_max_fieldsKeySpecifier)[];
+export type team_member_max_fieldsKeySpecifier = ('id' | 'team_id' | 'user_id' | team_member_max_fieldsKeySpecifier)[];
 export type team_member_max_fieldsFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_member_min_fieldsKeySpecifier = ('team_id' | 'user_id' | team_member_min_fieldsKeySpecifier)[];
+export type team_member_min_fieldsKeySpecifier = ('id' | 'team_id' | 'user_id' | team_member_min_fieldsKeySpecifier)[];
 export type team_member_min_fieldsFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -11431,9 +11481,10 @@ export type team_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_slack_installationKeySpecifier = ('data' | 'team' | 'team_id' | team_slack_installationKeySpecifier)[];
+export type team_slack_installationKeySpecifier = ('data' | 'slack_team_id' | 'team' | 'team_id' | team_slack_installationKeySpecifier)[];
 export type team_slack_installationFieldPolicy = {
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
+	slack_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	team?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -11448,12 +11499,14 @@ export type team_slack_installation_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_slack_installation_max_fieldsKeySpecifier = ('team_id' | team_slack_installation_max_fieldsKeySpecifier)[];
+export type team_slack_installation_max_fieldsKeySpecifier = ('slack_team_id' | 'team_id' | team_slack_installation_max_fieldsKeySpecifier)[];
 export type team_slack_installation_max_fieldsFieldPolicy = {
+	slack_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_slack_installation_min_fieldsKeySpecifier = ('team_id' | team_slack_installation_min_fieldsKeySpecifier)[];
+export type team_slack_installation_min_fieldsKeySpecifier = ('slack_team_id' | 'team_id' | team_slack_installation_min_fieldsKeySpecifier)[];
 export type team_slack_installation_min_fieldsFieldPolicy = {
+	slack_team_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_slack_installation_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_slack_installation_mutation_responseKeySpecifier)[];

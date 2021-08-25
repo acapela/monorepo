@@ -16,15 +16,20 @@ export function CurrentTeamIdProvider({ children }: PropsWithChildren<{}>) {
     gql`
       subscription CurrentTeam($userId: uuid!) {
         user: user_by_pk(id: $userId) {
-          current_team_id
+          current_team {
+            id
+          }
         }
       }
     `,
     user ? { variables: { userId: user.id } } : { skip: true }
   );
+  const liveUser = data?.user ?? null;
 
   return (
-    <CurrentTeamIdContext.Provider value={data?.user?.current_team_id ?? user?.currentTeamId ?? null}>
+    <CurrentTeamIdContext.Provider
+      value={liveUser?.current_team ? liveUser.current_team.id : null ?? user?.currentTeamId ?? null}
+    >
       {children}
     </CurrentTeamIdContext.Provider>
   );
