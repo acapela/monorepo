@@ -36,6 +36,13 @@ export const SUPPORT_RED = "hsl(344, 87%, 56%)";
 export const SUPPORT_GREEN = "hsl(159, 60%, 46%)";
 export const SUPPORT_YELLOW = "hsl(62, 61%, 67%)";
 
+// Not in design system but used for edge cases
+// Tags
+
+export const SHARE_INFO = "hsl(274, 42%, 61%)";
+export const DISCUSSION = "hsl(24, 100%, 68%)";
+export const ACTION = "hsl(327, 100%, 76%)";
+
 /*
  *
  * Theme Colors

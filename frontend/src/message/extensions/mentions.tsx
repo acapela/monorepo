@@ -80,6 +80,8 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
     unset();
   });
 
+  const otherProps = !props.isEditable ? { "data-tooltip": props.data.originalName } : {};
+
   return (
     <>
       {isMentionPickerOpen && (
@@ -95,7 +97,7 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
           </PopPresenceAnimator>
         </Popover>
       )}
-      <UIMention mentionType={mentionType} ref={anchorRef} onClick={toggle}>
+      <UIMention mentionType={mentionType} ref={anchorRef} onClick={toggle} {...otherProps}>
         @{props?.data?.originalName}
       </UIMention>
     </>
@@ -115,23 +117,27 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
 const UIMention = styled.span<{ mentionType: MentionType }>`
   cursor: default;
   height: 1.25em;
-  ${theme.font.body12.medium.build}
+  padding: 2px 8px;
+
+  ${theme.borderRadius.tag}
+  ${theme.font.medium.inter.body12.build}
 
   ${(props) => {
     switch (props.mentionType) {
       case "notification-only":
         return css`
-          color: white;
-          background-color: ${props.theme?.colors.interactive.notification()};
+          color: ${theme.colors.tags.action.foreground()};
+          background-color: ${theme.colors.tags.action.background()};
         `;
       case "request-read":
         return css`
-          color: white;
-          background: blue;
+          color: ${theme.colors.tags.shareInformation.foreground()};
+          background-color: ${theme.colors.tags.shareInformation.background()};
         `;
       case "request-response":
         return css`
-          ${props.theme?.colors.actions.primary.regular()}
+          color: ${theme.colors.tags.discussion.foreground()};
+          background-color: ${theme.colors.tags.discussion.background()};
         `;
       default:
         return "";
