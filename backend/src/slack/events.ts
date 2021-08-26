@@ -44,21 +44,30 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
       });
     }
 
-    const [, team, teamMember] = await Promise.all([
-      ack(),
+    await ack();
+
+    const [team, profileResponse] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
-      db.team_member.findFirst({ where: { team_member_slack_installation: { slack_user_id: body.user.id } } }),
+      client.users.profile.get({ user: body.user.id }),
     ]);
+    const email = assertDefined(profileResponse.profile?.email, "current user must have profile and email");
 
     const memberQueries = roomMembers.map((memberId) => client.users.profile.get({ user: memberId }));
     const memberProfiles = await Promise.all(memberQueries);
     const users = await db.user.findMany({
       where: {
-        email: { in: memberProfiles.map((response) => response.profile?.email).filter(isNotNullish) },
+        email: {
+          in: memberProfiles
+            .map((response) => response.profile?.email)
+            .filter(isNotNullish)
+            .concat(email),
+        },
       },
     });
 
-    const creatorId = assertDefined(teamMember?.user_id ?? team?.owner_id, "needs to at least have a team");
+    const user = users.find((u) => u.email == email);
+
+    const creatorId = assertDefined(user?.id ?? team?.owner_id, "needs to at least have a team");
     const room = await db.room.create({
       data: {
         name: roomName,
@@ -108,35 +117,22 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
         text: `Let's continue the discussion here: ${roomURL}`,
       });
     } catch (error) {
-      if (isChannelNotFoundError(error)) {
-        const slackInstallURL =
-          team && teamMember
-            ? await getSlackInstallURL({ withBot: false }, { teamId: team.id, userId: teamMember.user_id })
-            : null;
-        await ack({
-          response_action: "push",
-          view: {
-            type: "modal",
-            title: { type: "plain_text", text: "Acapela successfully created!" },
-            blocks: [
-              {
-                type: "section",
-                text: {
-                  type: "mrkdwn",
-                  text: [
-                    `Click <${roomURL}|here to view your Acapela room>.`,
-                    ...(slackInstallURL
-                      ? `We can automatically post the room link next time, if you <${slackInstallURL}|connect Acapela with Slack>. `
-                      : "There was no Acapela user found for your Slack email address. Create one and we can post room links for you next time."),
-                  ].join("\n"),
-                },
-              },
-            ],
-          },
-        });
-      } else {
+      if (!isChannelNotFoundError(error)) {
         throw error;
       }
+      const slackInstallURL =
+        team && user ? await getSlackInstallURL({ withBot: false }, { teamId: team.id, userId: user.id }) : null;
+      await client.chat.postEphemeral({
+        user: body.user.id,
+        token: context.botToken,
+        channel: body.user.id,
+        text: [
+          `Your Acapela room is here: ${roomURL}.`,
+          slackInstallURL
+            ? `We can automatically post the room link next time, if you <${slackInstallURL}|connect Acapela with Slack>. `
+            : `There was no Acapela user found for your Slack email address (${email}). Create one and we can post room links for you next time.`,
+        ].join("\n"),
+      });
     }
   });
 
