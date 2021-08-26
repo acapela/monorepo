@@ -1,4 +1,6 @@
 import * as SlackBolt from "@slack/bolt";
+import { GlobalShortcut, MessageShortcut, SlackShortcut, View } from "@slack/bolt";
+import { ViewsOpenArguments } from "@slack/web-api";
 
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { isChannelNotFoundError } from "~backend/src/slack/utils";
@@ -6,11 +8,138 @@ import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
 
-const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const;
+const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
+const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
 
 const createPlainMessageContent = (text: string) => ({
   type: "doc",
   content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+});
+
+type PrivateMetadata = SlackShortcut;
+
+const createRoomModalViewOpen = (shortcut: SlackShortcut): ViewsOpenArguments => ({
+  trigger_id: shortcut.trigger_id,
+  view: {
+    type: "modal",
+    callback_id: "create_room_modal",
+    title: {
+      type: "plain_text",
+      text: "Create a new room",
+    },
+    close: {
+      type: "plain_text",
+      text: "Close",
+    },
+    blocks: [
+      {
+        type: "input",
+        block_id: "space_block",
+        label: {
+          type: "plain_text",
+          text: "Pick the space for the discussion",
+        },
+        element: {
+          type: "external_select",
+          action_id: "select_space",
+          placeholder: {
+            type: "plain_text",
+            text: "Select a Space",
+          },
+          min_query_length: 2,
+        },
+      },
+      {
+        type: "input",
+        block_id: "room_block",
+        label: {
+          type: "plain_text",
+          text: "Enter room name",
+        },
+        element: {
+          type: "plain_text_input",
+          action_id: "room_name",
+          placeholder: {
+            type: "plain_text",
+            text: "Eg design discussion",
+          },
+        },
+      },
+      {
+        type: "input",
+        block_id: "topic_block",
+        label: {
+          type: "plain_text",
+          text: "Enter topic name",
+        },
+        element: {
+          type: "plain_text_input",
+          action_id: "topic_name",
+          placeholder: {
+            type: "plain_text",
+            text: "Eg feedback for Figma v12",
+          },
+        },
+      },
+      {
+        type: "input",
+        block_id: "message_block",
+        label: {
+          type: "plain_text",
+          text: "Message to start the discussion",
+        },
+        element: {
+          type: "plain_text_input",
+          action_id: "topic_message",
+          multiline: true,
+          initial_value: shortcut.type == "message_action" ? shortcut.message.text : "",
+          placeholder: {
+            type: "plain_text",
+            text: "Message to start the discussion",
+          },
+        },
+      },
+      {
+        type: "section",
+        block_id: "members_block",
+        text: {
+          type: "mrkdwn",
+          text: "Add members from Slack",
+        },
+        accessory: {
+          action_id: "members_select",
+          type: "multi_users_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select users",
+          },
+        },
+      },
+    ],
+    submit: {
+      type: "plain_text",
+      text: "Create a new room",
+    },
+    private_metadata: JSON.stringify(shortcut as PrivateMetadata),
+  },
+});
+
+const createSuccessModal = (text: string): View => ({
+  type: "modal",
+  title: {
+    type: "plain_text",
+    text: "Success!",
+  },
+  close: {
+    type: "plain_text",
+    text: "Close",
+  },
+  blocks: [
+    {
+      type: "section",
+      text: { type: "mrkdwn", text },
+    },
+  ],
 });
 
 export function setupSlackEvents(slackApp: SlackBolt.App) {
@@ -33,7 +162,7 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
       },
     } = view.state.values;
     const spaceId = selectedSpace?.value;
-    const { slackChannelId, slackThreadId } = JSON.parse(view.private_metadata);
+    const shortcut = JSON.parse(view.private_metadata) as PrivateMetadata;
 
     if (!(spaceId && roomName && topicName && topicMessage && roomMembers)) {
       return ack({
@@ -43,8 +172,6 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
         },
       });
     }
-
-    await ack();
 
     const [team, profileResponse] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
@@ -110,145 +237,55 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
 
     const roomURL = `${process.env.FRONTEND_URL}/space/${spaceId}/${room.id}/${topic.id}`;
     try {
-      await client.chat.postMessage({
-        token: context.userToken ?? context.botToken,
-        channel: slackChannelId,
-        thread_ts: slackThreadId,
-        text: `Let's continue the discussion here: ${roomURL}`,
-      });
+      if (shortcut.type == "message_action") {
+        await client.chat.postMessage({
+          token: context.userToken ?? context.botToken,
+          channel: shortcut.channel.id,
+          thread_ts: shortcut.message_ts,
+          text: `Let's continue the discussion here: ${roomURL}`,
+        });
+        await ack();
+      } else {
+        await client.views.update({
+          response_action: "update",
+          view_id: body.view.id,
+          view: createSuccessModal(`Your Acapela is waiting for you ${roomURL}`),
+        });
+        await ack({ response_action: "errors", errors: {} });
+      }
     } catch (error) {
       if (!isChannelNotFoundError(error)) {
         throw error;
       }
       const slackInstallURL =
         team && user ? await getSlackInstallURL({ withBot: false }, { teamId: team.id, userId: user.id }) : null;
-      await client.chat.postEphemeral({
-        user: body.user.id,
-        token: context.botToken,
-        channel: body.user.id,
-        text: [
-          `Your Acapela room is here: ${roomURL}.`,
-          slackInstallURL
-            ? `We can automatically post the room link next time, if you <${slackInstallURL}|connect Acapela with Slack>. `
-            : `There was no Acapela user found for your Slack email address (${email}). Create one and we can post room links for you next time.`,
-        ].join("\n"),
+      await client.views.update({
+        response_action: "update",
+        view_id: body.view.id,
+        view: createSuccessModal(
+          [
+            `Your Acapela room is here: ${roomURL}.`,
+            "",
+            slackInstallURL
+              ? `We can automatically post the room link next time, if you <${slackInstallURL}|connect Acapela with Slack>. `
+              : `There was no Acapela user found for your Slack email address (${email}). Create one and we can post room links for you next time.`,
+          ].join("\n")
+        ),
       });
+      await ack({ response_action: "errors", errors: {} });
     }
   });
 
   slackApp.action("select_space", ({ ack }) => ack());
   slackApp.action("members_select", ({ ack }) => ack());
 
+  slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client }) => {
+    await ack();
+    await client.views.open(createRoomModalViewOpen(shortcut));
+  });
+
   slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client }) => {
     await ack();
-
-    await client.views.open({
-      trigger_id: shortcut.trigger_id,
-      view: {
-        type: "modal",
-        callback_id: "create_room_modal",
-        title: {
-          type: "plain_text",
-          text: "Create a new room",
-        },
-        close: {
-          type: "plain_text",
-          text: "Close",
-        },
-        blocks: [
-          {
-            type: "input",
-            block_id: "space_block",
-            label: {
-              type: "plain_text",
-              text: "Pick the space for the discussion",
-            },
-            element: {
-              type: "external_select",
-              action_id: "select_space",
-              placeholder: {
-                type: "plain_text",
-                text: "Select a Space",
-              },
-              min_query_length: 2,
-            },
-          },
-          {
-            type: "input",
-            block_id: "room_block",
-            label: {
-              type: "plain_text",
-              text: "Enter room name",
-            },
-            element: {
-              type: "plain_text_input",
-              action_id: "room_name",
-              placeholder: {
-                type: "plain_text",
-                text: "Eg design discussion",
-              },
-            },
-          },
-          {
-            type: "input",
-            block_id: "topic_block",
-            label: {
-              type: "plain_text",
-              text: "Enter topic name",
-            },
-            element: {
-              type: "plain_text_input",
-              action_id: "topic_name",
-              placeholder: {
-                type: "plain_text",
-                text: "Eg feedback for Figma v12",
-              },
-            },
-          },
-          {
-            type: "input",
-            block_id: "message_block",
-            label: {
-              type: "plain_text",
-              text: "Message to start the discussion",
-            },
-            element: {
-              type: "plain_text_input",
-              action_id: "topic_message",
-              multiline: true,
-              initial_value: shortcut.message.text,
-              placeholder: {
-                type: "plain_text",
-                text: "Message to start the discussion",
-              },
-            },
-          },
-          {
-            type: "section",
-            block_id: "members_block",
-            text: {
-              type: "mrkdwn",
-              text: "Add members from Slack",
-            },
-            accessory: {
-              action_id: "members_select",
-              type: "multi_users_select",
-              placeholder: {
-                type: "plain_text",
-                text: "Select users",
-              },
-            },
-          },
-        ],
-        submit: {
-          type: "plain_text",
-          text: "Create a new room",
-        },
-        private_metadata: JSON.stringify({
-          slackChannelId: shortcut.channel.id,
-          slackThreadId: shortcut.message_ts,
-        }),
-      },
-    });
+    await client.views.open(createRoomModalViewOpen(shortcut));
   });
 }
