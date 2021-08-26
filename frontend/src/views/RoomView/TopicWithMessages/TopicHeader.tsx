@@ -44,6 +44,7 @@ const fragments = {
     fragment TopicHeader_topic on topic {
       id
       name
+      archived_at
       ...IsTopicClosed_topic
       ...IsCurrentUserTopicManager_topic
       ...ManageTopic_topic
@@ -60,15 +61,27 @@ interface Props {
 const useCloseTopic = () =>
   useMutation<CloseTopicMutation, CloseTopicMutationVariables>(
     gql`
-      mutation CloseTopic($id: uuid!, $closed_at: timestamp, $closed_by_user_id: uuid, $closing_summary: String) {
+      mutation CloseTopic(
+        $id: uuid!
+        $closed_at: timestamp
+        $closed_by_user_id: uuid
+        $closing_summary: String
+        $archived_at: timestamptz
+      ) {
         topic: update_topic_by_pk(
           pk_columns: { id: $id }
-          _set: { closed_at: $closed_at, closed_by_user_id: $closed_by_user_id, closing_summary: $closing_summary }
+          _set: {
+            closed_at: $closed_at
+            closed_by_user_id: $closed_by_user_id
+            closing_summary: $closing_summary
+            archived_at: $archived_at
+          }
         ) {
           id
           closed_at
           closed_by_user_id
           closing_summary
+          archived_at
         }
       }
     `,
@@ -94,17 +107,30 @@ const _TopicHeader = ({ room, topic }: Props) => {
 
       {!room.finished_at && (
         <UIActions>
-          {isClosed && (
-            <UIToggleCloseButton
-              onClick={() => {
-                closeTopic({ variables: { id: topic.id, closed_at: null, closed_by_user_id: null } });
-                trackEvent("Reopened Topic");
-              }}
-              isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
-            >
-              Reopen Topic
-            </UIToggleCloseButton>
-          )}
+          {isClosed &&
+            (topic.archived_at ? (
+              <UIToggleCloseButton
+                onClick={() => {
+                  closeTopic({
+                    variables: { id: topic.id, closed_at: null, closed_by_user_id: null, archived_at: null },
+                  });
+                  trackEvent("Reopened Topic");
+                }}
+                isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to restore topics` }}
+              >
+                Restore Topic
+              </UIToggleCloseButton>
+            ) : (
+              <UIToggleCloseButton
+                onClick={() => {
+                  closeTopic({ variables: { id: topic.id, closed_at: null, closed_by_user_id: null } });
+                  trackEvent("Reopened Topic");
+                }}
+                isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
+              >
+                Reopen Topic
+              </UIToggleCloseButton>
+            ))}
           {!isClosed && (
             <UIToggleCloseButton
               onClick={openClosingTopicModal}

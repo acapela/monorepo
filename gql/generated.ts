@@ -10436,7 +10436,7 @@ export type TopicHeader_RoomFragment = (
 
 export type TopicHeader_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'archived_at'>
   & IsTopicClosed_TopicFragment
   & IsCurrentUserTopicManager_TopicFragment
   & ManageTopic_TopicFragment
@@ -10447,6 +10447,7 @@ export type CloseTopicMutationVariables = Exact<{
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
+  archived_at?: Maybe<Scalars['timestamptz']>;
 }>;
 
 
@@ -10454,7 +10455,7 @@ export type CloseTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary'>
+    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'archived_at'>
   )> }
 );
 
