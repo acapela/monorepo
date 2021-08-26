@@ -30,7 +30,7 @@ export const DateTimePicker = ({ initialValue, onSubmit, withoutConfirmation = f
     if (withoutConfirmation) {
       handleSubmit();
     }
-  }, [withoutConfirmation, dirtyDate])
+  }, [withoutConfirmation, dirtyDate]);
 
   const pickedMinutesValue = useMemo(() => {
     const hours = getHours(dirtyDate);
