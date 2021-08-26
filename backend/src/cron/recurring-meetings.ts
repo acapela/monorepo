@@ -35,13 +35,15 @@ async function restartRoom(room: Room) {
 export async function recurringMeetingCronHandler() {
   const rooms = await db.room.findMany({
     where: {
+      deadline: {
+        lt: new Date(),
+      },
       NOT: {
         recurring_days: null,
       },
     },
   });
   for (const room of rooms) {
-    if (!isBefore(room.deadline, new Date())) continue;
     await restartRoom(room);
   }
 }

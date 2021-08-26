@@ -1,6 +1,6 @@
 - name: recurring-meetings
   webhook: "{{HASURA_CRON_WEBHOOK_URL}}"
-  schedule: "*/1 * * * *"
+  schedule: "*/10 * * * *"
   include_in_metadata: true
   payload:
     handler: recurring-meetings
