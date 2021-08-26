@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
 import styled from "styled-components";
 
-import { DiscussionTag, ShareInformationTag } from "~frontend/../../ui/tags";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask, useTasksQuery } from "~frontend/gql/tasks";
 import { routes } from "~frontend/router";
 import { fillParamsInUrl } from "~frontend/router/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { TaskBasicInfoFragment } from "~gql";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { IconCheck } from "~ui/icons";
@@ -59,7 +59,12 @@ export const UnresolvedRequests = () => {
       )}
       {tasks.map((task) => {
         const { message, id } = task;
-        const { topic } = message;
+        const { topic, user } = message;
+
+        const tooltip =
+          task.type === "request-response"
+            ? `${user.name} has requested a response from you.`
+            : `${user.name} wants to make sure you read this information.`;
 
         return (
           <Fragment key={id}>
@@ -71,12 +76,11 @@ export const UnresolvedRequests = () => {
               })}
             >
               <UIInfo>
-                <UITopArea>
-                  <UITopicTitle>{"Sup this is the topic"}</UITopicTitle>
-                  {task.type === "request-response" && <DiscussionTag />}
-                  {task.type === "request-read" && <ShareInformationTag />}
+                <UITopArea data-tooltip={tooltip}>
+                  <UITopicTitle>{topic.name}</UITopicTitle>
                 </UITopArea>
                 <UIMessageArea>
+                  <UserAvatar user={user} size={"extra-small"} />
                   <UIMessageText message={message} />
                 </UIMessageArea>
                 <UIRightArea>
@@ -105,11 +109,6 @@ const UIInfo = styled.div<{}>`
 
 const UITopArea = styled.div<{}>`
   grid-area: TopArea;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
 `;
 
 const UITopicTitle = styled.div<{}>`
@@ -118,6 +117,12 @@ const UITopicTitle = styled.div<{}>`
 
 const UIMessageArea = styled.div<{}>`
   grid-area: MessageArea;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 8px;
 `;
 
 const UIRightArea = styled.div<{}>`

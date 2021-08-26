@@ -42,6 +42,7 @@ export const TaskDetailedInfoFragment = createFragment<TaskDetailedInfoFragmentT
         ...MessageBasicInfo
         topic {
           id
+          name
           room {
             id
             space {

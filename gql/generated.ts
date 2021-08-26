@@ -9126,7 +9126,7 @@ export type TaskDetailedInfoFragment = (
     { __typename?: 'message' }
     & { topic: (
       { __typename?: 'topic' }
-      & Pick<Topic, 'id'>
+      & Pick<Topic, 'id' | 'name'>
       & { room: (
         { __typename?: 'room' }
         & Pick<Room, 'id'>
