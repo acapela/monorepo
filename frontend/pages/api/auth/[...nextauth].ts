@@ -59,10 +59,6 @@ async function checkWhitelist(profile: Profile) {
   const whiteListEntry = await db.whitelist.findFirst({ where: { email } });
 
   if (!whiteListEntry) {
-    // automatically add a non-whitelisted user to whitelist
-    await db.whitelist.create({
-      data: { email: profile.email.toLocaleLowerCase(), is_approved: false },
-    });
     throw new Error("email not whitelisted");
   }
 

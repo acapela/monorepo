@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
-import { recurringMeetingCronHandler } from "~backend/src/cron/recurring-meetings";
+import { recurringMeetingCronHandler } from "~backend/src/cron/recurringMeetings";
 import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
 import logger from "~shared/logger";
 

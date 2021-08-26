@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { data, previousData, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
+  const { data, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
     gql`
       ${RoomTopicView.fragments.room}
       ${RoomTopicView.fragments.topic}
