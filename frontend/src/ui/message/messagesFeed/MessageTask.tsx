@@ -23,8 +23,8 @@ const fragments = {
       user_id
       message_id
       seen_at
-      type
       done_at
+      type
     }
   `,
 };
@@ -104,6 +104,7 @@ export const MessageTask = withFragments(fragments, _MessageTask);
 
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;
+  flex-grow: 1;
   align-items: center;
   color: ${theme.colors.layout.supportingText()};
 
@@ -126,8 +127,9 @@ const UIUserNameLabel = styled.span<{}>`
 `;
 
 const UITextButton = styled.span<{}>`
-  text-decoration: underline;
+  white-space: nowrap;
   cursor: pointer;
+  text-decoration: underline;
 `;
 
 const UIIconHolder = styled.span<{}>`
