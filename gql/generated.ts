@@ -9513,7 +9513,7 @@ export type MessageMetaData_UserFragment = (
 
 export type MessageTask_TaskFragment = (
   { __typename?: 'task' }
-  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'seen_at' | 'done_at'>
+  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'seen_at' | 'type' | 'done_at'>
 );
 
 export type MakeReactionButton_MessageFragment = (
