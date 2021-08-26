@@ -15,15 +15,19 @@ interface Props {
   onChange: (value: Date) => void;
   isReadonly?: boolean;
   label?: string;
+  withoutConfirmation?: boolean;
 }
 
-export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Props) => {
+export const DateTimeInput = ({ value, onChange, isReadonly = false, withoutConfirmation, label }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
-    toggleOpenPicker();
+    if (!withoutConfirmation) {
+      toggleOpenPicker();
+    }
+
     onChange(date);
   };
 
@@ -34,7 +38,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
       <AnimatePresence>
         {isPickerOpen && (
           <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker onSubmit={handleSubmit} initialValue={value} />
+            <DateTimePicker withoutConfirmation={withoutConfirmation} onSubmit={handleSubmit} initialValue={value} />
           </Popover>
         )}
       </AnimatePresence>

@@ -124,7 +124,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
 
             <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
 
-            <DateTimeInput value={deadline} onChange={setDeadline} label="Set a due date" />
+            <DateTimeInput withoutConfirmation value={deadline} onChange={setDeadline} label="Set a due date" />
           </UIFormFields>
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
