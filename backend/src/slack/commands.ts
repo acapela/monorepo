@@ -1,14 +1,13 @@
 import * as SlackBolt from "@slack/bolt";
 
 import { db } from "~db";
-import { assert } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
 
 import { isChannelNotFoundError } from ".//utils";
 import { getSlackInstallURL } from "./install";
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
-  slackApp.command("/gregapela", async ({ command, ack, respond, client, context }) => {
+  slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, respond, client, context }) => {
     const getMembers = async (token?: string) =>
       (
         await client.conversations.members({
@@ -30,7 +29,10 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     const team = await db.team.findFirst({
       where: { team_slack_installation: { slack_team_id: command.team_id } },
     });
-    assert(team, "should always find a team");
+
+    if (!team) {
+      return await respond("No Slack installation for your team found. Go to https://app.acape.la/team to install it.");
+    }
 
     const [space, email] = await Promise.all([
       db.space.findFirst({ where: { team_id: team.id } }),

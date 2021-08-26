@@ -14,10 +14,13 @@ type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters
 
 export type SlackInstallation = SlackBolt.Installation;
 
+const clientId = process.env.SLACK_CLIENT_ID;
+const clientSecret = process.env.SLACK_CLIENT_SECRET;
+
 const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof SlackBolt.App> = {
   signingSecret: assertDefined(process.env.SLACK_SIGNING_SECRET, "missing SLACK_SIGNING_SECRET"),
-  clientId: process.env.SLACK_CLIENT_ID,
-  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  clientId,
+  clientSecret,
   stateSecret: crypto.randomBytes(64).toString("hex"),
 
   installationStore: {
@@ -66,16 +69,12 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
       return { ...teamData, user: memberData ?? {} } as SlackInstallation;
     },
     async deleteInstallation(query) {
-      const slackUserId = query.userId;
-      if (slackUserId) {
-        await db.team_member_slack_installation.deleteMany({ where: { slack_user_id: query.userId } });
-        const remainingTeamInstallations = await db.team_member_slack_installation.count({
-          where: { slack_team_id: query.teamId },
-        });
-        if (remainingTeamInstallations === 0) {
-          await db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } });
-        }
-      }
+      await db.$transaction([
+        db.team_slack_installation.deleteMany({ where: { slack_team_id: query.teamId } }),
+        db.team_member_slack_installation.deleteMany({
+          where: { team_slack_installation: { slack_team_id: query.teamId } },
+        }),
+      ]);
     },
   },
 

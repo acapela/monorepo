@@ -38,7 +38,7 @@ Fortunately you can use this manifest "generator":
 3. run it, you'll now have the manifest in your clipboard
 4. go to https://api.slack.com/apps?new_app=1 and use the manifest to create a new app
    1. make sure to give it a unique name and command name
-5. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET` and `SLACK_SIGNING_SECRET` in your `.env`, based on your new app's info
+5. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info
 
 ```javascript
 copy(
