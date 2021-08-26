@@ -1,11 +1,9 @@
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { sendNotification } from "~backend/src/notifications/sendNotification";
 import { findTeamById } from "~backend/src/teams/helpers";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
 import { TeamInvitation, db } from "~db";
+import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import logger from "~shared/logger";
-
-import { TeamInvitationNotification } from "./InviteNotification";
 
 export const sendInviteNotification = async (invite: TeamInvitation, userId: string | null) => {
   const { email, inviting_user_id: invitingUserId, team_id: teamId } = invite;
@@ -26,15 +24,21 @@ export const sendInviteNotification = async (invite: TeamInvitation, userId: str
     },
   });
 
-  const notification = new TeamInvitationNotification({
-    recipientEmail: email,
-    roomName: roomInvitation?.room?.name,
-    teamName: team.name,
-    inviterName: getNormalizedUserName(inviter),
-    inviteCode: invite.token,
-  });
+  const link = `${process.env.FRONTEND_URL}/invites/${invite.token}`;
 
-  await sendNotification(notification);
+  const inviterName = getNormalizedUserName(inviter);
+  await sendEmail({
+    from: DEFAULT_NOTIFICATION_EMAIL,
+    to: email,
+    subject: `${inviterName} has invited you to collaborate on ${roomInvitation?.room?.name ?? team.name}`,
+    html: [
+      "Hey!",
+      `${inviterName} has invited you to ${roomInvitation?.room ? `collaborate on ${link} room and ` : ""}join ${
+        team.name
+      } team on Acapela.`,
+      `Follow this link to sign up and join the discussion: ${link}`,
+    ].join("<br>"),
+  });
 
   logger.info("Sent invite notification", {
     userId,

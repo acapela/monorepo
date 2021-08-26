@@ -10,13 +10,9 @@ import { createNotification } from "../notifications/entity";
 export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEvent<RoomMember>) {
   const { room_id: roomId, user_id: addedUserId } = invite;
 
-  if (userId === addedUserId) {
-    // user added themselves
+  if (!userId || userId === addedUserId) {
+    // user added themselves or user added by the backend
     return;
-  }
-
-  if (!userId) {
-    throw new UnprocessableEntityError("user id missing");
   }
 
   await createNotification({

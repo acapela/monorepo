@@ -37,21 +37,6 @@ type GetTeamSlackInstallationURLOutput {
   url: String!
 }
 
-"""
-Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
-"""
-input Int_comparison_exp {
-  _eq: Int
-  _gt: Int
-  _gte: Int
-  _in: [Int!]
-  _is_null: Boolean
-  _lt: Int
-  _lte: Int
-  _neq: Int
-  _nin: [Int!]
-}
-
 type LookupTeamNameResponse {
   email: String!
   inviter_name: String!
@@ -1944,7 +1929,20 @@ type mutation_root {
   """
   delete single row from the table: "team_member"
   """
-  delete_team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  delete_team_member_by_pk(id: uuid!): team_member
+
+  """
+  delete data from the table: "team_member_slack_installation"
+  """
+  delete_team_member_slack_installation(
+    """filter the rows which have to be deleted"""
+    where: team_member_slack_installation_bool_exp!
+  ): team_member_slack_installation_mutation_response
+
+  """
+  delete single row from the table: "team_member_slack_installation"
+  """
+  delete_team_member_slack_installation_by_pk(id: uuid!): team_member_slack_installation
 
   """
   delete data from the table: "team_slack_installation"
@@ -2401,6 +2399,28 @@ type mutation_root {
   ): team_member
 
   """
+  insert data into the table: "team_member_slack_installation"
+  """
+  insert_team_member_slack_installation(
+    """the rows to be inserted"""
+    objects: [team_member_slack_installation_insert_input!]!
+
+    """on conflict condition"""
+    on_conflict: team_member_slack_installation_on_conflict
+  ): team_member_slack_installation_mutation_response
+
+  """
+  insert a single row into the table: "team_member_slack_installation"
+  """
+  insert_team_member_slack_installation_one(
+    """the row to be inserted"""
+    object: team_member_slack_installation_insert_input!
+
+    """on conflict condition"""
+    on_conflict: team_member_slack_installation_on_conflict
+  ): team_member_slack_installation
+
+  """
   insert a single row into the table: "team"
   """
   insert_team_one(
@@ -2814,9 +2834,6 @@ type mutation_root {
   update data of the table: "room"
   """
   update_room(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: room_inc_input
-
     """sets the columns of the filtered rows to the given values"""
     _set: room_set_input
 
@@ -2828,9 +2845,6 @@ type mutation_root {
   update single row of the table: "room"
   """
   update_room_by_pk(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: room_inc_input
-
     """sets the columns of the filtered rows to the given values"""
     _set: room_set_input
     pk_columns: room_pk_columns_input!
@@ -2995,6 +3009,68 @@ type mutation_root {
     _set: team_member_set_input
     pk_columns: team_member_pk_columns_input!
   ): team_member
+
+  """
+  update data of the table: "team_member_slack_installation"
+  """
+  update_team_member_slack_installation(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: team_member_slack_installation_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: team_member_slack_installation_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: team_member_slack_installation_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: team_member_slack_installation_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: team_member_slack_installation_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: team_member_slack_installation_set_input
+
+    """filter the rows which have to be updated"""
+    where: team_member_slack_installation_bool_exp!
+  ): team_member_slack_installation_mutation_response
+
+  """
+  update single row of the table: "team_member_slack_installation"
+  """
+  update_team_member_slack_installation_by_pk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: team_member_slack_installation_append_input
+
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _delete_at_path: team_member_slack_installation_delete_at_path_input
+
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _delete_elem: team_member_slack_installation_delete_elem_input
+
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _delete_key: team_member_slack_installation_delete_key_input
+
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: team_member_slack_installation_prepend_input
+
+    """sets the columns of the filtered rows to the given values"""
+    _set: team_member_slack_installation_set_input
+    pk_columns: team_member_slack_installation_pk_columns_input!
+  ): team_member_slack_installation
 
   """
   update data of the table: "team_slack_installation"
@@ -4279,7 +4355,52 @@ type query_root {
   ): team_member_aggregate!
 
   """fetch data from the table: "team_member" using primary key columns"""
-  team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  team_member_by_pk(id: uuid!): team_member
+
+  """
+  fetch data from the table: "team_member_slack_installation"
+  """
+  team_member_slack_installation(
+    """distinct select on columns"""
+    distinct_on: [team_member_slack_installation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [team_member_slack_installation_order_by!]
+
+    """filter the rows returned"""
+    where: team_member_slack_installation_bool_exp
+  ): [team_member_slack_installation!]!
+
+  """
+  fetch aggregated fields from the table: "team_member_slack_installation"
+  """
+  team_member_slack_installation_aggregate(
+    """distinct select on columns"""
+    distinct_on: [team_member_slack_installation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [team_member_slack_installation_order_by!]
+
+    """filter the rows returned"""
+    where: team_member_slack_installation_bool_exp
+  ): team_member_slack_installation_aggregate!
+
+  """
+  fetch data from the table: "team_member_slack_installation" using primary key columns
+  """
+  team_member_slack_installation_by_pk(id: uuid!): team_member_slack_installation
 
   """
   fetch data from the table: "team_slack_installation"
@@ -4722,8 +4843,6 @@ type room {
   """An object relationship"""
   owner: user!
   owner_id: uuid!
-  recurring_days: Int
-  recurring_last_restart: timestamptz
   slug: String!
   source_google_calendar_event_id: String
 
@@ -4781,34 +4900,18 @@ type room_aggregate {
 aggregate fields of "room"
 """
 type room_aggregate_fields {
-  avg: room_avg_fields
   count(columns: [room_select_column!], distinct: Boolean): Int!
   max: room_max_fields
   min: room_min_fields
-  stddev: room_stddev_fields
-  stddev_pop: room_stddev_pop_fields
-  stddev_samp: room_stddev_samp_fields
-  sum: room_sum_fields
-  var_pop: room_var_pop_fields
-  var_samp: room_var_samp_fields
-  variance: room_variance_fields
 }
 
 """
 order by aggregate values of table "room"
 """
 input room_aggregate_order_by {
-  avg: room_avg_order_by
   count: order_by
   max: room_max_order_by
   min: room_min_order_by
-  stddev: room_stddev_order_by
-  stddev_pop: room_stddev_pop_order_by
-  stddev_samp: room_stddev_samp_order_by
-  sum: room_sum_order_by
-  var_pop: room_var_pop_order_by
-  var_samp: room_var_samp_order_by
-  variance: room_variance_order_by
 }
 
 """
@@ -4819,18 +4922,6 @@ input room_arr_rel_insert_input {
 
   """on conflict condition"""
   on_conflict: room_on_conflict
-}
-
-"""aggregate avg on columns"""
-type room_avg_fields {
-  recurring_days: Float
-}
-
-"""
-order by avg() on columns of table "room"
-"""
-input room_avg_order_by {
-  recurring_days: order_by
 }
 
 """
@@ -4855,8 +4946,6 @@ input room_bool_exp {
   notification_job_id: String_comparison_exp
   owner: user_bool_exp
   owner_id: uuid_comparison_exp
-  recurring_days: Int_comparison_exp
-  recurring_last_restart: timestamptz_comparison_exp
   slug: String_comparison_exp
   source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
@@ -4874,13 +4963,6 @@ enum room_constraint {
 
   """unique or primary key constraint"""
   room_slug_space_id_key
-}
-
-"""
-input type for incrementing numeric columns in table "room"
-"""
-input room_inc_input {
-  recurring_days: Int
 }
 
 """
@@ -4902,8 +4984,6 @@ input room_insert_input {
   notification_job_id: String
   owner: user_obj_rel_insert_input
   owner_id: uuid
-  recurring_days: Int
-  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
@@ -5304,8 +5384,6 @@ type room_max_fields {
   name: String
   notification_job_id: String
   owner_id: uuid
-  recurring_days: Int
-  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -5325,8 +5403,6 @@ input room_max_order_by {
   name: order_by
   notification_job_id: order_by
   owner_id: order_by
-  recurring_days: order_by
-  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -5519,8 +5595,6 @@ type room_min_fields {
   name: String
   notification_job_id: String
   owner_id: uuid
-  recurring_days: Int
-  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -5540,8 +5614,6 @@ input room_min_order_by {
   name: order_by
   notification_job_id: order_by
   owner_id: order_by
-  recurring_days: order_by
-  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -5595,8 +5667,6 @@ input room_order_by {
   notification_job_id: order_by
   owner: user_order_by
   owner_id: order_by
-  recurring_days: order_by
-  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space: space_order_by
@@ -5645,12 +5715,6 @@ enum room_select_column {
   owner_id
 
   """column name"""
-  recurring_days
-
-  """column name"""
-  recurring_last_restart
-
-  """column name"""
   slug
 
   """column name"""
@@ -5677,60 +5741,10 @@ input room_set_input {
   name: String
   notification_job_id: String
   owner_id: uuid
-  recurring_days: Int
-  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
   summary: String
-}
-
-"""aggregate stddev on columns"""
-type room_stddev_fields {
-  recurring_days: Float
-}
-
-"""
-order by stddev() on columns of table "room"
-"""
-input room_stddev_order_by {
-  recurring_days: order_by
-}
-
-"""aggregate stddev_pop on columns"""
-type room_stddev_pop_fields {
-  recurring_days: Float
-}
-
-"""
-order by stddev_pop() on columns of table "room"
-"""
-input room_stddev_pop_order_by {
-  recurring_days: order_by
-}
-
-"""aggregate stddev_samp on columns"""
-type room_stddev_samp_fields {
-  recurring_days: Float
-}
-
-"""
-order by stddev_samp() on columns of table "room"
-"""
-input room_stddev_samp_order_by {
-  recurring_days: order_by
-}
-
-"""aggregate sum on columns"""
-type room_sum_fields {
-  recurring_days: Int
-}
-
-"""
-order by sum() on columns of table "room"
-"""
-input room_sum_order_by {
-  recurring_days: order_by
 }
 
 """
@@ -5768,12 +5782,6 @@ enum room_update_column {
   owner_id
 
   """column name"""
-  recurring_days
-
-  """column name"""
-  recurring_last_restart
-
-  """column name"""
   slug
 
   """column name"""
@@ -5784,42 +5792,6 @@ enum room_update_column {
 
   """column name"""
   summary
-}
-
-"""aggregate var_pop on columns"""
-type room_var_pop_fields {
-  recurring_days: Float
-}
-
-"""
-order by var_pop() on columns of table "room"
-"""
-input room_var_pop_order_by {
-  recurring_days: order_by
-}
-
-"""aggregate var_samp on columns"""
-type room_var_samp_fields {
-  recurring_days: Float
-}
-
-"""
-order by var_samp() on columns of table "room"
-"""
-input room_var_samp_order_by {
-  recurring_days: order_by
-}
-
-"""aggregate variance on columns"""
-type room_variance_fields {
-  recurring_days: Float
-}
-
-"""
-order by variance() on columns of table "room"
-"""
-input room_variance_order_by {
-  recurring_days: order_by
 }
 
 """
@@ -7077,7 +7049,52 @@ type subscription_root {
   ): team_member_aggregate!
 
   """fetch data from the table: "team_member" using primary key columns"""
-  team_member_by_pk(team_id: uuid!, user_id: uuid!): team_member
+  team_member_by_pk(id: uuid!): team_member
+
+  """
+  fetch data from the table: "team_member_slack_installation"
+  """
+  team_member_slack_installation(
+    """distinct select on columns"""
+    distinct_on: [team_member_slack_installation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [team_member_slack_installation_order_by!]
+
+    """filter the rows returned"""
+    where: team_member_slack_installation_bool_exp
+  ): [team_member_slack_installation!]!
+
+  """
+  fetch aggregated fields from the table: "team_member_slack_installation"
+  """
+  team_member_slack_installation_aggregate(
+    """distinct select on columns"""
+    distinct_on: [team_member_slack_installation_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [team_member_slack_installation_order_by!]
+
+    """filter the rows returned"""
+    where: team_member_slack_installation_bool_exp
+  ): team_member_slack_installation_aggregate!
+
+  """
+  fetch data from the table: "team_member_slack_installation" using primary key columns
+  """
+  team_member_slack_installation_by_pk(id: uuid!): team_member_slack_installation
 
   """
   fetch data from the table: "team_slack_installation"
@@ -8160,6 +8177,10 @@ input team_max_order_by {
 columns and relationships of "team_member"
 """
 type team_member {
+  id: uuid!
+  notify_email: Boolean!
+  notify_slack: Boolean!
+
   """An object relationship"""
   team: team!
   team_id: uuid!
@@ -8212,6 +8233,9 @@ input team_member_bool_exp {
   _and: [team_member_bool_exp!]
   _not: team_member_bool_exp
   _or: [team_member_bool_exp!]
+  id: uuid_comparison_exp
+  notify_email: Boolean_comparison_exp
+  notify_slack: Boolean_comparison_exp
   team: team_bool_exp
   team_id: uuid_comparison_exp
   user: user_bool_exp
@@ -8223,6 +8247,9 @@ unique or primary key constraints on table "team_member"
 """
 enum team_member_constraint {
   """unique or primary key constraint"""
+  team_member_id_key
+
+  """unique or primary key constraint"""
   team_membership_pkey
 }
 
@@ -8230,6 +8257,9 @@ enum team_member_constraint {
 input type for inserting data into table "team_member"
 """
 input team_member_insert_input {
+  id: uuid
+  notify_email: Boolean
+  notify_slack: Boolean
   team: team_obj_rel_insert_input
   team_id: uuid
   user: user_obj_rel_insert_input
@@ -8238,6 +8268,7 @@ input team_member_insert_input {
 
 """aggregate max on columns"""
 type team_member_max_fields {
+  id: uuid
   team_id: uuid
   user_id: uuid
 }
@@ -8246,12 +8277,14 @@ type team_member_max_fields {
 order by max() on columns of table "team_member"
 """
 input team_member_max_order_by {
+  id: order_by
   team_id: order_by
   user_id: order_by
 }
 
 """aggregate min on columns"""
 type team_member_min_fields {
+  id: uuid
   team_id: uuid
   user_id: uuid
 }
@@ -8260,6 +8293,7 @@ type team_member_min_fields {
 order by min() on columns of table "team_member"
 """
 input team_member_min_order_by {
+  id: order_by
   team_id: order_by
   user_id: order_by
 }
@@ -8286,6 +8320,9 @@ input team_member_on_conflict {
 
 """Ordering options when selecting data from "team_member"."""
 input team_member_order_by {
+  id: order_by
+  notify_email: order_by
+  notify_slack: order_by
   team: team_order_by
   team_id: order_by
   user: user_order_by
@@ -8294,14 +8331,22 @@ input team_member_order_by {
 
 """primary key columns input for table: team_member"""
 input team_member_pk_columns_input {
-  team_id: uuid!
-  user_id: uuid!
+  id: uuid!
 }
 
 """
 select columns of table "team_member"
 """
 enum team_member_select_column {
+  """column name"""
+  id
+
+  """column name"""
+  notify_email
+
+  """column name"""
+  notify_slack
+
   """column name"""
   team_id
 
@@ -8313,14 +8358,234 @@ enum team_member_select_column {
 input type for updating data in table "team_member"
 """
 input team_member_set_input {
+  id: uuid
+  notify_email: Boolean
+  notify_slack: Boolean
   team_id: uuid
   user_id: uuid
+}
+
+"""
+Individual team member Slack integration for adding team members from private chats automatically to Acapela rooms
+
+
+columns and relationships of "team_member_slack_installation"
+
+"""
+type team_member_slack_installation {
+  data(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  id: uuid!
+  slack_team_id: String!
+  slack_user_id: String!
+  team_member_id: uuid!
+}
+
+"""
+aggregated selection of "team_member_slack_installation"
+"""
+type team_member_slack_installation_aggregate {
+  aggregate: team_member_slack_installation_aggregate_fields
+  nodes: [team_member_slack_installation!]!
+}
+
+"""
+aggregate fields of "team_member_slack_installation"
+"""
+type team_member_slack_installation_aggregate_fields {
+  count(columns: [team_member_slack_installation_select_column!], distinct: Boolean): Int!
+  max: team_member_slack_installation_max_fields
+  min: team_member_slack_installation_min_fields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input team_member_slack_installation_append_input {
+  data: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "team_member_slack_installation". All fields are combined with a logical 'AND'.
+"""
+input team_member_slack_installation_bool_exp {
+  _and: [team_member_slack_installation_bool_exp!]
+  _not: team_member_slack_installation_bool_exp
+  _or: [team_member_slack_installation_bool_exp!]
+  data: jsonb_comparison_exp
+  id: uuid_comparison_exp
+  slack_team_id: String_comparison_exp
+  slack_user_id: String_comparison_exp
+  team_member_id: uuid_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "team_member_slack_installation"
+"""
+enum team_member_slack_installation_constraint {
+  """unique or primary key constraint"""
+  team_member_slack_installation_id_key
+
+  """unique or primary key constraint"""
+  team_member_slack_installation_pkey
+
+  """unique or primary key constraint"""
+  team_member_slack_installation_team_member_id_key
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input team_member_slack_installation_delete_at_path_input {
+  data: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input team_member_slack_installation_delete_elem_input {
+  data: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input team_member_slack_installation_delete_key_input {
+  data: String
+}
+
+"""
+input type for inserting data into table "team_member_slack_installation"
+"""
+input team_member_slack_installation_insert_input {
+  data: jsonb
+  id: uuid
+  slack_team_id: String
+  slack_user_id: String
+  team_member_id: uuid
+}
+
+"""aggregate max on columns"""
+type team_member_slack_installation_max_fields {
+  id: uuid
+  slack_team_id: String
+  slack_user_id: String
+  team_member_id: uuid
+}
+
+"""aggregate min on columns"""
+type team_member_slack_installation_min_fields {
+  id: uuid
+  slack_team_id: String
+  slack_user_id: String
+  team_member_id: uuid
+}
+
+"""
+response of any mutation on the table "team_member_slack_installation"
+"""
+type team_member_slack_installation_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [team_member_slack_installation!]!
+}
+
+"""
+on conflict condition type for table "team_member_slack_installation"
+"""
+input team_member_slack_installation_on_conflict {
+  constraint: team_member_slack_installation_constraint!
+  update_columns: [team_member_slack_installation_update_column!]! = []
+  where: team_member_slack_installation_bool_exp
+}
+
+"""
+Ordering options when selecting data from "team_member_slack_installation".
+"""
+input team_member_slack_installation_order_by {
+  data: order_by
+  id: order_by
+  slack_team_id: order_by
+  slack_user_id: order_by
+  team_member_id: order_by
+}
+
+"""primary key columns input for table: team_member_slack_installation"""
+input team_member_slack_installation_pk_columns_input {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input team_member_slack_installation_prepend_input {
+  data: jsonb
+}
+
+"""
+select columns of table "team_member_slack_installation"
+"""
+enum team_member_slack_installation_select_column {
+  """column name"""
+  data
+
+  """column name"""
+  id
+
+  """column name"""
+  slack_team_id
+
+  """column name"""
+  slack_user_id
+
+  """column name"""
+  team_member_id
+}
+
+"""
+input type for updating data in table "team_member_slack_installation"
+"""
+input team_member_slack_installation_set_input {
+  data: jsonb
+  id: uuid
+  slack_team_id: String
+  slack_user_id: String
+  team_member_id: uuid
+}
+
+"""
+update columns of table "team_member_slack_installation"
+"""
+enum team_member_slack_installation_update_column {
+  """column name"""
+  data
+
+  """column name"""
+  id
+
+  """column name"""
+  slack_team_id
+
+  """column name"""
+  slack_user_id
+
+  """column name"""
+  team_member_id
 }
 
 """
 update columns of table "team_member"
 """
 enum team_member_update_column {
+  """column name"""
+  id
+
+  """column name"""
+  notify_email
+
+  """column name"""
+  notify_slack
+
   """column name"""
   team_id
 
@@ -8429,6 +8694,7 @@ type team_slack_installation {
     """JSON select path"""
     path: String
   ): jsonb!
+  slack_team_id: String!
 
   """An object relationship"""
   team: team!
@@ -8465,6 +8731,7 @@ input team_slack_installation_bool_exp {
   _not: team_slack_installation_bool_exp
   _or: [team_slack_installation_bool_exp!]
   data: jsonb_comparison_exp
+  slack_team_id: String_comparison_exp
   team: team_bool_exp
   team_id: uuid_comparison_exp
 }
@@ -8475,6 +8742,9 @@ unique or primary key constraints on table "team_slack_installation"
 enum team_slack_installation_constraint {
   """unique or primary key constraint"""
   team_slack_installation_pkey
+
+  """unique or primary key constraint"""
+  team_slack_installation_slack_team_id_key
 }
 
 """
@@ -8503,17 +8773,20 @@ input type for inserting data into table "team_slack_installation"
 """
 input team_slack_installation_insert_input {
   data: jsonb
+  slack_team_id: String
   team: team_obj_rel_insert_input
   team_id: uuid
 }
 
 """aggregate max on columns"""
 type team_slack_installation_max_fields {
+  slack_team_id: String
   team_id: uuid
 }
 
 """aggregate min on columns"""
 type team_slack_installation_min_fields {
+  slack_team_id: String
   team_id: uuid
 }
 
@@ -8550,6 +8823,7 @@ input team_slack_installation_on_conflict {
 """Ordering options when selecting data from "team_slack_installation"."""
 input team_slack_installation_order_by {
   data: order_by
+  slack_team_id: order_by
   team: team_order_by
   team_id: order_by
 }
@@ -8572,6 +8846,9 @@ enum team_slack_installation_select_column {
   data
 
   """column name"""
+  slack_team_id
+
+  """column name"""
   team_id
 }
 
@@ -8580,6 +8857,7 @@ input type for updating data in table "team_slack_installation"
 """
 input team_slack_installation_set_input {
   data: jsonb
+  slack_team_id: String
   team_id: uuid
 }
 
@@ -8589,6 +8867,9 @@ update columns of table "team_slack_installation"
 enum team_slack_installation_update_column {
   """column name"""
   data
+
+  """column name"""
+  slack_team_id
 
   """column name"""
   team_id
@@ -8649,7 +8930,6 @@ input timestamptz_comparison_exp {
 columns and relationships of "topic"
 """
 type topic {
-  archived_at: timestamptz
   closed_at: timestamp
 
   """An object relationship"""
@@ -8785,7 +9065,6 @@ input topic_bool_exp {
   _and: [topic_bool_exp!]
   _not: topic_bool_exp
   _or: [topic_bool_exp!]
-  archived_at: timestamptz_comparison_exp
   closed_at: timestamp_comparison_exp
   closed_by_user: user_bool_exp
   closed_by_user_id: uuid_comparison_exp
@@ -8817,7 +9096,6 @@ enum topic_constraint {
 input type for inserting data into table "topic"
 """
 input topic_insert_input {
-  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user: user_obj_rel_insert_input
   closed_by_user_id: uuid
@@ -8836,7 +9114,6 @@ input topic_insert_input {
 
 """aggregate max on columns"""
 type topic_max_fields {
-  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -8852,7 +9129,6 @@ type topic_max_fields {
 order by max() on columns of table "topic"
 """
 input topic_max_order_by {
-  archived_at: order_by
   closed_at: order_by
   closed_by_user_id: order_by
   closing_summary: order_by
@@ -9038,7 +9314,6 @@ enum topic_member_update_column {
 
 """aggregate min on columns"""
 type topic_min_fields {
-  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -9054,7 +9329,6 @@ type topic_min_fields {
 order by min() on columns of table "topic"
 """
 input topic_min_order_by {
-  archived_at: order_by
   closed_at: order_by
   closed_by_user_id: order_by
   closing_summary: order_by
@@ -9098,7 +9372,6 @@ input topic_on_conflict {
 
 """Ordering options when selecting data from "topic"."""
 input topic_order_by {
-  archived_at: order_by
   closed_at: order_by
   closed_by_user: user_order_by
   closed_by_user_id: order_by
@@ -9124,9 +9397,6 @@ input topic_pk_columns_input {
 select columns of table "topic"
 """
 enum topic_select_column {
-  """column name"""
-  archived_at
-
   """column name"""
   closed_at
 
@@ -9159,7 +9429,6 @@ enum topic_select_column {
 input type for updating data in table "topic"
 """
 input topic_set_input {
-  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -9175,9 +9444,6 @@ input topic_set_input {
 update columns of table "topic"
 """
 enum topic_update_column {
-  """column name"""
-  archived_at
-
   """column name"""
   closed_at
 

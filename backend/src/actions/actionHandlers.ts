@@ -1,6 +1,6 @@
 import { getUploadUrl } from "~backend/src/attachments/attachments";
 import { roomInvitationView } from "~backend/src/roomInvitation/roomInvitationView";
-import { getTeamSlackInstallationURL } from "~backend/src/slack";
+import { getTeamSlackInstallationURL } from "~backend/src/slack/install";
 import { lookupTeamName } from "~backend/src/teamInvitation/lookupTeamName";
 import { resendInvitation } from "~backend/src/teamInvitation/resendInvitation";
 
