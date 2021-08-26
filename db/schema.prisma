@@ -92,6 +92,8 @@ model room {
   is_private                      Boolean           @default(false)
   last_activity_at                DateTime?         @db.Timestamptz(6)
   owner_id                        String            @db.Uuid
+  recurring_days                  Int?
+  recurring_last_restart          DateTime?         @db.Timestamptz(6)
   user                            user              @relation(fields: [creator_id], references: [id])
   user_room_owner_idTouser        user              @relation("room_owner_idTouser", fields: [owner_id], references: [id])
   space                           space             @relation(fields: [space_id], references: [id])
@@ -183,6 +185,7 @@ model topic {
   closed_by_user_id String?             @db.Uuid
   closing_summary   String?
   owner_id          String              @db.Uuid
+  archived_at       DateTime?           @db.Timestamptz(6)
   user              user                @relation(fields: [owner_id], references: [id])
   room              room                @relation(fields: [room_id], references: [id])
   last_seen_message last_seen_message[]
