@@ -19,7 +19,7 @@ const botScopes = [
   "chat:write",
 ];
 
-const userScopes = ["groups:read", "im:read", "mpim:read", "chat:write"];
+const userScopes = ["channels:read", "groups:read", "im:read", "mpim:read", "chat:write"];
 
 export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, metadata: Metadata) => {
   const basePath = isDev() ? (await getDevPublicTunnel(3000)).url + "/api/backend" : process.env.BACKEND_API_ENDPOINT;
