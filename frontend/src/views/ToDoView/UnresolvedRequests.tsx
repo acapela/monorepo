@@ -52,7 +52,7 @@ export const UnresolvedRequests = () => {
   }
 
   return (
-    <ToDoSection title={`Requests of your input (${tasks?.length || 0})`}>
+    <ToDoSection title={`Requests (${tasks?.length || 0})`}>
       {tasks.length === 0 && (
         <EmptyStatePlaceholder icon={<IconCheck />} description="There are no pending tasks for you" />
       )}
@@ -69,10 +69,19 @@ export const UnresolvedRequests = () => {
                 spaceId: topic.room.space.id,
               })}
             >
-              <UIMessageText message={message} />
-              <PopoverMenuTrigger options={getMenuOptions(task)}>
-                <CircleOptionsButton />
-              </PopoverMenuTrigger>
+              <UIInfo>
+                <UITopArea>
+                  <UITopicTitle>{"Sup this is the topic"}</UITopicTitle>
+                </UITopArea>
+                <UIMessageArea>
+                  <UIMessageText message={message} />
+                </UIMessageArea>
+                <UIRightArea>
+                  <PopoverMenuTrigger options={getMenuOptions(task)}>
+                    <CircleOptionsButton />
+                  </PopoverMenuTrigger>
+                </UIRightArea>
+              </UIInfo>
             </ToDoItem>
           </Fragment>
         );
@@ -80,6 +89,35 @@ export const UnresolvedRequests = () => {
     </ToDoSection>
   );
 };
+
+const UIInfo = styled.div<{}>`
+  display: grid;
+  grid-template-columns: 3fr 40px;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "TopArea RightMost"
+    "MessageArea RightMost";
+`;
+
+const UITopArea = styled.div<{}>`
+  grid-area: TopArea;
+`;
+
+const UITopicTitle = styled.div<{}>`
+  ${theme.font.h6.build}
+`;
+
+const UIMessageArea = styled.div<{}>`
+  grid-area: MessageArea;
+`;
+
+const UIRightArea = styled.div<{}>`
+  grid-area: RightMost;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const UIMessageText = styled(MessageText)`
   ${theme.font.body14.build()}
