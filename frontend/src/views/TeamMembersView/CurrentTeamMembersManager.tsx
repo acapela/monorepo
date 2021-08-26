@@ -70,7 +70,7 @@ export const CurrentTeamMembersManager = () => {
     {
       input: { teamId: team?.id ?? "", redirectURL: isServer ? "" : location.href },
     },
-    { skip: isServer || !isCurrentUserTeamOwner || !!team.slack_installation }
+    { skip: isServer || Boolean(team && team.slack_installation) }
   );
 
   if (!team) {
