@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import styled from "styled-components";
 
+import { DiscussionTag, ShareInformationTag } from "~frontend/../../ui/tags";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask, useTasksQuery } from "~frontend/gql/tasks";
 import { routes } from "~frontend/router";
@@ -72,6 +73,8 @@ export const UnresolvedRequests = () => {
               <UIInfo>
                 <UITopArea>
                   <UITopicTitle>{"Sup this is the topic"}</UITopicTitle>
+                  {task.type === "request-response" && <DiscussionTag />}
+                  {task.type === "request-read" && <ShareInformationTag />}
                 </UITopArea>
                 <UIMessageArea>
                   <UIMessageText message={message} />
@@ -94,7 +97,7 @@ const UIInfo = styled.div<{}>`
   display: grid;
   grid-template-columns: 3fr 40px;
   grid-template-rows: 1fr 1fr;
-  gap: 0px 0px;
+  gap: 8px 0px;
   grid-template-areas:
     "TopArea RightMost"
     "MessageArea RightMost";
@@ -102,6 +105,11 @@ const UIInfo = styled.div<{}>`
 
 const UITopArea = styled.div<{}>`
   grid-area: TopArea;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const UITopicTitle = styled.div<{}>`

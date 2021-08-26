@@ -22,6 +22,7 @@ export const TaskBasicInfoFragment = createFragment<TaskBasicInfoFragmentType>(
       created_at
       seen_at
       done_at
+      type
     }
   `
 );

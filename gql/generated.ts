@@ -9114,7 +9114,7 @@ export type RemoveSpaceMemberMutation = (
 
 export type TaskBasicInfoFragment = (
   { __typename?: 'task' }
-  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'created_at' | 'seen_at' | 'done_at'>
+  & Pick<Task, 'id' | 'user_id' | 'message_id' | 'created_at' | 'seen_at' | 'done_at' | 'type'>
 );
 
 export type TaskDetailedInfoFragment = (
