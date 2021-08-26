@@ -4,6 +4,7 @@ import { Message, Notification, PrismaPromise, Task, db } from "~db";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { EditorMentionData } from "~shared/types/editor";
+import { TaskType } from "~shared/types/task";
 
 import { createNotification } from "../notifications/entity";
 
@@ -68,14 +69,44 @@ export async function createMessageMentionNotifications(message: Message, messag
   return await db.$transaction(createNotificationPromises);
 }
 
+function getHighestPriorityTaskType(types: TaskType[]): TaskType {
+  if (types.includes("request-response")) return "request-response";
+  return "request-read";
+}
+
 export async function createTasksFromNewMentions(message: Message, messageBefore: Message | null) {
-  const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
+  const allMentionsInMessage = getNewMentionNodesFromMessage(message, messageBefore);
+
+  const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
+
+  allMentionsInMessage.map((mention) => {
+    const { userId, type } = mention.attrs.data;
+
+    // Exclude directly mention types that don't generate a task
+    if (type === "notification-only") {
+      return;
+    }
+
+    if (possibleNewTasksPerUserInMessage[userId]) {
+      possibleNewTasksPerUserInMessage[userId].push(type);
+    } else {
+      possibleNewTasksPerUserInMessage[userId] = [type];
+    }
+  });
+
+  const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: TaskType }> = Object.keys(
+    possibleNewTasksPerUserInMessage
+  ).map((user_id) => ({
+    user_id,
+    type: getHighestPriorityTaskType(possibleNewTasksPerUserInMessage[user_id]),
+  }));
+
   const createTasksPromises: Array<PrismaPromise<Task>> = [];
 
-  for (const mentionedUserId of mentionedUserIds) {
+  for (const { user_id, type } of mostImportantSingleTaskPerUserInMessage) {
     createTasksPromises.push(
       db.task.create({
-        data: { message_id: message.id, user_id: mentionedUserId },
+        data: { message_id: message.id, user_id, type },
       })
     );
   }
