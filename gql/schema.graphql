@@ -37,6 +37,21 @@ type GetTeamSlackInstallationURLOutput {
   url: String!
 }
 
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _is_null: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
 type LookupTeamNameResponse {
   email: String!
   inviter_name: String!
@@ -2834,6 +2849,9 @@ type mutation_root {
   update data of the table: "room"
   """
   update_room(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: room_inc_input
+
     """sets the columns of the filtered rows to the given values"""
     _set: room_set_input
 
@@ -2845,6 +2863,9 @@ type mutation_root {
   update single row of the table: "room"
   """
   update_room_by_pk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: room_inc_input
+
     """sets the columns of the filtered rows to the given values"""
     _set: room_set_input
     pk_columns: room_pk_columns_input!
@@ -4843,6 +4864,8 @@ type room {
   """An object relationship"""
   owner: user!
   owner_id: uuid!
+  recurring_days: Int
+  recurring_last_restart: timestamptz
   slug: String!
   source_google_calendar_event_id: String
 
@@ -4900,18 +4923,34 @@ type room_aggregate {
 aggregate fields of "room"
 """
 type room_aggregate_fields {
+  avg: room_avg_fields
   count(columns: [room_select_column!], distinct: Boolean): Int!
   max: room_max_fields
   min: room_min_fields
+  stddev: room_stddev_fields
+  stddev_pop: room_stddev_pop_fields
+  stddev_samp: room_stddev_samp_fields
+  sum: room_sum_fields
+  var_pop: room_var_pop_fields
+  var_samp: room_var_samp_fields
+  variance: room_variance_fields
 }
 
 """
 order by aggregate values of table "room"
 """
 input room_aggregate_order_by {
+  avg: room_avg_order_by
   count: order_by
   max: room_max_order_by
   min: room_min_order_by
+  stddev: room_stddev_order_by
+  stddev_pop: room_stddev_pop_order_by
+  stddev_samp: room_stddev_samp_order_by
+  sum: room_sum_order_by
+  var_pop: room_var_pop_order_by
+  var_samp: room_var_samp_order_by
+  variance: room_variance_order_by
 }
 
 """
@@ -4922,6 +4961,18 @@ input room_arr_rel_insert_input {
 
   """on conflict condition"""
   on_conflict: room_on_conflict
+}
+
+"""aggregate avg on columns"""
+type room_avg_fields {
+  recurring_days: Float
+}
+
+"""
+order by avg() on columns of table "room"
+"""
+input room_avg_order_by {
+  recurring_days: order_by
 }
 
 """
@@ -4946,6 +4997,8 @@ input room_bool_exp {
   notification_job_id: String_comparison_exp
   owner: user_bool_exp
   owner_id: uuid_comparison_exp
+  recurring_days: Int_comparison_exp
+  recurring_last_restart: timestamptz_comparison_exp
   slug: String_comparison_exp
   source_google_calendar_event_id: String_comparison_exp
   space: space_bool_exp
@@ -4963,6 +5016,13 @@ enum room_constraint {
 
   """unique or primary key constraint"""
   room_slug_space_id_key
+}
+
+"""
+input type for incrementing numeric columns in table "room"
+"""
+input room_inc_input {
+  recurring_days: Int
 }
 
 """
@@ -4984,6 +5044,8 @@ input room_insert_input {
   notification_job_id: String
   owner: user_obj_rel_insert_input
   owner_id: uuid
+  recurring_days: Int
+  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space: space_obj_rel_insert_input
@@ -5384,6 +5446,8 @@ type room_max_fields {
   name: String
   notification_job_id: String
   owner_id: uuid
+  recurring_days: Int
+  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -5403,6 +5467,8 @@ input room_max_order_by {
   name: order_by
   notification_job_id: order_by
   owner_id: order_by
+  recurring_days: order_by
+  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -5595,6 +5661,8 @@ type room_min_fields {
   name: String
   notification_job_id: String
   owner_id: uuid
+  recurring_days: Int
+  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
@@ -5614,6 +5682,8 @@ input room_min_order_by {
   name: order_by
   notification_job_id: order_by
   owner_id: order_by
+  recurring_days: order_by
+  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space_id: order_by
@@ -5667,6 +5737,8 @@ input room_order_by {
   notification_job_id: order_by
   owner: user_order_by
   owner_id: order_by
+  recurring_days: order_by
+  recurring_last_restart: order_by
   slug: order_by
   source_google_calendar_event_id: order_by
   space: space_order_by
@@ -5715,6 +5787,12 @@ enum room_select_column {
   owner_id
 
   """column name"""
+  recurring_days
+
+  """column name"""
+  recurring_last_restart
+
+  """column name"""
   slug
 
   """column name"""
@@ -5741,10 +5819,60 @@ input room_set_input {
   name: String
   notification_job_id: String
   owner_id: uuid
+  recurring_days: Int
+  recurring_last_restart: timestamptz
   slug: String
   source_google_calendar_event_id: String
   space_id: uuid
   summary: String
+}
+
+"""aggregate stddev on columns"""
+type room_stddev_fields {
+  recurring_days: Float
+}
+
+"""
+order by stddev() on columns of table "room"
+"""
+input room_stddev_order_by {
+  recurring_days: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type room_stddev_pop_fields {
+  recurring_days: Float
+}
+
+"""
+order by stddev_pop() on columns of table "room"
+"""
+input room_stddev_pop_order_by {
+  recurring_days: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type room_stddev_samp_fields {
+  recurring_days: Float
+}
+
+"""
+order by stddev_samp() on columns of table "room"
+"""
+input room_stddev_samp_order_by {
+  recurring_days: order_by
+}
+
+"""aggregate sum on columns"""
+type room_sum_fields {
+  recurring_days: Int
+}
+
+"""
+order by sum() on columns of table "room"
+"""
+input room_sum_order_by {
+  recurring_days: order_by
 }
 
 """
@@ -5782,6 +5910,12 @@ enum room_update_column {
   owner_id
 
   """column name"""
+  recurring_days
+
+  """column name"""
+  recurring_last_restart
+
+  """column name"""
   slug
 
   """column name"""
@@ -5792,6 +5926,42 @@ enum room_update_column {
 
   """column name"""
   summary
+}
+
+"""aggregate var_pop on columns"""
+type room_var_pop_fields {
+  recurring_days: Float
+}
+
+"""
+order by var_pop() on columns of table "room"
+"""
+input room_var_pop_order_by {
+  recurring_days: order_by
+}
+
+"""aggregate var_samp on columns"""
+type room_var_samp_fields {
+  recurring_days: Float
+}
+
+"""
+order by var_samp() on columns of table "room"
+"""
+input room_var_samp_order_by {
+  recurring_days: order_by
+}
+
+"""aggregate variance on columns"""
+type room_variance_fields {
+  recurring_days: Float
+}
+
+"""
+order by variance() on columns of table "room"
+"""
+input room_variance_order_by {
+  recurring_days: order_by
 }
 
 """
@@ -8930,6 +9100,7 @@ input timestamptz_comparison_exp {
 columns and relationships of "topic"
 """
 type topic {
+  archived_at: timestamptz
   closed_at: timestamp
 
   """An object relationship"""
@@ -9065,6 +9236,7 @@ input topic_bool_exp {
   _and: [topic_bool_exp!]
   _not: topic_bool_exp
   _or: [topic_bool_exp!]
+  archived_at: timestamptz_comparison_exp
   closed_at: timestamp_comparison_exp
   closed_by_user: user_bool_exp
   closed_by_user_id: uuid_comparison_exp
@@ -9096,6 +9268,7 @@ enum topic_constraint {
 input type for inserting data into table "topic"
 """
 input topic_insert_input {
+  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user: user_obj_rel_insert_input
   closed_by_user_id: uuid
@@ -9114,6 +9287,7 @@ input topic_insert_input {
 
 """aggregate max on columns"""
 type topic_max_fields {
+  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -9129,6 +9303,7 @@ type topic_max_fields {
 order by max() on columns of table "topic"
 """
 input topic_max_order_by {
+  archived_at: order_by
   closed_at: order_by
   closed_by_user_id: order_by
   closing_summary: order_by
@@ -9314,6 +9489,7 @@ enum topic_member_update_column {
 
 """aggregate min on columns"""
 type topic_min_fields {
+  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -9329,6 +9505,7 @@ type topic_min_fields {
 order by min() on columns of table "topic"
 """
 input topic_min_order_by {
+  archived_at: order_by
   closed_at: order_by
   closed_by_user_id: order_by
   closing_summary: order_by
@@ -9372,6 +9549,7 @@ input topic_on_conflict {
 
 """Ordering options when selecting data from "topic"."""
 input topic_order_by {
+  archived_at: order_by
   closed_at: order_by
   closed_by_user: user_order_by
   closed_by_user_id: order_by
@@ -9397,6 +9575,9 @@ input topic_pk_columns_input {
 select columns of table "topic"
 """
 enum topic_select_column {
+  """column name"""
+  archived_at
+
   """column name"""
   closed_at
 
@@ -9429,6 +9610,7 @@ enum topic_select_column {
 input type for updating data in table "topic"
 """
 input topic_set_input {
+  archived_at: timestamptz
   closed_at: timestamp
   closed_by_user_id: uuid
   closing_summary: String
@@ -9444,6 +9626,9 @@ input topic_set_input {
 update columns of table "topic"
 """
 enum topic_update_column {
+  """column name"""
+  archived_at
+
   """column name"""
   closed_at
 

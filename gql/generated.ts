@@ -42,6 +42,19 @@ export interface GetTeamSlackInstallationUrlOutput {
   url: Scalars['String'];
 }
 
+/** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+export interface Int_Comparison_Exp {
+  _eq?: Maybe<Scalars['Int']>;
+  _gt?: Maybe<Scalars['Int']>;
+  _gte?: Maybe<Scalars['Int']>;
+  _in?: Maybe<Array<Scalars['Int']>>;
+  _is_null?: Maybe<Scalars['Boolean']>;
+  _lt?: Maybe<Scalars['Int']>;
+  _lte?: Maybe<Scalars['Int']>;
+  _neq?: Maybe<Scalars['Int']>;
+  _nin?: Maybe<Array<Scalars['Int']>>;
+}
+
 export interface LookupTeamNameResponse {
   __typename?: 'LookupTeamNameResponse';
   email: Scalars['String'];
@@ -2558,6 +2571,7 @@ export interface Mutation_RootUpdate_Notification_By_PkArgs {
 
 /** mutation root */
 export interface Mutation_RootUpdate_RoomArgs {
+  _inc?: Maybe<Room_Inc_Input>;
   _set?: Maybe<Room_Set_Input>;
   where: Room_Bool_Exp;
 }
@@ -2565,6 +2579,7 @@ export interface Mutation_RootUpdate_RoomArgs {
 
 /** mutation root */
 export interface Mutation_RootUpdate_Room_By_PkArgs {
+  _inc?: Maybe<Room_Inc_Input>;
   _set?: Maybe<Room_Set_Input>;
   pk_columns: Room_Pk_Columns_Input;
 }
@@ -3889,6 +3904,8 @@ export interface Room {
   /** An object relationship */
   owner: User;
   owner_id: Scalars['uuid'];
+  recurring_days?: Maybe<Scalars['Int']>;
+  recurring_last_restart?: Maybe<Scalars['timestamptz']>;
   slug: Scalars['String'];
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   /** An object relationship */
@@ -3971,9 +3988,17 @@ export interface Room_Aggregate {
 /** aggregate fields of "room" */
 export interface Room_Aggregate_Fields {
   __typename?: 'room_aggregate_fields';
+  avg?: Maybe<Room_Avg_Fields>;
   count: Scalars['Int'];
   max?: Maybe<Room_Max_Fields>;
   min?: Maybe<Room_Min_Fields>;
+  stddev?: Maybe<Room_Stddev_Fields>;
+  stddev_pop?: Maybe<Room_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Room_Stddev_Samp_Fields>;
+  sum?: Maybe<Room_Sum_Fields>;
+  var_pop?: Maybe<Room_Var_Pop_Fields>;
+  var_samp?: Maybe<Room_Var_Samp_Fields>;
+  variance?: Maybe<Room_Variance_Fields>;
 }
 
 
@@ -3985,9 +4010,17 @@ export interface Room_Aggregate_FieldsCountArgs {
 
 /** order by aggregate values of table "room" */
 export interface Room_Aggregate_Order_By {
+  avg?: Maybe<Room_Avg_Order_By>;
   count?: Maybe<Order_By>;
   max?: Maybe<Room_Max_Order_By>;
   min?: Maybe<Room_Min_Order_By>;
+  stddev?: Maybe<Room_Stddev_Order_By>;
+  stddev_pop?: Maybe<Room_Stddev_Pop_Order_By>;
+  stddev_samp?: Maybe<Room_Stddev_Samp_Order_By>;
+  sum?: Maybe<Room_Sum_Order_By>;
+  var_pop?: Maybe<Room_Var_Pop_Order_By>;
+  var_samp?: Maybe<Room_Var_Samp_Order_By>;
+  variance?: Maybe<Room_Variance_Order_By>;
 }
 
 /** input type for inserting array relation for remote table "room" */
@@ -3995,6 +4028,17 @@ export interface Room_Arr_Rel_Insert_Input {
   data: Array<Room_Insert_Input>;
   /** on conflict condition */
   on_conflict?: Maybe<Room_On_Conflict>;
+}
+
+/** aggregate avg on columns */
+export interface Room_Avg_Fields {
+  __typename?: 'room_avg_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by avg() on columns of table "room" */
+export interface Room_Avg_Order_By {
+  recurring_days?: Maybe<Order_By>;
 }
 
 /** Boolean expression to filter rows from the table "room". All fields are combined with a logical 'AND'. */
@@ -4017,6 +4061,8 @@ export interface Room_Bool_Exp {
   notification_job_id?: Maybe<String_Comparison_Exp>;
   owner?: Maybe<User_Bool_Exp>;
   owner_id?: Maybe<Uuid_Comparison_Exp>;
+  recurring_days?: Maybe<Int_Comparison_Exp>;
+  recurring_last_restart?: Maybe<Timestamptz_Comparison_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
   source_google_calendar_event_id?: Maybe<String_Comparison_Exp>;
   space?: Maybe<Space_Bool_Exp>;
@@ -4031,6 +4077,11 @@ export type Room_Constraint =
   | 'room_pkey'
   /** unique or primary key constraint */
   | 'room_slug_space_id_key';
+
+/** input type for incrementing numeric columns in table "room" */
+export interface Room_Inc_Input {
+  recurring_days?: Maybe<Scalars['Int']>;
+}
 
 /** input type for inserting data into table "room" */
 export interface Room_Insert_Input {
@@ -4049,6 +4100,8 @@ export interface Room_Insert_Input {
   notification_job_id?: Maybe<Scalars['String']>;
   owner?: Maybe<User_Obj_Rel_Insert_Input>;
   owner_id?: Maybe<Scalars['uuid']>;
+  recurring_days?: Maybe<Scalars['Int']>;
+  recurring_last_restart?: Maybe<Scalars['timestamptz']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space?: Maybe<Space_Obj_Rel_Insert_Input>;
@@ -4401,6 +4454,8 @@ export interface Room_Max_Fields {
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
+  recurring_days?: Maybe<Scalars['Int']>;
+  recurring_last_restart?: Maybe<Scalars['timestamptz']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -4418,6 +4473,8 @@ export interface Room_Max_Order_By {
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
+  recurring_days?: Maybe<Order_By>;
+  recurring_last_restart?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
@@ -4585,6 +4642,8 @@ export interface Room_Min_Fields {
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
+  recurring_days?: Maybe<Scalars['Int']>;
+  recurring_last_restart?: Maybe<Scalars['timestamptz']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
@@ -4602,6 +4661,8 @@ export interface Room_Min_Order_By {
   name?: Maybe<Order_By>;
   notification_job_id?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
+  recurring_days?: Maybe<Order_By>;
+  recurring_last_restart?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
@@ -4648,6 +4709,8 @@ export interface Room_Order_By {
   notification_job_id?: Maybe<Order_By>;
   owner?: Maybe<User_Order_By>;
   owner_id?: Maybe<Order_By>;
+  recurring_days?: Maybe<Order_By>;
+  recurring_last_restart?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   source_google_calendar_event_id?: Maybe<Order_By>;
   space?: Maybe<Space_Order_By>;
@@ -4684,6 +4747,10 @@ export type Room_Select_Column =
   /** column name */
   | 'owner_id'
   /** column name */
+  | 'recurring_days'
+  /** column name */
+  | 'recurring_last_restart'
+  /** column name */
   | 'slug'
   /** column name */
   | 'source_google_calendar_event_id'
@@ -4704,10 +4771,56 @@ export interface Room_Set_Input {
   name?: Maybe<Scalars['String']>;
   notification_job_id?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
+  recurring_days?: Maybe<Scalars['Int']>;
+  recurring_last_restart?: Maybe<Scalars['timestamptz']>;
   slug?: Maybe<Scalars['String']>;
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
+}
+
+/** aggregate stddev on columns */
+export interface Room_Stddev_Fields {
+  __typename?: 'room_stddev_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by stddev() on columns of table "room" */
+export interface Room_Stddev_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
+
+/** aggregate stddev_pop on columns */
+export interface Room_Stddev_Pop_Fields {
+  __typename?: 'room_stddev_pop_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by stddev_pop() on columns of table "room" */
+export interface Room_Stddev_Pop_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
+
+/** aggregate stddev_samp on columns */
+export interface Room_Stddev_Samp_Fields {
+  __typename?: 'room_stddev_samp_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by stddev_samp() on columns of table "room" */
+export interface Room_Stddev_Samp_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
+
+/** aggregate sum on columns */
+export interface Room_Sum_Fields {
+  __typename?: 'room_sum_fields';
+  recurring_days?: Maybe<Scalars['Int']>;
+}
+
+/** order by sum() on columns of table "room" */
+export interface Room_Sum_Order_By {
+  recurring_days?: Maybe<Order_By>;
 }
 
 /** update columns of table "room" */
@@ -4733,6 +4846,10 @@ export type Room_Update_Column =
   /** column name */
   | 'owner_id'
   /** column name */
+  | 'recurring_days'
+  /** column name */
+  | 'recurring_last_restart'
+  /** column name */
   | 'slug'
   /** column name */
   | 'source_google_calendar_event_id'
@@ -4740,6 +4857,39 @@ export type Room_Update_Column =
   | 'space_id'
   /** column name */
   | 'summary';
+
+/** aggregate var_pop on columns */
+export interface Room_Var_Pop_Fields {
+  __typename?: 'room_var_pop_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by var_pop() on columns of table "room" */
+export interface Room_Var_Pop_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
+
+/** aggregate var_samp on columns */
+export interface Room_Var_Samp_Fields {
+  __typename?: 'room_var_samp_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by var_samp() on columns of table "room" */
+export interface Room_Var_Samp_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
+
+/** aggregate variance on columns */
+export interface Room_Variance_Fields {
+  __typename?: 'room_variance_fields';
+  recurring_days?: Maybe<Scalars['Float']>;
+}
+
+/** order by variance() on columns of table "room" */
+export interface Room_Variance_Order_By {
+  recurring_days?: Maybe<Order_By>;
+}
 
 /** columns and relationships of "space" */
 export interface Space {
@@ -7170,6 +7320,7 @@ export interface Timestamptz_Comparison_Exp {
 /** columns and relationships of "topic" */
 export interface Topic {
   __typename?: 'topic';
+  archived_at?: Maybe<Scalars['timestamptz']>;
   closed_at?: Maybe<Scalars['timestamp']>;
   /** An object relationship */
   closed_by_user?: Maybe<User>;
@@ -7276,6 +7427,7 @@ export interface Topic_Bool_Exp {
   _and?: Maybe<Array<Topic_Bool_Exp>>;
   _not?: Maybe<Topic_Bool_Exp>;
   _or?: Maybe<Array<Topic_Bool_Exp>>;
+  archived_at?: Maybe<Timestamptz_Comparison_Exp>;
   closed_at?: Maybe<Timestamp_Comparison_Exp>;
   closed_by_user?: Maybe<User_Bool_Exp>;
   closed_by_user_id?: Maybe<Uuid_Comparison_Exp>;
@@ -7301,6 +7453,7 @@ export type Topic_Constraint =
 
 /** input type for inserting data into table "topic" */
 export interface Topic_Insert_Input {
+  archived_at?: Maybe<Scalars['timestamptz']>;
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user?: Maybe<User_Obj_Rel_Insert_Input>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
@@ -7320,6 +7473,7 @@ export interface Topic_Insert_Input {
 /** aggregate max on columns */
 export interface Topic_Max_Fields {
   __typename?: 'topic_max_fields';
+  archived_at?: Maybe<Scalars['timestamptz']>;
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
@@ -7333,6 +7487,7 @@ export interface Topic_Max_Fields {
 
 /** order by max() on columns of table "topic" */
 export interface Topic_Max_Order_By {
+  archived_at?: Maybe<Order_By>;
   closed_at?: Maybe<Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
@@ -7494,6 +7649,7 @@ export type Topic_Member_Update_Column =
 /** aggregate min on columns */
 export interface Topic_Min_Fields {
   __typename?: 'topic_min_fields';
+  archived_at?: Maybe<Scalars['timestamptz']>;
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
@@ -7507,6 +7663,7 @@ export interface Topic_Min_Fields {
 
 /** order by min() on columns of table "topic" */
 export interface Topic_Min_Order_By {
+  archived_at?: Maybe<Order_By>;
   closed_at?: Maybe<Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
   closing_summary?: Maybe<Order_By>;
@@ -7543,6 +7700,7 @@ export interface Topic_On_Conflict {
 
 /** Ordering options when selecting data from "topic". */
 export interface Topic_Order_By {
+  archived_at?: Maybe<Order_By>;
   closed_at?: Maybe<Order_By>;
   closed_by_user?: Maybe<User_Order_By>;
   closed_by_user_id?: Maybe<Order_By>;
@@ -7567,6 +7725,8 @@ export interface Topic_Pk_Columns_Input {
 /** select columns of table "topic" */
 export type Topic_Select_Column =
   /** column name */
+  | 'archived_at'
+  /** column name */
   | 'closed_at'
   /** column name */
   | 'closed_by_user_id'
@@ -7587,6 +7747,7 @@ export type Topic_Select_Column =
 
 /** input type for updating data in table "topic" */
 export interface Topic_Set_Input {
+  archived_at?: Maybe<Scalars['timestamptz']>;
   closed_at?: Maybe<Scalars['timestamp']>;
   closed_by_user_id?: Maybe<Scalars['uuid']>;
   closing_summary?: Maybe<Scalars['String']>;
@@ -7600,6 +7761,8 @@ export interface Topic_Set_Input {
 
 /** update columns of table "topic" */
 export type Topic_Update_Column =
+  /** column name */
+  | 'archived_at'
   /** column name */
   | 'closed_at'
   /** column name */
@@ -11308,7 +11471,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'owner' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'owner' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11327,6 +11490,8 @@ export type roomFieldPolicy = {
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_last_restart?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11340,11 +11505,23 @@ export type room_aggregateFieldPolicy = {
 	aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	nodes?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_aggregate_fieldsKeySpecifier = ('count' | 'max' | 'min' | room_aggregate_fieldsKeySpecifier)[];
+export type room_aggregate_fieldsKeySpecifier = ('avg' | 'count' | 'max' | 'min' | 'stddev' | 'stddev_pop' | 'stddev_samp' | 'sum' | 'var_pop' | 'var_samp' | 'variance' | room_aggregate_fieldsKeySpecifier)[];
 export type room_aggregate_fieldsFieldPolicy = {
+	avg?: FieldPolicy<any> | FieldReadFunction<any>,
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
+	min?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev_pop?: FieldPolicy<any> | FieldReadFunction<any>,
+	stddev_samp?: FieldPolicy<any> | FieldReadFunction<any>,
+	sum?: FieldPolicy<any> | FieldReadFunction<any>,
+	var_pop?: FieldPolicy<any> | FieldReadFunction<any>,
+	var_samp?: FieldPolicy<any> | FieldReadFunction<any>,
+	variance?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_avg_fieldsKeySpecifier = ('recurring_days' | room_avg_fieldsKeySpecifier)[];
+export type room_avg_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_invitationKeySpecifier = ('created_at' | 'email' | 'id' | 'inviting_user' | 'inviting_user_id' | 'room' | 'room_id' | 'team' | 'team_id' | 'token' | 'used_at' | 'used_by_user' | 'used_by_user_id' | room_invitationKeySpecifier)[];
 export type room_invitationFieldPolicy = {
@@ -11429,7 +11606,7 @@ export type room_last_posted_message_min_fieldsFieldPolicy = {
 	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
+export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11440,6 +11617,8 @@ export type room_max_fieldsFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_last_restart?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11478,7 +11657,7 @@ export type room_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
+export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
 export type room_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11489,6 +11668,8 @@ export type room_min_fieldsFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	notification_job_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>,
+	recurring_last_restart?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11498,6 +11679,34 @@ export type room_mutation_responseKeySpecifier = ('affected_rows' | 'returning' 
 export type room_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_stddev_fieldsKeySpecifier = ('recurring_days' | room_stddev_fieldsKeySpecifier)[];
+export type room_stddev_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_stddev_pop_fieldsKeySpecifier = ('recurring_days' | room_stddev_pop_fieldsKeySpecifier)[];
+export type room_stddev_pop_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_stddev_samp_fieldsKeySpecifier = ('recurring_days' | room_stddev_samp_fieldsKeySpecifier)[];
+export type room_stddev_samp_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_sum_fieldsKeySpecifier = ('recurring_days' | room_sum_fieldsKeySpecifier)[];
+export type room_sum_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_var_pop_fieldsKeySpecifier = ('recurring_days' | room_var_pop_fieldsKeySpecifier)[];
+export type room_var_pop_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_var_samp_fieldsKeySpecifier = ('recurring_days' | room_var_samp_fieldsKeySpecifier)[];
+export type room_var_samp_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type room_variance_fieldsKeySpecifier = ('recurring_days' | room_variance_fieldsKeySpecifier)[];
+export type room_variance_fieldsFieldPolicy = {
+	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'members' | 'members_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | 'slug' | 'team' | 'team_id' | spaceKeySpecifier)[];
 export type spaceFieldPolicy = {
@@ -11911,8 +12120,9 @@ export type team_slack_installation_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topicKeySpecifier = ('closed_at' | 'closed_by_user' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owner' | 'owner_id' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
+export type topicKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owner' | 'owner_id' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
 export type topicFieldPolicy = {
+	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_by_user?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11941,8 +12151,9 @@ export type topic_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_max_fieldsKeySpecifier = ('closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
 export type topic_max_fieldsFieldPolicy = {
+	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	closing_summary?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11986,8 +12197,9 @@ export type topic_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_min_fieldsKeySpecifier = ('closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
+export type topic_min_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
 export type topic_min_fieldsFieldPolicy = {
+	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_by_user_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	closing_summary?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12480,6 +12692,10 @@ export type TypedTypePolicies = TypePolicies & {
 		keyFields?: false | room_aggregate_fieldsKeySpecifier | (() => undefined | room_aggregate_fieldsKeySpecifier),
 		fields?: room_aggregate_fieldsFieldPolicy,
 	},
+	room_avg_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_avg_fieldsKeySpecifier | (() => undefined | room_avg_fieldsKeySpecifier),
+		fields?: room_avg_fieldsFieldPolicy,
+	},
 	room_invitation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_invitationKeySpecifier | (() => undefined | room_invitationKeySpecifier),
 		fields?: room_invitationFieldPolicy,
@@ -12559,6 +12775,34 @@ export type TypedTypePolicies = TypePolicies & {
 	room_mutation_response?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | room_mutation_responseKeySpecifier | (() => undefined | room_mutation_responseKeySpecifier),
 		fields?: room_mutation_responseFieldPolicy,
+	},
+	room_stddev_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_stddev_fieldsKeySpecifier | (() => undefined | room_stddev_fieldsKeySpecifier),
+		fields?: room_stddev_fieldsFieldPolicy,
+	},
+	room_stddev_pop_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_stddev_pop_fieldsKeySpecifier | (() => undefined | room_stddev_pop_fieldsKeySpecifier),
+		fields?: room_stddev_pop_fieldsFieldPolicy,
+	},
+	room_stddev_samp_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_stddev_samp_fieldsKeySpecifier | (() => undefined | room_stddev_samp_fieldsKeySpecifier),
+		fields?: room_stddev_samp_fieldsFieldPolicy,
+	},
+	room_sum_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_sum_fieldsKeySpecifier | (() => undefined | room_sum_fieldsKeySpecifier),
+		fields?: room_sum_fieldsFieldPolicy,
+	},
+	room_var_pop_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_var_pop_fieldsKeySpecifier | (() => undefined | room_var_pop_fieldsKeySpecifier),
+		fields?: room_var_pop_fieldsFieldPolicy,
+	},
+	room_var_samp_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_var_samp_fieldsKeySpecifier | (() => undefined | room_var_samp_fieldsKeySpecifier),
+		fields?: room_var_samp_fieldsFieldPolicy,
+	},
+	room_variance_fields?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | room_variance_fieldsKeySpecifier | (() => undefined | room_variance_fieldsKeySpecifier),
+		fields?: room_variance_fieldsFieldPolicy,
 	},
 	space?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | spaceKeySpecifier | (() => undefined | spaceKeySpecifier),
