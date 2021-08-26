@@ -10542,7 +10542,7 @@ export type ManageTopic_RoomFragment = (
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name' | 'closed_at'>
+  & Pick<Topic, 'id' | 'name' | 'closed_at' | 'archived_at'>
   & IsCurrentUserTopicManager_TopicFragment
 );
 

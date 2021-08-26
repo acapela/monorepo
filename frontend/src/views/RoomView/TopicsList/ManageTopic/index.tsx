@@ -29,6 +29,7 @@ const fragments = {
       id
       name
       closed_at
+      archived_at
       ...IsCurrentUserTopicManager_topic
     }
   `,
@@ -89,7 +90,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
       icon: <IconEdit />,
     });
 
-    if (topic.closed_at) {
+    if (topic.closed_at && !topic.archived_at) {
       options.push({
         label: "Archive topic",
         onSelect: handleArchiveSelect,
