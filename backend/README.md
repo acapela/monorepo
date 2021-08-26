@@ -37,6 +37,7 @@ Fortunately you can use this manifest "generator":
 2. replace `<YOUR-PERSONAL.local.lt-DOMAIN>` with your loca.lt domain (it's the one you see when the server starts)
 3. run it, you'll now have the manifest in your clipboard
 4. go to https://api.slack.com/apps?new_app=1 and use the manifest to create a new app
+   1. make sure to give it a unique name and command name
 5. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET` and `SLACK_SIGNING_SECRET` in your `.env`, based on your new app's info
 
 ```javascript
@@ -73,7 +74,7 @@ copy(
         ],
         "slash_commands": [
             {
-                "command": "/acapela",
+                "command": "/dev-acapela",
                 "url": "https://acape.la/api/backend/slack/commands",
                 "description": "Create a new Acapela room",
                 "usage_hint": "[room name]",
