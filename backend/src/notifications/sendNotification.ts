@@ -3,7 +3,7 @@ import { TeamMember, User, db } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 
-async function sendSlackNotification(teamId: string, email: string, text: string) {
+async function trySendSlackNotification(teamId: string, email: string, text: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });
   if (!slackInstallation) {
     return;
@@ -19,7 +19,7 @@ async function sendSlackNotification(teamId: string, email: string, text: string
   await slackClient.chat.postMessage({ token: botToken, channel: slackUser.id, text });
 }
 
-export const sendNotification = (
+export const sendNotificationPerPreference = (
   teamMember: TeamMember & { user: User },
   {
     subject,
@@ -33,7 +33,7 @@ export const sendNotification = (
   const { email } = user;
   assert(email, "Every user should have an email");
   return Promise.all([
-    teamMember.notify_slack ? sendSlackNotification(team_id, email, content) : undefined,
+    teamMember.notify_slack ? trySendSlackNotification(team_id, email, content) : undefined,
     teamMember.notify_email
       ? sendEmail({
           from: DEFAULT_NOTIFICATION_EMAIL,

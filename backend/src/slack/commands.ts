@@ -8,7 +8,15 @@ import { isChannelNotFoundError } from ".//utils";
 import { getSlackInstallURL } from "./install";
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
-  slackApp.command("/acapela", async ({ command, ack, respond, client, context }) => {
+  slackApp.command("/gregapela", async ({ command, ack, respond, client, context }) => {
+    const getMembers = async (token?: string) =>
+      (
+        await client.conversations.members({
+          channel: command.channel_id,
+          token,
+        })
+      )?.members ?? [];
+
     await ack();
 
     let roomNameInput = command.text;
@@ -38,14 +46,6 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
 
     const user = email ? await db.user.findFirst({ where: { email } }) : null;
 
-    const getMembers = async (token?: string) =>
-      (
-        await client.conversations.members({
-          channel: command.channel_id,
-          token,
-        })
-      )?.members ?? [];
-
     let slackMembers: string[] | null = null;
     try {
       slackMembers = await getMembers(context.userToken ?? context.botToken);
@@ -60,19 +60,10 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
         );
       }
       const slackInstallURL = await getSlackInstallURL({ withBot: false }, { teamId: team.id, userId: user.id });
-      return respond({
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text:
-                `Slack integration is required to open an Acapela from private conversations. ` +
-                `Please run the command again after connecting Acapela with your Slack <${slackInstallURL}|here>`,
-            },
-          },
-        ],
-      });
+      return respond(
+        `Slack integration is required to open an Acapela from private conversations. ` +
+          `Please run the command again after connecting Acapela with your Slack <${slackInstallURL}|here>`
+      );
     }
 
     const slackProfileResponses = await Promise.all(

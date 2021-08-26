@@ -14,7 +14,8 @@ import { assertDefined } from "~shared/assert";
 import { Checkbox } from "~ui/forms/Checkbox";
 import { theme } from "~ui/theme";
 
-const getDescription = (channel: string) => `Mentions and room invitations will be sent via ${channel}.`;
+const getNotificationChannelDescription = (channel: string) =>
+  `Mentions and room invitations will be sent via ${channel}.`;
 
 const LabeledCheckbox = ({
   title,
@@ -111,13 +112,13 @@ export function NotificationSettings() {
 
       <LabeledCheckbox
         title="Email"
-        description={getDescription("email")}
+        description={getNotificationChannelDescription("email")}
         isChecked={teamMember.notify_email}
         onChange={(isChecked) => handleUpdate({ notify_email: isChecked })}
       />
       <LabeledCheckbox
         title="Slack"
-        description={getDescription("slack")}
+        description={getNotificationChannelDescription("slack")}
         isChecked={teamMember.notify_slack}
         onChange={(isChecked) => handleUpdate({ notify_slack: isChecked })}
         isDisabled={!hasSlackInstallation}

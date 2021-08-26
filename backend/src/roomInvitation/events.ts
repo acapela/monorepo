@@ -15,10 +15,6 @@ export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEv
     return;
   }
 
-  if (!userId) {
-    throw new UnprocessableEntityError("user id missing");
-  }
-
   await createNotification({
     type: "addedToRoom",
     userId: addedUserId,

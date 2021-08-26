@@ -6,7 +6,7 @@ import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
 import { findRoomById } from "../rooms/rooms";
 import { findUserById, getNormalizedUserName } from "../users/users";
-import { sendNotification } from "./sendNotification";
+import { sendNotificationPerPreference } from "./sendNotification";
 
 async function sendMentionEmailNotification(notification: Notification, data: NotificationData<"topicMention">) {
   const {
@@ -37,7 +37,7 @@ async function sendMentionEmailNotification(notification: Notification, data: No
   const authorName = getNormalizedUserName(mentioningUser);
   const topicName = topic.name || "a topic";
   const link = `${process.env.FRONTEND_URL}/space/${topic.room.space_id}/${topic.room.id}/${topic.id}`;
-  await sendNotification(mentionedTeamMember, {
+  await sendNotificationPerPreference(mentionedTeamMember, {
     subject: `${authorName} has tagged you in ${topicName}`,
     content: [
       `Hi ${getNormalizedUserName(mentionedTeamMember.user)}!`,
@@ -68,7 +68,7 @@ async function sendAddedToRoomEmailNotification(notification: Notification, data
   assert(room.space_id, new UnprocessableEntityError(`invalid room entry: ${roomId}`));
 
   const inviterName = getNormalizedUserName(inviter);
-  await sendNotification(addedTeamMember, {
+  await sendNotificationPerPreference(addedTeamMember, {
     subject: `${inviterName} has invited you to collaborate on ${room.name}`,
     content: [
       `Hey!`,
