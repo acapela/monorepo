@@ -10542,7 +10542,7 @@ export type ManageTopic_RoomFragment = (
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'closed_at'>
   & IsCurrentUserTopicManager_TopicFragment
 );
 
@@ -10724,6 +10724,20 @@ export type DeleteTopicMutation = (
   & { topic?: Maybe<(
     { __typename?: 'topic' }
     & Pick<Topic, 'id' | 'room_id'>
+  )> }
+);
+
+export type ArchiveTopicMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  archivedAt: Scalars['timestamptz'];
+}>;
+
+
+export type ArchiveTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id'>
   )> }
 );
 

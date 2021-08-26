@@ -7,10 +7,10 @@ import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserT
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { useDeleteTopic, useUpdateTopicName } from "~frontend/views/RoomView/TopicsList/shared";
+import { useArchiveTopic, useDeleteTopic, useUpdateTopicName } from "~frontend/views/RoomView/TopicsList/shared";
 import { ManageTopic_RoomFragment, ManageTopic_TopicFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconArchive, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 const fragments = {
@@ -28,6 +28,7 @@ const fragments = {
     fragment ManageTopic_topic on topic {
       id
       name
+      closed_at
       ...IsCurrentUserTopicManager_topic
     }
   `,
@@ -41,7 +42,12 @@ interface Props {
 
 export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequest }: Props) => {
   const [updateTopicName] = useUpdateTopicName();
+  const [archiveTopic] = useArchiveTopic();
   const [deleteTopic] = useDeleteTopic();
+
+  const handleArchiveSelect = async () => {
+    await archiveTopic({ variables: { id: topic.id, roomId: room.id, archivedAt: new Date().toISOString() } });
+  };
 
   const handleDeleteSelect = useCallback(async () => {
     const isDeleteConfirmed = await openConfirmPrompt({
@@ -77,19 +83,26 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
 
   const options = [];
   if (isTopicManager) {
-    options.push(
-      {
-        label: "Rename topic",
-        onSelect: onRenameRequest ?? handleRenameWithModal,
-        icon: <IconEdit />,
-      },
-      {
-        label: "Delete topic",
-        isDestructive: true,
-        onSelect: handleDeleteSelect,
-        icon: <IconTrash />,
-      }
-    );
+    options.push({
+      label: "Rename topic",
+      onSelect: onRenameRequest ?? handleRenameWithModal,
+      icon: <IconEdit />,
+    });
+
+    if (topic.closed_at) {
+      options.push({
+        label: "Archive topic",
+        onSelect: handleArchiveSelect,
+        icon: <IconArchive />,
+      });
+    }
+
+    options.push({
+      label: "Delete topic",
+      isDestructive: true,
+      onSelect: handleDeleteSelect,
+      icon: <IconTrash />,
+    });
   }
 
   if (options.length < 1) return null;
