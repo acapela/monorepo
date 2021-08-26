@@ -1,8 +1,9 @@
-import { JSONContent } from "@tiptap/react";
+import { NodeViewProps } from "@tiptap/react";
 
 export interface AutocompleteNodeProps<D> {
-  node: JSONContent;
   data: D;
+  isEditable: boolean;
+  node: NodeViewProps["node"];
 }
 
 export interface AutocompletePickerProps<D> {
