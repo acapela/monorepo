@@ -48,6 +48,9 @@ export function ItemsDropdown<I>({
 
   useShortcut("Enter", () => {
     onItemSelected(highlightedItem);
+
+    // If item is selected, mark event as handled preventing other shortcut handlers from reaching it.
+    return true;
   });
 
   useClickAway(menuRef, () => {

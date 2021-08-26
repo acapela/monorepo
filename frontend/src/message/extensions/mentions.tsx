@@ -2,6 +2,7 @@ import { toPairs } from "lodash";
 import React, { PropsWithChildren, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
+import { ItemsDropdown } from "~frontend/../../ui/forms/OptionsDropdown/ItemsDropdown";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
@@ -58,14 +59,18 @@ const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
 function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => void }) {
   const mentionLabelPairs = toPairs(mentionTypeLabelMap) as Array<[MentionType, MentionTypeLabel]>;
 
+  const preselected = ["notification-only", mentionTypeLabelMap["notification-only"]] as [
+    MentionType,
+    MentionTypeLabel
+  ];
+
   return (
-    <SelectList<[MentionType, MentionTypeLabel]>
+    <ItemsDropdown
       items={mentionLabelPairs}
       keyGetter={([mentionType]) => mentionType}
       onItemSelected={([mentionType]) => onSelect(mentionType)}
-      renderItem={([, mentionLabel]) => {
-        return <UISelectItem>{mentionLabel}</UISelectItem>;
-      }}
+      labelGetter={([, mentionLabel]) => mentionLabel}
+      selectedItems={[preselected]}
     />
   );
 }
