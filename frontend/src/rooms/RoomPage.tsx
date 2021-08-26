@@ -13,7 +13,11 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { data, loading } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
+  const {
+    data: newData,
+    previousData,
+    loading,
+  } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
     gql`
       ${RoomTopicView.fragments.room}
       ${RoomTopicView.fragments.topic}
@@ -31,6 +35,8 @@ export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
     `,
     { variables: { roomId, topicId: topicId, hasTopicId: !!topicId } }
   );
+
+  const data = newData ?? previousData;
 
   const hasRoom = Boolean(data && data.room);
 
