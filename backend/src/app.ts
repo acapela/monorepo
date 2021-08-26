@@ -21,6 +21,7 @@ import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middle
 import { router as eventRoutes } from "./events/events";
 import { setupSlack } from "./slack/setup";
 import { router as transcriptionRoutes } from "./transcriptions/router";
+import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
@@ -52,6 +53,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", transcriptionRoutes);
   app.use("/api", calendarRoutes);
   app.use("/api", cronRoutes);
+  app.use("/api", waitlistRoutes);
   app.use(attachmentsRoutes);
 }
 
