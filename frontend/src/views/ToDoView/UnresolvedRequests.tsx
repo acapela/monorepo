@@ -35,17 +35,29 @@ export const UnresolvedRequests = () => {
   function getMenuOptions(task: TaskBasicInfoFragment): PopoverMenuOption[] {
     const options: PopoverMenuOption[] = [];
 
+    // TODO: Refactor this. This logic is used in 2 places. imho, this should be handled by a Hasura event handler
+    function handleMarkAsRead() {
+      const nowAsIsoString = new Date().toISOString();
+      const done_at = task.type === "request-read" ? nowAsIsoString : null;
+      updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, done_at } });
+    }
+
+    function handleMarkAsUnread() {
+      const done_at = task.type === "request-read" ? null : undefined;
+      updateTask({ taskId: task.id, input: { seen_at: null, done_at } });
+    }
+
     if (task.seen_at) {
       options.push({
         label: "Mark as unread",
-        onSelect: () => updateTask({ taskId: task.id, input: { seen_at: null } }),
+        onSelect: handleMarkAsUnread,
       });
     }
 
     if (!task.seen_at) {
       options.push({
         label: "Mark as read",
-        onSelect: () => updateTask({ taskId: task.id, input: { seen_at: new Date().toISOString() } }),
+        onSelect: handleMarkAsRead,
       });
     }
 
