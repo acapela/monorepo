@@ -8,6 +8,7 @@ import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
+import { HttpStatus } from "../http";
 import { parseMetadata } from "./metadata";
 
 type Options<T extends { new (...p: never[]): unknown }> = ConstructorParameters<T>[0];
@@ -82,7 +83,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
     callbackOptions: {
       success(installation, options, req, res) {
         const { redirectURL } = parseMetadata(installation);
-        res.writeHead(302, { Location: redirectURL || "/" }).end();
+        res.writeHead(HttpStatus.FOUND, { Location: redirectURL || "/" }).end();
       },
     },
   },
