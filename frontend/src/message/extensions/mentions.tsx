@@ -10,6 +10,7 @@ import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/auto
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
+import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
@@ -34,7 +35,7 @@ function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMention
       keyGetter={(user) => user.id}
       onItemSelected={(user) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        onSelect({ originalName: user.name!, userId: user.id });
+        onSelect({ originalName: user.name!, userId: user.id, type: DEFAULT_MENTION_TYPE });
       }}
       renderItem={(user) => {
         return (
@@ -46,8 +47,6 @@ function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMention
     />
   );
 }
-
-type MentionType = "notification-only" | "request-read" | "request-response";
 
 type MentionTypeLabel = string;
 const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
@@ -64,7 +63,7 @@ function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => v
       items={mentionLabelPairs}
       keyGetter={([mentionType]) => mentionType}
       onItemSelected={([mentionType]) => onSelect(mentionType)}
-      renderItem={([_, mentionLabel]) => {
+      renderItem={([, mentionLabel]) => {
         return <UISelectItem>{mentionLabel}</UISelectItem>;
       }}
     />
@@ -74,8 +73,8 @@ function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => v
 function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) {
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-  const [isMentionPickerOpen, { toggle, unset }] = useBoolean(true);
-  const [mentionType, setMentionType] = useState<MentionType>("notification-only");
+  const [isMentionPickerOpen, { toggle, unset }] = useBoolean(props.isEditable);
+  const [mentionType, setMentionType] = useState<MentionType>(props.data.type ?? DEFAULT_MENTION_TYPE);
 
   useShortcut("Escape", () => {
     unset();
@@ -89,6 +88,7 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
             <MentionTypePicker
               onSelect={(mentionType: MentionType) => {
                 setMentionType(mentionType);
+                props.update({ type: mentionType });
                 unset();
               }}
             />

@@ -4,6 +4,7 @@ export interface AutocompleteNodeProps<D> {
   data: D;
   isEditable: boolean;
   node: NodeViewProps["node"];
+  update: (attributesToUpdate: Partial<D>) => void;
 }
 
 export interface AutocompletePickerProps<D> {

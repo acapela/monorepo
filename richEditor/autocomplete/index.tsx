@@ -39,7 +39,16 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
 
     return (
       <NodeViewWrapper className={`node-${options.type}`} as="span">
-        <NodeComponent data={data} node={props.node} isEditable={editor.isEditable} />
+        <NodeComponent
+          data={data}
+          node={props.node}
+          isEditable={editor.isEditable}
+          update={(attributes) => {
+            const previousAttributes = props.node.attrs.data;
+            const mergedAttributes = { ...previousAttributes, ...attributes };
+            props.updateAttributes({ data: mergedAttributes });
+          }}
+        />
       </NodeViewWrapper>
     );
   }
