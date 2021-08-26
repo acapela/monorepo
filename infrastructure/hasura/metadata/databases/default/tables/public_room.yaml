@@ -1,0 +1,163 @@
+table:
+  name: room
+  schema: public
+object_relationships:
+  - name: creator
+    using:
+      foreign_key_constraint_on: creator_id
+  - name: last_posted_message
+    using:
+      manual_configuration:
+        column_mapping:
+          id: room_id
+        insertion_order: null
+        remote_table:
+          name: room_last_posted_message
+          schema: public
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_id
+  - name: space
+    using:
+      foreign_key_constraint_on: space_id
+array_relationships:
+  - name: invitations
+    using:
+      foreign_key_constraint_on:
+        column: room_id
+        table:
+          name: room_invitation
+          schema: public
+  - name: members
+    using:
+      manual_configuration:
+        column_mapping:
+          id: room_id
+        insertion_order: null
+        remote_table:
+          name: room_member
+          schema: public
+  - name: topics
+    using:
+      foreign_key_constraint_on:
+        column: room_id
+        table:
+          name: topic
+          schema: public
+insert_permissions:
+  - permission:
+      backend_only: false
+      check:
+        space:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+      columns:
+        - deadline
+        - id
+        - name
+        - owner_id
+        - slug
+        - source_google_calendar_event_id
+        - space_id
+        - summary
+      set:
+        creator_id: x-hasura-User-Id
+    role: user
+select_permissions:
+  - permission:
+      columns:
+        - created_at
+        - creator_id
+        - deadline
+        - finished_at
+        - id
+        - is_private
+        - last_activity_at
+        - name
+        - owner_id
+        - slug
+        - source_google_calendar_event_id
+        - space_id
+        - summary
+      filter:
+        _and:
+          - space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+          - _or:
+              - is_private:
+                  _eq: false
+              - _and:
+                  - is_private:
+                      _eq: true
+                  - members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+    role: user
+  - permission:
+      columns:
+        - id
+        - is_private
+        - name
+      filter:
+        space:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+    role: visitor
+update_permissions:
+  - permission:
+      check: null
+      columns:
+        - deadline
+        - finished_at
+        - is_private
+        - name
+        - owner_id
+        - slug
+        - summary
+      filter:
+        members:
+          user_id:
+            _eq: X-Hasura-User-Id
+    role: user
+delete_permissions:
+  - permission:
+      filter:
+        members:
+          user_id:
+            _eq: X-Hasura-User-Id
+    role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - name
+          - notification_job_id
+          - slug
+          - summary
+          - created_at
+          - deadline
+          - finished_at
+          - creator_id
+          - id
+          - space_id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: room_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

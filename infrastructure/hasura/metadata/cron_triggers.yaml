@@ -1,6 +1,6 @@
 - name: recurring-meetings
-  webhook: "{{HASURA_CRON_WEBHOOK_URL}}"
-  schedule: "*/10 * * * *"
+  webhook: '{{HASURA_CRON_WEBHOOK_URL}}'
+  schedule: '*/10 * * * *'
   include_in_metadata: true
   payload:
     handler: recurring-meetings
@@ -10,5 +10,5 @@
     tolerance_seconds: 21600
     retry_interval_seconds: 10
   headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  - name: Authorization
+    value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
