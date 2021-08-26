@@ -5,6 +5,8 @@ import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import logger from "~shared/logger";
 
+import { HttpStatus } from "../http";
+
 const mailchimpApiKey = assertDefined(process.env.MAILCHIMP_API_KEY, "MAILCHIMP_API_KEY is required");
 
 export const router = Router();
@@ -22,13 +24,14 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
 
   if (!email || !name) {
     logger.info("Waitlist endpoint called with missing parameters");
-    return res.status(400).end();
+    return res.status(HttpStatus.BAD_REQUEST).end();
   }
   logger.info(`Handling waitlist signup for ${email}`);
 
   try {
     await db.whitelist.create({ data: { email } });
-    res.status(201).end();
+    res.status(HttpStatus.CREATED).end();
+    // we want to respond with success even when the mailchimp API call fails
     await axios.post(
       "https://us17.api.mailchimp.com/3.0/lists/b989557221/members/",
       JSON.stringify({
@@ -45,6 +48,6 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
     logger.info(`Mailchimp create subscriber API call successful`);
   } catch (e) {
     logger.error("Adding a new subscriber failed");
-    return res.status(409).end();
+    return res.status(HttpStatus.CONFLICT).end();
   }
 });

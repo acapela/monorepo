@@ -5,6 +5,7 @@ import logger from "~shared/logger";
 import { extractAndAssertBearerToken } from "../authentication";
 import { AuthenticationError, UnprocessableEntityError, isHttpError } from "../errors/errorTypes";
 import { HasuraSessionVariables } from "../hasura/session";
+import { HttpStatus } from "../http";
 import { ActionHandler, handlers } from "./actionHandlers";
 
 export const router = Router();
@@ -26,7 +27,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
 
   try {
     const response = await handler.handle(userId, hasuraAction.input);
-    res.status(200).json(response);
+    res.status(HttpStatus.OK).json(response);
     logger.info(`Action handled (${hasuraAction.action.name})`, {
       userId,
     });
@@ -34,7 +35,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
     isHttpError(error);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const anyError = error as any;
-    const status = anyError.status || 400;
+    const status = anyError.status || HttpStatus.BAD_REQUEST;
     res.status(status).json({
       message: anyError.message || "Something went wrong",
       code: `${status}`,

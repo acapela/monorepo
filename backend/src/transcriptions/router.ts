@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import logger from "~shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
+import { HttpStatus } from "../http";
 import { SonixMediaResponse } from "./sonixClient";
 import { handleAttachementTranscriptionStatusUpdate } from "./transcriptionService";
 
@@ -17,7 +18,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   if (secret !== process.env.SONIX_CALLBACK_SECRET) {
     logger.info("Invalid Sonix callback secret");
 
-    return res.status(401).end();
+    return res.status(HttpStatus.UNAUTHORIZED).end();
   }
 
   const media = req.body as SonixMediaResponse;
@@ -30,5 +31,5 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
     await handleAttachementTranscriptionStatusUpdate(media);
   }
 
-  res.status(204).end();
+  res.status(HttpStatus.NO_CONTENT).end();
 });
