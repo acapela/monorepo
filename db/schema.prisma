@@ -169,9 +169,9 @@ model team_invitation {
 model team_member {
   team_id                        String                          @db.Uuid
   user_id                        String                          @db.Uuid
+  id                             String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   notify_email                   Boolean                         @default(true)
   notify_slack                   Boolean                         @default(true)
-  id                             String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   team                           team                            @relation(fields: [team_id], references: [id])
   user                           user                            @relation(fields: [user_id], references: [id])
   team_member_slack_installation team_member_slack_installation?
