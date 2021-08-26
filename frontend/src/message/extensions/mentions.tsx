@@ -2,7 +2,6 @@ import { toPairs } from "lodash";
 import React, { PropsWithChildren, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { ItemsDropdown } from "~frontend/../../ui/forms/OptionsDropdown/ItemsDropdown";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
@@ -13,6 +12,7 @@ import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
+import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
