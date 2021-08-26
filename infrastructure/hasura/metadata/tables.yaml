@@ -891,9 +891,11 @@
         message:
           topic:
             room:
-              members:
-                user_id:
-                  _eq: X-Hasura-User-Id
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
   update_permissions:
   - role: user
     permission:
