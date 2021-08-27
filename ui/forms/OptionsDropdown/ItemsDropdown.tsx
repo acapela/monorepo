@@ -53,6 +53,11 @@ export function ItemsDropdown<I>({
     return true;
   });
 
+  // Prevents bubbling up of arrow key to parent container, used to prevent cursor in tip-tap editor from moving
+  // when ItemDropdown created from tip-tap node.
+  useShortcut("ArrowUp", () => true);
+  useShortcut("ArrowDown", () => true);
+
   useClickAway(menuRef, () => {
     onCloseRequest?.();
   });

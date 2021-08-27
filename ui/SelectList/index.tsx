@@ -28,6 +28,11 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
     return true;
   });
 
+  // Prevents bubbling up of arrow key to parent container, used to prevent cursor in tip-tap editor from moving
+  // when ItemDropdown created from tip-tap node.
+  useShortcut("ArrowUp", () => true);
+  useShortcut("ArrowDown", () => true);
+
   return (
     <UIHolder>
       {items.map((item) => {
