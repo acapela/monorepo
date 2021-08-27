@@ -19,6 +19,7 @@ const fragments = {
       space_id
       topics {
         id
+        archived_at
         ...TopicWithMessages_topic
       }
       ...RoomView_room
@@ -33,7 +34,8 @@ interface Props {
 }
 
 export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topicId }: Props) {
-  const firstTopic = room.topics?.[0] ?? null;
+  const openedTopics = room.topics?.filter((topic) => !topic.archived_at);
+  const firstTopic = openedTopics?.[0] ?? null;
 
   const selectedTopicId = topicId ?? firstTopic?.id ?? null;
   const selectedTopic = useMemo(
@@ -84,7 +86,7 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
         routeToFirstTopicUrl();
       }
     } else {
-      if (roomHasTopics) {
+      if (openedTopics.length > 0) {
         routeToFirstTopicUrl();
       }
     }

@@ -45,6 +45,7 @@ interface Props {
 
 export const Toggle = ({ isSet, size = "large", isDisabled, onSet, onUnset }: Props) => {
   const id = useId();
+
   function onSwitch(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation();
 

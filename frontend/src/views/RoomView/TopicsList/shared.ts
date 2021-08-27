@@ -68,6 +68,8 @@ export const useArchiveTopic = () =>
       mutation ArchiveTopic($id: uuid!, $archivedAt: timestamptz!) {
         topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { archived_at: $archivedAt }) {
           id
+          room_id
+          archived_at
         }
       }
     `,
@@ -75,6 +77,29 @@ export const useArchiveTopic = () =>
       optimisticResponse: ({ id, roomId }) => ({
         topic: { __typename: "topic", id, room_id: roomId },
       }),
+      update(cache, { data }) {
+        if (!data || !data.topic) {
+          return;
+        }
+        const { topic } = data;
+        const topicRef = cache.identify(topic);
+        cache.modify({
+          id: cache.identify({ __typename: "room", id: topic.room_id }),
+          fields: {
+            topics: (existing: Reference[]) =>
+              existing.map((topic) => {
+                if (cache.identify(topic) !== topicRef) {
+                  return;
+                }
+
+                return {
+                  ...topic,
+                  ...data,
+                };
+              }),
+          },
+        });
+      },
       onCompleted() {
         addToast({ type: "success", title: "Topic was archived" });
       },

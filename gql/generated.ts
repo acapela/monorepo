@@ -10359,7 +10359,7 @@ export type RoomTopicView_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'archived_at'>
     & TopicWithMessages_TopicFragment
   )> }
   & RoomView_RoomFragment
@@ -10738,7 +10738,7 @@ export type ArchiveTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'room_id' | 'archived_at'>
   )> }
 );
 

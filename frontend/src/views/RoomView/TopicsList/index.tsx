@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { usePrevious } from "react-use";
 import styled from "styled-components";
 
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
@@ -171,22 +172,65 @@ const useCreateTopic = () =>
     }
   );
 
-const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+const _TopicsList = observer(function TopicsList({
+  room: roomWithoutAppliedFilters,
+  activeTopicId,
+  isRoomOpen,
+}: Props) {
   const user = useAssertCurrentUser();
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const isActiveTopicArchived = !!roomWithoutAppliedFilters.topics.find(({ id }) => id === activeTopicId)?.archived_at;
+
+  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "open");
+  const previousTopicsFilter = usePrevious(topicsFilter);
+
+  const room = getRoomWithFilteredTopics(roomWithoutAppliedFilters, topicsFilter);
+
   const { id: roomId, space_id: spaceId, topics } = room;
+
+  const hasArchivedTopics = roomWithoutAppliedFilters.topics.some((topic) => topic.archived_at);
+  useEffect(() => {
+    if (!hasArchivedTopics && topicsFilter === "archived") {
+      setTopicsFilter("open");
+    }
+  }, [hasArchivedTopics, topicsFilter]);
+
+  useEffect(() => {
+    // when the room is closed - show all topics
+    if (!isRoomOpen && topicsFilter !== "all") {
+      setTopicsFilter("all");
+    }
+  }, [isRoomOpen, topicsFilter]);
+
+  useEffect(() => {
+    if (topicsFilter === "open" && previousTopicsFilter === "archived") {
+      const openedTopic = roomWithoutAppliedFilters.topics.find((topic) => !topic.archived_at);
+      if (openedTopic) {
+        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openedTopic.id });
+      } else {
+        routes.spaceRoom.push({ spaceId, roomId });
+      }
+
+      return;
+    }
+
+    if (topicsFilter === "archived" && previousTopicsFilter === "open") {
+      const archivedTopic = roomWithoutAppliedFilters.topics.find((topic) => topic.archived_at);
+      if (archivedTopic) {
+        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: archivedTopic.id });
+      }
+
+      return;
+    }
+  }, [topicsFilter, previousTopicsFilter, spaceId, roomId, roomWithoutAppliedFilters.topics]);
+
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
   const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
 
   const [createTopic] = useCreateTopic();
-
-  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>("open");
-  useEffect(() => {
-    // when the room is closed - hide the filter and show all topics
-    setTopicsFilter(isRoomOpen ? "open" : "all");
-  }, [isRoomOpen]);
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
@@ -224,10 +268,15 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             </Button>
           </RouteLink>
         )}
-        {isRoomOpen && (
+        {isRoomOpen && hasArchivedTopics && (
           <TopicsFilterHolder>
             <CategoryNameLabel>Archived</CategoryNameLabel>
-            <Toggle size="small" onSet={() => setTopicsFilter("archived")} onUnset={() => setTopicsFilter("open")} />
+            <Toggle
+              isSet={topicsFilter === "archived"}
+              size="small"
+              onSet={() => setTopicsFilter("archived")}
+              onUnset={() => setTopicsFilter("open")}
+            />
           </TopicsFilterHolder>
         )}
       </UIHeader>
@@ -235,7 +284,7 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
         {topics.length > 0 && (
           <UITopicsListHolder>
             <LazyTopicsList
-              room={getRoomWithFilteredTopics(room, topicsFilter)}
+              room={room}
               activeTopicId={activeTopicId}
               isDisabled={isEditingAnyMessage}
               isStatic={!amIMember || topicsFilter === "archived"}
