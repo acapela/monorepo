@@ -15,8 +15,8 @@ import { MessageImageAttachment } from "./MessageImageAttachment";
 const fragments = {
   attachment: gql`
     fragment MessageAttachmentDisplayer_attachment on attachment {
-      mime_type
-      original_name
+      mimeType: mime_type
+      originalName: original_name
     }
   `,
 };
@@ -28,7 +28,7 @@ interface AttachmentProps {
 }
 
 const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
-  const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
+  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
   function renderAttachment(): ReactNode {
     switch (messageType) {
@@ -48,15 +48,15 @@ const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, class
         );
     }
 
-    const [attachmentMimeType] = attachment.mime_type.split("/");
+    const [attachmentMimeType] = attachment.mimeType.split("/");
 
     if (attachmentMimeType === "image") {
-      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
+      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
     }
 
     return (
       <a href={attachmentUrl} target="_blank">
-        <span>{attachment.original_name}</span>
+        <span>{attachment.originalName}</span>
       </a>
     );
   }

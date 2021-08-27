@@ -9924,7 +9924,7 @@ export type MessageAttachment_AttachmentFragment = (
 
 export type MessageAttachmentDisplayer_AttachmentFragment = (
   { __typename?: 'attachment' }
-  & Pick<Attachment, 'mime_type' | 'original_name'>
+  & { mimeType: Attachment['mime_type'], originalName: Attachment['original_name'] }
 );
 
 export type CreateNewMessageMutationVariables = Exact<{
