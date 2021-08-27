@@ -16,6 +16,11 @@ export interface ColorTargetOptions {
   border?: ColorGetter;
 }
 
+export interface Tag {
+  background: ColorGetter;
+  foreground: ColorGetter;
+}
+
 export interface ThemeColorScheme {
   layout: {
     background: ColorGetter;
@@ -38,6 +43,16 @@ export interface ThemeColorScheme {
     error: ColorGetter;
     warning: ColorGetter;
     success: ColorGetter;
+  };
+
+  tags: {
+    shareInformation: Tag;
+    discussion: Tag;
+    action: Tag;
+    empty: Tag;
+    decision: Tag;
+    default: Tag;
+    private: Tag;
   };
 }
 

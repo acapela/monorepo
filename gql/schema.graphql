@@ -7624,6 +7624,7 @@ type task {
   message: message!
   message_id: uuid!
   seen_at: timestamptz
+  type: String
 
   """An object relationship"""
   user: user!
@@ -7679,6 +7680,7 @@ input task_bool_exp {
   message: message_bool_exp
   message_id: uuid_comparison_exp
   seen_at: timestamptz_comparison_exp
+  type: String_comparison_exp
   user: user_bool_exp
   user_id: uuid_comparison_exp
 }
@@ -7701,6 +7703,7 @@ input task_insert_input {
   message: message_obj_rel_insert_input
   message_id: uuid
   seen_at: timestamptz
+  type: String
   user: user_obj_rel_insert_input
   user_id: uuid
 }
@@ -7712,6 +7715,7 @@ type task_max_fields {
   id: uuid
   message_id: uuid
   seen_at: timestamptz
+  type: String
   user_id: uuid
 }
 
@@ -7724,6 +7728,7 @@ input task_max_order_by {
   id: order_by
   message_id: order_by
   seen_at: order_by
+  type: order_by
   user_id: order_by
 }
 
@@ -7734,6 +7739,7 @@ type task_min_fields {
   id: uuid
   message_id: uuid
   seen_at: timestamptz
+  type: String
   user_id: uuid
 }
 
@@ -7746,6 +7752,7 @@ input task_min_order_by {
   id: order_by
   message_id: order_by
   seen_at: order_by
+  type: order_by
   user_id: order_by
 }
 
@@ -7777,6 +7784,7 @@ input task_order_by {
   message: message_order_by
   message_id: order_by
   seen_at: order_by
+  type: order_by
   user: user_order_by
   user_id: order_by
 }
@@ -7806,6 +7814,9 @@ enum task_select_column {
   seen_at
 
   """column name"""
+  type
+
+  """column name"""
   user_id
 }
 
@@ -7818,6 +7829,7 @@ input task_set_input {
   id: uuid
   message_id: uuid
   seen_at: timestamptz
+  type: String
   user_id: uuid
 }
 
@@ -7839,6 +7851,9 @@ enum task_update_column {
 
   """column name"""
   seen_at
+
+  """column name"""
+  type
 
   """column name"""
   user_id

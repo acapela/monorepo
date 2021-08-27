@@ -22,6 +22,7 @@ export const TaskBasicInfoFragment = createFragment<TaskBasicInfoFragmentType>(
       created_at
       seen_at
       done_at
+      type
     }
   `
 );
@@ -41,6 +42,7 @@ export const TaskDetailedInfoFragment = createFragment<TaskDetailedInfoFragmentT
         ...MessageBasicInfo
         topic {
           id
+          name
           room {
             id
             space {

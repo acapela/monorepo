@@ -24,6 +24,7 @@ const fragments = {
       message_id
       seen_at
       done_at
+      type
     }
   `,
 };
@@ -40,11 +41,14 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
   }
 
   function handleMarkAsRead() {
-    updateTask({ taskId: task.id, input: { seen_at: new Date().toISOString() } });
+    const nowAsIsoString = new Date().toISOString();
+    const done_at = task.type === "request-read" ? nowAsIsoString : null;
+    updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, done_at } });
   }
 
   function handleMarkAsUnread() {
-    updateTask({ taskId: task.id, input: { seen_at: null } });
+    const done_at = task.type === "request-read" ? null : undefined;
+    updateTask({ taskId: task.id, input: { seen_at: null, done_at } });
   }
 
   function getTaskStatus(): "unseen" | "seen" | "done" {
@@ -54,7 +58,14 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
     return "unseen";
   }
 
+  function getTaskRequestLabel(): string {
+    if (task.type === "request-read") return "Read receipt";
+    // Null tasks are handled as "Request read" until all has been migrated to new types
+    return "Response";
+  }
+
   const taskStatus = getTaskStatus();
+  const taskRequestLabel = getTaskRequestLabel();
 
   return (
     <UISingleTask key={task.id} isDone={isDone} className={className}>
@@ -74,7 +85,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
           <IconCheck />
         </UIIconHolder>
       )}
-      Input from&nbsp;
+      {taskRequestLabel} from&nbsp;
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
       <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
@@ -93,6 +104,7 @@ export const MessageTask = withFragments(fragments, _MessageTask);
 
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;
+  flex-grow: 1;
   align-items: center;
   color: ${theme.colors.layout.supportingText()};
 
@@ -115,8 +127,9 @@ const UIUserNameLabel = styled.span<{}>`
 `;
 
 const UITextButton = styled.span<{}>`
-  text-decoration: underline;
+  white-space: nowrap;
   cursor: pointer;
+  text-decoration: underline;
 `;
 
 const UIIconHolder = styled.span<{}>`

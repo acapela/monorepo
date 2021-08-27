@@ -1,9 +1,14 @@
 import { Editor, Node, mergeAttributes } from "@tiptap/core";
-import { KeyboardShortcutCommand, ReactNodeViewRenderer, ReactRenderer } from "@tiptap/react";
+import {
+  KeyboardShortcutCommand,
+  NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+  ReactRenderer,
+} from "@tiptap/react";
 import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
-import { ComponentType, FunctionComponent } from "react";
+import React, { ComponentType, FunctionComponent } from "react";
 
-import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 
@@ -26,15 +31,25 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     return <AutocompletePickerPopoverBase baseProps={props} PickerComponent={options.pickerComponent} />;
   }
 
-  function NodeComponent(props: AutocompleteNodeProps<D>) {
+  function NodeComponent(props: NodeViewProps) {
     const data = props.node.attrs?.data as D;
+    const { editor } = props;
+
+    const NodeComponent = options.nodeComponent as ComponentType<AutocompleteNodeProps<D>>;
+
     return (
-      <AutocompleteNodeWrapper
-        type={options.type}
-        node={props.node}
-        data={data}
-        NodeComponent={options.nodeComponent}
-      />
+      <NodeViewWrapper className={`node-${options.type}`} as="span">
+        <NodeComponent
+          data={data}
+          node={props.node}
+          isEditable={editor.isEditable}
+          update={(attributes) => {
+            const previousAttributes = props.node.attrs.data;
+            const mergedAttributes = { ...previousAttributes, ...attributes };
+            props.updateAttributes({ data: mergedAttributes });
+          }}
+        />
+      </NodeViewWrapper>
     );
   }
 

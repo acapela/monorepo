@@ -330,6 +330,7 @@ model task {
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   done_at    DateTime? @db.Timestamptz(6)
   seen_at    DateTime? @db.Timestamptz(6)
+  type       String?
   message    message   @relation(fields: [message_id], references: [id])
   user       user      @relation(fields: [user_id], references: [id])
 }
