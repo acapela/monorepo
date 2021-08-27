@@ -10606,7 +10606,7 @@ export type TopicMenuItemSubscription = (
   { __typename?: 'subscription_root' }
   & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'name' | 'closed_at'>
+    & TopicMenuItem_TopicFragment
   )> }
 );
 
@@ -10642,20 +10642,6 @@ export type UpdateTopicOwnerMutationVariables = Exact<{
 export type UpdateTopicOwnerMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
-    { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
-    & TopicOwner_TopicFragment
-  )> }
-);
-
-export type TopicOwner_TopicSubscriptionVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type TopicOwner_TopicSubscription = (
-  { __typename?: 'subscription_root' }
-  & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
     & Pick<Topic, 'id'>
     & TopicOwner_TopicFragment
