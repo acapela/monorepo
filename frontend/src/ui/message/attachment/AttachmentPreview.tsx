@@ -19,10 +19,7 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
 
   return (
     <UIHolder>
-      {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        <MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment as any} />
-      }
+      <MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment} />
       {!!onRemoveRequest && (
         <UIRemoveButtonHolder>
           <CircleIconButton
