@@ -197,6 +197,14 @@ const _TopicsList = observer(function TopicsList({
   }, [hasArchivedTopics, topicsFilter]);
 
   useEffect(() => {
+    if (isActiveTopicArchived && topicsFilter === "open" && previousTopicsFilter === "open") {
+      setTopicsFilter("archived");
+    } else if (!isActiveTopicArchived && topicsFilter === "archived" && previousTopicsFilter === "archived") {
+      setTopicsFilter("open");
+    }
+  }, [isActiveTopicArchived, previousTopicsFilter, topicsFilter]);
+
+  useEffect(() => {
     // when the room is closed - show all topics
     if (!isRoomOpen && topicsFilter !== "all") {
       setTopicsFilter("all");
