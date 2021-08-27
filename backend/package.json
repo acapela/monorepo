@@ -24,6 +24,7 @@
     "@google-cloud/storage": "^5.8.5",
     "@sentry/node": "^6.8.0",
     "@slack/bolt": "^3.5.0",
+    "@slack/web-api": "^6.4.0",
     "cookie-parser": "^1.4.5",
     "express-async-errors": "^3.1.1",
     "googleapis": "^81.0.0",

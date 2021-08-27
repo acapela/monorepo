@@ -1,0 +1,28 @@
+table:
+  name: transcription
+  schema: public
+array_relationships:
+  - name: attachments
+    using:
+      foreign_key_constraint_on:
+        column: transcription_id
+        table:
+          name: attachment
+          schema: public
+select_permissions:
+  - permission:
+      columns:
+        - created_at
+        - id
+        - status
+        - transcript
+        - updated_at
+      filter:
+        attachments:
+          message:
+            topic:
+              room:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+    role: user

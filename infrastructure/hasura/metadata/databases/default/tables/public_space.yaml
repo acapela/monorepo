@@ -1,0 +1,104 @@
+table:
+  name: space
+  schema: public
+object_relationships:
+  - name: creator
+    using:
+      manual_configuration:
+        column_mapping:
+          creator_id: id
+        insertion_order: null
+        remote_table:
+          name: user
+          schema: public
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+array_relationships:
+  - name: members
+    using:
+      foreign_key_constraint_on:
+        column: space_id
+        table:
+          name: space_member
+          schema: public
+  - name: rooms
+    using:
+      foreign_key_constraint_on:
+        column: space_id
+        table:
+          name: room
+          schema: public
+insert_permissions:
+  - permission:
+      backend_only: false
+      check:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+      columns:
+        - id
+        - name
+        - slug
+        - team_id
+      set:
+        creator_id: x-hasura-User-Id
+    role: user
+select_permissions:
+  - permission:
+      columns:
+        - creator_id
+        - id
+        - name
+        - slug
+        - team_id
+      filter:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+    role: user
+update_permissions:
+  - permission:
+      check: null
+      columns:
+        - name
+        - slug
+      filter:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+    role: user
+delete_permissions:
+  - permission:
+      filter:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+    role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - name
+          - slug
+          - creator_id
+          - id
+          - team_id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: space_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

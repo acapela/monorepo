@@ -24,7 +24,7 @@ jest.mock("./actionHandlers", () => ({
       actionName: "an-erroring-action-with-status",
       handle: jest.fn(async () => {
         const error = new Error("error message 1");
-        (error as any).status = 404;
+        (error as any).status = HttpStatus.NOT_FOUND;
         throw error;
       }),
     },

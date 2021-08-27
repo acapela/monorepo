@@ -1,5 +1,5 @@
 import { addMinutes, getHours, getMinutes, minutesInHour, startOfDay } from "date-fns";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { PopPresenceAnimator } from "~ui/animations";
@@ -13,9 +13,10 @@ import { TimePicker } from "./TimePicker";
 interface Props {
   initialValue: Date;
   onSubmit: (date: Date) => void;
+  shouldSkipConfirmation?: boolean;
 }
 
-export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
+export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation = false }: Props) => {
   const [dirtyDate, setDirtyDate] = useState<Date>(initialValue);
   const didUserChangeInitialValue = dirtyDate === initialValue;
 
@@ -24,6 +25,12 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
       onSubmit(dirtyDate);
     }
   };
+
+  useEffect(() => {
+    if (shouldSkipConfirmation) {
+      handleSubmit();
+    }
+  }, [shouldSkipConfirmation, dirtyDate]);
 
   const pickedMinutesValue = useMemo(() => {
     const hours = getHours(dirtyDate);
@@ -52,9 +59,11 @@ export const DateTimePicker = ({ initialValue, onSubmit }: Props) => {
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
       </UIPickers>
-      <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
-        Save
-      </Button>
+      {!shouldSkipConfirmation && (
+        <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
+          Save
+        </Button>
+      )}
     </UIDateTimePickerForm>
   );
 };

@@ -19,14 +19,15 @@ import { router as calendarRoutes } from "./calendar/calendar";
 import { router as cronRoutes } from "./cron/cron";
 import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
 import { router as eventRoutes } from "./events/events";
-import { setupSlackBoltRoutes } from "./slack";
+import { setupSlack } from "./slack/setup";
 import { router as transcriptionRoutes } from "./transcriptions/router";
+import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
   const app = express();
   // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
-  setupSlackBoltRoutes(app);
+  setupSlack(app);
   setupMiddleware(app);
   setupRoutes(app);
   addErrorHandlersToApp(app);
@@ -52,6 +53,7 @@ function setupRoutes(app: Application): void {
   app.use("/api", transcriptionRoutes);
   app.use("/api", calendarRoutes);
   app.use("/api", cronRoutes);
+  app.use("/api", waitlistRoutes);
   app.use(attachmentsRoutes);
 }
 

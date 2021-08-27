@@ -29,12 +29,94 @@ Hasura is a standalone server we have to deploy that uses postgres and its own c
 
 ## Slack integration
 
-Setting Slack up is optional in development, but if you want to work on it you can either set-up your own Slack App or use the shared one:
+Setting Slack up is optional in development, but if you want to work on it you have to set-up your own Slack app.
 
-Ask one of the other developers [to give you access](https://app.slack.com/app-settings/T01DBMUNM5H/A02A84YP2J2/collaborators).
-After that enter the required keys (can be found in `.env.sample`) and go to http://localhost:1337/slack/install.
-You should have received an error message including your local tunnel URL. Add that to the list of redirect URIs here: https://api.slack.com/apps/A02A84YP2J2/oauth
-After saving the integration should be working for you locally.
+Fortunately you can use this manifest "generator":
+
+1. copy the code below into your favorite browser's JS console
+2. replace `<YOUR-PERSONAL.local.lt-DOMAIN>` with your loca.lt domain (it's the one you see when the server starts)
+3. run it, you'll now have the manifest in your clipboard
+4. go to https://api.slack.com/apps?new_app=1 and use the manifest to create a new app
+   1. make sure to give it a unique name and command name
+5. fill out `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`, `SLACK_SIGNING_SECRET` and `SLACK_SLASH_COMMAND`. in your `.env`, based on your new app's info
+
+```javascript
+copy(
+  `{
+    "_metadata": {
+        "major_version": 1,
+        "minor_version": 1
+    },
+    "display_information": {
+        "name": "[DEV] Acapela",
+        "description": "End your meetings before they start.",
+        "background_color": "#000000",
+        "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "[DEV] Acapela",
+            "always_online": true
+        },
+        "shortcuts": [
+            {
+                "name": "Start an Acapela room",
+                "type": "global",
+                "callback_id": "global_acapela",
+                "description": "Created a virtual meeting room for async discussion"
+            },
+            {
+                "name": "Start room from message",
+                "type": "message",
+                "callback_id": "message_acapela",
+                "description": "Creates an Acapela room from a message"
+            }
+        ],
+        "slash_commands": [
+            {
+                "command": "/dev-acapela",
+                "url": "https://acape.la/api/backend/slack/commands",
+                "description": "Create a new Acapela room",
+                "usage_hint": "[room name]",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "redirect_urls": [
+            "https://acape.la/api/backend/slack/oauth_redirect"
+        ],
+        "scopes": {
+            "user": [
+                "groups:read",
+                "im:read",
+                "mpim:read",
+                "chat:write"
+            ],
+            "bot": [
+                "channels:read",
+                "commands",
+                "im:write",
+                "users.profile:read",
+                "users:read",
+                "users:read.email",
+                "chat:write"
+            ]
+        }
+    },
+    "settings": {
+        "interactivity": {
+            "is_enabled": true,
+            "request_url": "https://acape.la/api/backend/slack/events",
+            "message_menu_options_url": "https://acape.la/api/backend/slack/options"
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}`.replaceAll("https://acape.la", "<YOUR-PERSONAL.local.lt-DOMAIN>")
+);
+```
 
 ### Resources on Hasura
 

@@ -70,7 +70,7 @@ export const CurrentTeamMembersManager = () => {
     {
       input: { teamId: team?.id ?? "", redirectURL: isServer ? "" : location.href },
     },
-    { skip: isServer || !isCurrentUserTeamOwner || !!team.slack_installation }
+    { skip: isServer || Boolean(team && team.slack_installation) }
   );
 
   if (!team) {
@@ -114,32 +114,30 @@ export const CurrentTeamMembersManager = () => {
         <UITitle>{team.name} members</UITitle>
         <ExitTeamButton />
       </UIHeader>
-      {isCurrentUserTeamOwner && (
-        <div>
-          {team.slack_installation ? (
-            <Button
-              disabled={isDeletingSlackInstallation}
-              onClick={handleClickDisableSlack}
-              icon={<IconMinus />}
-              iconPosition="start"
-              tooltip="Disable notifications through slack"
-            >
-              Remove Slack integration
-            </Button>
-          ) : (
-            <Button
-              onClick={() => {
-                window.location.href = assertDefined(slackInstallation, "should have slack installation").url;
-              }}
-              icon={<IconPlus />}
-              iconPosition="start"
-              tooltip="Enable your team to receive notifications through Slack"
-            >
-              Add Slack integration
-            </Button>
-          )}
-        </div>
-      )}
+      <div>
+        {team.slack_installation ? (
+          <Button
+            disabled={isDeletingSlackInstallation}
+            onClick={handleClickDisableSlack}
+            icon={<IconMinus />}
+            iconPosition="start"
+            tooltip="Disable notifications through slack"
+          >
+            Remove Slack integration
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              window.location.href = assertDefined(slackInstallation, "should have slack installation").url;
+            }}
+            icon={<IconPlus />}
+            iconPosition="start"
+            tooltip="Enable your team to receive notifications through Slack"
+          >
+            Add Slack integration
+          </Button>
+        )}
+      </div>
       <InviteMemberForm />
       {teamMembers.length > 0 && (
         <UISelectGridContainer>

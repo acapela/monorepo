@@ -28,8 +28,8 @@ model attachment {
   original_name    String
   mime_type        String
   message_id       String?        @db.Uuid
-  user_id          String?        @db.Uuid
   transcription_id String?        @db.Uuid
+  user_id          String?        @db.Uuid
   message          message?       @relation(fields: [message_id], references: [id])
   transcription    transcription? @relation(fields: [transcription_id], references: [id])
   user             user?          @relation(fields: [user_id], references: [id])
@@ -167,12 +167,14 @@ model team_invitation {
 }
 
 model team_member {
-  team_id String @db.Uuid
-  user_id String @db.Uuid
-  team    team   @relation(fields: [team_id], references: [id])
-  user    user   @relation(fields: [user_id], references: [id])
-
-  @@id([team_id, user_id])
+  team_id                        String                          @db.Uuid
+  user_id                        String                          @db.Uuid
+  id                             String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  notify_email                   Boolean                         @default(true)
+  notify_slack                   Boolean                         @default(true)
+  team                           team                            @relation(fields: [team_id], references: [id])
+  user                           user                            @relation(fields: [user_id], references: [id])
+  team_member_slack_installation team_member_slack_installation?
 }
 
 model topic {
@@ -304,9 +306,21 @@ model room_invitation {
 }
 
 model team_slack_installation {
-  team_id String @id @db.Uuid
-  data    Json
-  team    team   @relation(fields: [team_id], references: [id])
+  team_id                        String                           @id @db.Uuid
+  data                           Json
+  slack_team_id                  String                           @unique
+  team                           team                             @relation(fields: [team_id], references: [id])
+  team_member_slack_installation team_member_slack_installation[]
+}
+
+model team_member_slack_installation {
+  team_member_id          String                  @unique @db.Uuid
+  data                    Json
+  slack_team_id           String
+  slack_user_id           String
+  id                      String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  team_slack_installation team_slack_installation @relation(fields: [slack_team_id], references: [slack_team_id])
+  team_member             team_member             @relation(fields: [team_member_id], references: [id])
 }
 
 model task {
