@@ -59,13 +59,17 @@ const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
   "request-response": "Request response",
 };
 
-function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => void }) {
-  const mentionLabelPairs = toPairs(mentionTypeLabelMap) as Array<[MentionType, MentionTypeLabel]>;
+function MentionTypePicker({
+  selected,
+  onSelect,
+}: {
+  selected: MentionType;
+  onSelect: (mention: MentionType) => void;
+}) {
+  type MentionLabelPair = [MentionType, MentionTypeLabel];
 
-  const preselected = ["notification-only", mentionTypeLabelMap["notification-only"]] as [
-    MentionType,
-    MentionTypeLabel
-  ];
+  const mentionLabelPairs = toPairs(mentionTypeLabelMap) as Array<MentionLabelPair>;
+  const selectedPair = [selected, mentionTypeLabelMap[selected]] as MentionLabelPair;
 
   return (
     <ItemsDropdown
@@ -73,7 +77,7 @@ function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => v
       keyGetter={([mentionType]) => mentionType}
       onItemSelected={([mentionType]) => onSelect(mentionType)}
       labelGetter={([, mentionLabel]) => mentionLabel}
-      selectedItems={[preselected]}
+      selectedItems={[selectedPair]}
     />
   );
 }
@@ -88,13 +92,13 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
 
   useShortcut("Escape", closeMentionTypePicker);
 
-  const otherProps = !props.isEditable ? { "data-tooltip": props.data.originalName } : {};
-
   function handleOpenMentionTypePicker() {
     if (props.isEditable) {
       openMentionTypePicker();
     }
   }
+
+  const otherProps = !props.isEditable ? { "data-tooltip": props.data.originalName } : {};
 
   return (
     <>
@@ -107,6 +111,7 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
         >
           <PopPresenceAnimator>
             <MentionTypePicker
+              selected={mentionType}
               onSelect={(mentionType: MentionType) => {
                 setMentionType(mentionType);
                 props.update({ type: mentionType });
