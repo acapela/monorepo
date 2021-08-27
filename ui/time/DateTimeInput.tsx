@@ -24,10 +24,7 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipC
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
-    if (!shouldSkipConfirmation) {
-      toggleOpenPicker();
-    }
-
+    toggleOpenPicker();
     onChange(date);
   };
 
