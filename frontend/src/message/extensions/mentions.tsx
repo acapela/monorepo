@@ -12,11 +12,14 @@ import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
+import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { IconChevronUp } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
+import { Modifiers } from "~ui/theme/colors/createColor";
 
 /**
  * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions
@@ -78,32 +81,48 @@ function MentionTypePicker({ onSelect }: { onSelect: (mention: MentionType) => v
 function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) {
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-  const [isMentionPickerOpen, { toggle, unset }] = useBoolean(props.isEditable);
+  const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(
+    props.isEditable
+  );
   const [mentionType, setMentionType] = useState<MentionType>(props.data.type ?? DEFAULT_MENTION_TYPE);
 
-  useShortcut("Escape", () => {
-    unset();
-  });
+  useShortcut("Escape", closeMentionTypePicker);
 
   const otherProps = !props.isEditable ? { "data-tooltip": props.data.originalName } : {};
+
+  function handleOpenMentionTypePicker() {
+    if (props.isEditable) {
+      openMentionTypePicker();
+    }
+  }
 
   return (
     <>
       {isMentionPickerOpen && (
-        <Popover anchorRef={anchorRef} placement="top-start" onClickOutside={unset} isDisabled={!props.isEditable}>
+        <Popover
+          anchorRef={anchorRef}
+          placement="top-start"
+          onClickOutside={closeMentionTypePicker}
+          isDisabled={!props.isEditable}
+        >
           <PopPresenceAnimator>
             <MentionTypePicker
               onSelect={(mentionType: MentionType) => {
                 setMentionType(mentionType);
                 props.update({ type: mentionType });
-                unset();
+                closeMentionTypePicker();
               }}
             />
           </PopPresenceAnimator>
         </Popover>
       )}
-      <UIMention mentionType={mentionType} ref={anchorRef} onClick={toggle} {...otherProps}>
+      <UIMention mentionType={mentionType} ref={anchorRef} onClick={handleOpenMentionTypePicker} {...otherProps}>
         @{props?.data?.originalName}
+        {props.isEditable && (
+          <UIMentionPopoverOpenIndicator>
+            <UIMentionIcon icon={<IconChevronUp />} size={"inherit"} />
+          </UIMentionPopoverOpenIndicator>
+        )}
       </UIMention>
     </>
   );
@@ -118,7 +137,6 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
   pickerComponent: UserPicker,
 });
 
-// TODO: Build mention colors into theme
 const UIMention = styled.span<{ mentionType: MentionType }>`
   cursor: default;
   height: 1.25em;
@@ -133,16 +151,28 @@ const UIMention = styled.span<{ mentionType: MentionType }>`
         return css`
           color: ${theme.colors.tags.action.foreground()};
           background-color: ${theme.colors.tags.action.background()};
+
+          svg {
+            color: ${theme.colors.tags.action.foreground()};
+          }
         `;
       case "request-read":
         return css`
           color: ${theme.colors.tags.shareInformation.foreground()};
           background-color: ${theme.colors.tags.shareInformation.background()};
+
+          svg {
+            color: ${theme.colors.tags.shareInformation.foreground()};
+          }
         `;
       case "request-response":
         return css`
           color: ${theme.colors.tags.discussion.foreground()};
           background-color: ${theme.colors.tags.discussion.background()};
+
+          svg {
+            color: ${theme.colors.tags.discussion.foreground()};
+          }
         `;
       default:
         return "";
@@ -157,4 +187,17 @@ const UISelectItem = styled.div<{}>`
     font-size: 1.5rem;
     margin-right: 8px;
   }
+`;
+
+const UIMentionIcon = styled(CircleIconButton)`
+  display: inline;
+`;
+
+const UIMentionPopoverOpenIndicator = styled.span<{}>`
+  display: inline-flex;
+
+  padding-left: 4px;
+  margin-left: 4px;
+
+  border-left: 1px solid ${theme.colors.layout.strongLine((modifiers: Modifiers) => [modifiers.opacity(0.3)])};
 `;
