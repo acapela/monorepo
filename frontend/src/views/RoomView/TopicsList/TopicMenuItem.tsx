@@ -106,11 +106,11 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   const innerRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   useSubscription<TopicMenuItemSubscription, TopicMenuItemSubscriptionVariables>(
     gql`
+      ${fragments.topic}
+
       subscription TopicMenuItem($topicId: uuid!) {
         topic_by_pk(id: $topicId) {
-          id
-          name
-          closed_at
+          ...TopicMenuItem_topic
         }
       }
     `,

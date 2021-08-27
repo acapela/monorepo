@@ -1,4 +1,4 @@
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
@@ -10,8 +10,6 @@ import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
 import {
   TopicOwner_RoomFragment,
   TopicOwner_TopicFragment,
-  TopicOwner_TopicSubscription,
-  TopicOwner_TopicSubscriptionVariables,
   UpdateTopicOwnerMutation,
   UpdateTopicOwnerMutationVariables,
 } from "~gql";
@@ -77,20 +75,6 @@ const useUpdateTopicOwner = () =>
   );
 
 export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
-  useSubscription<TopicOwner_TopicSubscription, TopicOwner_TopicSubscriptionVariables>(
-    gql`
-      ${fragments.topic}
-
-      subscription TopicOwner_topic($id: uuid!) {
-        topic_by_pk(id: $id) {
-          id
-          ...TopicOwner_topic
-        }
-      }
-    `,
-    { variables: { id: topic.id } }
-  );
-
   const isTopicManager = useIsCurrentUserTopicManager(room, topic);
   const [updateTopicOwner] = useUpdateTopicOwner();
 
