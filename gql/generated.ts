@@ -10657,7 +10657,7 @@ export type TopicList_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'index'>
+    & Pick<Topic, 'archived_at' | 'id' | 'index'>
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment

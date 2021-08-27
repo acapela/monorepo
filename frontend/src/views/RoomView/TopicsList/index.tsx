@@ -2,6 +2,8 @@ import { Reference, gql, useMutation } from "@apollo/client";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
@@ -30,10 +32,13 @@ import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
+import { CategoryNameLabel } from "~ui/theme/functional";
+import { Toggle } from "~ui/toggle";
 import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
+import { TopicsFilter, getRoomWithFilteredTopics } from "./TopicsFilter";
 
 const fragments = {
   room: gql`
@@ -44,6 +49,7 @@ const fragments = {
       id
       space_id
       topics {
+        archived_at
         id
         index
       }
@@ -176,6 +182,12 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
 
   const [createTopic] = useCreateTopic();
 
+  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>("open");
+  useEffect(() => {
+    // when the room is closed - hide the filter and show all topics
+    setTopicsFilter(isRoomOpen ? "open" : "all");
+  }, [isRoomOpen]);
+
   async function handleCreateNewTopic() {
     const topicId = getUUID();
     const { data } = await createTopic({
@@ -212,15 +224,21 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             </Button>
           </RouteLink>
         )}
+        {isRoomOpen && (
+          <TopicsFilterHolder>
+            <CategoryNameLabel>Archived</CategoryNameLabel>
+            <Toggle size="small" onSet={() => setTopicsFilter("archived")} onUnset={() => setTopicsFilter("open")} />
+          </TopicsFilterHolder>
+        )}
       </UIHeader>
       <UIBody>
         {topics.length > 0 && (
           <UITopicsListHolder>
             <LazyTopicsList
-              room={room}
+              room={getRoomWithFilteredTopics(room, topicsFilter)}
               activeTopicId={activeTopicId}
               isDisabled={isEditingAnyMessage}
-              isStatic={!amIMember}
+              isStatic={!amIMember || topicsFilter === "archived"}
             />
           </UITopicsListHolder>
         )}
@@ -279,4 +297,9 @@ const UINoTopicsMessage = styled.div<{}>``;
 const UINewTopicButton = styled(Button)`
   margin-top: 16px;
   padding: 8px 48px;
+`;
+
+const TopicsFilterHolder = styled.div`
+  display: flex;
+  gap: 8px;
 `;
