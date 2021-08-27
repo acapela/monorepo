@@ -27,6 +27,7 @@ import { Modifiers } from "~ui/theme/colors/createColor";
  */
 
 function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
+  // TODO: Discussion -> Show only room members when inside a private room
   const teamMembers = useCurrentTeamMembers();
 
   const getMatchingUsers = useSearch(teamMembers, (user) => [user.email, user.name]);
