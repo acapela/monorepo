@@ -13,10 +13,10 @@ import { TimePicker } from "./TimePicker";
 interface Props {
   initialValue: Date;
   onSubmit: (date: Date) => void;
-  withoutConfirmation?: boolean;
+  shouldSkipConfirmation?: boolean;
 }
 
-export const DateTimePicker = ({ initialValue, onSubmit, withoutConfirmation = false }: Props) => {
+export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation = false }: Props) => {
   const [dirtyDate, setDirtyDate] = useState<Date>(initialValue);
   const didUserChangeInitialValue = dirtyDate === initialValue;
 
@@ -27,10 +27,10 @@ export const DateTimePicker = ({ initialValue, onSubmit, withoutConfirmation = f
   };
 
   useEffect(() => {
-    if (withoutConfirmation) {
+    if (shouldSkipConfirmation) {
       handleSubmit();
     }
-  }, [withoutConfirmation, dirtyDate]);
+  }, [shouldSkipConfirmation, dirtyDate]);
 
   const pickedMinutesValue = useMemo(() => {
     const hours = getHours(dirtyDate);
@@ -59,7 +59,7 @@ export const DateTimePicker = ({ initialValue, onSubmit, withoutConfirmation = f
           <TimePicker onChange={handleTimeChange} value={pickedMinutesValue} />
         </UITimePickerWrapper>
       </UIPickers>
-      {!withoutConfirmation && (
+      {!shouldSkipConfirmation && (
         <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
           Save
         </Button>

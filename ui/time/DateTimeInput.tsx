@@ -15,16 +15,16 @@ interface Props {
   onChange: (value: Date) => void;
   isReadonly?: boolean;
   label?: string;
-  withoutConfirmation?: boolean;
+  shouldSkipConfirmation?: boolean;
 }
 
-export const DateTimeInput = ({ value, onChange, isReadonly = false, withoutConfirmation, label }: Props) => {
+export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipConfirmation, label }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
-    if (!withoutConfirmation) {
+    if (!shouldSkipConfirmation) {
       toggleOpenPicker();
     }
 
@@ -38,7 +38,11 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, withoutConf
       <AnimatePresence>
         {isPickerOpen && (
           <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker withoutConfirmation={withoutConfirmation} onSubmit={handleSubmit} initialValue={value} />
+            <DateTimePicker
+              shouldSkipConfirmation={shouldSkipConfirmation}
+              onSubmit={handleSubmit}
+              initialValue={value}
+            />
           </Popover>
         )}
       </AnimatePresence>
