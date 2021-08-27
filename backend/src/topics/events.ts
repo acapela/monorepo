@@ -3,6 +3,7 @@ import { Topic, db } from "~db";
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
 import { updateRoomLastActivityDate } from "../rooms/rooms";
+import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   await updateRoomLastActivityDate(event.item.room_id);
@@ -12,10 +13,11 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
   }
 
   if (event.type === "update") {
-    const wasJustClosed = !event.item.closed_at && event.itemBefore.closed_at;
+    const wasJustClosed = event.item.closed_at && !event.itemBefore.closed_at;
 
     if (wasJustClosed && event.userId) {
       await createTopicClosedNotifications(event.item, event.userId);
+      await markAllOpenTasksAsDone(event.item);
     }
 
     const ownerId = event.item.owner_id;
