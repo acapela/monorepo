@@ -126,12 +126,17 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   useMarkTopicAsRead(topic?.id ?? null, data ? data.messages : []);
 
-  if (!topic || !data) {
+  if (!topic) {
     return null;
   }
-  const { messages } = data;
+
+  const messages = data?.messages ?? [];
 
   const isClosed = isTopicClosed(topic);
+
+  const isComposerDisabled = !isMember || !data?.messages;
+
+  const isLoadingMessages = !data?.messages;
 
   return (
     <TopicStoreContext>
@@ -152,7 +157,11 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
               </AnimateSharedLayout>
 
               {!messages.length && !isClosed && (
-                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
+                <UIContentWrapper>
+                  {isLoadingMessages
+                    ? "Loading messages..."
+                    : "Start the conversation and add your first message below."}
+                </UIContentWrapper>
               )}
 
               {isClosed && <TopicClosureNote isParentRoomOpen={!room.finished_at} />}
@@ -160,8 +169,8 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
             {!isClosed && (
               <ClientSideOnly>
-                <UIMessageComposer isDisabled={!isMember}>
-                  <CreateNewMessageEditor topicId={topic.id} isDisabled={!isMember} />
+                <UIMessageComposer isDisabled={isComposerDisabled}>
+                  <CreateNewMessageEditor topicId={topic.id} isDisabled={isComposerDisabled} />
                 </UIMessageComposer>
               </ClientSideOnly>
             )}
