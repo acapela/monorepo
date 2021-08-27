@@ -15,9 +15,10 @@ interface Props {
   onChange: (value: Date) => void;
   isReadonly?: boolean;
   label?: string;
+  shouldSkipConfirmation?: boolean;
 }
 
-export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Props) => {
+export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipConfirmation, label }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
@@ -34,7 +35,11 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
       <AnimatePresence>
         {isPickerOpen && (
           <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker onSubmit={handleSubmit} initialValue={value} />
+            <DateTimePicker
+              shouldSkipConfirmation={shouldSkipConfirmation}
+              onSubmit={handleSubmit}
+              initialValue={value}
+            />
           </Popover>
         )}
       </AnimatePresence>
