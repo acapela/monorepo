@@ -4,7 +4,7 @@ import React from "react";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
-import { RoomPageQuery, RoomPageQueryVariables } from "~gql";
+import { RoomPage_RoomQuery, RoomPage_RoomQueryVariables } from "~gql";
 
 interface Props {
   spaceId: string;
@@ -13,50 +13,34 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const {
-    data: newData,
-    previousData,
-    loading,
-  } = useQuery<RoomPageQuery, RoomPageQueryVariables>(
+  const { data, loading } = useQuery<RoomPage_RoomQuery, RoomPage_RoomQueryVariables>(
     gql`
       ${RoomTopicView.fragments.room}
-      ${RoomTopicView.fragments.topic}
 
-      query RoomPage($roomId: uuid!, $topicId: uuid, $hasTopicId: Boolean!) {
+      query RoomPage_room($roomId: uuid!) {
         room: room_by_pk(id: $roomId) {
           id
           is_private
           ...RoomTopicView_room
         }
-        topics: topic(where: { id: { _eq: $topicId } }) @include(if: $hasTopicId) {
-          ...RoomTopicView_topic
-        }
       }
     `,
-    { variables: { roomId, topicId: topicId, hasTopicId: !!topicId } }
+    { variables: { roomId } }
   );
-
-  const data = newData ?? previousData;
 
   const hasRoom = Boolean(data && data.room);
 
-  useRoomWithClientErrorRedirects({
-    spaceId,
-    roomId,
-    hasRoom,
-    loading,
-  });
+  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom, loading });
 
   if (!data || !data.room) {
     return null; // Left blank on purpose. Won't render for clients.
   }
 
-  const { room, topics } = data;
-  const topic = topics && topics[0];
+  const { room } = data;
 
   return (
     <AppLayout>
-      <RoomTopicView room={room} topic={topic} />
+      <RoomTopicView room={room} topicId={topicId} />
     </AppLayout>
   );
 };

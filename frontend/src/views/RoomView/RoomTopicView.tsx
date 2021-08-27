@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { withFragments } from "~frontend/gql/utils";
 import { routes } from "~frontend/router";
-import { RoomTopicView_RoomFragment, RoomTopicView_TopicFragment } from "~gql";
+import { RoomTopicView_RoomFragment } from "~gql";
 
 import { RoomView } from "./RoomView";
 import { TopicWithMessages } from "./TopicWithMessages";
@@ -12,42 +12,34 @@ const fragments = {
   room: gql`
     ${RoomView.fragments.room}
     ${TopicWithMessages.fragments.room}
+    ${TopicWithMessages.fragments.topic}
 
     fragment RoomTopicView_room on room {
       id
       space_id
       topics {
         id
+        ...TopicWithMessages_topic
       }
       ...RoomView_room
       ...TopicWithMessages_room
-    }
-  `,
-  topic: gql`
-    ${TopicWithMessages.fragments.topic}
-
-    fragment RoomTopicView_topic on topic {
-      id
-      ...TopicWithMessages_topic
     }
   `,
 };
 
 interface Props {
   room: RoomTopicView_RoomFragment;
-  topic: RoomTopicView_TopicFragment | null;
+  topicId: null | string;
 }
 
-export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topic }: Props) {
+export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topicId }: Props) {
   const firstTopic = room.topics?.[0] ?? null;
 
-  function getSelectedTopicId() {
-    if (topic) return topic.id;
-
-    return firstTopic?.id ?? null;
-  }
-
-  const selectedTopicId = getSelectedTopicId();
+  const selectedTopicId = topicId ?? firstTopic?.id ?? null;
+  const selectedTopic = useMemo(
+    () => room.topics.find((topic) => topic.id == selectedTopicId) ?? null,
+    [room, selectedTopicId]
+  );
 
   /*
     Routing on changes to topic
@@ -66,7 +58,6 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
       return;
     }
 
-    const topicIdGivenByUrl = topic?.id;
     const roomHasTopics = topicsInRoom.length > 0;
     const isFoundInRoom = (toFind: string) => topicsInRoom.find(({ id }) => id === toFind);
 
@@ -85,6 +76,7 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
         spaceId,
       });
 
+    const topicIdGivenByUrl = topicId;
     if (topicIdGivenByUrl) {
       if (!roomHasTopics) {
         routeToRoomUrl();
@@ -97,11 +89,11 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topic, firstTopic, room.topics]);
+  }, [topicId, firstTopic, room.topics]);
 
   return (
     <RoomView room={room} selectedTopicId={selectedTopicId}>
-      {selectedTopicId && <TopicWithMessages key={selectedTopicId} room={room} topic={topic} />}
+      {selectedTopic && <TopicWithMessages key={selectedTopicId} room={room} topic={selectedTopic} />}
     </RoomView>
   );
 });

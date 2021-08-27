@@ -9819,23 +9819,18 @@ export type BreadcrumbQuery = (
   )> }
 );
 
-export type RoomPageQueryVariables = Exact<{
+export type RoomPage_RoomQueryVariables = Exact<{
   roomId: Scalars['uuid'];
-  topicId?: Maybe<Scalars['uuid']>;
-  hasTopicId: Scalars['Boolean'];
 }>;
 
 
-export type RoomPageQuery = (
+export type RoomPage_RoomQuery = (
   { __typename?: 'query_root' }
   & { room?: Maybe<(
     { __typename?: 'room' }
     & Pick<Room, 'id' | 'is_private'>
     & RoomTopicView_RoomFragment
-  )>, topics: Maybe<Array<(
-    { __typename?: 'topic' }
-    & RoomTopicView_TopicFragment
-  )>> }
+  )> }
 );
 
 export type SpaceManager_SpaceFragment = (
@@ -10352,15 +10347,10 @@ export type RoomTopicView_RoomFragment = (
   & { topics: Array<(
     { __typename?: 'topic' }
     & Pick<Topic, 'id'>
+    & TopicWithMessages_TopicFragment
   )> }
   & RoomView_RoomFragment
   & TopicWithMessages_RoomFragment
-);
-
-export type RoomTopicView_TopicFragment = (
-  { __typename?: 'topic' }
-  & Pick<Topic, 'id'>
-  & TopicWithMessages_TopicFragment
 );
 
 export type RoomView_RoomFragment = (

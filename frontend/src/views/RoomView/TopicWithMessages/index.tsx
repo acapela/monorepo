@@ -87,7 +87,10 @@ function useMarkTopicAsRead(topicId: string | null, messages: Pick<MessageType, 
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { data } = useSubscription<TopicMessagesAscSubscription, TopicMessagesAscSubscriptionVariables>(
+  const { data, loading: isLoadingMessages } = useSubscription<
+    TopicMessagesAscSubscription,
+    TopicMessagesAscSubscriptionVariables
+  >(
     gql`
       ${MessagesFeed.fragments.message}
 
@@ -135,8 +138,6 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
   const isClosed = isTopicClosed(topic);
 
   const isComposerDisabled = !isMember || !data?.messages;
-
-  const isLoadingMessages = !data?.messages;
 
   return (
     <TopicStoreContext>
