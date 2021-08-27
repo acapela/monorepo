@@ -11,23 +11,23 @@ import {
   UpdateTeamMemberMutationVariables,
 } from "~gql";
 import { assertDefined } from "~shared/assert";
-import { Checkbox } from "~ui/forms/Checkbox";
 import { theme } from "~ui/theme";
+import { Toggle } from "~ui/toggle";
 
 const getNotificationChannelDescription = (channel: string) =>
   `Mentions and room invitations will be sent via ${channel}.`;
 
-const LabeledCheckbox = ({
+const LabeledToggle = ({
   title,
   description,
-  isChecked,
+  isSet,
   onChange,
   isDisabled,
   tooltip,
 }: {
   title: string;
   description: string;
-  isChecked: boolean;
+  isSet: boolean;
   onChange: (isChecked: boolean) => void;
   isDisabled?: boolean;
   tooltip?: string;
@@ -37,7 +37,13 @@ const LabeledCheckbox = ({
       {title}
       <UIByline>{description}</UIByline>
     </div>
-    <Checkbox checked={isChecked} onChange={(event) => onChange(event.target.checked)} disabled={isDisabled} />
+    <Toggle
+      size="small"
+      isSet={isSet}
+      isDisabled={isDisabled}
+      onSet={() => onChange(true)}
+      onUnset={() => onChange(false)}
+    />
   </UILabel>
 );
 
@@ -110,16 +116,16 @@ export function NotificationSettings() {
     <UIPanel>
       <UITitle>Notifications</UITitle>
 
-      <LabeledCheckbox
+      <LabeledToggle
         title="Email"
         description={getNotificationChannelDescription("email")}
-        isChecked={teamMember.notify_email}
+        isSet={teamMember.notify_email}
         onChange={(isChecked) => handleUpdate({ notify_email: isChecked })}
       />
-      <LabeledCheckbox
+      <LabeledToggle
         title="Slack"
         description={getNotificationChannelDescription("slack")}
-        isChecked={teamMember.notify_slack}
+        isSet={teamMember.notify_slack}
         onChange={(isChecked) => handleUpdate({ notify_slack: isChecked })}
         isDisabled={!hasSlackInstallation}
         tooltip={hasSlackInstallation ? undefined : "Slack has not been installed for your team"}
