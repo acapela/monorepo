@@ -1,8 +1,7 @@
 import { Reference, gql, useMutation } from "@apollo/client";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect, useRef, useState } from "react";
-import { usePrevious } from "react-use";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
@@ -37,7 +36,8 @@ import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
-import { TopicsFilter, getIsTopicArchived, getIsTopicPresent } from "./TopicsFilter";
+import { getIsTopicArchived, getIsTopicPresent } from "./TopicsFilter";
+import { useTopicsFilter } from "./useTopicsFilter";
 
 const fragments = {
   room: gql`
@@ -181,10 +181,11 @@ const _TopicsList = observer(function TopicsList({
 
   const { id: roomId, space_id: spaceId, topics } = roomWithoutAppliedFilters;
 
-  const isActiveTopicArchived = !!topics.find(({ id }) => id === activeTopicId)?.archived_at;
-
-  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "present");
-  const previousTopicsFilter = usePrevious(topicsFilter);
+  const { topicsFilter, requestChangeTopicsFilter } = useTopicsFilter({
+    topics,
+    activeTopicId,
+    isRoomOpen,
+  });
 
   const room: TopicList_RoomFragment = {
     ...roomWithoutAppliedFilters,
@@ -193,56 +194,6 @@ const _TopicsList = observer(function TopicsList({
         ? topics
         : (topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent) as typeof topics),
   };
-
-  const hasArchivedTopics = topics.some((topic) => topic.archived_at);
-  useEffect(() => {
-    if (!hasArchivedTopics && topicsFilter === "archived") {
-      setTopicsFilter("present");
-    }
-  }, [hasArchivedTopics, topicsFilter]);
-
-  useEffect(() => {
-    if (topicsFilter === "all" && isRoomOpen) {
-      setTopicsFilter("present");
-    }
-  }, [isRoomOpen, topicsFilter]);
-
-  useEffect(() => {
-    if (isActiveTopicArchived && topicsFilter === "present" && previousTopicsFilter === "present") {
-      setTopicsFilter("archived");
-    } else if (!isActiveTopicArchived && topicsFilter === "archived" && previousTopicsFilter === "archived") {
-      setTopicsFilter("present");
-    }
-  }, [isActiveTopicArchived, previousTopicsFilter, topicsFilter]);
-
-  useEffect(() => {
-    // when the room is closed - show all topics
-    if (!isRoomOpen && topicsFilter !== "all") {
-      setTopicsFilter("all");
-    }
-  }, [isRoomOpen, topicsFilter]);
-
-  useEffect(() => {
-    if (topicsFilter === "present" && previousTopicsFilter === "archived") {
-      const openTopic = topics.find((topic) => !topic.archived_at);
-      if (openTopic) {
-        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openTopic.id });
-      } else {
-        routes.spaceRoom.push({ spaceId, roomId });
-      }
-
-      return;
-    }
-
-    if (topicsFilter === "archived" && previousTopicsFilter === "present") {
-      const archivedTopic = topics.find((topic) => topic.archived_at);
-      if (archivedTopic) {
-        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: archivedTopic.id });
-      }
-
-      return;
-    }
-  }, [topicsFilter, previousTopicsFilter, spaceId, roomId, topics]);
 
   const roomContext = useRoomStoreContext();
 
@@ -287,14 +238,14 @@ const _TopicsList = observer(function TopicsList({
             </Button>
           </RouteLink>
         )}
-        {isRoomOpen && hasArchivedTopics && (
+        {isRoomOpen && (
           <TopicsFilterHolder>
             <CategoryNameLabel>Archived</CategoryNameLabel>
             <Toggle
               isSet={topicsFilter === "archived"}
               size="small"
-              onSet={() => setTopicsFilter("archived")}
-              onUnset={() => setTopicsFilter("present")}
+              onSet={() => requestChangeTopicsFilter("archived")}
+              onUnset={() => requestChangeTopicsFilter("present")}
             />
           </TopicsFilterHolder>
         )}
@@ -311,7 +262,11 @@ const _TopicsList = observer(function TopicsList({
           </UITopicsListHolder>
         )}
 
-        {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
+        {topics.length === 0 && (
+          <UINoTopicsMessage>
+            {topicsFilter === "archived" ? "This room has no archived topics." : "This room has no topics yet."}{" "}
+          </UINoTopicsMessage>
+        )}
 
         <VStack alignItems="center" justifyContent="start">
           <UINewTopicButton
