@@ -218,9 +218,9 @@ const _TopicsList = observer(function TopicsList({
 
   useEffect(() => {
     if (topicsFilter === "open" && previousTopicsFilter === "archived") {
-      const openedTopic = topics.find((topic) => !topic.archived_at);
-      if (openedTopic) {
-        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openedTopic.id });
+      const openTopic = topics.find((topic) => !topic.archived_at);
+      if (openTopic) {
+        routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openTopic.id });
       } else {
         routes.spaceRoom.push({ spaceId, roomId });
       }
