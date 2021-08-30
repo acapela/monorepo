@@ -37,7 +37,7 @@ import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
-import { TopicsFilter, getRoomWithFilteredTopics } from "./TopicsFilter";
+import { TopicsFilter, getIsTopicArchived, getIsTopicPresent } from "./TopicsFilter";
 
 const fragments = {
   room: gql`
@@ -183,29 +183,35 @@ const _TopicsList = observer(function TopicsList({
 
   const isActiveTopicArchived = !!topics.find(({ id }) => id === activeTopicId)?.archived_at;
 
-  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "open");
+  const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "present");
   const previousTopicsFilter = usePrevious(topicsFilter);
 
-  const room = getRoomWithFilteredTopics(roomWithoutAppliedFilters, topicsFilter);
+  const room = {
+    ...roomWithoutAppliedFilters,
+    topics:
+      topicsFilter === "all"
+        ? topics
+        : topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent),
+  };
 
   const hasArchivedTopics = topics.some((topic) => topic.archived_at);
   useEffect(() => {
     if (!hasArchivedTopics && topicsFilter === "archived") {
-      setTopicsFilter("open");
+      setTopicsFilter("present");
     }
   }, [hasArchivedTopics, topicsFilter]);
 
   useEffect(() => {
     if (topicsFilter === "all" && isRoomOpen) {
-      setTopicsFilter("open");
+      setTopicsFilter("present");
     }
   }, [isRoomOpen, topicsFilter]);
 
   useEffect(() => {
-    if (isActiveTopicArchived && topicsFilter === "open" && previousTopicsFilter === "open") {
+    if (isActiveTopicArchived && topicsFilter === "present" && previousTopicsFilter === "present") {
       setTopicsFilter("archived");
     } else if (!isActiveTopicArchived && topicsFilter === "archived" && previousTopicsFilter === "archived") {
-      setTopicsFilter("open");
+      setTopicsFilter("present");
     }
   }, [isActiveTopicArchived, previousTopicsFilter, topicsFilter]);
 
@@ -217,7 +223,7 @@ const _TopicsList = observer(function TopicsList({
   }, [isRoomOpen, topicsFilter]);
 
   useEffect(() => {
-    if (topicsFilter === "open" && previousTopicsFilter === "archived") {
+    if (topicsFilter === "present" && previousTopicsFilter === "archived") {
       const openTopic = topics.find((topic) => !topic.archived_at);
       if (openTopic) {
         routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openTopic.id });
@@ -228,7 +234,7 @@ const _TopicsList = observer(function TopicsList({
       return;
     }
 
-    if (topicsFilter === "archived" && previousTopicsFilter === "open") {
+    if (topicsFilter === "archived" && previousTopicsFilter === "present") {
       const archivedTopic = topics.find((topic) => topic.archived_at);
       if (archivedTopic) {
         routes.spaceRoomTopic.push({ spaceId, roomId, topicId: archivedTopic.id });
@@ -288,7 +294,7 @@ const _TopicsList = observer(function TopicsList({
               isSet={topicsFilter === "archived"}
               size="small"
               onSet={() => setTopicsFilter("archived")}
-              onUnset={() => setTopicsFilter("open")}
+              onUnset={() => setTopicsFilter("present")}
             />
           </TopicsFilterHolder>
         )}

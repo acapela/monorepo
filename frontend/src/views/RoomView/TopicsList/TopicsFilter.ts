@@ -1,26 +1,9 @@
-import { TopicList_RoomFragment } from "~gql";
+export type TopicsFilter = "present" | "archived" | "all";
 
-export type TopicsFilter = "open" | "archived" | "all";
+interface TopicFilterParams {
+  archived_at?: string | null;
+}
 
-export const getRoomWithFilteredTopics = (
-  room: TopicList_RoomFragment,
-  filter: TopicsFilter
-): TopicList_RoomFragment => {
-  const topics = room.topics.filter((topic) => {
-    if (filter === "open") {
-      return topic.archived_at === null;
-    }
-    if (filter === "archived") {
-      return topic.archived_at !== null;
-    }
+export const getIsTopicArchived = ({ archived_at }: TopicFilterParams) => !!archived_at;
 
-    return true;
-  });
-
-  return {
-    ...room,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    topics,
-  };
-};
+export const getIsTopicPresent = ({ archived_at }: TopicFilterParams) => !archived_at;
