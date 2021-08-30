@@ -10337,7 +10337,7 @@ export type RoomTopicView_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'archived_at'>
     & TopicWithMessages_TopicFragment
   )> }
   & RoomView_RoomFragment
@@ -10432,25 +10432,23 @@ export type TopicHeader_RoomFragment = (
 
 export type TopicHeader_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'archived_at'>
   & IsTopicClosed_TopicFragment
   & IsCurrentUserTopicManager_TopicFragment
   & ManageTopic_TopicFragment
 );
 
-export type CloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   id: Scalars['uuid'];
-  closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by_user_id?: Maybe<Scalars['uuid']>;
-  closing_summary?: Maybe<Scalars['String']>;
+  input: Topic_Set_Input;
 }>;
 
 
-export type CloseTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary'>
+    & Pick<Topic, 'id'>
   )> }
 );
 
@@ -10578,7 +10576,7 @@ export type ManageTopic_RoomFragment = (
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'closed_at' | 'archived_at'>
   & IsCurrentUserTopicManager_TopicFragment
 );
 
@@ -10692,7 +10690,7 @@ export type TopicList_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'index'>
+    & Pick<Topic, 'archived_at' | 'id' | 'index'>
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment
@@ -10760,6 +10758,20 @@ export type DeleteTopicMutation = (
   & { topic?: Maybe<(
     { __typename?: 'topic' }
     & Pick<Topic, 'id' | 'room_id'>
+  )> }
+);
+
+export type ArchiveTopicMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  archivedAt: Scalars['timestamptz'];
+}>;
+
+
+export type ArchiveTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'room_id' | 'archived_at'>
   )> }
 );
 

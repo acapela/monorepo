@@ -1,17 +1,24 @@
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
+import { getCanTopicBeArchived } from "~frontend/topics/getCanTopicBeArchived";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useDeleteTopic, useUpdateTopicName } from "~frontend/views/RoomView/TopicsList/shared";
-import { ManageTopic_RoomFragment, ManageTopic_TopicFragment } from "~gql";
+import {
+  ArchiveTopicMutation,
+  ArchiveTopicMutationVariables,
+  ManageTopic_RoomFragment,
+  ManageTopic_TopicFragment,
+} from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconArchive, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { addToast } from "~ui/toasts/data";
 
 const fragments = {
   room: gql`
@@ -28,6 +35,8 @@ const fragments = {
     fragment ManageTopic_topic on topic {
       id
       name
+      closed_at
+      archived_at
       ...IsCurrentUserTopicManager_topic
     }
   `,
@@ -39,9 +48,35 @@ interface Props {
   onRenameRequest?: () => void;
 }
 
+export const useArchiveTopic = () =>
+  useMutation<ArchiveTopicMutation, ArchiveTopicMutationVariables & { roomId: string }>(
+    gql`
+      mutation ArchiveTopic($id: uuid!, $archivedAt: timestamptz!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { archived_at: $archivedAt }) {
+          id
+          room_id
+          archived_at
+        }
+      }
+    `,
+    {
+      optimisticResponse: ({ id, roomId, archivedAt }) => ({
+        topic: { __typename: "topic", id, room_id: roomId, archived_at: archivedAt },
+      }),
+      onCompleted() {
+        addToast({ type: "success", title: "Topic was archived" });
+      },
+    }
+  );
+
 export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequest }: Props) => {
   const [updateTopicName] = useUpdateTopicName();
+  const [archiveTopic] = useArchiveTopic();
   const [deleteTopic] = useDeleteTopic();
+
+  const handleArchiveTopic = async () => {
+    await archiveTopic({ variables: { id: topic.id, roomId: room.id, archivedAt: new Date().toISOString() } });
+  };
 
   const handleDeleteSelect = useCallback(async () => {
     const isDeleteConfirmed = await openConfirmPrompt({
@@ -77,19 +112,26 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
 
   const options = [];
   if (isTopicManager) {
-    options.push(
-      {
-        label: "Rename topic",
-        onSelect: onRenameRequest ?? handleRenameWithModal,
-        icon: <IconEdit />,
-      },
-      {
-        label: "Delete topic",
-        isDestructive: true,
-        onSelect: handleDeleteSelect,
-        icon: <IconTrash />,
-      }
-    );
+    options.push({
+      label: "Rename topic",
+      onSelect: onRenameRequest ?? handleRenameWithModal,
+      icon: <IconEdit />,
+    });
+
+    if (getCanTopicBeArchived(topic)) {
+      options.push({
+        label: "Archive topic",
+        onSelect: handleArchiveTopic,
+        icon: <IconArchive />,
+      });
+    }
+
+    options.push({
+      label: "Delete topic",
+      isDestructive: true,
+      onSelect: handleDeleteSelect,
+      icon: <IconTrash />,
+    });
   }
 
   if (options.length < 1) return null;
