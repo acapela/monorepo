@@ -74,8 +74,8 @@ export const useArchiveTopic = () =>
       }
     `,
     {
-      optimisticResponse: ({ id, roomId }) => ({
-        topic: { __typename: "topic", id, room_id: roomId },
+      optimisticResponse: ({ id, roomId, archivedAt }) => ({
+        topic: { __typename: "topic", id, room_id: roomId, archived_at: archivedAt },
       }),
       onCompleted() {
         addToast({ type: "success", title: "Topic was archived" });
