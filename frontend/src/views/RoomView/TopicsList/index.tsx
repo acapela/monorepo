@@ -186,12 +186,12 @@ const _TopicsList = observer(function TopicsList({
   const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "present");
   const previousTopicsFilter = usePrevious(topicsFilter);
 
-  const room = {
+  const room: TopicList_RoomFragment = {
     ...roomWithoutAppliedFilters,
     topics:
       topicsFilter === "all"
         ? topics
-        : topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent),
+        : (topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent) as typeof topics),
   };
 
   const hasArchivedTopics = topics.some((topic) => topic.archived_at);
