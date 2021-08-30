@@ -71,7 +71,11 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
   );
 });
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  ${Transcript} {
+    margin-top: 16px;
+  }
+`;
 
 const UIVideoHolder = styled.div`
   height: 100%;
