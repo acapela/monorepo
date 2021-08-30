@@ -13,23 +13,6 @@ import {
   TopicWithMessagesQueryVariables,
 } from "~gql";
 
-// use this to extract the last updated message timestamp and use that to subscribe only to changes after that
-function useLastUpdatedAt() {
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<string | null>(null);
-
-  const updateLastUpdatedAt = useCallback(
-    (messages: { updated_at: string }[]) => {
-      const newValue = _.max(messages.map((m) => m.updated_at));
-      if (newValue) {
-        setLastUpdatedAt(newValue);
-      }
-    },
-    [setLastUpdatedAt]
-  );
-
-  return [lastUpdatedAt, updateLastUpdatedAt] as const;
-}
-
 // Update our messages cache when a message gets deleted
 function useExistingMessagesSubscription(topicId?: string) {
   const { data } = useSubscription<MessageExistenceSubscription, MessageExistenceSubscriptionVariables>(
@@ -72,25 +55,19 @@ function useExistingMessagesSubscription(topicId?: string) {
 }
 
 export function useMessagesSubscription(topicId?: string) {
-  const [lastUpdatedAt, updateLastUpdatedAt] = useLastUpdatedAt();
   const {
     data,
     loading: isLoadingMessages,
     subscribeToMore,
   } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(
     TOPIC_WITH_MESSAGES_QUERY,
-    topicId
-      ? {
-          variables: { topicId },
-          onCompleted(data) {
-            updateLastUpdatedAt(data?.messages ?? []);
-          },
-        }
-      : { skip: true }
+    topicId ? { variables: { topicId } } : { skip: true }
   );
 
   const existingMessageIds = useExistingMessagesSubscription(topicId);
   const messages = data?.messages ?? [];
+
+  const lastUpdatedAt = useMemo(() => (data ? _.max(data.messages.map((m) => m.updated_at)) : null), [data]);
 
   useEffect(() => {
     if (!topicId || !lastUpdatedAt) {
@@ -112,7 +89,6 @@ export function useMessagesSubscription(topicId?: string) {
       variables: { topicId, lastUpdatedAt },
       updateQuery(prev, { subscriptionData }) {
         const updatedMessages = subscriptionData.data.messages;
-        updateLastUpdatedAt(updatedMessages);
 
         const existingMessageIds = new Set(prev.messages.map((m) => m.id));
         const newMessages = updatedMessages.filter((m) => !existingMessageIds.has(m.id));
@@ -123,7 +99,7 @@ export function useMessagesSubscription(topicId?: string) {
         };
       },
     });
-  }, [lastUpdatedAt, subscribeToMore, topicId, updateLastUpdatedAt]);
+  }, [lastUpdatedAt, subscribeToMore, topicId]);
 
   return { messages, existingMessageIds, isLoadingMessages };
 }
