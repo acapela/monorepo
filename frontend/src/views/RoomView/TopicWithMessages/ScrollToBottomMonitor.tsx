@@ -2,54 +2,54 @@ import { RefObject, useCallback, useEffect, useRef } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
+import { useElementEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 
 interface Props {
   parentRef: RefObject<HTMLElement>;
-  getShouldScroll: () => boolean;
+  preventAutoScroll: boolean;
 }
 
-function scrollToBottom(element: HTMLElement, behavior: ScrollBehavior = "smooth") {
-  if (behavior === "auto") {
-    element.scrollTop = element.scrollHeight - element.clientHeight;
-    return;
-  }
-
-  element.scroll({ top: element.scrollHeight - element.clientHeight, behavior });
-}
+const SCROLL_BOTTOM_TOLERANCE = 10;
 
 /**
  * This component will manage keeping it's parent scrolled to bottom on content size changes.
  *
  * It's useful for cases like messages feed.
  */
-export function ScrollToBottomMonitor({ parentRef, getShouldScroll }: Props) {
+export function ScrollToBottomMonitor({ parentRef, preventAutoScroll }: Props) {
   const monitorRef = useRef<HTMLDivElement>(null);
+  const isScrolledToBottom = useRef(true);
+  const didAutoScroll = useRef(false);
+
+  useElementEvent(
+    parentRef,
+    "scroll",
+    useCallback(() => {
+      const parent = parentRef.current;
+      if (parent && !didAutoScroll.current) {
+        isScrolledToBottom.current =
+          parent.scrollTop >= parent.scrollHeight - parent.clientHeight - SCROLL_BOTTOM_TOLERANCE;
+      }
+      didAutoScroll.current = false;
+    }, [parentRef])
+  );
 
   const performScrollToBottom = useCallback(
     (behavior: ScrollBehavior) => {
       const parentNode = parentRef.current;
-      if (!parentNode || !getShouldScroll()) {
+      if (!parentNode || preventAutoScroll || !isScrolledToBottom.current) {
         return;
       }
 
-      const scrollToBottomOfParent = () => {
-        scrollToBottom(parentNode, behavior);
-      };
-
-      if (navigator.userAgent.includes("AppleWebKit")) {
-        // Safari schedules ~some sync work which stops bottom scrolling from working
-        // This little hack, while not nice, does make it work
-        // TODO: look for real fix if it turns out there is unforeseen negative consequences
-        setTimeout(() => {
-          scrollToBottomOfParent();
-        });
+      didAutoScroll.current = true;
+      if (behavior === "auto") {
+        parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
       } else {
-        scrollToBottomOfParent();
+        parentNode.scroll({ top: parentNode.scrollHeight - parentNode.clientHeight, behavior });
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getShouldScroll]
+    [parentRef, preventAutoScroll]
   );
 
   useResizeCallback(monitorRef, () => performScrollToBottom("auto"));
