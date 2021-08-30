@@ -2,8 +2,6 @@ import { Reference, gql, useMutation } from "@apollo/client";
 import styled from "styled-components";
 
 import {
-  ArchiveTopicMutation,
-  ArchiveTopicMutationVariables,
   DeleteTopicMutation,
   DeleteTopicMutationVariables,
   UpdateTopicNameMutation,
@@ -58,50 +56,6 @@ export const useDeleteTopic = () =>
       },
       onCompleted() {
         addToast({ type: "success", title: "Topic was removed" });
-      },
-    }
-  );
-
-export const useArchiveTopic = () =>
-  useMutation<ArchiveTopicMutation, ArchiveTopicMutationVariables & { roomId: string }>(
-    gql`
-      mutation ArchiveTopic($id: uuid!, $archivedAt: timestamptz!) {
-        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { archived_at: $archivedAt }) {
-          id
-          room_id
-          archived_at
-        }
-      }
-    `,
-    {
-      optimisticResponse: ({ id, roomId, archivedAt }) => ({
-        topic: { __typename: "topic", id, room_id: roomId, archived_at: archivedAt },
-      }),
-      update(cache, { data }) {
-        if (!data || !data.topic) {
-          return;
-        }
-        const { topic } = data;
-        const topicRef = cache.identify(topic);
-        cache.modify({
-          id: cache.identify({ __typename: "room", id: topic.room_id }),
-          fields: {
-            topics: (existing: Reference[]) =>
-              existing.map((topic) => {
-                if (cache.identify(topic) !== topicRef) {
-                  return;
-                }
-
-                return {
-                  ...topic,
-                  ...data,
-                };
-              }),
-          },
-        });
-      },
-      onCompleted() {
-        addToast({ type: "success", title: "Topic was archived" });
       },
     }
   );
