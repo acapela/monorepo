@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
+import { getCanTopicBeArchived } from "~frontend/topics/getCanTopicBeArchived";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
@@ -90,7 +91,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
       icon: <IconEdit />,
     });
 
-    if (topic.closed_at && !topic.archived_at) {
+    if (getCanTopicBeArchived(topic)) {
       options.push({
         label: "Archive topic",
         onSelect: handleArchiveTopic,
