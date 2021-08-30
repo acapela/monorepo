@@ -44,7 +44,16 @@ export function TranscriptSpeakerPart({ part, time, onTimeChangeRequest }: Props
   function getIsWordActive(word: TranscriptWordType) {
     if (isNumberBetween(time, word.start_time, word.end_time)) return true;
 
-    if (!previousTime) return false;
+    if (previousTime === null) return false;
+
+    const timeUpdateDuration = Math.abs(time - previousTime);
+
+    /**
+     * Playback time change bigger than 1s in one 'tick' must be caused by user manually changing the time of the playback.
+     *
+     * In such case we don't want to highlight all the words in between previous and current time
+     */
+    if (timeUpdateDuration > 1) return false;
 
     /**
      * Check if word is between previous media time and current media time
