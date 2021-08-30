@@ -13,6 +13,7 @@ import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
+import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
@@ -290,14 +291,18 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     editor.chain().focus().insertContent(contentToInsert).run();
   }
 
+  function handleEditorClick() {
+    if (isRichEditorContentEmpty(value)) {
+      getFocusAtEndCommand().run();
+    }
+
+    // If editor is not empty - tiptap will manually (or even dom?) put the cursor in a proper place.
+  }
+
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
-        <UIEditorContent
-          onClick={() => {
-            getFocusAtEndCommand().run();
-          }}
-        >
+        <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
           <UIEditorHolder>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
