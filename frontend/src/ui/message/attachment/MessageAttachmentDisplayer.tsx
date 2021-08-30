@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { withFragments } from "~frontend/gql/utils";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { MessageAttachmentDisplayer_AttachmentFragment } from "~gql";
+import { TranscriptData } from "~shared/types/transcript";
 import { AudioPlayer } from "~ui/media/AudioPlayer";
 import { VideoPlayer } from "~ui/media/VideoPlayer";
 import { theme } from "~ui/theme";
@@ -17,6 +18,11 @@ const fragments = {
     fragment MessageAttachmentDisplayer_attachment on attachment {
       mimeType: mime_type
       originalName: original_name
+      transcription {
+        id
+        status
+        transcript
+      }
     }
   `,
 };
@@ -30,20 +36,22 @@ interface AttachmentProps {
 const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
   const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
+  const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
+
   function renderAttachment(): ReactNode {
     switch (messageType) {
       case "VIDEO":
         return (
           <PlayableMediaWrapper>
             <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
-            <VideoPlayer fileUrl={attachmentUrl} />
+            <VideoPlayer fileUrl={attachmentUrl} transcript={transcript} />
           </PlayableMediaWrapper>
         );
       case "AUDIO":
         return (
           <PlayableMediaWrapper>
             <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
-            <AudioPlayer fileUrl={attachmentUrl} />
+            <AudioPlayer fileUrl={attachmentUrl} transcript={transcript} />
           </PlayableMediaWrapper>
         );
     }
