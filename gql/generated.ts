@@ -10478,19 +10478,6 @@ export type TopicWithMessagesQuery = (
   )> }
 );
 
-export type MessagePresenceSubscriptionVariables = Exact<{
-  topicId: Scalars['uuid'];
-}>;
-
-
-export type MessagePresenceSubscription = (
-  { __typename?: 'subscription_root' }
-  & { presentMessages: Array<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id'>
-  )> }
-);
-
 export type TopicWithMessages_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
@@ -10529,6 +10516,19 @@ export type TopicClosureSubscription = (
   & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
     & TopicSummaryMessage_TopicFragment
+  )> }
+);
+
+export type MessageExistenceSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type MessageExistenceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { existingMessages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
   )> }
 );
 
