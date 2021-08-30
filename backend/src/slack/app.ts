@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
 
+import * as Sentry from "@sentry/node";
 import * as SlackBolt from "@slack/bolt";
 import _ from "lodash";
 
@@ -98,6 +99,10 @@ export const slackApp = new SlackBolt.App({
   ...sharedOptions,
   receiver: slackReceiver,
   developerMode: isDev(),
+});
+
+slackApp.error(async (error) => {
+  Sentry.captureException(error);
 });
 
 export const slackClient = slackApp.client;
