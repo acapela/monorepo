@@ -8955,7 +8955,7 @@ export type AttachmentDetailedInfoFragment = (
     & Pick<Message, 'id' | 'user_id' | 'type'>
   )>, transcription?: Maybe<(
     { __typename?: 'transcription' }
-    & Pick<Transcription, 'status' | 'transcript'>
+    & Pick<Transcription, 'id' | 'status' | 'transcript'>
   )> }
 );
 
