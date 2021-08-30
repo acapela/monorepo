@@ -132,6 +132,7 @@ const useCreateTopic = () =>
             closed_by_user_id: null,
             closed_by_user: null,
             closing_summary: null,
+            archived_at: null,
           },
         };
       },
