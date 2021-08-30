@@ -77,29 +77,6 @@ export const useArchiveTopic = () =>
       optimisticResponse: ({ id, roomId }) => ({
         topic: { __typename: "topic", id, room_id: roomId },
       }),
-      update(cache, { data }) {
-        if (!data || !data.topic) {
-          return;
-        }
-        const { topic } = data;
-        const topicRef = cache.identify(topic);
-        cache.modify({
-          id: cache.identify({ __typename: "room", id: topic.room_id }),
-          fields: {
-            topics: (existing: Reference[]) =>
-              existing.map((topic) => {
-                if (cache.identify(topic) !== topicRef) {
-                  return;
-                }
-
-                return {
-                  ...topic,
-                  ...data,
-                };
-              }),
-          },
-        });
-      },
       onCompleted() {
         addToast({ type: "success", title: "Topic was archived" });
       },
