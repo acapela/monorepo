@@ -6,6 +6,7 @@ import { TranscriptData } from "~shared/types/transcript";
 
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";
+import { Transcript } from "./Transcript";
 import { usePlaybackState } from "./usePlaybackState";
 
 interface Props {
@@ -40,6 +41,7 @@ export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function Aud
           onTimeChangeRequest={setTime}
         />
       </UIControlsHolder>
+      {transcript && <Transcript transcript={transcript} time={time} onTimeChangeRequest={setTime} />}
     </UIHolder>
   );
 });
@@ -47,6 +49,10 @@ export const AudioPlayer = namedForwardRef<HTMLAudioElement, Props>(function Aud
 const UIHolder = styled.div`
   audio {
     display: none;
+  }
+
+  ${Transcript} {
+    margin-top: 16px;
   }
 `;
 

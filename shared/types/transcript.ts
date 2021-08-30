@@ -1,10 +1,10 @@
-interface TranscriptWord {
+export interface TranscriptWord {
   text: string;
   start_time: number;
   end_time: number;
 }
 
-interface TranscriptSpeakerPart {
+export interface TranscriptSpeakerPart {
   speaker: string;
   start_time: number;
   end_time: number;
