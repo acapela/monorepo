@@ -180,16 +180,16 @@ const _TopicsList = observer(function TopicsList({
   const user = useAssertCurrentUser();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const isActiveTopicArchived = !!roomWithoutAppliedFilters.topics.find(({ id }) => id === activeTopicId)?.archived_at;
+  const { id: roomId, space_id: spaceId, topics } = roomWithoutAppliedFilters;
+
+  const isActiveTopicArchived = !!topics.find(({ id }) => id === activeTopicId)?.archived_at;
 
   const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "open");
   const previousTopicsFilter = usePrevious(topicsFilter);
 
   const room = getRoomWithFilteredTopics(roomWithoutAppliedFilters, topicsFilter);
 
-  const { id: roomId, space_id: spaceId, topics } = room;
-
-  const hasArchivedTopics = roomWithoutAppliedFilters.topics.some((topic) => topic.archived_at);
+  const hasArchivedTopics = topics.some((topic) => topic.archived_at);
   useEffect(() => {
     if (!hasArchivedTopics && topicsFilter === "archived") {
       setTopicsFilter("open");
@@ -213,7 +213,7 @@ const _TopicsList = observer(function TopicsList({
 
   useEffect(() => {
     if (topicsFilter === "open" && previousTopicsFilter === "archived") {
-      const openedTopic = roomWithoutAppliedFilters.topics.find((topic) => !topic.archived_at);
+      const openedTopic = topics.find((topic) => !topic.archived_at);
       if (openedTopic) {
         routes.spaceRoomTopic.push({ spaceId, roomId, topicId: openedTopic.id });
       } else {
@@ -224,14 +224,14 @@ const _TopicsList = observer(function TopicsList({
     }
 
     if (topicsFilter === "archived" && previousTopicsFilter === "open") {
-      const archivedTopic = roomWithoutAppliedFilters.topics.find((topic) => topic.archived_at);
+      const archivedTopic = topics.find((topic) => topic.archived_at);
       if (archivedTopic) {
         routes.spaceRoomTopic.push({ spaceId, roomId, topicId: archivedTopic.id });
       }
 
       return;
     }
-  }, [topicsFilter, previousTopicsFilter, spaceId, roomId, roomWithoutAppliedFilters.topics]);
+  }, [topicsFilter, previousTopicsFilter, spaceId, roomId, topics]);
 
   const roomContext = useRoomStoreContext();
 
