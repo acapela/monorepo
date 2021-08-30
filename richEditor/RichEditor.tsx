@@ -295,7 +295,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
       <RichEditorContext value={editor}>
         <UIEditorContent
           onClick={() => {
-            editor?.chain().focus().run();
+            getFocusAtEndCommand().run();
           }}
         >
           {additionalTopContent}
