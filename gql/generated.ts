@@ -10442,20 +10442,17 @@ export type TopicHeader_TopicFragment = (
   & ManageTopic_TopicFragment
 );
 
-export type CloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   id: Scalars['uuid'];
-  closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by_user_id?: Maybe<Scalars['uuid']>;
-  closing_summary?: Maybe<Scalars['String']>;
-  archived_at?: Maybe<Scalars['timestamptz']>;
+  input: Topic_Set_Input;
 }>;
 
 
-export type CloseTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'archived_at'>
+    & Pick<Topic, 'id'>
   )> }
 );
 
