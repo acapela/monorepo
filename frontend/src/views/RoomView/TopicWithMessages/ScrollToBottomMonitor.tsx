@@ -42,6 +42,8 @@ export function ScrollToBottomMonitor({ parentRef, preventAutoScroll }: Props) {
         return;
       }
 
+      // We need to distinguish programmatically-triggered scroll events from user-triggered ones
+      // to retain a user's intention whether to stay scrolled to the bottom
       didAutoScroll.current = true;
       if (behavior === "auto") {
         parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
