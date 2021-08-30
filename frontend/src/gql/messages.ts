@@ -1,8 +1,6 @@
 import { gql } from "@apollo/client";
 
 import {
-  DeleteTextMessageMutation,
-  DeleteTextMessageMutationVariables,
   MessageBasicInfoFragment as MessageBasicInfoFragmentType,
   MessageDetailedInfoFragment as MessageDetailedInfoFragmentType,
   MessageFeedInfoFragment as MessageFeedInfoFragmentType,
@@ -12,7 +10,7 @@ import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
 import { TaskBasicInfoFragment } from "./tasks";
 import { UserBasicInfoFragment } from "./user";
-import { createFragment, createMutation } from "./utils";
+import { createFragment } from "./utils";
 
 export const MessageBasicInfoFragment = createFragment<MessageBasicInfoFragmentType>(
   () => gql`
@@ -61,21 +59,6 @@ export const MessageFeedInfoFragment = createFragment<MessageFeedInfoFragmentTyp
       ...MessageDetailedInfo
       replied_to_message {
         ...MessageDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useDeleteTextMessageMutation] = createMutation<
-  DeleteTextMessageMutation,
-  DeleteTextMessageMutationVariables
->(
-  () => gql`
-    mutation DeleteTextMessage($id: uuid!) {
-      delete_message(where: { id: { _eq: $id } }) {
-        message: returning {
-          id
-        }
       }
     }
   `

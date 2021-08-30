@@ -11,13 +11,12 @@ import {
   TopicMessagesQueryVariables,
   TopicsQuery,
   TopicsQueryVariables,
-  UpdateLastSeenMessageMutationVariables,
 } from "~gql";
 
 import { MessageFeedInfoFragment } from "./messages";
 import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
-import { createFragment, createMutation, createQuery } from "./utils";
+import { createFragment, createQuery } from "./utils";
 
 export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
   () => gql`
@@ -87,23 +86,6 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
         limit: $limit
       ) {
         ...MessageFeedInfo
-      }
-    }
-  `
-);
-
-export const [useLastSeenMessageMutation, { mutate: updateLastSeenMessage }] = createMutation<
-  UpdateLastSeenMessageMutationVariables,
-  UpdateLastSeenMessageMutationVariables
->(
-  () => gql`
-    mutation UpdateLastSeenMessage($topicId: uuid!, $messageId: uuid!) {
-      insert_last_seen_message_one(
-        object: { topic_id: $topicId, message_id: $messageId }
-        on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
-      ) {
-        message_id
-        seen_at
       }
     }
   `

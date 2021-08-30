@@ -853,6 +853,7 @@ export interface Message {
   topic: Topic;
   topic_id: Scalars['uuid'];
   type: Message_Type_Enum;
+  updated_at: Scalars['timestamptz'];
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
@@ -984,6 +985,7 @@ export interface Message_Bool_Exp {
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
 }
@@ -1026,6 +1028,7 @@ export interface Message_Insert_Input {
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
 }
@@ -1038,6 +1041,7 @@ export interface Message_Max_Fields {
   id?: Maybe<Scalars['uuid']>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1048,6 +1052,7 @@ export interface Message_Max_Order_By {
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -1059,6 +1064,7 @@ export interface Message_Min_Fields {
   id?: Maybe<Scalars['uuid']>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1069,6 +1075,7 @@ export interface Message_Min_Order_By {
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -1111,6 +1118,7 @@ export interface Message_Order_By {
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
 }
@@ -1305,6 +1313,8 @@ export type Message_Select_Column =
   /** column name */
   | 'type'
   /** column name */
+  | 'updated_at'
+  /** column name */
   | 'user_id';
 
 /** input type for updating data in table "message" */
@@ -1317,6 +1327,7 @@ export interface Message_Set_Input {
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1464,6 +1475,8 @@ export type Message_Update_Column =
   | 'topic_id'
   /** column name */
   | 'type'
+  /** column name */
+  | 'updated_at'
   /** column name */
   | 'user_id';
 
@@ -8958,22 +8971,6 @@ export type MessageFeedInfoFragment = (
   & MessageDetailedInfoFragment
 );
 
-export type DeleteTextMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DeleteTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { delete_message?: Maybe<(
-    { __typename?: 'message_mutation_response' }
-    & { message: Array<(
-      { __typename?: 'message' }
-      & Pick<Message, 'id'>
-    )> }
-  )> }
-);
-
 export type NotificationInfoFragment = (
   { __typename?: 'notification' }
   & Pick<Notification, 'id' | 'created_at' | 'data' | 'read_at'>
@@ -9728,20 +9725,6 @@ export type TopicMessagesQuery = (
   )> }
 );
 
-export type UpdateLastSeenMessageMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  messageId: Scalars['uuid'];
-}>;
-
-
-export type UpdateLastSeenMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { insert_last_seen_message_one?: Maybe<(
-    { __typename?: 'last_seen_message' }
-    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
-  )> }
-);
-
 export type SingleTopicQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
@@ -9922,24 +9905,6 @@ export type MessageAttachmentDisplayer_AttachmentFragment = (
   & { mimeType: Attachment['mime_type'], originalName: Attachment['original_name'] }
 );
 
-export type CreateNewMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-  topicId: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  type: Message_Type_Enum;
-  replied_to_message_id?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateNewMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id' | 'topic_id'>
-    & Message_MessageFragment
-  )> }
-);
-
 export type EditMessageEditor_MessageFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content'>
@@ -9985,7 +9950,7 @@ export type MessageText_MessageFragment = (
 
 export type Message_MessageFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'created_at'>
+  & Pick<Message, 'id' | 'created_at' | 'topic_id'>
   & { replied_to_message?: Maybe<(
     { __typename?: 'message' }
     & ReplyingToMessage_MessageFragment
@@ -10003,6 +9968,19 @@ export type Message_MessageFragment = (
   & MessageLinksPreviews_MessageFragment
   & EditMessageEditor_MessageFragment
   & MessageReactions_MessageFragment
+);
+
+export type DeleteTextMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DeleteTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
 );
 
 export type MessageLikeContent_UserFragment = (
@@ -10426,6 +10404,24 @@ export type UpdateTopicSummaryMutation = (
   )> }
 );
 
+export type CreateNewMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateNewMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'topic_id' | 'updated_at'>
+    & Message_MessageFragment
+  )> }
+);
+
 export type TopicHeader_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
@@ -10468,6 +10464,33 @@ export type TopicSummaryMessage_TopicFragment = (
   )> }
 );
 
+export type TopicWithMessagesQueryVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type TopicWithMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'updated_at'>
+    & Message_MessageFragment
+  )> }
+);
+
+export type MessagePresenceSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type MessagePresenceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { presentMessages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
 export type TopicWithMessages_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
@@ -10482,19 +10505,17 @@ export type TopicWithMessages_TopicFragment = (
   & TopicHeader_TopicFragment
 );
 
-export type TopicMessagesAscSubscriptionVariables = Exact<{
+export type UpdateLastSeenMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  limit?: Maybe<Scalars['Int']>;
-  order?: Maybe<Order_By>;
-  typeExpression?: Maybe<Message_Type_Enum_Comparison_Exp>;
+  messageId: Scalars['uuid'];
 }>;
 
 
-export type TopicMessagesAscSubscription = (
-  { __typename?: 'subscription_root' }
-  & { messages: Array<(
-    { __typename?: 'message' }
-    & Message_MessageFragment
+export type UpdateLastSeenMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_last_seen_message_one?: Maybe<(
+    { __typename?: 'last_seen_message' }
+    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
   )> }
 );
 
@@ -10508,6 +10529,21 @@ export type TopicClosureSubscription = (
   & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
     & TopicSummaryMessage_TopicFragment
+  )> }
+);
+
+export type NewestTopicMessageSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+  lastUpdatedAt: Scalars['timestamptz'];
+}>;
+
+
+export type NewestTopicMessageSubscription = (
+  { __typename?: 'subscription_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'created_at' | 'updated_at'>
+    & Message_MessageFragment
   )> }
 );
 
@@ -11057,7 +11093,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'updated_at' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11076,6 +11112,7 @@ export type messageFieldPolicy = {
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -11090,22 +11127,24 @@ export type message_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'updated_at' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'updated_at' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type message_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_mutation_responseKeySpecifier)[];

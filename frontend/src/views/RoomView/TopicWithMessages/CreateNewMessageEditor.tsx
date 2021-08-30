@@ -1,4 +1,4 @@
-import { Reference, gql, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useList } from "react-use";
@@ -7,22 +7,28 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
-import { updateLastSeenMessage } from "~frontend/gql/topics";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
+import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
+import { Recorder } from "~frontend/ui/message/composer/Recorder";
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { CreateNewMessageMutation, CreateNewMessageMutationVariables, Message_Type_Enum } from "~gql";
+import {
+  CreateNewMessageMutation,
+  CreateNewMessageMutationVariables,
+  Message_Type_Enum,
+  TopicWithMessagesQuery,
+  TopicWithMessagesQueryVariables,
+} from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 
-import { EditorAttachmentInfo, uploadFiles } from "./attachments";
-import { MessageContentEditor } from "./MessageContentComposer";
-import { Recorder } from "./Recorder";
+import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
 interface Props {
   topicId: string;
@@ -58,6 +64,7 @@ const useCreateMessageMutation = () =>
         ) {
           id
           topic_id
+          updated_at
           ...Message_message
         }
       }
@@ -72,6 +79,7 @@ const useCreateMessageMutation = () =>
             id: vars.id,
             topic_id: vars.topicId,
             created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
             message_attachments: [],
             type: vars.type,
             message_reactions: [],
@@ -87,6 +95,7 @@ const useCreateMessageMutation = () =>
             },
             content: vars.content,
             replied_to_message_id: vars.replied_to_message_id,
+            replied_to_message: null,
           },
         };
       },
@@ -95,21 +104,19 @@ const useCreateMessageMutation = () =>
         if (!message) {
           return;
         }
-        const newMessageRef = cache.writeFragment({
-          data: message,
-          fragment: Message.fragments.message,
-          fragmentName: "Message_message",
-        });
-        if (!newMessageRef) {
-          return;
+        const options = {
+          query: TOPIC_WITH_MESSAGES_QUERY,
+          variables: { topicId: message.topic_id },
+        };
+        const messages = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options)?.messages;
+        if (messages) {
+          cache.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
+            ...options,
+            data: {
+              messages: messages.some((m) => m.id == message.id) ? messages : messages.concat(message),
+            },
+          });
         }
-        cache.modify({
-          id: cache.identify({ __typename: "topic", id: message.topic_id }),
-          fields: {
-            messages: (existing: Reference[]) =>
-              existing.some((ref) => ref.__ref == newMessageRef.__ref) ? existing : existing.concat(newMessageRef),
-          },
-        });
       },
     }
   );
@@ -169,8 +176,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
         replied_to_message_id: topicContext.currentlyReplyingToMessageId,
       },
     });
-
-    updateLastSeenMessage({ messageId, topicId });
 
     if (data) {
       trackEvent("Sent Message", {

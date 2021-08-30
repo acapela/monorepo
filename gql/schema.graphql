@@ -1081,6 +1081,7 @@ type message {
   topic: topic!
   topic_id: uuid!
   type: message_type_enum!
+  updated_at: timestamptz!
 
   """An object relationship"""
   user: user!
@@ -1149,6 +1150,7 @@ input message_bool_exp {
   topic: topic_bool_exp
   topic_id: uuid_comparison_exp
   type: message_type_enum_comparison_exp
+  updated_at: timestamptz_comparison_exp
   user: user_bool_exp
   user_id: uuid_comparison_exp
 }
@@ -1203,6 +1205,7 @@ input message_insert_input {
   topic: topic_obj_rel_insert_input
   topic_id: uuid
   type: message_type_enum
+  updated_at: timestamptz
   user: user_obj_rel_insert_input
   user_id: uuid
 }
@@ -1214,6 +1217,7 @@ type message_max_fields {
   id: uuid
   replied_to_message_id: uuid
   topic_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -1226,6 +1230,7 @@ input message_max_order_by {
   id: order_by
   replied_to_message_id: order_by
   topic_id: order_by
+  updated_at: order_by
   user_id: order_by
 }
 
@@ -1236,6 +1241,7 @@ type message_min_fields {
   id: uuid
   replied_to_message_id: uuid
   topic_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -1248,6 +1254,7 @@ input message_min_order_by {
   id: order_by
   replied_to_message_id: order_by
   topic_id: order_by
+  updated_at: order_by
   user_id: order_by
 }
 
@@ -1297,6 +1304,7 @@ input message_order_by {
   topic: topic_order_by
   topic_id: order_by
   type: order_by
+  updated_at: order_by
   user: user_order_by
   user_id: order_by
 }
@@ -1529,6 +1537,9 @@ enum message_select_column {
   type
 
   """column name"""
+  updated_at
+
+  """column name"""
   user_id
 }
 
@@ -1544,6 +1555,7 @@ input message_set_input {
   replied_to_message_id: uuid
   topic_id: uuid
   type: message_type_enum
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -1718,6 +1730,9 @@ enum message_update_column {
 
   """column name"""
   type
+
+  """column name"""
+  updated_at
 
   """column name"""
   user_id
