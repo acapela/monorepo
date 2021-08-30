@@ -14,8 +14,10 @@ interface UseTopicsFilterParams {
 export const useTopicsFilter = ({ topics, activeTopicId, isRoomOpen }: UseTopicsFilterParams) => {
   const isActiveTopicArchived = !!topics.find(({ id }) => id === activeTopicId)?.archived_at;
 
+  const previousActiveTopicId = usePrevious(activeTopicId);
+  const isPreviousActiveTopicIdArchived = usePrevious(isActiveTopicArchived);
+
   const [topicsFilter, setTopicsFilter] = useState<TopicsFilter>(isActiveTopicArchived ? "archived" : "present");
-  const previousTopicsFilter = usePrevious(topicsFilter);
 
   useEffect(() => {
     //When the room gets reopened - hide archived topics.
@@ -32,12 +34,15 @@ export const useTopicsFilter = ({ topics, activeTopicId, isRoomOpen }: UseTopics
   useEffect(() => {
     // When the topic gets archived - show archived topics to make active one present in the list.
     // Vice-versa on "Restore" action.
-    if (isActiveTopicArchived && topicsFilter === "present" && previousTopicsFilter === "present") {
-      setTopicsFilter("archived");
-    } else if (!isActiveTopicArchived && topicsFilter === "archived" && previousTopicsFilter === "archived") {
-      setTopicsFilter("present");
-    }
-  }, [isActiveTopicArchived, previousTopicsFilter, topicsFilter]);
+
+    if (topicsFilter === "all") return;
+
+    if (activeTopicId !== previousActiveTopicId) return;
+
+    if (isPreviousActiveTopicIdArchived === isActiveTopicArchived) return;
+
+    setTopicsFilter(isActiveTopicArchived ? "archived" : "present");
+  }, [activeTopicId, isActiveTopicArchived, isPreviousActiveTopicIdArchived, previousActiveTopicId, topicsFilter]);
 
   return {
     topicsFilter,

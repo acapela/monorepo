@@ -262,7 +262,7 @@ const _TopicsList = observer(function TopicsList({
           </UITopicsListHolder>
         )}
 
-        {topics.length === 0 && (
+        {room.topics.length === 0 && (
           <UINoTopicsMessage>
             {topicsFilter === "archived" ? "This room has no archived topics." : "This room has no topics yet."}{" "}
           </UINoTopicsMessage>
