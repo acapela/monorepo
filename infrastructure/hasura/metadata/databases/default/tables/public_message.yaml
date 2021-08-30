@@ -86,6 +86,7 @@ select_permissions:
         - replied_to_message_id
         - topic_id
         - type
+        - updated_at
         - user_id
       filter:
         topic:

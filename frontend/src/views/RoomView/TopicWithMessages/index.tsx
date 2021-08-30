@@ -1,32 +1,38 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
-import React from "react";
+import _ from "lodash";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { Message as MessageType } from "~db";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { updateLastSeenMessage } from "~frontend/gql/topics";
-import { waitForAllRunningMutationsToFinish, withFragments } from "~frontend/gql/utils";
+import { withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
-import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import {
+  TOPIC_WITH_MESSAGES_QUERY,
+  usePresentMessagesSubscription,
+} from "~frontend/views/RoomView/TopicWithMessages/gql";
+import {
+  NewestTopicMessageSubscription,
+  NewestTopicMessageSubscriptionVariables,
   TopicClosureSubscription,
   TopicClosureSubscriptionVariables,
-  TopicMessagesAscSubscription,
-  TopicMessagesAscSubscriptionVariables,
+  TopicWithMessagesQuery,
+  TopicWithMessagesQueryVariables,
   TopicWithMessages_RoomFragment,
   TopicWithMessages_TopicFragment,
+  UpdateLastSeenMessageMutation,
+  UpdateLastSeenMessageMutationVariables,
 } from "~gql";
 import { DropFileContext } from "~richEditor/DropFileContext";
-import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
 import { Modifiers } from "~ui/theme/colors/createColor";
 
+import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
@@ -61,56 +67,74 @@ interface Props {
   topic: TopicWithMessages_TopicFragment | null;
 }
 
-function useMarkTopicAsRead(topicId: string | null, messages: Pick<MessageType, "id">[]) {
-  /**
-   * Let's mark last message as read each time we have new messages.
-   */
-  useAsyncLayoutEffect(async () => {
-    if (!messages || !topicId) return;
+// Marks last message as read
+function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | null) {
+  const [updateLastSeenMessage] = useMutation<
+    UpdateLastSeenMessageMutation,
+    UpdateLastSeenMessageMutationVariables
+  >(gql`
+    mutation UpdateLastSeenMessage($topicId: uuid!, $messageId: uuid!) {
+      insert_last_seen_message_one(
+        object: { topic_id: $topicId, message_id: $messageId }
+        on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
+      ) {
+        message_id
+        seen_at
+      }
+    }
+  `);
 
-    const lastMessage = messages[messages.length - 1];
+  useEffect(() => {
+    if (!messageIds || !topicId) {
+      return;
+    }
 
-    if (!lastMessage) return;
+    const lastMessageId = Array.from(messageIds).pop();
 
-    /**
-     * Let's make sure we're never marking message from 'optimistic' response (because it is not in the DB yet so it
-     * would result in DB error).
-     */
-    await waitForAllRunningMutationsToFinish();
+    if (!lastMessageId) {
+      return;
+    }
 
-    // Component might be unmounted at this point, but we still want to mark seen message as read.
+    updateLastSeenMessage({ variables: { topicId, messageId: lastMessageId } });
+  }, [messageIds, topicId, updateLastSeenMessage]);
+}
 
-    // There are no mutations in progress now so we can safely mark new message as read as mutation creating it already
-    // finished running
-    updateLastSeenMessage({ topicId, messageId: lastMessage.id });
-  }, [messages]);
+// use this to extract the last updated message timestamp and use that to subscribe only to changes after that
+function useLastUpdatedAt() {
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<string | null>(null);
+
+  const updateLastUpdatedAt = useCallback(
+    (messages: { updated_at: string }[]) => {
+      const newValue = _.max(messages.map((m) => m.updated_at));
+      if (newValue) {
+        setLastUpdatedAt(newValue);
+      }
+    },
+    [setLastUpdatedAt]
+  );
+
+  return [lastUpdatedAt, updateLastUpdatedAt] as const;
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { data, loading: isLoadingMessages } = useSubscription<
-    TopicMessagesAscSubscription,
-    TopicMessagesAscSubscriptionVariables
-  >(
-    gql`
-      ${MessagesFeed.fragments.message}
-
-      subscription TopicMessagesAsc(
-        $topicId: uuid!
-        $limit: Int
-        $order: order_by = asc
-        $typeExpression: message_type_enum_comparison_exp = { _is_null: false }
-      ) {
-        messages: message(
-          where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: $typeExpression }
-          order_by: [{ created_at: $order }]
-          limit: $limit
-        ) {
-          ...Message_message
+  const [lastUpdatedAt, updateLastUpdatedAt] = useLastUpdatedAt();
+  const {
+    data,
+    loading: isLoadingMessages,
+    subscribeToMore,
+  } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(
+    TOPIC_WITH_MESSAGES_QUERY,
+    topic
+      ? {
+          variables: { topicId: topic.id },
+          onCompleted(data) {
+            updateLastUpdatedAt(data?.messages ?? []);
+          },
         }
-      }
-    `,
-    topic ? { variables: { topicId: topic.id } } : { skip: true }
+      : { skip: true }
   );
+  const presentMessageIds = usePresentMessagesSubscription(topic?.id);
+  const messages = data?.messages ?? [];
 
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
@@ -127,13 +151,44 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   const isMember = useIsCurrentUserRoomMember(room);
 
-  useMarkTopicAsRead(topic?.id ?? null, data ? data.messages : []);
+  useMarkTopicAsRead(topic?.id ?? null, presentMessageIds);
+
+  useEffect(() => {
+    if (!topic || !lastUpdatedAt) {
+      return;
+    }
+    return subscribeToMore<NewestTopicMessageSubscription, NewestTopicMessageSubscriptionVariables>({
+      document: gql`
+        ${MessagesFeed.fragments.message}
+
+        subscription NewestTopicMessage($topicId: uuid!, $lastUpdatedAt: timestamptz!) {
+          messages: message(where: { topic_id: { _eq: $topicId }, updated_at: { _gt: $lastUpdatedAt } }) {
+            id
+            created_at
+            updated_at
+            ...Message_message
+          }
+        }
+      `,
+      variables: { topicId: topic.id, lastUpdatedAt },
+      updateQuery(query, { subscriptionData }) {
+        const updatedMessages = subscriptionData.data.messages;
+        updateLastUpdatedAt(updatedMessages);
+
+        const existingMessageIds = new Set(query.messages.map((m) => m.id));
+        const newMessages = updatedMessages.filter((m) => !existingMessageIds.has(m.id));
+
+        return {
+          ...query,
+          messages: [...query.messages, ..._.sortBy(newMessages, (m) => new Date(m.created_at))],
+        };
+      },
+    });
+  }, [topic, subscribeToMore, lastUpdatedAt, updateLastUpdatedAt]);
 
   if (!topic) {
     return null;
   }
-
-  const messages = data?.messages ?? [];
 
   const isClosed = isTopicClosed(topic);
 
