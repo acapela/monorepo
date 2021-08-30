@@ -46,7 +46,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
   const [archiveTopic] = useArchiveTopic();
   const [deleteTopic] = useDeleteTopic();
 
-  const handleArchiveSelect = async () => {
+  const handleArchiveTopic = async () => {
     await archiveTopic({ variables: { id: topic.id, roomId: room.id, archivedAt: new Date().toISOString() } });
   };
 
@@ -93,7 +93,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
     if (topic.closed_at && !topic.archived_at) {
       options.push({
         label: "Archive topic",
-        onSelect: handleArchiveSelect,
+        onSelect: handleArchiveTopic,
         icon: <IconArchive />,
       });
     }
