@@ -2,13 +2,6 @@
   "name": "~gql",
   "version": "0.1.0",
   "license": "UNLICENSED",
-  "scripts": {
-    "dbenv": "dotenv -e ../.env",
-    "introspect": "yarn dbenv prisma introspect",
-    "validate": "yarn dbenv prisma validate",
-    "generate": "yarn dbenv prisma generate",
-    "update": "yarn introspect && yarn generate"
-  },
   "devDependencies": {
     "cross-env": "7.0.3"
   },

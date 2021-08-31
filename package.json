@@ -61,7 +61,7 @@
     "start:backend": "yarn backend start",
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
-    "generate": "yarn workspace ~db generate && yarn workspace ~gql generate",
+    "generate": "yarn db update && tooling gql frontend",
     "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
