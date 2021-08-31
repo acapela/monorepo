@@ -11,12 +11,12 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "prisma": "2.25.0"
+    "prisma": "2.27.0"
   },
   "dependencies": {
-    "@prisma/client": "2.25.0",
+    "@prisma/client": "2.27.0",
     "dotenv-cli": "^4.0.0",
-    "prisma": "^2.23.0",
+    "prisma": "2.27.0",
     "~config": "0.1.0",
     "~shared": "0.1.0"
   }
