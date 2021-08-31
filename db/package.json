@@ -4,19 +4,18 @@
   "license": "UNLICENSED",
   "scripts": {
     "dbenv": "dotenv -e ../.env",
-    "introspect": "yarn dbenv prisma introspect",
+    "introspect": "yarn dbenv prisma db pull",
     "validate": "yarn dbenv prisma validate",
     "generate": "yarn dbenv prisma generate",
-    "update": "yarn introspect && yarn generate"
+    "update": "cp template.prisma schema.prisma && yarn introspect && yarn generate"
   },
   "devDependencies": {
-    "cross-env": "7.0.3",
-    "prisma": "2.27.0"
+    "cross-env": "7.0.3"
   },
   "dependencies": {
-    "@prisma/client": "2.27.0",
+    "@prisma/client": "^2.30.2",
     "dotenv-cli": "^4.0.0",
-    "prisma": "2.27.0",
+    "prisma": "^2.30.2",
     "~config": "0.1.0",
     "~shared": "0.1.0"
   }
