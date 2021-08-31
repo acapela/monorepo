@@ -3,6 +3,7 @@ import { ActionsBlock, GlobalShortcut, InputBlock, MessageShortcut, SlackShortcu
 
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
+import { WebClient } from "~node_modules/@slack/web-api";
 import { assertDefined } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
 
@@ -10,6 +11,69 @@ const createPlainMessageContent = (text: string) => ({
   type: "doc",
   content: [{ type: "paragraph", content: [{ type: "text", text }] }],
 });
+
+const createRoomWithTopic = async ({
+  spaceId,
+  roomName,
+  creatorId,
+  userIds,
+  topicName,
+  topicMessage,
+}: {
+  spaceId: string;
+  roomName: string;
+  creatorId: string;
+  userIds: string[];
+  topicName: string;
+  topicMessage: string;
+}) => {
+  const room = await db.room.create({
+    data: {
+      name: roomName,
+      slug: roomName,
+      creator_id: creatorId,
+      owner_id: creatorId,
+      space_id: spaceId,
+      room_member: { createMany: { data: userIds.map((user_id) => ({ user_id })) } },
+    },
+  });
+  const topic = await db.topic.create({
+    data: {
+      room_id: room.id,
+      name: topicName,
+      slug: topicName,
+      index: "a",
+      owner_id: creatorId,
+      message: {
+        createMany: {
+          data: [
+            {
+              type: "TEXT",
+              user_id: creatorId,
+              content: createPlainMessageContent(topicMessage),
+              content_text: topicMessage,
+            },
+          ],
+        },
+      },
+    },
+  });
+  return [room, topic];
+};
+
+async function getUsersByEmail(client: WebClient, roomMembers: string[], email: string) {
+  const memberProfiles = await Promise.all(roomMembers.map((memberId) => client.users.profile.get({ user: memberId })));
+  return db.user.findMany({
+    where: {
+      email: {
+        in: memberProfiles
+          .map((response) => response.profile?.email)
+          .filter(isNotNullish)
+          .concat(email),
+      },
+    },
+  });
+}
 
 const createSuccessModal = ({
   roomURL,
@@ -118,7 +182,7 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       return ack({
         response_action: "errors",
         errors: {
-          email_address: "Sorry, this isn’t valid input",
+          room_block: "Sorry, this isn’t valid input",
         },
       });
     }
@@ -129,34 +193,20 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
     ]);
     const email = assertDefined(profileResponse.profile?.email, "current user must have profile and email");
 
-    const memberQueries = roomMembers.map((memberId) => client.users.profile.get({ user: memberId }));
-    const memberProfiles = await Promise.all(memberQueries);
-    const users = await db.user.findMany({
-      where: {
-        email: {
-          in: memberProfiles
-            .map((response) => response.profile?.email)
-            .filter(isNotNullish)
-            .concat(email),
-        },
-      },
-    });
-
+    const users = await getUsersByEmail(client, roomMembers, email);
     const user = users.find((u) => u.email == email);
 
     const creatorId = assertDefined(user?.id ?? team?.owner_id, "needs to at least have a team");
-    const room = await db.room.create({
-      data: {
-        name: roomName,
-        slug: roomName,
-        creator_id: creatorId,
-        owner_id: creatorId,
-        space_id: spaceId,
-        room_member: { createMany: { data: users.map((u) => ({ user_id: u.id })) } },
-      },
+    const [room, topic] = await createRoomWithTopic({
+      spaceId,
+      roomName,
+      creatorId,
+      userIds: users.map((u) => u.id),
+      topicName,
+      topicMessage,
     });
 
-    if (!room) {
+    if (!room || !topic) {
       return await ack({
         response_action: "errors",
         errors: {
@@ -164,28 +214,6 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
         },
       });
     }
-
-    const topic = await db.topic.create({
-      data: {
-        room_id: room.id,
-        name: topicName,
-        slug: topicName,
-        index: "a",
-        owner_id: creatorId,
-        message: {
-          createMany: {
-            data: [
-              {
-                type: "TEXT",
-                user_id: creatorId,
-                content: createPlainMessageContent(topicMessage),
-                content_text: topicMessage,
-              },
-            ],
-          },
-        },
-      },
-    });
 
     const roomURL = `${process.env.FRONTEND_URL}/space/${spaceId}/${room.id}/${topic.id}`;
 
