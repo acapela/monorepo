@@ -61,16 +61,11 @@ const createRoomWithTopic = async ({
   return [room, topic];
 };
 
-async function findUsersBySlackEmails(client: WebClient, roomMembers: string[], email: string) {
-  const memberProfiles = await Promise.all(roomMembers.map((memberId) => client.users.profile.get({ user: memberId })));
+async function findUsersThroughSlackProfiles(client: WebClient, slackUserIds: string[]) {
+  const responses = await Promise.all(slackUserIds.map((memberId) => client.users.profile.get({ user: memberId })));
   return db.user.findMany({
     where: {
-      email: {
-        in: memberProfiles
-          .map((response) => response.profile?.email)
-          .filter(isNotNullish)
-          .concat(email),
-      },
+      email: { in: responses.map((res) => res.profile?.email).filter(isNotNullish) },
     },
   });
 }
@@ -187,16 +182,19 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       });
     }
 
-    const [team, profileResponse] = await Promise.all([
+    const [team, currentUser] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
-      client.users.profile.get({ user: body.user.id }),
+      client.users.profile
+        .get({ user: body.user.id })
+        .then((res) => (res.profile ? db.user.findFirst({ where: { email: res.profile.email } }) : null)),
     ]);
-    const email = assertDefined(profileResponse.profile?.email, "current user must have profile and email");
 
-    const users = await findUsersBySlackEmails(client, roomMembers, email);
-    const user = users.find((u) => u.email == email);
+    const users = await findUsersThroughSlackProfiles(client, roomMembers);
+    if (currentUser) {
+      users.unshift(currentUser);
+    }
 
-    const creatorId = assertDefined(user?.id ?? team?.owner_id, "needs to at least have a team");
+    const creatorId = assertDefined(currentUser?.id ?? team?.owner_id, "needs to at least have a team");
     const [room, topic] = await createRoomWithTopic({
       spaceId,
       roomName,
@@ -222,12 +220,12 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
         roomURL: `${process.env.FRONTEND_URL}/space/${spaceId}/${room.id}/${topic.id}`,
         hasUserToken: Boolean(context.userToken),
         slackInstallURL:
-          team && user
+          team && currentUser
             ? (await getSlackInstallURL(
                 { withBot: false },
                 {
                   teamId: team.id,
-                  userId: user.id,
+                  userId: currentUser.id,
                 }
               )) ?? null
             : null,
