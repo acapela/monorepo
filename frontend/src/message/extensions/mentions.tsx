@@ -19,7 +19,6 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
-import { Modifiers } from "~ui/theme/colors/createColor";
 
 /**
  * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions
@@ -205,5 +204,5 @@ const UIMentionPopoverOpenIndicator = styled.span<{}>`
   padding-left: 4px;
   margin-left: 4px;
 
-  border-left: 1px solid ${theme.colors.layout.strongLine((modifiers: Modifiers) => [modifiers.opacity(0.3)])};
+  border-left: 1px solid ${theme.colors.layout.strongLine((modifiers) => [modifiers.opacity(0.3)])};
 `;

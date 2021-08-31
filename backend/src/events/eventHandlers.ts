@@ -10,6 +10,7 @@ import {
   TeamInvitation,
   TeamMember,
   Topic,
+  Transcription,
   User,
 } from "~db";
 
@@ -26,6 +27,7 @@ export const hasuraEvents = createHasuraEventsHandler<{
   user_updates: User;
   room_member_updates: RoomMember;
   attachment_updates: Attachment;
+  transcription_updates: Transcription;
   team_member_updates: TeamMember;
   notification_updates: Notification;
 }>();

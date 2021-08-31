@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import logger from "~shared/logger";
+import logger, { log } from "~shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";
@@ -26,6 +26,8 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   if (!media) {
     throw new BadRequestError("Sonix call has no body");
   }
+
+  log.info(`Received update from sonix - current status is ${media.status}`);
 
   if (media.status === "completed") {
     await handleAttachementTranscriptionStatusUpdate(media);

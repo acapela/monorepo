@@ -340,6 +340,7 @@ export interface Attachment {
   /** An object relationship */
   transcription?: Maybe<Transcription>;
   transcription_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -392,6 +393,7 @@ export interface Attachment_Bool_Exp {
   original_name?: Maybe<String_Comparison_Exp>;
   transcription?: Maybe<Transcription_Bool_Exp>;
   transcription_id?: Maybe<Uuid_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
 }
 
@@ -412,6 +414,7 @@ export interface Attachment_Insert_Input {
   original_name?: Maybe<Scalars['String']>;
   transcription?: Maybe<Transcription_Obj_Rel_Insert_Input>;
   transcription_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -424,6 +427,7 @@ export interface Attachment_Max_Fields {
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -435,6 +439,7 @@ export interface Attachment_Max_Order_By {
   mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -447,6 +452,7 @@ export interface Attachment_Min_Fields {
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -458,6 +464,7 @@ export interface Attachment_Min_Order_By {
   mime_type?: Maybe<Order_By>;
   original_name?: Maybe<Order_By>;
   transcription_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -487,6 +494,7 @@ export interface Attachment_Order_By {
   original_name?: Maybe<Order_By>;
   transcription?: Maybe<Transcription_Order_By>;
   transcription_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -510,6 +518,8 @@ export type Attachment_Select_Column =
   /** column name */
   | 'transcription_id'
   /** column name */
+  | 'updated_at'
+  /** column name */
   | 'user_id';
 
 /** input type for updating data in table "attachment" */
@@ -520,6 +530,7 @@ export interface Attachment_Set_Input {
   mime_type?: Maybe<Scalars['String']>;
   original_name?: Maybe<Scalars['String']>;
   transcription_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -537,6 +548,8 @@ export type Attachment_Update_Column =
   | 'original_name'
   /** column name */
   | 'transcription_id'
+  /** column name */
+  | 'updated_at'
   /** column name */
   | 'user_id';
 
@@ -853,6 +866,7 @@ export interface Message {
   topic: Topic;
   topic_id: Scalars['uuid'];
   type: Message_Type_Enum;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   /** An object relationship */
   user: User;
   user_id: Scalars['uuid'];
@@ -984,6 +998,7 @@ export interface Message_Bool_Exp {
   topic?: Maybe<Topic_Bool_Exp>;
   topic_id?: Maybe<Uuid_Comparison_Exp>;
   type?: Maybe<Message_Type_Enum_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
   user?: Maybe<User_Bool_Exp>;
   user_id?: Maybe<Uuid_Comparison_Exp>;
 }
@@ -1026,6 +1041,7 @@ export interface Message_Insert_Input {
   topic?: Maybe<Topic_Obj_Rel_Insert_Input>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user?: Maybe<User_Obj_Rel_Insert_Input>;
   user_id?: Maybe<Scalars['uuid']>;
 }
@@ -1038,6 +1054,7 @@ export interface Message_Max_Fields {
   id?: Maybe<Scalars['uuid']>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1048,6 +1065,7 @@ export interface Message_Max_Order_By {
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -1059,6 +1077,7 @@ export interface Message_Min_Fields {
   id?: Maybe<Scalars['uuid']>;
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1069,6 +1088,7 @@ export interface Message_Min_Order_By {
   id?: Maybe<Order_By>;
   replied_to_message_id?: Maybe<Order_By>;
   topic_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user_id?: Maybe<Order_By>;
 }
 
@@ -1111,6 +1131,7 @@ export interface Message_Order_By {
   topic?: Maybe<Topic_Order_By>;
   topic_id?: Maybe<Order_By>;
   type?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
   user?: Maybe<User_Order_By>;
   user_id?: Maybe<Order_By>;
 }
@@ -1305,6 +1326,8 @@ export type Message_Select_Column =
   /** column name */
   | 'type'
   /** column name */
+  | 'updated_at'
+  /** column name */
   | 'user_id';
 
 /** input type for updating data in table "message" */
@@ -1317,6 +1340,7 @@ export interface Message_Set_Input {
   replied_to_message_id?: Maybe<Scalars['uuid']>;
   topic_id?: Maybe<Scalars['uuid']>;
   type?: Maybe<Message_Type_Enum>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
   user_id?: Maybe<Scalars['uuid']>;
 }
 
@@ -1464,6 +1488,8 @@ export type Message_Update_Column =
   | 'topic_id'
   /** column name */
   | 'type'
+  /** column name */
+  | 'updated_at'
   /** column name */
   | 'user_id';
 
@@ -3916,6 +3942,7 @@ export interface Room {
   topics: Array<Topic>;
   /** An aggregate relationship */
   topics_aggregate: Topic_Aggregate;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 
@@ -4069,6 +4096,7 @@ export interface Room_Bool_Exp {
   space_id?: Maybe<Uuid_Comparison_Exp>;
   summary?: Maybe<String_Comparison_Exp>;
   topics?: Maybe<Topic_Bool_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
 }
 
 /** unique or primary key constraints on table "room" */
@@ -4108,6 +4136,7 @@ export interface Room_Insert_Input {
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
   topics?: Maybe<Topic_Arr_Rel_Insert_Input>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** columns and relationships of "room_invitation" */
@@ -4460,6 +4489,7 @@ export interface Room_Max_Fields {
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by max() on columns of table "room" */
@@ -4479,6 +4509,7 @@ export interface Room_Max_Order_By {
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** columns and relationships of "room_member" */
@@ -4648,6 +4679,7 @@ export interface Room_Min_Fields {
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by min() on columns of table "room" */
@@ -4667,6 +4699,7 @@ export interface Room_Min_Order_By {
   source_google_calendar_event_id?: Maybe<Order_By>;
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** response of any mutation on the table "room" */
@@ -4717,6 +4750,7 @@ export interface Room_Order_By {
   space_id?: Maybe<Order_By>;
   summary?: Maybe<Order_By>;
   topics_aggregate?: Maybe<Topic_Aggregate_Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** primary key columns input for table: room */
@@ -4757,7 +4791,9 @@ export type Room_Select_Column =
   /** column name */
   | 'space_id'
   /** column name */
-  | 'summary';
+  | 'summary'
+  /** column name */
+  | 'updated_at';
 
 /** input type for updating data in table "room" */
 export interface Room_Set_Input {
@@ -4777,6 +4813,7 @@ export interface Room_Set_Input {
   source_google_calendar_event_id?: Maybe<Scalars['String']>;
   space_id?: Maybe<Scalars['uuid']>;
   summary?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** aggregate stddev on columns */
@@ -4856,7 +4893,9 @@ export type Room_Update_Column =
   /** column name */
   | 'space_id'
   /** column name */
-  | 'summary';
+  | 'summary'
+  /** column name */
+  | 'updated_at';
 
 /** aggregate var_pop on columns */
 export interface Room_Var_Pop_Fields {
@@ -4911,6 +4950,7 @@ export interface Space {
   /** An object relationship */
   team: Team;
   team_id: Scalars['uuid'];
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 
@@ -5003,6 +5043,7 @@ export interface Space_Bool_Exp {
   slug?: Maybe<String_Comparison_Exp>;
   team?: Maybe<Team_Bool_Exp>;
   team_id?: Maybe<Uuid_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
 }
 
 /** unique or primary key constraints on table "space" */
@@ -5023,6 +5064,7 @@ export interface Space_Insert_Input {
   slug?: Maybe<Scalars['String']>;
   team?: Maybe<Team_Obj_Rel_Insert_Input>;
   team_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** aggregate max on columns */
@@ -5033,6 +5075,7 @@ export interface Space_Max_Fields {
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by max() on columns of table "space" */
@@ -5042,6 +5085,7 @@ export interface Space_Max_Order_By {
   name?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** columns and relationships of "space_member" */
@@ -5199,6 +5243,7 @@ export interface Space_Min_Fields {
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by min() on columns of table "space" */
@@ -5208,6 +5253,7 @@ export interface Space_Min_Order_By {
   name?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
   team_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** response of any mutation on the table "space" */
@@ -5244,6 +5290,7 @@ export interface Space_Order_By {
   slug?: Maybe<Order_By>;
   team?: Maybe<Team_Order_By>;
   team_id?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** primary key columns input for table: space */
@@ -5262,7 +5309,9 @@ export type Space_Select_Column =
   /** column name */
   | 'slug'
   /** column name */
-  | 'team_id';
+  | 'team_id'
+  /** column name */
+  | 'updated_at';
 
 /** input type for updating data in table "space" */
 export interface Space_Set_Input {
@@ -5271,6 +5320,7 @@ export interface Space_Set_Input {
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   team_id?: Maybe<Scalars['uuid']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** update columns of table "space" */
@@ -5284,7 +5334,9 @@ export type Space_Update_Column =
   /** column name */
   | 'slug'
   /** column name */
-  | 'team_id';
+  | 'team_id'
+  /** column name */
+  | 'updated_at';
 
 export interface Subscription_Root {
   __typename?: 'subscription_root';
@@ -6299,6 +6351,7 @@ export interface Team {
   spaces: Array<Space>;
   /** An aggregate relationship */
   spaces_aggregate: Space_Aggregate;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 
@@ -6411,6 +6464,7 @@ export interface Team_Bool_Exp {
   slack_installation?: Maybe<Team_Slack_Installation_Bool_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
   spaces?: Maybe<Space_Bool_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
 }
 
 /** unique or primary key constraints on table "team" */
@@ -6433,6 +6487,7 @@ export interface Team_Insert_Input {
   slack_installation?: Maybe<Team_Slack_Installation_Obj_Rel_Insert_Input>;
   slug?: Maybe<Scalars['String']>;
   spaces?: Maybe<Space_Arr_Rel_Insert_Input>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** columns and relationships of "team_invitation" */
@@ -6675,6 +6730,7 @@ export interface Team_Max_Fields {
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by max() on columns of table "team" */
@@ -6683,6 +6739,7 @@ export interface Team_Max_Order_By {
   name?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** columns and relationships of "team_member" */
@@ -7057,6 +7114,7 @@ export interface Team_Min_Fields {
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by min() on columns of table "team" */
@@ -7065,6 +7123,7 @@ export interface Team_Min_Order_By {
   name?: Maybe<Order_By>;
   owner_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** response of any mutation on the table "team" */
@@ -7101,6 +7160,7 @@ export interface Team_Order_By {
   slack_installation?: Maybe<Team_Slack_Installation_Order_By>;
   slug?: Maybe<Order_By>;
   spaces_aggregate?: Maybe<Space_Aggregate_Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** primary key columns input for table: team */
@@ -7117,7 +7177,9 @@ export type Team_Select_Column =
   /** column name */
   | 'owner_id'
   /** column name */
-  | 'slug';
+  | 'slug'
+  /** column name */
+  | 'updated_at';
 
 /** input type for updating data in table "team" */
 export interface Team_Set_Input {
@@ -7125,6 +7187,7 @@ export interface Team_Set_Input {
   name?: Maybe<Scalars['String']>;
   owner_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** columns and relationships of "team_slack_installation" */
@@ -7300,7 +7363,9 @@ export type Team_Update_Column =
   /** column name */
   | 'owner_id'
   /** column name */
-  | 'slug';
+  | 'slug'
+  /** column name */
+  | 'updated_at';
 
 
 /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
@@ -7357,6 +7422,7 @@ export interface Topic {
   room: Room;
   room_id: Scalars['uuid'];
   slug: Scalars['String'];
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 
@@ -7455,6 +7521,7 @@ export interface Topic_Bool_Exp {
   room?: Maybe<Room_Bool_Exp>;
   room_id?: Maybe<Uuid_Comparison_Exp>;
   slug?: Maybe<String_Comparison_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
 }
 
 /** unique or primary key constraints on table "topic" */
@@ -7481,6 +7548,7 @@ export interface Topic_Insert_Input {
   room?: Maybe<Room_Obj_Rel_Insert_Input>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** aggregate max on columns */
@@ -7496,6 +7564,7 @@ export interface Topic_Max_Fields {
   owner_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by max() on columns of table "topic" */
@@ -7510,6 +7579,7 @@ export interface Topic_Max_Order_By {
   owner_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** columns and relationships of "topic_member" */
@@ -7672,6 +7742,7 @@ export interface Topic_Min_Fields {
   owner_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** order by min() on columns of table "topic" */
@@ -7686,6 +7757,7 @@ export interface Topic_Min_Order_By {
   owner_id?: Maybe<Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** response of any mutation on the table "topic" */
@@ -7728,6 +7800,7 @@ export interface Topic_Order_By {
   room?: Maybe<Room_Order_By>;
   room_id?: Maybe<Order_By>;
   slug?: Maybe<Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** primary key columns input for table: topic */
@@ -7756,7 +7829,9 @@ export type Topic_Select_Column =
   /** column name */
   | 'room_id'
   /** column name */
-  | 'slug';
+  | 'slug'
+  /** column name */
+  | 'updated_at';
 
 /** input type for updating data in table "topic" */
 export interface Topic_Set_Input {
@@ -7770,6 +7845,7 @@ export interface Topic_Set_Input {
   owner_id?: Maybe<Scalars['uuid']>;
   room_id?: Maybe<Scalars['uuid']>;
   slug?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** update columns of table "topic" */
@@ -7793,7 +7869,9 @@ export type Topic_Update_Column =
   /** column name */
   | 'room_id'
   /** column name */
-  | 'slug';
+  | 'slug'
+  /** column name */
+  | 'updated_at';
 
 /** columns and relationships of "transcription" */
 export interface Transcription {
@@ -8314,6 +8392,7 @@ export interface User {
   topic_memberships: Array<Topic_Member>;
   /** An aggregate relationship */
   topic_memberships_aggregate: Topic_Member_Aggregate;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 
@@ -8561,6 +8640,7 @@ export interface User_Bool_Exp {
   space_memberships?: Maybe<Space_Member_Bool_Exp>;
   team_memberships?: Maybe<Team_Member_Bool_Exp>;
   topic_memberships?: Maybe<Topic_Member_Bool_Exp>;
+  updated_at?: Maybe<Timestamptz_Comparison_Exp>;
 }
 
 /** unique or primary key constraints on table "user" */
@@ -8590,6 +8670,7 @@ export interface User_Insert_Input {
   space_memberships?: Maybe<Space_Member_Arr_Rel_Insert_Input>;
   team_memberships?: Maybe<Team_Member_Arr_Rel_Insert_Input>;
   topic_memberships?: Maybe<Topic_Member_Arr_Rel_Insert_Input>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** aggregate max on columns */
@@ -8602,6 +8683,7 @@ export interface User_Max_Fields {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** aggregate min on columns */
@@ -8614,6 +8696,7 @@ export interface User_Min_Fields {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** response of any mutation on the table "user" */
@@ -8659,6 +8742,7 @@ export interface User_Order_By {
   space_memberships_aggregate?: Maybe<Space_Member_Aggregate_Order_By>;
   team_memberships_aggregate?: Maybe<Team_Member_Aggregate_Order_By>;
   topic_memberships_aggregate?: Maybe<Topic_Member_Aggregate_Order_By>;
+  updated_at?: Maybe<Order_By>;
 }
 
 /** primary key columns input for table: user */
@@ -8681,7 +8765,9 @@ export type User_Select_Column =
   /** column name */
   | 'id'
   /** column name */
-  | 'name';
+  | 'name'
+  /** column name */
+  | 'updated_at';
 
 /** input type for updating data in table "user" */
 export interface User_Set_Input {
@@ -8692,6 +8778,7 @@ export interface User_Set_Input {
   email_verified?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
   name?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['timestamptz']>;
 }
 
 /** update columns of table "user" */
@@ -8709,7 +8796,9 @@ export type User_Update_Column =
   /** column name */
   | 'id'
   /** column name */
-  | 'name';
+  | 'name'
+  /** column name */
+  | 'updated_at';
 
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
@@ -8866,7 +8955,7 @@ export type AttachmentDetailedInfoFragment = (
     & Pick<Message, 'id' | 'user_id' | 'type'>
   )>, transcription?: Maybe<(
     { __typename?: 'transcription' }
-    & Pick<Transcription, 'status' | 'transcript'>
+    & Pick<Transcription, 'id' | 'status' | 'transcript'>
   )> }
 );
 
@@ -8956,22 +9045,6 @@ export type MessageFeedInfoFragment = (
     & MessageDetailedInfoFragment
   )> }
   & MessageDetailedInfoFragment
-);
-
-export type DeleteTextMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DeleteTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { delete_message?: Maybe<(
-    { __typename?: 'message_mutation_response' }
-    & { message: Array<(
-      { __typename?: 'message' }
-      & Pick<Message, 'id'>
-    )> }
-  )> }
 );
 
 export type NotificationInfoFragment = (
@@ -9728,20 +9801,6 @@ export type TopicMessagesQuery = (
   )> }
 );
 
-export type UpdateLastSeenMessageMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  messageId: Scalars['uuid'];
-}>;
-
-
-export type UpdateLastSeenMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { insert_last_seen_message_one?: Maybe<(
-    { __typename?: 'last_seen_message' }
-    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
-  )> }
-);
-
 export type SingleTopicQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
@@ -9920,23 +9979,9 @@ export type MessageAttachment_AttachmentFragment = (
 export type MessageAttachmentDisplayer_AttachmentFragment = (
   { __typename?: 'attachment' }
   & { mimeType: Attachment['mime_type'], originalName: Attachment['original_name'] }
-);
-
-export type CreateNewMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-  topicId: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  type: Message_Type_Enum;
-  replied_to_message_id?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateNewMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id' | 'topic_id'>
-    & Message_MessageFragment
+  & { transcription?: Maybe<(
+    { __typename?: 'transcription' }
+    & Pick<Transcription, 'id' | 'status' | 'transcript'>
   )> }
 );
 
@@ -9985,7 +10030,7 @@ export type MessageText_MessageFragment = (
 
 export type Message_MessageFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'created_at'>
+  & Pick<Message, 'id' | 'created_at' | 'topic_id'>
   & { replied_to_message?: Maybe<(
     { __typename?: 'message' }
     & ReplyingToMessage_MessageFragment
@@ -10003,6 +10048,19 @@ export type Message_MessageFragment = (
   & MessageLinksPreviews_MessageFragment
   & EditMessageEditor_MessageFragment
   & MessageReactions_MessageFragment
+);
+
+export type DeleteTextMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DeleteTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
 );
 
 export type MessageLikeContent_UserFragment = (
@@ -10359,7 +10417,7 @@ export type RoomTopicView_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'archived_at'>
     & TopicWithMessages_TopicFragment
   )> }
   & RoomView_RoomFragment
@@ -10426,6 +10484,24 @@ export type UpdateTopicSummaryMutation = (
   )> }
 );
 
+export type CreateNewMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateNewMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'topic_id' | 'updated_at'>
+    & Message_MessageFragment
+  )> }
+);
+
 export type TopicHeader_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
@@ -10436,25 +10512,23 @@ export type TopicHeader_RoomFragment = (
 
 export type TopicHeader_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'archived_at'>
   & IsTopicClosed_TopicFragment
   & IsCurrentUserTopicManager_TopicFragment
   & ManageTopic_TopicFragment
 );
 
-export type CloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   id: Scalars['uuid'];
-  closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by_user_id?: Maybe<Scalars['uuid']>;
-  closing_summary?: Maybe<Scalars['String']>;
+  input: Topic_Set_Input;
 }>;
 
 
-export type CloseTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary'>
+    & Pick<Topic, 'id'>
   )> }
 );
 
@@ -10465,6 +10539,20 @@ export type TopicSummaryMessage_TopicFragment = (
     { __typename?: 'user' }
     & Pick<User, 'id' | 'name' | 'email'>
     & MessageLikeContent_UserFragment
+  )> }
+);
+
+export type TopicWithMessagesQueryVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type TopicWithMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'updated_at'>
+    & Message_MessageFragment
   )> }
 );
 
@@ -10482,19 +10570,17 @@ export type TopicWithMessages_TopicFragment = (
   & TopicHeader_TopicFragment
 );
 
-export type TopicMessagesAscSubscriptionVariables = Exact<{
+export type UpdateLastSeenMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  limit?: Maybe<Scalars['Int']>;
-  order?: Maybe<Order_By>;
-  typeExpression?: Maybe<Message_Type_Enum_Comparison_Exp>;
+  messageId: Scalars['uuid'];
 }>;
 
 
-export type TopicMessagesAscSubscription = (
-  { __typename?: 'subscription_root' }
-  & { messages: Array<(
-    { __typename?: 'message' }
-    & Message_MessageFragment
+export type UpdateLastSeenMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_last_seen_message_one?: Maybe<(
+    { __typename?: 'last_seen_message' }
+    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
   )> }
 );
 
@@ -10508,6 +10594,34 @@ export type TopicClosureSubscription = (
   & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
     & TopicSummaryMessage_TopicFragment
+  )> }
+);
+
+export type MessageExistenceSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type MessageExistenceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { existingMessages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
+export type NewestTopicMessageSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+  lastUpdatedAt: Scalars['timestamptz'];
+}>;
+
+
+export type NewestTopicMessageSubscription = (
+  { __typename?: 'subscription_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'created_at' | 'updated_at'>
+    & Message_MessageFragment
   )> }
 );
 
@@ -10542,8 +10656,22 @@ export type ManageTopic_RoomFragment = (
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'closed_at' | 'archived_at'>
   & IsCurrentUserTopicManager_TopicFragment
+);
+
+export type ArchiveTopicMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  archivedAt: Scalars['timestamptz'];
+}>;
+
+
+export type ArchiveTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'room_id' | 'archived_at'>
+  )> }
 );
 
 export type UpdateTopicIndexMutationVariables = Exact<{
@@ -10656,7 +10784,7 @@ export type TopicList_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'index'>
+    & Pick<Topic, 'archived_at' | 'id' | 'index'>
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment
@@ -10944,7 +11072,7 @@ export type account_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachmentKeySpecifier = ('created_at' | 'id' | 'message' | 'message_id' | 'mime_type' | 'original_name' | 'transcription' | 'transcription_id' | 'user_id' | attachmentKeySpecifier)[];
+export type attachmentKeySpecifier = ('created_at' | 'id' | 'message' | 'message_id' | 'mime_type' | 'original_name' | 'transcription' | 'transcription_id' | 'updated_at' | 'user_id' | attachmentKeySpecifier)[];
 export type attachmentFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10954,6 +11082,7 @@ export type attachmentFieldPolicy = {
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type attachment_aggregateKeySpecifier = ('aggregate' | 'nodes' | attachment_aggregateKeySpecifier)[];
@@ -10967,7 +11096,7 @@ export type attachment_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachment_max_fieldsKeySpecifier = ('created_at' | 'id' | 'message_id' | 'mime_type' | 'original_name' | 'transcription_id' | 'user_id' | attachment_max_fieldsKeySpecifier)[];
+export type attachment_max_fieldsKeySpecifier = ('created_at' | 'id' | 'message_id' | 'mime_type' | 'original_name' | 'transcription_id' | 'updated_at' | 'user_id' | attachment_max_fieldsKeySpecifier)[];
 export type attachment_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10975,9 +11104,10 @@ export type attachment_max_fieldsFieldPolicy = {
 	mime_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type attachment_min_fieldsKeySpecifier = ('created_at' | 'id' | 'message_id' | 'mime_type' | 'original_name' | 'transcription_id' | 'user_id' | attachment_min_fieldsKeySpecifier)[];
+export type attachment_min_fieldsKeySpecifier = ('created_at' | 'id' | 'message_id' | 'mime_type' | 'original_name' | 'transcription_id' | 'updated_at' | 'user_id' | attachment_min_fieldsKeySpecifier)[];
 export type attachment_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -10985,6 +11115,7 @@ export type attachment_min_fieldsFieldPolicy = {
 	mime_type?: FieldPolicy<any> | FieldReadFunction<any>,
 	original_name?: FieldPolicy<any> | FieldReadFunction<any>,
 	transcription_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type attachment_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | attachment_mutation_responseKeySpecifier)[];
@@ -11057,7 +11188,7 @@ export type membership_status_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'user' | 'user_id' | messageKeySpecifier)[];
+export type messageKeySpecifier = ('content' | 'content_text' | 'created_at' | 'id' | 'is_draft' | 'message_attachments' | 'message_attachments_aggregate' | 'message_reactions' | 'message_reactions_aggregate' | 'message_type' | 'replied_to_message' | 'replied_to_message_id' | 'tasks' | 'tasks_aggregate' | 'topic' | 'topic_id' | 'type' | 'updated_at' | 'user' | 'user_id' | messageKeySpecifier)[];
 export type messageFieldPolicy = {
 	content?: FieldPolicy<any> | FieldReadFunction<any>,
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11076,6 +11207,7 @@ export type messageFieldPolicy = {
 	topic?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -11090,22 +11222,24 @@ export type message_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_max_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'user_id' | message_max_fieldsKeySpecifier)[];
+export type message_max_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'updated_at' | 'user_id' | message_max_fieldsKeySpecifier)[];
 export type message_max_fieldsFieldPolicy = {
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type message_min_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'user_id' | message_min_fieldsKeySpecifier)[];
+export type message_min_fieldsKeySpecifier = ('content_text' | 'created_at' | 'id' | 'replied_to_message_id' | 'topic_id' | 'updated_at' | 'user_id' | message_min_fieldsKeySpecifier)[];
 export type message_min_fieldsFieldPolicy = {
 	content_text?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	replied_to_message_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	user_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type message_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | message_mutation_responseKeySpecifier)[];
@@ -11460,7 +11594,7 @@ export type query_rootFieldPolicy = {
 	whitelist_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	whitelist_by_pk?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'owner' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | roomKeySpecifier)[];
+export type roomKeySpecifier = ('created_at' | 'creator' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'invitations' | 'invitations_aggregate' | 'is_private' | 'last_activity_at' | 'last_posted_message' | 'members' | 'members_aggregate' | 'name' | 'notification_job_id' | 'owner' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space' | 'space_id' | 'summary' | 'topics' | 'topics_aggregate' | 'updated_at' | roomKeySpecifier)[];
 export type roomFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11487,7 +11621,8 @@ export type roomFieldPolicy = {
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	topics?: FieldPolicy<any> | FieldReadFunction<any>,
-	topics_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	topics_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_aggregateKeySpecifier = ('aggregate' | 'nodes' | room_aggregateKeySpecifier)[];
 export type room_aggregateFieldPolicy = {
@@ -11595,7 +11730,7 @@ export type room_last_posted_message_min_fieldsFieldPolicy = {
 	last_posted_message_time?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_max_fieldsKeySpecifier)[];
+export type room_max_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | 'updated_at' | room_max_fieldsKeySpecifier)[];
 export type room_max_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11611,7 +11746,8 @@ export type room_max_fieldsFieldPolicy = {
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	summary?: FieldPolicy<any> | FieldReadFunction<any>
+	summary?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_memberKeySpecifier = ('room' | 'room_id' | 'user' | 'user_id' | room_memberKeySpecifier)[];
 export type room_memberFieldPolicy = {
@@ -11646,7 +11782,7 @@ export type room_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | room_min_fieldsKeySpecifier)[];
+export type room_min_fieldsKeySpecifier = ('created_at' | 'creator_id' | 'deadline' | 'finished_at' | 'id' | 'last_activity_at' | 'name' | 'notification_job_id' | 'owner_id' | 'recurring_days' | 'recurring_last_restart' | 'slug' | 'source_google_calendar_event_id' | 'space_id' | 'summary' | 'updated_at' | room_min_fieldsKeySpecifier)[];
 export type room_min_fieldsFieldPolicy = {
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11662,7 +11798,8 @@ export type room_min_fieldsFieldPolicy = {
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	source_google_calendar_event_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	space_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	summary?: FieldPolicy<any> | FieldReadFunction<any>
+	summary?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type room_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | room_mutation_responseKeySpecifier)[];
 export type room_mutation_responseFieldPolicy = {
@@ -11697,7 +11834,7 @@ export type room_variance_fieldsKeySpecifier = ('recurring_days' | room_variance
 export type room_variance_fieldsFieldPolicy = {
 	recurring_days?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'members' | 'members_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | 'slug' | 'team' | 'team_id' | spaceKeySpecifier)[];
+export type spaceKeySpecifier = ('creator' | 'creator_id' | 'id' | 'members' | 'members_aggregate' | 'name' | 'rooms' | 'rooms_aggregate' | 'slug' | 'team' | 'team_id' | 'updated_at' | spaceKeySpecifier)[];
 export type spaceFieldPolicy = {
 	creator?: FieldPolicy<any> | FieldReadFunction<any>,
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11709,7 +11846,8 @@ export type spaceFieldPolicy = {
 	rooms_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	team?: FieldPolicy<any> | FieldReadFunction<any>,
-	team_id?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type space_aggregateKeySpecifier = ('aggregate' | 'nodes' | space_aggregateKeySpecifier)[];
 export type space_aggregateFieldPolicy = {
@@ -11722,13 +11860,14 @@ export type space_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type space_max_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | space_max_fieldsKeySpecifier)[];
+export type space_max_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | 'updated_at' | space_max_fieldsKeySpecifier)[];
 export type space_max_fieldsFieldPolicy = {
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
-	team_id?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type space_memberKeySpecifier = ('space' | 'space_id' | 'user' | 'user_id' | space_memberKeySpecifier)[];
 export type space_memberFieldPolicy = {
@@ -11763,13 +11902,14 @@ export type space_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type space_min_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | space_min_fieldsKeySpecifier)[];
+export type space_min_fieldsKeySpecifier = ('creator_id' | 'id' | 'name' | 'slug' | 'team_id' | 'updated_at' | space_min_fieldsKeySpecifier)[];
 export type space_min_fieldsFieldPolicy = {
 	creator_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
-	team_id?: FieldPolicy<any> | FieldReadFunction<any>
+	team_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type space_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | space_mutation_responseKeySpecifier)[];
 export type space_mutation_responseFieldPolicy = {
@@ -11906,7 +12046,7 @@ export type task_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | teamKeySpecifier)[];
+export type teamKeySpecifier = ('id' | 'invitations' | 'invitations_aggregate' | 'memberships' | 'memberships_aggregate' | 'name' | 'owner' | 'owner_id' | 'slack_installation' | 'slug' | 'spaces' | 'spaces_aggregate' | 'updated_at' | teamKeySpecifier)[];
 export type teamFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	invitations?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -11919,7 +12059,8 @@ export type teamFieldPolicy = {
 	slack_installation?: FieldPolicy<any> | FieldReadFunction<any>,
 	slug?: FieldPolicy<any> | FieldReadFunction<any>,
 	spaces?: FieldPolicy<any> | FieldReadFunction<any>,
-	spaces_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	spaces_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_aggregateKeySpecifier = ('aggregate' | 'nodes' | team_aggregateKeySpecifier)[];
 export type team_aggregateFieldPolicy = {
@@ -11984,12 +12125,13 @@ export type team_invitation_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_max_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | team_max_fieldsKeySpecifier)[];
+export type team_max_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | 'updated_at' | team_max_fieldsKeySpecifier)[];
 export type team_max_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	slug?: FieldPolicy<any> | FieldReadFunction<any>
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_memberKeySpecifier = ('id' | 'notify_email' | 'notify_slack' | 'team' | 'team_id' | 'user' | 'user_id' | team_memberKeySpecifier)[];
 export type team_memberFieldPolicy = {
@@ -12067,12 +12209,13 @@ export type team_member_slack_installation_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type team_min_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | team_min_fieldsKeySpecifier)[];
+export type team_min_fieldsKeySpecifier = ('id' | 'name' | 'owner_id' | 'slug' | 'updated_at' | team_min_fieldsKeySpecifier)[];
 export type team_min_fieldsFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	slug?: FieldPolicy<any> | FieldReadFunction<any>
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type team_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | team_mutation_responseKeySpecifier)[];
 export type team_mutation_responseFieldPolicy = {
@@ -12112,7 +12255,7 @@ export type team_slack_installation_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topicKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owner' | 'owner_id' | 'room' | 'room_id' | 'slug' | topicKeySpecifier)[];
+export type topicKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'members' | 'members_aggregate' | 'messages' | 'messages_aggregate' | 'name' | 'owner' | 'owner_id' | 'room' | 'room_id' | 'slug' | 'updated_at' | topicKeySpecifier)[];
 export type topicFieldPolicy = {
 	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12130,7 +12273,8 @@ export type topicFieldPolicy = {
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	slug?: FieldPolicy<any> | FieldReadFunction<any>
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type topic_aggregateKeySpecifier = ('aggregate' | 'nodes' | topic_aggregateKeySpecifier)[];
 export type topic_aggregateFieldPolicy = {
@@ -12143,7 +12287,7 @@ export type topic_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_max_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_max_fieldsKeySpecifier)[];
+export type topic_max_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | 'updated_at' | topic_max_fieldsKeySpecifier)[];
 export type topic_max_fieldsFieldPolicy = {
 	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12154,7 +12298,8 @@ export type topic_max_fieldsFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	slug?: FieldPolicy<any> | FieldReadFunction<any>
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type topic_memberKeySpecifier = ('topic' | 'topic_id' | 'user' | 'user_id' | topic_memberKeySpecifier)[];
 export type topic_memberFieldPolicy = {
@@ -12189,7 +12334,7 @@ export type topic_member_mutation_responseFieldPolicy = {
 	affected_rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	returning?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type topic_min_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | topic_min_fieldsKeySpecifier)[];
+export type topic_min_fieldsKeySpecifier = ('archived_at' | 'closed_at' | 'closed_by_user_id' | 'closing_summary' | 'id' | 'index' | 'name' | 'owner_id' | 'room_id' | 'slug' | 'updated_at' | topic_min_fieldsKeySpecifier)[];
 export type topic_min_fieldsFieldPolicy = {
 	archived_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	closed_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12200,7 +12345,8 @@ export type topic_min_fieldsFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	owner_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	room_id?: FieldPolicy<any> | FieldReadFunction<any>,
-	slug?: FieldPolicy<any> | FieldReadFunction<any>
+	slug?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type topic_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | topic_mutation_responseKeySpecifier)[];
 export type topic_mutation_responseFieldPolicy = {
@@ -12348,7 +12494,7 @@ export type unread_messages_variance_fieldsKeySpecifier = ('unread_messages' | u
 export type unread_messages_variance_fieldsFieldPolicy = {
 	unread_messages?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_room_invitations' | 'created_room_invitations_aggregate' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'messages' | 'messages_aggregate' | 'name' | 'notifications' | 'notifications_aggregate' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | userKeySpecifier)[];
+export type userKeySpecifier = ('avatar_url' | 'created_at' | 'created_room_invitations' | 'created_room_invitations_aggregate' | 'created_rooms' | 'created_rooms_aggregate' | 'created_team_invitations' | 'created_team_invitations_aggregate' | 'current_team' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'messages' | 'messages_aggregate' | 'name' | 'notifications' | 'notifications_aggregate' | 'owned_teams' | 'owned_teams_aggregate' | 'rooms' | 'rooms_aggregate' | 'space_memberships' | 'space_memberships_aggregate' | 'team_memberships' | 'team_memberships_aggregate' | 'topic_memberships' | 'topic_memberships_aggregate' | 'updated_at' | userKeySpecifier)[];
 export type userFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12377,7 +12523,8 @@ export type userFieldPolicy = {
 	team_memberships?: FieldPolicy<any> | FieldReadFunction<any>,
 	team_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
 	topic_memberships?: FieldPolicy<any> | FieldReadFunction<any>,
-	topic_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>
+	topic_memberships_aggregate?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type user_aggregateKeySpecifier = ('aggregate' | 'nodes' | user_aggregateKeySpecifier)[];
 export type user_aggregateFieldPolicy = {
@@ -12390,7 +12537,7 @@ export type user_aggregate_fieldsFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | user_max_fieldsKeySpecifier)[];
+export type user_max_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | 'updated_at' | user_max_fieldsKeySpecifier)[];
 export type user_max_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12398,9 +12545,10 @@ export type user_max_fieldsFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | user_min_fieldsKeySpecifier)[];
+export type user_min_fieldsKeySpecifier = ('avatar_url' | 'created_at' | 'current_team_id' | 'email' | 'email_verified' | 'id' | 'name' | 'updated_at' | user_min_fieldsKeySpecifier)[];
 export type user_min_fieldsFieldPolicy = {
 	avatar_url?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -12408,7 +12556,8 @@ export type user_min_fieldsFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
 	email_verified?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type user_mutation_responseKeySpecifier = ('affected_rows' | 'returning' | user_mutation_responseKeySpecifier)[];
 export type user_mutation_responseFieldPolicy = {

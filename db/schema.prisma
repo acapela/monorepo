@@ -30,6 +30,7 @@ model attachment {
   message_id       String?        @db.Uuid
   transcription_id String?        @db.Uuid
   user_id          String?        @db.Uuid
+  updated_at       DateTime?      @default(now()) @db.Timestamptz(6)
   message          message?       @relation(fields: [message_id], references: [id])
   transcription    transcription? @relation(fields: [transcription_id], references: [id])
   user             user?          @relation(fields: [user_id], references: [id])
@@ -61,6 +62,7 @@ model message {
   content               Json                @default(dbgenerated("jsonb_build_object()"))
   replied_to_message_id String?             @db.Uuid
   content_text          String?
+  updated_at            DateTime?           @default(now()) @db.Timestamptz(6)
   message               message?            @relation("messageTomessage_replied_to_message_id", fields: [replied_to_message_id], references: [id])
   topic                 topic               @relation(fields: [topic_id], references: [id])
   message_type          message_type        @relation(fields: [type], references: [value])
@@ -92,6 +94,7 @@ model room {
   is_private                      Boolean           @default(false)
   last_activity_at                DateTime?         @db.Timestamptz(6)
   owner_id                        String            @db.Uuid
+  updated_at                      DateTime?         @default(now()) @db.Timestamptz(6)
   recurring_days                  Int?
   recurring_last_restart          DateTime?         @db.Timestamptz(6)
   user                            user              @relation(fields: [creator_id], references: [id])
@@ -120,6 +123,7 @@ model space {
   creator_id   String         @db.Uuid
   team_id      String         @db.Uuid
   slug         String
+  updated_at   DateTime?      @default(now()) @db.Timestamptz(6)
   team         team           @relation(fields: [team_id], references: [id])
   room         room[]
   space_member space_member[]
@@ -141,6 +145,7 @@ model team {
   slug                            String                   @unique
   name                            String
   owner_id                        String                   @db.Uuid
+  updated_at                      DateTime?                @default(now()) @db.Timestamptz(6)
   user_team_owner_idTouser        user                     @relation("team_owner_idTouser", fields: [owner_id], references: [id])
   room_invitation                 room_invitation[]
   space                           space[]
@@ -187,6 +192,7 @@ model topic {
   closed_by_user_id String?             @db.Uuid
   closing_summary   String?
   owner_id          String              @db.Uuid
+  updated_at        DateTime?           @default(now()) @db.Timestamptz(6)
   archived_at       DateTime?           @db.Timestamptz(6)
   user              user                @relation(fields: [owner_id], references: [id])
   room              room                @relation(fields: [room_id], references: [id])
@@ -230,6 +236,7 @@ model user {
   created_at                                             DateTime            @default(now()) @db.Timestamptz(6)
   email_verified                                         DateTime?           @db.Timestamptz(6)
   current_team_id                                        String?             @db.Uuid
+  updated_at                                             DateTime?           @default(now()) @db.Timestamptz(6)
   team_teamTouser_current_team_id                        team?               @relation("teamTouser_current_team_id", fields: [current_team_id], references: [id])
   account                                                account[]
   attachment                                             attachment[]

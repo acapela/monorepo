@@ -40,11 +40,17 @@ const typePolicies: TypedTypePolicies = {
       topic: {
         merge: mergeUsingIncoming,
       },
+      message: {
+        merge: mergeUsingIncoming,
+      },
     },
   },
   Subscription: {
     fields: {
       topic: {
+        merge: mergeUsingIncoming,
+      },
+      message: {
         merge: mergeUsingIncoming,
       },
     },

@@ -4,6 +4,7 @@ import { MouseEvent } from "react";
 import styled from "styled-components";
 
 import { handleWithStopPropagation } from "~shared/events";
+import { formatMsTimeToPlaybackTime } from "~shared/time";
 import { PopPresenceAnimator } from "~ui/animations";
 import { IconPause, IconPlay } from "~ui/icons";
 import { theme } from "~ui/theme";
@@ -140,18 +141,6 @@ const UIProgressTextLabel = styled.div`
   user-select: none;
 `;
 
-function convertTimeToMinutesTime(time: number) {
-  if (!Number.isFinite(time)) {
-    return "--:--";
-  }
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-
-  const paddedSeconds = `${seconds}`.padStart(2, "0");
-
-  return `${minutes}:${paddedSeconds}`;
-}
-
 function renderProgressTime(time: number, duration: number) {
-  return `${convertTimeToMinutesTime(time)} / ${convertTimeToMinutesTime(duration)}`;
+  return `${formatMsTimeToPlaybackTime(time)} / ${formatMsTimeToPlaybackTime(duration)}`;
 }

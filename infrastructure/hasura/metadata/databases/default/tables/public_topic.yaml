@@ -64,6 +64,7 @@ select_permissions:
   - permission:
       allow_aggregations: true
       columns:
+        - archived_at
         - closed_at
         - closed_by_user_id
         - closing_summary
@@ -98,6 +99,7 @@ update_permissions:
   - permission:
       check: null
       columns:
+        - archived_at
         - closed_at
         - closed_by_user_id
         - closing_summary

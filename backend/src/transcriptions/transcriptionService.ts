@@ -39,7 +39,7 @@ export async function handleAttachementTranscriptionStatusUpdate(mediaResponse: 
   assert(attachment, "No attachment for given id");
   assert(attachment.transcription_id, "Provided attachment has no transcript");
 
-  db.transcription.update({
+  await db.transcription.update({
     where: { id: attachment.transcription_id },
     data: {
       status: mediaResponse.status,

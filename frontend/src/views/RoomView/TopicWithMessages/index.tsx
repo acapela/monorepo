@@ -1,32 +1,29 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { Message as MessageType } from "~db";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { updateLastSeenMessage } from "~frontend/gql/topics";
-import { waitForAllRunningMutationsToFinish, withFragments } from "~frontend/gql/utils";
+import { withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
-import { CreateNewMessageEditor } from "~frontend/ui/message/composer/CreateNewMessageEditor";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
+import { useMessagesSubscription } from "~frontend/views/RoomView/TopicWithMessages/useMessagesSubscription";
 import {
   TopicClosureSubscription,
   TopicClosureSubscriptionVariables,
-  TopicMessagesAscSubscription,
-  TopicMessagesAscSubscriptionVariables,
   TopicWithMessages_RoomFragment,
   TopicWithMessages_TopicFragment,
+  UpdateLastSeenMessageMutation,
+  UpdateLastSeenMessageMutationVariables,
 } from "~gql";
 import { DropFileContext } from "~richEditor/DropFileContext";
-import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
-import { Modifiers } from "~ui/theme/colors/createColor";
 
+import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
@@ -61,56 +58,40 @@ interface Props {
   topic: TopicWithMessages_TopicFragment | null;
 }
 
-function useMarkTopicAsRead(topicId: string | null, messages: Pick<MessageType, "id">[]) {
-  /**
-   * Let's mark last message as read each time we have new messages.
-   */
-  useAsyncLayoutEffect(async () => {
-    if (!messages || !topicId) return;
+// Marks last message as read
+function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | null) {
+  const [updateLastSeenMessage] = useMutation<
+    UpdateLastSeenMessageMutation,
+    UpdateLastSeenMessageMutationVariables
+  >(gql`
+    mutation UpdateLastSeenMessage($topicId: uuid!, $messageId: uuid!) {
+      insert_last_seen_message_one(
+        object: { topic_id: $topicId, message_id: $messageId }
+        on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
+      ) {
+        message_id
+        seen_at
+      }
+    }
+  `);
 
-    const lastMessage = messages[messages.length - 1];
+  useEffect(() => {
+    if (!messageIds || !topicId) {
+      return;
+    }
 
-    if (!lastMessage) return;
+    const lastMessageId = Array.from(messageIds).pop();
 
-    /**
-     * Let's make sure we're never marking message from 'optimistic' response (because it is not in the DB yet so it
-     * would result in DB error).
-     */
-    await waitForAllRunningMutationsToFinish();
+    if (!lastMessageId) {
+      return;
+    }
 
-    // Component might be unmounted at this point, but we still want to mark seen message as read.
-
-    // There are no mutations in progress now so we can safely mark new message as read as mutation creating it already
-    // finished running
-    updateLastSeenMessage({ topicId, messageId: lastMessage.id });
-  }, [messages]);
+    updateLastSeenMessage({ variables: { topicId, messageId: lastMessageId } });
+  }, [messageIds, topicId, updateLastSeenMessage]);
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { data, loading: isLoadingMessages } = useSubscription<
-    TopicMessagesAscSubscription,
-    TopicMessagesAscSubscriptionVariables
-  >(
-    gql`
-      ${MessagesFeed.fragments.message}
-
-      subscription TopicMessagesAsc(
-        $topicId: uuid!
-        $limit: Int
-        $order: order_by = asc
-        $typeExpression: message_type_enum_comparison_exp = { _is_null: false }
-      ) {
-        messages: message(
-          where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: $typeExpression }
-          order_by: [{ created_at: $order }]
-          limit: $limit
-        ) {
-          ...Message_message
-        }
-      }
-    `,
-    topic ? { variables: { topicId: topic.id } } : { skip: true }
-  );
+  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic?.id);
 
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
@@ -127,17 +108,15 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   const isMember = useIsCurrentUserRoomMember(room);
 
-  useMarkTopicAsRead(topic?.id ?? null, data ? data.messages : []);
+  useMarkTopicAsRead(topic?.id ?? null, existingMessageIds);
 
   if (!topic) {
     return null;
   }
 
-  const messages = data?.messages ?? [];
-
   const isClosed = isTopicClosed(topic);
 
-  const isComposerDisabled = !isMember || !data?.messages;
+  const isComposerDisabled = !isMember || isLoadingMessages;
 
   return (
     <TopicStoreContext>
@@ -229,7 +208,7 @@ const UIMainContainer = styled.div<{}>`
   flex-direction: column;
   height: 100%;
 
-  background: ${theme.colors.layout.foreground((modifiers: Modifiers) => [modifiers.opacity(0.65)])};
+  background: ${theme.colors.layout.foreground((modifiers) => [modifiers.opacity(0.65)])};
   border: 1px solid ${theme.colors.layout.softLine()};
   box-sizing: border-box;
 

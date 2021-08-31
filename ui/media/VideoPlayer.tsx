@@ -14,6 +14,7 @@ import { theme } from "~ui/theme";
 
 import { PlaybackControls } from "./PlaybackControls";
 import { defaultAllowedPlaybackRates } from "./playbackRates";
+import { Transcript } from "./Transcript";
 import { usePlaybackState } from "./usePlaybackState";
 
 interface Props {
@@ -43,31 +44,40 @@ export const VideoPlayer = namedForwardRef<HTMLVideoElement, Props>(function Vid
 
   return (
     <UIHolder ref={holderRef}>
-      <video height={videoHeight} ref={videoRef} src={fileUrl} controls={false}>
-        Sorry, your browser doesn't support embedded videos.
-      </video>
-      <AnimatePresence>
-        {shouldShowControls && (
-          <UIControlsHolder>
-            <PlaybackControls
-              isPlaying={isPlaying}
-              onPlayRequest={play}
-              onPauseRequest={pause}
-              duration={duration}
-              time={time}
-              playbackRate={playbackRate}
-              onPlaybackRateChangeRequest={setPlaybackRate}
-              allowedPlaybackRates={defaultAllowedPlaybackRates}
-              onTimeChangeRequest={setTime}
-            />
-          </UIControlsHolder>
-        )}
-      </AnimatePresence>
+      <UIVideoHolder>
+        <video height={videoHeight} ref={videoRef} src={fileUrl} controls={false}>
+          Sorry, your browser doesn't support embedded videos.
+        </video>
+        <AnimatePresence>
+          {shouldShowControls && (
+            <UIControlsHolder>
+              <PlaybackControls
+                isPlaying={isPlaying}
+                onPlayRequest={play}
+                onPauseRequest={pause}
+                duration={duration}
+                time={time}
+                playbackRate={playbackRate}
+                onPlaybackRateChangeRequest={setPlaybackRate}
+                allowedPlaybackRates={defaultAllowedPlaybackRates}
+                onTimeChangeRequest={setTime}
+              />
+            </UIControlsHolder>
+          )}
+        </AnimatePresence>
+      </UIVideoHolder>
+      {transcript && <Transcript transcript={transcript} time={time} onTimeChangeRequest={setTime} />}
     </UIHolder>
   );
 });
 
 const UIHolder = styled.div`
+  ${Transcript} {
+    margin-top: 16px;
+  }
+`;
+
+const UIVideoHolder = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
