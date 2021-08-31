@@ -19,7 +19,6 @@ const fragments = {
 
     fragment RoomSidebarInfo_room on room {
       space_id
-      recurring_days
       ...IsCurrentUserRoomMember_room
       ...ManageRoomMembers_room
       ...DeadlineManager_room
