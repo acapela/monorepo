@@ -6,9 +6,6 @@
     "cross-env": "7.0.3"
   },
   "dependencies": {
-    "@prisma/client": "^2.23.0",
-    "dotenv-cli": "^4.0.0",
-    "prisma": "^2.23.0",
     "~config": "0.1.0",
     "~shared": "0.1.0"
   }
