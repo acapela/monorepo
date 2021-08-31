@@ -1,6 +1,6 @@
 import { gql, useApolloClient, useQuery, useSubscription } from "@apollo/client";
 import _ from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/RoomView/TopicWithMessages/gql";

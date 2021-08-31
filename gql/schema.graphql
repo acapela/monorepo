@@ -386,6 +386,7 @@ type attachment {
   """An object relationship"""
   transcription: transcription
   transcription_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -440,6 +441,7 @@ input attachment_bool_exp {
   original_name: String_comparison_exp
   transcription: transcription_bool_exp
   transcription_id: uuid_comparison_exp
+  updated_at: timestamptz_comparison_exp
   user_id: uuid_comparison_exp
 }
 
@@ -466,6 +468,7 @@ input attachment_insert_input {
   original_name: String
   transcription: transcription_obj_rel_insert_input
   transcription_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -477,6 +480,7 @@ type attachment_max_fields {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -490,6 +494,7 @@ input attachment_max_order_by {
   mime_type: order_by
   original_name: order_by
   transcription_id: order_by
+  updated_at: order_by
   user_id: order_by
 }
 
@@ -501,6 +506,7 @@ type attachment_min_fields {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -514,6 +520,7 @@ input attachment_min_order_by {
   mime_type: order_by
   original_name: order_by
   transcription_id: order_by
+  updated_at: order_by
   user_id: order_by
 }
 
@@ -547,6 +554,7 @@ input attachment_order_by {
   original_name: order_by
   transcription: transcription_order_by
   transcription_id: order_by
+  updated_at: order_by
   user_id: order_by
 }
 
@@ -578,6 +586,9 @@ enum attachment_select_column {
   transcription_id
 
   """column name"""
+  updated_at
+
+  """column name"""
   user_id
 }
 
@@ -591,6 +602,7 @@ input attachment_set_input {
   mime_type: String
   original_name: String
   transcription_id: uuid
+  updated_at: timestamptz
   user_id: uuid
 }
 
@@ -615,6 +627,9 @@ enum attachment_update_column {
 
   """column name"""
   transcription_id
+
+  """column name"""
+  updated_at
 
   """column name"""
   user_id
@@ -1081,7 +1096,7 @@ type message {
   topic: topic!
   topic_id: uuid!
   type: message_type_enum!
-  updated_at: timestamptz!
+  updated_at: timestamptz
 
   """An object relationship"""
   user: user!
@@ -4924,6 +4939,7 @@ type room {
     """filter the rows returned"""
     where: topic_bool_exp
   ): topic_aggregate!
+  updated_at: timestamptz
 }
 
 """
@@ -5020,6 +5036,7 @@ input room_bool_exp {
   space_id: uuid_comparison_exp
   summary: String_comparison_exp
   topics: topic_bool_exp
+  updated_at: timestamptz_comparison_exp
 }
 
 """
@@ -5067,6 +5084,7 @@ input room_insert_input {
   space_id: uuid
   summary: String
   topics: topic_arr_rel_insert_input
+  updated_at: timestamptz
 }
 
 """
@@ -5467,6 +5485,7 @@ type room_max_fields {
   source_google_calendar_event_id: String
   space_id: uuid
   summary: String
+  updated_at: timestamptz
 }
 
 """
@@ -5488,6 +5507,7 @@ input room_max_order_by {
   source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
+  updated_at: order_by
 }
 
 """
@@ -5682,6 +5702,7 @@ type room_min_fields {
   source_google_calendar_event_id: String
   space_id: uuid
   summary: String
+  updated_at: timestamptz
 }
 
 """
@@ -5703,6 +5724,7 @@ input room_min_order_by {
   source_google_calendar_event_id: order_by
   space_id: order_by
   summary: order_by
+  updated_at: order_by
 }
 
 """
@@ -5760,6 +5782,7 @@ input room_order_by {
   space_id: order_by
   summary: order_by
   topics_aggregate: topic_aggregate_order_by
+  updated_at: order_by
 }
 
 """primary key columns input for table: room"""
@@ -5818,6 +5841,9 @@ enum room_select_column {
 
   """column name"""
   summary
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -5840,6 +5866,7 @@ input room_set_input {
   source_google_calendar_event_id: String
   space_id: uuid
   summary: String
+  updated_at: timestamptz
 }
 
 """aggregate stddev on columns"""
@@ -5941,6 +5968,9 @@ enum room_update_column {
 
   """column name"""
   summary
+
+  """column name"""
+  updated_at
 }
 
 """aggregate var_pop on columns"""
@@ -6065,6 +6095,7 @@ type space {
   """An object relationship"""
   team: team!
   team_id: uuid!
+  updated_at: timestamptz
 }
 
 """
@@ -6119,6 +6150,7 @@ input space_bool_exp {
   slug: String_comparison_exp
   team: team_bool_exp
   team_id: uuid_comparison_exp
+  updated_at: timestamptz_comparison_exp
 }
 
 """
@@ -6145,6 +6177,7 @@ input space_insert_input {
   slug: String
   team: team_obj_rel_insert_input
   team_id: uuid
+  updated_at: timestamptz
 }
 
 """aggregate max on columns"""
@@ -6154,6 +6187,7 @@ type space_max_fields {
   name: String
   slug: String
   team_id: uuid
+  updated_at: timestamptz
 }
 
 """
@@ -6165,6 +6199,7 @@ input space_max_order_by {
   name: order_by
   slug: order_by
   team_id: order_by
+  updated_at: order_by
 }
 
 """
@@ -6346,6 +6381,7 @@ type space_min_fields {
   name: String
   slug: String
   team_id: uuid
+  updated_at: timestamptz
 }
 
 """
@@ -6357,6 +6393,7 @@ input space_min_order_by {
   name: order_by
   slug: order_by
   team_id: order_by
+  updated_at: order_by
 }
 
 """
@@ -6400,6 +6437,7 @@ input space_order_by {
   slug: order_by
   team: team_order_by
   team_id: order_by
+  updated_at: order_by
 }
 
 """primary key columns input for table: space"""
@@ -6425,6 +6463,9 @@ enum space_select_column {
 
   """column name"""
   team_id
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -6436,6 +6477,7 @@ input space_set_input {
   name: String
   slug: String
   team_id: uuid
+  updated_at: timestamptz
 }
 
 """
@@ -6456,6 +6498,9 @@ enum space_update_column {
 
   """column name"""
   team_id
+
+  """column name"""
+  updated_at
 }
 
 type subscription_root {
@@ -7996,6 +8041,7 @@ type team {
     """filter the rows returned"""
     where: space_bool_exp
   ): space_aggregate!
+  updated_at: timestamptz
 }
 
 """
@@ -8050,6 +8096,7 @@ input team_bool_exp {
   slack_installation: team_slack_installation_bool_exp
   slug: String_comparison_exp
   spaces: space_bool_exp
+  updated_at: timestamptz_comparison_exp
 }
 
 """
@@ -8079,6 +8126,7 @@ input team_insert_input {
   slack_installation: team_slack_installation_obj_rel_insert_input
   slug: String
   spaces: space_arr_rel_insert_input
+  updated_at: timestamptz
 }
 
 """
@@ -8361,6 +8409,7 @@ type team_max_fields {
   name: String
   owner_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -8371,6 +8420,7 @@ input team_max_order_by {
   name: order_by
   owner_id: order_by
   slug: order_by
+  updated_at: order_by
 }
 
 """
@@ -8799,6 +8849,7 @@ type team_min_fields {
   name: String
   owner_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -8809,6 +8860,7 @@ input team_min_order_by {
   name: order_by
   owner_id: order_by
   slug: order_by
+  updated_at: order_by
 }
 
 """
@@ -8852,6 +8904,7 @@ input team_order_by {
   slack_installation: team_slack_installation_order_by
   slug: order_by
   spaces_aggregate: space_aggregate_order_by
+  updated_at: order_by
 }
 
 """primary key columns input for table: team"""
@@ -8874,6 +8927,9 @@ enum team_select_column {
 
   """column name"""
   slug
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -8884,6 +8940,7 @@ input team_set_input {
   name: String
   owner_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -9090,6 +9147,9 @@ enum team_update_column {
 
   """column name"""
   slug
+
+  """column name"""
+  updated_at
 }
 
 scalar timestamp
@@ -9221,6 +9281,7 @@ type topic {
   room: room!
   room_id: uuid!
   slug: String!
+  updated_at: timestamptz
 }
 
 """
@@ -9281,6 +9342,7 @@ input topic_bool_exp {
   room: room_bool_exp
   room_id: uuid_comparison_exp
   slug: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
 }
 
 """
@@ -9313,6 +9375,7 @@ input topic_insert_input {
   room: room_obj_rel_insert_input
   room_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """aggregate max on columns"""
@@ -9327,6 +9390,7 @@ type topic_max_fields {
   owner_id: uuid
   room_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -9343,6 +9407,7 @@ input topic_max_order_by {
   owner_id: order_by
   room_id: order_by
   slug: order_by
+  updated_at: order_by
 }
 
 """
@@ -9529,6 +9594,7 @@ type topic_min_fields {
   owner_id: uuid
   room_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -9545,6 +9611,7 @@ input topic_min_order_by {
   owner_id: order_by
   room_id: order_by
   slug: order_by
+  updated_at: order_by
 }
 
 """
@@ -9594,6 +9661,7 @@ input topic_order_by {
   room: room_order_by
   room_id: order_by
   slug: order_by
+  updated_at: order_by
 }
 
 """primary key columns input for table: topic"""
@@ -9634,6 +9702,9 @@ enum topic_select_column {
 
   """column name"""
   slug
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -9650,6 +9721,7 @@ input topic_set_input {
   owner_id: uuid
   room_id: uuid
   slug: String
+  updated_at: timestamptz
 }
 
 """
@@ -9685,6 +9757,9 @@ enum topic_update_column {
 
   """column name"""
   slug
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -10579,6 +10654,7 @@ type user {
     """filter the rows returned"""
     where: topic_member_bool_exp
   ): topic_member_aggregate!
+  updated_at: timestamptz
 }
 
 """
@@ -10623,6 +10699,7 @@ input user_bool_exp {
   space_memberships: space_member_bool_exp
   team_memberships: team_member_bool_exp
   topic_memberships: topic_member_bool_exp
+  updated_at: timestamptz_comparison_exp
 }
 
 """
@@ -10658,6 +10735,7 @@ input user_insert_input {
   space_memberships: space_member_arr_rel_insert_input
   team_memberships: team_member_arr_rel_insert_input
   topic_memberships: topic_member_arr_rel_insert_input
+  updated_at: timestamptz
 }
 
 """aggregate max on columns"""
@@ -10669,6 +10747,7 @@ type user_max_fields {
   email_verified: timestamptz
   id: uuid
   name: String
+  updated_at: timestamptz
 }
 
 """aggregate min on columns"""
@@ -10680,6 +10759,7 @@ type user_min_fields {
   email_verified: timestamptz
   id: uuid
   name: String
+  updated_at: timestamptz
 }
 
 """
@@ -10732,6 +10812,7 @@ input user_order_by {
   space_memberships_aggregate: space_member_aggregate_order_by
   team_memberships_aggregate: team_member_aggregate_order_by
   topic_memberships_aggregate: topic_member_aggregate_order_by
+  updated_at: order_by
 }
 
 """primary key columns input for table: user"""
@@ -10763,6 +10844,9 @@ enum user_select_column {
 
   """column name"""
   name
+
+  """column name"""
+  updated_at
 }
 
 """
@@ -10776,6 +10860,7 @@ input user_set_input {
   email_verified: timestamptz
   id: uuid
   name: String
+  updated_at: timestamptz
 }
 
 """
@@ -10802,6 +10887,9 @@ enum user_update_column {
 
   """column name"""
   name
+
+  """column name"""
+  updated_at
 }
 
 scalar uuid

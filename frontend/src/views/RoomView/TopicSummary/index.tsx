@@ -8,7 +8,6 @@ import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSumm
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
-import { Modifiers } from "~ui/theme/colors/createColor";
 
 import { formatDate } from "../shared";
 
@@ -91,7 +90,7 @@ const UITopicSummary = styled.div<{}>`
 
   padding: 8px 16px;
 
-  border-left: 3px solid ${theme.colors.interactive.active((modifiers: Modifiers) => [modifiers.opacity(0.4)])};
+  border-left: 3px solid ${theme.colors.interactive.active((modifiers) => [modifiers.opacity(0.4)])};
 
   font-size: ${fontSize.label};
   font-weight: 400;
