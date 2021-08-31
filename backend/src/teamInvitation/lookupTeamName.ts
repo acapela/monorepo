@@ -31,7 +31,7 @@ export const lookupTeamName: ActionHandler<
       },
       include: {
         team: true,
-        user: true,
+        user_team_invitation_inviting_user_idTouser: true,
       },
     });
 
@@ -41,7 +41,7 @@ export const lookupTeamName: ActionHandler<
 
     return {
       team_name: teamInvitation.team.name,
-      inviter_name: getNormalizedUserName(teamInvitation.user),
+      inviter_name: getNormalizedUserName(teamInvitation.user_team_invitation_inviting_user_idTouser),
       email: teamInvitation.email,
     };
   },
