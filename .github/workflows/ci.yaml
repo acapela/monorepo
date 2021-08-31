@@ -26,7 +26,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
-      - run: yarn workspace ~db generate
       - run: yarn run lint
       - run: yarn typecheck
 
@@ -51,9 +50,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
-      - run: yarn workspace ~db generate
       - name: Setup dotenv
         run: cp .env.sample .env
+      - name: Run hasura migrations
+        run: |
+          docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
+          sleep 5
+          yarn hasura:update
+          yarn generate
       - run: yarn run frontend:test
 
   backend:
@@ -62,26 +66,6 @@ jobs:
     concurrency:
       group: backend-${{ github.ref }}
       cancel-in-progress: true
-    services:
-      postgres:
-        image: postgres:12
-        ports:
-          - "5432:5432"
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: dev
-          POSTGRES_DB: dev_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      hasura:
-        image: hasura/graphql-engine:v2.0.7
-        ports:
-          - "8080:8080"
-        env:
-          HASURA_GRAPHQL_DATABASE_URL: postgres://user:dev@postgres:5432/dev_db
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -97,12 +81,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
-      - run: yarn workspace ~db generate
-      - name: Migrate postgres using hasura migrations
-        run: |
-          yarn hasura:update
       - name: Setup dotenv
         run: cp .env.sample .env
+      - name: Run hasura migrations
+        run: |
+          docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
+          sleep 5
+          yarn hasura:update
+          yarn generate
       - run: yarn run backend:test
 
   e2e:
@@ -126,15 +112,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
-      - run: yarn workspace ~db generate
       - run: npx playwright install
       - name: Setup dotenv
         run: cp .env.sample .env
-      - run: docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
       - name: Run hasura migrations
         run: |
+          docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
+          yarn generate
       - name: Start backend
         run: yarn workspace ~backend start:ci
       - name: Build frontend
@@ -162,23 +148,37 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
-      - run: yarn workspace ~db generate
       - name: semantic-release
         uses: go-semantic-release/action@v1
         id: semrel
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-file: package.json
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+        if: steps.semrel.outputs.version != ''
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+        if: steps.semrel.outputs.version != ''
+      - run: yarn --prefer-offline
+        if: steps.semrel.outputs.version != ''
+      - name: Setup dotenv
+        run: cp .env.sample .env
+        if: steps.semrel.outputs.version != ''
+      - name: Run hasura migrations
+        run: |
+          docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
+          sleep 5
+          yarn hasura:update
+          yarn generate
+          docker-compose -f ./docker-compose.ci.yaml down -v
+          rm .env
+        if: steps.semrel.outputs.version != ''
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
         with:
