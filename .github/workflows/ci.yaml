@@ -27,7 +27,6 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn --prefer-offline
       - run: yarn run lint
-      - run: yarn typecheck
 
   frontend:
     name: Frontend
@@ -59,6 +58,7 @@ jobs:
           yarn hasura:update
           yarn generate
       - run: yarn run frontend:test
+      - run: yarn typecheck
 
   backend:
     name: Backend
