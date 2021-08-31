@@ -48,7 +48,10 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - name: yarn install
+        run: |
+          rm .npmrc
+          yarn --prefer-offline
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
