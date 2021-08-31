@@ -1,6 +1,6 @@
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { MouseEvent, ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import { useUpdate } from "react-use";
 import styled from "styled-components";
 
@@ -97,7 +97,6 @@ function getLastSelectableCursorPosition(editor: Editor) {
 
 function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
   const lastSelectablePosition = getLastSelectableCursorPosition(editor);
-  console.log({ lastSelectablePosition });
   return editor.chain().focus(lastSelectablePosition);
 }
 
