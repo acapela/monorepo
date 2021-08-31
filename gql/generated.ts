@@ -9047,22 +9047,6 @@ export type MessageFeedInfoFragment = (
   & MessageDetailedInfoFragment
 );
 
-export type DeleteTextMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-}>;
-
-
-export type DeleteTextMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { delete_message?: Maybe<(
-    { __typename?: 'message_mutation_response' }
-    & { message: Array<(
-      { __typename?: 'message' }
-      & Pick<Message, 'id'>
-    )> }
-  )> }
-);
-
 export type NotificationInfoFragment = (
   { __typename?: 'notification' }
   & Pick<Notification, 'id' | 'created_at' | 'data' | 'read_at'>
@@ -9817,20 +9801,6 @@ export type TopicMessagesQuery = (
   )> }
 );
 
-export type UpdateLastSeenMessageMutationVariables = Exact<{
-  topicId: Scalars['uuid'];
-  messageId: Scalars['uuid'];
-}>;
-
-
-export type UpdateLastSeenMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { insert_last_seen_message_one?: Maybe<(
-    { __typename?: 'last_seen_message' }
-    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
-  )> }
-);
-
 export type SingleTopicQueryVariables = Exact<{
   id: Scalars['uuid'];
 }>;
@@ -10015,24 +9985,6 @@ export type MessageAttachmentDisplayer_AttachmentFragment = (
   )> }
 );
 
-export type CreateNewMessageMutationVariables = Exact<{
-  id: Scalars['uuid'];
-  topicId: Scalars['uuid'];
-  content: Scalars['jsonb'];
-  type: Message_Type_Enum;
-  replied_to_message_id?: Maybe<Scalars['uuid']>;
-}>;
-
-
-export type CreateNewMessageMutation = (
-  { __typename?: 'mutation_root' }
-  & { message?: Maybe<(
-    { __typename?: 'message' }
-    & Pick<Message, 'id' | 'topic_id'>
-    & Message_MessageFragment
-  )> }
-);
-
 export type EditMessageEditor_MessageFragment = (
   { __typename?: 'message' }
   & Pick<Message, 'id' | 'content'>
@@ -10078,7 +10030,7 @@ export type MessageText_MessageFragment = (
 
 export type Message_MessageFragment = (
   { __typename?: 'message' }
-  & Pick<Message, 'id' | 'created_at'>
+  & Pick<Message, 'id' | 'created_at' | 'topic_id'>
   & { replied_to_message?: Maybe<(
     { __typename?: 'message' }
     & ReplyingToMessage_MessageFragment
@@ -10096,6 +10048,19 @@ export type Message_MessageFragment = (
   & MessageLinksPreviews_MessageFragment
   & EditMessageEditor_MessageFragment
   & MessageReactions_MessageFragment
+);
+
+export type DeleteTextMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+}>;
+
+
+export type DeleteTextMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
 );
 
 export type MessageLikeContent_UserFragment = (
@@ -10452,7 +10417,7 @@ export type RoomTopicView_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id'>
+    & Pick<Topic, 'id' | 'archived_at'>
     & TopicWithMessages_TopicFragment
   )> }
   & RoomView_RoomFragment
@@ -10519,6 +10484,24 @@ export type UpdateTopicSummaryMutation = (
   )> }
 );
 
+export type CreateNewMessageMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  topicId: Scalars['uuid'];
+  content: Scalars['jsonb'];
+  type: Message_Type_Enum;
+  replied_to_message_id?: Maybe<Scalars['uuid']>;
+}>;
+
+
+export type CreateNewMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { message?: Maybe<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'topic_id' | 'updated_at'>
+    & Message_MessageFragment
+  )> }
+);
+
 export type TopicHeader_RoomFragment = (
   { __typename?: 'room' }
   & Pick<Room, 'id' | 'finished_at'>
@@ -10529,25 +10512,23 @@ export type TopicHeader_RoomFragment = (
 
 export type TopicHeader_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'archived_at'>
   & IsTopicClosed_TopicFragment
   & IsCurrentUserTopicManager_TopicFragment
   & ManageTopic_TopicFragment
 );
 
-export type CloseTopicMutationVariables = Exact<{
+export type UpdateTopicMutationVariables = Exact<{
   id: Scalars['uuid'];
-  closed_at?: Maybe<Scalars['timestamp']>;
-  closed_by_user_id?: Maybe<Scalars['uuid']>;
-  closing_summary?: Maybe<Scalars['String']>;
+  input: Topic_Set_Input;
 }>;
 
 
-export type CloseTopicMutation = (
+export type UpdateTopicMutation = (
   { __typename?: 'mutation_root' }
   & { topic?: Maybe<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'closed_at' | 'closed_by_user_id' | 'closing_summary'>
+    & Pick<Topic, 'id'>
   )> }
 );
 
@@ -10558,6 +10539,20 @@ export type TopicSummaryMessage_TopicFragment = (
     { __typename?: 'user' }
     & Pick<User, 'id' | 'name' | 'email'>
     & MessageLikeContent_UserFragment
+  )> }
+);
+
+export type TopicWithMessagesQueryVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type TopicWithMessagesQuery = (
+  { __typename?: 'query_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'updated_at'>
+    & Message_MessageFragment
   )> }
 );
 
@@ -10575,19 +10570,17 @@ export type TopicWithMessages_TopicFragment = (
   & TopicHeader_TopicFragment
 );
 
-export type TopicMessagesAscSubscriptionVariables = Exact<{
+export type UpdateLastSeenMessageMutationVariables = Exact<{
   topicId: Scalars['uuid'];
-  limit?: Maybe<Scalars['Int']>;
-  order?: Maybe<Order_By>;
-  typeExpression?: Maybe<Message_Type_Enum_Comparison_Exp>;
+  messageId: Scalars['uuid'];
 }>;
 
 
-export type TopicMessagesAscSubscription = (
-  { __typename?: 'subscription_root' }
-  & { messages: Array<(
-    { __typename?: 'message' }
-    & Message_MessageFragment
+export type UpdateLastSeenMessageMutation = (
+  { __typename?: 'mutation_root' }
+  & { insert_last_seen_message_one?: Maybe<(
+    { __typename?: 'last_seen_message' }
+    & Pick<Last_Seen_Message, 'message_id' | 'seen_at'>
   )> }
 );
 
@@ -10601,6 +10594,34 @@ export type TopicClosureSubscription = (
   & { topic_by_pk?: Maybe<(
     { __typename?: 'topic' }
     & TopicSummaryMessage_TopicFragment
+  )> }
+);
+
+export type MessageExistenceSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+}>;
+
+
+export type MessageExistenceSubscription = (
+  { __typename?: 'subscription_root' }
+  & { existingMessages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id'>
+  )> }
+);
+
+export type NewestTopicMessageSubscriptionVariables = Exact<{
+  topicId: Scalars['uuid'];
+  lastUpdatedAt: Scalars['timestamptz'];
+}>;
+
+
+export type NewestTopicMessageSubscription = (
+  { __typename?: 'subscription_root' }
+  & { messages: Array<(
+    { __typename?: 'message' }
+    & Pick<Message, 'id' | 'created_at' | 'updated_at'>
+    & Message_MessageFragment
   )> }
 );
 
@@ -10635,8 +10656,22 @@ export type ManageTopic_RoomFragment = (
 
 export type ManageTopic_TopicFragment = (
   { __typename?: 'topic' }
-  & Pick<Topic, 'id' | 'name'>
+  & Pick<Topic, 'id' | 'name' | 'closed_at' | 'archived_at'>
   & IsCurrentUserTopicManager_TopicFragment
+);
+
+export type ArchiveTopicMutationVariables = Exact<{
+  id: Scalars['uuid'];
+  archivedAt: Scalars['timestamptz'];
+}>;
+
+
+export type ArchiveTopicMutation = (
+  { __typename?: 'mutation_root' }
+  & { topic?: Maybe<(
+    { __typename?: 'topic' }
+    & Pick<Topic, 'id' | 'room_id' | 'archived_at'>
+  )> }
 );
 
 export type UpdateTopicIndexMutationVariables = Exact<{
@@ -10749,7 +10784,7 @@ export type TopicList_RoomFragment = (
   & Pick<Room, 'id' | 'space_id'>
   & { topics: Array<(
     { __typename?: 'topic' }
-    & Pick<Topic, 'id' | 'index'>
+    & Pick<Topic, 'archived_at' | 'id' | 'index'>
   )> }
   & IsCurrentUserRoomMember_RoomFragment
   & StaticTopicList_RoomFragment

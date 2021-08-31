@@ -10,10 +10,10 @@ import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserT
 import { isTopicClosed } from "~frontend/topics/utils";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
 import {
-  CloseTopicMutation,
-  CloseTopicMutationVariables,
   TopicHeader_RoomFragment,
   TopicHeader_TopicFragment,
+  UpdateTopicMutation,
+  UpdateTopicMutationVariables,
 } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
@@ -44,6 +44,7 @@ const fragments = {
     fragment TopicHeader_topic on topic {
       id
       name
+      archived_at
       ...IsTopicClosed_topic
       ...IsCurrentUserTopicManager_topic
       ...ManageTopic_topic
@@ -57,25 +58,19 @@ interface Props {
   className?: string;
 }
 
-const useCloseTopic = () =>
-  useMutation<CloseTopicMutation, CloseTopicMutationVariables>(
+const useUpdateTopic = () =>
+  useMutation<UpdateTopicMutation, UpdateTopicMutationVariables>(
     gql`
-      mutation CloseTopic($id: uuid!, $closed_at: timestamp, $closed_by_user_id: uuid, $closing_summary: String) {
-        topic: update_topic_by_pk(
-          pk_columns: { id: $id }
-          _set: { closed_at: $closed_at, closed_by_user_id: $closed_by_user_id, closing_summary: $closing_summary }
-        ) {
+      mutation UpdateTopic($id: uuid!, $input: topic_set_input!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: $input) {
           id
-          closed_at
-          closed_by_user_id
-          closing_summary
         }
       }
     `,
     {
-      optimisticResponse: (vars) => ({
+      optimisticResponse: ({ id, input }) => ({
         __typename: "mutation_root",
-        topic: { __typename: "topic", ...vars },
+        topic: { __typename: "topic", ...input, id },
       }),
     }
   );
@@ -84,9 +79,35 @@ const _TopicHeader = ({ room, topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const user = useAssertCurrentUser();
   const isMember = useIsCurrentUserRoomMember(room);
-  const [closeTopic] = useCloseTopic();
+  const [updateTopic] = useUpdateTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
   const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+
+  const handleRestoreTopic = () => {
+    updateTopic({
+      variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null, archived_at: null } },
+    });
+    trackEvent("Reopened Topic");
+  };
+
+  const handleReopenTopic = () => {
+    updateTopic({ variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null } } });
+    trackEvent("Reopened Topic");
+  };
+
+  const handleCloseTopic = (topicSummary: string) => {
+    updateTopic({
+      variables: {
+        id: topic.id,
+        input: {
+          closed_at: new Date().toISOString(),
+          closed_by_user_id: user.id,
+          closing_summary: topicSummary,
+        },
+      },
+    });
+    trackEvent("Closed Topic", { topicId: topic.id });
+  };
 
   return (
     <UIHolder>
@@ -94,17 +115,22 @@ const _TopicHeader = ({ room, topic }: Props) => {
 
       {!room.finished_at && (
         <UIActions>
-          {isClosed && (
-            <UIToggleCloseButton
-              onClick={() => {
-                closeTopic({ variables: { id: topic.id, closed_at: null, closed_by_user_id: null } });
-                trackEvent("Reopened Topic");
-              }}
-              isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
-            >
-              Reopen Topic
-            </UIToggleCloseButton>
-          )}
+          {isClosed &&
+            (topic.archived_at ? (
+              <UIToggleCloseButton
+                onClick={handleRestoreTopic}
+                isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to restore topics` }}
+              >
+                Restore Topic
+              </UIToggleCloseButton>
+            ) : (
+              <UIToggleCloseButton
+                onClick={handleReopenTopic}
+                isDisabled={!isTopicManager && { reason: `You have to be room or topic owner to reopen topics` }}
+              >
+                Reopen Topic
+              </UIToggleCloseButton>
+            ))}
           {!isClosed && (
             <UIToggleCloseButton
               onClick={openClosingTopicModal}
@@ -122,17 +148,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
             loading={false}
             topicId={topic.id}
             onDismissRequest={() => closeClosingModal()}
-            onTopicClosed={(topicSummary) => {
-              closeTopic({
-                variables: {
-                  id: topic.id,
-                  closed_at: new Date().toISOString(),
-                  closed_by_user_id: user.id,
-                  closing_summary: topicSummary,
-                },
-              });
-              trackEvent("Closed Topic", { topicId: topic.id });
-            }}
+            onTopicClosed={handleCloseTopic}
           />
         )}
       </AnimatePresence>

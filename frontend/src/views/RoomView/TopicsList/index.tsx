@@ -30,10 +30,14 @@ import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
 import { IconPlusSquare } from "~ui/icons";
 import { VStack } from "~ui/Stack";
+import { CategoryNameLabel } from "~ui/theme/functional";
+import { Toggle } from "~ui/toggle";
 import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
 import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
+import { getIsTopicArchived, getIsTopicPresent } from "./TopicsFilter";
+import { useTopicsFilter } from "./useTopicsFilter";
 
 const fragments = {
   room: gql`
@@ -44,6 +48,7 @@ const fragments = {
       id
       space_id
       topics {
+        archived_at
         id
         index
       }
@@ -125,6 +130,7 @@ const useCreateTopic = () =>
             closed_by_user_id: null,
             closed_by_user: null,
             closing_summary: null,
+            archived_at: null,
           },
         };
       },
@@ -165,10 +171,30 @@ const useCreateTopic = () =>
     }
   );
 
-const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+const _TopicsList = observer(function TopicsList({
+  room: roomWithoutAppliedFilters,
+  activeTopicId,
+  isRoomOpen,
+}: Props) {
   const user = useAssertCurrentUser();
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { id: roomId, space_id: spaceId, topics } = room;
+
+  const { id: roomId, space_id: spaceId, topics } = roomWithoutAppliedFilters;
+
+  const { topicsFilter, requestChangeTopicsFilter } = useTopicsFilter({
+    topics,
+    activeTopicId,
+    isRoomOpen,
+  });
+
+  const room: TopicList_RoomFragment = {
+    ...roomWithoutAppliedFilters,
+    topics:
+      topicsFilter === "all"
+        ? topics
+        : (topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent) as typeof topics),
+  };
+
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
@@ -212,6 +238,17 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
             </Button>
           </RouteLink>
         )}
+        {isRoomOpen && (
+          <TopicsFilterHolder>
+            <CategoryNameLabel>Archived</CategoryNameLabel>
+            <Toggle
+              isSet={topicsFilter === "archived"}
+              size="small"
+              onSet={() => requestChangeTopicsFilter("archived")}
+              onUnset={() => requestChangeTopicsFilter("present")}
+            />
+          </TopicsFilterHolder>
+        )}
       </UIHeader>
       <UIBody>
         {topics.length > 0 && (
@@ -220,12 +257,16 @@ const _TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOp
               room={room}
               activeTopicId={activeTopicId}
               isDisabled={isEditingAnyMessage}
-              isStatic={!amIMember}
+              isStatic={!amIMember || topicsFilter === "archived"}
             />
           </UITopicsListHolder>
         )}
 
-        {topics.length === 0 && <UINoTopicsMessage>This room has no topics yet.</UINoTopicsMessage>}
+        {room.topics.length === 0 && (
+          <UINoTopicsMessage>
+            {topicsFilter === "archived" ? "This room has no archived topics." : "This room has no topics yet."}{" "}
+          </UINoTopicsMessage>
+        )}
 
         <VStack alignItems="center" justifyContent="start">
           <UINewTopicButton
@@ -279,4 +320,9 @@ const UINoTopicsMessage = styled.div<{}>``;
 const UINewTopicButton = styled(Button)`
   margin-top: 16px;
   padding: 8px 48px;
+`;
+
+const TopicsFilterHolder = styled.div`
+  display: flex;
+  gap: 8px;
 `;

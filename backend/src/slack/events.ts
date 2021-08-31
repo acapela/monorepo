@@ -3,7 +3,7 @@ import { GlobalShortcut, MessageShortcut, SlackShortcut, View } from "@slack/bol
 import { ViewsOpenArguments } from "@slack/web-api";
 
 import { getSlackInstallURL } from "~backend/src/slack/install";
-import { isChannelNotFoundError } from "~backend/src/slack/utils";
+import { isChannelNotFoundOrNotInChannelError } from "~backend/src/slack/utils";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
@@ -254,7 +254,7 @@ export function setupSlackEvents(slackApp: SlackBolt.App) {
         await ack({ response_action: "errors", errors: {} });
       }
     } catch (error) {
-      if (!isChannelNotFoundError(error)) {
+      if (!isChannelNotFoundOrNotInChannelError(error)) {
         throw error;
       }
       const slackInstallURL =

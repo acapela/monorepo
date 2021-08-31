@@ -177,7 +177,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
           <UITopicsCard>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </UITopicsCard>
-          <CloseRoomButton onClick={handleCloseRoom}>Close Room</CloseRoomButton>
+          <CloseRoomButton onClick={handleCloseRoom}>{room.finished_at ? "Reopen Room" : "Close Room"}</CloseRoomButton>
         </UISidebar>
 
         <UIContentHolder>{children}</UIContentHolder>

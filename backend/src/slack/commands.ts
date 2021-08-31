@@ -3,7 +3,7 @@ import * as SlackBolt from "@slack/bolt";
 import { db } from "~db";
 import { isNotNullish } from "~shared/nullish";
 
-import { isChannelNotFoundError } from ".//utils";
+import { isChannelNotFoundOrNotInChannelError } from ".//utils";
 import { getSlackInstallURL } from "./install";
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
@@ -52,7 +52,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     try {
       slackMembers = await getMembers(context.userToken ?? context.botToken);
     } catch (error) {
-      if (!isChannelNotFoundError(error)) {
+      if (!isChannelNotFoundOrNotInChannelError(error)) {
         throw error;
       }
 
