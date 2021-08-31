@@ -2,11 +2,12 @@ import { gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
+import { InputLabel } from "~frontend/../../ui/theme/functional";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
+import { RecurranceManager } from "~frontend/rooms/recurrance/RecurranceManager";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { RoomSidebarInfo_RoomFragment } from "~gql";
-import { TextBody12 } from "~ui/typo";
 
 import { DeadlineManager } from "./DeadlineManager";
 
@@ -18,6 +19,7 @@ const fragments = {
 
     fragment RoomSidebarInfo_room on room {
       space_id
+      recurring_days
       ...IsCurrentUserRoomMember_room
       ...ManageRoomMembers_room
       ...DeadlineManager_room
@@ -44,9 +46,11 @@ export const RoomSidebarInfo = withFragments(fragments, function RoomSidebarInfo
 
       <UIManageSections>
         <UIManageSection>
-          <TextBody12 speziaMono secondary>
-            Due date
-          </TextBody12>
+          <InputLabel>Recurrance</InputLabel>
+          <RecurranceManager room={room} isReadonly={!amIMember} />
+        </UIManageSection>
+        <UIManageSection>
+          <InputLabel>Due date</InputLabel>
           <DeadlineManager room={room} isReadonly={!amIMember} />
         </UIManageSection>
       </UIManageSections>

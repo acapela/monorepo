@@ -231,7 +231,6 @@ const UIRoomTitle = styled.div<{}>`
 `;
 
 const UIRoomTags = styled.div<{}>`
-  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;

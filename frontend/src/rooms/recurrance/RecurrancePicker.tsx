@@ -6,6 +6,7 @@ import { RecurringDays, getRecurringDaysLabel } from "./getRecurringDaysLabel";
 interface Props {
   recurringDays: RecurringDays;
   onChange: (recurringDays: RecurringDays) => void;
+  shouldShowName?: boolean;
 }
 
 interface RecurranceOption {
@@ -18,11 +19,11 @@ const recurringOptions: RecurranceOption[] = [null, 1, 7, 28].map((recurringDays
   name: getRecurringDaysLabel(recurringDays),
 }));
 
-export const RecurrancePicker = ({ recurringDays, onChange }: Props) => {
+export const RecurrancePicker = ({ recurringDays, onChange, shouldShowName = true }: Props) => {
   return (
     <SingleOptionDropdown<RecurranceOption>
       icon={<IconRepeat />}
-      name="Recurrence"
+      name={shouldShowName ? "Recurrence" : undefined}
       items={recurringOptions}
       selectedItem={recurringOptions.find((option) => option.recurringDays === recurringDays)}
       onChange={({ recurringDays }) => {
