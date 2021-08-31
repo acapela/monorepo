@@ -12,7 +12,7 @@ interface TagProps {
   kind: keyof ThemeColorScheme["tags"];
 }
 
-const Tag = ({ kind, children, tooltipLabel }: TagProps) => {
+export const Tag = ({ kind, children, tooltipLabel }: TagProps) => {
   return (
     <UITag data-tooltip={tooltipLabel} kind={kind}>
       {children}
@@ -46,8 +46,4 @@ export const DiscussionTag = ({ tooltipLabel }: Pick<TagProps, "tooltipLabel">) 
   <Tag tooltipLabel={tooltipLabel} kind="discussion">
     Discussion
   </Tag>
-);
-
-export const RecurranceTag = ({ children }: Pick<TagProps, "children">) => (
-  <Tag kind="shareInformation">{children}</Tag>
 );
