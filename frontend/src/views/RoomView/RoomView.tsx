@@ -5,6 +5,7 @@ import styled, { css } from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
+import { getRecurringDaysLabel } from "~frontend/rooms/recurrance/getRecurringDaysLabel";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
@@ -24,7 +25,7 @@ import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
-import { PrivateTag } from "~ui/tags";
+import { PrivateTag, RecurranceTag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
@@ -157,7 +158,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
                   <UIRoomTags>
                     {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
-                    {room.recurring_days && <p>{room.recurring_days}</p>}
+                    {room.recurring_days && <RecurranceTag>{getRecurringDaysLabel(room.recurring_days)}</RecurranceTag>}
 
                     {room.source_google_calendar_event_id && (
                       <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
@@ -220,6 +221,8 @@ const UIRoomHead = styled(TextH4)<{}>`
 const UIRoomTitle = styled.div<{}>`
   padding-right: 16px;
   display: flex;
+  align-items: center;
+  gap: 4px;
   ${(props) =>
     props.onClick &&
     css`
@@ -228,7 +231,7 @@ const UIRoomTitle = styled.div<{}>`
 `;
 
 const UIRoomTags = styled.div<{}>`
-  margin-top: 8px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;

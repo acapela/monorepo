@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RecurringDays } from "~frontend/rooms/recurrance/getRecurringDaysLabel";
+import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
 import { Modal } from "~frontend/ui/Modal";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
@@ -14,7 +16,6 @@ import { IconCommentText } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { DateTimeInput } from "~ui/time/DateTimeInput";
 
-import { RecurrancePicker, RecurringDays } from "./RecurrancePicker";
 import { TeamMembersPicker } from "./TeamMembersPicker";
 import { validateRoomCreationInfo } from "./validateRoomCreationInfo";
 

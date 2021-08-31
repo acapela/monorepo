@@ -1,7 +1,7 @@
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { IconRepeat } from "~ui/icons";
 
-export type RecurringDays = number | null;
+import { RecurringDays, getRecurringDaysLabel } from "./getRecurringDaysLabel";
 
 interface Props {
   recurringDays: RecurringDays;
@@ -13,24 +13,10 @@ interface RecurranceOption {
   name: string;
 }
 
-const recurringOptions: RecurranceOption[] = [
-  {
-    recurringDays: null,
-    name: "Does not repeat",
-  },
-  {
-    recurringDays: 1,
-    name: "Daily",
-  },
-  {
-    recurringDays: 7,
-    name: "Weekly",
-  },
-  {
-    recurringDays: 28,
-    name: "Monthly",
-  },
-];
+const recurringOptions: RecurranceOption[] = [null, 1, 7, 28].map((recurringDays) => ({
+  recurringDays,
+  name: getRecurringDaysLabel(recurringDays),
+}));
 
 export const RecurrancePicker = ({ recurringDays, onChange }: Props) => {
   return (

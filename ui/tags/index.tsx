@@ -47,3 +47,7 @@ export const DiscussionTag = ({ tooltipLabel }: Pick<TagProps, "tooltipLabel">) 
     Discussion
   </Tag>
 );
+
+export const RecurranceTag = ({ children }: Pick<TagProps, "children">) => (
+  <Tag kind="shareInformation">{children}</Tag>
+);
