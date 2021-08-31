@@ -167,11 +167,9 @@ jobs:
         if: steps.semrel.outputs.version != ''
       - run: yarn --prefer-offline
         if: steps.semrel.outputs.version != ''
-      - name: Setup dotenv
-        run: cp .env.sample .env
-        if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |
+          cp .env.sample .env
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
