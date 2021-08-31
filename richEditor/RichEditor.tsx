@@ -1,6 +1,6 @@
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
-import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import React, { MouseEvent, ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
 import { useUpdate } from "react-use";
 import styled from "styled-components";
 
@@ -28,7 +28,11 @@ export type { RichEditorSubmitMode } from "./Toolbar";
 export function getEmptyRichContent(): JSONContent {
   return {
     type: "doc",
-    content: [],
+    content: [
+      {
+        type: "paragraph",
+      },
+    ],
   };
 }
 
@@ -93,7 +97,7 @@ function getLastSelectableCursorPosition(editor: Editor) {
 
 function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
   const lastSelectablePosition = getLastSelectableCursorPosition(editor);
-
+  console.log({ lastSelectablePosition });
   return editor.chain().focus(lastSelectablePosition);
 }
 
@@ -123,6 +127,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
         enableInputRules: true,
       })
   );
+
   const forceUpdate = useUpdate();
 
   function getFocusAtEndCommand() {
