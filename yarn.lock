@@ -2348,16 +2348,16 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@slack/bolt@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@slack/bolt/-/bolt-3.5.0.tgz#4dbb6b17b736804654a9674b05321526d11c87b7"
-  integrity sha512-1YjDLUuLSL4kn3mw7ht7HjcvawC8S79E3X9IXuRL+fTaRnE8FZBr4jssUYiT2oMzGJGaiCsA1FgPrYvJcZ817g==
+"@slack/bolt@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@slack/bolt/-/bolt-3.6.0.tgz#ac1ad154568c377af84fe102a82e540a43843346"
+  integrity sha512-NIFXjhhFEReh3Un3Ac5aJ2Vnsj/SCOaIdLf6Q9akL+yvzl55HnhhnPIb5U+hrkiTeyUdOw63vpTs/Ilz/o+3KA==
   dependencies:
     "@slack/logger" "^3.0.0"
     "@slack/oauth" "^2.2.0"
     "@slack/socket-mode" "^1.1.0"
-    "@slack/types" "^2.0.0"
-    "@slack/web-api" "^6.3.0"
+    "@slack/types" "^2.2.0"
+    "@slack/web-api" "^6.4.0"
     "@types/express" "^4.16.1"
     "@types/node" ">=12"
     "@types/promise.allsettled" "^1.0.3"
@@ -2409,7 +2409,12 @@
   resolved "https://registry.yarnpkg.com/@slack/types/-/types-2.1.0.tgz#3b8d9fc600938ac3b55c39d93d7d4be74b380212"
   integrity sha512-6FSyuKt3dqmXpKxu5cH7vCm2Ekj7WpyaYyznTQ/SpKZKkdLvpkcp0/HbPFTtDI9O1wHGeaPgs6h3AtZmRRDXjA==
 
-"@slack/web-api@^6.0.0", "@slack/web-api@^6.2.3", "@slack/web-api@^6.3.0":
+"@slack/types@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@slack/types/-/types-2.2.0.tgz#fcc3648ee20c3fb92a076b23c35bca19158d9925"
+  integrity sha512-/yHEFvgp0UY/lfFvQqbq9BocW/pM4xnGycqGAx+plRgYp96dZp1y50Whz7yzOgasEUsy5TyQfBK07cj0RwUyIg==
+
+"@slack/web-api@^6.0.0", "@slack/web-api@^6.2.3":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@slack/web-api/-/web-api-6.3.0.tgz#a6e592d2bed49666ac9c31cdc6ab0c04443e935e"
   integrity sha512-EYJ5PuYtSzbrnFCoVE2+JzdM5NTPBlgJYpPGbiVyAved7if4tnbgZpeQT/Vg6E18w5RrFOZScbQaEU78GWmVDA==
@@ -11270,7 +11275,7 @@ react-use@^17.2.4:
     ts-easing "^0.2.0"
     tslib "^2.1.0"
 
-react@17.0.2, react@^17.0.2:
+react@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
@@ -12814,10 +12819,30 @@ tsconfig@^7.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-tslib@2.3.0, tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3, tslib@^2, tslib@^2.0.0, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@~2.0.1, tslib@~2.1.0, tslib@~2.2.0, tslib@~2.3.0:
+tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
+  integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
+tslib@^2, tslib@^2.0.0, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.3.0, tslib@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
+
+tslib@~2.0.1:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
+  integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
+
+tslib@~2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
+  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
+
+tslib@~2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
 
 tsscmp@^1.0.6:
   version "1.0.6"
@@ -12928,10 +12953,20 @@ typeorm@^0.2.30:
     yargs "^16.2.0"
     zen-observable-ts "^1.0.0"
 
-typescript@*, typescript@4.4.0-beta, typescript@^3.2.4:
+typescript@*:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.2.tgz#6d618640d430e3569a1dfb44f7d7e600ced3ee86"
+  integrity sha512-gzP+t5W4hdy4c+68bfcv0t400HVJMMd2+H9B7gae1nQlBzCqvrXX+6GL/b3GAgyTH966pzrZ70/fRjwAtZksSQ==
+
+typescript@4.4.0-beta:
   version "4.4.0-beta"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.0-beta.tgz#a5b8a3a0d260fa5ce84daa3ab58f7102ad19a655"
   integrity sha512-qMxA8NzN3igwX8Mii7MXGNW+YeFAkUKyKg+x4F1CCFsO36LqISf1EXXSOLDuRIdGjdVvV53grRxfHjOW65YfMA==
+
+typescript@^3.2.4:
+  version "3.9.10"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
+  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
 
 ua-parser-js@^0.7.18:
   version "0.7.28"
