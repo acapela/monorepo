@@ -22,7 +22,6 @@ import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
-import { ColorModifiers } from "~ui/theme/colors/createColor";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";

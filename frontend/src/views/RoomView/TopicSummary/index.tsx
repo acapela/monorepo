@@ -8,7 +8,6 @@ import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSumm
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
-import { ColorModifiers } from "~ui/theme/colors/createColor";
 
 import { formatDate } from "../shared";
 
