@@ -2124,7 +2124,7 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@slack/bolt@^3.5.0":
+"@slack/bolt@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@slack/bolt/-/bolt-3.6.0.tgz#ac1ad154568c377af84fe102a82e540a43843346"
   integrity sha512-NIFXjhhFEReh3Un3Ac5aJ2Vnsj/SCOaIdLf6Q9akL+yvzl55HnhhnPIb5U+hrkiTeyUdOw63vpTs/Ilz/o+3KA==
