@@ -14,6 +14,7 @@ import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
 import { handleUserCreated } from "~backend/src/users/events";
 
+import { handleTranscriptionUpdates } from "../transcriptions/events";
 import { hasuraEvents } from "./eventHandlers";
 
 export const router = Router();
@@ -32,6 +33,7 @@ hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomMemberCreat
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], handleMessageChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addHandler("notification_updates", ["INSERT"], handleNotificationCreated);
+hasuraEvents.addHandler("transcription_updates", ["INSERT"], handleTranscriptionUpdates);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
