@@ -1,9 +1,9 @@
 import * as SlackBolt from "@slack/bolt";
 import { ActionsBlock, GlobalShortcut, InputBlock, MessageShortcut, SlackShortcut, View } from "@slack/bolt";
+import { WebClient } from "@slack/web-api";
 
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
-import { WebClient } from "~node_modules/@slack/web-api";
 import { assertDefined } from "~shared/assert";
 import { isNotNullish } from "~shared/nullish";
 
