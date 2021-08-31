@@ -12,7 +12,7 @@ interface EmojiData {
   emoji: string;
 }
 
-function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) {
+function EmojiPicker({ keyword, onSelect }: AutocompletePickerProps<EmojiData>) {
   const matchingEmoji = (emojiIndex.search(keyword) as BaseEmoji[]) ?? [];
 
   if (!keyword) {
@@ -48,7 +48,7 @@ export const emojiAutocompleteExtension = createAutocompletePlugin<EmojiData>({
     // TODO: We might want a bit different UI for emoji eg. a bit bigger font face then the rest of the text
     return <UIEmoji data-tooltip={`:${data.name}`}>{data.emoji}</UIEmoji>;
   },
-  pickerComponent: UserPicker,
+  pickerComponent: EmojiPicker,
 });
 
 const UISelectItem = styled.div<{}>`
