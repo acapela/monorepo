@@ -53,6 +53,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
         source_google_calendar_event_id: event.id,
+        recurring_days: createRoomInput.recurringDays,
         owner_id: user.id,
         members: {
           data: createRoomInput.participantsIds.map((userId) => {

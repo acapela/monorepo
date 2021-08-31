@@ -42,6 +42,7 @@ const fragments = {
       name
       finished_at
       is_private
+      recurring_days
       source_google_calendar_event_id
       ...IsCurrentUserRoomMember_room
       ...EditOptions_room
@@ -156,6 +157,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
                   <UIRoomTags>
                     {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+                    {room.recurring_days && <p>{room.recurring_days}</p>}
 
                     {room.source_google_calendar_event_id && (
                       <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />

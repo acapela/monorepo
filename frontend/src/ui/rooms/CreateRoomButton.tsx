@@ -35,6 +35,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
+        recurring_days: createRoomInput.recurringDays,
         members: initialMembers,
         owner_id: user.id,
       },
