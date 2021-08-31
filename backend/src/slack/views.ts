@@ -215,17 +215,12 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       });
     }
 
-    const roomURL = `${process.env.FRONTEND_URL}/space/${spaceId}/${room.id}/${topic.id}`;
-
-    const shortcut = JSON.parse(view.private_metadata) as SlackShortcut;
-
-    const hasUserToken = Boolean(context.userToken);
     await client.views.update({
       response_action: "update",
       view_id: body.view.id,
       view: createSuccessModal({
-        roomURL,
-        hasUserToken,
+        roomURL: `${process.env.FRONTEND_URL}/space/${spaceId}/${room.id}/${topic.id}`,
+        hasUserToken: Boolean(context.userToken),
         slackInstallURL:
           team && user
             ? (await getSlackInstallURL(
@@ -236,7 +231,7 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
                 }
               )) ?? null
             : null,
-        shortcut,
+        shortcut: JSON.parse(view.private_metadata) as SlackShortcut,
       }),
     });
     await ack({ response_action: "errors", errors: {} });
