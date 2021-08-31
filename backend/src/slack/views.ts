@@ -61,7 +61,7 @@ const createRoomWithTopic = async ({
   return [room, topic];
 };
 
-async function getUsersByEmail(client: WebClient, roomMembers: string[], email: string) {
+async function findUsersBySlackEmails(client: WebClient, roomMembers: string[], email: string) {
   const memberProfiles = await Promise.all(roomMembers.map((memberId) => client.users.profile.get({ user: memberId })));
   return db.user.findMany({
     where: {
@@ -193,7 +193,7 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
     ]);
     const email = assertDefined(profileResponse.profile?.email, "current user must have profile and email");
 
-    const users = await getUsersByEmail(client, roomMembers, email);
+    const users = await findUsersBySlackEmails(client, roomMembers, email);
     const user = users.find((u) => u.email == email);
 
     const creatorId = assertDefined(user?.id ?? team?.owner_id, "needs to at least have a team");
