@@ -7,7 +7,7 @@
     "introspect": "yarn dbenv prisma introspect",
     "validate": "yarn dbenv prisma validate",
     "generate": "yarn dbenv prisma generate",
-    "update": "yarn introspect && yarn generate"
+    "update": "cp template.prisma schema.prisma && yarn introspect && yarn generate"
   },
   "devDependencies": {
     "cross-env": "7.0.3",
