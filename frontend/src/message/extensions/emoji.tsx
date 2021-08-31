@@ -67,6 +67,9 @@ const StateDescription = styled.div<{}>`
   ${theme.borderRadius.menu}
 `;
 
+/**
+ * Emoji has larger font size than surrounding text. This is this size difference ratio.
+ */
 const EMOJI_SIZE_RATIO = 1.5;
 
 const UIEmoji = styled.span`
