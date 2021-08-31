@@ -3,8 +3,8 @@ import * as SlackBolt from "@slack/bolt";
 import { db } from "~db";
 import { isNotNullish } from "~shared/nullish";
 
-import { isChannelNotFoundError } from ".//utils";
 import { getSlackInstallURL } from "./install";
+import { isChannelNotFoundError } from "./utils";
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
   slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, respond, client, context }) => {
