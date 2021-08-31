@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 
 import { withFragments } from "~frontend/gql/utils";
 import { routes } from "~frontend/router";
+import { byIndexAscending } from "~frontend/topics/utils";
 import { RoomTopicView_RoomFragment } from "~gql";
 
 import { RoomView } from "./RoomView";
@@ -34,7 +35,7 @@ interface Props {
 }
 
 export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topicId }: Props) {
-  const openTopics = room.topics?.filter((topic) => !topic.archived_at);
+  const openTopics = room.topics?.filter((topic) => !topic.archived_at).sort(byIndexAscending);
   const firstTopic = openTopics?.[0] ?? null;
 
   const selectedTopicId = topicId ?? firstTopic?.id ?? null;
