@@ -33,7 +33,7 @@ hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomMemberCreat
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], handleMessageChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addHandler("notification_updates", ["INSERT"], handleNotificationCreated);
-hasuraEvents.addHandler("transcription_updates", ["INSERT"], handleTranscriptionUpdates);
+hasuraEvents.addHandler("transcription_updates", ["INSERT", "UPDATE"], handleTranscriptionUpdates);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
