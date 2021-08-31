@@ -25,7 +25,7 @@ import { useAsyncLayoutEffect } from "~shared/hooks/useAsyncEffect";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
 import { theme } from "~ui/theme";
-import { Modifiers } from "~ui/theme/colors/createColor";
+import { ColorModifiers } from "~ui/theme/colors/createColor";
 
 import { ScrollableMessages } from "./ScrollableMessages";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
@@ -229,7 +229,7 @@ const UIMainContainer = styled.div<{}>`
   flex-direction: column;
   height: 100%;
 
-  background: ${theme.colors.layout.foreground((modifiers: Modifiers) => [modifiers.opacity(0.65)])};
+  background: ${theme.colors.layout.foreground((modifiers) => [modifiers.opacity(0.65)])};
   border: 1px solid ${theme.colors.layout.softLine()};
   box-sizing: border-box;
 

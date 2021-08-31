@@ -38,7 +38,12 @@ export function TranscriptSpeakerPart({ part, time, onTimeChangeRequest }: Props
   const previousTime = useLastValue(time);
 
   const handleWordClick = useMethod((word: TranscriptWordType) => {
-    onTimeChangeRequest(word.start_time);
+    /**
+     * When word is clicked, we move the time a bit before of it, so it's easier to actually
+     * hear it.
+     */
+    const targetTime = Math.max(0, word.start_time - 0.5);
+    onTimeChangeRequest(targetTime);
   });
 
   function getIsWordActive(word: TranscriptWordType) {

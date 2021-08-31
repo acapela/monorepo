@@ -4,7 +4,6 @@ import axios, { Method } from "axios";
 
 import { assert, assertDefined } from "~shared/assert";
 import { isDev } from "~shared/dev";
-import log from "~shared/logger";
 import { SonixTranscriptData } from "~shared/types/transcript";
 
 import { getDevPublicTunnel } from "../localtunnel";

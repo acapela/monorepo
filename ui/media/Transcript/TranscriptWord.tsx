@@ -68,7 +68,6 @@ const UIActiveWordHighlight = styled(motion.div)<{ isFirstActive: boolean; isLas
   left: 0;
   right: 0;
   bottom: 0;
-  /* ${theme.borderRadius.item}; */
 
   transition: 0.5s border-radius;
 
@@ -104,5 +103,5 @@ const UIActiveWordHighlight = styled(motion.div)<{ isFirstActive: boolean; isLas
    * We need bg color to not be transparent as it'd be very visible when multiple words are animating next to each other.
    * Our current theme has no easy was of doing primary>lighten, so I'm inlining the color.
    */
-  background-color: #f2cbd5;
+  background-color: ${theme.colors.layout.link((modifiers) => [modifiers.lighten(30)])};
 `;
