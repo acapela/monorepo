@@ -46,6 +46,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
       roomDeadline: createRoomInput.deadline,
       spaceId: createRoomInput.spaceId,
       numberOfInitialMembers: initialMembers.data.length,
+      isRecurring: !!createRoomInput.recurranceIntervalInDays,
       isCalendarEvent: false,
     });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
