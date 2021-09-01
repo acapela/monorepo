@@ -7,6 +7,7 @@ import {
   ReactRenderer,
 } from "@tiptap/react";
 import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
+import { PluginKey } from "prosemirror-state";
 import React, { ComponentType, FunctionComponent } from "react";
 
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
@@ -56,7 +57,6 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
   const suggestionOptions: ProsemirrorSuggestionOptions = {
     allowSpaces: options.allowSpaces ?? false,
     char: options.triggerChar,
-
     command: ({ editor, range, props }) => {
       editor
         .chain()
@@ -180,6 +180,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     addProseMirrorPlugins() {
       return [
         Suggestion({
+          pluginKey: new PluginKey(`autocomplete-${options.type}`),
           editor: this.editor,
           ...suggestionOptions,
         }),
