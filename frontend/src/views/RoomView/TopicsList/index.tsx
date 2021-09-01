@@ -68,7 +68,7 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
   if (topics.length == 0) {
     return getInitialIndexes(1)[0];
   }
-  const sortedTopics = topics.sort(byIndexAscending);
+  const sortedTopics = topics.slice().sort(byIndexAscending);
   const activeTopicNumIndex = sortedTopics.findIndex((t) => t.id == activeTopicId);
   if (activeTopicNumIndex == -1) {
     return createLastItemIndex(sortedTopics[sortedTopics.length - 1].index ?? "");
