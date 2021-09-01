@@ -1,7 +1,4 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
-import React from "react";
-import styled from "styled-components";
-
 import { withFragments } from "~frontend/gql/utils";
 import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
@@ -12,6 +9,7 @@ import {
   UpdateRoomRecurranceIntervalInDaysMutation,
   UpdateRoomRecurranceIntervalInDaysMutationVariables,
 } from "~gql";
+import React from "react";
 
 const fragments = {
   room: gql`
@@ -64,21 +62,12 @@ export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }:
     });
   };
 
-  const picker = (
+  return (
     <RecurrancePicker
+      isDisabled={isReadonly}
       onChange={handleChange}
       shouldShowName={false}
-      recurranceIntervalInDays={room.recurrance_interval_in_days || null}
+      recurranceIntervalInDays={(room.recurrance_interval_in_days || null) as RecurranceIntervalInDays}
     />
   );
-
-  if (isReadonly) {
-    return <UIReadonly>{picker}</UIReadonly>;
-  }
-
-  return picker;
 });
-
-const UIReadonly = styled.div`
-  pointer-events: none;
-`;

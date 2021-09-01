@@ -19,6 +19,7 @@ interface Props<I> {
   };
   placeholder?: string;
   icon?: ReactNode;
+  isDisabled?: boolean;
 }
 
 export function SingleOptionDropdown<I>({
@@ -32,6 +33,7 @@ export function SingleOptionDropdown<I>({
   placeholder,
   onChange,
   icon,
+  isDisabled
 }: Props<I>) {
   return (
     <MultipleOptionsDropdown<I>
@@ -48,6 +50,7 @@ export function SingleOptionDropdown<I>({
       }}
       iconGetter={iconGetter}
       closeAfterItemPicked
+      isDisabled={isDisabled}
       selectedItemsPreviewRenderer={([item]) => {
         if (!item) {
           return <TextBody>{placeholder}</TextBody>;

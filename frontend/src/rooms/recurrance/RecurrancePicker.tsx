@@ -8,6 +8,7 @@ interface Props {
   recurranceIntervalInDays: RecurranceIntervalInDays;
   onChange: (recurranceIntervalInDays: RecurranceIntervalInDays) => void;
   shouldShowName?: boolean;
+  isDisabled?: boolean;
 }
 
 interface RecurranceOption {
@@ -20,7 +21,7 @@ const recurringOptions: RecurranceOption[] = recurranceIntervalInDaysOptions.map
   name: getRecurranceIntervalInDaysLabel(recurranceIntervalInDays),
 }));
 
-export const RecurrancePicker = ({ recurranceIntervalInDays, onChange, shouldShowName = true }: Props) => {
+export const RecurrancePicker = ({ recurranceIntervalInDays, onChange, isDisabled, shouldShowName = true }: Props) => {
   return (
     <SingleOptionDropdown<RecurranceOption>
       icon={<IconRepeat />}
@@ -32,6 +33,7 @@ export const RecurrancePicker = ({ recurranceIntervalInDays, onChange, shouldSho
       }}
       keyGetter={({ name }) => name}
       labelGetter={({ name }) => name}
+      isDisabled={isDisabled}
     />
   );
 };
