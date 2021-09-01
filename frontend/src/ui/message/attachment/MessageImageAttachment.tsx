@@ -70,4 +70,6 @@ const ImageWrapper = styled.img<{}>`
 
   /* Safari fix - make sure image always keeps its aspect ratio. */
   object-fit: scale-down;
+  width: auto;
+  height: 100%;
 `;
