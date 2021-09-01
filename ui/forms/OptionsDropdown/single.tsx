@@ -33,7 +33,7 @@ export function SingleOptionDropdown<I>({
   placeholder,
   onChange,
   icon,
-  isDisabled
+  isDisabled,
 }: Props<I>) {
   return (
     <MultipleOptionsDropdown<I>

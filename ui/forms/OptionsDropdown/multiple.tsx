@@ -47,7 +47,7 @@ export function MultipleOptionsDropdown<I>({
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
   icon,
-  isDisabled
+  isDisabled,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isOpen, { unset: close, toggle }] = useBoolean(false);
@@ -83,7 +83,15 @@ export function MultipleOptionsDropdown<I>({
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
 
   return (
-    <FieldWithLabel isDisabled={isDisabled} ref={openerRef} label={name} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
+    <FieldWithLabel
+      isDisabled={isDisabled}
+      ref={openerRef}
+      label={name}
+      onClick={toggle}
+      pushLabel={hasSelection}
+      icon={icon}
+      indicateDropdown
+    >
       <UIHolder>
         <UIMenuOpener>
           {selectedItems.length > 0 && (

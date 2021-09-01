@@ -1,4 +1,6 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
+import React from "react";
+
 import { withFragments } from "~frontend/gql/utils";
 import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
@@ -9,7 +11,6 @@ import {
   UpdateRoomRecurranceIntervalInDaysMutation,
   UpdateRoomRecurranceIntervalInDaysMutationVariables,
 } from "~gql";
-import React from "react";
 
 const fragments = {
   room: gql`
