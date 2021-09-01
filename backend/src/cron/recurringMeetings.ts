@@ -3,9 +3,9 @@ import { addDays } from "date-fns";
 import { Room, db } from "~db";
 
 async function restartRoom(room: Room) {
-  if (!room.recurring_days) return;
+  if (!room.recurrance_interval_in_days) return;
 
-  const newDeadline = addDays(room.deadline, room.recurring_days);
+  const newDeadline = addDays(room.deadline, room.recurrance_interval_in_days);
   const timestamp = new Date();
   await db.$transaction([
     db.topic.updateMany({
@@ -39,7 +39,7 @@ export async function recurringMeetingCronHandler() {
         lt: new Date(),
       },
       NOT: {
-        recurring_days: null,
+        recurrance_interval_in_days: null,
       },
     },
   });

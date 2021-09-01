@@ -30,6 +30,7 @@ interface Props<I> {
   selectedItemsPreviewRenderer?: (items: I[]) => ReactNode;
   closeAfterItemPicked?: boolean;
   icon?: ReactNode;
+  isDisabled?: boolean;
 }
 
 export function MultipleOptionsDropdown<I>({
@@ -46,6 +47,7 @@ export function MultipleOptionsDropdown<I>({
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
   icon,
+  isDisabled,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isOpen, { unset: close, toggle }] = useBoolean(false);
@@ -81,7 +83,15 @@ export function MultipleOptionsDropdown<I>({
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
 
   return (
-    <FieldWithLabel ref={openerRef} label={name} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
+    <FieldWithLabel
+      isDisabled={isDisabled}
+      ref={openerRef}
+      label={name}
+      onClick={toggle}
+      pushLabel={hasSelection}
+      icon={icon}
+      indicateDropdown
+    >
       <UIHolder>
         <UIMenuOpener>
           {selectedItems.length > 0 && (

@@ -165,7 +165,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
         if: steps.semrel.outputs.version != ''
-      - run: yarn --prefer-offline
+      - name: yarn install
+        run: |
+          rm .npmrc
+          yarn --prefer-offline
         if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |

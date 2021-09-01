@@ -32,6 +32,11 @@ export const PrimaryItemTitle = styled.div`
   ${theme.font.h3.speziaExtended.build}
 `;
 
+export const InputLabel = styled.div`
+  ${theme.font.body12.speziaMono.build}
+  color: ${theme.colors.layout.supportingText()};
+`;
+
 export const CategoryNameLabel = styled.div`
   ${theme.font.body14.speziaMono.build}
   color: ${theme.colors.layout.supportingText()};
