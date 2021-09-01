@@ -18,16 +18,10 @@ import { waitForAllRunningMutationsToFinish } from "./createMutation";
 import { reportQueryUsage } from "./hydration";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { unwrapQueryData } from "./unwrapQueryData";
-import { RequestWithRole, addRoleToContext } from "./withRole";
-
-type QueryDefinitionOptions = RequestWithRole;
 
 type QueryExecutionOptions = Omit<QueryOptions, "query" | "variables">;
 
-export function createQuery<Data, Variables>(
-  query: () => DocumentNode,
-  queryDefinitionOptions?: QueryDefinitionOptions
-) {
+export function createQuery<Data, Variables>(query: () => DocumentNode) {
   type VoidableVariables = VoidableIfEmpty<Variables>;
 
   const getQuery = memoize(query);
@@ -44,10 +38,7 @@ export function createQuery<Data, Variables>(
     }
 
     const { data, ...rest } = useRawQuery(getQuery(), {
-      ...{
-        ...options,
-        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
-      },
+      ...options,
       variables: variables as Variables,
     });
 
@@ -59,7 +50,6 @@ export function createQuery<Data, Variables>(
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...{
         ...options,
-        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
         /**
          * We don't need cache for subscriptions and it can actually introduce hard to debug
          * race conditions.
@@ -162,7 +152,7 @@ export function createQuery<Data, Variables>(
   async function fetch(variables: Variables, options?: QueryExecutionOptions) {
     const response = await getRenderedApolloClient().query<Data, Variables>({
       query: getQuery(),
-      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      ...options,
       variables,
     });
 

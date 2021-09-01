@@ -1,26 +1,11 @@
+import { gql, useQuery } from "@apollo/client";
 import { useEffect } from "react";
 
-import { fetchPrivateRoom } from "~frontend/gql/rooms";
 import { routes } from "~frontend/router";
-import { openForbiddenAccessModal } from "~frontend/utils/accessForbidden";
 import { openNotFoundModal } from "~frontend/utils/notFound";
+import { PrivateRoomExistenceQuery, PrivateRoomExistenceQueryVariables } from "~gql";
 
-/*
-  We're using different `x-hasura-role`s to determine if a room has been locked or not.
-
-  Hasura doesn't provide us with an out-of-the-box way to differentiate between a non-existing room or
-  a room that can't be accessed, i.e. our queries will return `null` instead of an equivalent error to a 404 or 401
-
-  In order to get around this, we've introduced the `visitor` role, which can see a very limited parts of the
-  room as long as that `visitor` is a member of the team. Fetching a private room uses the `visitor` role.
-
-  So, whenever a `user` gets a "null" room, the `visitor` can check if the room has private access
-  or if the room is not found.
-*/
-async function isRoomPrivate(roomId: string) {
-  const { privateRoom } = await fetchPrivateRoom({ id: roomId }, { fetchPolicy: "no-cache" });
-  return privateRoom?.is_private ?? false;
-}
+import { openForbiddenAccessModal } from "./accessForbiddenModal";
 
 type Props = {
   roomId: string;
@@ -30,12 +15,22 @@ type Props = {
 };
 
 export const useRoomWithClientErrorRedirects = ({ roomId, spaceId, hasRoom, loading }: Props) => {
+  const { data: privateRoomResult } = useQuery<PrivateRoomExistenceQuery, PrivateRoomExistenceQueryVariables>(
+    gql`
+      query PrivateRoomExistence($roomId: uuid!) {
+        privateRooms: private_room(where: { id: { _eq: $roomId } }) {
+          id
+        }
+      }
+    `,
+    loading || hasRoom ? { skip: true } : { variables: { roomId } }
+  );
   useEffect(() => {
     async function redirectOnClientError() {
       if (hasRoom) {
         return;
       }
-      if (await isRoomPrivate(roomId)) {
+      if (privateRoomResult?.privateRooms?.length) {
         await openForbiddenAccessModal({ place: "room" });
       } else {
         await openNotFoundModal({ place: "room" });
@@ -43,5 +38,5 @@ export const useRoomWithClientErrorRedirects = ({ roomId, spaceId, hasRoom, load
       routes.space.replace({ spaceId });
     }
     if (!loading) redirectOnClientError();
-  }, [hasRoom, loading, roomId, spaceId]);
+  }, [hasRoom, loading, privateRoomResult, roomId, spaceId]);
 };

@@ -12,8 +12,6 @@ import {
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomsQuery,
   RoomsQueryVariables,
-  SinglePrivateRoomQuery,
-  SinglePrivateRoomQueryVariables,
   SingleRoomQuery,
   SingleRoomQueryVariables,
 } from "~gql";
@@ -99,24 +97,6 @@ export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQ
       }
     }
   `
-);
-
-export const [usePrivateRoomQuery, { fetch: fetchPrivateRoom }] = createQuery<
-  SinglePrivateRoomQuery,
-  SinglePrivateRoomQueryVariables
->(
-  () => gql`
-    ${PrivateRoomInfoFragment()}
-
-    query SinglePrivateRoom($id: uuid!) {
-      privateRoom: room_by_pk(id: $id) {
-        ...PrivateRoomInfo
-      }
-    }
-  `,
-  {
-    requestWithRole: "visitor",
-  }
 );
 
 export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<SingleRoomQuery, SingleRoomQueryVariables>(

@@ -100,18 +100,6 @@ select_permissions:
                       user_id:
                         _eq: X-Hasura-User-Id
     role: user
-  - permission:
-      columns:
-        - id
-        - is_private
-        - name
-      filter:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-    role: visitor
 update_permissions:
   - permission:
       check: null
