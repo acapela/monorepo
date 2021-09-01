@@ -1,10 +1,6 @@
-import { Readable, Writable } from "stream";
+import { $, ProcessPromise, chalk } from "zx";
 
-import { $, ProcessPromise, chalk, question } from "zx";
-
-import { log } from "~shared/logger";
-
-import { ScenarioConfig, ScenarioStep } from "./config";
+import { ScenarioStep } from "./config";
 import { getDidFilesChange, updateFilesHash } from "./didFilesChange";
 
 function watchStdoutAddingPrefix(runner: ProcessPromise<any>, prefix: string) {

@@ -2,8 +2,6 @@ import "~config/dotenv";
 
 import { $, chalk, question } from "zx";
 
-import { log } from "~shared/logger";
-
 import { readScenariosMap } from "./config";
 import { runScenario } from "./runScenario";
 
