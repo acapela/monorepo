@@ -105,12 +105,12 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
 
-  allMentionsInMessage.forEach((mention) => {
+  for (const mention of allMentionsInMessage) {
     const { userId, type } = mention.attrs.data;
 
     // Exclude directly mention types that don't generate a task
     if (type === "notification-only") {
-      return;
+      continue;
     }
 
     if (possibleNewTasksPerUserInMessage[userId]) {
@@ -118,7 +118,7 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
     } else {
       possibleNewTasksPerUserInMessage[userId] = [type];
     }
-  });
+  }
 
   const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: TaskType }> = Object.keys(
     possibleNewTasksPerUserInMessage
