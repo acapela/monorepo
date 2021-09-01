@@ -32,7 +32,7 @@
     "scenario": "ts-node --transpile-only ./scenario/cli.ts"
   },
   "bin": {
-    "tooling": "./bin/tooling",
-    "run-scenario": "./bin/scenario"
+    "run-scenario": "./bin/scenario",
+    "tooling": "./bin/tooling"
   }
 }
