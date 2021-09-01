@@ -1,4 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
+import styled, { css } from "styled-components";
+
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
@@ -16,8 +19,6 @@ import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 import { TextH3 } from "~ui/typo";
-import { AnimatePresence } from "framer-motion";
-import styled, { css } from "styled-components";
 
 import { CloseTopicModal } from "./CloseTopicModal";
 
@@ -67,12 +68,10 @@ const useUpdateTopic = () =>
       }
     `,
     {
-      optimisticResponse: ({ id, roomId, input }) => (
-        {
-          __typename: "mutation_root",
-          topic: { __typename: "topic", ...input, room_id: roomId, id },
-        }
-      ),
+      optimisticResponse: ({ id, roomId, input }) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", ...input, room_id: roomId, id },
+      }),
     }
   );
 
@@ -86,7 +85,11 @@ const _TopicHeader = ({ room, topic }: Props) => {
 
   const handleRestoreTopic = () => {
     updateTopic({
-      variables: { id: topic.id, roomId: room.id, input: { closed_at: null, closed_by_user_id: null, archived_at: null } },
+      variables: {
+        id: topic.id,
+        roomId: room.id,
+        input: { closed_at: null, closed_by_user_id: null, archived_at: null },
+      },
     });
     trackEvent("Reopened Topic");
   };
@@ -100,7 +103,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
     updateTopic({
       variables: {
         id: topic.id,
-        roomId: room.id, 
+        roomId: room.id,
         input: {
           closed_at: new Date().toISOString(),
           closed_by_user_id: user.id,
