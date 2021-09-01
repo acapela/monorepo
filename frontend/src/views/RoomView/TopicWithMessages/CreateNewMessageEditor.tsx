@@ -108,11 +108,13 @@ const useCreateMessageMutation = () =>
           query: TOPIC_WITH_MESSAGES_QUERY,
           variables: { topicId: message.topic_id },
         };
-        const messages = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options)?.messages;
-        if (messages) {
+        const data = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options);
+        if (data) {
+          const { messages } = data;
           cache.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
             ...options,
             data: {
+              ...data,
               messages: messages.some((m) => m.id == message.id) ? messages : messages.concat(message),
             },
           });

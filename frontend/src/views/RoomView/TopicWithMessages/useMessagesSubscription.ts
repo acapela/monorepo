@@ -40,12 +40,13 @@ function useExistingMessagesSubscription(topicId?: string) {
       query: TOPIC_WITH_MESSAGES_QUERY,
       variables: { topicId },
     };
-    const messages = client.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options)?.messages;
-    if (messages) {
+    const data = client.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options);
+    if (data) {
       client.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
         ...options,
         data: {
-          messages: messages.filter((m) => existingMessageIds.has(m.id)),
+          ...data,
+          messages: data.messages.filter((m) => existingMessageIds.has(m.id)),
         },
       });
     }
