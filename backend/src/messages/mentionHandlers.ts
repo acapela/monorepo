@@ -8,11 +8,11 @@ import { TaskType } from "~shared/types/task";
 
 import { createNotification } from "../notifications/entity";
 
+const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
+
 function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
   const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
-
-  const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
 
   return uniqBy(mentionNodes, (mention) => toUniqueMentionIdentifier(mention.attrs.data));
 }
