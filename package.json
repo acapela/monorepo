@@ -84,15 +84,13 @@
         "commands": [
           "yarn db update"
         ],
-        "dependsOnFiles": "infrastructure/hasura/migrations/**",
-        "hideLogs": true
+        "dependsOnFiles": "infrastructure/hasura/migrations/**"
       },
       {
         "commands": [
           "yarn hasura:update"
         ],
-        "dependsOnFiles": "infrastructure/**",
-        "hideLogs": true
+        "dependsOnFiles": "infrastructure/**"
       },
       {
         "commands": [

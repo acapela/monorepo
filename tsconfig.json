@@ -14,7 +14,7 @@
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react",
     "tsBuildInfoFile": "./buildinfo.tsbuild",
     "skipDefaultLibCheck": true,
     "incremental": true,

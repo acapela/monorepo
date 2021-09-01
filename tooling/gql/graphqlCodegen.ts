@@ -55,6 +55,7 @@ export async function startGeneratingGraphqlTypes({ watch }: ToolingGenerateOpti
           declarationKind: "interface",
           apolloClientVersion: 3,
           useExplicitTyping: true,
+
           strictScalars: true,
           scalars: {
             // Hasura has bunch of custom scalars. Let's inform gql codegen about corresponding typescript types.

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+TOOLING_CLI=$(node -e 'console.info(require.resolve("~tooling/scenario/cli.ts"))')
+
+
+exec /usr/bin/env ts-node --project "tsconfig.json" --transpile-only $TOOLING_CLI "$@"

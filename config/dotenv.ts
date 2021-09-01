@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 
 import { assertDefined } from "~shared/assert";
+import { log } from "~shared/logger";
 
 function getDotEnvPath() {
   if (!__dirname) {

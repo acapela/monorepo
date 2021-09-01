@@ -4,6 +4,7 @@
     "baseUrl": "./src",
     "paths": {
       "~frontend/*": ["./*"]
-    }
+    },
+    "jsx": "preserve"
   }
 }
