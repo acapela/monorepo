@@ -69,12 +69,36 @@ test("delete a topic", async ({ page, db, auth }) => {
   await page.waitForSelector(`text='${topicName}'`, { state: "hidden" });
 });
 
+const COMPOSER_SELECTOR = '[class^="RichEditor__UIEditorContent"]';
+
 test("send a message", async ({ page, db, auth }) => {
   await auth.login(db.user2);
   await createTopic(page, { spaceName: db.space.name, roomName: "Mailbox", topicName: "hot takes" });
-  await page.click('[class^="RichEditor__UIEditorContent"]');
+  await page.click(COMPOSER_SELECTOR);
   const message = "What is happening";
   await page.keyboard.type(message);
   await page.keyboard.press("Enter");
   await page.waitForSelector("text=" + message);
+});
+
+test("sending a message with tasks for read and response, asks for the latter", async ({ page, db, auth }) => {
+  await auth.login(db.user2);
+  await createTopic(page, { spaceName: db.space.name, roomName: "Mailbox", topicName: "hot takes" });
+  await page.click(COMPOSER_SELECTOR);
+
+  await page.keyboard.type("What is happening @u");
+  await page.click(`text='${db.user1.name}'`);
+  await page.click("text=Notify only");
+
+  await page.click(COMPOSER_SELECTOR);
+
+  await page.keyboard.type("and now @u");
+  await page.click(`text='${db.user1.name}'`);
+  await page.click("text=Request response");
+
+  await page.click(COMPOSER_SELECTOR);
+
+  await page.keyboard.press("Enter");
+
+  await page.waitForSelector(`text=Response from`);
 });
