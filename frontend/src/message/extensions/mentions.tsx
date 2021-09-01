@@ -203,7 +203,7 @@ const UIMentionIcon = styled(CircleIconButton)`
 `;
 
 const UIMentionPopoverOpenIndicator = styled.span<{}>`
-  display: inline-flex;
+  display: inline;
 
   padding-left: 4px;
   margin-left: 4px;
