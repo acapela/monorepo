@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
+import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
 import { Modal } from "~frontend/ui/Modal";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";
 import { getRoomDefaultDeadline } from "~frontend/utils/room";
@@ -23,6 +25,7 @@ interface RoomInputInitialData {
   spaceId?: string;
   hideSpaceInput?: boolean;
   participantsIds?: string[];
+  recurranceIntervalInDays?: RecurranceIntervalInDays;
 }
 
 interface RoomInputOutputData {
@@ -30,6 +33,7 @@ interface RoomInputOutputData {
   deadline: Date;
   spaceId: string;
   participantsIds: string[];
+  recurranceIntervalInDays: RecurranceIntervalInDays;
 }
 
 export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInputOutputData | null>(
@@ -39,6 +43,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
       deadline: initialDeadline = getRoomDefaultDeadline(),
       spaceId: initialSpaceId,
       participantsIds: initialParticipantsIds = [],
+      recurranceIntervalInDays: initialRecurranceIntervalInDays = null,
       hideSpaceInput,
     },
     resolve
@@ -47,6 +52,9 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
     const [roomName, setRoomName] = useState<string>(initialRoomName);
     const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(initialSpaceId ?? null);
     const [deadline, setDeadline] = useState<Date>(initialDeadline);
+    const [recurranceIntervalInDays, setRecurranceIntervalInDays] = useState<RecurranceIntervalInDays>(
+      initialRecurranceIntervalInDays
+    );
     const [participantIds, setParticipantIds] = useState<string[]>(
       ensureCurrentUserInParticipants(initialParticipantsIds)
     );
@@ -89,6 +97,7 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             name: roomName,
             spaceId: selectedSpaceId,
             participantsIds: participantIdsWithCurrentUser,
+            recurranceIntervalInDays,
           });
         } catch (err) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -125,6 +134,11 @@ export const openRoomInputPrompt = createPromiseUI<RoomInputInitialData, RoomInp
             <TeamMembersPicker selectedMemberIds={participantIdsWithCurrentUser} onChange={setParticipantIds} />
 
             <DateTimeInput shouldSkipConfirmation value={deadline} onChange={setDeadline} label="Set a due date" />
+
+            <RecurrancePicker
+              recurranceIntervalInDays={recurranceIntervalInDays}
+              onChange={setRecurranceIntervalInDays}
+            />
           </UIFormFields>
           <UIBottomArea>
             {formErrorMessage ? <InputError message={formErrorMessage} /> : <div />}
