@@ -9,6 +9,7 @@ import { TextMeta10 } from "~ui/typo";
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
+const appBuildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
 
 export const TeamMembersView = () => {
   const currentTeamId = useCurrentTeamId();
@@ -25,7 +26,11 @@ export const TeamMembersView = () => {
           <NotificationSettings />
         </ClientSideOnly>
 
-        {appVersion && <TextMeta10 secondary>Version: {appVersion}</TextMeta10>}
+        {appVersion && (
+          <TextMeta10 secondary>
+            Version: {appVersion} ({appBuildDate})
+          </TextMeta10>
+        )}
       </UIHolder>
     </SpacedAppLayoutContainer>
   );
