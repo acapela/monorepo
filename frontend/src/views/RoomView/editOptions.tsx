@@ -50,6 +50,7 @@ export const usePopoverEditMenuOptions = withFragments(
       `,
       {
         optimisticResponse: (vars) => ({
+          __typename: "mutation_root",
           room: { __typename: "room", id: vars.id, is_private: vars.isPrivate },
         }),
       }

@@ -40,7 +40,7 @@ export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }:
       }
     `,
     {
-      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
     }
   );
 

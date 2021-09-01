@@ -84,6 +84,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
     `,
     {
       optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
         room: { __typename: "room", id: vars.id, finished_at: vars.finishedAt },
       }),
     }
@@ -98,7 +99,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
       }
     `,
     {
-      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
     }
   );
 

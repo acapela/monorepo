@@ -54,7 +54,7 @@ export const RoomSummaryView = withFragments(fragments, function RoomSummaryView
       }
     `,
     {
-      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
     }
   );
 
