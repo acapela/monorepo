@@ -65,6 +65,7 @@ export type AnalyticsEventsMap = {
     spaceId: string;
     numberOfInitialMembers: number;
     isCalendarEvent: boolean;
+    isRecurring: boolean;
   };
   "Joined Room": { roomId: string; userId: string };
   "Left Room": { roomId: string; userId: string };
@@ -77,6 +78,8 @@ export type AnalyticsEventsMap = {
   "Renamed Room": { roomId: string; newRoomName: string; oldRoomName: string };
   "Made Room Public": { roomId: string };
   "Made Room Private": { roomId: string };
+  "Made Room Recurring": { roomId: string; intervalInDays: number };
+  "Made Room Non-recurring": { roomId: string };
 
   // Topic related events
 
