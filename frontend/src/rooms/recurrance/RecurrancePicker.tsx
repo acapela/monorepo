@@ -1,7 +1,8 @@
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { IconRepeat } from "~ui/icons";
 
-import { RecurranceIntervalInDays, getRecurranceIntervalInDaysLabel } from "./getRecurranceIntervalInDaysLabel";
+import { getRecurranceIntervalInDaysLabel } from "./getRecurranceIntervalInDaysLabel";
+import { RecurranceIntervalInDays, recurranceIntervalInDaysOptions } from "./RecurranceIntervalInDays";
 
 interface Props {
   recurranceIntervalInDays: RecurranceIntervalInDays;
@@ -14,7 +15,7 @@ interface RecurranceOption {
   name: string;
 }
 
-const recurringOptions: RecurranceOption[] = [null, 1, 7, 28].map((recurranceIntervalInDays) => ({
+const recurringOptions: RecurranceOption[] = recurranceIntervalInDaysOptions.map((recurranceIntervalInDays) => ({
   recurranceIntervalInDays,
   name: getRecurranceIntervalInDaysLabel(recurranceIntervalInDays),
 }));

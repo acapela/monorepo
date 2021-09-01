@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
-import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/getRecurranceIntervalInDaysLabel";
+import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
 import {
   RecurranceManagerSubscription,

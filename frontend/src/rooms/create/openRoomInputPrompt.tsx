@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/getRecurranceIntervalInDaysLabel";
+import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
 import { Modal } from "~frontend/ui/Modal";
 import { SpacePicker } from "~frontend/ui/spaces/SpacePicker";

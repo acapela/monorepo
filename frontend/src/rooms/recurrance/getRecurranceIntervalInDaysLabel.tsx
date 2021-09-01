@@ -1,15 +1,13 @@
-export type RecurranceIntervalInDays = number | null;
+import { RecurranceIntervalInDays } from "./RecurranceIntervalInDays";
 
 export const getRecurranceIntervalInDaysLabel = (recurranceIntervaldInDays: RecurranceIntervalInDays) => {
   if (recurranceIntervaldInDays === null) {
     return "Does not repeat";
   }
 
-  const definedText = {
+  return {
     1: "Daily",
     7: "Weekly",
     28: "Monthly",
   }[recurranceIntervaldInDays];
-
-  return definedText || `Every ${recurranceIntervaldInDays} days`;
 };
