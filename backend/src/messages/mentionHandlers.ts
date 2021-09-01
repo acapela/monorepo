@@ -12,7 +12,9 @@ function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
   const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
 
-  return uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
+  const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
+
+  return uniqBy(mentionNodes, (mention) => toUniqueMentionIdentifier(mention.attrs.data));
 }
 
 function getNewMentionNodesFromMessage(message: Message, messageBefore: Message | null) {
@@ -103,7 +105,7 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
 
-  allMentionsInMessage.map((mention) => {
+  allMentionsInMessage.forEach((mention) => {
     const { userId, type } = mention.attrs.data;
 
     // Exclude directly mention types that don't generate a task
