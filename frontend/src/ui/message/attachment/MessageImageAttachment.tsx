@@ -69,5 +69,5 @@ const ImageWrapper = styled.img<{}>`
   will-change: transform, opacity;
 
   /* Safari fix - make sure image always keeps its aspect ratio. */
-  object-fit: scale-down;
+  object-fit: cover;
 `;
