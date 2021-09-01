@@ -25,6 +25,7 @@ import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
+import { Tag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
@@ -42,6 +43,7 @@ const fragments = {
       name
       finished_at
       is_private
+      recurrance_interval_in_days
       source_google_calendar_event_id
       ...IsCurrentUserRoomMember_room
       ...EditOptions_room
@@ -156,6 +158,7 @@ function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
 
                   <UIRoomTags>
                     {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
+                    {room.recurrance_interval_in_days && <Tag kind="shareInformation">Recurring</Tag>}
 
                     {room.source_google_calendar_event_id && (
                       <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
@@ -218,6 +221,8 @@ const UIRoomHead = styled(TextH4)<{}>`
 const UIRoomTitle = styled.div<{}>`
   padding-right: 16px;
   display: flex;
+  align-items: center;
+  gap: 4px;
   ${(props) =>
     props.onClick &&
     css`
@@ -226,7 +231,6 @@ const UIRoomTitle = styled.div<{}>`
 `;
 
 const UIRoomTags = styled.div<{}>`
-  margin-top: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
