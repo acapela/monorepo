@@ -1,8 +1,10 @@
 import { toPairs } from "lodash";
 import React, { PropsWithChildren, useRef, useState } from "react";
+import { useContext } from "react";
 import styled, { css } from "styled-components";
 
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
+import { MessageComposerContext } from "~frontend/ui/message/composer/MessageComposerContext";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
@@ -85,8 +87,10 @@ function MentionTypePicker({
 function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) {
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
+  const { mode: composerMode } = useContext(MessageComposerContext);
+
   const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(
-    props.isEditable
+    composerMode !== "editing" && props.isEditable
   );
   const [mentionType, setMentionType] = useState<MentionType>(props.data.type ?? DEFAULT_MENTION_TYPE);
 
