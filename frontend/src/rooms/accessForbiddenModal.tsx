@@ -2,10 +2,9 @@ import React from "react";
 import styled from "styled-components";
 
 import { ModalAnchor } from "~frontend/ui/Modal";
+import { WarningModal } from "~frontend/utils/warningModal";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
-
-import { WarningModal } from "./warningModal";
 
 type Place = "room" | "space";
 

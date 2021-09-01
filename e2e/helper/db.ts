@@ -28,7 +28,7 @@ function createJWTForUser(user: user): string {
       id: user.id,
       currentTeamId: user.current_team_id,
       "https://hasura.io/jwt/claims": {
-        "x-hasura-allowed-roles": ["user", "visitor"],
+        "x-hasura-allowed-roles": ["user"],
         "x-hasura-default-role": "user",
         "x-hasura-user-id": user.id,
       },
