@@ -13,6 +13,7 @@ import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
+import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
@@ -27,7 +28,11 @@ export type { RichEditorSubmitMode } from "./Toolbar";
 export function getEmptyRichContent(): JSONContent {
   return {
     type: "doc",
-    content: [],
+    content: [
+      {
+        type: "paragraph",
+      },
+    ],
   };
 }
 
@@ -92,7 +97,6 @@ function getLastSelectableCursorPosition(editor: Editor) {
 
 function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
   const lastSelectablePosition = getLastSelectableCursorPosition(editor);
-
   return editor.chain().focus(lastSelectablePosition);
 }
 
@@ -122,6 +126,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
         enableInputRules: true,
       })
   );
+
   const forceUpdate = useUpdate();
 
   function getFocusAtEndCommand() {
@@ -290,14 +295,18 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     editor.chain().focus().insertContent(contentToInsert).run();
   }
 
+  function handleEditorClick() {
+    if (isRichEditorContentEmpty(value)) {
+      getFocusAtEndCommand().run();
+    }
+
+    // If editor is not empty - tiptap will manually (or even dom?) put the cursor in a proper place.
+  }
+
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
-        <UIEditorContent
-          onClick={() => {
-            editor?.chain().focus().run();
-          }}
-        >
+        <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
           <UIEditorHolder>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />
