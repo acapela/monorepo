@@ -21,6 +21,7 @@
     ]
   },
   "scripts": {
+    "dev": "run-scenario",
     "code": "code acapela.code-workspace",
     "unstable:scope": "func() { ( npm \"$2\" --prefix \"$1\" --save --package-lock-only --no-package-lock \"$3\" ; ) && npm i;}; func",
     "frontend:dev": "yarn frontend dev",

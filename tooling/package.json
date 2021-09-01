@@ -32,6 +32,6 @@
   },
   "bin": {
     "tooling": "./bin/tooling",
-    "scenario": "./bin/scenario"
+    "run-scenario": "./bin/scenario"
   }
 }
