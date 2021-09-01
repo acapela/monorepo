@@ -16,12 +16,12 @@
   },
   "peerDependencies": {
     "axios": "*",
+    "date-fns": "*",
     "express": "*",
     "react": "*",
     "react-dom": "*",
     "styled-components": "*",
-    "tslib": "*",
-    "date-fns": "*"
+    "tslib": "*"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
