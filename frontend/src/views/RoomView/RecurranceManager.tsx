@@ -3,6 +3,8 @@ import React from "react";
 import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
+import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/getRecurranceIntervalInDaysLabel";
+import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
 import {
   RecurranceManagerSubscription,
   RecurranceManagerSubscriptionVariables,
@@ -10,9 +12,6 @@ import {
   UpdateRoomRecurranceIntervalInDaysMutation,
   UpdateRoomRecurranceIntervalInDaysMutationVariables,
 } from "~gql";
-
-import { RecurranceIntervalInDays } from "./getRecurranceIntervalInDaysLabel";
-import { RecurrancePicker } from "./RecurrancePicker";
 
 const fragments = {
   room: gql`
