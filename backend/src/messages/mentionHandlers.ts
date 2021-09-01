@@ -8,11 +8,13 @@ import { TaskType } from "~shared/types/task";
 
 import { createNotification } from "../notifications/entity";
 
+const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
+
 function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
   const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
 
-  return uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
+  return uniqBy(mentionNodes, (mention) => toUniqueMentionIdentifier(mention.attrs.data));
 }
 
 function getNewMentionNodesFromMessage(message: Message, messageBefore: Message | null) {
@@ -103,12 +105,12 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
 
-  allMentionsInMessage.map((mention) => {
+  for (const mention of allMentionsInMessage) {
     const { userId, type } = mention.attrs.data;
 
     // Exclude directly mention types that don't generate a task
     if (type === "notification-only") {
-      return;
+      continue;
     }
 
     if (possibleNewTasksPerUserInMessage[userId]) {
@@ -116,7 +118,7 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
     } else {
       possibleNewTasksPerUserInMessage[userId] = [type];
     }
-  });
+  }
 
   const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: TaskType }> = Object.keys(
     possibleNewTasksPerUserInMessage
