@@ -58,7 +58,7 @@ insert_permissions:
         - id
         - name
         - owner_id
-        - recurring_days
+        - recurrance_interval_in_days
         - slug
         - source_google_calendar_event_id
         - space_id
@@ -78,7 +78,7 @@ select_permissions:
         - last_activity_at
         - name
         - owner_id
-        - recurring_days
+        - recurrance_interval_in_days
         - slug
         - source_google_calendar_event_id
         - space_id
@@ -121,7 +121,7 @@ update_permissions:
         - is_private
         - name
         - owner_id
-        - recurring_days
+        - recurrance_interval_in_days
         - slug
         - summary
       filter:

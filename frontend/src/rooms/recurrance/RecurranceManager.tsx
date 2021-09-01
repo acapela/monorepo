@@ -7,18 +7,18 @@ import {
   RecurranceManagerSubscription,
   RecurranceManagerSubscriptionVariables,
   RecurranceManager_RoomFragment,
-  UpdateRoomRecurringDaysMutation,
-  UpdateRoomRecurringDaysMutationVariables,
+  UpdateRoomRecurranceIntervalInDaysMutation,
+  UpdateRoomRecurranceIntervalInDaysMutationVariables,
 } from "~gql";
 
-import { RecurringDays } from "./getRecurringDaysLabel";
+import { RecurranceIntervalInDays } from "./getRecurranceIntervalInDaysLabel";
 import { RecurrancePicker } from "./RecurrancePicker";
 
 const fragments = {
   room: gql`
     fragment RecurranceManager_room on room {
       id
-      recurring_days
+      recurrance_interval_in_days
     }
   `,
 };
@@ -26,15 +26,18 @@ const fragments = {
 type Props = { room: RecurranceManager_RoomFragment; isReadonly?: boolean };
 
 export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }: Props) => {
-  const [updateRoomRecurringDays] = useMutation<
-    UpdateRoomRecurringDaysMutation,
-    UpdateRoomRecurringDaysMutationVariables
+  const [updateRoomRecurranceIntervalInDays] = useMutation<
+    UpdateRoomRecurranceIntervalInDaysMutation,
+    UpdateRoomRecurranceIntervalInDaysMutationVariables
   >(
     gql`
-      mutation UpdateRoomRecurringDays($id: uuid!, $recurring_days: Int) {
-        room: update_room_by_pk(pk_columns: { id: $id }, _set: { recurring_days: $recurring_days }) {
+      mutation UpdateRoomRecurranceIntervalInDays($id: uuid!, $recurrance_interval_in_days: Int) {
+        room: update_room_by_pk(
+          pk_columns: { id: $id }
+          _set: { recurrance_interval_in_days: $recurrance_interval_in_days }
+        ) {
           id
-          recurring_days
+          recurrance_interval_in_days
         }
       }
     `,
@@ -56,12 +59,18 @@ export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }:
     { variables: { roomId: room.id } }
   );
 
-  const handleChange = async (recurringDays: RecurringDays) => {
-    await updateRoomRecurringDays({ variables: { id: room.id, recurring_days: recurringDays } });
+  const handleChange = async (recurranceIntervalInDays: RecurranceIntervalInDays) => {
+    await updateRoomRecurranceIntervalInDays({
+      variables: { id: room.id, recurrance_interval_in_days: recurranceIntervalInDays },
+    });
   };
 
   const picker = (
-    <RecurrancePicker onChange={handleChange} shouldShowName={false} recurringDays={room.recurring_days || null} />
+    <RecurrancePicker
+      onChange={handleChange}
+      shouldShowName={false}
+      recurranceIntervalInDays={room.recurrance_interval_in_days || null}
+    />
   );
 
   if (isReadonly) {
