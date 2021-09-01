@@ -1,5 +1,5 @@
 import { Room, db } from "~db";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 import { createNotification } from "../notifications/entity";
@@ -10,13 +10,13 @@ async function ensureOwnerIsRoomMember(room: Room) {
 
   const creatorIsAlreadyParticipant = await getIfParticipantExists(roomId, creatorId);
   if (!creatorIsAlreadyParticipant) {
-    logger.info("Adding creator as participant to room", {
+    log.info("Adding creator as participant to room", {
       roomId: room.id,
       creatorId,
     });
     await addRoomParticipant(roomId, creatorId);
   } else {
-    logger.info("Skipping adding creator as participant, as they are already there", {
+    log.info("Skipping adding creator as participant, as they are already there", {
       roomId: room.id,
       creatorId,
     });

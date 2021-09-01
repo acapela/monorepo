@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { convertMaybeArrayToArray } from "~shared/array";
 import { isDev } from "~shared/dev";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 import { mapGetOrCreate } from "~shared/map";
 
 import { HasuraEvent, RawHasuraEvent, getUserIdFromRawHasuraEvent, normalizeHasuraEvent } from "./eventUtils";
@@ -50,7 +50,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const normalizedEvent = normalizeHasuraEvent(event);
 
     if (!normalizedEvent) {
-      logger.warn(`Failed to normalize hasura event`, { event });
+      log.warn(`Failed to normalize hasura event`, { event });
       return;
     }
 
@@ -64,9 +64,9 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const userId = getUserIdFromRawHasuraEvent(hasuraEvent);
 
     if (isDev()) {
-      logger.info(`Handling event (${hasuraEvent.trigger.name})`);
+      log.info(`Handling event (${hasuraEvent.trigger.name})`);
     } else {
-      logger.info("Handling event", {
+      log.info("Handling event", {
         eventId: hasuraEvent.id,
         triggerName: hasuraEvent.trigger.name,
         userId,
@@ -76,9 +76,9 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     await handleHasuraEvent(hasuraEvent);
 
     if (isDev()) {
-      logger.info(`Handled event (${hasuraEvent.trigger.name})`);
+      log.info(`Handled event (${hasuraEvent.trigger.name})`);
     } else {
-      logger.info("Handled event", {
+      log.info("Handled event", {
         eventId: hasuraEvent.id,
         triggerName: hasuraEvent.trigger.name,
         userId,

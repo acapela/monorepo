@@ -31,12 +31,14 @@
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",
     "docker:up:detach": "yarn docker:up -d",
-    "docker:up": "docker-compose --env-file .env up --force-recreate",
+    "docker:up:force": "yarn docker:up --force-recreate",
+    "docker:up": "docker-compose --env-file .env up",
     "docker:config": "docker-compose --env-file .env config",
     "docker:stop": "docker-compose stop",
     "docker:down": "docker-compose down -v",
     "frontend": "yarn workspace ~frontend",
     "backend": "yarn workspace ~backend",
+    "tooling": "yarn workspace ~tooling",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
     "richEditor": "yarn workspace ~richEditor",
@@ -53,7 +55,7 @@
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
     "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta:reload",
-    "frontend:gql-types": "tooling gql frontend --watch",
+    "tooling:gql-types": "tooling gql frontend --watch",
     "lint": "eslint . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
@@ -69,6 +71,36 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
+    ]
+  },
+  "scenarios": {
+    "dev": [
+      {
+        "commands": [
+          "yarn run docker:up:detach"
+        ]
+      },
+      {
+        "commands": [
+          "yarn db update"
+        ],
+        "dependsOnFiles": "infrastructure/hasura/migrations/**",
+        "hideLogs": true
+      },
+      {
+        "commands": [
+          "yarn hasura:update"
+        ],
+        "dependsOnFiles": "infrastructure/**",
+        "hideLogs": true
+      },
+      {
+        "commands": [
+          "yarn frontend:dev",
+          "yarn backend:dev",
+          "yarn tooling:gql-types"
+        ]
+      }
     ]
   },
   "ntl": {

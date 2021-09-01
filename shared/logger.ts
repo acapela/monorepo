@@ -91,5 +91,3 @@ export const log = {
   error,
   middleware,
 };
-
-export default log;

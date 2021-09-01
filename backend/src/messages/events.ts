@@ -3,7 +3,7 @@ import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
-import log from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 import { updateRoomLastActivityDate } from "../rooms/rooms";

@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 import { get } from "lodash";
 
 import { db } from "~db";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";
@@ -66,6 +66,6 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   }
 
   const downloadUrl = await getSignedDownloadUrl(attachmentId, attachment.mime_type);
-  logger.info(`serving attachment ${attachmentId}`);
+  log.info(`serving attachment ${attachmentId}`);
   res.redirect(downloadUrl);
 });

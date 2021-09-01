@@ -3,7 +3,7 @@ import { Request, Response, Router } from "express";
 import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
 import { recurringMeetingCronHandler } from "~backend/src/cron/recurringMeetings";
 import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { HttpStatus } from "../http";
 
@@ -28,7 +28,7 @@ router.post("/v1/cron", middlewareAuthenticateHasura, async (req: Request, res: 
   const cronPayload = req.body as CronPayload;
   const cronName = cronPayload.payload.handler;
 
-  logger.info(`Handling cron (${cronName})`);
+  log.info(`Handling cron (${cronName})`);
 
   const cronHandler = handlers[cronName];
   if (!cronHandler) {
@@ -38,7 +38,7 @@ router.post("/v1/cron", middlewareAuthenticateHasura, async (req: Request, res: 
   try {
     const response = await cronHandler();
     res.status(HttpStatus.OK).json(response);
-    logger.info(`Cron handled (${cronName})`);
+    log.info(`Cron handled (${cronName})`);
   } catch (error) {
     isHttpError(error);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,7 +48,7 @@ router.post("/v1/cron", middlewareAuthenticateHasura, async (req: Request, res: 
       message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
-    logger.info(`Failed handling cron (${cronName})`, {
+    log.info(`Failed handling cron (${cronName})`, {
       failureReason: anyError.message,
       status: status,
     });

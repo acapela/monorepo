@@ -3,7 +3,7 @@ import { Request, Response, Router } from "express";
 
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { HttpStatus } from "../http";
 
@@ -23,10 +23,10 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
   const { email, name } = req.body as SignupPayload;
 
   if (!email || !name) {
-    logger.info("Waitlist endpoint called with missing parameters");
+    log.info("Waitlist endpoint called with missing parameters");
     return res.status(HttpStatus.BAD_REQUEST).end();
   }
-  logger.info(`Handling waitlist signup for ${email}`);
+  log.info(`Handling waitlist signup for ${email}`);
 
   try {
     await db.whitelist.create({ data: { email } });
@@ -45,9 +45,9 @@ router.post("/v1/waitlist", async (req: Request, res: Response) => {
         },
       }
     );
-    logger.info(`Mailchimp create subscriber API call successful`);
+    log.info(`Mailchimp create subscriber API call successful`);
   } catch (e) {
-    logger.error("Adding a new subscriber failed");
+    log.error("Adding a new subscriber failed");
     return res.status(HttpStatus.CONFLICT).end();
   }
 });

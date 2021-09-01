@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { HttpStatus } from "~backend/src/http";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { HttpError, NotFoundError, isHttpError } from "./errorTypes";
 
@@ -26,7 +26,7 @@ function getResponseDataFromHttpError(error: HttpError) {
 
 export function errorHandlerMiddleware(error: Error, req: Request, response: Response): void {
   function handleAsInternalError() {
-    logger.error("Server encountered an internal server error", {
+    log.error("Server encountered an internal server error", {
       errorMessage: error.message,
       stack: error.stack,
       url: req.url,
