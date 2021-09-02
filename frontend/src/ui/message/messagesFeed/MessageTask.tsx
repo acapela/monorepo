@@ -68,7 +68,12 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
   const taskRequestLabel = getTaskRequestLabel();
 
   return (
-    <UISingleTask key={task.id} isDone={isDone} className={className}>
+    <UISingleTask
+      key={task.id}
+      isDone={isDone}
+      data-test-task-is-done={isDone ? true : undefined}
+      className={className}
+    >
       {taskStatus === "unseen" && (
         <UIIconHolder data-tooltip={`Was not yet seen by ${taskAssignee.name}`}>
           <IconTime />
