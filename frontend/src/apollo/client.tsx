@@ -80,6 +80,11 @@ const typePolicies: TypedTypePolicies = {
       },
     },
   },
+  message: {
+    fields: {
+      message_reactions: { merge: mergeUsingIncoming },
+    },
+  },
 };
 
 /**

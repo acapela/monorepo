@@ -1,6 +1,7 @@
 import {
   Attachment,
   Message,
+  MessageReaction,
   Notification,
   Room,
   RoomInvitation,
@@ -18,6 +19,7 @@ import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{
   message_updates: Message;
+  message_reaction_updates: MessageReaction;
   room_updates: Room;
   space_updates: Space;
   team_invitation_updates: TeamInvitation;

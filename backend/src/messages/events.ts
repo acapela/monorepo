@@ -1,4 +1,4 @@
-import { Message, db } from "~db";
+import { Message, MessageReaction, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -31,17 +31,14 @@ async function markPendingTasksAsDone(message: Message) {
    * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
    */
 
+  const tasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
   await db.task.updateMany({
-    where: {
-      message: {
-        topic_id,
-      },
-      user_id,
-      done_at: null,
-    },
-    data: {
-      done_at: new Date(),
-    },
+    where: { id: { in: tasks.map((t) => t.id) } },
+    data: { done_at: new Date() },
+  });
+  await db.message.updateMany({
+    where: { id: { in: tasks.map((t) => t.message_id) } },
+    data: { updated_at: new Date() },
   });
 }
 
@@ -61,4 +58,8 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     createTasksFromNewMentions(event.item, event.itemBefore),
     markPendingTasksAsDone(event.item),
   ]);
+}
+
+export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
+  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
 }
