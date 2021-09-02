@@ -12,7 +12,6 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { LocalStorageWrapper, persistCache } from "apollo3-cache-persist";
 import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
@@ -99,8 +98,6 @@ export function clearApolloCache() {
   cache = new InMemoryCache({ typePolicies });
 }
 
-const localStorageCacheWrapper = typeof window !== "undefined" ? new LocalStorageWrapper(window.localStorage) : null;
-
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
 
@@ -168,8 +165,7 @@ function formatGraphqlErrorMessage(error: GraphQLError) {
 }
 
 // Log any GraphQL errors or network error that occurred
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const errorLink = onError(({ graphQLErrors = [], networkError }) => {
+onError(({ graphQLErrors = [], networkError }) => {
   for (const graphqlError of graphQLErrors) {
     const message = formatGraphqlErrorMessage(graphqlError);
 
@@ -223,14 +219,6 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
 
   if (initialCacheState) {
     cache.restore(initialCacheState);
-  }
-
-  if (localStorageCacheWrapper) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    persistCache<any>({
-      cache: cache,
-      storage: localStorageCacheWrapper,
-    });
   }
 
   return new ApolloClient({

@@ -33,7 +33,6 @@
     "@segment/snippet": "^4.14.2",
     "@sentry/nextjs": "^6.8.0",
     "@sentry/node": "^6.8.0",
-    "apollo3-cache-persist": "^0.10.0",
     "clipboard-polyfill": "^3.0.3",
     "escape-html": "^1.0.3",
     "express-http-proxy": "^1.6.2",
