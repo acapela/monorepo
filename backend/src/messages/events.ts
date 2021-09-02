@@ -1,4 +1,4 @@
-import { Message, db } from "~db";
+import { Message, MessageReaction, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -32,26 +32,22 @@ export async function prepareMessagePlainTextData(message: Message) {
 async function markPendingTasksAsDone(message: Message) {
   const { topic_id, user_id } = message;
 
-  // Although this way is less efficient, we get the pending tasks first so that we can track them
-  const pendingTasks = await db.task.findMany({
-    where: {
-      message: {
-        topic_id,
-      },
-      user_id,
-      done_at: null,
-    },
-  });
+  /**
+   * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
+   */
 
-  const doneAt = new Date();
+  const taskCompletionTime = new Date();
+
+  const pendingTasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
 
   await db.task.updateMany({
-    where: {
-      id: { in: pendingTasks.map((task) => task.id) },
-    },
-    data: {
-      done_at: doneAt,
-    },
+    where: { id: { in: pendingTasks.map((t) => t.id) } },
+    data: { done_at: taskCompletionTime },
+  });
+
+  await db.message.updateMany({
+    where: { id: { in: pendingTasks.map((t) => t.message_id) } },
+    data: { updated_at: taskCompletionTime },
   });
 
   // Tracking
@@ -60,7 +56,7 @@ async function markPendingTasksAsDone(message: Message) {
       taskType: task.type as string,
       taskId: task.id,
       messageId: task.message_id,
-      doneAt: doneAt,
+      doneAt: taskCompletionTime,
     });
   });
 }
@@ -81,4 +77,8 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     createTasksFromNewMentions(event.item, event.itemBefore),
     markPendingTasksAsDone(event.item),
   ]);
+}
+
+export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
+  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
 }

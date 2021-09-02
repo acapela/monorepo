@@ -34,12 +34,12 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
   useShortcut("ArrowDown", () => true);
 
   return (
-    <UIHolder>
+    <UIHolder role="listbox">
       {items.map((item) => {
         const key = keyGetter(item);
         const isActive = activeKey === key;
         return (
-          <UIItem isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
+          <UIItem role="option" isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
             {renderItem(item)}
           </UIItem>
         );
