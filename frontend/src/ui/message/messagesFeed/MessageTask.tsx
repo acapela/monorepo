@@ -20,10 +20,9 @@ const fragments = {
   task: gql`
     fragment MessageTask_task on task {
       id
-      user_id
-      message_id
       seen_at
       done_at
+      user_id
       type
     }
   `,
@@ -42,12 +41,12 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
 
   function handleMarkAsRead() {
     const nowAsIsoString = new Date().toISOString();
-    const done_at = task.type === "request-read" ? nowAsIsoString : null;
+    const done_at = task.type === "request-read" ? nowAsIsoString : task.done_at;
     updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, done_at } });
   }
 
   function handleMarkAsUnread() {
-    const done_at = task.type === "request-read" ? null : undefined;
+    const done_at = task.type === "request-read" ? null : task.done_at;
     updateTask({ taskId: task.id, input: { seen_at: null, done_at } });
   }
 
