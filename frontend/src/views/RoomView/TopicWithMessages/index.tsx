@@ -55,11 +55,11 @@ const fragments = {
 
 interface Props {
   room: TopicWithMessages_RoomFragment;
-  topic: TopicWithMessages_TopicFragment | null;
+  topic: TopicWithMessages_TopicFragment;
 }
 
 // Marks last message as read
-function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | null) {
+function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   const [updateLastSeenMessage] = useMutation<
     UpdateLastSeenMessageMutation,
     UpdateLastSeenMessageMutationVariables
@@ -76,7 +76,7 @@ function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | nu
   `);
 
   useEffect(() => {
-    if (!messageIds || !topicId) {
+    if (!messageIds) {
       return;
     }
 
@@ -91,7 +91,7 @@ function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | nu
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic?.id);
+  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic.id);
 
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
@@ -103,16 +103,12 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
         }
       }
     `,
-    topic ? { variables: { topicId: topic.id } } : { skip: true }
+    { variables: { topicId: topic.id } }
   );
 
   const isMember = useIsCurrentUserRoomMember(room);
 
-  useMarkTopicAsRead(topic?.id ?? null, existingMessageIds);
-
-  if (!topic) {
-    return null;
-  }
+  useMarkTopicAsRead(topic.id, existingMessageIds);
 
   const isClosed = isTopicClosed(topic);
 

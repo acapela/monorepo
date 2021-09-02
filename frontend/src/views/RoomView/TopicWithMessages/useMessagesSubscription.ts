@@ -55,15 +55,14 @@ function useExistingMessagesSubscription(topicId?: string) {
   return existingMessageIds;
 }
 
-export function useMessagesSubscription(topicId?: string) {
+export function useMessagesSubscription(topicId: string) {
   const {
     data,
     loading: isLoadingMessages,
     subscribeToMore,
-  } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(
-    TOPIC_WITH_MESSAGES_QUERY,
-    topicId ? { variables: { topicId } } : { skip: true }
-  );
+  } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(TOPIC_WITH_MESSAGES_QUERY, {
+    variables: { topicId },
+  });
 
   const existingMessageIds = useExistingMessagesSubscription(topicId);
   const messages = data?.messages ?? [];
@@ -71,7 +70,7 @@ export function useMessagesSubscription(topicId?: string) {
   const lastUpdatedAt = useMemo(() => (data ? _.max(data.messages.map((m) => m.updated_at)) : null), [data]);
 
   useEffect(() => {
-    if (!topicId || !lastUpdatedAt) {
+    if (!lastUpdatedAt) {
       return;
     }
     return subscribeToMore<NewestTopicMessageSubscription, NewestTopicMessageSubscriptionVariables>({

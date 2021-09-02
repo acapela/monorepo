@@ -35,7 +35,7 @@ interface Props {
 }
 
 export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topicId }: Props) {
-  const openTopics = room.topics?.filter((topic) => !topic.archived_at).sort(byIndexAscending);
+  const openTopics = useMemo(() => room.topics?.filter((topic) => !topic.archived_at).sort(byIndexAscending), [room]);
   const firstTopic = openTopics?.[0] ?? null;
 
   const selectedTopicId = topicId ?? firstTopic?.id ?? null;
@@ -91,8 +91,7 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
         routeToFirstTopicUrl();
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topicId, firstTopic, room.topics]);
+  }, [topicId, firstTopic, room, openTopics]);
 
   return (
     <RoomView room={room} selectedTopicId={selectedTopicId}>

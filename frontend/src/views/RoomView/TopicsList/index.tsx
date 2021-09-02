@@ -17,7 +17,6 @@ import {
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
-import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
 import { CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables, TopicList_RoomFragment } from "~gql";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
@@ -77,13 +76,11 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
 
 const createTopicFragment = gql`
   ${topicListTopicFragment}
-  ${TopicWithMessages.fragments.topic}
 
   fragment TopicListCreateTopic on topic {
     id
     room_id
     ...TopicList_topic
-    ...TopicWithMessages_topic
   }
 `;
 
