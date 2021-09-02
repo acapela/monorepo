@@ -128,7 +128,7 @@ const useCreateTopic = () =>
           },
         };
       },
-      update(cache, result) {
+      async update(cache, result) {
         const topic = result.data?.topic;
         if (!topic) {
           return;

@@ -1,4 +1,4 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useApolloClient, useSubscription } from "@apollo/client";
 import { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -12,11 +12,14 @@ import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/RoomView/TopicWithMessages/gql";
 import {
   TopicMenuItemSubscription,
   TopicMenuItemSubscriptionVariables,
   TopicMenuItem_RoomFragment,
   TopicMenuItem_TopicFragment,
+  TopicWithMessagesQuery,
+  TopicWithMessagesQueryVariables,
 } from "~gql";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
@@ -130,6 +133,14 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
 
   const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
+  const apolloClient = useApolloClient();
+  const prefetchMessages = () => {
+    apolloClient.query<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
+      query: TOPIC_WITH_MESSAGES_QUERY,
+      variables: { topicId: topic.id },
+    });
+  };
+
   // We need to disable the Link while editing, so that selection does not trigger navigation
   const NameWrap = useCallback(
     (props: { children: React.ReactChild }) =>
@@ -158,7 +169,13 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   };
 
   return (
-    <UIFlyingTooltipWrapper ref={innerRef} {...rootProps} isDragged={isDragged}>
+    <UIFlyingTooltipWrapper
+      ref={innerRef}
+      {...rootProps}
+      isDragged={isDragged}
+      onFocus={prefetchMessages}
+      onMouseEnter={prefetchMessages}
+    >
       <NameWrap>
         <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
           <UITopicNameHolder>
