@@ -141,20 +141,6 @@ const useCreateTopic = () =>
         if (!newTopicRef) {
           return;
         }
-        // const res = await cache.readFragment({
-        //   fragment: gql`
-        //     fragment R on room {
-        //       id
-        //       name
-        //       topics {
-        //         id
-        //         name
-        //       }
-        //     }
-        //   `,
-        //   id: cache.identify({ __typename: "room", id: topic.room_id }),
-        // });
-        // console.log(res);
         cache.modify({
           id: cache.identify({ __typename: "room", id: topic.room_id }),
           fields: {
