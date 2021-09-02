@@ -25,9 +25,9 @@ backend_version=""
 frontend_version=""
 i=0
 while [ "$backend_version" != "$version" ] || [ "$frontend_version" != "$version" ]; do
-  version_data=$(curl -sL "https://${endpoint}/healthz")
-  backend_version=$(echo "$version_data" | jq -r '.backend.version')
-  frontend_version=$(echo "$version_data" | jq -r '.version')
+  version_data=$(curl -sL "https://${endpoint}/healthz" || echo "{}")
+  backend_version=$((echo "$version_data" | jq -r '.backend.version') || echo "unknown")
+  frontend_version=$((echo "$version_data" | jq -r '.version') || echo "unknown")
   echo "[$i] current versions: backend=$backend_version frontend=$frontend_version"
   i=$((i + 1))
   if [ $i -ge 600 ]; then
@@ -39,4 +39,4 @@ while [ "$backend_version" != "$version" ] || [ "$frontend_version" != "$version
 done
 
 echo "version $version is deployed on $stage"
-./scripts/send-slack-message.sh ":white_check_mark: version *${version}* was successfully deployed at https://$endpoint"
+./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint"
