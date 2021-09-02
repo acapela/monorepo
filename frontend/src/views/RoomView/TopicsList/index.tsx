@@ -17,6 +17,7 @@ import {
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
+import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
 import { CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables, TopicList_RoomFragment } from "~gql";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
@@ -76,11 +77,13 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
 
 const createTopicFragment = gql`
   ${topicListTopicFragment}
+  ${TopicWithMessages.fragments.topic}
 
   fragment TopicListCreateTopic on topic {
     id
     room_id
     ...TopicList_topic
+    ...TopicWithMessages_topic
   }
 `;
 
@@ -125,7 +128,7 @@ const useCreateTopic = () =>
           },
         };
       },
-      update(cache, result) {
+      async update(cache, result) {
         const topic = result.data?.topic;
         if (!topic) {
           return;
@@ -138,6 +141,20 @@ const useCreateTopic = () =>
         if (!newTopicRef) {
           return;
         }
+        // const res = await cache.readFragment({
+        //   fragment: gql`
+        //     fragment R on room {
+        //       id
+        //       name
+        //       topics {
+        //         id
+        //         name
+        //       }
+        //     }
+        //   `,
+        //   id: cache.identify({ __typename: "room", id: topic.room_id }),
+        // });
+        // console.log(res);
         cache.modify({
           id: cache.identify({ __typename: "room", id: topic.room_id }),
           fields: {
