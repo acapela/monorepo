@@ -67,8 +67,9 @@ fi
 # all means we want to deploy api and frontend
 if [[ "${APP_NAME}" == "all" ]]; then
   echo "deploying frontend and api..."
-  ./scripts/deploy.sh -s $STAGE -a frontend -v $APP_VERSION
   ./scripts/deploy.sh -s $STAGE -a api -v $APP_VERSION
+  ./scripts/deploy.sh -s $STAGE -a frontend -v $APP_VERSION
+  ./scripts/wait-for-release.sh "$STAGE" "$APP_VERSION"
   exit
 fi
 
@@ -82,6 +83,8 @@ if [[ ! -d $app_dir ]]; then
 fi
 
 echo "deploying ${APP_NAME}@${APP_VERSION} to $STAGE"
+
+./scripts/send-slack-message.sh ":rocket: deploying *${APP_NAME}@${APP_VERSION}* to *${STAGE}*"
 
 image_name=$(cat "${kubernetes_dir}${APP_NAME}/image_name")
 
