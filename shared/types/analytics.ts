@@ -99,10 +99,10 @@ export type AnalyticsEventsMap = {
 
   // Mention and task related events
 
-  "Created Mention": { mentionType: string; isToSelf: boolean; messageId: string; mentionedUserId: string };
+  "Created Mention": { isToSelf: boolean; messageId: string; mentionedUserId: string };
   "Created Task": { taskType: string; mentionedUserId: string; taskId: string; messageId: string };
-  "Seen task": { taskType: string; taskId: string; messageId: string };
-  "Completed task": { taskType: string; taskId: string; messageId: string };
+  "Seen task": { taskType: string; taskId: string; messageId: string; seenAt: Date };
+  "Completed task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

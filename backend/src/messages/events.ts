@@ -3,6 +3,7 @@ import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import log from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
@@ -24,14 +25,15 @@ export async function prepareMessagePlainTextData(message: Message) {
     log.warn("Failed to prepare message plain text content", message);
   }
 }
+
+/**
+ * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
+ */
 async function markPendingTasksAsDone(message: Message) {
   const { topic_id, user_id } = message;
 
-  /**
-   * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
-   */
-
-  await db.task.updateMany({
+  // Although this way is less efficient, we get the pending tasks first so that we can track them
+  const pendingTasks = await db.task.findMany({
     where: {
       message: {
         topic_id,
@@ -39,9 +41,27 @@ async function markPendingTasksAsDone(message: Message) {
       user_id,
       done_at: null,
     },
-    data: {
-      done_at: new Date(),
+  });
+
+  const doneAt = new Date();
+
+  await db.task.updateMany({
+    where: {
+      id: { in: pendingTasks.map((task) => task.id) },
     },
+    data: {
+      done_at: doneAt,
+    },
+  });
+
+  // Tracking
+  pendingTasks.forEach((task) => {
+    trackBackendUserEvent(task.user_id, "Completed task", {
+      taskType: task.type as string,
+      taskId: task.id,
+      messageId: task.message_id,
+      doneAt: doneAt,
+    });
   });
 }
 
