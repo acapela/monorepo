@@ -96,10 +96,12 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
       ${TopicSummaryMessage.fragments.topic}
+      ${TopicHeader.fragments.topic}
 
       subscription TopicClosure($topicId: uuid!) {
         topic_by_pk(id: $topicId) {
           ...TopicSummaryMessage_topic
+          ...TopicHeader_topic
         }
       }
     `,
