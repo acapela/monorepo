@@ -39,9 +39,10 @@ export async function run() {
    * $.verbose = true would cause all logs to be displayed as is.
    */
   $.verbose = false;
+
   const [scenario, scenarioName] = await selectScenario();
 
-  console.info(chalk.blue(`Running ${scenarioName} scenario`));
+  // console.info(chalk.blue(`Running ${scenarioName} scenario`));
 
   await runScenario(scenario);
 }
