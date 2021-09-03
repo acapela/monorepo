@@ -26,7 +26,7 @@ router.use(
       // Those are for testing purposes.
       `http://localhost`,
       `http://localhost:3000`,
-      `https://landing-page-git-v3-acapela.vercel.app/`,
+      `https://landing-page-git-v3-acapela.vercel.app`,
     ],
   })
 );
