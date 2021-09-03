@@ -50,7 +50,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
 
     updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, ...doneParams } });
 
-    trackEvent("Seen task", {
+    trackEvent("Marked Task As Seen", {
       taskId: task.id,
       taskType: task.type as string,
       messageId: task.message_id,
@@ -58,7 +58,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
     });
 
     if (isTaskToBeMarkedAsDone) {
-      trackEvent("Completed task", {
+      trackEvent("Completed Task", {
         taskId: task.id,
         taskType: task.type as string,
         messageId: task.message_id,
@@ -73,7 +73,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
 
     updateTask({ taskId: task.id, input: { seen_at: null, ...doneParams } });
 
-    trackEvent("Unseen task", {
+    trackEvent("Marked Task As Unseen", {
       taskId: task.id,
       taskType: task.type as string,
       messageId: task.message_id,

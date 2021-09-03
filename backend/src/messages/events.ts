@@ -52,7 +52,7 @@ async function markPendingTasksAsDone(message: Message) {
 
   // Tracking
   pendingTasks.forEach((task) => {
-    trackBackendUserEvent(task.user_id, "Completed task", {
+    trackBackendUserEvent(task.user_id, "Completed Task", {
       taskType: task.type as string,
       taskId: task.id,
       messageId: task.message_id,
