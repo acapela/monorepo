@@ -32,11 +32,11 @@ while [ "$backend_version" != "$version" ] || [ "$frontend_version" != "$version
   i=$((i + 1))
   if [ $i -ge 600 ]; then
     echo "the new version has not been found after 10 minutes. canceling..."
-    ./scripts/send-slack-message.sh ":rotating_light: version *${version}* was *not successfully* deployed on $stage"
+    ./scripts/send-slack-message.sh ":rotating_light: version *${version}* was *not successfully* deployed on $stage" "$stage"
     exit 1
   fi
   sleep 1
 done
 
 echo "version $version is deployed on $stage"
-./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint"
+./scripts/send-slack-message.sh ":white_check_mark: version <https://github.com/weareacapela/monorepo/releases/tag/v${version}|*${version}*> was successfully deployed at https://$endpoint" "$stage"
