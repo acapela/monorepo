@@ -1,4 +1,4 @@
-import { Message, MessageReaction, db } from "~db";
+import { Message, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -41,11 +41,6 @@ async function markPendingTasksAsDone(message: Message) {
     data: { done_at: taskCompletionTime },
   });
 
-  await db.message.updateMany({
-    where: { id: { in: pendingTasks.map((t) => t.message_id) } },
-    data: { updated_at: taskCompletionTime },
-  });
-
   // Tracking
   pendingTasks.forEach((task) => {
     trackBackendUserEvent(task.user_id, "Completed Task", {
@@ -73,8 +68,4 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     createTasksFromNewMentions(event.item, event.itemBefore),
     markPendingTasksAsDone(event.item),
   ]);
-}
-
-export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
-  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
 }

@@ -78,7 +78,25 @@ export function useMessagesSubscription(topicId: string) {
         ${MessagesFeed.fragments.message}
 
         subscription NewestTopicMessage($topicId: uuid!, $lastUpdatedAt: timestamptz!) {
-          messages: message(where: { topic_id: { _eq: $topicId }, updated_at: { _gt: $lastUpdatedAt } }) {
+          messages: message(
+            where: {
+              topic_id: { _eq: $topicId }
+              _or: [
+                { updated_at: { _gt: $lastUpdatedAt } }
+                { tasks: { created_at: { _gt: $lastUpdatedAt } } }
+                { tasks: { done_at: { _gt: $lastUpdatedAt } } }
+                {
+                  message_attachments: {
+                    _or: [
+                      { created_at: { _gt: $lastUpdatedAt } }
+                      # { transcription: { created_at: { _gt: $lastUpdatedAt } } }
+                    ]
+                  }
+                }
+                { message_reactions: { created_at: { _gt: $lastUpdatedAt } } }
+              ]
+            }
+          ) {
             id
             created_at
             updated_at
