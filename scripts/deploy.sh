@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-[ ! -z "${KUSTOMIZE_BIN:-}" ] && {
+[ -n "${KUSTOMIZE_BIN:-}" ] && {
   KUSTOMIZE_BIN=$(realpath $KUSTOMIZE_BIN)
 }
 
@@ -15,13 +15,15 @@ cat << EOF
     -a Application (api)
     -v Application version
     -t Dry run
+    -S send no slack messages (ignored if application is all)
     -h Help
 EOF
 exit 1;
 }
 
+SILENT_MODE="false"
 DRY_RUN="";
-while getopts "s:a:v:ht" opt; do
+while getopts "s:a:v:htS" opt; do
   case $opt in
     s) STAGE=${OPTARG}
       ;;
@@ -32,6 +34,8 @@ while getopts "s:a:v:ht" opt; do
     h) usage
       ;;
     t) DRY_RUN="--dry-run=client"
+      ;;
+    S) SILENT_MODE="true"
       ;;
     \?) echo "Invalid option: -$OPTARG" >&2
       ;;
@@ -67,8 +71,9 @@ fi
 # all means we want to deploy api and frontend
 if [[ "${APP_NAME}" == "all" ]]; then
   echo "deploying frontend and api..."
-  ./scripts/deploy.sh -s $STAGE -a api -v $APP_VERSION
-  ./scripts/deploy.sh -s $STAGE -a frontend -v $APP_VERSION
+  ./scripts/send-slack-message.sh ":rocket: deploying version *${APP_VERSION}* to *${STAGE}*" "$STAGE"
+  ./scripts/deploy.sh -s "$STAGE" -a api -v "$APP_VERSION" -S
+  ./scripts/deploy.sh -s "$STAGE" -a frontend -v "$APP_VERSION" -S
   ./scripts/wait-for-release.sh "$STAGE" "$APP_VERSION"
   exit
 fi
@@ -84,14 +89,14 @@ fi
 
 echo "deploying ${APP_NAME}@${APP_VERSION} to $STAGE"
 
-./scripts/send-slack-message.sh ":rocket: deploying *${APP_NAME}@${APP_VERSION}* to *${STAGE}*"
+[[ "${SILENT_MODE}" == "false" ]] && ./scripts/send-slack-message.sh ":rocket: deploying *${APP_NAME}@${APP_VERSION}* to *${STAGE}*" "$STAGE"
 
 image_name=$(cat "${kubernetes_dir}${APP_NAME}/image_name")
 
 echo "updating image $image_name to $APP_VERSION"
 
-cd $app_dir
-$kustomize_command edit set image $image_name:$APP_VERSION
+cd "$app_dir"
+$kustomize_command edit set image "$image_name:$APP_VERSION"
 cd -
 
-$kustomize_command build $app_dir | kubectl apply $DRY_RUN -f -
+$kustomize_command build "$app_dir" | kubectl apply $DRY_RUN -f -
