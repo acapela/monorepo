@@ -1,6 +1,5 @@
-import { Box, Static, Text } from "ink";
+import { Box, Text } from "ink";
 import React, { useEffect, useState } from "react";
-import { ProcessPromise, chalk } from "zx";
 
 import { CommandRunner } from "./commandRunner";
 
@@ -28,17 +27,5 @@ export function CommandLogs({ runner }: Props) {
         );
       })}
     </Box>
-  );
-
-  return (
-    <Static key={runner.command} items={logLines}>
-      {(line, index) => {
-        return (
-          <Box key={index}>
-            <Text>{line}</Text>
-          </Box>
-        );
-      }}
-    </Static>
   );
 }

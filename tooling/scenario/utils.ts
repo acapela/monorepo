@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+// eslint-disable-next-line no-console
 export const clearConsole = console.clear;
 
 export function useCallOnFirstRender(callback: () => void) {

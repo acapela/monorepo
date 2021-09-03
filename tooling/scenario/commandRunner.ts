@@ -4,7 +4,7 @@ import { ScenarioStep } from "./config";
 import { getDidFilesChange } from "./didFilesChange";
 
 export async function createStepCommandRunner(step: ScenarioStep, command: string) {
-  const { dependsOnFiles, commands } = step;
+  const { dependsOnFiles } = step;
   const shouldSkipAsFilesDidNotChange = !!dependsOnFiles && !(await getDidFilesChange(dependsOnFiles));
 
   const commandRunner = shouldSkipAsFilesDidNotChange ? null : $`${command.split(" ")}`;
@@ -14,6 +14,7 @@ export async function createStepCommandRunner(step: ScenarioStep, command: strin
   function onNewLine(callback: (line: string) => void) {
     const std = commandRunner?.stdout;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function handleChunk(chunk: any) {
       const lineString = `${chunk.toLocaleString()}`;
 

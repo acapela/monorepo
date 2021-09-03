@@ -1,9 +1,9 @@
 import "~config/dotenv";
 
-import { $, chalk, question } from "zx";
+import { $, question } from "zx";
 
 import { readScenariosMap } from "./config";
-import { runScenario } from "./runScenario";
+import { runScenario } from "./ScenarioRunner";
 
 async function selectScenario() {
   const scenarios = readScenariosMap();
@@ -40,7 +40,7 @@ export async function run() {
    */
   $.verbose = false;
 
-  const [scenario, scenarioName] = await selectScenario();
+  const [scenario] = await selectScenario();
 
   // console.info(chalk.blue(`Running ${scenarioName} scenario`));
 

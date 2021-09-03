@@ -1,13 +1,12 @@
 import { render } from "ink";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { ScenarioConfig } from "./config";
-import { FullScreen } from "./Fullscreen";
-import { StepRunner } from "./runScenarioStep";
+import { StepRunner } from "./StepRunner";
 import { clearConsole } from "./utils";
 
 export async function runScenario(scenario: ScenarioConfig) {
-  const { clear } = render(<ScenarioRunner scenario={scenario} />);
+  render(<ScenarioRunner scenario={scenario} />);
 }
 
 interface Props {
@@ -28,10 +27,4 @@ function ScenarioRunner({ scenario }: Props) {
   }
 
   return <StepRunner key={currentStep.commands.join("")} step={currentStep} onFinished={handleStepFinished} />;
-
-  return (
-    <FullScreen>
-      <StepRunner key={currentStep.commands.join("")} step={currentStep} onFinished={handleStepFinished} />
-    </FullScreen>
-  );
 }
