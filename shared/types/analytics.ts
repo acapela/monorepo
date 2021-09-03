@@ -96,6 +96,14 @@ export type AnalyticsEventsMap = {
   "Edited Message": { messageId: string };
   "Deleted Message": { messageId: string };
   "Reacted To Message": { messageId: string; reactionEmoji: string };
+
+  // Mention and task related events
+
+  "Created Mention": { isToSelf: boolean; messageId: string; mentionedUserId: string };
+  "Created Task": { taskType: string; mentionedUserId: string; taskId: string; messageId: string };
+  "Marked Task As Seen": { taskType: string; taskId: string; messageId: string; seenAt: Date };
+  "Marked Task As Unseen": { taskType: string; taskId: string; messageId: string };
+  "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

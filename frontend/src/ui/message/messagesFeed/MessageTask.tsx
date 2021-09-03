@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import styled, { css } from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
@@ -41,14 +42,42 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
   }
 
   function handleMarkAsRead() {
-    const nowAsIsoString = new Date().toISOString();
-    const done_at = task.type === "request-read" ? nowAsIsoString : null;
-    updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, done_at } });
+    const now = new Date();
+    const nowAsIsoString = now.toISOString();
+
+    const isTaskToBeMarkedAsDone = task.type === "request-read";
+    const doneParams = isTaskToBeMarkedAsDone ? { done_at: nowAsIsoString } : {};
+
+    updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, ...doneParams } });
+
+    trackEvent("Marked Task As Seen", {
+      taskId: task.id,
+      taskType: task.type as string,
+      messageId: task.message_id,
+      seenAt: now,
+    });
+
+    if (isTaskToBeMarkedAsDone) {
+      trackEvent("Completed Task", {
+        taskId: task.id,
+        taskType: task.type as string,
+        messageId: task.message_id,
+        doneAt: now,
+      });
+    }
   }
 
   function handleMarkAsUnread() {
-    const done_at = task.type === "request-read" ? null : undefined;
-    updateTask({ taskId: task.id, input: { seen_at: null, done_at } });
+    const isTaskToBeMarkedAsIncomplete = task.type === "request-read";
+    const doneParams = isTaskToBeMarkedAsIncomplete ? { done_at: null } : {};
+
+    updateTask({ taskId: task.id, input: { seen_at: null, ...doneParams } });
+
+    trackEvent("Marked Task As Unseen", {
+      taskId: task.id,
+      taskType: task.type as string,
+      messageId: task.message_id,
+    });
   }
 
   function getTaskStatus(): "unseen" | "seen" | "done" {
