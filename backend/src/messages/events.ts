@@ -32,20 +32,16 @@ export async function prepareMessagePlainTextData(message: Message) {
 async function markPendingTasksAsDone(message: Message) {
   const { topic_id, user_id } = message;
 
-  /**
-   * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
-   */
-
   const taskCompletionTime = new Date();
 
   const pendingTasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
 
-  await db.task.updateMany({
+  db.task.updateMany({
     where: { id: { in: pendingTasks.map((t) => t.id) } },
     data: { done_at: taskCompletionTime },
   });
 
-  await db.message.updateMany({
+  db.message.updateMany({
     where: { id: { in: pendingTasks.map((t) => t.message_id) } },
     data: { updated_at: taskCompletionTime },
   });
