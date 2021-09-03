@@ -27,10 +27,12 @@ function getAnalyticsSDK() {
 function createAnalyticsSessionForUser(user: User) {
   const analytics = getAnalyticsSDK();
 
-  assertDefined(analytics, "Analytics framework not defined").identify({
-    userId: user.id,
-    traits: getAnalyticsProfileFromDbUser(user),
-  });
+  if (analytics) {
+    analytics.identify({
+      userId: user.id,
+      traits: getAnalyticsProfileFromDbUser(user),
+    });
+  }
 }
 
 export function trackFirstBackendUserEvent<N extends keyof AnalyticsEventsMap>(
@@ -50,5 +52,7 @@ export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
 ) {
   const analytics = getAnalyticsSDK();
 
-  assertDefined(analytics, "Analytics framework not defined").track({ userId, event: eventName, properties: payload });
+  if (analytics) {
+    analytics.track({ userId, event: eventName, properties: payload });
+  }
 }
