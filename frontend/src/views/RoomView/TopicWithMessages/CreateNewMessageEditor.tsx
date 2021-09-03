@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useRef, useState } from "react";
-import { useList } from "react-use";
+import React, { useRef } from "react";
+import { useList, useLocalStorage } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -25,6 +25,7 @@ import {
 } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { assertDefined } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
@@ -127,8 +128,13 @@ const useCreateMessageMutation = () =>
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const [value, setValue] = useState<RichEditorNode>(getEmptyRichContent);
+  const [storedValue, setValue] = useLocalStorage<RichEditorNode>(
+    "message-draft-for-topic:" + topicId,
+    getEmptyRichContent()
+  );
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
+
+  const value = assertDefined(storedValue, "useLocalStorage does not return undefined if given a default");
 
   const editorRef = useRef<Editor>(null);
 
