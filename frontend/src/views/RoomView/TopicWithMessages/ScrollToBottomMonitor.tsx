@@ -48,7 +48,6 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
 
       // We need to distinguish programmatically-triggered scroll events from user-triggered ones
       // to retain a user's intention whether to stay scrolled to the bottom
-      didAutoScroll.current = true;
       if (behavior === "auto") {
         parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
       } else {
@@ -58,23 +57,21 @@ export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ pa
     [parentRef]
   );
 
-  const tryScrollToBottom = useCallback(
-    (...args: Parameters<typeof scrollToBottom>) => {
-      if (!preventAutoScroll && isScrolledToBottom.current) {
-        scrollToBottom(...args);
-      }
-    },
-    [preventAutoScroll, scrollToBottom]
-  );
+  const tryAutoScroll = useCallback(() => {
+    if (!preventAutoScroll && isScrolledToBottom.current) {
+      didAutoScroll.current = true;
+      scrollToBottom("auto");
+    }
+  }, [preventAutoScroll, scrollToBottom]);
 
   useImperativeHandle(ref, () => ({ scrollToBottom }));
 
-  useResizeCallback(monitorRef, () => tryScrollToBottom("auto"));
-  useResizeCallback(parentRef, () => tryScrollToBottom("auto"));
+  useResizeCallback(monitorRef, () => tryAutoScroll());
+  useResizeCallback(parentRef, () => tryAutoScroll());
 
   // On mount try to scroll down without animation
   useIsomorphicLayoutEffect(() => {
-    tryScrollToBottom("auto");
+    tryAutoScroll();
   }, []);
 
   useEffect(() => {
