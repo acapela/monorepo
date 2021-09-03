@@ -33,7 +33,8 @@ import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
 interface Props {
   topicId: string;
-  isDisabled?: boolean;
+  isDisabled: boolean;
+  onMessageSent: () => void;
 }
 
 interface SubmitMessageParams {
@@ -124,7 +125,7 @@ const useCreateMessageMutation = () =>
     }
   );
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorNode>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
@@ -195,6 +196,8 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
     }
 
     handleStopReplyingToMessage();
+
+    onMessageSent();
   };
 
   return (
