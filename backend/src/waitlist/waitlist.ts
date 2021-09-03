@@ -1,3 +1,4 @@
+import cors from "cors";
 import { Request, Response, Router } from "express";
 
 import { db } from "~db";
@@ -12,6 +13,22 @@ interface SignupPayload {
   email?: string;
   firstName?: string;
 }
+
+/**
+ * We're calling those endpoints from landing which is a different url, this we need to enable CORS for this endpoints
+ * server side
+ */
+router.use(
+  cors({
+    origin: [
+      `https://acape.la`,
+      `https://acapela.com`,
+      // Those are for testing purposes.
+      `http://localhost`,
+      `https://landing-page-git-v3-acapela.vercel.app/`,
+    ],
+  })
+);
 
 /**
  * This endpoint handles user signup calls from the landing page
