@@ -36,12 +36,12 @@ async function markPendingTasksAsDone(message: Message) {
 
   const pendingTasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
 
-  db.task.updateMany({
+  await db.task.updateMany({
     where: { id: { in: pendingTasks.map((t) => t.id) } },
     data: { done_at: taskCompletionTime },
   });
 
-  db.message.updateMany({
+  await db.message.updateMany({
     where: { id: { in: pendingTasks.map((t) => t.message_id) } },
     data: { updated_at: taskCompletionTime },
   });
