@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - run: yarn run lint
 
   frontend:
@@ -48,7 +48,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
@@ -80,7 +80,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
@@ -111,7 +111,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - run: npx playwright install
       - name: Setup dotenv
         run: cp .env.sample .env
@@ -167,7 +167,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
         if: steps.semrel.outputs.version != ''
-      - run: yarn --prefer-offline
+      - name: yarn install
+        run: |
+          rm .npmrc
+          yarn
         if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |
