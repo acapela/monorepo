@@ -100,7 +100,15 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       text: `Please continue the discussion here: ${process.env.FRONTEND_URL}/space/${space.id}/${room.id}`,
     });
     if (user) {
-      trackBackendUserEvent(user.id, "Created Room with Slack Command", { roomId: room.id });
+      trackBackendUserEvent(user.id, "Created Room", {
+        origin: "slack-command",
+        roomId: room.id,
+        roomName: room.name,
+        roomDeadline: room.deadline,
+        spaceId: room.space_id,
+        numberOfInitialMembers: users.length,
+        isRecurring: !!room.recurrance_interval_in_days,
+      });
     }
   });
 }

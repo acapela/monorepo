@@ -59,7 +59,7 @@ const createRoomWithTopic = async ({
       },
     },
   });
-  return [room, topic];
+  return [room, topic] as const;
 };
 
 async function findUsersThroughSlackProfiles(client: WebClient, slackUserIds: string[]) {
@@ -236,13 +236,16 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
     });
     await ack({ response_action: "errors", errors: {} });
     if (currentUser) {
-      const eventName = (
-        {
-          shortcut: "Created Room with Slack Global Shortcut",
-          message_action: "Created Room with Slack Message Action",
-        } as const
-      )[shortcut.type];
-      trackBackendUserEvent(currentUser.id, eventName, { roomId: room.id });
+      const origin = ({ shortcut: "slack-shortcut", message_action: "slack-message-action" } as const)[shortcut.type];
+      trackBackendUserEvent(currentUser.id, "Created Room", {
+        origin,
+        roomId: room.id,
+        roomName: room.name,
+        roomDeadline: room.deadline,
+        spaceId: room.space_id,
+        numberOfInitialMembers: users.length,
+        isRecurring: !!room.recurrance_interval_in_days,
+      });
     }
   });
 

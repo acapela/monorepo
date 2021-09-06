@@ -41,13 +41,13 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
       },
     });
     trackEvent("Created Room", {
+      origin: "new",
       roomId,
       roomName: createRoomInput.name,
       roomDeadline: createRoomInput.deadline,
       spaceId: createRoomInput.spaceId,
       numberOfInitialMembers: initialMembers.data.length,
       isRecurring: !!createRoomInput.recurranceIntervalInDays,
-      isCalendarEvent: false,
     });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
   }

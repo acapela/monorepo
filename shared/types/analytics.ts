@@ -59,12 +59,12 @@ export type AnalyticsEventsMap = {
   "Toggled Closed Rooms": { isShowingClosedRooms: boolean };
   // current user or when current user adds someone else
   "Created Room": {
+    origin: "new" | "calendar" | "slack-command" | "slack-shortcut" | "slack-message-action";
     roomId: string;
     roomName: string;
     roomDeadline: Date;
     spaceId: string;
     numberOfInitialMembers: number;
-    isCalendarEvent: boolean;
     isRecurring: boolean;
   };
   "Joined Room": { roomId: string; userId: string };
@@ -106,11 +106,8 @@ export type AnalyticsEventsMap = {
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 
   // Slack
-  "Created Room with Slack Command": { roomId: string };
   "Started creating Room with Slack Global Shortcut": void;
-  "Created Room with Slack Global Shortcut": { roomId: string };
   "Started creating Room with Slack Message Action": void;
-  "Created Room with Slack Message Action": { roomId: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
