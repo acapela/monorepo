@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useRef } from "react";
-import { useList, useLocalStorage } from "react-use";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -25,7 +25,6 @@ import {
 } from "~gql";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
-import { assertDefined } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
@@ -126,17 +125,42 @@ const useCreateMessageMutation = () =>
     }
   );
 
+function useLocalStorageState<S>({
+  key,
+  getInitialValue,
+  checkShouldStore,
+}: {
+  key: string;
+  getInitialValue: () => S;
+  checkShouldStore: (value: S) => boolean;
+}): [S, Dispatch<SetStateAction<S>>] {
+  const [value, setValue] = useState(() => {
+    const storedValue = localStorage.getItem(key);
+    return storedValue ? JSON.parse(storedValue) : getInitialValue;
+  });
+
+  useEffect(() => {
+    if (checkShouldStore(value)) {
+      localStorage.setItem(key, JSON.stringify(value));
+    } else {
+      localStorage.removeItem(key);
+    }
+  }, [value, checkShouldStore, key]);
+
+  return [value, setValue];
+}
+
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const [storedValue, setValue] = useLocalStorage<RichEditorNode>(
-    "message-draft-for-topic:" + topicId,
-    getEmptyRichContent()
-  );
-  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
-
-  const value = assertDefined(storedValue, "useLocalStorage does not return undefined if given a default");
-
   const editorRef = useRef<Editor>(null);
+
+  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
+  const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
+  const [value, setValue] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-topic:" + topicId,
+    getInitialValue: getEmptyRichContent,
+    checkShouldStore,
+  });
+  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
   const topicContext = useTopicStoreContext();
   const roomContext = useRoomStoreContext();
