@@ -41,7 +41,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
       },
     });
     trackEvent("Created Room", {
-      origin: "new",
+      origin: "create-modal",
       roomId,
       roomName: createRoomInput.name,
       roomDeadline: createRoomInput.deadline,

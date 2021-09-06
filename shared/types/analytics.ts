@@ -59,7 +59,7 @@ export type AnalyticsEventsMap = {
   "Toggled Closed Rooms": { isShowingClosedRooms: boolean };
   // current user or when current user adds someone else
   "Created Room": {
-    origin: "new" | "calendar" | "slack-command" | "slack-shortcut" | "slack-message-action";
+    origin: "create-modal" | "calendar" | "slack-command" | "slack-shortcut" | "slack-message-action";
     roomId: string;
     roomName: string;
     roomDeadline: Date;
