@@ -5,6 +5,7 @@ import { WebClient } from "@slack/web-api";
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 
 const createPlainMessageContent = (text: string) => ({
@@ -213,6 +214,7 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       });
     }
 
+    const shortcut = JSON.parse(view.private_metadata) as SlackShortcut;
     await client.views.update({
       response_action: "update",
       view_id: body.view.id,
@@ -229,10 +231,19 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
                 }
               )) ?? null
             : null,
-        shortcut: JSON.parse(view.private_metadata) as SlackShortcut,
+        shortcut,
       }),
     });
     await ack({ response_action: "errors", errors: {} });
+    if (currentUser) {
+      const eventName = (
+        {
+          shortcut: "Created Room with Slack Global Shortcut",
+          message_action: "Created Room with Slack Message Action",
+        } as const
+      )[shortcut.type];
+      trackBackendUserEvent(currentUser.id, eventName, { roomId: room.id });
+    }
   });
 
   slackApp.view("send_message_modal", async ({ ack, view, client, context }) => {

@@ -104,6 +104,13 @@ export type AnalyticsEventsMap = {
   "Marked Task As Seen": { taskType: string; taskId: string; messageId: string; seenAt: Date };
   "Marked Task As Unseen": { taskType: string; taskId: string; messageId: string };
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
+
+  // Slack
+  "Created Room with Slack Command": { roomId: string };
+  "Started creating Room with Slack Global Shortcut": void;
+  "Created Room with Slack Global Shortcut": { roomId: string };
+  "Started creating Room with Slack Message Action": void;
+  "Created Room with Slack Message Action": { roomId: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
