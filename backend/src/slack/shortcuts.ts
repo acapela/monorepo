@@ -114,20 +114,18 @@ const createRoomModalViewOpen = (shortcut: SlackShortcut): ViewsOpenArguments =>
   },
 });
 
-async function trackStartCreatingRoom(client: WebClient, slackUserId: string, eventName: keyof AnalyticsEventsMap) {
-  let user = await db.user.findFirst({
+async function findUserBySlackId(client: WebClient, slackUserId: string) {
+  const user = await db.user.findFirst({
     where: { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
   });
-  if (!user) {
-    const { profile } = await client.users.profile.get({ user: slackUserId });
-    if (!profile) {
-      return;
-    }
-    user = await db.user.findFirst({ where: { email: profile.email } });
-  }
   if (user) {
-    trackBackendUserEvent(user.id, eventName);
+    return user;
   }
+  const { profile } = await client.users.profile.get({ user: slackUserId });
+  if (!profile) {
+    return;
+  }
+  return await db.user.findFirst({ where: { email: profile.email } });
 }
 
 export function setupSlackShortcuts(slackApp: App) {
@@ -137,12 +135,18 @@ export function setupSlackShortcuts(slackApp: App) {
   slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body }) => {
     await ack();
     await client.views.open(createRoomModalViewOpen(shortcut));
-    await trackStartCreatingRoom(client, body.user.id, "Started creating Room with Slack Global Shortcut");
+    const user = await findUserBySlackId(client, body.user.id);
+    if (user) {
+      trackBackendUserEvent(user.id, "Started creating Room with Slack Global Shortcut");
+    }
   });
 
   slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client, body }) => {
     await ack();
     await client.views.open(createRoomModalViewOpen(shortcut));
-    await trackStartCreatingRoom(client, body.user.id, "Started creating Room with Slack Message Action");
+    const user = await findUserBySlackId(client, body.user.id);
+    if (user) {
+      trackBackendUserEvent(user.id, "Started creating Room with Slack Message Action");
+    }
   });
 }
