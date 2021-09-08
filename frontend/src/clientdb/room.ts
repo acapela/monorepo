@@ -1,13 +1,15 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+
 import { RoomFragment, UpdatedRoomsQuery, UpdatedRoomsQueryVariables } from "~frontend/../../gql";
+import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
-import { clientdb } from ".";
+
 import { spaceEntity } from "./space";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getType } from "./utils";
+import { clientdb } from ".";
 
 const roomFragment = gql`
   fragment Room on room {
@@ -46,12 +48,12 @@ export const roomEntity = defineEntity(
   {
     type: getType<RoomFragment>(),
     name: "room",
-    getId: (item) => item.id,
+    keyField: "id",
     getCacheKey: (space) => space.id,
     sync: {
       initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
-        return subscribeToRoomUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
+        return subscribeToRoomUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
           updateItems(newData.room);
         });
       },

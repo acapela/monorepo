@@ -15,7 +15,6 @@ export const HomeView = observer(function HomeView() {
   const roomz = clientdb.room.query(() => true).all;
   const user = useAssertCurrentUser();
 
-  console.log({ roomz });
   // const [rooms = []] = useRoomsQuery({
   //   where: getHomeViewRoomsQueryWhere(user.id),
   // });
@@ -26,10 +25,9 @@ export const HomeView = observer(function HomeView() {
     <div>
       dfsjksdfjklsdfjklsdf
       {roomz.map((room) => {
-        console.log("elko", room.name);
         return (
           <div key={room.id}>
-            {room.name} (owner {room.owner.name})
+            {room.name} (owner {room.owner?.name})
           </div>
         );
       })}

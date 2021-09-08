@@ -40,11 +40,11 @@ export const messageEntity = defineEntity(
     type: getType<MessageFragment>(),
     name: "message",
     getCacheKey: (space) => space.id,
-    getId: (message) => message.id,
+    keyField: "id",
     sync: {
       initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
-        return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
+        return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
           updateItems(newData.message);
         });
       },

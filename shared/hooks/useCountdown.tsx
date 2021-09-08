@@ -14,7 +14,6 @@ export function useCountdown(fromSeconds: number, onFinishedCallback: () => void
     const newSeconds = seconds - 1;
 
     if (newSeconds === 0) {
-      console.log("elomelo");
       onFinished();
     } else {
       setSeconds((seconds) => seconds - 1);

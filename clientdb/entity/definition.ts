@@ -6,7 +6,7 @@ interface DefineEntityConfig<Data> {
   type?: Data;
   name: string;
   getCacheKey: (item: Data) => string;
-  getId: (item: Data) => string;
+  keyField: keyof Data;
   sync: EntitySyncConfig<Data>;
 }
 

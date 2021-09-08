@@ -1,15 +1,21 @@
-import { computed, IObservableArray } from "mobx";
+import { IObservableArray, computed } from "mobx";
+
+import { Entity } from "./entity";
 
 type EntityQueryFilter<Data> = (item: Data) => boolean;
 
+type SortResult = string | number | boolean | Date | null | void | undefined;
+
 type EntityQueryResolvedConfig<Data> = {
   filter: EntityQueryFilter<Data>;
-  sort?: any;
+  sort?: (item: Data) => SortResult;
 };
 
-export type EntityQueryConfig<Data> = EntityQueryFilter<Data> | EntityQueryResolvedConfig<Data>;
+export type EntityQueryConfig<Data, Connections> = EntityQueryFilter<Data> | EntityQueryResolvedConfig<Data>;
 
-function resolveEntityQueryConfig<Data>(config: EntityQueryConfig<Data>): EntityQueryResolvedConfig<Data> {
+function resolveEntityQueryConfig<Data, Connections>(
+  config: EntityQueryConfig<Data, Connections>
+): EntityQueryResolvedConfig<Data> {
   if (typeof config === "function") {
     return {
       filter: config,
@@ -19,15 +25,17 @@ function resolveEntityQueryConfig<Data>(config: EntityQueryConfig<Data>): Entity
   return config;
 }
 
-export type EntityQuery<Data> = {
-  all: Data[];
-  query: (config: EntityQueryConfig<Data>) => EntityQuery<Data>;
+type MaybeObservableArray<T> = IObservableArray<T> | T[];
+
+export type EntityQuery<Data, Connections> = {
+  all: Entity<Data, Connections>[];
+  query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
 
-export function createEntityQuery<Data>(
-  source: IObservableArray<Data> | Data[],
-  config: EntityQueryConfig<Data>
-): EntityQuery<Data> {
+export function createEntityQuery<Data, Connections>(
+  source: MaybeObservableArray<Entity<Data, Connections>>,
+  config: EntityQueryConfig<Data, Connections>
+): EntityQuery<Data, Connections> {
   const { filter, sort } = resolveEntityQueryConfig(config);
 
   const passingItems = computed(() => {

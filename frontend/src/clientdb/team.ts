@@ -1,12 +1,14 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+
 import { TeamFragment, UpdatedTeamsQuery, UpdatedTeamsQueryVariables } from "~frontend/../../gql";
+import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
-import { clientdb } from ".";
+
 import { spaceEntity } from "./space";
 import { userEntity } from "./user";
 import { getType } from "./utils";
+import { clientdb } from ".";
 
 const teamFragment = gql`
   fragment Team on team {
@@ -38,11 +40,11 @@ export const teamEntity = defineEntity(
     type: getType<TeamFragment>(),
     name: "team",
     getCacheKey: (space) => space.id,
-    getId: (team) => team.id,
+    keyField: "id",
     sync: {
       initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
-        return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
+        return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
           updateItems(newData.team);
         });
       },

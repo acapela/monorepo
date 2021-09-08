@@ -1,29 +1,46 @@
-interface DbInfo {
-  dbPrefix: string;
-  dbVersion: number;
+export interface DbEntityInfo {
+  name: string;
+  keyField: string;
 }
 
-interface EntityDbInfo extends DbInfo {
+export interface DbInfo {
+  dbPrefix: string;
+  dbVersion: number;
+  entities: DbEntityInfo[];
+}
+
+export interface EntityDbInfo extends DbInfo {
   entityName: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface LocalDbFetchAllInput extends EntityDbInfo {}
-
-interface SaveItemInput<Data> extends EntityDbInfo {
+export interface SaveItemInput<Data> extends EntityDbInfo {
   item: Data;
 }
 
-interface RemoveItemInput extends EntityDbInfo {
+export interface RemoveItemInput extends EntityDbInfo {
   itemId: string;
 }
 
+interface GetTableConfig<Data> {
+  name: string;
+  keyField: keyof Data;
+}
+
+export interface LocalDbTableAdapter<Data> {
+  saveItem(key: string, input: Data): Promise<boolean>;
+  removeItem(key: string): Promise<boolean>;
+  fetchAllItems(): Promise<Data[]>;
+  removeTable(): Promise<boolean>;
+  clearTable(): Promise<boolean>;
+}
+
+export interface ClientAdapterConfig {
+  dbAdapter: LocalDbAdapter;
+  dbVersion: number;
+  dbPrefix: string;
+}
+
 export interface LocalDbAdapter {
-  fetchEntityAll<Data>(input: LocalDbFetchAllInput): Promise<Data[]>;
-  saveItem<Data>(input: SaveItemInput<Data>): Promise<boolean>;
-  removeItem(input: RemoveItemInput): Promise<boolean>;
-  clearEntity(input: EntityDbInfo): Promise<boolean>;
+  getTable<Data>(conifg: GetTableConfig<Data>): Promise<LocalDbTableAdapter<Data>>;
   initialize(input: DbInfo): Promise<boolean>;
-  fetchSystemInfo<Data>(db: DbInfo, key: string): Promise<Data>;
-  saveSystemInfo<Data>(db: DbInfo, key: string, value: Data): Promise<boolean>;
 }

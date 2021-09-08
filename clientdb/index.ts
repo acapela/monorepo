@@ -1,11 +1,12 @@
 import { typedKeys } from "~shared/object";
+
 import {
-  createEntityClient,
   EntityClient,
   EntityClientFromDefinition,
   GetEntityClientByDefinition,
+  createEntityClient,
 } from "./entity/client";
-import { LocalDbAdapter } from "./entity/db/adapter";
+import { ClientAdapterConfig, DbEntityInfo, LocalDbAdapter } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { EntitiesConnectionsConfig } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
@@ -13,7 +14,8 @@ import { EntitiesMap } from "./entity/entitiesMap";
 export * from "./entity/index";
 
 interface ClientDbConfig {
-  dbAdapter?: LocalDbAdapter;
+  db?: ClientAdapterConfig;
+  //
 }
 
 type ClientDb<Entities extends EntitiesMap> = {
@@ -21,7 +23,7 @@ type ClientDb<Entities extends EntitiesMap> = {
 };
 
 export function createClientDb<Entities extends EntitiesMap>(
-  config: ClientDbConfig,
+  { db }: ClientDbConfig,
   entitiesMap: Entities
 ): ClientDb<Entities> {
   const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
@@ -44,12 +46,23 @@ export function createClientDb<Entities extends EntitiesMap>(
 
   typedKeys(entitiesMap).forEach((entityKey) => {
     const definition = entitiesMap[entityKey];
-    const entityClient = createEntityClient(definition, entitiesConnectionConfig);
+    const entityClient = createEntityClient(definition, {
+      connectionsConfig: entitiesConnectionConfig,
+      dbAdapterConfig: db,
+    });
 
     definitionClientMap.set(definition, entityClient);
 
     clientdb[entityKey] = entityClient;
   });
+
+  if (db && typeof window !== "undefined") {
+    const entitiesInfo = typedKeys(entitiesMap).map((entityName): DbEntityInfo => {
+      const definition = entitiesMap[entityName];
+      return { name: definition.config.name, keyField: definition.config.keyField as string };
+    });
+    db.dbAdapter.initialize({ dbPrefix: db.dbPrefix, dbVersion: db.dbVersion, entities: entitiesInfo });
+  }
 
   return clientdb;
 }

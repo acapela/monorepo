@@ -1,14 +1,16 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+
 import { TopicFragment, UpdatedTopicsQuery, UpdatedTopicsQueryVariables } from "~frontend/../../gql";
+import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
-import { clientdb } from ".";
+
 import { messageEntity } from "./message";
 import { roomEntity } from "./room";
 import { spaceEntity } from "./space";
 import { userEntity } from "./user";
 import { getType } from "./utils";
+import { clientdb } from ".";
 
 const topicFragment = gql`
   fragment Topic on topic {
@@ -44,11 +46,11 @@ export const topicEntity = defineEntity(
     type: getType<TopicFragment>(),
     name: "topic",
     getCacheKey: (space) => space.id,
-    getId: (topic) => topic.id,
+    keyField: "id",
     sync: {
       initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
-        return subscribeToTopicUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
+        return subscribeToTopicUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
           updateItems(newData.topic);
         });
       },

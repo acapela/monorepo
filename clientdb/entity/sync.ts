@@ -3,7 +3,7 @@ import { EntityDefinition } from "./definition";
 interface SyncManager<Data> {
   updateItems(items: Data[]): void;
   removeItems(items: Data[]): void;
-  lastSyncDate: Date | null;
+  lastSyncDate: Date;
 }
 
 type SyncCleanup = () => void;
@@ -27,7 +27,7 @@ export function createEntitySyncManager<Data>(
   definition: EntityDefinition<Data, any>,
   config: EntitySyncManagerConfig<Data>
 ): EntitySyncManager<Data> {
-  let lastSyncDate: Date | null = null;
+  let lastSyncDate: Date = new Date(0);
   const syncConfig = definition.config.sync;
 
   if (!syncConfig) {
@@ -35,10 +35,8 @@ export function createEntitySyncManager<Data>(
   }
 
   function startNextSync() {
-    console.log("sync", definition.config.name);
     let didScheduleAgain = false;
     function scheduleAgain() {
-      console.log("again", definition.config.name);
       if (didScheduleAgain) return;
       didScheduleAgain = true;
 
@@ -47,11 +45,9 @@ export function createEntitySyncManager<Data>(
       startNextSync();
     }
 
-    console.log({ lastSyncDate });
     const maybeCleanup = syncConfig.pull?.({
       lastSyncDate,
       updateItems(items) {
-        console.log("will try update", definition.config.name, { items });
         if (!items.length) return;
 
         maybeCleanup?.();
@@ -74,7 +70,6 @@ export function createEntitySyncManager<Data>(
 
     const foo = await syncConfig.initPromise?.();
 
-    console.log({ foo });
     startNextSync();
   }
 

@@ -28,19 +28,18 @@ const [, { subscribe: subscribeToAttachmentUpdates }] = createQuery<
         ...Attachment
       }
     }
-  `,
-  {}
+  `
 );
 
 export const attachmentEntity = defineEntity<AttachmentFragment>(
   {
     name: "attachment",
     getCacheKey: (space) => space.id,
-    getId: (space) => space.id,
+    keyField: "id",
     sync: {
       initPromise: () => renderedApolloClientPromise,
       pull({ lastSyncDate, updateItems }) {
-        return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate?.toISOString() ?? null }, (newData) => {
+        return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
           updateItems(newData.attachment);
         });
       },
