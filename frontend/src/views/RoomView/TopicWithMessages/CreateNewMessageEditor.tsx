@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
@@ -125,12 +125,42 @@ const useCreateMessageMutation = () =>
     }
   );
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
-  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
-  const [value, setValue] = useState<RichEditorNode>(getEmptyRichContent);
-  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
+function useLocalStorageState<S>({
+  key,
+  getInitialValue,
+  checkShouldStore,
+}: {
+  key: string;
+  getInitialValue: () => S;
+  checkShouldStore: (value: S) => boolean;
+}): [S, Dispatch<SetStateAction<S>>] {
+  const [value, setValue] = useState(() => {
+    const storedValue = localStorage.getItem(key);
+    return storedValue ? JSON.parse(storedValue) : getInitialValue;
+  });
 
+  useEffect(() => {
+    if (checkShouldStore(value)) {
+      localStorage.setItem(key, JSON.stringify(value));
+    } else {
+      localStorage.removeItem(key);
+    }
+  }, [value, checkShouldStore, key]);
+
+  return [value, setValue];
+}
+
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
   const editorRef = useRef<Editor>(null);
+
+  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
+  const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
+  const [value, setValue] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-topic:" + topicId,
+    getInitialValue: getEmptyRichContent,
+    checkShouldStore,
+  });
+  const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
 
   const topicContext = useTopicStoreContext();
   const roomContext = useRoomStoreContext();
