@@ -8,10 +8,11 @@ interface Props {
 }
 
 export function CommandLogs({ runner }: Props) {
-  const [logLines, setLogLines] = useState<string[]>([]);
+  const [logLines, setLogLines] = useState<string[]>(() => {
+    return [...runner.lines];
+  });
 
   useEffect(() => {
-    setLogLines([...runner.lines]);
     return runner.onNewLine((line) => {
       setLogLines((lines) => [...lines, line]);
     });
@@ -19,7 +20,7 @@ export function CommandLogs({ runner }: Props) {
 
   return (
     <Box flexDirection="column">
-      {logLines.slice(0, 5).map((line, index) => {
+      {logLines.map((line, index) => {
         return (
           <Box key={index + line}>
             <Text>{line}</Text>

@@ -30,6 +30,7 @@ export async function createStepCommandRunner(step: ScenarioStep, command: strin
 
       callback(parsedLine);
     }
+
     std?.on("data", handleChunk);
 
     return () => {

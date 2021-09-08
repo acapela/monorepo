@@ -69,7 +69,7 @@ export function StepRunner({ step, onFinished }: Props) {
     <Box flexDirection="column">
       {selectedCommand && (
         <Box key="logs">
-          <CommandLogs runner={selectedCommand} />
+          <CommandLogs key={selectedCommand.command} runner={selectedCommand} />
         </Box>
       )}
       <Box>
