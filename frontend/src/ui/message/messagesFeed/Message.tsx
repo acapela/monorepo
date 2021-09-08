@@ -203,11 +203,11 @@ const UITools = styled.div<{}>`
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  gap: 16px;
+  gap: 8px;
 `;
 
 const UIMessageBody = styled.div<{}>`
   ${MessageTasks} {
-    margin-top: 24px;
+    margin-top: 8px;
   }
 `;
