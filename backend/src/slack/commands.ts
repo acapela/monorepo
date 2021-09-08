@@ -1,6 +1,7 @@
 import * as SlackBolt from "@slack/bolt";
 
 import { db } from "~db";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 
 import { getSlackInstallURL } from "./install";
@@ -98,5 +99,16 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       response_type: "in_channel",
       text: `Please continue the discussion here: ${process.env.FRONTEND_URL}/space/${space.id}/${room.id}`,
     });
+    if (user) {
+      trackBackendUserEvent(user.id, "Created Room", {
+        origin: "slack-command",
+        roomId: room.id,
+        roomName: room.name,
+        roomDeadline: room.deadline,
+        spaceId: room.space_id,
+        numberOfInitialMembers: users.length,
+        isRecurring: !!room.recurrance_interval_in_days,
+      });
+    }
   });
 }
