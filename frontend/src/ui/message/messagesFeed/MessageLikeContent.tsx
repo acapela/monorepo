@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageLikeContent_UserFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { borderRadius } from "~ui/baseStyles";
 import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
@@ -27,19 +28,28 @@ interface Props {
   user: MessageLikeContent_UserFragment;
   date: Date;
   children: ReactNode;
+  hasHiddenMetadata?: boolean;
   tools?: ReactNode;
   className?: string;
 }
 
-const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className }) => {
+const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
   const holderRef = useRef<HTMLDivElement>(null);
   const currentUser = useCurrentUser();
 
   const isOwnMessage = currentUser?.id === user.id;
 
+  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
+
   return (
-    <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
-      <MessageMetaData user={user} date={date}>
+    <UIAnimatedMessageWrapper
+      ref={holderRef}
+      isOwnMessage={isOwnMessage}
+      className={className}
+      onMouseEnter={() => setHovered()}
+      onMouseLeave={() => unsetHovered()}
+    >
+      <MessageMetaData user={user} date={date} isMetaDataHidden={hasHiddenMetadata} isHovered={isHovered}>
         {children}
       </MessageMetaData>
       {tools && <UITools>{tools}</UITools>}

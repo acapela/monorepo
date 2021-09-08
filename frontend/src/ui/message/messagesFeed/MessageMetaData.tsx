@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { MessageMetaData_UserFragment } from "~gql";
-import { fontSize } from "~ui/baseStyles";
+import { theme } from "~ui/theme";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
 const fragments = {
@@ -21,37 +21,54 @@ const fragments = {
 
 interface Props {
   user: MessageMetaData_UserFragment;
+  isMetaDataHidden: boolean;
+  isHovered: boolean;
   date: Date;
   children: ReactNode;
 }
 
-export const MessageMetaData = withFragments(fragments, ({ user, date, children }: Props) => (
-  <UIHolder>
-    <UserAvatar user={user} size="small" />
-    <UIHead>
-      {user.name || "Guest"} <TimeLabelWithDateTooltip date={date} />
-    </UIHead>
-    <div />
-    {children}
-  </UIHolder>
-));
+export const MessageMetaData = withFragments(
+  fragments,
+  ({ user, date, children, isMetaDataHidden, isHovered }: Props) => {
+    const canShowSideTimeLabel = isMetaDataHidden && isHovered;
+
+    return (
+      <UIHolder>
+        {!isMetaDataHidden && <UserAvatar user={user} size="small" />}
+        {!isMetaDataHidden && (
+          <UIHead>
+            {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
+          </UIHead>
+        )}
+        <div>{canShowSideTimeLabel && <UISideTimeLabel date={date} />}</div>
+        {children}
+      </UIHolder>
+    );
+  }
+);
 
 const UIHolder = styled.div<{}>`
   display: grid;
-  align-items: center;
-  grid-template-columns: auto minmax(360px, 700px);
+
+  grid-template-columns: 24px minmax(360px, 700px);
   gap: 8px 12px;
 `;
 
 const UIHead = styled.div<{}>`
-  font-weight: bold;
-  font-size: ${fontSize.label};
   display: flex;
+  align-items: center;
   gap: 8px;
 
-  ${TimeLabelWithDateTooltip} {
-    opacity: 0.4;
-    user-select: none;
-    font-weight: 400;
-  }
+  ${theme.font.body14.semibold.build()}
+`;
+
+const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
+  opacity: 0.4;
+  user-select: none;
+`;
+
+const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
+  ${theme.font.body12.build()};
+  opacity: 0.4;
+  user-select: none;
 `;

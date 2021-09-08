@@ -71,12 +71,13 @@ const fragments = {
 
 interface Props extends MotionProps {
   message: Message_MessageFragment;
+  hasHiddenMetadata?: boolean;
   isReadonly?: boolean;
   className?: string;
 }
 
 const _Message = styled<Props>(
-  observer(({ message, className, isReadonly }) => {
+  observer(({ message, className, isReadonly, hasHiddenMetadata = false }) => {
     const user = useCurrentUser();
     const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
       gql`
@@ -165,6 +166,7 @@ const _Message = styled<Props>(
             )
           }
           user={message.user}
+          hasHiddenMetadata={hasHiddenMetadata}
           date={new Date(message.created_at)}
         >
           <UIMessageBody>

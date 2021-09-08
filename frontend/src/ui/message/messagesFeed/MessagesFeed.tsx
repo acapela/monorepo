@@ -37,10 +37,17 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
       {messages.map((message, index) => {
         const previousMessage = messages[index - 1] ?? null;
 
+        const isSameAuthorAsPreviousMessage = previousMessage?.user_id === message.user_id;
+
         return (
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
-            <Message isReadonly={isReadonly} message={message} key={message.id} />
+            <Message
+              isReadonly={isReadonly}
+              message={message}
+              key={message.id}
+              hasHiddenMetadata={isSameAuthorAsPreviousMessage}
+            />
           </Fragment>
         );
       })}
