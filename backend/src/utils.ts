@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { extractAndAssertBearerToken } from "./authentication";
 import { AuthenticationError } from "./errors/errorTypes";
 
@@ -15,10 +16,6 @@ export function middlewareRequireBearerToken(secretValue: string, errorMessage: 
     }
     next();
   };
-}
-
-export function isDev() {
-  return !["staging", "production"].includes(process.env.STAGE);
 }
 
 export function isValidDateString(dateString: string) {

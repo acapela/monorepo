@@ -1,34 +1,37 @@
 import { gql } from "@apollo/client";
-import { addToast } from "~ui/toasts/data";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
+  AddSpaceMemberMutation,
+  AddSpaceMemberMutationVariables,
   CreateSpaceMutation,
   CreateSpaceMutationVariables,
+  DeleteSpaceMutation,
+  DeleteSpaceMutationVariables,
+  EditSpaceMutation,
+  EditSpaceMutationVariables,
+  IsCurrentUserSpaceMember_SpaceFragment,
+  RemoveSpaceMemberMutation,
+  RemoveSpaceMemberMutationVariables,
+  SingleSpaceQuery,
+  SingleSpaceQueryVariables,
+  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
+  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
   SpacesQuery,
   SpacesQueryVariables,
   TeamSpacesQuery,
   TeamSpacesQueryVariables,
-  SingleSpaceQuery,
-  SingleSpaceQueryVariables,
-  AddSpaceMemberMutation,
-  AddSpaceMemberMutationVariables,
-  RemoveSpaceMemberMutation,
-  RemoveSpaceMemberMutationVariables,
-  EditSpaceMutation,
-  EditSpaceMutationVariables,
-  DeleteSpaceMutation,
-  DeleteSpaceMutationVariables,
-  SpaceDetailedInfoFragment as SpaceDetailedInfoFragmentType,
-  SpaceBasicInfoFragment as SpaceBasicInfoFragmentType,
 } from "~gql";
-import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
-import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { createFragment, createMutation, createQuery } from "./utils";
-import { TeamDetailedInfoFragment } from "./teams";
-import { getUUID } from "~shared/uuid";
 import { slugify } from "~shared/slugify";
+import { getUUID } from "~shared/uuid";
+import { addToast } from "~ui/toasts/data";
+
+import { RoomBasicInfoFragment, RoomDetailedInfoFragment } from "./rooms";
+import { TeamDetailedInfoFragment } from "./teams";
+import { UserBasicInfoFragment } from "./user";
+import { createFragment, createMutation, createQuery, withFragments } from "./utils";
 import { getUpdatedDataWithInput } from "./utils/updateWithInput";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 
 export const SpaceBasicInfoFragment = createFragment<SpaceBasicInfoFragmentType>(
   () => gql`
@@ -77,11 +80,6 @@ export const [useTeamSpacesQuery] = createQuery<TeamSpacesQuery, TeamSpacesQuery
   `
 );
 
-export function useCurrentTeamSpaces() {
-  const teamId = useAssertCurrentTeamId();
-  return useTeamSpacesQuery({ teamId });
-}
-
 export const [useSpacesQuery] = createQuery<SpacesQuery, SpacesQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
@@ -111,7 +109,7 @@ export function usePreferredSpaces(limit = 10) {
   return [...mySpaces, ...otherSpaces].slice(0, limit);
 }
 
-export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
+export const [useSingleSpaceQuery] = createQuery<SingleSpaceQuery, SingleSpaceQueryVariables>(
   () => gql`
     ${SpaceDetailedInfoFragment()}
 
@@ -123,11 +121,26 @@ export const [useSingleSpaceQuery, singleSpaceQueryManager] = createQuery<Single
   `
 );
 
-export function useIsCurrentUserSpaceMember(space?: SpaceBasicInfoFragmentType) {
-  const user = useAssertCurrentUser();
+export const useIsCurrentUserSpaceMember = withFragments(
+  {
+    space: gql`
+      fragment IsCurrentUserSpaceMember_space on space {
+        members {
+          space_id
+          user_id
+          user {
+            id
+          }
+        }
+      }
+    `,
+  },
+  function useIsCurrentUserSpaceMember(space?: IsCurrentUserSpaceMember_SpaceFragment) {
+    const user = useAssertCurrentUser();
 
-  return space?.members.some((member) => member.user.id === user.id) ?? false;
-}
+    return space?.members.some((member) => member.user.id === user.id) ?? false;
+  }
+);
 
 export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
   CreateSpaceMutation,
@@ -250,6 +263,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
       return {
         __typename: "mutation_root",
         insert_space_member_one: {
+          __typename: "space_member",
           space_id: vars.spaceId,
           user_id: vars.userId,
         },

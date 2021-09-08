@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ReactNode, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
+
 import { getFocusedElement } from "~shared/focus";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
@@ -11,7 +12,7 @@ import { CollapseToggleButton } from "~ui/buttons/CollapseToggleButton";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 interface Props {
-  initialIsOpened?: boolean;
+  isInitiallyOpen?: boolean;
   persistanceKey?: string;
   headerNode: ReactNode;
   children: ReactNode;
@@ -19,27 +20,27 @@ interface Props {
 
 const closedPanelsPersistanceInfo = createLocalStorageValueManager<Record<string, boolean>>("closed-panels", {});
 
-export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerNode, children }: Props) {
-  const [isOpened, setIsOpened] = useState(initialIsOpened);
+export function CollapsePanel({ isInitiallyOpen = false, persistanceKey, headerNode, children }: Props) {
+  const [isOpen, setIsOpen] = useState(isInitiallyOpen);
   const holderRef = useRef<HTMLDivElement>(null);
 
   useIsomorphicLayoutEffect(() => {
     if (!persistanceKey) return;
 
-    const persistedIsOpened = closedPanelsPersistanceInfo.get()[persistanceKey];
+    const persistedIsOpen = closedPanelsPersistanceInfo.get()[persistanceKey];
 
-    if (persistedIsOpened === undefined) return;
+    if (persistedIsOpen === undefined) return;
 
-    setIsOpened(persistedIsOpened);
+    setIsOpen(persistedIsOpen);
   }, [persistanceKey]);
 
   useDependencyChangeEffect(() => {
     if (!persistanceKey) return;
 
     closedPanelsPersistanceInfo.update((closeInfo) => {
-      closeInfo[persistanceKey] = isOpened;
+      closeInfo[persistanceKey] = isOpen;
     });
-  }, [isOpened]);
+  }, [isOpen]);
 
   const isHovered = useIsElementOrChildHovered(holderRef);
 
@@ -51,20 +52,20 @@ export function CollapsePanel({ initialIsOpened = false, persistanceKey, headerN
         return;
       }
 
-      setIsOpened(!isOpened);
+      setIsOpen(!isOpen);
     },
     { isEnabled: isHovered }
   );
 
   return (
     <UIHolder ref={holderRef}>
-      <UIHead onClick={() => setIsOpened(!isOpened)}>
+      <UIHead onClick={() => setIsOpen(!isOpen)}>
         <UIToggleIcon>
-          <CollapseToggleButton isOpened={isOpened} onToggle={() => setIsOpened(!isOpened)} />
+          <CollapseToggleButton isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
         </UIToggleIcon>
         <UIHeadContent>{headerNode}</UIHeadContent>
       </UIHead>
-      {isOpened && <UIContent>{children}</UIContent>}
+      {isOpen && <UIContent>{children}</UIContent>}
     </UIHolder>
   );
 }

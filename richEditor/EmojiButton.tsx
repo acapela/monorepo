@@ -1,11 +1,13 @@
+import type { BaseEmoji, EmojiData } from "emoji-mart";
+import { AnimatePresence } from "framer-motion";
 import { useRef } from "react";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
+
 import { ToolbarButton } from "./ToolbarButton";
-import { AnimatePresence } from "framer-motion";
-import type { EmojiData, BaseEmoji } from "emoji-mart";
 
 interface Props {
   onEmojiSelected: (emoji: string) => void;
@@ -20,7 +22,7 @@ export function EmojiButton({ onEmojiSelected }: Props) {
       <ToolbarButton ref={buttonRef} tooltipLabel="Add emoji..." onClick={open} icon={<IconEmotionSmile />} />
       <AnimatePresence>
         {isPicking && (
-          <Popover anchorRef={buttonRef} placement="top">
+          <Popover anchorRef={buttonRef} placement="top" enableScreenCover>
             <EmojiPickerWindow
               onCloseRequest={close}
               onSelect={(emoji) => {

@@ -1,10 +1,11 @@
 import styled from "styled-components";
+
 import { CollapsibleRoomInfo } from "./CollapsibleRoomInfo";
-import { RoomWithActivities } from "./useRoomsWithActivities";
+import { RoomWithActivity } from "./useRoomsWithActivity";
 
 interface Props {
   className?: string;
-  rooms: RoomWithActivities[];
+  rooms: RoomWithActivity[];
 }
 
 export const RoomsList = styled(function RoomsList({ className, rooms }: Props) {

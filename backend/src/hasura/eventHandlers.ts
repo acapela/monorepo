@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
-import logger from "~shared/logger";
-import { mapGetOrCreate } from "~shared/map";
+
 import { convertMaybeArrayToArray } from "~shared/array";
-import { RawHasuraEvent, HasuraEvent, normalizeHasuraEvent, getUserIdFromRawHasuraEvent } from "./eventUtils";
+import { isDev } from "~shared/dev";
+import { log } from "~shared/logger";
+import { mapGetOrCreate } from "~shared/map";
+
+import { HasuraEvent, RawHasuraEvent, getUserIdFromRawHasuraEvent, normalizeHasuraEvent } from "./eventUtils";
 
 type EntitiesEventsMapBase = Record<string, unknown>;
 
@@ -47,7 +50,7 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const normalizedEvent = normalizeHasuraEvent(event);
 
     if (!normalizedEvent) {
-      logger.warn(`Failed to normalize hasura event`, { event });
+      log.warn(`Failed to normalize hasura event`, { event });
       return;
     }
 
@@ -60,19 +63,28 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     const hasuraEvent = req.body as RawHasuraEvent<unknown>;
     const userId = getUserIdFromRawHasuraEvent(hasuraEvent);
 
-    logger.info("Handling event", {
-      eventId: hasuraEvent.id,
-      triggerName: hasuraEvent.trigger.name,
-      userId,
-    });
+    if (isDev()) {
+      log.info(`Handling event (${hasuraEvent.trigger.name})`);
+    } else {
+      log.info("Handling event", {
+        eventId: hasuraEvent.id,
+        triggerName: hasuraEvent.trigger.name,
+        userId,
+      });
+    }
 
     await handleHasuraEvent(hasuraEvent);
 
-    logger.info("Handled event", {
-      eventId: hasuraEvent.id,
-      triggerName: hasuraEvent.trigger.name,
-      userId,
-    });
+    if (isDev()) {
+      log.info(`Handled event (${hasuraEvent.trigger.name})`);
+    } else {
+      log.info("Handled event", {
+        eventId: hasuraEvent.id,
+        triggerName: hasuraEvent.trigger.name,
+        userId,
+      });
+    }
+
     res.status(200).json({
       id: hasuraEvent.id,
       trigger: {

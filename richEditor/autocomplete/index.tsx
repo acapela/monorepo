@@ -1,10 +1,17 @@
-import { Node, mergeAttributes, Editor } from "@tiptap/core";
+import { Editor, Node, mergeAttributes } from "@tiptap/core";
+import {
+  KeyboardShortcutCommand,
+  NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+  ReactRenderer,
+} from "@tiptap/react";
 import Suggestion, { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
-import { KeyboardShortcutCommand, ReactNodeViewRenderer, ReactRenderer } from "@tiptap/react";
-import { ComponentType, FunctionComponent } from "react";
-import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
+import { PluginKey } from "prosemirror-state";
+import React, { ComponentType, FunctionComponent } from "react";
+
 import { AutocompletePickerPopoverBase } from "./AutocompletePickerPopover";
-import { AutocompleteNodeWrapper } from "./AutocompleteNodeWrapper";
+import { AutocompleteNodeProps, AutocompletePickerProps } from "./component";
 
 interface AutocompletePluginOptions<D> {
   type: string;
@@ -25,22 +32,31 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     return <AutocompletePickerPopoverBase baseProps={props} PickerComponent={options.pickerComponent} />;
   }
 
-  function NodeComponent(props: AutocompleteNodeProps<D>) {
+  function NodeComponent(props: NodeViewProps) {
     const data = props.node.attrs?.data as D;
+    const { editor } = props;
+
+    const NodeComponent = options.nodeComponent as ComponentType<AutocompleteNodeProps<D>>;
+
     return (
-      <AutocompleteNodeWrapper
-        type={options.type}
-        node={props.node}
-        data={data}
-        NodeComponent={options.nodeComponent}
-      />
+      <NodeViewWrapper className={`node-${options.type}`} as="span">
+        <NodeComponent
+          data={data}
+          node={props.node}
+          isEditable={editor.isEditable}
+          update={(attributes) => {
+            const previousAttributes = props.node.attrs.data;
+            const mergedAttributes = { ...previousAttributes, ...attributes };
+            props.updateAttributes({ data: mergedAttributes });
+          }}
+        />
+      </NodeViewWrapper>
     );
   }
 
   const suggestionOptions: ProsemirrorSuggestionOptions = {
     allowSpaces: options.allowSpaces ?? false,
     char: options.triggerChar,
-
     command: ({ editor, range, props }) => {
       editor
         .chain()
@@ -164,6 +180,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
     addProseMirrorPlugins() {
       return [
         Suggestion({
+          pluginKey: new PluginKey(`autocomplete-${options.type}`),
           editor: this.editor,
           ...suggestionOptions,
         }),

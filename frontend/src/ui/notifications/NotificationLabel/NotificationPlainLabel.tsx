@@ -1,22 +1,24 @@
 import { AnimatePresence } from "framer-motion";
 import { MouseEvent, ReactNode } from "react";
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
+import { useCurrentTeamMember } from "~frontend/gql/teams";
+import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { NotificationInfoFragment } from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { handleWithStopPropagation } from "~shared/events";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
+import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { PopPresenceAnimator } from "~ui/animations";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { IconCheck, IconNotificationIndicator } from "~ui/icons";
+import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
-import { TextBody14, TextBody } from "~ui/typo";
-import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
-import { useCurrentTeamMember } from "~frontend/gql/teams";
-import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { useSharedRef } from "~shared/hooks/useSharedRef";
+import { TextBody, TextBody14 } from "~ui/typo";
 
 interface Props {
   userId: string;
@@ -32,7 +34,7 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
 ) {
   const holderRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   const id = notification.id;
-  const user = useCurrentTeamMember(userId);
+  const [user] = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
 
   const isHovered = useIsElementOrChildHovered(holderRef);
@@ -40,19 +42,22 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
   function handleClick(event: MouseEvent) {
     markAsRead();
     onClick?.(event);
+    trackEvent("Clicked Notification Link");
   }
 
   function markAsRead() {
     markNotificationAsRead({ id, date: new Date().toISOString() });
+    trackEvent("Marked Notification As Read");
   }
 
   function markAsUnread() {
     markNotificationAsUnread({ id });
+    trackEvent("Marked Notification As Unread");
   }
 
   return (
     <UIHolder onClick={handleClick} ref={holderRef}>
-      <UserAvatar user={user ?? undefined} />
+      {user && <UserAvatar user={user} />}
       <UIContent>
         <UITitle>{titleNode}</UITitle>
         <UIDate secondary semibold>

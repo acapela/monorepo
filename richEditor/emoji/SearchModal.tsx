@@ -1,6 +1,7 @@
 import type { BaseEmoji } from "emoji-mart";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+
 import { Channel } from "~shared/channel";
 import { SelectionPopover } from "~ui/popovers/SelectionPopover";
 import { SelectList } from "~ui/SelectList";

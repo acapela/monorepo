@@ -1,11 +1,12 @@
 import { useMap } from "react-use";
+
 import { MediaSource } from "./MediaSource";
 
 export function useRecorderErrors() {
   const [map, { set: setKey }] = useMap<{ [key: string]: string | null }>({
-    [MediaSource.SCREEN]: null,
-    [MediaSource.CAMERA]: null,
-    [MediaSource.MICROPHONE]: null,
+    [MediaSource.Screen]: null,
+    [MediaSource.Camera]: null,
+    [MediaSource.Microphone]: null,
   });
 
   function set(mediaSource: MediaSource, error: string) {

@@ -1,100 +1,76 @@
+import { gql } from "@apollo/client";
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { ScreenCover } from "~frontend/ui/Modal/ScreenCover";
-import { AttachmentDetailedInfoFragment } from "~gql";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
-import { WideIconButton } from "~ui/buttons/WideIconButton";
-import { IconCross } from "~ui/icons";
-import { useShortcuts } from "~ui/keyboard/useShortcut";
-import { theme } from "~ui/theme";
-import { MessageAttachmentActions } from "./MessageAttachmentActions";
-import { ATTACHMENT_PREVIEW_HEIGHT_PX, MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
-interface AttachmentProps {
-  attachment: AttachmentDetailedInfoFragment;
-  selectedMediaTime?: number | null;
-  onMediaTimeUpdate?: (time: number) => void;
-  onAttachmentRemoveRequest?: (attachment: AttachmentDetailedInfoFragment) => void;
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { withFragments } from "~frontend/gql/utils";
+import { MessageAttachment_AttachmentFragment, MessageAttachment_MessageFragment } from "~gql";
+import { theme } from "~ui/theme";
+
+import { MessageAttachmentActions } from "./MessageAttachmentActions";
+import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
+
+const fragments = {
+  message: gql`
+    fragment MessageAttachment_message on message {
+      user_id
+      type
+    }
+  `,
+  attachment: gql`
+    ${MessageAttachmentDisplayer.fragments.attachment}
+
+    fragment MessageAttachment_attachment on attachment {
+      id
+      ...MessageAttachmentDisplayer_attachment
+    }
+  `,
+};
+
+interface Props {
+  message: MessageAttachment_MessageFragment;
+  attachment: MessageAttachment_AttachmentFragment;
+  onAttachmentRemoveRequest?: (attachment: unknown) => void;
   className?: string;
 }
 
-export const MessageAttachment = styled<AttachmentProps>(
-  ({ attachment, selectedMediaTime, onMediaTimeUpdate, onAttachmentRemoveRequest }) => {
-    const mediaRef = useRef<HTMLVideoElement>(null);
-    const user = useCurrentUser();
-    const canEditAttachments = attachment.message?.user_id === user?.id;
-    const [isFullscreenOpened, { set: openFullScreen, unset: closeFullscreen }] = useBoolean(false);
+const _MessageAttachment = styled<Props>(({ message, attachment, className, onAttachmentRemoveRequest }) => {
+  const user = useAssertCurrentUser();
 
-    const onTimeUpdate = () => onMediaTimeUpdate?.(mediaRef.current?.currentTime ?? 0);
+  function getCanEditAttachments() {
+    if (message.user_id !== user.id) return false;
 
-    useEffect(() => {
-      if (typeof selectedMediaTime === "number" && mediaRef.current) {
-        mediaRef.current.currentTime = selectedMediaTime;
-      }
-    }, [selectedMediaTime]);
+    // For messages of non-text type, attachment is essential part of it, so entire message should be removed instead.
+    if (message.type !== "TEXT") return false;
 
-    useEffect(() => {
-      mediaRef.current?.addEventListener("timeupdate", onTimeUpdate);
-      return () => mediaRef.current?.removeEventListener("timeupdate", onTimeUpdate);
-    }, [mediaRef.current]);
-
-    useShortcuts(
-      ["Space", "Esc"],
-      () => {
-        closeFullscreen();
-      },
-      { isEnabled: isFullscreenOpened }
-    );
-
-    if (!attachment) return null;
-
-    const renderAttachment = () => {
-      return (
-        <MessageAttachmentDisplayer
-          mediaRef={mediaRef}
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          attachment={attachment!}
-          attachmentUrl={`/attachments/${attachment.id}`}
-          onClick={openFullScreen}
-        />
-      );
-    };
-
-    return (
-      <AnimateSharedLayout>
-        <UIInlineAttachmentHolder>
-          {renderAttachment()}
-          <AnimatePresence>
-            {canEditAttachments && (
-              <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
-            )}
-          </AnimatePresence>
-        </UIInlineAttachmentHolder>
-
-        {isFullscreenOpened && (
-          <ScreenCover isTransparent={false} onCloseRequest={closeFullscreen}>
-            <CornerButtonWrapper>
-              <WideIconButton tooltip="Esc or Space" onClick={closeFullscreen} kind="primary" icon={<IconCross />} />
-            </CornerButtonWrapper>
-            {renderAttachment()}
-          </ScreenCover>
-        )}
-      </AnimateSharedLayout>
-    );
+    return true;
   }
-)``;
+
+  const canEditAttachments = getCanEditAttachments();
+
+  if (!attachment) return null;
+
+  return (
+    <AnimateSharedLayout>
+      <UIInlineAttachmentHolder className={className}>
+        <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={`/attachments/${attachment.id}`} />
+        <AnimatePresence>
+          {canEditAttachments && (
+            <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
+          )}
+        </AnimatePresence>
+      </UIInlineAttachmentHolder>
+    </AnimateSharedLayout>
+  );
+})``;
+
+export const MessageAttachment = withFragments(fragments, _MessageAttachment);
 
 const UIInlineAttachmentHolder = styled.div<{}>`
+  height: 100%;
   display: flex;
   position: relative;
   ${theme.borderRadius.item}
   overflow: hidden;
-
-  /* Set explicit max height so it works properly in Safari. */
-  ${MessageAttachmentDisplayer} {
-    max-height: ${ATTACHMENT_PREVIEW_HEIGHT_PX}px;
-  }
 `;

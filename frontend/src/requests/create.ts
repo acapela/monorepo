@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
-import { JsonValue } from "~shared/types";
+
 import { readCurrentToken } from "~frontend/authentication/cookie";
 import { useEqualEffect } from "~shared/hooks/useEqualEffect";
+import { JsonValue } from "~shared/types";
 
 export function createBackendRequestSender<Input, Output>(route: string) {
   // Response from the server is sent as JSON which mean Dates will be converted to strings. Reflect it in the result type.
@@ -19,7 +20,7 @@ export function createBackendRequestSender<Input, Output>(route: string) {
     return response.data;
   }
 
-  function use(input: Input) {
+  function useBackendRequestSender(input: Input) {
     const [isLoading, setIsLoading] = useState(true);
     const [data, setData] = useState<JSONOutput | undefined>();
 
@@ -37,6 +38,6 @@ export function createBackendRequestSender<Input, Output>(route: string) {
 
   return {
     send,
-    use,
+    use: useBackendRequestSender,
   };
 }

@@ -8,24 +8,20 @@ import {
 } from "@apollo/client";
 import { memoize } from "lodash";
 import { useRef } from "react";
-import { VoidableIfEmpty } from "~shared/types";
-import { reportQueryUsage } from "./hydration";
-import { unwrapQueryData } from "./unwrapQueryData";
-import { getCurrentApolloClientHandler } from "./proxy";
-import { getRenderedApolloClient } from "~frontend/apollo/client";
-import { addRoleToContext, RequestWithRole } from "./withRole";
-import { waitForAllRunningMutationsToFinish } from "./createMutation";
-import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
-import { updateValue, ValueUpdater } from "~shared/updateValue";
 
-type QueryDefinitionOptions = RequestWithRole;
+import { getRenderedApolloClient } from "~frontend/apollo/client";
+import { useAsyncEffect } from "~shared/hooks/useAsyncEffect";
+import { VoidableIfEmpty } from "~shared/types";
+import { ValueUpdater, updateValue } from "~shared/updateValue";
+
+import { waitForAllRunningMutationsToFinish } from "./createMutation";
+import { reportQueryUsage } from "./hydration";
+import { getCurrentApolloClientHandler } from "./proxy";
+import { unwrapQueryData } from "./unwrapQueryData";
 
 type QueryExecutionOptions = Omit<QueryOptions, "query" | "variables">;
 
-export function createQuery<Data, Variables>(
-  query: () => DocumentNode,
-  queryDefinitionOptions?: QueryDefinitionOptions
-) {
+export function createQuery<Data, Variables>(query: () => DocumentNode) {
   type VoidableVariables = VoidableIfEmpty<Variables>;
 
   const getQuery = memoize(query);
@@ -42,10 +38,7 @@ export function createQuery<Data, Variables>(
     }
 
     const { data, ...rest } = useRawQuery(getQuery(), {
-      ...{
-        ...options,
-        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
-      },
+      ...options,
       variables: variables as Variables,
     });
 
@@ -57,7 +50,6 @@ export function createQuery<Data, Variables>(
     const subscriptionResult = useRawSubscription(getSubscriptionQuery(), {
       ...{
         ...options,
-        context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole),
         /**
          * We don't need cache for subscriptions and it can actually introduce hard to debug
          * race conditions.
@@ -160,7 +152,7 @@ export function createQuery<Data, Variables>(
   async function fetch(variables: Variables, options?: QueryExecutionOptions) {
     const response = await getRenderedApolloClient().query<Data, Variables>({
       query: getQuery(),
-      ...{ ...options, context: addRoleToContext(options?.context, queryDefinitionOptions?.requestWithRole) },
+      ...options,
       variables,
     });
 

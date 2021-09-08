@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+
 import { IconSelection } from "~ui/icons";
 import { theme } from "~ui/theme";
 
@@ -33,6 +34,7 @@ const UIHolder = styled.div<{}>`
   align-items: center;
 
   background-color: ${theme.colors.layout.background()};
+  border: 1px solid ${theme.colors.layout.softLine()};
   ${theme.borderRadius.card}
 `;
 

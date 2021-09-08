@@ -1,8 +1,10 @@
 import { startOfToday } from "date-fns";
 import { useState } from "react";
 import styled from "styled-components";
+
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { Calendar } from "~ui/time/Calendar";
+
 import { RoomsTimeline } from "./RoomsTimeline";
 
 export function CalendarView() {

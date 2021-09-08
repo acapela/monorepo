@@ -1,8 +1,10 @@
 import { validate as validateUuid } from "uuid";
+
+import { getNormalizedUserName } from "~backend/src/users/users";
 import { db } from "~db";
+
 import { ActionHandler } from "../actions/actionHandlers";
 import { NotFoundError, UnprocessableEntityError } from "../errors/errorTypes";
-import { getNormalizedUserName } from "~backend/src/users/users";
 
 export interface LookupTeamNameActionInputs {
   token: string;
@@ -29,7 +31,7 @@ export const lookupTeamName: ActionHandler<
       },
       include: {
         team: true,
-        user: true,
+        user_team_invitation_inviting_user_idTouser: true,
       },
     });
 
@@ -39,7 +41,8 @@ export const lookupTeamName: ActionHandler<
 
     return {
       team_name: teamInvitation.team.name,
-      inviter_name: getNormalizedUserName(teamInvitation.user),
+      inviter_name: getNormalizedUserName(teamInvitation.user_team_invitation_inviting_user_idTouser),
+      email: teamInvitation.email,
     };
   },
 };

@@ -1,34 +1,36 @@
 import { gql } from "@apollo/client";
+
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
-  CreateTeamMutation,
-  CreateTeamMutationVariables,
-  TeamsQuery,
-  TeamsQueryVariables,
-  TeamDetailsQuery,
-  TeamDetailsQueryVariables,
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables,
-  TeamBasicInfoQuery,
-  TeamBasicInfoQueryVariables,
-  TeamBasicInfoFragment as TeamBasicInfoFragmentType,
-  TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
-  TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
-  UserBasicInfoFragment as UserBasicInfoFragmentType,
+  CreateTeamMutation,
+  CreateTeamMutationVariables,
+  LookupTeamNameQuery,
+  LookupTeamNameQueryVariables,
   RemoveTeamInvitationMutation,
   RemoveTeamInvitationMutationVariables,
   RemoveTeamMemberMutation,
   RemoveTeamMemberMutationVariables,
-  LookupTeamNameQuery,
-  LookupTeamNameQueryVariables,
   ResendInvitationMutation,
   ResendInvitationMutationVariables,
+  TeamBasicInfoFragment as TeamBasicInfoFragmentType,
+  TeamBasicInfoQuery,
+  TeamBasicInfoQueryVariables,
+  TeamDetailedInfoFragment as TeamDetailedInfoFragmentType,
+  TeamDetailsQuery,
+  TeamDetailsQueryVariables,
+  TeamInvitationBasicInfoFragment as TeamInvitationBasicInfoFragmentType,
+  TeamsQuery,
+  TeamsQueryVariables,
+  UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
-import { createFragment, createMutation, createQuery } from "./utils";
+import { slugify } from "~shared/slugify";
+import { addToast } from "~ui/toasts/data";
+
 import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { addToast } from "~ui/toasts/data";
-import { slugify } from "~shared/slugify";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const TeamBasicInfoFragment = createFragment<TeamBasicInfoFragmentType>(
   () => gql`
@@ -71,6 +73,9 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
         user {
           ...UserBasicInfo
         }
+      }
+      slack_installation {
+        team_id
       }
     }
   `
@@ -143,12 +148,14 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export function useCurrentTeamMember(userId: string): UserBasicInfoFragmentType | null {
-  const [teamDetails] = useCurrentTeamDetails();
+export function useCurrentTeamMember(userId: string): [UserBasicInfoFragmentType | null, boolean] {
+  const [teamDetails, { loading }] = useCurrentTeamDetails();
 
   const teamMember = teamDetails?.memberships.find((membership) => membership.user.id === userId)?.user;
 
-  return teamMember ?? null;
+  const teamMemberData = teamMember ?? null;
+
+  return [teamMemberData, loading];
 }
 
 export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
@@ -208,8 +215,10 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
 >(
   () => gql`
     mutation RemoveTeamMember($teamId: uuid!, $userId: uuid!) {
-      delete_team_member_by_pk(team_id: $teamId, user_id: $userId) {
-        user_id
+      delete_team_member(where: { team_id: { _eq: $teamId }, user_id: { _eq: $userId } }) {
+        returning {
+          user_id
+        }
       }
     }
   `,
@@ -241,6 +250,7 @@ export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQ
       invite: lookup_team_name(token: $token) {
         team_name
         inviter_name
+        email
       }
     }
   `

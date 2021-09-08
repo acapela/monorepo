@@ -1,8 +1,9 @@
 import { pick } from "lodash";
 import router, { NextRouter, useRouter } from "next/router";
-import { assertDefined } from "~shared/assert";
 
+import { assertDefined } from "~shared/assert";
 import { groupByFilter } from "~shared/groupByFilter";
+
 import { InferParamsFromDefinition, RouteParamsDefinition } from "./params";
 import { fillParamsInUrl } from "./utils";
 

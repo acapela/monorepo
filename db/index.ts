@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+
 import { assert } from "~shared/assert";
 
 export type {
   account as Account,
   message as Message,
   message_type as MessageType,
+  message_reaction as MessageReaction,
   room as Room,
   room_member as RoomMember,
   topic as Topic,
@@ -13,6 +15,7 @@ export type {
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
+  task as Task,
   team as Team,
   space as Space,
   team_invitation as TeamInvitation,
@@ -24,6 +27,7 @@ export type {
   whitelist as Whitelist,
   notification as Notification,
   PrismaPromise,
+  Prisma,
 } from "@prisma/client";
 
 assert(process.env.DB_HOST, "DB_HOST required");

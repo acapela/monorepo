@@ -1,4 +1,4 @@
-import { db, Room, RoomMember } from "~db";
+import { Room, RoomMember, db } from "~db";
 
 export async function findRoomById(roomId: string): Promise<Room | null> {
   return await db.room.findUnique({

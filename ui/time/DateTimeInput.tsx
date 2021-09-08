@@ -1,11 +1,13 @@
 import { AnimatePresence } from "framer-motion";
 import React, { useRef } from "react";
 import styled from "styled-components";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { FieldWithLabel } from "~ui/forms/FieldWithLabel";
 import { IconCalendar } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { TextBody } from "~ui/typo";
+
 import { DateTimePicker } from "./DateTimePicker";
 
 interface Props {
@@ -13,9 +15,10 @@ interface Props {
   onChange: (value: Date) => void;
   isReadonly?: boolean;
   label?: string;
+  shouldSkipConfirmation?: boolean;
 }
 
-export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Props) => {
+export const DateTimeInput = ({ value, onChange, isReadonly = false, shouldSkipConfirmation, label }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { toggle: toggleOpenPicker, set: openPicker, unset: closePicker }] = useBoolean(false);
@@ -32,7 +35,11 @@ export const DateTimeInput = ({ value, onChange, isReadonly = false, label }: Pr
       <AnimatePresence>
         {isPickerOpen && (
           <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker onSubmit={handleSubmit} initialValue={value} />
+            <DateTimePicker
+              shouldSkipConfirmation={shouldSkipConfirmation}
+              onSubmit={handleSubmit}
+              initialValue={value}
+            />
           </Popover>
         )}
       </AnimatePresence>

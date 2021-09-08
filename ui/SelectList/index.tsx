@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { hoverActionCss, hoverActionActiveCss } from "~ui/transitions";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { borderRadius, shadow } from "~ui/baseStyles";
+
 import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 interface Props<T> {
   items: T[];
@@ -27,13 +28,18 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
     return true;
   });
 
+  // Prevents bubbling up of arrow key to parent container, used to prevent cursor in tip-tap editor from moving
+  // when ItemDropdown created from tip-tap node.
+  useShortcut("ArrowUp", () => true);
+  useShortcut("ArrowDown", () => true);
+
   return (
-    <UIHolder>
+    <UIHolder role="listbox">
       {items.map((item) => {
         const key = keyGetter(item);
         const isActive = activeKey === key;
         return (
-          <UIItem isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
+          <UIItem role="option" isActive={isActive} onClick={() => onItemSelected(item)} key={key}>
             {renderItem(item)}
           </UIItem>
         );

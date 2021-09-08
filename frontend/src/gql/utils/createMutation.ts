@@ -7,14 +7,15 @@ import {
 } from "@apollo/client";
 import { memoize, merge } from "lodash";
 import { DeepPartial } from "utility-types";
-import { ValueUpdater, updateValue } from "~shared/updateValue";
+
 import { getRenderedApolloClient } from "~frontend/apollo/client";
+import { createPromisesGroup } from "~shared/promiseGroup";
+import { ValueUpdater, updateValue } from "~shared/updateValue";
+
 import { runWithApolloProxy } from "./proxy";
 import { UnwrapQueryData, unwrapQueryData } from "./unwrapQueryData";
-import { addRoleToContext, RequestWithRole } from "./withRole";
-import { createPromisesGroup } from "~shared/promiseGroup";
 
-interface MutationDefinitionOptions<Data, Variables> extends RequestWithRole {
+interface MutationDefinitionOptions<Data, Variables> {
   // This callback is called optionally twice for both optimistic and actual response
   onOptimisticOrActualResponse?: (
     data: NonNullable<UnwrapQueryData<Data>>,
@@ -107,7 +108,6 @@ export function createMutation<Data, Variables>(
         const rawResult = await runMutationRaw({
           ...options,
           optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-          context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
           variables,
           update: createMutationUpdateCallback(variables, options),
         });
@@ -128,7 +128,6 @@ export function createMutation<Data, Variables>(
       const rawResult = await getRenderedApolloClient().mutate<Data, Variables>({
         ...options,
         optimisticResponse: mutationDefinitionOptions?.optimisticResponse,
-        context: addRoleToContext(options?.context, mutationDefinitionOptions?.requestWithRole),
         mutation: getMutation(),
         variables,
         update: createMutationUpdateCallback(variables, options),

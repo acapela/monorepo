@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
-import { createFragment, createMutation, createQuery } from "./utils";
+
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
@@ -7,12 +8,10 @@ import {
   TeamMembersQueryVariables,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
   UserDetailedInfoFragment as UserDetailedInfoFragmentType,
-  UserDetailedQuery,
-  UserDetailedQueryVariables,
 } from "~gql";
-import { UserTokenData } from "~shared/types/jwtAuth";
+
 import { TeamBasicInfoFragment } from "./teams";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { createFragment, createMutation, createQuery } from "./utils";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
@@ -76,28 +75,3 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
 
   return teamMembers;
 }
-
-export function convertUserTokenDataToInfoFragment(userTokenData: UserTokenData): UserBasicInfoFragmentType {
-  return {
-    id: userTokenData.id,
-    __typename: "user",
-    avatar_url: userTokenData.picture,
-    email: userTokenData.email,
-    name: userTokenData.name,
-  };
-}
-
-export const [useUserDetailedInfoQuery, userDetailedInfoQuery] = createQuery<
-  UserDetailedQuery,
-  UserDetailedQueryVariables
->(
-  () => gql`
-    ${UserDetailedInfoFragment()}
-
-    query UserDetailed($id: uuid!) {
-      user_by_pk(id: $id) {
-        ...UserDetailedInfo
-      }
-    }
-  `
-);

@@ -1,19 +1,35 @@
-import { SpaceBasicInfoFragment } from "~gql";
-import { createLengthValidator } from "~shared/validation/inputValidation";
-import { IconSelection } from "~ui/icons";
-import { routes } from "~frontend/router";
+import { gql } from "@apollo/client";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import {
-  useEditSpaceMutation,
-  useRemoveSpaceMemberMutation,
-  useAddSpaceMemberMutation,
-  useIsCurrentUserSpaceMember,
   deleteSpace,
+  useAddSpaceMemberMutation,
+  useEditSpaceMutation,
+  useIsCurrentUserSpaceMember,
+  useRemoveSpaceMemberMutation,
 } from "~frontend/gql/spaces";
+import { withFragments } from "~frontend/gql/utils";
+import { routes } from "~frontend/router";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { SpaceManager_SpaceFragment } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
+import { IconSelection } from "~ui/icons";
 
-export function useSpaceManager(space: SpaceBasicInfoFragment) {
+const fragments = {
+  space: gql`
+    ${useIsCurrentUserSpaceMember.fragments.space}
+
+    fragment SpaceManager_space on space {
+      id
+      name
+      ...IsCurrentUserSpaceMember_space
+    }
+  `,
+};
+
+export const useSpaceManager = withFragments(fragments, function useSpaceManager(space: SpaceManager_SpaceFragment) {
   const spaceId = space.id;
   const user = useAssertCurrentUser();
   const isCurrentUserMember = useIsCurrentUserSpaceMember(space);
@@ -24,18 +40,22 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
 
   async function join() {
     await addMember(user.id);
+    trackEvent("Joined Space", { userId: user.id, spaceId });
   }
 
   async function leave() {
     await removeMember(user.id);
+    trackEvent("Left Space", { userId: user.id, spaceId });
   }
 
   async function addMember(userId: string) {
     addSpaceMember({ userId, spaceId });
+    trackEvent("Joined Space", { userId, spaceId });
   }
 
   async function removeMember(userId: string) {
     removeSpaceMember({ userId, spaceId });
+    trackEvent("Left Space", { userId, spaceId });
   }
 
   async function toggleJoin() {
@@ -59,20 +79,21 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     if (!newSpaceName?.trim()) return;
 
     if (newSpaceName === space.name) return;
-
+    const oldSpaceName = space?.name;
     await edit({ spaceId: space?.id, input: { name: newSpaceName } });
+    trackEvent("Renamed Space", { spaceId, newSpaceName, oldSpaceName });
   }
 
   async function remove() {
     routes.spaces.prefetch({});
     const didConfirm = await openConfirmPrompt({
-      title: `Remove space`,
+      title: `Delete space`,
       description: (
         <>
-          Are you sure you want to remove space <strong>{space.name}</strong>
+          Are you sure you want to delete space <strong>{space.name}</strong>
         </>
       ),
-      confirmLabel: `Remove`,
+      confirmLabel: `Delete Space`,
     });
 
     if (!didConfirm) return;
@@ -80,6 +101,7 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     routes.spaces.push({});
 
     await deleteSpace({ spaceId: space.id });
+    trackEvent("Deleted Space", { spaceId });
   }
 
   const members = space.members.map((member) => member.user);
@@ -96,4 +118,4 @@ export function useSpaceManager(space: SpaceBasicInfoFragment) {
     removeMember,
     members,
   };
-}
+});

@@ -1,12 +1,14 @@
 import React from "react";
-import { routes } from "~frontend/router";
+import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createRoom } from "~frontend/gql/rooms";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
+import { routes } from "~frontend/router";
+import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
 import { IconPlusSquare } from "~ui/icons/default";
-import styled from "styled-components";
-import { getUUID } from "~shared/uuid";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 type Props = {
   className?: string;
@@ -25,6 +27,7 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
     }
 
     const roomId = getUUID();
+    const initialMembers = { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) };
 
     createRoom({
       input: {
@@ -32,11 +35,20 @@ export const CreateRoomButton = styled(function CreateRoomButton({ className, bu
         name: createRoomInput.name,
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
-        members: { data: createRoomInput.participantsIds.map((id) => ({ user_id: id })) },
+        recurrance_interval_in_days: createRoomInput.recurranceIntervalInDays,
+        members: initialMembers,
         owner_id: user.id,
       },
     });
-
+    trackEvent("Created Room", {
+      roomId,
+      roomName: createRoomInput.name,
+      roomDeadline: createRoomInput.deadline,
+      spaceId: createRoomInput.spaceId,
+      numberOfInitialMembers: initialMembers.data.length,
+      isRecurring: !!createRoomInput.recurranceIntervalInDays,
+      isCalendarEvent: false,
+    });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId });
   }
 

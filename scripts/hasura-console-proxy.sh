@@ -16,7 +16,7 @@ command -v gcloud >/dev/null || {
 [[ ! -f "$HOME/.kube/config" ]] && {
   echo "kubectl config is not found"
   echo "trying to fetch config..."
-  gcloud container clusters get-credentials cluster-1
+  gcloud container clusters get-credentials cluster-1 --region europe-west1 --project meetnomoreapp
   kubectl version --short
 }
 

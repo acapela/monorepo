@@ -1,14 +1,16 @@
 import { gql } from "@apollo/client";
+
 import {
-  ReactionBasicInfoFragment as ReactionBasicInfoFragmentType,
   AddMessageReactionMutation,
   AddMessageReactionMutationVariables,
+  ReactionBasicInfoFragment as ReactionBasicInfoFragmentType,
   RemoveMessageReactionMutation,
   RemoveMessageReactionMutationVariables,
 } from "~gql";
-import { createFragment, createMutation } from "./utils";
-import { UserBasicInfoFragment } from "./user";
+
 import { MessageDetailedInfoFragment } from "./messages";
+import { UserBasicInfoFragment } from "./user";
+import { createFragment, createMutation } from "./utils";
 
 export const ReactionBasicInfoFragment = createFragment<ReactionBasicInfoFragmentType>(
   () => gql`

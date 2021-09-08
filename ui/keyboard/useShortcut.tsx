@@ -1,11 +1,13 @@
-import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
-import { Key } from "./codes";
 import isHotkey from "is-hotkey";
+import { sortBy } from "lodash";
 import { useEffect } from "react";
+
+import { convertMaybeArrayToArray, removeElementFromArray } from "~shared/array";
 import { createCleanupObject } from "~shared/cleanup";
 import { onDocumentReady } from "~shared/document";
 import { mapGetOrCreate } from "~shared/map";
-import { sortBy } from "lodash";
+
+import { Key } from "./codes";
 
 type ShortcutDefinition = Key | Key[];
 
@@ -55,8 +57,8 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  * By default in DOM - who is first to add listener is first to be called
  *
  * eg
- * body.addEventListener('click', () => console.log('a'));
- * body.addEventListener('click', () => console.log('b'));
+ * body.addEventListener('click', () => console.info('a'));
+ * body.addEventListener('click', () => console.info('b'));
  *
  * // Click!
  * // Output in the console: a, b
@@ -64,7 +66,7 @@ const finallyHandledEvents = new WeakSet<KeyboardEvent>();
  * With shortcuts we want it in reverse order - who is last to add shortcut is the first to handle it (and potentially prevent propagation to other handlers).
  *
  * useShortcut('Enter', () => {
- *   console.log('foo')
+ *   console.info('foo')
  * });
  *
  * useShortcut('Enter', () => {

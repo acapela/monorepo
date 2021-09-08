@@ -1,19 +1,14 @@
+import { gql, useMutation } from "@apollo/client";
 import React from "react";
-
-import { createPromiseUI } from "~ui/createPromiseUI";
-
-import { TopicDetailedInfoFragment } from "~gql";
-import { Modal } from "~frontend/ui/Modal";
-import { useCloseOpenTopicsMutation } from "~frontend/gql/rooms";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import styled from "styled-components";
-import { Button } from "~ui/buttons/Button";
-import { TextH3, TextBody } from "~ui/typo";
 
-interface RoomCloseModalInput {
-  roomId: string;
-  openTopics: TopicDetailedInfoFragment[];
-}
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { withFragments } from "~frontend/gql/utils";
+import { Modal } from "~frontend/ui/Modal";
+import { RoomCloseModal_RoomFragment } from "~gql";
+import { Button } from "~ui/buttons/Button";
+import { createPromiseUI } from "~ui/createPromiseUI";
+import { TextBody, TextH3 } from "~ui/typo";
 
 type RoomCloseModalResult = boolean;
 
@@ -22,7 +17,8 @@ const MAX_TOPICS_PER_COLUMN = 5;
 // When there's more than 5 open topics, the height of the modal starts increasing significantly
 // We're dividing the topics into columns after they pass a certain threshold
 // Each of the columns will be of similar in size e.g, 6 topics = 2 columns of 3 topics each
-function splitTopicsIntoColumns(topics: TopicDetailedInfoFragment[]): TopicDetailedInfoFragment[][] {
+type Topics = RoomCloseModal_RoomFragment["topics"];
+function splitTopicsIntoColumns(topics: Topics): Topics[] {
   const columns = [];
 
   const numberOfColumns = Math.ceil(topics.length / MAX_TOPICS_PER_COLUMN);
@@ -35,23 +31,47 @@ function splitTopicsIntoColumns(topics: TopicDetailedInfoFragment[]): TopicDetai
   return columns;
 }
 
-export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCloseModalResult>(
-  ({ roomId, openTopics }, resolve) => {
+const fragments = {
+  room: gql`
+    fragment RoomCloseModal_room on room {
+      id
+      topics {
+        id
+        name
+      }
+    }
+  `,
+};
+
+export const closeOpenTopicsPrompt = withFragments(
+  fragments,
+  createPromiseUI<RoomCloseModal_RoomFragment, RoomCloseModalResult>((room, resolve) => {
     const { id: closedByUserId } = useAssertCurrentUser();
 
-    const [closeOpenTopics, { loading: isClosingOpenTopics }] = useCloseOpenTopicsMutation();
+    const [closeOpenTopics, { loading: isClosingOpenTopics }] = useMutation(gql`
+      mutation CloseOpenTopics($roomId: uuid!, $closedAt: timestamp, $closedByUserId: uuid) {
+        update_topic(
+          where: { room_id: { _eq: $roomId } }
+          _set: { closed_at: $closedAt, closed_by_user_id: $closedByUserId }
+        ) {
+          affected_rows
+        }
+      }
+    `);
 
     async function handleCloseOpenTopics() {
       await closeOpenTopics({
-        roomId,
-        closedAt: new Date().toISOString(),
-        closedByUserId,
+        variables: {
+          roomId: room.id,
+          closedAt: new Date().toISOString(),
+          closedByUserId,
+        },
       });
       resolve(true);
       return;
     }
 
-    const columnsOfTopics = splitTopicsIntoColumns(openTopics);
+    const columnsOfTopics = splitTopicsIntoColumns(room.topics);
 
     return (
       <Modal onCloseRequest={() => resolve(false)}>
@@ -77,7 +97,7 @@ export const closeOpenTopicsPrompt = createPromiseUI<RoomCloseModalInput, RoomCl
         </UIContentWrapper>
       </Modal>
     );
-  }
+  })
 );
 
 const UIContentWrapper = styled.div<{}>`

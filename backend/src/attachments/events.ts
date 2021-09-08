@@ -1,18 +1,29 @@
+import { initializeAttachmentTranscription } from "~backend/src/transcriptions/transcriptionService";
 import { Attachment, db } from "~db";
 import { Message_Type_Enum } from "~gql";
-import { sendForTranscription } from "~backend/src/transcriptions/transcriptionService";
+import { log } from "~shared/logger";
+
 import { HasuraEvent } from "../hasura";
 
 const MESSAGE_TYPES_TO_BE_PROCESSED: Message_Type_Enum[] = ["AUDIO", "VIDEO"];
 
-export async function handleAttachmentUpdates({ item: attachment }: HasuraEvent<Attachment>) {
+export async function handleAttachmentUpdates({ item: attachment, type }: HasuraEvent<Attachment>) {
   const messageId = attachment.message_id;
   if (!messageId) return;
 
   const message = await db.message.findUnique({ where: { id: messageId } });
   if (!message) return;
 
+  if (type !== "delete") {
+    await db.message.update({ where: { id: message.id }, data: { updated_at: new Date() } });
+  }
+
   if (MESSAGE_TYPES_TO_BE_PROCESSED.includes(message.type as Message_Type_Enum)) {
-    await sendForTranscription(attachment);
+    log.info("Sending message for transcription");
+    try {
+      await initializeAttachmentTranscription(attachment);
+    } catch (error) {
+      log.error(`Failed to prepare `, { error });
+    }
   }
 }

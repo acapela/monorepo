@@ -1,12 +1,10 @@
-import { db, User } from "~db";
 import { HasuraEvent } from "~backend/src/hasura";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { addTeamMember } from "~backend/src/teams/helpers";
+import { User, db } from "~db";
+import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 
 export async function handleUserCreated({ item: user }: HasuraEvent<User>) {
   await acceptAllNewUserInvitations(user);
-
-  trackBackendUserEvent(user, "Account Added User");
 }
 
 async function acceptAllNewUserInvitations(user: User) {
@@ -43,8 +41,10 @@ async function acceptAllNewUserInvitations(user: User) {
     db.room_invitation.updateMany(updateInvitationBody),
   ]);
 
+  // add user to the team
+  await addTeamMember(teamId, user.id);
+  trackFirstBackendUserEvent(user, "Account Added User", { teamId, userEmail });
+
   // If user is accepting team invite - set it as current team for this user
   await db.user.update({ where: { id: user.id }, data: { current_team_id: teamId } });
-
-  await addTeamMember(teamId, user.id);
 }

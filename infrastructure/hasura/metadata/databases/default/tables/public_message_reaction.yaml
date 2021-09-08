@@ -1,0 +1,61 @@
+table:
+  name: message_reaction
+  schema: public
+object_relationships:
+  - name: message
+    using:
+      foreign_key_constraint_on: message_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - permission:
+      backend_only: false
+      check: {}
+      columns:
+        - emoji
+        - message_id
+        - user_id
+    role: user
+select_permissions:
+  - permission:
+      columns:
+        - emoji
+        - message_id
+        - user_id
+      filter: {}
+    role: user
+update_permissions:
+  - permission:
+      check: null
+      columns:
+        - emoji
+        - message_id
+        - user_id
+      filter: {}
+    role: user
+delete_permissions:
+  - permission:
+      filter: {}
+    role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - emoji
+          - message_id
+          - user_id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: message_reaction_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

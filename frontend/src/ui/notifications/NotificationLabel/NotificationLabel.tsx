@@ -1,15 +1,17 @@
-import { NotificationInfoFragment } from "~gql";
-import { routes, RouteLink } from "~frontend/router";
+import { useSingleRoomQuery } from "~frontend/gql/rooms";
 import { useCurrentTeamMember } from "~frontend/gql/teams";
 import { useSingleTopicQuery } from "~frontend/gql/topics";
+import { RouteLink, routes } from "~frontend/router";
+import { NotificationInfoFragment } from "~gql";
 import {
   AnyNotificationData,
-  isNotificationDataOfType,
   NotificationType,
   NotificationTypesMap,
+  isNotificationDataOfType,
 } from "~shared/notifications/types";
+
 import { NotificationPlainLabel } from "./NotificationPlainLabel";
-import { useSingleRoomQuery } from "~frontend/gql/rooms";
+import { useRemoveIncorrectNotification } from "./useRemoveIncorrectNotification";
 
 interface Props {
   notification: NotificationInfoFragment;
@@ -20,6 +22,8 @@ interface NotificationTypeComponentProps<T extends NotificationType> {
   payload: NotificationTypesMap[T];
 }
 
+// TODO: Move `useSingleTopicQuery` to fragments here!
+
 export function NotificationLabel({ notification }: Props) {
   const notificationData = notification.data as AnyNotificationData;
   if (isNotificationDataOfType(notificationData, "topicMention")) {
@@ -28,6 +32,10 @@ export function NotificationLabel({ notification }: Props) {
 
   if (isNotificationDataOfType(notificationData, "topicClosed")) {
     return <TopicClosedNotificationLabel notification={notification} payload={notificationData.payload} />;
+  }
+
+  if (isNotificationDataOfType(notificationData, "topicAssigned")) {
+    return <TopicAssignedNotificationLabel notification={notification} payload={notificationData.payload} />;
   }
 
   if (isNotificationDataOfType(notificationData, "addedToTopic")) {
@@ -50,8 +58,14 @@ function MentionNotificationLabel({
   payload: { mentionedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicMention">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const mentioningUser = useCurrentTeamMember(mentionedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [mentioningUser, isUserLoading] = useCurrentTeamMember(mentionedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !mentioningUser,
+    notification,
+  });
 
   if (!topic || !mentioningUser) return null;
 
@@ -74,8 +88,14 @@ function TopicClosedNotificationLabel({
   payload: { closedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"topicClosed">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const closingUser = useCurrentTeamMember(closedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !closingUser,
+    notification,
+  });
 
   if (!topic || !closingUser) return null;
 
@@ -94,12 +114,48 @@ function TopicClosedNotificationLabel({
   );
 }
 
+function TopicAssignedNotificationLabel({
+  payload: { assignedByUserId, topicId },
+  notification,
+}: NotificationTypeComponentProps<"topicAssigned">) {
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [assigningUser, isUserLoading] = useCurrentTeamMember(assignedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !assigningUser,
+    notification,
+  });
+
+  if (!topic || !assigningUser) return null;
+
+  return (
+    <RouteLink route={routes.spaceRoomTopic} params={{ topicId, spaceId: topic.room.space_id, roomId: topic.room.id }}>
+      <NotificationPlainLabel
+        notification={notification}
+        titleNode={
+          <>
+            <strong>{assigningUser.name}</strong> assigned you the topic <strong>{topic.name}</strong>
+          </>
+        }
+        userId={assignedByUserId}
+      />
+    </RouteLink>
+  );
+}
+
 function AddedToTopicClosedNotificationLabel({
   payload: { addedByUserId, topicId },
   notification,
 }: NotificationTypeComponentProps<"addedToTopic">) {
-  const [topic] = useSingleTopicQuery({ id: topicId });
-  const addedByUser = useCurrentTeamMember(addedByUserId);
+  const [topic, { loading: isTopicLoading }] = useSingleTopicQuery({ id: topicId });
+  const [addedByUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isTopicLoading || isUserLoading,
+    shouldRemove: !topic && !addedByUser,
+    notification,
+  });
 
   if (!topic || !addedByUser) return null;
 
@@ -122,8 +178,14 @@ function RoomClosedNotificationLabel({
   payload: { closedByUserId, roomId },
   notification,
 }: NotificationTypeComponentProps<"roomClosed">) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-  const closingUser = useCurrentTeamMember(closedByUserId);
+  const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
+  const [closingUser, isUserLoading] = useCurrentTeamMember(closedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !closingUser,
+    notification,
+  });
 
   // TODO: Sentry - add info in case of incorrect data
   if (!room || !closingUser) return null;
@@ -147,8 +209,14 @@ function AddedToRoomClosedNotificationLabel({
   payload: { roomId, addedByUserId },
   notification,
 }: NotificationTypeComponentProps<"addedToRoom">) {
-  const [room] = useSingleRoomQuery({ id: roomId });
-  const addingUser = useCurrentTeamMember(addedByUserId);
+  const [room, { loading: isRoomLoading }] = useSingleRoomQuery({ id: roomId });
+  const [addingUser, isUserLoading] = useCurrentTeamMember(addedByUserId);
+
+  useRemoveIncorrectNotification({
+    isLoading: isRoomLoading || isUserLoading,
+    shouldRemove: !room && !addingUser,
+    notification,
+  });
 
   if (!room || !addingUser) return null;
 

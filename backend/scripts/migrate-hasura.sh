@@ -13,7 +13,8 @@ set -eu
 }
 
 cd ../infrastructure/hasura
-hasura migrate apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
-hasura seed apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 hasura metadata apply --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura migrate apply --all-databases --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura seed apply --database-name default --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
+hasura metadata reload --endpoint $HASURA_ENDPOINT --admin-secret $HASURA_ADMIN_SECRET
 cd -

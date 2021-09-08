@@ -1,18 +1,21 @@
 import styled from "styled-components";
-import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
-import { JsonValue } from "~shared/types";
-import { CardBase } from "~ui/card/Base";
-import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
-import { hoverTransition } from "~ui/transitions";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createRoom } from "~frontend/gql/rooms";
 import { useCurrentTeamMembers } from "~frontend/gql/user";
 import { openRoomInputPrompt } from "~frontend/rooms/create/openRoomInputPrompt";
+import { routes } from "~frontend/router";
 import { niceFormatDateTime } from "~shared/dates/format";
+import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
+import { JsonValue } from "~shared/types";
 import { GoogleCalendarEvent } from "~shared/types/googleCalendar";
 import { Button } from "~ui/buttons/Button";
+import { CardBase } from "~ui/card/Base";
+import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
+import { hoverTransition } from "~ui/transitions";
 import { TextH4 } from "~ui/typo";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 interface Props {
   event: JsonValue<GoogleCalendarEvent>;
@@ -50,6 +53,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
         deadline: createRoomInput.deadline?.toISOString(),
         space_id: createRoomInput.spaceId,
         source_google_calendar_event_id: event.id,
+        recurrance_interval_in_days: createRoomInput.recurranceIntervalInDays,
         owner_id: user.id,
         members: {
           data: createRoomInput.participantsIds.map((userId) => {
@@ -60,6 +64,16 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
     });
 
     if (!room) return;
+    trackEvent("Created Room", {
+      roomId: room.id,
+      roomName: createRoomInput.name,
+      roomDeadline: new Date(createRoomInput.deadline),
+      spaceId: createRoomInput.spaceId,
+      numberOfInitialMembers: createRoomInput.participantsIds.length,
+      isRecurring: !!createRoomInput.recurranceIntervalInDays,
+      isCalendarEvent: true,
+    });
+    routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId: room.id });
   }
 
   return (

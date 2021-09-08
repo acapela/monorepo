@@ -1,7 +1,8 @@
-import { ThemeColorScheme } from ".";
 import { setColorOpacity } from "~shared/colors";
+
 import * as colors from "./base";
 import { createColor } from "./createColor";
+import { ThemeColorScheme } from ".";
 
 export const defaultTheme: ThemeColorScheme = {
   layout: {
@@ -77,5 +78,35 @@ export const defaultTheme: ThemeColorScheme = {
     error: createColor(colors.SUPPORT_RED),
     warning: createColor(colors.SECONDARY_ORANGE_2),
     success: createColor(colors.SUPPORT_GREEN),
+  },
+  tags: {
+    shareInformation: {
+      foreground: createColor(colors.SHARE_INFO),
+      background: createColor(setColorOpacity(colors.SHARE_INFO, 0.1)),
+    },
+    discussion: {
+      foreground: createColor(colors.DISCUSSION),
+      background: createColor(setColorOpacity(colors.DISCUSSION, 0.1)),
+    },
+    empty: {
+      foreground: createColor(colors.BASE_GREY_4),
+      background: createColor(setColorOpacity(colors.BASE_GREY_4, 0.1)),
+    },
+    decision: {
+      foreground: createColor(colors.SUPPORT_GREEN),
+      background: createColor(setColorOpacity(colors.SUPPORT_GREEN, 0.1)),
+    },
+    action: {
+      foreground: createColor(colors.ACTION),
+      background: createColor(setColorOpacity(colors.ACTION, 0.1)),
+    },
+    default: {
+      foreground: createColor(colors.BASE_GREY_3),
+      background: createColor(setColorOpacity(colors.BASE_GREY_3, 0.1)),
+    },
+    private: {
+      foreground: createColor(colors.PRIMARY_PINK_3),
+      background: createColor(setColorOpacity(colors.PRIMARY_PINK_3, 0.1)),
+    },
   },
 };

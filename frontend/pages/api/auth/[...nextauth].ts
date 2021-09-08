@@ -2,13 +2,18 @@ import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
 import { AdapterInstance } from "next-auth/adapters";
-import Providers from "next-auth/providers";
+import Providers, { EmailConfig } from "next-auth/providers";
+
 import { initializeSecrets } from "~config";
-import { Account, db, User } from "~db";
+import { Account, User, db } from "~db";
 import { assert } from "~shared/assert";
+import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { DEFAULT_ROLE, ALLOWED_ROLES } from "~shared/roles";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { getSearchParams } from "~shared/urlParams";
+
+type Role = "user";
+const ALLOWED_ROLES: Role[] = ["user"];
+const DEFAULT_ROLE: Role = "user";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -57,10 +62,6 @@ async function checkWhitelist(profile: Profile) {
   const whiteListEntry = await db.whitelist.findFirst({ where: { email } });
 
   if (!whiteListEntry) {
-    // automatically add a non-whitelisted user to whitelist
-    await db.whitelist.create({
-      data: { email: profile.email.toLocaleLowerCase(), is_approved: false },
-    });
     throw new Error("email not whitelisted");
   }
 
@@ -89,7 +90,7 @@ const authAdapterProvider = {
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
 
-        trackBackendUserEvent(user, "Signed Up");
+        trackFirstBackendUserEvent(user, "Signed Up", { userEmail: profile.email });
 
         return user;
       },
@@ -172,6 +173,14 @@ const authAdapterProvider = {
         // We're using JWT so sessions are not needed.
         // throw new SessionsNotSupportedError();
       },
+      async createVerificationRequest(identifier, url, token, secret, provider) {
+        const { sendVerificationRequest } = provider;
+        const ONE_DAY = 1000 * 24 * 60 * 60;
+        const expires = new Date(Date.now() + ONE_DAY);
+        await db.verification_requests.create({ data: { identifier, token, expires } });
+        await sendVerificationRequest({ identifier, url } as VerificationRequestParams);
+        return;
+      },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async getVerificationRequest(identifier, token, secret, provider) {
         return await db.verification_requests.findFirst({ where: { identifier, token } });
@@ -187,9 +196,9 @@ const authAdapterProvider = {
 interface VerificationRequestParams {
   identifier: string;
   url: string;
-  // baseUrl: string;
-  // token: string;
-  // provider: ProviderEmailOptions;
+  baseUrl: string;
+  token: string;
+  provider: EmailConfig;
 }
 
 async function sendVerificationRequest({ identifier: email, url }: VerificationRequestParams) {
@@ -271,7 +280,9 @@ async function getAuthInitOptions() {
           return true;
         }
 
-        trackBackendUserEvent(user, "Signed In");
+        if (user.email) {
+          trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
+        }
 
         try {
           const existingAccount = await db.account.findFirst({
@@ -389,10 +400,6 @@ async function getAuthInitOptions() {
   };
 
   return authInitOptions;
-}
-
-function getSearchParams(params: Record<string, string>) {
-  return new URLSearchParams(params).toString();
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {

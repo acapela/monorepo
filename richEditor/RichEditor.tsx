@@ -1,14 +1,19 @@
 import { ChainedCommands, Editor, EditorContent, Extensions, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { ReactNode, useEffect, useImperativeHandle, useMemo } from "react";
+import { useUpdate } from "react-use";
 import styled from "styled-components";
+
 import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
+import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { createTimeout, wait } from "~shared/time";
 import { borderRadius } from "~ui/baseStyles";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
+
+import { isRichEditorContentEmpty } from "./content/isEmpty";
 import { RichEditorNode } from "./content/types";
 import { RichEditorContext } from "./context";
 import { useFileDroppedInContext } from "./DropFileContext";
@@ -16,8 +21,6 @@ import { richEditorExtensions } from "./preset";
 import { richEditorContentCss } from "./Theme";
 import { RichEditorSubmitMode, Toolbar } from "./Toolbar";
 import { useDocumentFilesPaste } from "./useDocumentFilePaste";
-import { useUpdate } from "react-use";
-import { namedForwardRef } from "~shared/react/namedForwardRef";
 
 export type { Editor } from "@tiptap/react";
 export type { RichEditorSubmitMode } from "./Toolbar";
@@ -25,7 +28,11 @@ export type { RichEditorSubmitMode } from "./Toolbar";
 export function getEmptyRichContent(): JSONContent {
   return {
     type: "doc",
-    content: [],
+    content: [
+      {
+        type: "paragraph",
+      },
+    ],
   };
 }
 
@@ -90,7 +97,6 @@ function getLastSelectableCursorPosition(editor: Editor) {
 
 function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
   const lastSelectablePosition = getLastSelectableCursorPosition(editor);
-
   return editor.chain().focus(lastSelectablePosition);
 }
 
@@ -120,6 +126,7 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
         enableInputRules: true,
       })
   );
+
   const forceUpdate = useUpdate();
 
   function getFocusAtEndCommand() {
@@ -288,14 +295,18 @@ export const RichEditor = namedForwardRef<Editor, RichEditorProps>(function Rich
     editor.chain().focus().insertContent(contentToInsert).run();
   }
 
+  function handleEditorClick() {
+    if (isRichEditorContentEmpty(value)) {
+      getFocusAtEndCommand().run();
+    }
+
+    // If editor is not empty - tiptap will manually (or even dom?) put the cursor in a proper place.
+  }
+
   return (
     <UIHolder>
       <RichEditorContext value={editor}>
-        <UIEditorContent
-          onClick={() => {
-            editor?.chain().focus().run();
-          }}
-        >
+        <UIEditorContent onClick={handleEditorClick}>
           {additionalTopContent}
           <UIEditorHolder>
             <EditorContent placeholder={placeholder} editor={editor} spellCheck readOnly={isDisabled} />

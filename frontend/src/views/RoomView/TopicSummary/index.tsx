@@ -1,33 +1,73 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+import { withFragments } from "~frontend/gql/utils";
+import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSummaryMutationVariables } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
-import { TextH4 } from "~ui/typo";
-import { TopicDetailedInfoFragment } from "~gql";
-import { useTopic } from "~frontend/topics/useTopic";
+import { theme } from "~ui/theme";
+
 import { formatDate } from "../shared";
 
+const fragments = {
+  topic: gql`
+    fragment TopicSummary_topic on topic {
+      id
+      name
+      closing_summary
+      closed_at
+      closed_by_user {
+        name
+      }
+    }
+  `,
+};
+
 interface Props {
-  topic: TopicDetailedInfoFragment;
+  topic: TopicSummary_TopicFragment;
 }
 
-export const TopicSummary = ({ topic }: Props) => {
+export const TopicSummary = withFragments(fragments, ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
-  const { loading, updateSummary } = useTopic(topic);
+  const [updateTopicSummary, { loading }] = useMutation<
+    UpdateTopicSummaryMutation,
+    UpdateTopicSummaryMutationVariables
+  >(
+    gql`
+      mutation UpdateTopicSummary($id: uuid!, $closingSummary: String!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { closing_summary: $closingSummary }) {
+          id
+          closing_summary
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, closing_summary: vars.closingSummary },
+      }),
+    }
+  );
 
   function submitUpdatedSummary() {
     if (summary.trim() !== summaryBeforeEdit.trim()) {
-      updateSummary(summary.trim());
+      updateTopicSummary({ variables: { id: topic.id, closingSummary: summary.trim() } });
+      trackEvent("Updated Topic Summary", { topicId: topic.id });
     }
   }
 
   return (
     <UITopicSummary>
       <UITopicSummaryMetadata>
-        <TextH4 spezia>{topic.name}</TextH4> was closed by{" "}
-        <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
+        <UITopicName>{topic.name}</UITopicName>
+        <UITopicClosingInfo>
+          {" "}
+          was closed by <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
+        </UITopicClosingInfo>
       </UITopicSummaryMetadata>
       <UITopicSummaryContent
         isResizable={true}
@@ -39,7 +79,7 @@ export const TopicSummary = ({ topic }: Props) => {
       />
     </UITopicSummary>
   );
-};
+});
 
 const UITopicSummary = styled.div<{}>`
   display: grid;
@@ -48,10 +88,9 @@ const UITopicSummary = styled.div<{}>`
   min-height: 32px;
   width: 100%;
 
-  padding: 16px;
+  padding: 8px 16px;
 
-  border: 1px solid hsla(300, 2%, 92%, 1);
-  border-left-width: 3px;
+  border-left: 3px solid ${theme.colors.interactive.active((modifiers) => [modifiers.opacity(0.4)])};
 
   font-size: ${fontSize.label};
   font-weight: 400;
@@ -61,16 +100,20 @@ const UITopicSummary = styled.div<{}>`
 const UITopicSummaryMetadata = styled.div<{}>`
   display: flex;
   align-items: center;
+  gap: 4px;
+`;
 
-  ${TextH4} {
-    font-size: 1rem;
-    padding-right: 4px;
-  }
+const UITopicName = styled.span<{}>`
+  ${theme.font.body14.inter.semibold.build}
+`;
+
+const UITopicClosingInfo = styled.span<{}>`
+  color: ${theme.colors.layout.supportingText()};
+  ${theme.font.body12.inter.build};
 `;
 
 const UIClosingMember = styled.span<{}>`
-  padding: 0 4px;
-  font-weight: 600;
+  ${theme.font.medium.build}
 `;
 
 const UITopicSummaryContent = styled(TextArea)<{}>`

@@ -1,17 +1,29 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
-import { MessageBasicInfoFragment } from "~gql";
-import { loomPreviewProvider } from "./loomPreviewProvider";
-import { figmaPreviewProvider } from "./figmaPreviewProvider";
-import { notionPreviewProvider } from "./notionPreviewProvider";
+
+import { withFragments } from "~frontend/gql/utils";
+import { MessageLinksPreviews_MessageFragment } from "~gql";
 import { extractLinksFromRichContent } from "~richEditor/links/extract";
+
+import { figmaPreviewProvider } from "./figmaPreviewProvider";
+import { loomPreviewProvider } from "./loomPreviewProvider";
+import { notionPreviewProvider } from "./notionPreviewProvider";
 
 const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider, notionPreviewProvider];
 
+const fragments = {
+  message: gql`
+    fragment MessageLinksPreviews_message on message {
+      content
+    }
+  `,
+};
+
 interface Props {
-  message: MessageBasicInfoFragment;
+  message: MessageLinksPreviews_MessageFragment;
 }
 
-export const MessageLinksPreviews = ({ message }: Props) => {
+export const MessageLinksPreviews = withFragments(fragments, ({ message }: Props) => {
   const links = extractLinksFromRichContent(message.content);
 
   const linksPreviews = links
@@ -29,7 +41,7 @@ export const MessageLinksPreviews = ({ message }: Props) => {
   if (linksPreviews.length < 1) return null;
 
   return <UIHolder>{linksPreviews}</UIHolder>;
-};
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

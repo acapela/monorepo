@@ -1,3 +1,5 @@
+import { IncomingMessage } from "http";
+
 import {
   ApolloClient,
   ApolloLink,
@@ -11,24 +13,48 @@ import { onError } from "@apollo/client/link/error";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLError } from "graphql";
-import { IncomingMessage } from "http";
 import { memoize } from "lodash";
 import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
-import { readCurrentToken, TOKEN_COOKIE_NAME } from "~frontend/authentication/cookie";
+
+import { TOKEN_COOKIE_NAME, readCurrentToken } from "~frontend/authentication/cookie";
 import { getApolloInitialState } from "~frontend/gql/utils/hydration";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
+import { createResolvablePromise } from "~shared/promises";
 import { addToast } from "~ui/toasts/data";
+
 import { createDateParseLink } from "./dateStringParseLink";
-import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
-import { createResolvablePromise } from "~frontend/../../shared/promises";
 
 const mergeUsingIncoming: FieldMergeFunction<unknown, unknown> = (old, fresh) => fresh;
 
+/**
+ * Apollo wants to make sure that it does not lose data, so it emits warnings when there is no merge function for arrays
+ * from which elements might be removed. Hence we define these explicitly.
+ */
 const typePolicies: TypedTypePolicies = {
+  Query: {
+    fields: {
+      topic: {
+        merge: mergeUsingIncoming,
+      },
+      message: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  Subscription: {
+    fields: {
+      topic: {
+        merge: mergeUsingIncoming,
+      },
+      message: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
   space_member: {
     keyFields: ["space_id", "user_id"],
     merge: mergeUsingIncoming,
@@ -39,6 +65,25 @@ const typePolicies: TypedTypePolicies = {
         keyArgs: ["user_id"],
         merge: mergeUsingIncoming,
       },
+    },
+  },
+  room: {
+    fields: {
+      topics: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  topic: {
+    fields: {
+      messages: {
+        merge: mergeUsingIncoming,
+      },
+    },
+  },
+  message: {
+    fields: {
+      message_reactions: { merge: mergeUsingIncoming },
     },
   },
 };
@@ -58,8 +103,6 @@ let cache = new InMemoryCache({ typePolicies });
 export function clearApolloCache() {
   cache = new InMemoryCache({ typePolicies });
 }
-
-const localStorageCacheWrapper = typeof window !== "undefined" ? new LocalStorageWrapper(window.localStorage) : null;
 
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
@@ -128,8 +171,7 @@ function formatGraphqlErrorMessage(error: GraphQLError) {
 }
 
 // Log any GraphQL errors or network error that occurred
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const errorLink = onError(({ graphQLErrors = [], networkError }) => {
+onError(({ graphQLErrors = [], networkError }) => {
   for (const graphqlError of graphQLErrors) {
     const message = formatGraphqlErrorMessage(graphqlError);
 
@@ -183,14 +225,6 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
 
   if (initialCacheState) {
     cache.restore(initialCacheState);
-  }
-
-  if (localStorageCacheWrapper) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    persistCache<any>({
-      cache: cache,
-      storage: localStorageCacheWrapper,
-    });
   }
 
   return new ApolloClient({

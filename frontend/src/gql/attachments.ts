@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { assert } from "~shared/assert";
+
 import {
   AttachmentDetailedInfoFragment as AttachmentDetailedInfoFragmentType,
   AttachmentQuery,
@@ -11,6 +11,8 @@ import {
   UploadUrlQuery,
   UploadUrlQueryVariables,
 } from "~gql";
+import { assert } from "~shared/assert";
+
 import { MessageDetailedInfoFragment } from "./messages";
 import { createFragment, createMutation, createQuery } from "./utils";
 
@@ -23,6 +25,12 @@ export const AttachmentDetailedInfoFragment = createFragment<AttachmentDetailedI
       message {
         id
         user_id
+        type
+      }
+      transcription {
+        id
+        status
+        transcript
       }
     }
   `

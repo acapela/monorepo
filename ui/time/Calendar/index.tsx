@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
+
 import { Header } from "./Header";
 import { MonthDays } from "./MonthDays";
-import styled from "styled-components";
 
 interface Props {
   date: Date;
@@ -10,6 +13,12 @@ interface Props {
 
 export function Calendar({ date, onDateChange }: Props) {
   const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
+
+  function handleDateChange(newDate: Date) {
+    onDateChange(newDate);
+    trackEvent("Selected Calendar Date", { newDate });
+  }
+
   return (
     <UICalendarContainer>
       <UICalendar>
@@ -19,7 +28,7 @@ export function Calendar({ date, onDateChange }: Props) {
           key={currentMonthDate.getTime()}
           selectedDayDate={date}
           date={currentMonthDate}
-          onDaySelected={onDateChange}
+          onDaySelected={handleDateChange}
         />
       </UICalendar>
     </UICalendarContainer>

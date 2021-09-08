@@ -1,13 +1,16 @@
 import React from "react";
+
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
 import { UserBasicInfoFragment } from "~gql";
 import { IconFilter } from "~ui/icons";
+
 import { RoomCriteria, UserRoomCriteria } from "./filter";
 
 export function createUserFilter(user: UserBasicInfoFragment): UserRoomCriteria {
   return {
     key: `user-${user.id}`,
-    label: user.name ?? "Unknown user",
+    label: getUserDisplayName(user),
     icon: <UserAvatar user={user} size="small" />,
     filter(room) {
       return room.members.some((member) => member.user.id === user.id);

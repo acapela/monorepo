@@ -1,13 +1,14 @@
 import styled from "styled-components";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createTeam, useTeamsQuery } from "~frontend/gql/teams";
 import { changeCurrentTeamId } from "~frontend/gql/user";
-import { Button } from "~ui/buttons/Button";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { addToast } from "~ui/toasts/data";
+import { Button } from "~ui/buttons/Button";
 import { IconEmotionSmile } from "~ui/icons";
+import { addToast } from "~ui/toasts/data";
 
 export function TeamPickerView() {
   const [teams = []] = useTeamsQuery();
@@ -41,8 +42,8 @@ export function TeamPickerView() {
         "The team has been created successfully and we are happy to have you on board. Now you can invite your team members and start the collaboration!",
     });
 
-    trackEvent("Account Created");
-    trackEvent("Trial Started");
+    trackEvent("Account Created", { teamName: name });
+    trackEvent("Trial Started", { teamName: name });
   }
 
   return (

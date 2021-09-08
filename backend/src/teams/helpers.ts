@@ -1,4 +1,4 @@
-import { db, TeamMember } from "~db";
+import { TeamMember, db } from "~db";
 
 export async function getHasTeamMember(teamId: string, memberId: string): Promise<boolean> {
   const entry = await db.team_member.findFirst({

@@ -1,13 +1,15 @@
 import React, { ReactNode, useRef } from "react";
 import { useClickAway, useWindowSize } from "react-use";
 import styled, { css } from "styled-components";
-import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
-import { borderRadius, shadow } from "~ui/baseStyles";
-import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
-import { PopPresenceAnimator } from "~ui/animations";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { DropdownItem } from "./DropdownItem";
+
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { useListWithNavigation } from "~shared/hooks/useListWithNavigation";
+import { PopPresenceAnimator } from "~ui/animations";
+import { borderRadius, shadow } from "~ui/baseStyles";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { BACKGROUND_ACCENT } from "~ui/theme/colors/base";
+
+import { DropdownItem } from "./DropdownItem";
 
 interface Props<I> {
   items: I[];
@@ -46,7 +48,15 @@ export function ItemsDropdown<I>({
 
   useShortcut("Enter", () => {
     onItemSelected(highlightedItem);
+
+    // If item is selected, mark event as handled preventing other shortcut handlers from reaching it.
+    return true;
   });
+
+  // Prevents bubbling up of arrow key to parent container, used to prevent cursor in tip-tap editor from moving
+  // when ItemDropdown created from tip-tap node.
+  useShortcut("ArrowUp", () => true);
+  useShortcut("ArrowDown", () => true);
 
   useClickAway(menuRef, () => {
     onCloseRequest?.();

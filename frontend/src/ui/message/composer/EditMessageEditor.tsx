@@ -1,35 +1,77 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
-import { MessageDetailedInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { HStack } from "~ui/Stack";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
-import { updateTextMessage } from "~frontend/gql/messages";
-import { EditorAttachmentInfo, uploadFiles } from "./attachments";
-import { MessageContentEditor } from "./MessageContentComposer";
-import { makePromiseVoidable } from "~shared/promises";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { RichEditorNode } from "~richEditor/content/types";
+import { withFragments } from "~frontend/gql/utils";
+import {
+  EditMessageEditor_MessageFragment,
+  UpdateMessageContentMutation,
+  UpdateMessageContentMutationVariables,
+} from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichEditorNode } from "~richEditor/content/types";
+import { makePromiseVoidable } from "~shared/promises";
+import { Button } from "~ui/buttons/Button";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { HStack } from "~ui/Stack";
+
+import { EditorAttachmentInfo, uploadFiles } from "./attachments";
+import { MessageComposerContext } from "./MessageComposerContext";
+import { MessageContentEditor } from "./MessageContentComposer";
+
+const fragments = {
+  message: gql`
+    fragment EditMessageEditor_message on message {
+      id
+      content
+      message_attachments {
+        id
+        mime_type
+      }
+    }
+  `,
+};
 
 interface Props {
-  message: MessageDetailedInfoFragment;
+  message: EditMessageEditor_MessageFragment;
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
 
-export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) => {
+export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRequest, onSaved }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
     message.message_attachments.map((messageAttachment) => {
       return {
-        mimeType: messageAttachment.mimeType,
+        mimeType: messageAttachment.mime_type,
         uuid: messageAttachment.id,
       };
     })
   );
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
+
+  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
+    gql`
+      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
+        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
+          id
+          content
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          ...vars,
+        },
+      }),
+    }
+  );
 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
@@ -59,15 +101,16 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
 
     // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
     const updatingMessagePromise = makePromiseVoidable(
-      updateTextMessage({
-        id: message.id,
-        isDraft: false,
-        content: content,
+      updateMessageContent({
+        variables: {
+          id: message.id,
+          content,
+        },
       })
     );
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
-
+    trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }
 
@@ -79,23 +122,25 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
 
   return (
     <UIHolder>
-      <MessageContentEditor
-        content={content}
-        onContentChange={setContent}
-        onFilesSelected={async (files) => {
-          const newAttachments = await uploadFiles(files);
+      <MessageComposerContext.Provider value={{ mode: "editing" }}>
+        <MessageContentEditor
+          content={content}
+          onContentChange={setContent}
+          onFilesSelected={async (files) => {
+            const newAttachments = await uploadFiles(files);
 
-          attachmentsList.push(...newAttachments);
-        }}
-        attachments={attachments}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        autofocusKey={message.id}
-        hideEditorSubmitButton
-      />
+            attachmentsList.push(...newAttachments);
+          }}
+          attachments={attachments}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
+            });
+          }}
+          autofocusKey={message.id}
+          hideEditorSubmitButton
+        />
+      </MessageComposerContext.Provider>
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel
@@ -106,7 +151,7 @@ export const EditMessageEditor = ({ message, onCancelRequest, onSaved }: Props) 
       </UIButtons>
     </UIHolder>
   );
-};
+});
 
 const UIHolder = styled.div<{}>``;
 

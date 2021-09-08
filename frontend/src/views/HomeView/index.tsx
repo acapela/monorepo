@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useRoomsQuery } from "~frontend/gql/rooms";
-import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { createSortByLatestActivityFilter } from "~frontend/ui/rooms/filters/factories";
-import { useRoomsCriteria } from "~frontend/ui/rooms/filters/filter";
-import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
-import { getHomeViewRoomsQueryWhere } from "./query";
-import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
-import { clientdb } from "~frontend/clientdb";
 import { observer } from "mobx-react";
+import styled from "styled-components";
+
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { clientdb } from "~frontend/clientdb";
+import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
+import { CreateRoomButton } from "~frontend/ui/rooms/CreateRoomButton";
+import { createSortByLatestActivityFilter } from "~frontend/ui/rooms/filters/factories";
+import { RoomsGroupedByActivities } from "~frontend/ui/rooms/RoomsList";
+import { ToDoView } from "~frontend/views/ToDoView";
+
 const sortByLatestActivity = createSortByLatestActivityFilter();
 
 export const HomeView = observer(function HomeView() {
@@ -38,9 +38,13 @@ export const HomeView = observer(function HomeView() {
 
   return (
     <UIHolder isNarrow>
-      <UIContent>
-        <RoomsGroupedByActivities rooms={filteredRooms} />
-      </UIContent>
+      <UIColumns>
+        <ToDoView />
+        <UIRooms>
+          <RoomsGroupedByActivities rooms={filteredRooms} />
+        </UIRooms>
+      </UIColumns>
+
       <FlyingCreateRoomButton buttonProps={{ size: "large" }} />
     </UIHolder>
   );
@@ -48,7 +52,11 @@ export const HomeView = observer(function HomeView() {
 
 const UIHolder = styled(SpacedAppLayoutContainer)<{}>``;
 
-const UIContent = styled.div<{}>`
+const UIColumns = styled.div<{}>`
+  grid-gap: 32px;
+`;
+
+const UIRooms = styled.div<{}>`
   display: flex;
   flex-direction: column;
   align-items: stretch;

@@ -1,6 +1,8 @@
 import { Server } from "http";
+
 import request from "supertest";
 import { v4 as uuid } from "uuid";
+
 import { setupServer } from "../app";
 import { HttpStatus } from "../http";
 import { handlers as fakeHandlers } from "./actionHandlers";
@@ -22,7 +24,7 @@ jest.mock("./actionHandlers", () => ({
       actionName: "an-erroring-action-with-status",
       handle: jest.fn(async () => {
         const error = new Error("error message 1");
-        (error as any).status = 404;
+        (error as any).status = HttpStatus.NOT_FOUND;
         throw error;
       }),
     },

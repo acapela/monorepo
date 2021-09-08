@@ -1,4 +1,4 @@
-import { createLengthValidator, ValidationResult } from "~shared/validation/inputValidation";
+import { ValidationResult, createLengthValidator } from "~shared/validation/inputValidation";
 
 interface RoomCreateInput {
   roomName: string;

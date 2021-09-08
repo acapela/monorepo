@@ -1,7 +1,12 @@
 process.env.APP = "backend";
+
+import * as Sentry from "@sentry/node";
+
 // We need to load secrets before any configuration is accessed, which is why we are doing lazy imports in this file
 import { initializeSecrets } from "~config";
-import * as Sentry from "@sentry/node";
+import { isDev } from "~shared/dev";
+
+import { getDevPublicTunnel } from "./localtunnel";
 
 if (["staging", "production"].includes(process.env.STAGE)) {
   Sentry.init({
@@ -33,6 +38,13 @@ async function start(): Promise<void> {
       production: process.env.NODE_ENV === "production",
     })
   );
+
+  if (isDev()) {
+    const publicDevTunnel = await getDevPublicTunnel(3000);
+    log.info("Public dev tunnel set up", {
+      url: `${publicDevTunnel.url}/api/backend`,
+    });
+  }
 }
 
 start();

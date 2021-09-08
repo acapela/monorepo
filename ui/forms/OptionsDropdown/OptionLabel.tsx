@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
+
 import { TextBody } from "~ui/typo";
 
 interface Props {
@@ -22,7 +23,6 @@ const UIHolder = styled.div<{}>`
   flex: 1;
   align-items: center;
   user-select: none;
-  flex-grow: 0;
 
   ${TextBody} {
     flex: 1;

@@ -1,5 +1,7 @@
-import { css, StylesPart } from "styled-components";
+import { StylesPart, css } from "styled-components";
+
 import { setColorOpacity } from "~shared/colors";
+
 import { BLACK } from "./theme/colors/base";
 
 function createShadowCss(size: number, opacity = 0.2): StylesPart {
@@ -36,6 +38,9 @@ export const shadow = {
   `,
   button: css`
     box-shadow: 0px 3px 0px rgba(86, 33, 88, 0.05);
+  `,
+  largeFrame: css`
+    box-shadow: 0px 12px 68px rgba(0, 0, 0, 0.05);
   `,
 } as const;
 

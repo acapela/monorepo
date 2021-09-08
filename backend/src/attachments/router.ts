@@ -1,9 +1,11 @@
-import { get } from "lodash";
 import { Request, Response, Router } from "express";
 import { verify } from "jsonwebtoken";
-import logger from "~shared/logger";
-import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
+import { get } from "lodash";
+
 import { db } from "~db";
+import { log } from "~shared/logger";
+
+import { AuthenticationError, BadRequestError, NotFoundError } from "../errors/errorTypes";
 import { getSignedDownloadUrl } from "./googleStorage";
 
 export const router = Router();
@@ -64,6 +66,6 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
   }
 
   const downloadUrl = await getSignedDownloadUrl(attachmentId, attachment.mime_type);
-  logger.info(`serving attachment ${attachmentId}`);
+  log.info(`serving attachment ${attachmentId}`);
   res.redirect(downloadUrl);
 });

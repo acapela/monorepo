@@ -1,8 +1,11 @@
 import { Request, Response, Router } from "express";
-import logger from "~shared/logger";
+
+import { log } from "~shared/logger";
+
 import { extractAndAssertBearerToken } from "../authentication";
-import { AuthenticationError, isHttpError, UnprocessableEntityError } from "../errors/errorTypes";
+import { AuthenticationError, UnprocessableEntityError, isHttpError } from "../errors/errorTypes";
 import { HasuraSessionVariables } from "../hasura/session";
+import { HttpStatus } from "../http";
 import { ActionHandler, handlers } from "./actionHandlers";
 
 export const router = Router();
@@ -13,8 +16,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   const hasuraAction = req.body as HasuraAction<string, unknown>;
   const userId = hasuraAction.session_variables["x-hasura-user-id"];
 
-  logger.info("Handling action", {
-    actionName: hasuraAction.action.name,
+  log.info(`Handling action (${hasuraAction.action.name})`, {
     userId,
   });
 
@@ -25,21 +27,20 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
 
   try {
     const response = await handler.handle(userId, hasuraAction.input);
-    res.status(200).json(response);
-    logger.info("Action handled", {
-      actionName: hasuraAction.action.name,
+    res.status(HttpStatus.OK).json(response);
+    log.info(`Action handled (${hasuraAction.action.name})`, {
       userId,
     });
   } catch (error) {
     isHttpError(error);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const anyError = error as any;
-    const status = anyError.status || 400;
+    const status = anyError.status || HttpStatus.BAD_REQUEST;
     res.status(status).json({
       message: anyError.message || "Something went wrong",
       code: `${status}`,
     });
-    logger.info("Failed handling action", {
+    log.info("Failed handling action", {
       actionName: hasuraAction.action.name,
       userId,
       failureReason: anyError.message,
@@ -48,7 +49,7 @@ router.post("/v1/actions", middlewareAuthenticateHasura, async (req: Request, re
   }
 });
 
-function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
+export function middlewareAuthenticateHasura(req: Request, _: Response, next: () => unknown) {
   const token = extractAndAssertBearerToken(req.get("Authorization") || "");
 
   if (!token) {

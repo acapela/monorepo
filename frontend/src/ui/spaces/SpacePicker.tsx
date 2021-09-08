@@ -1,11 +1,14 @@
+import { gql } from "@apollo/client";
 import React from "react";
 import styled from "styled-components";
-import { createLengthValidator } from "~shared/validation/inputValidation";
+
+import { createSpace } from "~frontend/gql/spaces";
+import { createQuery } from "~frontend/gql/utils";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { createSpace, useCurrentTeamSpaces } from "~frontend/gql/spaces";
 import { SpaceGradientIcon } from "~frontend/ui/spaces/spaceGradient";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { SpaceBasicInfoFragment } from "~gql";
+import { SpacePickerQuery, SpacePickerQueryVariables } from "~gql";
+import { createLengthValidator } from "~shared/validation/inputValidation";
 import { SingleOptionDropdown } from "~ui/forms/OptionsDropdown/single";
 import { IconSelection } from "~ui/icons";
 
@@ -14,11 +17,22 @@ interface Props {
   onChange: (spaceId: string) => void;
 }
 
-export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
-  const [spacesList = []] = useCurrentTeamSpaces();
-  const teamId = useAssertCurrentTeamId();
+const [useSpacePickerQuery] = createQuery<SpacePickerQuery, SpacePickerQueryVariables>(
+  () => gql`
+    query SpacePicker($teamId: uuid) {
+      spaces: space(where: { team_id: { _eq: $teamId } }) {
+        id
+        name
+      }
+    }
+  `
+);
 
-  const selectedSpace = spacesList.find((space) => space.id === selectedSpaceId);
+export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
+  const teamId = useAssertCurrentTeamId();
+  const [spaces = []] = useSpacePickerQuery({ teamId });
+
+  const selectedSpace = spaces.find((space) => space.id === selectedSpaceId);
 
   async function handleCreateNewSpace() {
     const spaceName = await openUIPrompt({
@@ -38,11 +52,11 @@ export const SpacePicker = ({ selectedSpaceId, onChange }: Props) => {
   }
 
   return (
-    <SingleOptionDropdown<SpaceBasicInfoFragment>
+    <SingleOptionDropdown<typeof spaces[0]>
       icon={<IconSelection />}
       name="Space"
       placeholder="Select a space..."
-      items={spacesList}
+      items={spaces}
       selectedItem={selectedSpace}
       onChange={(space) => {
         onChange(space.id);

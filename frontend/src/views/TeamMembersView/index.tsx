@@ -1,21 +1,36 @@
 import styled from "styled-components";
-import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
+
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
-import { TextMeta10 } from "~ui/typo";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { NotificationSettings } from "~frontend/views/TeamMembersView/NotificationSettings";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { TextMeta10 } from "~ui/typo";
+
+import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
 
 const appVersion = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
+const appBuildDate = process.env.NEXT_PUBLIC_BUILD_DATE;
 
 export const TeamMembersView = () => {
   const currentTeamId = useCurrentTeamId();
 
-  if (!currentTeamId) return null;
+  if (!currentTeamId) {
+    return null;
+  }
 
   return (
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
-        {currentTeamId ? <CurrentTeamMembersManager /> : <div />}
-        {appVersion && <TextMeta10 secondary>Version: {appVersion}</TextMeta10>}
+        <CurrentTeamMembersManager />
+        <ClientSideOnly>
+          <NotificationSettings />
+        </ClientSideOnly>
+
+        {appVersion && (
+          <TextMeta10 secondary>
+            Version: {appVersion} ({appBuildDate})
+          </TextMeta10>
+        )}
       </UIHolder>
     </SpacedAppLayoutContainer>
   );

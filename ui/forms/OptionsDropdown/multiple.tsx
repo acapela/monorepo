@@ -1,10 +1,12 @@
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useBoundingBox } from "~shared/hooks/useBoundingBox";
 import { IconPlus } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
+
 import { FieldWithLabel } from "../FieldWithLabel";
 import { DropdownItem } from "./DropdownItem";
 import { ItemsDropdown } from "./ItemsDropdown";
@@ -28,6 +30,7 @@ interface Props<I> {
   selectedItemsPreviewRenderer?: (items: I[]) => ReactNode;
   closeAfterItemPicked?: boolean;
   icon?: ReactNode;
+  isDisabled?: boolean;
 }
 
 export function MultipleOptionsDropdown<I>({
@@ -44,9 +47,10 @@ export function MultipleOptionsDropdown<I>({
   closeAfterItemPicked,
   selectedItemsPreviewRenderer,
   icon,
+  isDisabled,
 }: Props<I>) {
   const openerRef = useRef<HTMLDivElement>(null);
-  const [isOpened, { unset: close, toggle }] = useBoolean(false);
+  const [isOpen, { unset: close, toggle }] = useBoolean(false);
   const selectedKeys = selectedItems.map(keyGetter);
 
   const hasSelection = selectedKeys.length > 0;
@@ -79,7 +83,15 @@ export function MultipleOptionsDropdown<I>({
   const { width: menuOpenerWidth } = useBoundingBox(openerRef);
 
   return (
-    <FieldWithLabel ref={openerRef} label={name} onClick={toggle} pushLabel={hasSelection} icon={icon} indicateDropdown>
+    <FieldWithLabel
+      isDisabled={isDisabled}
+      ref={openerRef}
+      label={name}
+      onClick={toggle}
+      pushLabel={hasSelection}
+      icon={icon}
+      indicateDropdown
+    >
       <UIHolder>
         <UIMenuOpener>
           {selectedItems.length > 0 && (
@@ -95,9 +107,9 @@ export function MultipleOptionsDropdown<I>({
           )}
         </UIMenuOpener>
         <AnimatePresence>
-          {isOpened && (
+          {isOpen && (
             <Popover anchorRef={openerRef} placement="bottom-start">
-              <UIDropdownHolder style={{ width: `${menuOpenerWidth}px` }}>
+              <UIDropdownHolder role="listbox" style={{ width: `${menuOpenerWidth}px` }}>
                 <ItemsDropdown
                   items={items}
                   keyGetter={keyGetter}

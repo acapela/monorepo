@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+
 import { theme } from "~ui/theme";
 
 export const CardBase = styled.div<{ isClickable?: boolean }>`

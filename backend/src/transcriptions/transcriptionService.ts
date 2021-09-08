@@ -1,48 +1,49 @@
-import { Attachment, db } from "~db";
+import { Attachment, Prisma, db } from "~db";
+import { assert } from "~shared/assert";
+
 import { getSignedDownloadUrl } from "../attachments/googleStorage";
-import { getSonixClient, MediaResponse } from "./sonixClient";
-import { assertDefined } from "~shared/assert";
+import { SonixCustomData } from "./customData";
+import { SonixMediaResponse, fetchSonixTranscriptForMedia, requestSonixMediaTranscript } from "./sonixClient";
 
-export async function sendForTranscription(attachment: Attachment) {
-  const messageId = assertDefined(attachment?.message_id, "Attachment to be transcribed does not have message_id");
-
-  const sonix = getSonixClient();
+export async function initializeAttachmentTranscription(attachment: Attachment) {
   const attachmentUrl = await getSignedDownloadUrl(attachment.id, attachment.mime_type);
   const language = "en";
 
-  const media = await sonix.submitNewMedia({
-    messageId,
+  const transcriptionRequestInfo = await requestSonixMediaTranscript({
+    attachmentId: attachment.id,
     fileUrl: attachmentUrl,
     fileName: attachment.original_name,
     language,
   });
 
-  await db.message.update({
-    where: { id: messageId },
+  await db.attachment.update({
+    where: { id: attachment.id },
     data: {
       transcription: {
         create: {
-          sonix_media_id: media.id,
-          status: media.status,
+          sonix_media_id: transcriptionRequestInfo.id,
+          status: transcriptionRequestInfo.status,
         },
       },
     },
   });
 }
 
-export async function updateMessageTranscription(media: MediaResponse) {
-  const sonix = getSonixClient();
-  const transcript = await sonix.getJsonTranscript({ mediaId: media.id });
+export async function handleAttachementTranscriptionStatusUpdate(mediaResponse: SonixMediaResponse) {
+  const { attachmentId }: SonixCustomData = mediaResponse.custom_data;
 
-  await db.message.update({
-    where: { id: media.custom_data.messageId },
+  const transcriptInfo = await fetchSonixTranscriptForMedia(mediaResponse.id);
+
+  const attachment = await db.attachment.findUnique({ where: { id: attachmentId } });
+
+  assert(attachment, "No attachment for given id");
+  assert(attachment.transcription_id, "Provided attachment has no transcript");
+
+  await db.transcription.update({
+    where: { id: attachment.transcription_id },
     data: {
-      transcription: {
-        update: {
-          status: media.status,
-          transcript: transcript.transcript,
-        },
-      },
+      status: mediaResponse.status,
+      transcript: transcriptInfo.transcript as unknown as Prisma.InputJsonValue,
     },
   });
 }

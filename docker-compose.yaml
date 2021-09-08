@@ -16,7 +16,7 @@ services:
     # TEMP: This is modified version of hasura  engine that works on M1 macs.
     # TODO: Not sure what to do about it. For sure we dont need it in production so it'll have to be resolved somehow
     # when we'll plan to deploy it
-    image: fedormelexin/graphql-engine-arm64
+    image: fedormelexin/graphql-engine-arm64:v2.0.7
     command: ["/srv/graphql-engine", "serve"]
 
     ports:
@@ -27,7 +27,6 @@ services:
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       HASURA_GRAPHQL_DEV_MODE: "true"
-      HASURA_GRAPHQL_NO_OF_RETRIES: 5
       HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS512", "key": "${AUTH_JWT_TOKEN_SECRET}"}'
@@ -36,6 +35,7 @@ services:
       HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_ACTION_SECRET}
       HASURA_EVENTS_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/events
       HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_EVENT_SECRET}
+      HASURA_CRON_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/cron
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
 volumes:
   db_data:

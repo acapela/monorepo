@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
-import { borderRadius } from "~ui/baseStyles";
+
+import { trackEvent } from "~frontend/analytics/tracking";
 import { useFullTextSearchQuery } from "~frontend/gql/search";
-import { SearchInput } from "~ui/forms/SearchInput";
-import { SearchResults } from "./SearchResults";
-import { WHITE } from "~ui/theme/colors/base";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
+import { borderRadius } from "~ui/baseStyles";
+import { SearchInput } from "~ui/forms/SearchInput";
+import { WHITE } from "~ui/theme/colors/base";
+
+import { SearchResults } from "./SearchResults";
 
 interface Props {
   className?: string;
@@ -22,6 +25,7 @@ const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, r
   useDebounce(
     () => {
       setTerm(value);
+      trackEvent("Used Search Bar", { searchTerm: value });
     },
     DEBOUNCE_DELAY_MS,
     [value]

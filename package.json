@@ -22,6 +22,7 @@
     ]
   },
   "scripts": {
+    "dev": "run-scenario",
     "code": "code acapela.code-workspace",
     "unstable:scope": "func() { ( npm \"$2\" --prefix \"$1\" --save --package-lock-only --no-package-lock \"$3\" ; ) && npm i;}; func",
     "frontend:dev": "yarn frontend dev",
@@ -32,28 +33,31 @@
     "backend:test": "yarn backend test",
     "backend:test:watch": "yarn backend test:watch",
     "docker:up:detach": "yarn docker:up -d",
-    "docker:up": "docker-compose --env-file .env up --force-recreate",
+    "docker:up:force": "yarn docker:up --force-recreate",
+    "docker:up": "docker-compose --env-file .env up",
     "docker:config": "docker-compose --env-file .env config",
     "docker:stop": "docker-compose stop",
     "docker:down": "docker-compose down -v",
     "frontend": "yarn workspace ~frontend",
     "backend": "yarn workspace ~backend",
+    "tooling": "yarn workspace ~tooling",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
     "richEditor": "yarn workspace ~richEditor",
     "shared": "yarn workspace ~shared",
     "e2e": "yarn workspace ~e2e",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
-    "hasura:migrations": "hasura migrate apply --project infrastructure/hasura --admin-secret dev",
+    "hasura:migrations": "hasura migrate apply --all-databases --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:squash": "func(){ hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:migrations:mark-as-applied": "func(){ hasura migrate apply --version \"$1\" --skip-execution --project infrastructure/hasura --admin-secret dev; }; func",
-    "hasura:seeds": "func(){ hasura seed apply --project infrastructure/hasura --admin-secret dev; }; func",
+    "hasura:seeds": "hasura seed apply --database-name default --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:meta": "hasura metadata apply --project infrastructure/hasura --admin-secret dev",
+    "hasura:meta:reload": "hasura metadata reload --project infrastructure/hasura --admin-secret dev",
     "hasura:console": "hasura console --project infrastructure/hasura --admin-secret dev",
     "hasura:console:proxy": "./scripts/hasura-console-proxy.sh",
-    "hasura:update": "yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta",
-    "frontend:gql-types": "tooling gql frontend --watch",
+    "hasura:update": "yarn hasura:meta && yarn hasura:migrations && yarn hasura:seeds && yarn hasura:meta:reload",
+    "tooling:gql-types": "tooling gql frontend --watch",
     "lint": "eslint . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
@@ -61,7 +65,7 @@
     "start:backend": "yarn backend start",
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
-    "generate": "yarn workspace ~db generate && yarn workspace ~gql generate",
+    "generate": "yarn db update && tooling gql frontend",
     "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "lint-staged": {
@@ -69,6 +73,34 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
+    ]
+  },
+  "scenarios": {
+    "dev": [
+      {
+        "commands": [
+          "yarn run docker:up:detach"
+        ]
+      },
+      {
+        "commands": [
+          "yarn hasura:update"
+        ],
+        "dependsOnFiles": "infrastructure/hasura/**"
+      },
+      {
+        "commands": [
+          "yarn db update"
+        ],
+        "dependsOnFiles": "infrastructure/hasura/migrations/**"
+      },
+      {
+        "commands": [
+          "yarn frontend:dev",
+          "yarn backend:dev",
+          "yarn tooling:gql-types"
+        ]
+      }
     ]
   },
   "ntl": {
@@ -85,6 +117,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "date-fns": "^2.23.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "hasura-cli": "^2.0.1",
@@ -118,15 +151,28 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
+    "import-sort-style-module-and-prefix": "^0.1.3",
     "jest": "^27.0.6",
     "lint-staged": "^11.0.0",
     "ntl": "^5.1.0",
     "prettier": "^2.3.2",
+    "prettier-plugin-import-sort": "^0.0.7",
     "tslib": "^2.3.0"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "style": "module-and-prefix",
+      "parser": "typescript"
+    }
+  },
+  "importSortPrefix": {
+    "groupings": [
+      "~"
+    ]
   }
 }

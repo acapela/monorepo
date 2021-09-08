@@ -1,7 +1,9 @@
 import React, { ChangeEvent } from "react";
 import styled from "styled-components";
+
 import { useId } from "~shared/id";
 import { getColorHoverVariant } from "~ui/transitions";
+
 import { BACKGROUND_ACCENT, BUTTON_BACKGROUND_COLOR, WHITE } from "../theme/colors/base";
 
 /**
@@ -34,13 +36,16 @@ interface Dimensions {
 type ToggleSize = "small" | "large";
 
 interface Props {
+  isSet?: boolean;
   size?: ToggleSize;
+  isDisabled?: boolean;
   onSet?: () => void;
   onUnset?: () => void;
 }
 
-export const Toggle = ({ size = "large", onSet, onUnset }: Props) => {
+export const Toggle = ({ isSet, size = "large", isDisabled, onSet, onUnset }: Props) => {
   const id = useId();
+
   function onSwitch(e: ChangeEvent<HTMLInputElement>) {
     e.stopPropagation();
 
@@ -53,8 +58,8 @@ export const Toggle = ({ size = "large", onSet, onUnset }: Props) => {
 
   return (
     <UIToggle dimensions={getDimensions(size)}>
-      <input type="checkbox" id={id} onChange={onSwitch} />
-      <label htmlFor={id}></label>
+      <input type="checkbox" checked={isSet} id={id} onChange={onSwitch} disabled={isDisabled} />
+      <label htmlFor={id} />
     </UIToggle>
   );
 };

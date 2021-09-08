@@ -1,24 +1,33 @@
-import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
-import express, { Application, json } from "express";
 import "express-async-errors"; // patches express to handle errors from async functions, must be right after express
-import securityMiddleware from "helmet";
-import cookieParser from "cookie-parser";
-import { createServer, Server } from "http";
+
+import { Server, createServer } from "http";
 import { promisify } from "util";
-import { initializeSecrets } from "~config";
-import logger from "~shared/logger";
-import { router as actionRoutes } from "./actions/actions";
-import { router as authenticationRoutes } from "./authentication";
-import { router as eventRoutes } from "./events/events";
-import { router as transcriptionRoutes } from "./transcriptions/transcriptions";
-import { router as calendarRoutes } from "./calendar/calendar";
-import { router as attachmentsRoutes } from "./attachments/router";
-import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
+
+import { createTerminus as gracefulShutdown } from "@godaddy/terminus";
 import * as Sentry from "@sentry/node";
+import cookieParser from "cookie-parser";
+import express, { Application, json } from "express";
+import securityMiddleware from "helmet";
+
+import { initializeSecrets } from "~config";
+import { log } from "~shared/logger";
+
+import { router as actionRoutes } from "./actions/actions";
+import { router as attachmentsRoutes } from "./attachments/router";
+import { router as authenticationRoutes } from "./authentication";
+import { router as calendarRoutes } from "./calendar/calendar";
+import { router as cronRoutes } from "./cron/cron";
+import { errorHandlerMiddleware, notFoundRouteMiddleware } from "./errors/middleware";
+import { router as eventRoutes } from "./events/events";
+import { setupSlack } from "./slack/setup";
+import { router as transcriptionRoutes } from "./transcriptions/router";
+import { router as waitlistRoutes } from "./waitlist/waitlist";
 
 export async function setupServer(): Promise<Server> {
   await initializeSecrets();
   const app = express();
+  // @slack/bolt needs to be set up before middlewares as it does its own parsing etc.
+  setupSlack(app);
   setupMiddleware(app);
   setupRoutes(app);
   addErrorHandlersToApp(app);
@@ -32,7 +41,7 @@ export async function setupServer(): Promise<Server> {
 function setupMiddleware(app: Application): void {
   app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   app.use(securityMiddleware());
-  app.use(logger.middleware);
+  app.use(log.middleware);
   app.use(cookieParser());
   app.use(json());
 }
@@ -43,6 +52,8 @@ function setupRoutes(app: Application): void {
   app.use("/api", actionRoutes);
   app.use("/api", transcriptionRoutes);
   app.use("/api", calendarRoutes);
+  app.use("/api", cronRoutes);
+  app.use("/api", waitlistRoutes);
   app.use(attachmentsRoutes);
 }
 

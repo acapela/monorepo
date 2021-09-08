@@ -1,6 +1,6 @@
-import { Variant } from "..";
 import { ColorGetter } from "./createColor";
 import { defaultTheme } from "./default";
+import { Variant } from "..";
 
 export interface VariantStates {
   regular: ColorTargetOptions;
@@ -14,6 +14,11 @@ export interface ColorTargetOptions {
   text: ColorGetter;
   icon: ColorGetter;
   border?: ColorGetter;
+}
+
+export interface Tag {
+  background: ColorGetter;
+  foreground: ColorGetter;
 }
 
 export interface ThemeColorScheme {
@@ -38,6 +43,16 @@ export interface ThemeColorScheme {
     error: ColorGetter;
     warning: ColorGetter;
     success: ColorGetter;
+  };
+
+  tags: {
+    shareInformation: Tag;
+    discussion: Tag;
+    action: Tag;
+    empty: Tag;
+    decision: Tag;
+    default: Tag;
+    private: Tag;
   };
 }
 

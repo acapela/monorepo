@@ -1,5 +1,7 @@
-import dotenv from "dotenv";
 import path from "path";
+
+import dotenv from "dotenv";
+
 import { assertDefined } from "~shared/assert";
 
 function getDotEnvPath() {
@@ -31,7 +33,6 @@ const requiredEnvVarNames = [
   "DB_PASSWORD",
   "LOGGING_LEVEL",
   "SENDGRID_API_KEY",
-  "BACKEND_HOST",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "BACKEND_AUTH_TOKEN",

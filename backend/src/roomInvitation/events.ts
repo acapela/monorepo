@@ -1,21 +1,18 @@
-import { db, RoomMember } from "~db";
-import { RoomInvitation } from "~db";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
-import { HasuraEvent } from "../hasura";
-import { createNotification } from "../notifications/entity";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById } from "~backend/src/users/users";
+import { RoomMember, db } from "~db";
+import { RoomInvitation } from "~db";
+
+import { HasuraEvent } from "../hasura";
+import { createNotification } from "../notifications/entity";
 
 export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEvent<RoomMember>) {
   const { room_id: roomId, user_id: addedUserId } = invite;
 
-  if (userId === addedUserId) {
-    // user added themselves
+  if (!userId || userId === addedUserId) {
+    // user added themselves or user added by the backend
     return;
-  }
-
-  if (!userId) {
-    throw new UnprocessableEntityError("user id missing");
   }
 
   await createNotification({

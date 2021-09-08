@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { isCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { routes, RouteLink } from "~frontend/router";
+
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { RouteLink, routes } from "~frontend/router";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { AvatarList } from "~frontend/ui/users/AvatarList";
 import { useRoomUnreadMessagesCount } from "~frontend/utils/unreadMessages";
@@ -15,6 +16,7 @@ import { ValueDescriptor } from "~ui/meta/ValueDescriptor";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
 import { PrivateTag } from "~ui/tags";
 import { theme } from "~ui/theme";
+
 import { ExpandableTopicsList } from "./ExpandableTopicsList";
 
 interface Props {
@@ -33,14 +35,15 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
   const [isOpen, { toggle: toggleIsOpen }] = useBoolean(false);
 
   const unreadMessagesCount = useRoomUnreadMessagesCount(room.id, { overWriteCount: unreadMessages });
-  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember(room);
+  const isCurrentUserRoomMember = useIsCurrentUserRoomMember(room);
+  const isAbleToAddTopic = !room.finished_at && isCurrentUserRoomMember;
 
   return (
     <UIHolder className={className}>
       <UIIndentBody>
         <UIHead>
-          <UICollapseHolder isOpened={isOpen}>
-            <CollapseToggleButton isOpened={isOpen} onToggle={toggleIsOpen} />
+          <UICollapseHolder isOpen={isOpen}>
+            <CollapseToggleButton isOpen={isOpen} onToggle={toggleIsOpen} />
           </UICollapseHolder>
           <RouteLink route={routes.spaceRoom} params={{ roomId: room.id, spaceId: room.space_id }}>
             <UIHeadPrimary>
@@ -82,7 +85,7 @@ export const CollapsibleRoomInfo = styled(function CollapsibleRoomInfo({
 
 const UIHolder = styled(CardBase)<{}>``;
 
-const UICollapseHolder = styled.div<{ isOpened: boolean }>`
+const UICollapseHolder = styled.div<{ isOpen: boolean }>`
   padding-right: 16px;
 `;
 const UIIndentBody = styled.div<{}>`

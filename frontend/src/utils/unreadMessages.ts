@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client";
 import { memoize } from "lodash";
+
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createQuery } from "~frontend/gql/utils";
 import {
   RoomBasicInfoFragment,
-  TopicDetailedInfoFragment,
   UnreadMessageFragmentFragment,
   UserUnreadMessagesQuery,
   UserUnreadMessagesQueryVariables,
@@ -129,7 +129,8 @@ export function useRoomUnreadMessagesCount(roomId: string, options?: { overWrite
   return getRoomUnreadMessagesChannel(user.id, roomId).useLastValue() ?? 0;
 }
 
-type DetailedRoomMessages = Record<TopicDetailedInfoFragment["id"], number>;
+type TopicId = string;
+type DetailedRoomMessages = Record<TopicId, number>;
 
 export function useDetailedRoomMessagesCount(roomId: string): DetailedRoomMessages {
   const user = useAssertCurrentUser();

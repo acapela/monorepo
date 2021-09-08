@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { theme } from "~ui/theme";
 import { PRIMARY_PINK_1, PRIMARY_TEAL_1 } from "~ui/theme/colors/base";
 
@@ -29,6 +30,11 @@ export const HeroItemTitle = styled.div`
 
 export const PrimaryItemTitle = styled.div`
   ${theme.font.h3.speziaExtended.build}
+`;
+
+export const InputLabel = styled.div`
+  ${theme.font.body12.speziaMono.build}
+  color: ${theme.colors.layout.supportingText()};
 `;
 
 export const CategoryNameLabel = styled.div`

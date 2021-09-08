@@ -1,4 +1,4 @@
-import { useEffect, EffectCallback, DependencyList } from "react";
+import { DependencyList, EffectCallback, useEffect } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 
 type GetIsCancelled = () => boolean;
@@ -28,7 +28,7 @@ type AsyncEffect = (getIsCancelled: GetIsCancelled) => Promise<Cleanup | void>;
  *   setResponse(apiResponse);
  *
  *   // We can also return cleanup at any point in async function
- *   return createTimeout(() => console.log("hello"), 5000);
+ *   return createTimeout(() => console.info("hello"), 5000);
  * }, [apiParams])
  */
 

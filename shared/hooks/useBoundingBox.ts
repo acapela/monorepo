@@ -1,5 +1,6 @@
 import { RefObject } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
+
 import { useEqualState } from "./useEqualState";
 import { useResizeCallback } from "./useResizeCallback";
 

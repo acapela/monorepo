@@ -1,56 +1,60 @@
 type Query {
-  get_upload_url (
-    fileName: String!
-    mimeType: String!
-  ): UploadUrlResponse
+  get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
 }
 
 type Query {
-  lookup_team_name (
-    token: String!
-  ): LookupTeamNameResponse
-}
-
-type Mutation {
-  resend_invitation (
-    invitation_id: ID!
-  ): ResendInvitationResponse
+  get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 }
 
 type Query {
-  room_invitation_view (
-    token: String!
-  ): RoomInvitationViewResponse
+  lookup_team_name(token: String!): LookupTeamNameResponse
 }
 
 type Mutation {
-  upgrade_current_user : UpgradeUserResponse
+  resend_invitation(invitation_id: ID!): ResendInvitationResponse
+}
+
+type Query {
+  room_invitation_view(token: String!): RoomInvitationViewResponse
+}
+
+type Mutation {
+  upgrade_current_user: UpgradeUserResponse
+}
+
+input GetTeamSlackInstallationURLInput {
+  redirectURL: String!
+  teamId: uuid!
 }
 
 type UpgradeUserResponse {
-  user_id : ID!
+  user_id: ID!
 }
 
 type UploadUrlResponse {
-  uploadUrl : String!
-  uuid : ID!
+  uploadUrl: String!
+  uuid: ID!
 }
 
 type DownloadUrlResponse {
-  downloadUrl : String!
+  downloadUrl: String!
 }
 
 type LookupTeamNameResponse {
-  team_name : String!
-  inviter_name : String!
+  team_name: String!
+  inviter_name: String!
+  email: String!
 }
 
 type RoomInvitationViewResponse {
-  room_name : String!
-  inviter_name : String!
+  room_name: String!
+  inviter_name: String!
 }
 
 type ResendInvitationResponse {
-  sent_at : timestamptz
+  sent_at: timestamptz
 }
 
+type GetTeamSlackInstallationURLOutput {
+  url: String!
+}

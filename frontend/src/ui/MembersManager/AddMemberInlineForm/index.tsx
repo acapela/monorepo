@@ -1,28 +1,48 @@
+import { gql, useQuery } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { AnimatePresence } from "framer-motion";
-import { UserBasicInfoFragment } from "~gql";
-import { Button } from "~ui/buttons/Button";
-import { useShortcut } from "~ui/keyboard/useShortcut";
-import { IconPlusSquare, IconSearch } from "~ui/icons";
-import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
-import { useBoundingBox } from "~shared/hooks/useBoundingBox";
-import { Popover } from "~ui/popovers/Popover";
-import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { Avatar } from "~frontend/ui/users/Avatar";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { useSearch } from "~shared/search";
 import isEmail from "validator/lib/isEmail";
 
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { Avatar } from "~frontend/ui/users/Avatar";
+import { MissingTeamMembersQuery, MissingTeamMembersQueryVariables } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { useBoundingBox } from "~shared/hooks/useBoundingBox";
+import { useSearch } from "~shared/search";
+import { Button } from "~ui/buttons/Button";
+import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
+import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
+import { IconPlusSquare, IconSearch } from "~ui/icons";
+import { useShortcut } from "~ui/keyboard/useShortcut";
+import { Popover } from "~ui/popovers/Popover";
+
 interface Props {
-  users: UserBasicInfoFragment[];
+  memberUserIds: string[];
   onAddMember: (userId: string) => void;
   onInviteByEmail?: (email: string) => void;
 }
 
-export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Props) => {
+export const AddMemberInlineForm = ({ memberUserIds, onAddMember, onInviteByEmail }: Props) => {
   const canInviteByEmail = Boolean(onInviteByEmail);
+  const teamId = useAssertCurrentTeamId();
+  const { data } = useQuery<MissingTeamMembersQuery, MissingTeamMembersQueryVariables>(
+    gql`
+      query MissingTeamMembers($teamId: uuid!, $userIds: [uuid!]) {
+        missingTeamMembers: team_member(where: { team_id: { _eq: $teamId }, user_id: { _nin: $userIds } }) {
+          user {
+            id
+            name
+            email
+            avatar_url
+          }
+        }
+      }
+    `,
+    { variables: { teamId, userIds: memberUserIds } }
+  );
+  const users = (data?.missingTeamMembers ?? []).map((t) => t.user);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
 
@@ -42,6 +62,7 @@ export const AddMemberInlineForm = ({ users, onAddMember, onInviteByEmail }: Pro
     } else if (inputValue) {
       openMenu();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUser, inputValue]);
 
   const handleSubmit = () => {

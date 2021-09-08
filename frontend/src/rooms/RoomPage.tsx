@@ -1,8 +1,10 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { singleTopicQueryManager, topicMessagesQueryManager } from "~frontend/gql/topics";
+
+import { AppLayout } from "~frontend/layouts/AppLayout";
 import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
-import { AppLayout } from "../layouts/AppLayout";
+import { RoomPage_RoomQuery, RoomPage_RoomQueryVariables } from "~gql";
 
 interface Props {
   spaceId: string;
@@ -11,20 +13,30 @@ interface Props {
 }
 
 export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { room } = useRoomWithClientErrorRedirects({ spaceId, roomId });
+  const { data, loading } = useQuery<RoomPage_RoomQuery, RoomPage_RoomQueryVariables>(
+    gql`
+      ${RoomTopicView.fragments.room}
 
-  if (topicId) {
-    /**
-     * As we're returning null early in case there is no room, let's manually inform next what queries we want to pre-fetch
-     * to have full data ready on initial render
-     */
-    singleTopicQueryManager.requestPrefetch({ id: topicId });
-    topicMessagesQueryManager.requestPrefetch({ topicId });
-  }
+      query RoomPage_room($roomId: uuid!) {
+        room: room_by_pk(id: $roomId) {
+          id
+          is_private
+          ...RoomTopicView_room
+        }
+      }
+    `,
+    { variables: { roomId } }
+  );
 
-  if (!room) {
+  const hasRoom = Boolean(data && data.room);
+
+  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom, loading });
+
+  if (!data || !data.room) {
     return null; // Left blank on purpose. Won't render for clients.
   }
+
+  const { room } = data;
 
   return (
     <AppLayout>

@@ -1,13 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCamera, IconMic, IconMicSlash, IconMonitor, IconVideoCamera } from "~ui/icons";
+import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { addToast } from "~ui/toasts/data";
+
 import { FullScreenCountdown } from "./FullScreenCountdown";
 import { MediaSource } from "./MediaSource";
 import { RecordButton } from "./RecordButton";
 import { RecorderControls } from "./RecorderControls";
-import { useReactMediaRecorder } from "./useReactMediaRecorder";
 import { useRecorderErrors } from "./useRecorderErrors";
 
 interface RecorderProps {
@@ -26,113 +29,186 @@ function recordingBlobToFile(blob: Blob): File {
   return file;
 }
 
-const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
-  const [isDismissed, { set: dismissRecording, unset: clearDismissedStatus }] = useBoolean(false);
-  const [blob, setBlob] = useState<Blob | null>(null);
-  const [mediaSource, setMediaSource] = useState<MediaSource | null>(null);
+export enum RecorderError {
+  PermissionDenied = "permission_denied",
+  NoRecorder = "recorder_error",
+  ScreenCaptureUnsupported = "screen_capture_unsupported",
+  UnsupportedBrowser = "unsupported_browser",
+}
 
+const COUNTDOWN_IN_SECONS = 3;
+
+/*
+Recorder components provide three ways of capturing media:
+1. Screen = Microphone + Screen = getUserMedia({ audio: true }) + getDisplayMedia({ video: true })
+2. Video = Camera + Microphone = getUserMedia({ audio: true, video: true })
+3. Microphone = getUserMedia({ audio: true })
+
+On Safari, we can't start recording without a user gesture, e. g. button click.
+
+const recorder = new MediaRecorder(mediaStream)
+recorder.start()
+recorder.onstop = handleStop
+recorder.ondataavailable = handleAvailableData 
+
+handleAvailableData() will run after handleStop(), it means the stream data won't be available in handleStop().
+To cancel the recording we remove the handler of recorder.ondataavailable
+*/
+
+const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
   const [isCountdownStarted, { set: startCountdown, unset: dismissCountdown }] = useBoolean(false);
   const popoverHandlerRef = useRef<HTMLDivElement>(null);
-  const { status, startRecording, stopRecording, previewStream, getMediaStream, error } = useReactMediaRecorder({
-    video: mediaSource === MediaSource.CAMERA,
-    screen: mediaSource === MediaSource.SCREEN,
-    audio: !!mediaSource,
-    acquireMediaOnDemand: true,
-    onStop: (_url: string, blob: Blob) => setBlob(blob),
-  });
-  const isRecording = !!mediaSource && status === "recording";
-  const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
-  const isUnsupportedBrowser = error === "unsupported_browser";
 
-  const doStartRecording = () => {
-    dismissCountdown();
-    startRecording();
-  };
+  const mediaSource = useRef<MediaSource | null>(null);
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const mediaChunks = useRef<Blob[]>([]);
+  const mediaStream = useRef<MediaStream | null>(null);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [error, setError] = useState<RecorderError | null>(null);
 
-  const doCancelRecording = () => {
-    dismissCountdown();
-    dismissRecording();
-    setMediaSource(null);
-  };
-
-  const doStopRecording = () => {
-    setMediaSource(null);
-  };
-
-  /* Handle Video Source Picker */
-  const startVideoRecording = async (source: MediaSource) => {
-    setMediaSource(source);
-  };
-
-  const onVideoButtonClick = () => {
-    if (isRecording) {
-      doCancelRecording();
-    }
-  };
-
-  const onAudioButtonClick = () => {
-    if (mediaSource === MediaSource.MICROPHONE && isRecording) {
-      return doCancelRecording();
+  const stopRecording = () => {
+    if (mediaRecorder.current && mediaRecorder.current?.state !== "inactive") {
+      mediaRecorder.current?.stop();
     }
 
-    doCancelRecording();
-    setMediaSource(MediaSource.MICROPHONE);
+    mediaStream.current?.getTracks().forEach((track) => track.stop());
   };
 
-  const onRecorded = async (blob: Blob) => {
+  const resetRecorder = () => {
+    mediaSource.current = null;
+    mediaChunks.current = [];
+    setIsRecording(false);
+  };
+
+  const finishRecording = () => {
+    const { type } = mediaChunks.current[0];
+
+    // MediaRecorder doesn't properly work on old Safari
+    // more info: https://stackoverflow.com/questions/67682482/on-safari-14-0-2-mediarecorder-dataavailable-handler-captures-empty-blob
+    if (!type) {
+      addToast({ title: "Fail to record", type: "error" });
+      resetRecorder();
+      return;
+    }
+
+    const blob = new Blob(mediaChunks.current, { type });
+    resetRecorder();
+
     const file = recordingBlobToFile(blob);
-
     onRecordingReady(file);
   };
 
-  useEffect(() => {
-    if (!mediaSource) {
-      return stopRecording();
+  const cancelRecording = () => {
+    if (mediaRecorder.current) {
+      // ondataavailable() runs after onstop()
+      // handler for ondataavailable() is finishRecording()
+      // to prevent saving recording we reset onstop()
+      mediaRecorder.current.onstop = () => null;
     }
 
-    clearDismissedStatus();
-    setBlob(null);
+    dismissCountdown();
+    stopRecording();
+    resetRecorder();
+  };
 
-    getMediaStream().then((success) => {
-      if (!success) {
-        /* This state is recoverable, possible to retry */
-        if (mediaSource === MediaSource.SCREEN) {
-          setMediaSource(null);
+  useEffect(() => {
+    if (!window.MediaRecorder) {
+      return setError(RecorderError.UnsupportedBrowser);
+    }
+  }, []);
+
+  const startRecording = async () => {
+    setError(null);
+
+    if (!mediaSource.current) return;
+    if (!mediaStream.current) return;
+
+    // User can stop the stream using browser's own built-in 'Stop sharing' button.
+    mediaStream.current.getVideoTracks().forEach((track) => (track.onended = stopRecording));
+    mediaRecorder.current = new MediaRecorder(mediaStream.current);
+    mediaRecorder.current.ondataavailable = ({ data }: BlobEvent) => {
+      mediaChunks.current.push(data);
+    };
+    mediaRecorder.current.onstop = finishRecording;
+    mediaRecorder.current.onerror = () => {
+      setError(RecorderError.NoRecorder);
+    };
+    mediaRecorder.current.start();
+    setIsRecording(true);
+  };
+
+  const previewStream = mediaStream.current ? new MediaStream(mediaStream.current.getVideoTracks()) : null;
+
+  const { get: getRecorderError, set: setRecorderError } = useRecorderErrors();
+  const isUnsupportedBrowser = error === RecorderError.UnsupportedBrowser;
+
+  /* Handle Video Source Picker */
+  const startVideoRecording = async (source: MediaSource) => {
+    mediaSource.current = source;
+
+    try {
+      if (mediaSource.current === MediaSource.Screen) {
+        if (!window.navigator.mediaDevices.getDisplayMedia) {
+          setError(RecorderError.ScreenCaptureUnsupported);
+          return;
         }
 
-        return;
-      }
+        mediaStream.current = await window.navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
 
-      if (mediaSource === MediaSource.MICROPHONE) {
-        doStartRecording();
+        const audioStream = await window.navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        audioStream.getAudioTracks().forEach((audioTrack) => mediaStream.current?.addTrack(audioTrack));
       } else {
-        startCountdown();
+        mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
       }
-    });
-  }, [mediaSource]);
-
-  useEffect(() => {
-    if (!isDismissed && blob) {
-      onRecorded(blob);
-
-      /* Reset the state for hot reloading in dev mode */
-      setBlob(null);
-
-      /* In case recording is forcefully stopped */
-      setMediaSource(null);
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
+      return;
     }
-  }, [isDismissed, blob]);
+
+    startCountdown();
+    setTimeout(() => {
+      dismissCountdown();
+      if (mediaSource.current) {
+        startRecording();
+      }
+    }, COUNTDOWN_IN_SECONS * 1000);
+  };
+
+  const onAudioButtonClick = async () => {
+    mediaSource.current = MediaSource.Microphone;
+
+    try {
+      mediaStream.current = await window.navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((error as any)?.name);
+      return;
+    }
+
+    startRecording();
+  };
 
   useEffect(() => {
-    if (mediaSource && error) {
+    if (mediaSource.current && error) {
       /* This state is recoverable, no need to block the UI */
-      if (mediaSource === MediaSource.SCREEN && error === "permission_denied") {
+      if (mediaSource.current === MediaSource.Screen && error === RecorderError.PermissionDenied) {
         return;
       }
 
-      setRecorderError(mediaSource, error);
+      setRecorderError(mediaSource.current, error);
     }
-  }, [mediaSource, error]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   if (isUnsupportedBrowser) {
     return (
@@ -152,18 +228,18 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
           {
             label: "Record screen",
             icon: <IconMonitor />,
-            onSelect: () => startVideoRecording(MediaSource.SCREEN),
+            onSelect: () => startVideoRecording(MediaSource.Screen),
           },
           {
             label: "Record with camera",
             icon: <IconCamera />,
-            onSelect: () => startVideoRecording(MediaSource.CAMERA),
+            onSelect: () => startVideoRecording(MediaSource.Camera),
           },
         ]}
       >
         <RecordButton
-          onClick={onVideoButtonClick}
-          disabled={!!getRecorderError(MediaSource.SCREEN) && !!getRecorderError(MediaSource.CAMERA)}
+          onClick={cancelRecording}
+          disabled={isRecording || (!!getRecorderError(MediaSource.Screen) && !!getRecorderError(MediaSource.Camera))}
         >
           <IconVideoCamera />
         </RecordButton>
@@ -171,23 +247,24 @@ const PureRecorder = ({ className, onRecordingReady }: RecorderProps) => {
       <RecordButton
         onClick={onAudioButtonClick}
         tooltipLabel={isRecording ? undefined : "Start recording audio"}
-        disabled={!!getRecorderError(MediaSource.MICROPHONE)}
-        title={getRecorderError(MediaSource.MICROPHONE) ?? ""}
+        disabled={!!getRecorderError(MediaSource.Microphone)}
+        title={getRecorderError(MediaSource.Microphone) ?? ""}
       >
         <IconMic />
       </RecordButton>
 
-      {isCountdownStarted && (
-        <FullScreenCountdown seconds={3} onFinished={doStartRecording} onCancelled={doCancelRecording} />
-      )}
+      <AnimatePresence>
+        {isCountdownStarted && <FullScreenCountdown seconds={COUNTDOWN_IN_SECONS} onCancelled={cancelRecording} />}
+      </AnimatePresence>
+
       {isRecording && (
         <RecorderControls
           handlerRef={popoverHandlerRef}
-          onStop={doStopRecording}
-          onCancel={doCancelRecording}
-          previewStream={mediaSource === MediaSource.MICROPHONE ? null : previewStream}
-          flipVideoPreview={mediaSource === MediaSource.CAMERA}
-          showInCorner={mediaSource !== MediaSource.MICROPHONE}
+          onStop={stopRecording}
+          onCancel={cancelRecording}
+          previewStream={mediaSource.current === MediaSource.Microphone ? null : previewStream}
+          flipVideoPreview={mediaSource.current === MediaSource.Camera}
+          showInCorner={mediaSource.current !== MediaSource.Microphone}
         />
       )}
     </div>

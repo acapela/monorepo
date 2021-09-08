@@ -20,7 +20,8 @@
     "react": "*",
     "react-dom": "*",
     "styled-components": "*",
-    "tslib": "*"
+    "tslib": "*",
+    "date-fns": "*"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
@@ -32,8 +33,7 @@
     "@segment/snippet": "^4.14.2",
     "@sentry/nextjs": "^6.8.0",
     "@sentry/node": "^6.8.0",
-    "apollo3-cache-persist": "^0.10.0",
-    "date-fns": "^2.22.0",
+    "clipboard-polyfill": "^3.0.3",
     "escape-html": "^1.0.3",
     "express-http-proxy": "^1.6.2",
     "focus-visible": "^5.2.0",
@@ -73,6 +73,7 @@
     "autoprefixer": "^10.3.0",
     "babel-jest": "^27.0.6",
     "babel-plugin-styled-components": "^1.13.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "identity-obj-proxy": "^3.0.0",
     "msw": "^0.31.0",
     "next-compose-plugins": "^2.2.1",

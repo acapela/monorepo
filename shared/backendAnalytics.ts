@@ -1,5 +1,7 @@
-import { User } from "~db";
 import Analytics from "analytics-node";
+
+import { User } from "~db";
+
 import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
@@ -13,26 +15,43 @@ function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
   };
 }
 
-function createAnalyticsSessionForUser(user: User) {
+function getAnalyticsSDK() {
   if (!process.env.NEXT_PUBLIC_SEGMENT_API_KEY) {
     return null;
   }
 
-  const analytics = new Analytics(process.env.NEXT_PUBLIC_SEGMENT_API_KEY);
-
-  analytics.identify({ userId: user.id, traits: getAnalyticsProfileFromDbUser(user) });
-
-  return analytics;
+  return new Analytics(process.env.NEXT_PUBLIC_SEGMENT_API_KEY);
 }
 
-export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
+function createAnalyticsSessionForUser(user: User) {
+  const analytics = getAnalyticsSDK();
+
+  if (analytics) {
+    analytics.identify({
+      userId: user.id,
+      traits: getAnalyticsProfileFromDbUser(user),
+    });
+  }
+}
+
+export function trackFirstBackendUserEvent<N extends keyof AnalyticsEventsMap>(
   user: User,
   eventName: N,
   payload?: AnalyticsEventsMap[N]
 ) {
-  const analytics = createAnalyticsSessionForUser(user);
+  createAnalyticsSessionForUser(user);
 
-  if (!analytics) return;
+  trackBackendUserEvent(user.id, eventName, payload);
+}
 
-  analytics.track({ userId: user.id, event: eventName, properties: payload });
+export function trackBackendUserEvent<N extends keyof AnalyticsEventsMap>(
+  userId: string,
+  eventName: N,
+  payload?: AnalyticsEventsMap[N]
+) {
+  const analytics = getAnalyticsSDK();
+
+  if (analytics) {
+    analytics.track({ userId, event: eventName, properties: payload });
+  }
 }
