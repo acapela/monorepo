@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+
 import { AttachmentFragment, UpdatedAttachmentsQuery, UpdatedAttachmentsQueryVariables } from "~frontend/../../gql";
+import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
-import { clientdb } from ".";
+
 import { messageEntity } from "./message";
-import { userEntity } from "./user";
 
 const attachmentFragment = gql`
   fragment Attachment on attachment {

@@ -1,13 +1,15 @@
 import gql from "graphql-tag";
-import { defineEntity } from "~clientdb";
+
 import { MessageFragment, UpdatedMessagesQuery, UpdatedMessagesQueryVariables } from "~frontend/../../gql";
+import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
-import { clientdb } from ".";
+
 import { attachmentEntity } from "./attachment";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getType } from "./utils";
+import { clientdb } from ".";
 
 const messageFragment = gql`
   fragment Message on message {
@@ -16,7 +18,6 @@ const messageFragment = gql`
     created_at
     replied_to_message_id
     topic_id
-    transcription_id
     type
     user_id
   }

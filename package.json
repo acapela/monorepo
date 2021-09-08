@@ -98,7 +98,8 @@
         "commands": [
           "yarn frontend:dev",
           "yarn backend:dev",
-          "yarn tooling:gql-types"
+          "yarn tooling:gql-types",
+          "yarn hasura:console"
         ]
       }
     ]
