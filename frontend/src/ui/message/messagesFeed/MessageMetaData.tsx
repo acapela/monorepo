@@ -21,15 +21,15 @@ const fragments = {
 
 interface Props {
   user: MessageMetaData_UserFragment;
-  isMetaDataHidden: boolean;
-  isHovered: boolean;
+  isMetaDataHidden?: boolean;
+  isHovered?: boolean;
   date: Date;
   children: ReactNode;
 }
 
 export const MessageMetaData = withFragments(
   fragments,
-  ({ user, date, children, isMetaDataHidden, isHovered }: Props) => {
+  ({ user, date, children, isMetaDataHidden = false, isHovered = false }: Props) => {
     const canShowSideTimeLabel = isMetaDataHidden && isHovered;
 
     return (
