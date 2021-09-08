@@ -4,10 +4,12 @@
   "license": "UNLICENSED",
   "scripts": {
     "dbenv": "dotenv -e ../.env",
+    "copy-template": "cp template.prisma schema.prisma",
     "introspect": "yarn dbenv prisma db pull",
-    "validate": "yarn dbenv prisma validate",
+    "format": "yarn copy-template && yarn dbenv prisma format",
+    "validate": "yarn copy-template && yarn dbenv prisma validate",
     "generate": "yarn dbenv prisma generate",
-    "update": "cp template.prisma schema.prisma && yarn introspect && yarn generate"
+    "update": "yarn copy-template && yarn introspect && yarn generate"
   },
   "devDependencies": {
     "cross-env": "7.0.3"

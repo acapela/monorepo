@@ -7,8 +7,6 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { EditorMentionData } from "~shared/types/editor";
 import { TaskType } from "~shared/types/task";
 
-import { createNotification } from "../notifications/entity";
-
 const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
 
 function getMentionNodesFromMessage(message: Message) {
@@ -66,10 +64,13 @@ export async function createMessageMentionNotifications(message: Message, messag
       messageId: message.id,
     });
 
-    const createNotificationPromise = createNotification({
-      type: "topicMention",
-      payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
-      userId: mentionedUserId,
+    const createNotificationPromise = db.notification.create({
+      data: {
+        user_id: mentionedUserId,
+        notification_topic_mention: {
+          create: { topic_id: message.topic_id, mentioned_by_user_id: message.user_id },
+        },
+      },
     });
 
     createNotificationPromises.push(createNotificationPromise);

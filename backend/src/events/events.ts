@@ -4,7 +4,10 @@ import { handleAttachmentUpdates } from "~backend/src/attachments/events";
 import { extractAndAssertBearerToken } from "~backend/src/authentication";
 import { AuthenticationError } from "~backend/src/errors/errorTypes";
 import { handleMessageChanges, handleMessageReactionChanges } from "~backend/src/messages/events";
-import { handleNotificationCreated } from "~backend/src/notifications/events";
+import {
+  handleNotificationRoomAddedToCreated,
+  handleNotificationTopicMentionCreated,
+} from "~backend/src/notifications/events";
 import { handleRoomInvitationCreated, handleRoomMemberCreated } from "~backend/src/roomInvitation/events";
 import { handleRoomUpdates } from "~backend/src/rooms/events";
 import { handleSpaceUpdates } from "~backend/src/spaces/events";
@@ -33,7 +36,8 @@ hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomMemberCreat
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], handleMessageChanges);
 hasuraEvents.addHandler("message_reaction_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageReactionChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
-hasuraEvents.addHandler("notification_updates", ["INSERT"], handleNotificationCreated);
+hasuraEvents.addHandler("notification_room_added_to_updates", ["INSERT"], handleNotificationRoomAddedToCreated);
+hasuraEvents.addHandler("notification_topic_mention_updates", ["INSERT"], handleNotificationTopicMentionCreated);
 hasuraEvents.addHandler("transcription_updates", ["INSERT", "UPDATE"], handleTranscriptionUpdates);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
