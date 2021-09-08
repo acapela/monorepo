@@ -51,14 +51,17 @@ const _MessageLikeContent = styled<Props>(({ user, date, children, tools, classN
 
 export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
 
+const UITools = styled(motion.div)<{}>``;
+
 const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
   padding: 8px 8px;
+
   ${theme.borderRadius.item};
   ${theme.transitions.hover()}
 
-  ${() => UITools} {
+  ${UITools} {
     opacity: 0;
     transition: 0.1s all;
   }
@@ -66,10 +69,8 @@ const UIAnimatedMessageWrapper = styled.div<{}>`
   &:hover {
     background: ${theme.colors.interactive.selected()};
 
-    ${() => UITools} {
+    ${UITools} {
       opacity: 1;
     }
   }
 `;
-
-const UITools = styled(motion.div)<{}>``;
