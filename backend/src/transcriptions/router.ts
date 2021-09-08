@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 
-import logger, { log } from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { BadRequestError } from "../errors/errorTypes";
 import { HttpStatus } from "../http";
@@ -16,7 +16,7 @@ router.post("/v1/transcriptions", async (req: Request, res: Response) => {
   const { secret } = req.query;
 
   if (secret !== process.env.SONIX_CALLBACK_SECRET) {
-    logger.info("Invalid Sonix callback secret");
+    log.info("Invalid Sonix callback secret");
 
     return res.status(HttpStatus.UNAUTHORIZED).end();
   }

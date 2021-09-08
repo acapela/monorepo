@@ -9,7 +9,7 @@ import yargs from "yargs";
 // @ts-ignore
 import { hideBin } from "yargs/helpers";
 
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 const tooling = yargs(hideBin(process.argv));
 
@@ -21,10 +21,10 @@ tooling
       return yargs.option("watch", { type: "boolean", default: false });
     },
     async ({ watch }) => {
-      logger.info("Loading graphql types generator");
+      log.info("Loading graphql types generator");
       const { startGeneratingGraphqlTypes } = await import("./graphqlCodegen");
 
-      logger.info("Starting generation");
+      log.info("Starting generation");
       await startGeneratingGraphqlTypes({ watch });
     }
   )

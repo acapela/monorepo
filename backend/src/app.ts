@@ -10,7 +10,7 @@ import express, { Application, json } from "express";
 import securityMiddleware from "helmet";
 
 import { initializeSecrets } from "~config";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 import { router as actionRoutes } from "./actions/actions";
 import { router as attachmentsRoutes } from "./attachments/router";
@@ -41,7 +41,7 @@ export async function setupServer(): Promise<Server> {
 function setupMiddleware(app: Application): void {
   app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   app.use(securityMiddleware());
-  app.use(logger.middleware);
+  app.use(log.middleware);
   app.use(cookieParser());
   app.use(json());
 }

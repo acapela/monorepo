@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 import { JsonValue } from "~shared/types";
 import { UserTokenData } from "~shared/types/jwtAuth";
 
@@ -16,7 +16,7 @@ export function createEndpointHandler<Input, Output>(
       const requestResultData = await handler(request.body, request);
       response.status(HttpStatus.OK).json(requestResultData);
     } catch (error) {
-      logger.info("endpointHandler failed with error", error as Record<string, unknown>);
+      log.info("endpointHandler failed with error", error as Record<string, unknown>);
       throw error;
     }
   };

@@ -55,6 +55,7 @@ export async function startGeneratingGraphqlTypes({ watch }: ToolingGenerateOpti
           declarationKind: "interface",
           apolloClientVersion: 3,
           useExplicitTyping: true,
+
           strictScalars: true,
           nonOptionalTypename: true,
           scalars: {

@@ -3,7 +3,7 @@ import { findTeamById } from "~backend/src/teams/helpers";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
 import { TeamInvitation, db } from "~db";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import logger from "~shared/logger";
+import { log } from "~shared/logger";
 
 export const sendInviteNotification = async (invite: TeamInvitation, userId: string | null) => {
   const { email, inviting_user_id: invitingUserId, team_id: teamId } = invite;
@@ -40,7 +40,7 @@ export const sendInviteNotification = async (invite: TeamInvitation, userId: str
     ].join("<br>"),
   });
 
-  logger.info("Sent invite notification", {
+  log.info("Sent invite notification", {
     userId,
     teamId,
   });
