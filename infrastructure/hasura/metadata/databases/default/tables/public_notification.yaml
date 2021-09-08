@@ -55,6 +55,7 @@ select_permissions:
         - id
         - read_at
         - user_id
+        - updated_at
       filter:
         user_id:
           _eq: X-Hasura-User-Id

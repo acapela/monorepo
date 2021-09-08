@@ -2,77 +2,78 @@ table:
   name: team_invitation
   schema: public
 object_relationships:
-  - name: inviting_user
-    using:
-      foreign_key_constraint_on: inviting_user_id
-  - name: team
-    using:
-      foreign_key_constraint_on: team_id
-  - name: used_by_user
-    using:
-      foreign_key_constraint_on: used_by_user_id
+- name: inviting_user
+  using:
+    foreign_key_constraint_on: inviting_user_id
+- name: team
+  using:
+    foreign_key_constraint_on: team_id
+- name: used_by_user
+  using:
+    foreign_key_constraint_on: used_by_user_id
 insert_permissions:
-  - permission:
-      backend_only: false
-      check:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
-      columns:
-        - email
-        - team_id
-      set:
-        inviting_user_id: x-hasura-User-Id
-    role: user
+- permission:
+    backend_only: false
+    check:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+    columns:
+    - email
+    - team_id
+    set:
+      inviting_user_id: x-hasura-User-Id
+  role: user
 select_permissions:
-  - permission:
-      columns:
-        - created_at
-        - email
-        - id
-        - inviting_user_id
-        - team_id
-        - token
-        - used_at
-        - used_by_user_id
-      filter:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - created_at
+    - email
+    - id
+    - inviting_user_id
+    - team_id
+    - token
+    - updated_at
+    - used_at
+    - used_by_user_id
+    filter:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
 delete_permissions:
-  - permission:
-      filter:
-        team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    filter:
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - definition:
-      delete:
-        columns: "*"
-      enable_manual: false
-      insert:
-        columns: "*"
-      update:
-        columns:
-          - used_at
-          - email
-          - created_at
-          - id
-          - inviting_user_id
-          - team_id
-          - token
-          - used_by_user_id
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-    name: team_invitation_updates
-    retry_conf:
-      interval_sec: 10
-      num_retries: 0
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+    insert:
+      columns: "*"
+    update:
+      columns:
+      - used_at
+      - email
+      - created_at
+      - id
+      - inviting_user_id
+      - team_id
+      - token
+      - used_by_user_id
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: team_invitation_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

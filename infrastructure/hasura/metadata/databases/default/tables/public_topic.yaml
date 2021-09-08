@@ -76,6 +76,7 @@ select_permissions:
         - room_id
         - slug
         - team_id
+        - updated_at
       filter:
         _and:
           - room:

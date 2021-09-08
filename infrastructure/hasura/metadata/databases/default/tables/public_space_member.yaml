@@ -2,57 +2,57 @@ table:
   name: space_member
   schema: public
 object_relationships:
-  - name: space
-    using:
-      foreign_key_constraint_on: space_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+- name: space
+  using:
+    foreign_key_constraint_on: space_id
+- name: user
+  using:
+    foreign_key_constraint_on: user_id
 insert_permissions:
-  - permission:
-      backend_only: false
-      check:
-        space:
-          team:
-            memberships:
-              _and:
-                - user_id:
-                    _eq: X-Hasura-User-Id
-                - user_id:
-                    _ceq: user_id
-      columns:
-        - space_id
-        - user_id
-    role: user
+- permission:
+    backend_only: false
+    check:
+      space:
+        team:
+          memberships:
+            _and:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - user_id:
+                _ceq: user_id
+    columns:
+    - space_id
+    - user_id
+  role: user
 select_permissions:
-  - permission:
-      columns:
-        - space_id
-        - user_id
-      filter:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - space_id
+    - user_id
+    filter:
+      space:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - permission:
-      check: null
-      columns: []
-      filter:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    check: null
+    columns: []
+    filter:
+      space:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user
 delete_permissions:
-  - permission:
-      filter:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    filter:
+      space:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user

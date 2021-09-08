@@ -2,39 +2,40 @@ table:
   name: task
   schema: public
 object_relationships:
-  - name: message
-    using:
-      foreign_key_constraint_on: message_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+- name: message
+  using:
+    foreign_key_constraint_on: message_id
+- name: user
+  using:
+    foreign_key_constraint_on: user_id
 select_permissions:
-  - permission:
-      columns:
-        - created_at
-        - done_at
-        - id
-        - message_id
-        - seen_at
-        - type
-        - user_id
-      filter:
-        message:
-          topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - created_at
+    - done_at
+    - id
+    - message_id
+    - seen_at
+    - type
+    - updated_at
+    - user_id
+    filter:
+      message:
+        topic:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - permission:
-      check: null
-      columns:
-        - done_at
-        - seen_at
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    check: null
+    columns:
+    - done_at
+    - seen_at
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
