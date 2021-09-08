@@ -1,7 +1,7 @@
 import { $ } from "zx";
 
 import { ScenarioStep } from "./config";
-import { getDidFilesChange } from "./didFilesChange";
+import { getDidFilesChange, updateFilesHash } from "./didFilesChange";
 
 export async function createStepCommandRunner(step: ScenarioStep, command: string) {
   const { dependsOnFiles } = step;
@@ -36,6 +36,12 @@ export async function createStepCommandRunner(step: ScenarioStep, command: strin
       std?.off("data", handleChunk);
     };
   }
+
+  commandRunner?.then(() => {
+    if (dependsOnFiles) {
+      updateFilesHash(dependsOnFiles);
+    }
+  });
 
   onNewLine((line) => {
     lines.push(line);
