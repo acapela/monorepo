@@ -2,7 +2,6 @@ import Analytics from "analytics-node";
 
 import { User } from "~db";
 
-import { assertDefined } from "./assert";
 import { AnalyticsEventsMap, AnalyticsUserProfile } from "./types/analytics";
 
 function getAnalyticsProfileFromDbUser(user: User): AnalyticsUserProfile {
