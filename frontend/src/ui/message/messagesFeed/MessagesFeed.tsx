@@ -8,7 +8,6 @@ import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 
 import { Message } from "./Message";
-import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
   messages: Message_MessageFragment[];
@@ -56,10 +55,6 @@ function DateHeader({ date }: { date: Date }) {
 const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
-
-  ${MessageLikeContent} {
-    margin-bottom: 16px;
-  }
 `;
 
 const UIDateHeader = styled.div<{}>`
