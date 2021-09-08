@@ -18,13 +18,7 @@ import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
-import {
-  CreateRoomViewTopicMutation,
-  CreateRoomViewTopicMutationVariables,
-  RoomViewTopicQuery,
-  RoomViewTopicQueryVariables,
-  TopicList_RoomFragment,
-} from "~gql";
+import { CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables, TopicList_RoomFragment } from "~gql";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
@@ -68,7 +62,7 @@ function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicI
   if (topics.length == 0) {
     return getInitialIndexes(1)[0];
   }
-  const sortedTopics = topics.sort(byIndexAscending);
+  const sortedTopics = topics.slice().sort(byIndexAscending);
   const activeTopicNumIndex = sortedTopics.findIndex((t) => t.id == activeTopicId);
   if (activeTopicNumIndex == -1) {
     return createLastItemIndex(sortedTopics[sortedTopics.length - 1].index ?? "");
@@ -134,7 +128,7 @@ const useCreateTopic = () =>
           },
         };
       },
-      update: function (cache, result) {
+      async update(cache, result) {
         const topic = result.data?.topic;
         if (!topic) {
           return;
@@ -153,19 +147,6 @@ const useCreateTopic = () =>
             topics: (existing: Reference[]) =>
               existing.some((ref) => ref.__ref == newTopicRef.__ref) ? existing : existing.concat(newTopicRef),
           },
-        });
-        cache.writeQuery<RoomViewTopicQuery, RoomViewTopicQueryVariables>({
-          query: gql`
-            ${createTopicFragment}
-
-            query RoomViewTopic($id: uuid!) {
-              topics: topic(where: { id: { _eq: $id } }) {
-                ...TopicListCreateTopic
-              }
-            }
-          `,
-          data: { topics: [topic] },
-          variables: { id: topic.id },
         });
       },
     }

@@ -61,6 +61,7 @@ export const useArchiveTopic = () =>
     `,
     {
       optimisticResponse: ({ id, roomId, archivedAt }) => ({
+        __typename: "mutation_root",
         topic: { __typename: "topic", id, room_id: roomId, archived_at: archivedAt },
       }),
       onCompleted() {

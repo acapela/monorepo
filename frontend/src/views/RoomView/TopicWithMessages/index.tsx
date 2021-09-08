@@ -1,6 +1,6 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
@@ -9,7 +9,6 @@ import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { useMessagesSubscription } from "~frontend/views/RoomView/TopicWithMessages/useMessagesSubscription";
 import {
   TopicClosureSubscription,
   TopicClosureSubscriptionVariables,
@@ -25,9 +24,11 @@ import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
+import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
+import { useMessagesSubscription } from "./useMessagesSubscription";
 
 const fragments = {
   room: gql`
@@ -55,11 +56,11 @@ const fragments = {
 
 interface Props {
   room: TopicWithMessages_RoomFragment;
-  topic: TopicWithMessages_TopicFragment | null;
+  topic: TopicWithMessages_TopicFragment;
 }
 
 // Marks last message as read
-function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | null) {
+function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   const [updateLastSeenMessage] = useMutation<
     UpdateLastSeenMessageMutation,
     UpdateLastSeenMessageMutationVariables
@@ -76,7 +77,7 @@ function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | nu
   `);
 
   useEffect(() => {
-    if (!messageIds || !topicId) {
+    if (!messageIds) {
       return;
     }
 
@@ -91,32 +92,32 @@ function useMarkTopicAsRead(topicId: string | null, messageIds: Set<string> | nu
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic?.id);
+  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic.id);
 
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
       ${TopicSummaryMessage.fragments.topic}
+      ${TopicHeader.fragments.topic}
 
       subscription TopicClosure($topicId: uuid!) {
         topic_by_pk(id: $topicId) {
           ...TopicSummaryMessage_topic
+          ...TopicHeader_topic
         }
       }
     `,
-    topic ? { variables: { topicId: topic.id } } : { skip: true }
+    { variables: { topicId: topic.id } }
   );
 
   const isMember = useIsCurrentUserRoomMember(room);
 
-  useMarkTopicAsRead(topic?.id ?? null, existingMessageIds);
-
-  if (!topic) {
-    return null;
-  }
+  useMarkTopicAsRead(topic.id, existingMessageIds);
 
   const isClosed = isTopicClosed(topic);
 
   const isComposerDisabled = !isMember || isLoadingMessages;
+
+  const scrollerRef = useRef<ScrollHandle>();
 
   return (
     <TopicStoreContext>
@@ -129,7 +130,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
             <UITopicHeaderHolder>{topic && <TopicHeader room={room} topic={topic} />}</UITopicHeaderHolder>
 
-            <ScrollableMessages>
+            <ScrollableMessages ref={scrollerRef as any}>
               <AnimateSharedLayout>
                 <MessagesFeed isReadonly={!isMember} messages={messages} />
 
@@ -150,7 +151,13 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
             {!isClosed && (
               <ClientSideOnly>
                 <UIMessageComposer isDisabled={isComposerDisabled}>
-                  <CreateNewMessageEditor topicId={topic.id} isDisabled={isComposerDisabled} />
+                  <CreateNewMessageEditor
+                    topicId={topic.id}
+                    isDisabled={isComposerDisabled}
+                    onMessageSent={() => {
+                      scrollerRef.current?.scrollToBottom("auto");
+                    }}
+                  />
                 </UIMessageComposer>
               </ClientSideOnly>
             )}

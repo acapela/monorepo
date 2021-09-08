@@ -1,8 +1,9 @@
-import { Message, db } from "~db";
+import { Message, MessageReaction, db } from "~db";
 import { Message_Type_Enum } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
@@ -24,24 +25,35 @@ export async function prepareMessagePlainTextData(message: Message) {
     log.warn("Failed to prepare message plain text content", message);
   }
 }
+
+/**
+ * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
+ */
 async function markPendingTasksAsDone(message: Message) {
   const { topic_id, user_id } = message;
 
-  /**
-   * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
-   */
+  const taskCompletionTime = new Date();
+
+  const pendingTasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
 
   await db.task.updateMany({
-    where: {
-      message: {
-        topic_id,
-      },
-      user_id,
-      done_at: null,
-    },
-    data: {
-      done_at: new Date(),
-    },
+    where: { id: { in: pendingTasks.map((t) => t.id) } },
+    data: { done_at: taskCompletionTime },
+  });
+
+  await db.message.updateMany({
+    where: { id: { in: pendingTasks.map((t) => t.message_id) } },
+    data: { updated_at: taskCompletionTime },
+  });
+
+  // Tracking
+  pendingTasks.forEach((task) => {
+    trackBackendUserEvent(task.user_id, "Completed Task", {
+      taskType: task.type as string,
+      taskId: task.id,
+      messageId: task.message_id,
+      doneAt: taskCompletionTime,
+    });
   });
 }
 
@@ -61,4 +73,8 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
     createTasksFromNewMentions(event.item, event.itemBefore),
     markPendingTasksAsDone(event.item),
   ]);
+}
+
+export async function handleMessageReactionChanges(event: HasuraEvent<MessageReaction>) {
+  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
 }

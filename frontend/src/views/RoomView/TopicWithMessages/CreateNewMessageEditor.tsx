@@ -10,6 +10,7 @@ import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
+import { MessageComposerContext } from "~frontend/ui/message/composer/MessageComposerContext";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
 import { Recorder } from "~frontend/ui/message/composer/Recorder";
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
@@ -32,7 +33,8 @@ import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
 interface Props {
   topicId: string;
-  isDisabled?: boolean;
+  isDisabled: boolean;
+  onMessageSent: () => void;
 }
 
 interface SubmitMessageParams {
@@ -108,11 +110,13 @@ const useCreateMessageMutation = () =>
           query: TOPIC_WITH_MESSAGES_QUERY,
           variables: { topicId: message.topic_id },
         };
-        const messages = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options)?.messages;
-        if (messages) {
+        const data = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options);
+        if (data) {
+          const { messages } = data;
           cache.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
             ...options,
             data: {
+              ...data,
               messages: messages.some((m) => m.id == message.id) ? messages : messages.concat(message),
             },
           });
@@ -121,7 +125,7 @@ const useCreateMessageMutation = () =>
     }
   );
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const [value, setValue] = useState<RichEditorNode>(getEmptyRichContent);
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
@@ -192,6 +196,8 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
     }
 
     handleStopReplyingToMessage();
+
+    onMessageSent();
   };
 
   return (
@@ -209,46 +215,48 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled }: Props) 
           });
         }}
       />
-      <MessageContentEditor
-        ref={editorRef}
-        isDisabled={isDisabled || isEditingAnyMessage}
-        content={value}
-        onContentChange={setValue}
-        onSubmit={async () => {
-          if (isCreatingMessage) return;
+      <MessageComposerContext.Provider value={{ mode: "creating" }}>
+        <MessageContentEditor
+          ref={editorRef}
+          isDisabled={isDisabled || isEditingAnyMessage}
+          content={value}
+          onContentChange={setValue}
+          onSubmit={async () => {
+            if (isCreatingMessage) return;
 
-          attachmentsList.clear();
-          setValue(getEmptyRichContent());
+            attachmentsList.clear();
+            setValue(getEmptyRichContent());
 
-          try {
-            await submitMessage({
-              type: "TEXT",
-              content: value,
-              attachments,
+            try {
+              await submitMessage({
+                type: "TEXT",
+                content: value,
+                attachments,
+              });
+            } catch (error) {
+              // In case of error - restore attachments and content you were trying to send
+              attachmentsList.set(attachments);
+              setValue(value);
+            }
+          }}
+          onFilesSelected={handleNewFiles}
+          attachments={attachments}
+          onEditorReady={focusEditor}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
             });
-          } catch (error) {
-            // In case of error - restore attachments and content you were trying to send
-            attachmentsList.set(attachments);
-            setValue(value);
+          }}
+          additionalContent={
+            topicContext.currentlyReplyingToMessageId && (
+              <ReplyingToMessageById
+                onRemove={handleStopReplyingToMessage}
+                messageId={topicContext.currentlyReplyingToMessageId}
+              />
+            )
           }
-        }}
-        onFilesSelected={handleNewFiles}
-        attachments={attachments}
-        onEditorReady={focusEditor}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        additionalContent={
-          topicContext.currentlyReplyingToMessageId && (
-            <ReplyingToMessageById
-              onRemove={handleStopReplyingToMessage}
-              messageId={topicContext.currentlyReplyingToMessageId}
-            />
-          )
-        }
-      />
+        />
+      </MessageComposerContext.Provider>
     </UIEditorContainer>
   );
 });

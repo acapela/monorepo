@@ -154,6 +154,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-file: package.json
+      - run: rm -f .npmrc
+        if: steps.semrel.outputs.version != ''
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -165,10 +167,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
         if: steps.semrel.outputs.version != ''
-      - name: yarn install
-        run: |
-          rm .npmrc
-          yarn --prefer-offline
+      - run: yarn --prefer-offline
         if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |
@@ -204,3 +203,4 @@ jobs:
         env:
           KUSTOMIZE_BIN: ./kustomize
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

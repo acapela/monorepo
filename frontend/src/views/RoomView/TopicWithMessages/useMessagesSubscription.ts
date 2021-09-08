@@ -40,12 +40,13 @@ function useExistingMessagesSubscription(topicId?: string) {
       query: TOPIC_WITH_MESSAGES_QUERY,
       variables: { topicId },
     };
-    const messages = client.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options)?.messages;
-    if (messages) {
+    const data = client.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options);
+    if (data) {
       client.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
         ...options,
         data: {
-          messages: messages.filter((m) => existingMessageIds.has(m.id)),
+          ...data,
+          messages: data.messages.filter((m) => existingMessageIds.has(m.id)),
         },
       });
     }
@@ -54,15 +55,14 @@ function useExistingMessagesSubscription(topicId?: string) {
   return existingMessageIds;
 }
 
-export function useMessagesSubscription(topicId?: string) {
+export function useMessagesSubscription(topicId: string) {
   const {
     data,
     loading: isLoadingMessages,
     subscribeToMore,
-  } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(
-    TOPIC_WITH_MESSAGES_QUERY,
-    topicId ? { variables: { topicId } } : { skip: true }
-  );
+  } = useQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(TOPIC_WITH_MESSAGES_QUERY, {
+    variables: { topicId },
+  });
 
   const existingMessageIds = useExistingMessagesSubscription(topicId);
   const messages = data?.messages ?? [];
@@ -70,7 +70,7 @@ export function useMessagesSubscription(topicId?: string) {
   const lastUpdatedAt = useMemo(() => (data ? _.max(data.messages.map((m) => m.updated_at)) : null), [data]);
 
   useEffect(() => {
-    if (!topicId || !lastUpdatedAt) {
+    if (!lastUpdatedAt) {
       return;
     }
     return subscribeToMore<NewestTopicMessageSubscription, NewestTopicMessageSubscriptionVariables>({

@@ -6,6 +6,7 @@
 - "!include public_message_reaction.yaml"
 - "!include public_message_type.yaml"
 - "!include public_notification.yaml"
+- "!include public_private_room.yaml"
 - "!include public_room.yaml"
 - "!include public_room_invitation.yaml"
 - "!include public_room_last_posted_message.yaml"

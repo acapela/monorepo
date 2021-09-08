@@ -3,16 +3,19 @@ import { uniq, uniqBy } from "lodash";
 import { Message, Notification, PrismaPromise, Task, db } from "~db";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { EditorMentionData } from "~shared/types/editor";
 import { TaskType } from "~shared/types/task";
 
 import { createNotification } from "../notifications/entity";
 
+const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
+
 function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
   const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
 
-  return uniqBy(mentionNodes, (mention) => mention.attrs.data.userId);
+  return uniqBy(mentionNodes, (mention) => toUniqueMentionIdentifier(mention.attrs.data));
 }
 
 function getNewMentionNodesFromMessage(message: Message, messageBefore: Message | null) {
@@ -57,6 +60,12 @@ export async function createMessageMentionNotifications(message: Message, messag
   const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
 
   for (const mentionedUserId of mentionedUserIds) {
+    trackBackendUserEvent(message.user_id, "Created Mention", {
+      mentionedUserId,
+      isToSelf: mentionedUserId === message.user_id,
+      messageId: message.id,
+    });
+
     const createNotificationPromise = createNotification({
       type: "topicMention",
       payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
@@ -103,20 +112,20 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
 
-  allMentionsInMessage.map((mention) => {
-    const { userId, type } = mention.attrs.data;
+  for (const mention of allMentionsInMessage) {
+    const { userId: mentionedUserId, type } = mention.attrs.data;
 
     // Exclude directly mention types that don't generate a task
     if (type === "notification-only") {
-      return;
+      continue;
     }
 
-    if (possibleNewTasksPerUserInMessage[userId]) {
-      possibleNewTasksPerUserInMessage[userId].push(type);
+    if (possibleNewTasksPerUserInMessage[mentionedUserId]) {
+      possibleNewTasksPerUserInMessage[mentionedUserId].push(type);
     } else {
-      possibleNewTasksPerUserInMessage[userId] = [type];
+      possibleNewTasksPerUserInMessage[mentionedUserId] = [type];
     }
-  });
+  }
 
   const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: TaskType }> = Object.keys(
     possibleNewTasksPerUserInMessage
@@ -139,5 +148,16 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
     );
   }
 
-  return await db.$transaction(createTasksPromises);
+  const createdTasks = (await db.$transaction(createTasksPromises)) as Task[];
+
+  createdTasks.forEach((task: Task) => {
+    trackBackendUserEvent(message.user_id, "Created Task", {
+      taskType: task.type as string,
+      mentionedUserId: task.user_id,
+      taskId: task.id,
+      messageId: task.message_id,
+    });
+  });
+
+  return createdTasks;
 }

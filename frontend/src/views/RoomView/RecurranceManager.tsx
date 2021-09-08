@@ -1,6 +1,7 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import React from "react";
 
+import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
 import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
@@ -40,7 +41,7 @@ export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }:
       }
     `,
     {
-      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
     }
   );
 
@@ -61,6 +62,12 @@ export const RecurranceManager = withFragments(fragments, ({ room, isReadonly }:
     await updateRoomRecurranceIntervalInDays({
       variables: { id: room.id, recurrance_interval_in_days: recurranceIntervalInDays },
     });
+
+    if (recurranceIntervalInDays && !room.recurrance_interval_in_days) {
+      trackEvent("Made Room Recurring", { roomId: room.id, intervalInDays: recurranceIntervalInDays });
+    } else if (!recurranceIntervalInDays && room.recurrance_interval_in_days) {
+      trackEvent("Made Room Non-recurring", { roomId: room.id });
+    }
   };
 
   return (

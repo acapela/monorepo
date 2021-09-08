@@ -65,6 +65,7 @@ export type AnalyticsEventsMap = {
     spaceId: string;
     numberOfInitialMembers: number;
     isCalendarEvent: boolean;
+    isRecurring: boolean;
   };
   "Joined Room": { roomId: string; userId: string };
   "Left Room": { roomId: string; userId: string };
@@ -77,6 +78,8 @@ export type AnalyticsEventsMap = {
   "Renamed Room": { roomId: string; newRoomName: string; oldRoomName: string };
   "Made Room Public": { roomId: string };
   "Made Room Private": { roomId: string };
+  "Made Room Recurring": { roomId: string; intervalInDays: number };
+  "Made Room Non-recurring": { roomId: string };
 
   // Topic related events
 
@@ -93,6 +96,14 @@ export type AnalyticsEventsMap = {
   "Edited Message": { messageId: string };
   "Deleted Message": { messageId: string };
   "Reacted To Message": { messageId: string; reactionEmoji: string };
+
+  // Mention and task related events
+
+  "Created Mention": { isToSelf: boolean; messageId: string; mentionedUserId: string };
+  "Created Task": { taskType: string; mentionedUserId: string; taskId: string; messageId: string };
+  "Marked Task As Seen": { taskType: string; taskId: string; messageId: string; seenAt: Date };
+  "Marked Task As Unseen": { taskType: string; taskId: string; messageId: string };
+  "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

@@ -34,7 +34,7 @@ export const DeadlineManager = withFragments(fragments, ({ room, isReadonly }: P
       }
     `,
     {
-      optimisticResponse: (vars) => ({ room: { __typename: "room", ...vars } }),
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
     }
   );
   useSubscription<DeadlineManagerSubscription, DeadlineManagerSubscriptionVariables>(

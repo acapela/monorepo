@@ -57,6 +57,7 @@ export async function startGeneratingGraphqlTypes({ watch }: ToolingGenerateOpti
           useExplicitTyping: true,
 
           strictScalars: true,
+          nonOptionalTypename: true,
           scalars: {
             // Hasura has bunch of custom scalars. Let's inform gql codegen about corresponding typescript types.
             bigint: "number",

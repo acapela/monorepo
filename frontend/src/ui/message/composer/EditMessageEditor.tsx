@@ -19,6 +19,7 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
 
 import { EditorAttachmentInfo, uploadFiles } from "./attachments";
+import { MessageComposerContext } from "./MessageComposerContext";
 import { MessageContentEditor } from "./MessageContentComposer";
 
 const fragments = {
@@ -121,23 +122,25 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
 
   return (
     <UIHolder>
-      <MessageContentEditor
-        content={content}
-        onContentChange={setContent}
-        onFilesSelected={async (files) => {
-          const newAttachments = await uploadFiles(files);
+      <MessageComposerContext.Provider value={{ mode: "editing" }}>
+        <MessageContentEditor
+          content={content}
+          onContentChange={setContent}
+          onFilesSelected={async (files) => {
+            const newAttachments = await uploadFiles(files);
 
-          attachmentsList.push(...newAttachments);
-        }}
-        attachments={attachments}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        autofocusKey={message.id}
-        hideEditorSubmitButton
-      />
+            attachmentsList.push(...newAttachments);
+          }}
+          attachments={attachments}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
+            });
+          }}
+          autofocusKey={message.id}
+          hideEditorSubmitButton
+        />
+      </MessageComposerContext.Provider>
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel

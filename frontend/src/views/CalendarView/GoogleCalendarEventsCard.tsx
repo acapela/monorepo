@@ -70,6 +70,7 @@ export const GoogleCalendarEventsCard = styled(function GoogleCalendarEventsCard
       roomDeadline: new Date(createRoomInput.deadline),
       spaceId: createRoomInput.spaceId,
       numberOfInitialMembers: createRoomInput.participantsIds.length,
+      isRecurring: !!createRoomInput.recurranceIntervalInDays,
       isCalendarEvent: true,
     });
     routes.spaceRoom.push({ spaceId: createRoomInput.spaceId, roomId: room.id });

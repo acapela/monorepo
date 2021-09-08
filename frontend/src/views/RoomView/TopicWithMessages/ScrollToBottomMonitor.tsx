@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef } from "react";
+import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { useIsomorphicLayoutEffect } from "react-use";
 import styled from "styled-components";
 
@@ -10,6 +10,10 @@ interface Props {
   preventAutoScroll: boolean;
 }
 
+export interface ScrollHandle {
+  scrollToBottom: (behavior: ScrollBehavior) => void;
+}
+
 const SCROLL_BOTTOM_TOLERANCE = 10;
 
 /**
@@ -17,7 +21,7 @@ const SCROLL_BOTTOM_TOLERANCE = 10;
  *
  * It's useful for cases like messages feed.
  */
-export function ScrollToBottomMonitor({ parentRef, preventAutoScroll }: Props) {
+export const ScrollToBottomMonitor = React.forwardRef<ScrollHandle, Props>(({ parentRef, preventAutoScroll }, ref) => {
   const monitorRef = useRef<HTMLDivElement>(null);
   const isScrolledToBottom = useRef(true);
   const didAutoScroll = useRef(false);
@@ -35,31 +39,39 @@ export function ScrollToBottomMonitor({ parentRef, preventAutoScroll }: Props) {
     }, [parentRef])
   );
 
-  const performScrollToBottom = useCallback(
+  const scrollToBottom = useCallback(
     (behavior: ScrollBehavior) => {
       const parentNode = parentRef.current;
-      if (!parentNode || preventAutoScroll || !isScrolledToBottom.current) {
+      if (!parentNode) {
         return;
       }
 
       // We need to distinguish programmatically-triggered scroll events from user-triggered ones
       // to retain a user's intention whether to stay scrolled to the bottom
-      didAutoScroll.current = true;
       if (behavior === "auto") {
         parentNode.scrollTop = parentNode.scrollHeight - parentNode.clientHeight;
       } else {
         parentNode.scroll({ top: parentNode.scrollHeight - parentNode.clientHeight, behavior });
       }
     },
-    [parentRef, preventAutoScroll]
+    [parentRef]
   );
 
-  useResizeCallback(monitorRef, () => performScrollToBottom("auto"));
-  useResizeCallback(parentRef, () => performScrollToBottom("auto"));
+  const tryAutoScroll = useCallback(() => {
+    if (!preventAutoScroll && isScrolledToBottom.current) {
+      didAutoScroll.current = true;
+      scrollToBottom("auto");
+    }
+  }, [preventAutoScroll, scrollToBottom]);
+
+  useImperativeHandle(ref, () => ({ scrollToBottom }));
+
+  useResizeCallback(monitorRef, () => tryAutoScroll());
+  useResizeCallback(parentRef, () => tryAutoScroll());
 
   // On mount try to scroll down without animation
   useIsomorphicLayoutEffect(() => {
-    performScrollToBottom("auto");
+    tryAutoScroll();
   }, []);
 
   useEffect(() => {
@@ -78,7 +90,7 @@ export function ScrollToBottomMonitor({ parentRef, preventAutoScroll }: Props) {
   });
 
   return <UIContentSizeCaptureFlyer ref={monitorRef} />;
-}
+});
 
 const UIContentSizeCaptureFlyer = styled.div<{}>`
   position: absolute;

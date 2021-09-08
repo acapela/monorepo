@@ -7,12 +7,14 @@ import Providers, { EmailConfig } from "next-auth/providers";
 import { initializeSecrets } from "~config";
 import { Account, User, db } from "~db";
 import { assert } from "~shared/assert";
-import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
-import { ALLOWED_ROLES, DEFAULT_ROLE } from "~shared/roles";
 import { getSearchParams } from "~shared/urlParams";
 
-//
+type Role = "user";
+const ALLOWED_ROLES: Role[] = ["user"];
+const DEFAULT_ROLE: Role = "user";
+
 /**
  * In this file we manage authorization integration using next-auth.
  *
@@ -88,7 +90,7 @@ const authAdapterProvider = {
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
 
-        trackBackendUserEvent(user, "Signed Up", { userEmail: profile.email });
+        trackFirstBackendUserEvent(user, "Signed Up", { userEmail: profile.email });
 
         return user;
       },
@@ -279,7 +281,7 @@ async function getAuthInitOptions() {
         }
 
         if (user.email) {
-          trackBackendUserEvent(user, "Signed In", { userEmail: user.email });
+          trackFirstBackendUserEvent(user, "Signed In", { userEmail: user.email });
         }
 
         try {

@@ -263,6 +263,7 @@ export const [useAddSpaceMemberMutation] = createMutation<AddSpaceMemberMutation
       return {
         __typename: "mutation_root",
         insert_space_member_one: {
+          __typename: "space_member",
           space_id: vars.spaceId,
           user_id: vars.userId,
         },
