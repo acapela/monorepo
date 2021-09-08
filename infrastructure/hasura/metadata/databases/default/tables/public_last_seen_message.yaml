@@ -2,36 +2,36 @@ table:
   name: last_seen_message
   schema: public
 insert_permissions:
-  - permission:
-      backend_only: false
-      check:
-        user_id:
-          _eq: X-Hasura-User-Id
-      columns:
-        - message_id
-        - topic_id
-      set:
-        user_id: x-hasura-User-Id
-    role: user
+- permission:
+    backend_only: false
+    check:
+      user_id:
+        _eq: X-Hasura-User-Id
+    columns:
+    - message_id
+    - topic_id
+    set:
+      user_id: x-hasura-User-Id
+  role: user
 select_permissions:
-  - permission:
-      columns:
-        - message_id
-        - seen_at
-        - topic_id
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - message_id
+    - seen_at
+    - topic_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - permission:
-      check: null
-      columns:
-        - message_id
-        - topic_id
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-      set:
-        user_id: x-hasura-User-Id
-    role: user
+- permission:
+    check: null
+    columns:
+    - message_id
+    - topic_id
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+    set:
+      user_id: x-hasura-User-Id
+  role: user
