@@ -2,24 +2,24 @@ table:
   name: room_last_posted_message
   schema: public
 object_relationships:
-  - name: room
-    using:
-      manual_configuration:
-        column_mapping:
-          room_id: id
-        insertion_order: null
-        remote_table:
-          name: room
-          schema: public
+- name: room
+  using:
+    manual_configuration:
+      column_mapping:
+        room_id: id
+      insertion_order: null
+      remote_table:
+        name: room
+        schema: public
 select_permissions:
-  - permission:
-      columns:
-        - last_posted_message_time
-      filter:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - last_posted_message_time
+    filter:
+      room:
+        space:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+  role: user

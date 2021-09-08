@@ -2,23 +2,23 @@ table:
   name: private_room
   schema: public
 object_relationships:
-  - name: space
-    using:
-      manual_configuration:
-        column_mapping:
-          space_id: id
-        insertion_order: null
-        remote_table:
-          name: space
-          schema: public
+- name: space
+  using:
+    manual_configuration:
+      column_mapping:
+        space_id: id
+      insertion_order: null
+      remote_table:
+        name: space
+        schema: public
 select_permissions:
-  - permission:
-      columns:
-        - id
-      filter:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    columns:
+    - id
+    filter:
+      space:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user
