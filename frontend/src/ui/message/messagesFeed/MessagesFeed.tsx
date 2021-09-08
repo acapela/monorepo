@@ -1,3 +1,4 @@
+import { differenceInMinutes } from "date-fns";
 import { isSameDay } from "date-fns";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
@@ -12,6 +13,21 @@ import { Message } from "./Message";
 interface Props {
   messages: Message_MessageFragment[];
   isReadonly?: boolean;
+}
+
+function shouldHideMetadata(currentMsg: Message_MessageFragment, prevMsg: Message_MessageFragment | null): boolean {
+  if (!prevMsg) {
+    return false;
+  }
+
+  if (prevMsg.user_id !== currentMsg.user_id) {
+    return false;
+  }
+
+  const wasCurrentMessageSentShortlyAfterPrevious =
+    differenceInMinutes(new Date(currentMsg.created_at), new Date(prevMsg.created_at)) < 15;
+
+  return wasCurrentMessageSentShortlyAfterPrevious;
 }
 
 export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
@@ -37,8 +53,6 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
       {messages.map((message, index) => {
         const previousMessage = messages[index - 1] ?? null;
 
-        const isSameAuthorAsPreviousMessage = previousMessage?.user_id === message.user_id;
-
         return (
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
@@ -46,7 +60,7 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
               isReadonly={isReadonly}
               message={message}
               key={message.id}
-              hasHiddenMetadata={isSameAuthorAsPreviousMessage}
+              hasHiddenMetadata={shouldHideMetadata(message, previousMessage)}
             />
           </Fragment>
         );
