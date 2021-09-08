@@ -3,13 +3,10 @@ import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageLikeContent_UserFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
-import { borderRadius } from "~ui/baseStyles";
-import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
+import { theme } from "~ui/theme";
 
 import { MessageMetaData } from "./MessageMetaData";
 
@@ -35,16 +32,11 @@ interface Props {
 
 const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
   const holderRef = useRef<HTMLDivElement>(null);
-  const currentUser = useCurrentUser();
-
-  const isOwnMessage = currentUser?.id === user.id;
-
   const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
   return (
     <UIAnimatedMessageWrapper
       ref={holderRef}
-      isOwnMessage={isOwnMessage}
       className={className}
       onMouseEnter={() => setHovered()}
       onMouseLeave={() => unsetHovered()}
@@ -59,13 +51,12 @@ const _MessageLikeContent = styled<Props>(({ user, date, children, tools, classN
 
 export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
 
-const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
+const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
-  gap: 20px;
-  padding: 14px 8px;
-  ${borderRadius.item};
-  ${hoverTransition()}
+  padding: 8px 8px;
+  ${theme.borderRadius.item};
+  ${theme.transitions.hover()}
 
   ${() => UITools} {
     opacity: 0;
@@ -73,7 +64,7 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 
   &:hover {
-    background: ${ITEM_BACKGROUND_WEAK_TRANSPARENT};
+    background: ${theme.colors.interactive.selected()};
 
     ${() => UITools} {
       opacity: 1;
@@ -81,6 +72,4 @@ const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   }
 `;
 
-const UITools = styled(motion.div)<{}>`
-  margin-top: 0.25rem;
-`;
+const UITools = styled(motion.div)<{}>``;
