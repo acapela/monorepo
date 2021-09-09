@@ -91,11 +91,21 @@ select_permissions:
       filter:
         topic:
           room:
-            space:
-              team:
-                memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
+            _or:
+              - _and:
+                  - is_private:
+                      _eq: true
+                  - members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+              - _and:
+                  - is_private:
+                      _eq: false
+                  - space:
+                      team:
+                        memberships:
+                          user_id:
+                            _eq: X-Hasura-User-Id
     role: user
 update_permissions:
   - permission:
