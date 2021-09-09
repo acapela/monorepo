@@ -1,3 +1,4 @@
+import { differenceInMinutes } from "date-fns";
 import { isSameDay } from "date-fns";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
@@ -8,11 +9,33 @@ import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 
 import { Message } from "./Message";
-import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
   messages: Message_MessageFragment[];
   isReadonly?: boolean;
+}
+
+const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
+
+function shouldBundleCurrentMessageWithPrevious(
+  currentMsg: Message_MessageFragment,
+  prevMsg: Message_MessageFragment | null
+): boolean {
+  if (!prevMsg) {
+    return false;
+  }
+
+  const isSameOwnerForBothMessages = prevMsg.user_id === currentMsg.user_id;
+  if (!isSameOwnerForBothMessages) {
+    return false;
+  }
+
+  const minutesBetweenCurrentAndPreviousMessage = differenceInMinutes(
+    new Date(currentMsg.created_at),
+    new Date(prevMsg.created_at)
+  );
+
+  return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
 export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
@@ -41,7 +64,12 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
         return (
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
-            <Message isReadonly={isReadonly} message={message} key={message.id} />
+            <Message
+              isReadonly={isReadonly}
+              message={message}
+              key={message.id}
+              isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
+            />
           </Fragment>
         );
       })}
@@ -56,10 +84,6 @@ function DateHeader({ date }: { date: Date }) {
 const UIHolder = styled.div<{}>`
   display: flex;
   flex-direction: column;
-
-  ${MessageLikeContent} {
-    margin-bottom: 16px;
-  }
 `;
 
 const UIDateHeader = styled.div<{}>`

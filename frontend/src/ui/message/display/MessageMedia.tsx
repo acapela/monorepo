@@ -46,7 +46,7 @@ export const MessageMedia = withFragments(fragments, ({ message, nonInteractive 
 const UIAttachments = styled.div<{ nonInteractive: boolean }>`
   display: flex;
   gap: 8px;
-  height: 400px;
+  max-height: 200px;
 
   ${(props) =>
     props.nonInteractive &&

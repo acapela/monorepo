@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
 import { ReplyingToMessageQuery, ReplyingToMessageQueryVariables, ReplyingToMessage_MessageFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
@@ -14,7 +14,7 @@ import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_
 
 const fragments = {
   message: gql`
-    ${MessageMetaData.fragments.user}
+    ${MessageMetaDataWrapper.fragments.user}
     ${MessageText.fragments.message}
     ${MessageMedia.fragments.message}
 
@@ -50,12 +50,12 @@ export const ReplyingToMessage = withFragments(fragments, ({ onRemove, message }
     <UIHolder onClick={handleClick}>
       <UIBorder />
       <UIContent>
-        <MessageMetaData user={message.user} date={new Date(message.created_at)}>
+        <MessageMetaDataWrapper user={message.user} date={new Date(message.created_at)}>
           <UIMessageContent>
             <UIMessageText message={message} />
             <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
-        </MessageMetaData>
+        </MessageMetaDataWrapper>
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>
