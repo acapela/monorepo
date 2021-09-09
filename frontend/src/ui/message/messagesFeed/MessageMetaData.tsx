@@ -21,19 +21,20 @@ const fragments = {
 
 interface Props {
   user: MessageMetaData_UserFragment;
-  isHidden?: boolean;
-  isHovered?: boolean;
   date: Date;
   children: ReactNode;
+  className?: string;
+  isHidden?: boolean;
+  isHovered?: boolean;
 }
 
 export const MessageMetaDataWrapper = withFragments(
   fragments,
-  ({ user, date, children, isHidden = false, isHovered = false }: Props) => {
+  styled(({ user, date, children, isHidden = false, isHovered = false, className }: Props) => {
     const canShowSideTimeLabel = isHidden && isHovered;
 
     return (
-      <UIHolder>
+      <UIHolder className={className}>
         {!isHidden && (
           <>
             <UserAvatar user={user} size="small" />{" "}
@@ -46,7 +47,7 @@ export const MessageMetaDataWrapper = withFragments(
         {children}
       </UIHolder>
     );
-  }
+  })``
 );
 
 const UIHolder = styled.div<{}>`
@@ -70,7 +71,7 @@ const UIHeaderTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
 `;
 
 const UISideTimeLabel = styled(TimeLabelWithDateTooltip)<{}>`
-  ${theme.font.body12.build()};
+  ${theme.font.body12.withExceptionalLineHeight("1", "Prevents adding space when content only has one line").build()};
   opacity: 0.4;
   user-select: none;
 `;

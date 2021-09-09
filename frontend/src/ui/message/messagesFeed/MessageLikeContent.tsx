@@ -41,27 +41,46 @@ const _MessageLikeContent = styled<Props>(({ user, date, children, tools, classN
       onMouseEnter={() => setHovered()}
       onMouseLeave={() => unsetHovered()}
     >
-      <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
-        {children}
-      </MessageMetaDataWrapper>
-      {tools && <UITools>{tools}</UITools>}
+      <UIContentContainer>
+        <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
+          {children}
+        </MessageMetaDataWrapper>
+        {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
+      </UIContentContainer>
     </UIAnimatedMessageWrapper>
   );
 })``;
 
 export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
 
-const UITools = styled(motion.div)<{}>``;
+const UIFlyingTools = styled(motion.div)<{}>`
+  position: absolute;
+  /* Doesn't block text */
+  top: -16px;
+  right: 0;
+`;
+
+const UIContentContainer = styled.div<{}>`
+  position: relative;
+
+  /* Needed to have tools fly close to text */
+  min-width: 332px;
+  max-width: 732px;
+
+  ${MessageMetaDataWrapper} {
+    /* About half text size in padding */
+    padding: 0.5rem 8px;
+  }
+`;
 
 const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
-  padding: 8px 8px;
 
-  ${theme.borderRadius.item};
+  ${theme.borderRadius.item}
   ${theme.transitions.hover()}
 
-  ${UITools} {
+  ${UIFlyingTools} {
     opacity: 0;
     transition: 0.1s all;
   }
@@ -69,7 +88,7 @@ const UIAnimatedMessageWrapper = styled.div<{}>`
   &:hover {
     background: ${theme.colors.interactive.selected()};
 
-    ${UITools} {
+    ${UIFlyingTools} {
       opacity: 1;
     }
   }
