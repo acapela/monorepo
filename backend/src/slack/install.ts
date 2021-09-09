@@ -33,7 +33,7 @@ export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, meta
 
 export const getTeamSlackInstallationURL: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },
-  GetTeamSlackInstallationUrlOutput
+  Omit<GetTeamSlackInstallationUrlOutput, "__typename">
 > = {
   actionName: "get_team_slack_installation_url",
 
@@ -45,6 +45,6 @@ export const getTeamSlackInstallationURL: ActionHandler<
     assert(team, new UnprocessableEntityError(`Team ${teamId} for member ${userId} not found`));
     const url = await getSlackInstallURL({ withBot: true }, { teamId, redirectURL, userId });
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
-    return { __typename: "GetTeamSlackInstallationURLOutput", url };
+    return { url };
   },
 };
