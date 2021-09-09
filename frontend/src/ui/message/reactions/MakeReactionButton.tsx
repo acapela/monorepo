@@ -1,10 +1,12 @@
 import { gql } from "@apollo/client";
 import { EmojiData } from "emoji-mart";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import { useRef } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { addMessageReaction } from "~frontend/gql/reactions";
 import { withFragments } from "~frontend/gql/utils";
 import { MakeReactionButton_MessageFragment } from "~gql";
@@ -28,10 +30,10 @@ const fragments = {
 };
 
 interface Props {
-  message: MakeReactionButton_MessageFragment;
+  message: MessageEntity;
 }
 
-export const MakeReactionButton = withFragments(fragments, ({ message }: Props) => {
+export const MakeReactionButton = observer(({ message }: Props) => {
   const user = useAssertCurrentUser();
 
   const buttonRef = useRef<HTMLButtonElement>(null);

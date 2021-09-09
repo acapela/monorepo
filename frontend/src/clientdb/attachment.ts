@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 
+import { EntityByDefinition } from "~frontend/../../clientdb/entity/entity";
 import { AttachmentFragment, UpdatedAttachmentsQuery, UpdatedAttachmentsQueryVariables } from "~frontend/../../gql";
 import { defineEntity } from "~clientdb";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
@@ -12,7 +13,9 @@ const attachmentFragment = gql`
     id
     created_at
     mime_type
+    original_name
     message_id
+    updated_at
   }
 `;
 
@@ -24,34 +27,33 @@ const [, { subscribe: subscribeToAttachmentUpdates }] = createQuery<
     ${attachmentFragment}
 
     query UpdatedAttachments($lastSyncDate: timestamptz) {
-      attachment(where: { created_at: { _gte: $lastSyncDate } }) {
+      attachment(where: { created_at: { _gt: $lastSyncDate } }) {
         ...Attachment
       }
     }
   `
 );
 
-export const attachmentEntity = defineEntity<AttachmentFragment>(
-  {
-    name: "attachment",
-    getCacheKey: (space) => space.id,
-    keyField: "id",
-    sync: {
-      initPromise: () => renderedApolloClientPromise,
-      pull({ lastSyncDate, updateItems }) {
-        return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-          updateItems(newData.attachment);
-        });
-      },
+export const attachmentEntity = defineEntity<AttachmentFragment>({
+  name: "attachment",
+  updatedAtField: "updated_at",
+  keyField: "id",
+  sync: {
+    initPromise: () => renderedApolloClientPromise,
+    pull({ lastSyncDate, updateItems }) {
+      return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
+        updateItems(newData.attachment);
+      });
     },
   },
-  (attachment, { getEntity }) => {
-    return {
-      get message() {
-        if (!attachment.message_id) return;
+}).addConnections((attachment, { getEntity }) => {
+  return {
+    get message() {
+      if (!attachment.message_id) return;
 
-        return getEntity(messageEntity).findById(attachment.message_id);
-      },
-    };
-  }
-);
+      return getEntity(messageEntity).findById(attachment.message_id);
+    },
+  };
+});
+
+export type AttachmentEntity = EntityByDefinition<typeof attachmentEntity>;

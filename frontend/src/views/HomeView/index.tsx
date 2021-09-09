@@ -27,7 +27,21 @@ export const HomeView = observer(function HomeView() {
       {roomz.map((room) => {
         return (
           <div key={room.id}>
-            {room.name} (owner {room.owner?.name})
+            ROOM: {room.name} (owner {room.owner?.name})
+            <div>
+              {room.topics.all.map((topic) => {
+                return (
+                  <div key={topic.id}>
+                    TOPIC: {topic.name}
+                    <div>
+                      {topic.messages.all.map((message) => {
+                        return <div key={message.id}>MESSAGE: {message.id}</div>;
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         );
       })}

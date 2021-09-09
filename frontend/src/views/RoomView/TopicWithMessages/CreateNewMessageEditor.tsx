@@ -46,8 +46,6 @@ interface SubmitMessageParams {
 const useCreateMessageMutation = () =>
   useMutation<CreateNewMessageMutation, CreateNewMessageMutationVariables>(
     gql`
-      ${Message.fragments.message}
-
       mutation CreateNewMessage(
         $id: uuid!
         $topicId: uuid!
@@ -67,7 +65,6 @@ const useCreateMessageMutation = () =>
           id
           topic_id
           updated_at
-          ...Message_message
         }
       }
     `,
@@ -100,27 +97,6 @@ const useCreateMessageMutation = () =>
             replied_to_message: null,
           },
         };
-      },
-      update(cache, result) {
-        const message = result.data?.message;
-        if (!message) {
-          return;
-        }
-        const options = {
-          query: TOPIC_WITH_MESSAGES_QUERY,
-          variables: { topicId: message.topic_id },
-        };
-        const data = cache.readQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>(options);
-        if (data) {
-          const { messages } = data;
-          cache.writeQuery<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
-            ...options,
-            data: {
-              ...data,
-              messages: messages.some((m) => m.id == message.id) ? messages : messages.concat(message),
-            },
-          });
-        }
       },
     }
   );

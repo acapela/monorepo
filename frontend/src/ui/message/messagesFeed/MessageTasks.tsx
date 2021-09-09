@@ -1,12 +1,13 @@
 import styled from "styled-components";
 
+import { TaskEntity } from "~frontend/clientdb/task";
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
 import { MessageTask_TaskFragment } from "~gql";
 
 import { MessageTask } from "./MessageTask";
 
 interface Props {
-  tasks: MessageTask_TaskFragment[];
+  tasks: TaskEntity[];
   className?: string;
 }
 

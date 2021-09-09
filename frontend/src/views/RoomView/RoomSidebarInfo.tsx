@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
+import { RoomEntity } from "~frontend/clientdb/room";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
-import { RoomSidebarInfo_RoomFragment } from "~gql";
 import { InputLabel } from "~ui/theme/functional";
 
 import { DeadlineManager } from "./DeadlineManager";
@@ -15,25 +15,21 @@ const fragments = {
   room: gql`
     ${useIsCurrentUserRoomMember.fragments.room}
     ${ManageRoomMembers.fragments.room}
-    ${DeadlineManager.fragments.room}
 
     fragment RoomSidebarInfo_room on room {
       space_id
       ...IsCurrentUserRoomMember_room
       ...ManageRoomMembers_room
-      ...DeadlineManager_room
     }
   `,
 };
 
 interface Props {
-  room: RoomSidebarInfo_RoomFragment;
+  room: RoomEntity;
 }
 
 export const RoomSidebarInfo = withFragments(fragments, function RoomSidebarInfo({ room }: Props) {
   const router = useRouter();
-
-  const amIMember = useIsCurrentUserRoomMember(room ?? undefined);
 
   const handleRoomLeave = () => {
     router.replace(`/space/${room?.space_id || ""}`);
@@ -46,11 +42,11 @@ export const RoomSidebarInfo = withFragments(fragments, function RoomSidebarInfo
       <UIManageSections>
         <UIManageSection>
           <InputLabel>Recurrance</InputLabel>
-          <RecurranceManager room={room} isReadonly={!amIMember} />
+          <RecurranceManager room={room} isReadonly={!room.isCurrentUserMember} />
         </UIManageSection>
         <UIManageSection>
           <InputLabel>Due date</InputLabel>
-          <DeadlineManager room={room} isReadonly={!amIMember} />
+          <DeadlineManager room={room} isReadonly={!room.isCurrentUserMember} />
         </UIManageSection>
       </UIManageSections>
     </UIRoomInfo>

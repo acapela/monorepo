@@ -7,8 +7,6 @@ import { createQuery } from "~frontend/gql/utils";
 
 import { spaceEntity } from "./space";
 import { userEntity } from "./user";
-import { getType } from "./utils";
-import { clientdb } from ".";
 
 const teamFragment = gql`
   fragment Team on team {
@@ -28,37 +26,33 @@ const [, { subscribe: subscribeToSpaceUpdates }] = createQuery<UpdatedTeamsQuery
     ${teamFragment}
 
     query UpdatedTeams($lastSyncDate: timestamptz) {
-      team(where: { updated_at: { _gte: $lastSyncDate } }) {
+      team(where: { updated_at: { _gt: $lastSyncDate } }) {
         ...Team
       }
     }
   `
 );
 
-export const teamEntity = defineEntity(
-  {
-    type: getType<TeamFragment>(),
-    name: "team",
-    getCacheKey: (space) => space.id,
-    keyField: "id",
-    sync: {
-      initPromise: () => renderedApolloClientPromise,
-      pull({ lastSyncDate, updateItems }) {
-        return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-          updateItems(newData.team);
-        });
-      },
+export const teamEntity = defineEntity<TeamFragment>({
+  name: "team",
+  updatedAtField: "updated_at",
+  keyField: "id",
+  sync: {
+    initPromise: () => renderedApolloClientPromise,
+    pull({ lastSyncDate, updateItems }) {
+      return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
+        updateItems(newData.team);
+      });
     },
   },
-  (team, { getEntity }) => {
-    const memberIds = team.membershipsIds.map((member) => member.user_id);
-    return {
-      get members() {
-        return getEntity(userEntity).query((user) => memberIds.includes(user.id));
-      },
-      get spaces() {
-        return getEntity(spaceEntity).query((space) => space.team_id === team.id);
-      },
-    };
-  }
-);
+}).addConnections((team, { getEntity }) => {
+  const memberIds = team.membershipsIds.map((member) => member.user_id);
+  return {
+    get members() {
+      return getEntity(userEntity).query((user) => memberIds.includes(user.id));
+    },
+    get spaces() {
+      return getEntity(spaceEntity).query((space) => space.team_id === team.id);
+    },
+  };
+});

@@ -1,9 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RoomEntity } from "~frontend/clientdb/room";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
@@ -22,39 +25,9 @@ import { TextH3 } from "~ui/typo";
 
 import { CloseTopicModal } from "./CloseTopicModal";
 
-const fragments = {
-  room: gql`
-    ${useIsCurrentUserRoomMember.fragments.room}
-    ${useIsCurrentUserTopicManager.fragments.room}
-    ${ManageTopic.fragments.room}
-
-    fragment TopicHeader_room on room {
-      id
-      finished_at
-      ...IsCurrentUserRoomMember_room
-      ...IsCurrentUserTopicManager_room
-      ...ManageTopic_room
-    }
-  `,
-  topic: gql`
-    ${isTopicClosed.fragments.topic}
-    ${useIsCurrentUserTopicManager.fragments.topic}
-    ${ManageTopic.fragments.topic}
-
-    fragment TopicHeader_topic on topic {
-      id
-      name
-      archived_at
-      ...IsTopicClosed_topic
-      ...IsCurrentUserTopicManager_topic
-      ...ManageTopic_topic
-    }
-  `,
-};
-
 interface Props {
-  room: TopicHeader_RoomFragment;
-  topic: TopicHeader_TopicFragment;
+  room: RoomEntity;
+  topic: TopicEntity;
   className?: string;
 }
 
@@ -75,10 +48,10 @@ const useUpdateTopic = () =>
     }
   );
 
-const _TopicHeader = ({ room, topic }: Props) => {
+export const TopicHeader = observer(({ room, topic }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
   const user = useAssertCurrentUser();
-  const isMember = useIsCurrentUserRoomMember(room);
+  const isMember = room.isCurrentUserMember;
   const [updateTopic] = useUpdateTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
   const isTopicManager = useIsCurrentUserTopicManager(room, topic);
@@ -159,9 +132,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
       </AnimatePresence>
     </UIHolder>
   );
-};
-
-export const TopicHeader = withFragments(fragments, _TopicHeader);
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

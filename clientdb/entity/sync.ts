@@ -1,3 +1,5 @@
+import { runInAction } from "mobx";
+
 import { EntityDefinition } from "./definition";
 
 interface SyncManager<Data> {
@@ -17,21 +19,48 @@ export interface EntitySyncConfig<Data> {
 interface EntitySyncManagerConfig<Data> {
   onPulledItems(items: Data[]): void;
   onItemRemoveRequest(items: Data[]): void;
+  getLastSyncDate(): Date;
 }
 
 interface EntitySyncManager<Data> {
-  pushItem(item: Data): void;
+  cancel: () => void;
 }
 
 export function createEntitySyncManager<Data>(
   definition: EntityDefinition<Data, any>,
   config: EntitySyncManagerConfig<Data>
 ): EntitySyncManager<Data> {
-  let lastSyncDate: Date = new Date(0);
   const syncConfig = definition.config.sync;
 
   if (!syncConfig) {
     throw new Error("no sync");
+  }
+
+  function getLastSyncDate() {
+    const lastSyncDate = config.getLastSyncDate();
+
+    /**
+     * Note, this is a bit interesting.
+     *
+     * So Hasura keeps a bit more 'precise' data than native JS Date can keep.
+     *
+     * Native JS Date keeps milliseconds as integer, while Hasura describes also decimal parts of millisecond.
+     *
+     * eg (real example) we might have date client side 2021-09-08T10:23:53.037, but hasura will actually keep and return: 2021-09-08T10:23:53.0372
+     *
+     * They're nearly the same, but 'nearly' makes all the difference. looking at sub-second part it is
+     * .037 vs .0372
+     * aka. 37ms vs 37.2ms
+     *
+     * This is very slight difference of 0.2ms, however it will break sync as we'll keep receiving the same item over and over because
+     * .0372 is greater than .037.
+     *
+     * As there is no simple way to keep more precision than integer millisecond in javascript Date, I decided to add 1 MS to last sync date which solves the issue.
+     *
+     * This introduces very unlikely risk of race condition when some element was updated eg 0.5ms (server time) after our last sync date.
+     * In such case we'd skip this element and never receive update about it until it is updated next time.
+     */
+    return new Date(lastSyncDate.getTime() + 1);
   }
 
   function startNextSync() {
@@ -40,24 +69,28 @@ export function createEntitySyncManager<Data>(
       if (didScheduleAgain) return;
       didScheduleAgain = true;
 
-      lastSyncDate = new Date();
-
-      startNextSync();
+      cancelCurrent = startNextSync();
     }
 
     const maybeCleanup = syncConfig.pull?.({
-      lastSyncDate,
+      lastSyncDate: getLastSyncDate(),
       updateItems(items) {
         if (!items.length) return;
 
         maybeCleanup?.();
-        config.onPulledItems(items);
+        runInAction(() => {
+          config.onPulledItems(items);
+        });
+
         scheduleAgain();
       },
       removeItems(items) {
         if (!items.length) return;
         maybeCleanup?.();
-        config.onPulledItems(items);
+        runInAction(() => {
+          config.onItemRemoveRequest(items);
+        });
+
         scheduleAgain();
       },
     });
@@ -70,14 +103,20 @@ export function createEntitySyncManager<Data>(
 
     const foo = await syncConfig.initPromise?.();
 
-    startNextSync();
+    cancelCurrent = startNextSync();
   }
 
   init();
 
+  let cancelCurrent: SyncCleanup | undefined | void = undefined;
+
+  function cancel() {
+    if (cancelCurrent) {
+      cancelCurrent();
+    }
+  }
+
   return {
-    pushItem() {
-      //
-    },
+    cancel,
   };
 }

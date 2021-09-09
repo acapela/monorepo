@@ -1,9 +1,12 @@
 import { gql } from "@apollo/client";
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { AttachmentEntity } from "~frontend/clientdb/attachment";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageAttachment_AttachmentFragment, MessageAttachment_MessageFragment } from "~gql";
 import { theme } from "~ui/theme";
@@ -11,26 +14,9 @@ import { theme } from "~ui/theme";
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
 import { MessageAttachmentDisplayer } from "./MessageAttachmentDisplayer";
 
-const fragments = {
-  message: gql`
-    fragment MessageAttachment_message on message {
-      user_id
-      type
-    }
-  `,
-  attachment: gql`
-    ${MessageAttachmentDisplayer.fragments.attachment}
-
-    fragment MessageAttachment_attachment on attachment {
-      id
-      ...MessageAttachmentDisplayer_attachment
-    }
-  `,
-};
-
 interface Props {
-  message: MessageAttachment_MessageFragment;
-  attachment: MessageAttachment_AttachmentFragment;
+  message: MessageEntity;
+  attachment: AttachmentEntity;
   onAttachmentRemoveRequest?: (attachment: unknown) => void;
   className?: string;
 }
@@ -65,7 +51,7 @@ const _MessageAttachment = styled<Props>(({ message, attachment, className, onAt
   );
 })``;
 
-export const MessageAttachment = withFragments(fragments, _MessageAttachment);
+export const MessageAttachment = observer(_MessageAttachment);
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   height: 100%;

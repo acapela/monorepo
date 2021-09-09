@@ -1,4 +1,5 @@
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import { ReactNode } from "react";
 
 import { createChannel } from "~shared/channel";
@@ -59,9 +60,13 @@ type PromiseUIRenderer<I, O> = (input: I, resolve: (data: O) => void) => ReactNo
 const uiPromisesListChannel = createChannel<Array<PromiseUIData<any, any>>>();
 
 // Component able to render single ui promise
-function SinglePromiseUIRenderer<I, O>({ promiseUI }: { promiseUI: PromiseUIData<I, O> }) {
+const SinglePromiseUIRenderer = observer(function SinglePromiseUIRenderer<I, O>({
+  promiseUI,
+}: {
+  promiseUI: PromiseUIData<I, O>;
+}) {
   return <>{promiseUI.renderer(promiseUI.input, promiseUI.resolvePromise)}</>;
-}
+});
 
 /**
  * This component will render all currently active ui promises. It's good to put it somewhere global like in _app.tsx.

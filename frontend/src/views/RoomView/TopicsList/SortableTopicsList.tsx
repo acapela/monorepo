@@ -10,16 +10,17 @@ import {
 } from "@dnd-kit/core";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { observer } from "mobx-react";
 import React, { useMemo, useState } from "react";
 
-import { withFragments } from "~frontend/gql/utils";
+import { RoomEntity } from "~frontend/clientdb/room";
 import {
   getIndexBetweenCurrentAndLast,
   getIndexBetweenFirstAndCurrent,
   getIndexBetweenItems,
 } from "~frontend/rooms/order";
 import { byIndexAscending } from "~frontend/topics/utils";
-import { SortableTopicList_RoomFragment, UpdateTopicIndexMutation, UpdateTopicIndexMutationVariables } from "~gql";
+import { UpdateTopicIndexMutation, UpdateTopicIndexMutationVariables } from "~gql";
 import { BodyPortal } from "~ui/BodyPortal";
 
 import { UITopic, UITopicsList } from "./shared";
@@ -43,36 +44,19 @@ const useUpdateTopicIndex = () =>
     }
   );
 
-const fragments = {
-  room: gql`
-    ${SortableTopicMenuItem.fragments.room}
-    ${SortableTopicMenuItem.fragments.topic}
-
-    fragment SortableTopicList_room on room {
-      id
-      ...TopicMenuItem_room
-      topics {
-        id
-        index
-        ...TopicMenuItem_topic
-      }
-    }
-  `,
-};
-
 type Props = {
-  room: SortableTopicList_RoomFragment;
+  room: RoomEntity;
   isDisabled?: boolean;
   activeTopicId: string | null;
 };
 
-export const SortableTopicsList = withFragments(fragments, ({ room, activeTopicId, isDisabled }: Props) => {
+export const SortableTopicsList = observer(({ room, activeTopicId, isDisabled }: Props) => {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [updateTopicIndex] = useUpdateTopicIndex();
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 200 } }));
 
-  const sortedTopics = useMemo(() => room.topics.slice().sort(byIndexAscending), [room.topics]);
+  const sortedTopics = useMemo(() => room.topics.all.slice().sort(byIndexAscending), [room.topics]);
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over || active.id === over.id) {

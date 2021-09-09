@@ -1,4 +1,4 @@
-import { IObservableArray, computed, makeObservable, observable } from "mobx";
+import { IObservableArray, computed, makeObservable, observable, runInAction } from "mobx";
 
 import { EntityDefinition } from "./definition";
 import { EntityDraft } from "./draft";
@@ -7,7 +7,7 @@ import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
 export type EntityStore<Data, Connections> = {
-  items: IObservableArray<Data>;
+  items: IObservableArray<Entity<Data, Connections>>;
   findById(id: string): Entity<Data, Connections> | null;
   removeById(id: string): boolean;
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
@@ -41,16 +41,18 @@ export function createEntityStore<Data, Connections>(
     items,
     add(entity) {
       const id = `${entity[config.keyField]}`;
-      items.push(entity);
-      itemsMap[id] = entity;
 
-      console.log("elomelo");
+      runInAction(() => {
+        items.push(entity);
+        itemsMap[id] = entity;
+      });
 
       events.emit("itemAdded", entity);
 
       return entity;
     },
     findById(id) {
+      console.log({ id, itemsMap, items });
       return computed(() => itemsMap[id] ?? null).get();
     },
     removeById(id) {

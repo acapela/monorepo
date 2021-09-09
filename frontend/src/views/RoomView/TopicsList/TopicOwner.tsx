@@ -1,108 +1,50 @@
-import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
+import { RoomEntity } from "~frontend/clientdb/room";
+import { TopicEntity } from "~frontend/clientdb/topic";
+import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
-import {
-  TopicOwner_RoomFragment,
-  TopicOwner_TopicFragment,
-  UpdateTopicOwnerMutation,
-  UpdateTopicOwnerMutationVariables,
-} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { IconChevronDown } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
-const fragments = {
-  room: gql`
-    ${useIsCurrentUserTopicManager.fragments.room}
+type Props = { room: RoomEntity; topic: TopicEntity };
 
-    fragment TopicOwner_room on room {
-      ...IsCurrentUserTopicManager_room
-      members {
-        user {
-          id
-          name
-          email
-        }
-      }
-    }
-  `,
-  topic: gql`
-    ${useIsCurrentUserTopicManager.fragments.topic}
-    ${UserAvatar.fragments.user}
-
-    fragment TopicOwner_topic on topic {
-      id
-      ...IsCurrentUserTopicManager_topic
-      owner {
-        id
-        name
-        ...UserAvatar_user
-      }
-    }
-  `,
-};
-
-type Props = { room: TopicOwner_RoomFragment; topic: TopicOwner_TopicFragment };
-
-type Owner = TopicOwner_TopicFragment["owner"];
-
-const useUpdateTopicOwner = () =>
-  useMutation<UpdateTopicOwnerMutation, UpdateTopicOwnerMutationVariables & { owner: Owner }>(
-    gql`
-      ${fragments.topic}
-
-      mutation UpdateTopicOwner($id: uuid!, $ownerId: uuid!) {
-        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { owner_id: $ownerId }) {
-          id
-          ...TopicOwner_topic
-        }
-      }
-    `,
-    {
-      optimisticResponse: (vars) => ({
-        __typename: "mutation_root",
-        topic: { __typename: "topic", id: vars.id, owner_id: vars.ownerId, owner: vars.owner },
-      }),
-    }
-  );
-
-export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
-  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
-  const [updateTopicOwner] = useUpdateTopicOwner();
+export const TopicOwner = observer(({ room, topic }: Props) => {
+  // TODOC
+  const isTopicManager = true;
 
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
-  const onOwnerSelect = (user: Owner) => {
-    updateTopicOwner({ variables: { id: topic.id, ownerId: user.id, owner: user } });
+  const onOwnerSelect = (user: UserEntity) => {
+    topic.update({ owner_id: user.id });
     closeMenu();
   };
 
   return (
     <>
       <UIHolder ref={openerRef} onClick={toggleMenu} isInteractive={isTopicManager}>
-        <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />
-        {topic.owner.name}
+        {topic.owner && <UserAvatar size="extra-small" user={topic.owner!} disableNameTooltip />}
+        {topic.owner?.name}
         {isTopicManager && <IconChevronDown />}
       </UIHolder>
       <AnimatePresence>
         {isMenuOpen && (
           <Popover anchorRef={openerRef} placement="bottom-start" enableScreenCover>
-            <ItemsDropdown
-              items={room.members.map(({ user }) => user)}
+            <ItemsDropdown<UserEntity>
+              items={room.members.all}
               keyGetter={(user) => user.id}
               labelGetter={getUserDisplayName}
               onItemSelected={onOwnerSelect}
               onCloseRequest={closeMenu}
-              selectedItems={[topic.owner]}
+              selectedItems={[topic.owner!]}
               iconGetter={(user) => <UserAvatar size="small" user={user} />}
             />
           </Popover>

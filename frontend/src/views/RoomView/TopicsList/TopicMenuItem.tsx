@@ -1,4 +1,3 @@
-import { gql, useApolloClient, useSubscription } from "@apollo/client";
 import { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -8,19 +7,11 @@ import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { withFragments } from "~frontend/gql/utils";
+import { RoomEntity } from "~frontend/clientdb/room";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/RoomView/TopicWithMessages/gql";
-import {
-  TopicMenuItemSubscription,
-  TopicMenuItemSubscriptionVariables,
-  TopicMenuItem_RoomFragment,
-  TopicMenuItem_TopicFragment,
-  TopicWithMessagesQuery,
-  TopicWithMessagesQueryVariables,
-} from "~gql";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { select } from "~shared/sharedState";
@@ -32,38 +23,12 @@ import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
 
 import { ManageTopic } from "./ManageTopic";
-import { useDeleteTopic, useUpdateTopicName } from "./shared";
+import { useDeleteTopic } from "./shared";
 import { TopicOwner } from "./TopicOwner";
 
-const fragments = {
-  room: gql`
-    ${ManageTopic.fragments.room}
-    ${TopicOwner.fragments.room}
-
-    fragment TopicMenuItem_room on room {
-      id
-      space_id
-      ...ManageTopic_room
-      ...TopicOwner_room
-    }
-  `,
-  topic: gql`
-    ${ManageTopic.fragments.topic}
-    ${TopicOwner.fragments.topic}
-
-    fragment TopicMenuItem_topic on topic {
-      id
-      name
-      closed_at
-      ...ManageTopic_topic
-      ...TopicOwner_topic
-    }
-  `,
-};
-
 type Props = {
-  room: TopicMenuItem_RoomFragment;
-  topic: TopicMenuItem_TopicFragment;
+  room: RoomEntity;
+  topic: TopicEntity;
   isActive: boolean;
   className?: string;
   isEditingDisabled?: boolean;
@@ -74,53 +39,38 @@ type Props = {
 
 type SortableTopicMenuItemProps = { isDisabled?: boolean } & React.ComponentProps<typeof TopicMenuItem>;
 
-export const SortableTopicMenuItem = withFragments(
-  fragments,
-  ({ isDisabled, ...props }: SortableTopicMenuItemProps) => {
-    const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
-      id: props.topic.id,
-      disabled: isDisabled,
-    });
+export const SortableTopicMenuItem = observer(({ isDisabled, ...props }: SortableTopicMenuItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({
+    id: props.topic.id,
+    disabled: isDisabled,
+  });
 
-    const isDragged = active?.id === props.topic.id;
-    const style = {
-      // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
-      transform: CSS.Transform.toString(transform),
-      transition: transition ?? undefined,
-      opacity: isDragged ? 0 : undefined,
-    };
+  const isDragged = active?.id === props.topic.id;
+  const style = {
+    // When an item is not actively dragged, transform will be null, and toString will turn it into undefined
+    transform: CSS.Transform.toString(transform),
+    transition: transition ?? undefined,
+    opacity: isDragged ? 0 : undefined,
+  };
 
-    return (
-      <TopicMenuItem
-        {...props}
-        ref={setNodeRef}
-        rootProps={{ ...attributes, style }}
-        listeners={listeners}
-        isDragged={isDragged}
-      />
-    );
-  }
-);
+  return (
+    <TopicMenuItem
+      {...props}
+      ref={setNodeRef}
+      rootProps={{ ...attributes, style }}
+      listeners={listeners}
+      isDragged={isDragged}
+    />
+  );
+});
 
 const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMenuItem(
   { room, topic, isActive, className, isEditingDisabled, listeners, isDragged, rootProps },
   ref
 ) {
   const innerRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
-  useSubscription<TopicMenuItemSubscription, TopicMenuItemSubscriptionVariables>(
-    gql`
-      ${fragments.topic}
 
-      subscription TopicMenuItem($topicId: uuid!) {
-        topic_by_pk(id: $topicId) {
-          ...TopicMenuItem_topic
-        }
-      }
-    `,
-    { variables: { topicId: topic.id } }
-  );
   const roomContext = useRoomStoreContext();
-  const [updateTopicName] = useUpdateTopicName();
   const [deleteTopic] = useDeleteTopic();
   const unreadCount = useTopicUnreadMessagesCount(topic.id);
   const hasUnreadMessaged = !isActive && unreadCount > 0;
@@ -132,14 +82,6 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
 
   const manageWrapperRef = useRef<HTMLDivElement | null>(null);
-
-  const apolloClient = useApolloClient();
-  const prefetchMessages = () => {
-    apolloClient.query<TopicWithMessagesQuery, TopicWithMessagesQueryVariables>({
-      query: TOPIC_WITH_MESSAGES_QUERY,
-      variables: { topicId: topic.id },
-    });
-  };
 
   // We need to disable the Link while editing, so that selection does not trigger navigation
   const NameWrap = useCallback(
@@ -159,7 +101,8 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
 
   const handleNewTopicName = (newName: string) => {
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: newName, oldTopicName: topic.name });
-    updateTopicName({ variables: { id: topic.id, name: newName } });
+
+    topic.update({ name: newName });
 
     roomContext.editingNameTopicId = null;
 
@@ -173,8 +116,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
       ref={innerRef}
       {...rootProps}
       isDragged={isDragged}
-      onFocus={prefetchMessages}
-      onMouseEnter={prefetchMessages}
+      // TODOC pre-fetching if needed?
     >
       <NameWrap>
         <UIHolder ref={anchorRef} className={className} isActive={isActive} isClosed={!!topic.closed_at}>
@@ -238,7 +180,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   );
 });
 
-export const TopicMenuItem = withFragments(fragments, styled<Props>(observer(_TopicMenuItem))``);
+export const TopicMenuItem = observer(styled<Props>(observer(_TopicMenuItem))``);
 
 const PADDING = "12px";
 

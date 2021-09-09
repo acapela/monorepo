@@ -1,5 +1,5 @@
-import { pick } from "lodash";
-import { makeAutoObservable, runInAction } from "mobx";
+import { extend, pick } from "lodash";
+import { extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
 import { typedKeys } from "~shared/object";
 
@@ -16,9 +16,15 @@ type EntityMethods<Data, Connections> = {
   update(data: Partial<Data>): void;
   getData(): Data;
   getKey(): string;
+  getUpdatedAt(): Date;
+  remove(): void;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
+
+export type EntityByDefinition<Def> = Def extends EntityDefinition<infer Data, infer Connections>
+  ? Entity<Data, Connections>
+  : never;
 
 function mergeProperties<I, A>(input: I, propertiesToAdd: A): I & A {
   const keysToAdd = Object.keys(propertiesToAdd);
@@ -41,27 +47,33 @@ export function createEntity<D, C>(
   { getEntityClientByDefinition }: EntitiesConnectionsConfig
 ): Entity<D, C> {
   const { config, getConnections } = definition;
-
-  const connections = getConnections(data, {
-    getEntity: getEntityClientByDefinition,
-  });
-
   const rawDataKeys = typedKeys(data);
 
-  const entityRawData = { ...data };
+  const observableData = makeAutoObservable(data as D & object);
 
-  const entityWithConnectionsRawData = mergeProperties(entityRawData, connections);
+  const connections =
+    getConnections?.(observableData, {
+      getEntity: getEntityClientByDefinition,
+    }) ?? ({} as C);
+
+  const observableDataAndConnections = extendObservable(observableData, connections);
 
   const entityMethods: EntityMethods<D, C> = {
+    remove() {
+      throw "unimplemented";
+    },
     getKey() {
       return `${entity[config.keyField]}`;
     },
-    getData() {
-      const foo: D = pick(entity, rawDataKeys);
+    getUpdatedAt() {
+      const rawInfo = entity[config.updatedAtField];
 
-      return foo;
-      // TODO: get data after updates
-      return entityRawData;
+      // TODO Validate
+      return new Date(rawInfo as string);
+    },
+    getData() {
+      const rawObject = toJS(entity);
+      return pick(rawObject, rawDataKeys);
     },
     clone() {
       throw "un";
@@ -69,24 +81,25 @@ export function createEntity<D, C>(
     update(input) {
       runInAction(() => {
         typedKeys(input).forEach((keyToUpdate) => {
-          const value = input[keyToUpdate];
+          const value = input[keyToUpdate]!;
 
           if (value === undefined) return;
 
-          (entity as D)[keyToUpdate] = value as D[keyof D];
+          (entity as D)[keyToUpdate] = value;
         });
       });
 
       store.events.emit("itemUpdated", entity);
     },
     createDraft() {
-      return createEntityDraft(entity, () => {
+      return createEntityDraft(entity, (draft) => {
+        entity.update(draft);
         throw "un";
       });
     },
   };
 
-  const entity: Entity<D, C> = mergeProperties(entityWithConnectionsRawData, entityMethods);
+  const entity: Entity<D, C> = extendObservable(observableDataAndConnections, entityMethods);
 
   return entity;
 }

@@ -2,7 +2,7 @@ import { typedKeys } from "~shared/object";
 
 import {
   EntityClient,
-  EntityClientFromDefinition,
+  EntityClientByDefinition,
   GetEntityClientByDefinition,
   createEntityClient,
 } from "./entity/client";
@@ -19,7 +19,7 @@ interface ClientDbConfig {
 }
 
 type ClientDb<Entities extends EntitiesMap> = {
-  [key in keyof Entities]: EntityClientFromDefinition<Entities[key]>;
+  [key in keyof Entities]: EntityClientByDefinition<Entities[key]>;
 };
 
 export function createClientDb<Entities extends EntitiesMap>(

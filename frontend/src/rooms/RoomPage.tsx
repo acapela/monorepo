@@ -1,6 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 
+import { clientdb } from "~frontend/clientdb";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
@@ -12,35 +14,17 @@ interface Props {
   topicId: string | null;
 }
 
-export const RoomPage = ({ topicId, spaceId, roomId }: Props) => {
-  const { data, loading } = useQuery<RoomPage_RoomQuery, RoomPage_RoomQueryVariables>(
-    gql`
-      ${RoomTopicView.fragments.room}
+export const RoomPage = observer(({ topicId, spaceId, roomId }: Props) => {
+  // TODOC
+  // useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom, loading });
 
-      query RoomPage_room($roomId: uuid!) {
-        room: room_by_pk(id: $roomId) {
-          id
-          is_private
-          ...RoomTopicView_room
-        }
-      }
-    `,
-    { variables: { roomId } }
-  );
+  const room = clientdb.room.findById(roomId);
 
-  const hasRoom = Boolean(data && data.room);
-
-  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom, loading });
-
-  if (!data || !data.room) {
-    return null; // Left blank on purpose. Won't render for clients.
-  }
-
-  const { room } = data;
+  if (!room) return null;
 
   return (
     <AppLayout>
       <RoomTopicView room={room} topicId={topicId} />
     </AppLayout>
   );
-};
+});

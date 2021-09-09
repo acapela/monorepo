@@ -1,8 +1,10 @@
 import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
+import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { withFragments } from "~frontend/gql/utils";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
 import { MessageAttachmentDisplayer_AttachmentFragment } from "~gql";
@@ -13,30 +15,18 @@ import { theme } from "~ui/theme";
 
 import { MessageImageAttachment } from "./MessageImageAttachment";
 
-const fragments = {
-  attachment: gql`
-    fragment MessageAttachmentDisplayer_attachment on attachment {
-      mimeType: mime_type
-      originalName: original_name
-      transcription {
-        id
-        status
-        transcript
-      }
-    }
-  `,
-};
-
 interface AttachmentProps {
-  attachment: MessageAttachmentDisplayer_AttachmentFragment;
+  attachment: AttachmentEntity;
   attachmentUrl: string;
   className?: string;
 }
 
 const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
-  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+  const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
+  // TODOC
+  const transcript: TranscriptData | undefined = undefined;
 
-  const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
+  // const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
 
   function renderAttachment(): ReactNode {
     switch (messageType) {
@@ -56,15 +46,15 @@ const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, class
         );
     }
 
-    const [attachmentMimeType] = attachment.mimeType.split("/");
+    const [attachmentMimeType] = attachment.mime_type.split("/");
 
     if (attachmentMimeType === "image") {
-      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
+      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
     }
 
     return (
       <a href={attachmentUrl} target="_blank">
-        <span>{attachment.originalName}</span>
+        <span>{attachment.original_name}</span>
       </a>
     );
   }
@@ -76,7 +66,7 @@ const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, class
   );
 })``;
 
-export const MessageAttachmentDisplayer = withFragments(fragments, _MessageAttachmentDisplayer);
+export const MessageAttachmentDisplayer = observer(_MessageAttachmentDisplayer);
 
 const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;

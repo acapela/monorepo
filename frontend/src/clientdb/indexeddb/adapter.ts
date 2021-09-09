@@ -9,12 +9,10 @@ async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
   const db = await openDB(`${dbPrefix}-localdb`, dbVersion, {
     upgrade(database, oldVersion, newVersion) {
       for (const existingStore of database.objectStoreNames) {
-        console.log("removing", { existingStore });
         database.deleteObjectStore(existingStore);
       }
 
       for (const entity of entities) {
-        console.log("creating", { entity });
         database.createObjectStore(entity.name, { keyPath: entity.keyField });
       }
     },

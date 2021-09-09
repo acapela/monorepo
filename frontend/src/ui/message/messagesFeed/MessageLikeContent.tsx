@@ -4,6 +4,7 @@ import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { UserEntity } from "~frontend/clientdb/user";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageLikeContent_UserFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
@@ -24,7 +25,7 @@ const fragments = {
 };
 
 interface Props {
-  user: MessageLikeContent_UserFragment;
+  user: UserEntity;
   date: Date;
   children: ReactNode;
   tools?: ReactNode;

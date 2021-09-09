@@ -1,48 +1,26 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import { useEffect, useMemo } from "react";
 
-import { withFragments } from "~frontend/gql/utils";
+import { clientdb } from "~frontend/clientdb";
+import { RoomEntity } from "~frontend/clientdb/room";
 import { routes } from "~frontend/router";
 import { byIndexAscending } from "~frontend/topics/utils";
-import { RoomTopicView_RoomFragment } from "~gql";
 
 import { RoomView } from "./RoomView";
 import { TopicWithMessages } from "./TopicWithMessages";
 
-const fragments = {
-  room: gql`
-    ${RoomView.fragments.room}
-    ${TopicWithMessages.fragments.room}
-    ${TopicWithMessages.fragments.topic}
-
-    fragment RoomTopicView_room on room {
-      id
-      space_id
-      topics {
-        id
-        archived_at
-        ...TopicWithMessages_topic
-      }
-      ...RoomView_room
-      ...TopicWithMessages_room
-    }
-  `,
-};
-
 interface Props {
-  room: RoomTopicView_RoomFragment;
+  room: RoomEntity;
   topicId: null | string;
 }
 
-export const RoomTopicView = withFragments(fragments, function RoomTopicView({ room, topicId }: Props) {
-  const openTopics = useMemo(() => room.topics?.filter((topic) => !topic.archived_at).sort(byIndexAscending), [room]);
+export const RoomTopicView = observer(function RoomTopicView({ room, topicId }: Props) {
+  const openTopics = room.topics.query((topic) => !topic.archived_at).all;
   const firstTopic = openTopics?.[0] ?? null;
 
   const selectedTopicId = topicId ?? firstTopic?.id ?? null;
-  const selectedTopic = useMemo(
-    () => room.topics.find((topic) => topic.id == selectedTopicId) ?? null,
-    [room, selectedTopicId]
-  );
+
+  const selectedTopic = selectedTopicId ? clientdb.topic.findById(selectedTopicId) : null;
 
   /*
     Routing on changes to topic
@@ -54,7 +32,7 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
     Topic ids given through url that are not found in the room, route to the first topic in room.
   */
   useEffect(() => {
-    const topicsInRoom = room?.topics;
+    const topicsInRoom = room?.topics.all;
 
     // Newly created room stores topics as `null`
     if (!room || !topicsInRoom) {
@@ -93,8 +71,10 @@ export const RoomTopicView = withFragments(fragments, function RoomTopicView({ r
     }
   }, [topicId, firstTopic, room, openTopics]);
 
+  console.log("elomel2o");
+
   return (
-    <RoomView room={room} selectedTopicId={selectedTopicId}>
+    <RoomView roomId={room.id} selectedTopicId={selectedTopicId}>
       {selectedTopic && <TopicWithMessages key={selectedTopicId} room={room} topic={selectedTopic} />}
     </RoomView>
   );

@@ -1,7 +1,9 @@
 import { isSameDay } from "date-fns";
+import { observer } from "mobx-react";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
 
+import { MessageEntity } from "~frontend/clientdb/message";
 import { withFragments } from "~frontend/gql/utils";
 import { Message_MessageFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
@@ -11,14 +13,14 @@ import { Message } from "./Message";
 import { MessageLikeContent } from "./MessageLikeContent";
 
 interface Props {
-  messages: Message_MessageFragment[];
+  messages: MessageEntity[];
   isReadonly?: boolean;
 }
 
-export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
+export const MessagesFeed = observer(function MessagesFeed({ messages, isReadonly }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
-  function renderMessageHeader(message: Message_MessageFragment, previousMessage: Message_MessageFragment | null) {
+  function renderMessageHeader(message: MessageEntity, previousMessage: MessageEntity | null) {
     if (!previousMessage) {
       return <DateHeader date={new Date(message.created_at)} />;
     }

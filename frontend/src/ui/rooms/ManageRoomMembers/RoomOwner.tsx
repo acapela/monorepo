@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import styled from "styled-components";
 
+import { RoomEntity } from "~frontend/clientdb/room";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { RoomOwner_RoomFragment } from "~gql";
@@ -19,11 +20,12 @@ const fragments = {
   `,
 };
 
-type Props = { room: RoomOwner_RoomFragment };
+type Props = { room: RoomEntity };
 
 export const RoomOwner = withFragments(fragments, ({ room }: Props) => (
-  <UIHolder data-tooltip={`${room.owner.name} (Room Owner)`}>
-    <UserAvatar disableNameTooltip size="medium" user={room.owner} />
+  <UIHolder data-tooltip={`${room.owner?.name} (Room Owner)`}>
+    {/* TODOC */}
+    <UserAvatar disableNameTooltip size="medium" user={room.owner!} />
   </UIHolder>
 ));
 

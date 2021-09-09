@@ -67,9 +67,9 @@ export const [useRemoveMessageReaction, { mutate: removeMessageReaction }] = cre
   RemoveMessageReactionMutationVariables
 >(
   () => gql`
-    mutation RemoveMessageReaction($emoji: String!, $messageId: uuid!, $userId: uuid!) {
-      delete_message_reaction_by_pk(emoji: $emoji, message_id: $messageId, user_id: $userId) {
-        message_id
+    mutation RemoveMessageReaction($id: uuid!) {
+      delete_message_reaction_by_pk(id: $id) {
+        id
       }
     }
   `,
@@ -79,18 +79,17 @@ export const [useRemoveMessageReaction, { mutate: removeMessageReaction }] = cre
         __typename: "mutation_root",
         delete_message_reaction_by_pk: {
           __typename: "message_reaction",
-          emoji: variables.emoji,
-          message_id: variables.messageId,
-          user_id: variables.userId,
+          id: variables.id,
         },
       };
     },
-    onOptimisticOrActualResponse(messageReaction, variables) {
-      MessageDetailedInfoFragment.update(variables.messageId, (message) => {
-        message.message_reactions = message.message_reactions.filter(
-          (reaction) => !(reaction.emoji === variables.emoji && reaction.user.id === variables.userId)
-        );
-      });
-    },
+    // TODOC probably remove
+    // onOptimisticOrActualResponse(messageReaction, variables) {
+    //   MessageDetailedInfoFragment.update(variables.messageId, (message) => {
+    //     message.message_reactions = message.message_reactions.filter(
+    //       (reaction) => !(reaction.emoji === variables.emoji && reaction.user.id === variables.userId)
+    //     );
+    //   });
+    // },
   }
 );

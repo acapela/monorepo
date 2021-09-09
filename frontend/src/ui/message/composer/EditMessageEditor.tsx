@@ -1,9 +1,11 @@
 import { gql, useMutation } from "@apollo/client";
+import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { withFragments } from "~frontend/gql/utils";
 import {
@@ -22,28 +24,15 @@ import { EditorAttachmentInfo, uploadFiles } from "./attachments";
 import { MessageComposerContext } from "./MessageComposerContext";
 import { MessageContentEditor } from "./MessageContentComposer";
 
-const fragments = {
-  message: gql`
-    fragment EditMessageEditor_message on message {
-      id
-      content
-      message_attachments {
-        id
-        mime_type
-      }
-    }
-  `,
-};
-
 interface Props {
-  message: EditMessageEditor_MessageFragment;
+  message: MessageEntity;
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
 
-export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRequest, onSaved }: Props) => {
+export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
-    message.message_attachments.map((messageAttachment) => {
+    message.attachments.all.map((messageAttachment) => {
       return {
         mimeType: messageAttachment.mime_type,
         uuid: messageAttachment.id,
@@ -83,10 +72,10 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {
-      return !message.message_attachments.some((messageAttachment) => messageAttachment.id === attachmentNow.uuid);
+      return !message.attachments.all.some((messageAttachment) => messageAttachment.id === attachmentNow.uuid);
     });
 
-    const existingAttachmentsToRemove = message.message_attachments.filter((existingMessageAttachment) => {
+    const existingAttachmentsToRemove = message.attachments.all.filter((existingMessageAttachment) => {
       return !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id);
     });
 

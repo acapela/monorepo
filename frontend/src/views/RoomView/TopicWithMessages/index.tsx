@@ -1,22 +1,16 @@
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { withFragments } from "~frontend/gql/utils";
+import { RoomEntity } from "~frontend/clientdb/room";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import {
-  TopicClosureSubscription,
-  TopicClosureSubscriptionVariables,
-  TopicWithMessages_RoomFragment,
-  TopicWithMessages_TopicFragment,
-  UpdateLastSeenMessageMutation,
-  UpdateLastSeenMessageMutationVariables,
-} from "~gql";
+import { UpdateLastSeenMessageMutation, UpdateLastSeenMessageMutationVariables } from "~gql";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
@@ -28,39 +22,15 @@ import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
-import { useMessagesSubscription } from "./useMessagesSubscription";
-
-const fragments = {
-  room: gql`
-    ${TopicHeader.fragments.room}
-
-    fragment TopicWithMessages_room on room {
-      id
-      finished_at
-      ...TopicHeader_room
-    }
-  `,
-  topic: gql`
-    ${isTopicClosed.fragments.topic}
-    ${TopicSummaryMessage.fragments.topic}
-    ${TopicHeader.fragments.topic}
-
-    fragment TopicWithMessages_topic on topic {
-      id
-      ...IsTopicClosed_topic
-      ...TopicSummaryMessage_topic
-      ...TopicHeader_topic
-    }
-  `,
-};
 
 interface Props {
-  room: TopicWithMessages_RoomFragment;
-  topic: TopicWithMessages_TopicFragment;
+  room: RoomEntity;
+  topic: TopicEntity;
 }
 
 // Marks last message as read
-function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
+// TODOC use it
+export function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   const [updateLastSeenMessage] = useMutation<
     UpdateLastSeenMessageMutation,
     UpdateLastSeenMessageMutationVariables
@@ -91,31 +61,20 @@ function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   }, [messageIds, topicId, updateLastSeenMessage]);
 }
 
-export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic.id);
+export const TopicWithMessages = observer(({ room, topic }: Props) => {
+  const messages = topic.messages.all;
 
-  useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
-    gql`
-      ${TopicSummaryMessage.fragments.topic}
-      ${TopicHeader.fragments.topic}
+  console.log({ messages });
 
-      subscription TopicClosure($topicId: uuid!) {
-        topic_by_pk(id: $topicId) {
-          ...TopicSummaryMessage_topic
-          ...TopicHeader_topic
-        }
-      }
-    `,
-    { variables: { topicId: topic.id } }
-  );
+  const isMember = room.isCurrentUserMember;
 
-  const isMember = useIsCurrentUserRoomMember(room);
-
-  useMarkTopicAsRead(topic.id, existingMessageIds);
+  // TODOC
+  // useMarkTopicAsRead(topic.id, existingMessageIds);
 
   const isClosed = isTopicClosed(topic);
 
-  const isComposerDisabled = !isMember || isLoadingMessages;
+  // TODOC is loading?
+  const isComposerDisabled = !isMember;
 
   const scrollerRef = useRef<ScrollHandle>();
 
@@ -138,11 +97,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
               </AnimateSharedLayout>
 
               {!messages.length && !isClosed && (
-                <UIContentWrapper>
-                  {isLoadingMessages
-                    ? "Loading messages..."
-                    : "Start the conversation and add your first message below."}
-                </UIContentWrapper>
+                <UIContentWrapper>Start the conversation and add your first message below.</UIContentWrapper>
               )}
 
               {isClosed && <TopicClosureNote isParentRoomOpen={!room.finished_at} />}

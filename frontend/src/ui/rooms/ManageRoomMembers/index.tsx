@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RoomEntity } from "~frontend/clientdb/room";
 import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
 import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
@@ -73,12 +74,13 @@ const fragments = {
 };
 
 interface Props {
-  room: ManageRoomMembers_RoomFragment;
+  room: RoomEntity;
   onCurrentUserLeave?: () => void;
 }
 
 export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUserLeave }: Props) => {
   const teamId = useAssertCurrentTeamId();
+
   const { data: invitationResult } = useQuery<
     ManageRoomMembers_InvitationsQuery,
     ManageRoomMembers_InvitationsQueryVariables
@@ -110,8 +112,8 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
   );
 
   const currentUser = useCurrentUser();
-  const members = room.members.map((m) => m.user);
-  const amIMember = useIsCurrentUserRoomMember(room);
+  const members = room.members.all;
+  const amIMember = room.isCurrentUserMember;
 
   const [deleteRoom] = useDeleteRoom();
   const [addRoomMember] = useMutation(
@@ -146,7 +148,7 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
   );
 
   function isLastMemberInRoom() {
-    return room.members.length === 1;
+    return members.length === 1;
   }
 
   async function handleJoin(userId: string) {
@@ -193,7 +195,8 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
 
     const reservedEmails = new Set([
       ...members.map(({ email }) => email),
-      ...room.invitations.map(({ email }) => email),
+      // TODOC invitations
+      // ...room.invitations.map(({ email }) => email),
     ]);
 
     if (reservedEmails.has(email)) {
@@ -252,7 +255,8 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
             onCloseRequest={closeUserPicker}
             onAddUser={handleJoin}
             onRemoveUser={handleLeave}
-            invitations={room.invitations}
+            // TODOC
+            invitations={[]}
             onRemoveInvitation={handleRemoveRoomInvitation}
             onInviteByEmail={handleInviteByEmailRequest}
           />

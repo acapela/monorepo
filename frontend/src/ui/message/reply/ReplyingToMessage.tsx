@@ -16,13 +16,11 @@ const fragments = {
   message: gql`
     ${MessageMetaData.fragments.user}
     ${MessageText.fragments.message}
-    ${MessageMedia.fragments.message}
 
     fragment ReplyingToMessage_message on message {
       id
       created_at
       ...MessageText_message
-      ...MessageMedia_message
       user {
         ...MessageMetaData_user
       }
