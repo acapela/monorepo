@@ -11,6 +11,7 @@ import {
   SlackInstallationButton_TeamFragment,
 } from "~gql";
 import { assertDefined } from "~shared/assert";
+import { isServer } from "~shared/isServer";
 import { Button } from "~ui/buttons/Button";
 import { IconMinus, IconPlus } from "~ui/icons";
 import { addToast } from "~ui/toasts/data";
@@ -30,8 +31,6 @@ type Props = {
   team: SlackInstallationButton_TeamFragment;
   isCurrentUserTeamOwner: boolean;
 };
-
-const isServer = typeof window == "undefined";
 
 function AddSlackInstallationButton({ teamId }: { teamId: string }) {
   const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
