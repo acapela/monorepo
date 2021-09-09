@@ -58,13 +58,15 @@ const UIInlineAttachmentHolder = styled.div<{}>`
 `;
 
 const ImageWrapper = styled.img<{}>`
-  max-height: 100%;
-  /* Allow parent to control max-height so it can be used both for fullscreen and inline displaying. */
-  max-height: inherit;
+  /* Image doesn't fill whole screen when in fullscreen */
+  max-height: 80vh;
+
   /* Don't allow image to extend over space of the parent */
   min-width: 0;
   min-height: 0;
+
   user-select: none;
+
   ${theme.borderRadius.item};
   will-change: transform, opacity;
 

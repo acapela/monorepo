@@ -3,7 +3,6 @@ import { ViewsOpenArguments, WebClient } from "@slack/web-api";
 
 import { db } from "~db";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { AnalyticsEventsMap } from "~shared/types/analytics";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
