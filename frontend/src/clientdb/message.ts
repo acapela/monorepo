@@ -75,7 +75,7 @@ export const messageEntity = defineEntity<MessageFragment>({
     },
     get isOwnMessage() {
       // TODOC
-      return false;
+      return true;
     },
   };
 });

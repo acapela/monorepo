@@ -1,21 +1,14 @@
-import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { clientdb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
-import { withFragments } from "~frontend/gql/utils";
-import {
-  EditMessageEditor_MessageFragment,
-  UpdateMessageContentMutation,
-  UpdateMessageContentMutationVariables,
-} from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
-import { makePromiseVoidable } from "~shared/promises";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
@@ -41,26 +34,6 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
   );
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
-
-  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
-    gql`
-      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
-        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
-          id
-          content
-        }
-      }
-    `,
-    {
-      optimisticResponse: (vars) => ({
-        __typename: "mutation_root",
-        message: {
-          __typename: "message",
-          ...vars,
-        },
-      }),
-    }
-  );
 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
@@ -88,17 +61,9 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
-    const updatingMessagePromise = makePromiseVoidable(
-      updateMessageContent({
-        variables: {
-          id: message.id,
-          content,
-        },
-      })
-    );
+    message.update({ content });
 
-    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
+    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
     trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }

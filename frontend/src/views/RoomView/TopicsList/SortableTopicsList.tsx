@@ -1,4 +1,3 @@
-import { gql, useMutation } from "@apollo/client";
 import {
   DndContext,
   DragEndEvent,
@@ -11,7 +10,7 @@ import {
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { observer } from "mobx-react";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import { clientdb } from "~frontend/clientdb";
 import { RoomEntity } from "~frontend/clientdb/room";
@@ -20,8 +19,6 @@ import {
   getIndexBetweenFirstAndCurrent,
   getIndexBetweenItems,
 } from "~frontend/rooms/order";
-import { byIndexAscending } from "~frontend/topics/utils";
-import { UpdateTopicIndexMutation, UpdateTopicIndexMutationVariables } from "~gql";
 import { BodyPortal } from "~ui/BodyPortal";
 
 import { UITopic, UITopicsList } from "./shared";
