@@ -21,24 +21,26 @@ const fragments = {
 
 interface Props {
   user: MessageMetaData_UserFragment;
-  isMetaDataHidden?: boolean;
+  isHidden?: boolean;
   isHovered?: boolean;
   date: Date;
   children: ReactNode;
 }
 
-export const MessageMetaData = withFragments(
+export const MessageMetaDataWrapper = withFragments(
   fragments,
-  ({ user, date, children, isMetaDataHidden = false, isHovered = false }: Props) => {
-    const canShowSideTimeLabel = isMetaDataHidden && isHovered;
+  ({ user, date, children, isHidden = false, isHovered = false }: Props) => {
+    const canShowSideTimeLabel = isHidden && isHovered;
 
     return (
       <UIHolder>
-        {!isMetaDataHidden && <UserAvatar user={user} size="small" />}
-        {!isMetaDataHidden && (
-          <UIHead>
-            {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
-          </UIHead>
+        {!isHidden && (
+          <>
+            <UserAvatar user={user} size="small" />{" "}
+            <UIHead>
+              {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
+            </UIHead>
+          </>
         )}
         <div>{canShowSideTimeLabel && <UISideTimeLabel date={date} />}</div>
         {children}

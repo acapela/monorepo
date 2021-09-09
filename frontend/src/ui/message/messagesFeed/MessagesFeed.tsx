@@ -15,19 +15,27 @@ interface Props {
   isReadonly?: boolean;
 }
 
-function shouldHideMetadata(currentMsg: Message_MessageFragment, prevMsg: Message_MessageFragment | null): boolean {
+const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
+
+function shouldBundleCurrentMessageWithPrevious(
+  currentMsg: Message_MessageFragment,
+  prevMsg: Message_MessageFragment | null
+): boolean {
   if (!prevMsg) {
     return false;
   }
 
-  if (prevMsg.user_id !== currentMsg.user_id) {
+  const isSameOwnerForBothMessages = prevMsg.user_id === currentMsg.user_id;
+  if (!isSameOwnerForBothMessages) {
     return false;
   }
 
-  const wasCurrentMessageSentShortlyAfterPrevious =
-    differenceInMinutes(new Date(currentMsg.created_at), new Date(prevMsg.created_at)) < 15;
+  const minutesBetweenCurrentAndPreviousMessage = differenceInMinutes(
+    new Date(currentMsg.created_at),
+    new Date(prevMsg.created_at)
+  );
 
-  return wasCurrentMessageSentShortlyAfterPrevious;
+  return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
 export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
@@ -60,7 +68,7 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
               isReadonly={isReadonly}
               message={message}
               key={message.id}
-              hasHiddenMetadata={shouldHideMetadata(message, previousMessage)}
+              isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
             />
           </Fragment>
         );

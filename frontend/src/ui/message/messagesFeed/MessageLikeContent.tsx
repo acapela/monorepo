@@ -8,11 +8,11 @@ import { MessageLikeContent_UserFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { theme } from "~ui/theme";
 
-import { MessageMetaData } from "./MessageMetaData";
+import { MessageMetaDataWrapper } from "./MessageMetaData";
 
 const fragments = {
   user: gql`
-    ${MessageMetaData.fragments.user}
+    ${MessageMetaDataWrapper.fragments.user}
 
     fragment MessageLikeContent_user on user {
       id
@@ -41,9 +41,9 @@ const _MessageLikeContent = styled<Props>(({ user, date, children, tools, classN
       onMouseEnter={() => setHovered()}
       onMouseLeave={() => unsetHovered()}
     >
-      <MessageMetaData user={user} date={date} isMetaDataHidden={hasHiddenMetadata} isHovered={isHovered}>
+      <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
         {children}
-      </MessageMetaData>
+      </MessageMetaDataWrapper>
       {tools && <UITools>{tools}</UITools>}
     </UIAnimatedMessageWrapper>
   );
