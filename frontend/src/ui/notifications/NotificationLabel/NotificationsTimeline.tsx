@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@sentry/nextjs";
 import { startOfDay } from "date-fns";
 import styled from "styled-components";
 
@@ -6,7 +7,6 @@ import { relativeFormatDate } from "~shared/dates/format";
 import { groupByDate } from "~shared/dates/groupByDate";
 import { sortByDate } from "~shared/dates/utils";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
-import { ErrorBoundary } from "~ui/ErrorBoundary";
 import { IconNotificationIndicator } from "~ui/icons";
 import { CategoryNameLabel } from "~ui/theme/functional";
 
@@ -37,7 +37,7 @@ export function NotificationsTimeline({ notifications }: Props) {
             <UINotificationsList>
               {sortNotificationsByDate(dayNotificationsGroup.items).map((notification) => {
                 return (
-                  <ErrorBoundary errorFallback={null}>
+                  <ErrorBoundary fallback={<></>}>
                     <NotificationLabel key={notification.id} notification={notification} />
                   </ErrorBoundary>
                 );

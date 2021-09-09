@@ -2,13 +2,14 @@
 import "focus-visible";
 
 import * as Sentry from "@sentry/nextjs";
+import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
 import { Provider as SessionProvider, getSession } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { ThemeProvider } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
@@ -68,7 +69,14 @@ export default function App({
   }, []);
 
   return (
-    <>
+    <ErrorBoundary
+      fallback={
+        <UIErrorBox>
+          <h1>It's not you, it's us!</h1>
+          <p>An error occurred. We will look into it.</p>
+        </UIErrorBox>
+      }
+    >
       <BuiltInStyles />
       <CommonMetadata />
       <AnalyticsManager />
@@ -90,7 +98,7 @@ export default function App({
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -137,3 +145,12 @@ App.getInitialProps = async (context: AppContext) => {
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };
+
+const UIErrorBox = styled.div<{}>`
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
+`;

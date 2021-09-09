@@ -1,10 +1,10 @@
+import { ErrorBoundary } from "@sentry/nextjs";
 import { useEffect, useState } from "react";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { fetchTeamBasicInfoQuery } from "~frontend/gql/teams";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
-import { ErrorBoundary } from "~ui/ErrorBoundary";
 
 import { SegmentScript } from "./SegmentScript";
 import { identifyUser, identifyUserGroup } from "./tracking";
@@ -52,7 +52,7 @@ export function AnalyticsManager() {
 
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>
-      <ErrorBoundary errorFallback={null}>
+      <ErrorBoundary fallback={<></>}>
         <SegmentScript />
       </ErrorBoundary>
     </ClientSideOnly>
