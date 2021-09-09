@@ -1,4 +1,5 @@
 import { EntityClient } from "./client";
+import { SortResult } from "./query";
 import { EntitySyncConfig } from "./sync";
 
 interface DefineEntityConfig<Data> {
@@ -6,6 +7,7 @@ interface DefineEntityConfig<Data> {
   keyField: keyof Data;
   updatedAtField: keyof Data;
   sync: EntitySyncConfig<Data>;
+  defaultSort?: (item: Data) => SortResult;
 }
 
 export interface EntityDefinition<Data, Connections> {

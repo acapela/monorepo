@@ -136,7 +136,7 @@ const _Message = styled<Props>(
             {!isInEditMode && (
               <UIMessageContent>
                 {/* TODOC */}
-                {/* {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />} */}
+                {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
                 <MessageText message={message} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />

@@ -41,6 +41,7 @@ export const messageEntity = defineEntity<MessageFragment>({
   name: "message",
   keyField: "id",
   updatedAtField: "updated_at",
+  defaultSort: (message) => new Date(message.created_at).getTime(),
   sync: {
     initPromise: () => renderedApolloClientPromise,
     pull({ lastSyncDate, updateItems }) {
@@ -64,11 +65,11 @@ export const messageEntity = defineEntity<MessageFragment>({
     get reactions() {
       return getEntity(messageReactionEntity).query((reaction) => reaction.message_id === message.id);
     },
-    // get repliedToMessage() {
-    //   if (!message.replied_to_message_id) return null;
+    get repliedToMessage() {
+      if (!message.replied_to_message_id) return null;
 
-    //   return getEntity(message.findById(message.replied_to_message_id);
-    // },
+      return getEntity(messageEntity).findById(message.replied_to_message_id);
+    },
     get attachments() {
       return getEntity(attachmentEntity).query((attachment) => attachment.message_id === message.id);
     },

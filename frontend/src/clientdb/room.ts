@@ -75,7 +75,10 @@ export const roomEntity = defineEntity<RoomFragment>({
       return getEntity(spaceEntity).findById(room.space_id);
     },
     get topics() {
-      return getEntity(topicEntity).query((topic) => topic.room_id === room.id);
+      return getEntity(topicEntity).query({
+        filter: (topic) => topic.room_id === room.id,
+        sort: (topic) => topic.index,
+      });
     },
     get isOpen() {
       return !!room.finished_at;

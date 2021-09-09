@@ -1,14 +1,12 @@
-import { extend, pick } from "lodash";
+import { pick } from "lodash";
 import { extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
 import { typedKeys } from "~shared/object";
 
-import { EntityClient } from "./client";
 import { EntityDefinition } from "./definition";
 import { EntityDraft, createEntityDraft } from "./draft";
 import { EntitiesConnectionsConfig } from "./entitiesConnections";
 import { EntityStore } from "./store";
-import { EntitySyncConfig } from "./sync";
 
 type EntityMethods<Data, Connections> = {
   createDraft(): EntityDraft<Data>;

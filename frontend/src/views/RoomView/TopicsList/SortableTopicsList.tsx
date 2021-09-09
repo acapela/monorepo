@@ -13,6 +13,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { observer } from "mobx-react";
 import React, { useMemo, useState } from "react";
 
+import { clientdb } from "~frontend/clientdb";
 import { RoomEntity } from "~frontend/clientdb/room";
 import {
   getIndexBetweenCurrentAndLast,
@@ -26,24 +27,6 @@ import { BodyPortal } from "~ui/BodyPortal";
 import { UITopic, UITopicsList } from "./shared";
 import { SortableTopicMenuItem, TopicMenuItem } from "./TopicMenuItem";
 
-const useUpdateTopicIndex = () =>
-  useMutation<UpdateTopicIndexMutation, UpdateTopicIndexMutationVariables>(
-    gql`
-      mutation UpdateTopicIndex($id: uuid!, $index: String!) {
-        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { index: $index }) {
-          id
-          index
-        }
-      }
-    `,
-    {
-      optimisticResponse: ({ id, index }) => ({
-        __typename: "mutation_root",
-        topic: { __typename: "topic", id, index },
-      }),
-    }
-  );
-
 type Props = {
   room: RoomEntity;
   isDisabled?: boolean;
@@ -52,11 +35,10 @@ type Props = {
 
 export const SortableTopicsList = observer(({ room, activeTopicId, isDisabled }: Props) => {
   const [draggedId, setDraggedId] = useState<string | null>(null);
-  const [updateTopicIndex] = useUpdateTopicIndex();
   // Sensors can be used to support multiple input modalities for drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { delay: 250, tolerance: 200 } }));
 
-  const sortedTopics = useMemo(() => room.topics.all.slice().sort(byIndexAscending), [room.topics]);
+  const sortedTopics = room.topics.query({ sort: (topic) => topic.index }).all;
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over || active.id === over.id) {
@@ -78,7 +60,7 @@ export const SortableTopicsList = observer(({ room, activeTopicId, isDisabled }:
 
       newIndex = getIndexBetweenItems(sortedTopics[start].index, sortedTopics[end].index);
     }
-    updateTopicIndex({ variables: { id: sortedTopics[activeIndex].id, index: newIndex } });
+    clientdb.topic.update(sortedTopics[activeIndex].id, { index: newIndex });
   }
 
   return (

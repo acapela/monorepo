@@ -1,67 +1,46 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { clientdb } from "~frontend/clientdb";
+import { MessageEntity } from "~frontend/clientdb/message";
+import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
 import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
-import { withFragments } from "~frontend/gql/utils";
-import { MessageReaction_MessageFragment, MessageReaction_Message_ReactionFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
-const fragments = {
-  message: gql`
-    fragment MessageReaction_message on message {
-      id
-    }
-  `,
-  message_reaction: gql`
-    ${MessageReactionTooltip.fragments.message_reaction}
-
-    fragment MessageReaction_message_reaction on message_reaction {
-      user_id
-      ...MessageReactionTooltip_message_reaction
-    }
-  `,
-};
-
 interface Props {
-  message: MessageReaction_MessageFragment;
+  message: MessageEntity;
   emoji: string;
-  reactions: MessageReaction_Message_ReactionFragment[];
+  reactions: MessageReactionEntity[];
 }
 
-export const MessageReaction = withFragments(fragments, ({ message, emoji, reactions }: Props) => {
+export const MessageReaction = observer(({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
 
-  const isSelectedByCurrentUser = reactions.some((reaction) => reaction.user_id === user.id);
+  const userReactions = reactions.filter((reaction) => reaction.user_id === user.id);
 
   const handleClick = () => {
-    if (isSelectedByCurrentUser) {
-      removeMessageReaction({
-        emoji,
-        messageId: message.id,
-        userId: user.id,
+    if (userReactions.length) {
+      userReactions.forEach((userReaction) => {
+        userReaction.remove();
       });
-    } else {
-      addMessageReaction({
-        input: {
-          emoji,
-          message_id: message.id,
-          user_id: user.id,
-        },
-      });
+      return;
     }
+
+    // TODOC
+    // clientdb.messageReaction.create({})
   };
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
-      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={isSelectedByCurrentUser}>
+      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={userReactions.length > 0}>
         <p>{emoji}</p>
         <p>{reactions.length}</p>
       </UIReactionButton>

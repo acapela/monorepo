@@ -46,6 +46,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   name: "topic",
   updatedAtField: "updated_at",
   keyField: "id",
+  defaultSort: (topic) => topic.index,
   sync: {
     initPromise: () => renderedApolloClientPromise,
     pull({ lastSyncDate, updateItems }) {

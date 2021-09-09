@@ -1,13 +1,15 @@
+import { memoize, sortBy } from "lodash";
 import { IObservableArray, computed } from "mobx";
 
+import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 
 type EntityQueryFilter<Data> = (item: Data) => boolean;
 
-type SortResult = string | number | boolean | Date | null | void | undefined;
+export type SortResult = string | number | boolean | Date | null | void | undefined;
 
 type EntityQueryResolvedConfig<Data> = {
-  filter: EntityQueryFilter<Data>;
+  filter?: EntityQueryFilter<Data>;
   sort?: (item: Data) => SortResult;
 };
 
@@ -42,12 +44,22 @@ function truePredicate() {
 
 export function createEntityQuery<Data, Connections>(
   source: MaybeObservableArray<Entity<Data, Connections>>,
-  config: EntityQueryConfig<Data, Connections>
+  config: EntityQueryConfig<Data, Connections>,
+  definition: EntityDefinition<Data, Connections>
 ): EntityQuery<Data, Connections> {
-  const { filter, sort } = resolveEntityQueryConfig(config);
+  const { filter, sort = definition.config.defaultSort } = resolveEntityQueryConfig(config);
+
+  const memoizedFilter = memoize(filter ?? truePredicate);
+  const memoizedSort = sort ? memoize(sort) : null;
 
   const passingItems = computed(() => {
-    return source.filter(filter ?? truePredicate);
+    const passedItems = source.filter(memoizedFilter);
+
+    if (memoizedSort) {
+      return sortBy(passedItems, memoizedSort);
+    }
+
+    return passedItems;
   });
 
   return {
@@ -55,7 +67,7 @@ export function createEntityQuery<Data, Connections>(
       return passingItems.get();
     },
     query(config) {
-      return createEntityQuery(passingItems.get(), config);
+      return createEntityQuery(passingItems.get(), config, definition);
     },
   };
 }

@@ -15,7 +15,7 @@ export type EntityClient<Data, Connections> = {
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   createDraft(input: Data): EntityDraft<Data & Connections>;
   create(input: Data): Entity<Data, Connections>;
-  update(id: string, input: Data): Entity<Data, Connections>;
+  update(id: string, input: Partial<Data>): Entity<Data, Connections>;
   createOrUpdate(input: Data): Entity<Data, Connections>;
   destroy(): void;
 };

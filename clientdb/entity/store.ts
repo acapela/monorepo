@@ -68,7 +68,7 @@ export function createEntityStore<Data, Connections>(
       return didRemove;
     },
     query(config: EntityQueryConfig<Data, Connections>) {
-      return createEntityQuery(items, config);
+      return createEntityQuery(items, config, definition);
     },
   };
 

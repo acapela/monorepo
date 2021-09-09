@@ -1,33 +1,19 @@
-import { gql } from "@apollo/client";
 import { EmojiData } from "emoji-mart";
 import { AnimatePresence } from "framer-motion";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
+import { getUUID } from "~frontend/../../shared/uuid";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { clientdb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { addMessageReaction } from "~frontend/gql/reactions";
-import { withFragments } from "~frontend/gql/utils";
-import { MakeReactionButton_MessageFragment } from "~gql";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
 import { EmojiPickerWindow } from "~ui/EmojiPicker/EmojiPickerWindow";
 import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
-
-const fragments = {
-  message: gql`
-    fragment MakeReactionButton_message on message {
-      id
-      message_reactions {
-        emoji
-        user_id
-      }
-    }
-  `,
-};
 
 interface Props {
   message: MessageEntity;
@@ -48,19 +34,20 @@ export const MakeReactionButton = observer(({ message }: Props) => {
 
     close();
 
-    const hasUserAlreadyReacted = message.message_reactions.some(
+    const hasUserAlreadyReacted = message.reactions.all.some(
       (reaction) => reaction.emoji === emoji.native && reaction.user_id === user.id
     );
 
     if (hasUserAlreadyReacted) return;
 
-    addMessageReaction({
-      input: {
-        emoji: emoji.native,
-        message_id: message.id,
-        user_id: user.id,
-      },
+    clientdb.messageReaction.create({
+      id: getUUID(),
+      __typename: "message_reaction",
+      emoji: emoji.native,
+      message_id: message.id,
+      user_id: user.id,
     });
+
     trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji.native });
   };
 
