@@ -22,6 +22,10 @@ function resolveEntityQueryConfig<Data, Connections>(
     };
   }
 
+  if (!config) {
+    return { filter: truePredicate };
+  }
+
   return config;
 }
 
@@ -32,6 +36,10 @@ export type EntityQuery<Data, Connections> = {
   query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
 
+function truePredicate() {
+  return true;
+}
+
 export function createEntityQuery<Data, Connections>(
   source: MaybeObservableArray<Entity<Data, Connections>>,
   config: EntityQueryConfig<Data, Connections>
@@ -39,7 +47,7 @@ export function createEntityQuery<Data, Connections>(
   const { filter, sort } = resolveEntityQueryConfig(config);
 
   const passingItems = computed(() => {
-    return source.filter(filter);
+    return source.filter(filter ?? truePredicate);
   });
 
   return {

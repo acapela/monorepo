@@ -40,6 +40,13 @@ function mergeProperties<I, A>(input: I, propertiesToAdd: A): I & A {
   return input as I & A;
 }
 
+export type EntityFromDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
+  infer Data,
+  infer Connections
+>
+  ? Entity<Data, Connections>
+  : never;
+
 export function createEntity<D, C>(
   data: D,
   definition: EntityDefinition<D, C>,

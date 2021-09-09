@@ -62,7 +62,12 @@ export const HomeView = observer(function HomeView() {
   );
 });
 
-const UIHolder = styled(SpacedAppLayoutContainer)<{}>``;
+const UIHolder = styled(SpacedAppLayoutContainer)<{}>`
+  pre {
+    font-family: monospace !important;
+    font-size: 10px;
+  }
+`;
 
 const UIColumns = styled.div<{}>`
   grid-gap: 32px;

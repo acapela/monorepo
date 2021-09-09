@@ -81,7 +81,10 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
   `
 );
 
-export const [useCreateTeamMutation] = createMutation<CreateTeamMutation, CreateTeamMutationVariables>(
+export const [useCreateTeamMutation, { mutate: createTeam }] = createMutation<
+  CreateTeamMutation,
+  CreateTeamMutationVariables
+>(
   () => gql`
     ${TeamDetailedInfoFragment()}
     mutation CreateTeam($input: team_insert_input!) {
