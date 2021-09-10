@@ -7,6 +7,7 @@
     "jsonwebtoken": "^8.5.1"
   },
   "scripts": {
-    "test": "APP=e2e playwright test"
+    "test": "APP=e2e playwright test",
+    "test:debug": "PWDEBUG=1 APP=e2e playwright test"
   }
 }
