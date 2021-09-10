@@ -1,4 +1,5 @@
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { createAndSendAddedToRoomNotification } from "~backend/src/notifications/create-and-send";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById } from "~backend/src/users/users";
 import { RoomInvitation, RoomMember, db } from "~db";
@@ -13,12 +14,7 @@ export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEv
     return;
   }
 
-  await db.notification.create({
-    data: {
-      user_id: addedUserId,
-      notification_room_added_to: { create: { room_id: roomId, added_by_user_id: userId } },
-    },
-  });
+  await createAndSendAddedToRoomNotification({ userId: addedUserId, roomId: roomId, addedByUserId: userId });
 }
 
 export async function handleRoomInvitationCreated({ item: invite, userId }: HasuraEvent<RoomInvitation>) {

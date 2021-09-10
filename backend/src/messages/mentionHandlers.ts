@@ -1,6 +1,7 @@
 import { uniq, uniqBy } from "lodash";
 
-import { Message, Notification, PrismaPromise, Task, db } from "~db";
+import { createAndSendTopicMentionNotification } from "~backend/src/notifications/create-and-send";
+import { Message, PrismaPromise, Task, db } from "~db";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -55,28 +56,21 @@ function getMentionedUserIdsFromMessage(message: Message, messageBefore: Message
 export async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
   const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
 
-  const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
+  await Promise.all(
+    mentionedUserIds.map((mentionedUserId) => {
+      trackBackendUserEvent(message.user_id, "Created Mention", {
+        mentionedUserId,
+        isToSelf: mentionedUserId === message.user_id,
+        messageId: message.id,
+      });
 
-  for (const mentionedUserId of mentionedUserIds) {
-    trackBackendUserEvent(message.user_id, "Created Mention", {
-      mentionedUserId,
-      isToSelf: mentionedUserId === message.user_id,
-      messageId: message.id,
-    });
-
-    const createNotificationPromise = db.notification.create({
-      data: {
-        user_id: mentionedUserId,
-        notification_topic_mention: {
-          create: { topic_id: message.topic_id, mentioned_by_user_id: message.user_id },
-        },
-      },
-    });
-
-    createNotificationPromises.push(createNotificationPromise);
-  }
-
-  return await db.$transaction(createNotificationPromises);
+      return createAndSendTopicMentionNotification({
+        userId: mentionedUserId,
+        topicId: message.topic_id,
+        mentionedByUserId: message.user_id,
+      });
+    })
+  );
 }
 
 function getHighestPriorityTaskType(types: TaskType[]): TaskType {
