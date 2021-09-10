@@ -12,8 +12,6 @@ import {
   RoomDetailedInfoFragment as RoomDetailedInfoFragmentType,
   RoomsQuery,
   RoomsQueryVariables,
-  SingleRoomQuery,
-  SingleRoomQueryVariables,
 } from "~gql";
 import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
@@ -93,18 +91,6 @@ export const [useRoomsQuery, roomsQueryManager] = createQuery<RoomsQuery, RoomsQ
 
     query Rooms($limit: Int, $orderBy: [room_order_by!], $where: room_bool_exp) {
       rooms: room(where: $where, limit: $limit, order_by: $orderBy) {
-        ...RoomDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useSingleRoomQuery, getSingleRoomQueryManager] = createQuery<SingleRoomQuery, SingleRoomQueryVariables>(
-  () => gql`
-    ${RoomDetailedInfoFragment()}
-
-    query SingleRoom($id: uuid!) {
-      room: room_by_pk(id: $id) {
         ...RoomDetailedInfo
       }
     }

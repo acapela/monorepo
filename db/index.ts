@@ -26,6 +26,8 @@ export type {
   team_member as TeamMember,
   whitelist as Whitelist,
   notification as Notification,
+  notification_room_added_to as NotificationRoomAddedTo,
+  notification_topic_mention as NotificationTopicMention,
   PrismaPromise,
   Prisma,
 } from "@prisma/client";

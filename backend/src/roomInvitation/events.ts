@@ -1,11 +1,10 @@
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
+import { createAndSendAddedToRoomNotification } from "~backend/src/notifications/create-and-send";
 import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById } from "~backend/src/users/users";
-import { RoomMember, db } from "~db";
-import { RoomInvitation } from "~db";
+import { RoomInvitation, RoomMember, db } from "~db";
 
 import { HasuraEvent } from "../hasura";
-import { createNotification } from "../notifications/entity";
 
 export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEvent<RoomMember>) {
   const { room_id: roomId, user_id: addedUserId } = invite;
@@ -15,11 +14,7 @@ export async function handleRoomMemberCreated({ item: invite, userId }: HasuraEv
     return;
   }
 
-  await createNotification({
-    type: "addedToRoom",
-    userId: addedUserId,
-    payload: { addedByUserId: userId, roomId: roomId },
-  });
+  await createAndSendAddedToRoomNotification({ userId: addedUserId, roomId: roomId, addedByUserId: userId });
 }
 
 export async function handleRoomInvitationCreated({ item: invite, userId }: HasuraEvent<RoomInvitation>) {

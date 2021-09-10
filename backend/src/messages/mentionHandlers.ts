@@ -1,13 +1,12 @@
 import { uniq, uniqBy } from "lodash";
 
-import { Message, Notification, PrismaPromise, Task, db } from "~db";
+import { createAndSendTopicMentionNotification } from "~backend/src/notifications/create-and-send";
+import { Message, PrismaPromise, Task, db } from "~db";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { EditorMentionData } from "~shared/types/editor";
 import { TaskType } from "~shared/types/task";
-
-import { createNotification } from "../notifications/entity";
 
 const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
 
@@ -57,25 +56,21 @@ function getMentionedUserIdsFromMessage(message: Message, messageBefore: Message
 export async function createMessageMentionNotifications(message: Message, messageBefore: Message | null) {
   const mentionedUserIds = getMentionedUserIdsFromMessage(message, messageBefore);
 
-  const createNotificationPromises: Array<PrismaPromise<Notification>> = [];
+  await Promise.all(
+    mentionedUserIds.map((mentionedUserId) => {
+      trackBackendUserEvent(message.user_id, "Created Mention", {
+        mentionedUserId,
+        isToSelf: mentionedUserId === message.user_id,
+        messageId: message.id,
+      });
 
-  for (const mentionedUserId of mentionedUserIds) {
-    trackBackendUserEvent(message.user_id, "Created Mention", {
-      mentionedUserId,
-      isToSelf: mentionedUserId === message.user_id,
-      messageId: message.id,
-    });
-
-    const createNotificationPromise = createNotification({
-      type: "topicMention",
-      payload: { topicId: message.topic_id, mentionedByUserId: message.user_id },
-      userId: mentionedUserId,
-    });
-
-    createNotificationPromises.push(createNotificationPromise);
-  }
-
-  return await db.$transaction(createNotificationPromises);
+      return createAndSendTopicMentionNotification({
+        userId: mentionedUserId,
+        topicId: message.topic_id,
+        mentionedByUserId: message.user_id,
+      });
+    })
+  );
 }
 
 function getHighestPriorityTaskType(types: TaskType[]): TaskType {

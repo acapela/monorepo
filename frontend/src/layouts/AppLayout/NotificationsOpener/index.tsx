@@ -1,9 +1,11 @@
+import { gql, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { useRef } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useUnreadNotifications } from "~frontend/gql/notifications";
+import { UnreadNotificationsCountSubscription, UnreadNotificationsCountSubscriptionVariables } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { borderRadius } from "~ui/baseStyles";
@@ -15,14 +17,32 @@ import { NOTIFICATION_COLOR } from "~ui/theme/colors/base";
 import { NotificationsCenterPopover } from "./NotificationsCenterPopover";
 
 export function NotificationsOpener() {
-  const [unreadNotifications = []] = useUnreadNotifications();
+  const router = useRouter();
+  const { data } = useSubscription<UnreadNotificationsCountSubscription, UnreadNotificationsCountSubscriptionVariables>(
+    gql`
+      subscription UnreadNotificationsCount {
+        unreadNotificationsAggregate: notification_aggregate(where: { read_at: { _is_null: true } }) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `
+  );
   const [isOpen, { set: openNotifications, unset: closeNotifications }] = useBoolean(false);
 
   useDependencyChangeEffect(() => {
     trackEvent("Toggled Notifications Center", { isOpen });
   }, [isOpen]);
 
-  const hasUnreadNotifications = unreadNotifications.length > 0;
+  useEffect(() => {
+    router.events.on("routeChangeStart", closeNotifications);
+    return () => {
+      router.events.off("routeChangeStart", closeNotifications);
+    };
+  }, [closeNotifications, router.events]);
+
+  const hasUnreadNotifications = (data?.unreadNotificationsAggregate.aggregate?.count ?? 0) > 0;
 
   const buttonRef = useRef<HTMLDivElement>(null);
 

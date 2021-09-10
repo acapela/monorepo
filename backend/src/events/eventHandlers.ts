@@ -2,7 +2,6 @@ import {
   Attachment,
   Message,
   MessageReaction,
-  Notification,
   Room,
   RoomInvitation,
   RoomMember,
@@ -31,5 +30,4 @@ export const hasuraEvents = createHasuraEventsHandler<{
   attachment_updates: Attachment;
   transcription_updates: Transcription;
   team_member_updates: TeamMember;
-  notification_updates: Notification;
 }>();
