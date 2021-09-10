@@ -2,23 +2,23 @@ table:
   name: team_slack_installation
   schema: public
 object_relationships:
-- name: team
-  using:
-    foreign_key_constraint_on: team_id
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
 select_permissions:
-- permission:
-    columns:
-    - team_id
-    filter:
-      team:
-        memberships:
-          user_id:
-            _eq: X-Hasura-User-Id
-  role: user
+  - permission:
+      columns:
+        - team_id
+      filter:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+    role: user
 delete_permissions:
-- permission:
-    filter:
-      team:
-        owner_id:
-          _eq: X-Hasura-User-Id
-  role: user
+  - permission:
+      filter:
+        team:
+          owner_id:
+            _eq: X-Hasura-User-Id
+    role: user

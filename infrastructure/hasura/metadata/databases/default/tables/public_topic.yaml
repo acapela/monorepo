@@ -2,164 +2,163 @@ table:
   name: topic
   schema: public
 object_relationships:
-- name: closed_by_user
-  using:
-    manual_configuration:
-      column_mapping:
-        closed_by_user_id: id
-      insertion_order: null
-      remote_table:
-        name: user
-        schema: public
-- name: owner
-  using:
-    foreign_key_constraint_on: owner_id
-- name: room
-  using:
-    foreign_key_constraint_on: room_id
+  - name: closed_by_user
+    using:
+      manual_configuration:
+        column_mapping:
+          closed_by_user_id: id
+        insertion_order: null
+        remote_table:
+          name: user
+          schema: public
+  - name: owner
+    using:
+      foreign_key_constraint_on: owner_id
+  - name: room
+    using:
+      foreign_key_constraint_on: room_id
 array_relationships:
-- name: members
-  using:
-    foreign_key_constraint_on:
-      column: topic_id
-      table:
-        name: topic_member
-        schema: public
-- name: messages
-  using:
-    manual_configuration:
-      column_mapping:
-        id: topic_id
-      insertion_order: null
-      remote_table:
-        name: message
-        schema: public
+  - name: members
+    using:
+      foreign_key_constraint_on:
+        column: topic_id
+        table:
+          name: topic_member
+          schema: public
+  - name: messages
+    using:
+      manual_configuration:
+        column_mapping:
+          id: topic_id
+        insertion_order: null
+        remote_table:
+          name: message
+          schema: public
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      _and:
-      - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-      - room:
-          members:
-            user_id:
-              _eq: X-Hasura-User-Id
-      - room:
-          finished_at:
-            _is_null: true
-    columns:
-    - id
-    - index
-    - name
-    - owner_id
-    - room_id
-    - slug
-  role: user
-select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - archived_at
-    - closed_at
-    - closed_by_user_id
-    - closing_summary
-    - id
-    - index
-    - name
-    - owner_id
-    - room_id
-    - slug
-    - updated_at
-    filter:
-      _and:
-      - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-      - _or:
-        - room:
-            is_private:
-              _eq: false
-        - _and:
+  - permission:
+      backend_only: false
+      check:
+        _and:
           - room:
-              is_private:
-                _eq: true
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
           - room:
               members:
                 user_id:
                   _eq: X-Hasura-User-Id
-  role: user
-update_permissions:
-- permission:
-    check: null
-    columns:
-    - archived_at
-    - closed_at
-    - closed_by_user_id
-    - closing_summary
-    - index
-    - name
-    - owner_id
-    - slug
-    filter:
-      _and:
-      - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-      - room:
-          members:
-            user_id:
-              _eq: X-Hasura-User-Id
-  role: user
-delete_permissions:
-- permission:
-    filter:
-      _and:
-      - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-      - room:
-          members:
-            user_id:
-              _eq: X-Hasura-User-Id
-  role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
+          - room:
+              finished_at:
+                _is_null: true
       columns:
-      - closing_summary
-      - index
-      - name
-      - slug
-      - closed_at
-      - closed_by_user_id
-      - id
-      - owner_id
-      - room_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: topic_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+        - id
+        - index
+        - name
+        - owner_id
+        - room_id
+        - slug
+    role: user
+select_permissions:
+  - permission:
+      allow_aggregations: true
+      columns:
+        - archived_at
+        - closed_at
+        - closed_by_user_id
+        - closing_summary
+        - id
+        - index
+        - name
+        - owner_id
+        - room_id
+        - slug
+      filter:
+        _and:
+          - room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - _or:
+              - room:
+                  is_private:
+                    _eq: false
+              - _and:
+                  - room:
+                      is_private:
+                        _eq: true
+                  - room:
+                      members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+    role: user
+update_permissions:
+  - permission:
+      check: null
+      columns:
+        - archived_at
+        - closed_at
+        - closed_by_user_id
+        - closing_summary
+        - index
+        - name
+        - owner_id
+        - slug
+      filter:
+        _and:
+          - room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - room:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+    role: user
+delete_permissions:
+  - permission:
+      filter:
+        _and:
+          - room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - room:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+    role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - closing_summary
+          - index
+          - name
+          - slug
+          - closed_at
+          - closed_by_user_id
+          - id
+          - owner_id
+          - room_id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: topic_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

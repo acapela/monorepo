@@ -2,81 +2,81 @@ table:
   name: room_member
   schema: public
 object_relationships:
-- name: room
-  using:
-    foreign_key_constraint_on: room_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: room
+    using:
+      foreign_key_constraint_on: room_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      room:
-        space:
-          team:
-            memberships:
-              _and:
-              - user_id:
-                  _eq: X-Hasura-User-Id
-              - user_id:
-                  _ceq: user_id
-    columns:
-    - room_id
-    - user_id
-  role: user
-select_permissions:
-- permission:
-    columns:
-    - room_id
-    - user_id
-    filter:
-      room:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-  role: user
-update_permissions:
-- permission:
-    check: null
-    columns: []
-    filter:
-      room:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-  role: user
-delete_permissions:
-- permission:
-    filter:
-      room:
-        space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-  role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
+  - permission:
+      backend_only: false
+      check:
+        room:
+          space:
+            team:
+              memberships:
+                _and:
+                  - user_id:
+                      _eq: X-Hasura-User-Id
+                  - user_id:
+                      _ceq: user_id
       columns:
-      - room_id
-      - user_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: room_member_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+        - room_id
+        - user_id
+    role: user
+select_permissions:
+  - permission:
+      columns:
+        - room_id
+        - user_id
+      filter:
+        room:
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+    role: user
+update_permissions:
+  - permission:
+      check: null
+      columns: []
+      filter:
+        room:
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+    role: user
+delete_permissions:
+  - permission:
+      filter:
+        room:
+          space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+    role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - room_id
+          - user_id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: room_member_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

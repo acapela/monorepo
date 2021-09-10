@@ -10,5 +10,5 @@ gql/schema.graphql
 
 tooling/schema.graphql
 
-infrastructure/hasura/metadata/**/*.yaml
+infrastructure/hasura/metadata/*.yaml
 infrastructure/kubernetes
