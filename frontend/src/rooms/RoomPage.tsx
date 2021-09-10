@@ -1,12 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
 import { observer } from "mobx-react";
 import React from "react";
 
 import { clientdb } from "~frontend/clientdb";
 import { AppLayout } from "~frontend/layouts/AppLayout";
-import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { RoomTopicView } from "~frontend/views/RoomView/RoomTopicView";
-import { RoomPage_RoomQuery, RoomPage_RoomQueryVariables } from "~gql";
 
 interface Props {
   spaceId: string;
@@ -20,6 +17,7 @@ export const RoomPage = observer(({ topicId, spaceId, roomId }: Props) => {
 
   const room = clientdb.room.findById(roomId);
 
+  console.log({ room });
   if (!room) return null;
 
   return (

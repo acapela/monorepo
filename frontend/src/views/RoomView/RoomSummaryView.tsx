@@ -111,8 +111,8 @@ const UITitle = styled.div<{}>`
 `;
 
 const UIRoomClosingTime = styled.div<{}>`
-  ${theme.font.body12.speziaMono.semibold.build}
-  color: ${theme.colors.layout.supportingText()}
+  ${theme.font.body12.speziaMono.semibold.build};
+  color: ${theme.colors.layout.supportingText()};
 `;
 
 const UIHeader = styled.div<{}>`

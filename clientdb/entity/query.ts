@@ -35,6 +35,7 @@ type MaybeObservableArray<T> = IObservableArray<T> | T[];
 
 export type EntityQuery<Data, Connections> = {
   all: Entity<Data, Connections>[];
+  findById(id: string): Entity<Data, Connections> | null;
   query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
 
@@ -65,6 +66,11 @@ export function createEntityQuery<Data, Connections>(
   return {
     get all() {
       return passingItems.get();
+    },
+    findById(id) {
+      return computed(() => {
+        return passingItems.get().find((item) => item.getKey() === id) ?? null;
+      }).get();
     },
     query(config) {
       return createEntityQuery(passingItems.get(), config, definition);

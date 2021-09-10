@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { observer } from "mobx-react";
 import React from "react";
@@ -7,8 +6,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { withFragments } from "~frontend/gql/utils";
-import { MessageAttachment_AttachmentFragment, MessageAttachment_MessageFragment } from "~gql";
 import { theme } from "~ui/theme";
 
 import { MessageAttachmentActions } from "./MessageAttachmentActions";
@@ -21,37 +18,37 @@ interface Props {
   className?: string;
 }
 
-const _MessageAttachment = styled<Props>(({ message, attachment, className, onAttachmentRemoveRequest }) => {
-  const user = useAssertCurrentUser();
+export const MessageAttachment = styled<Props>(
+  observer(({ message, attachment, className, onAttachmentRemoveRequest }) => {
+    const user = useAssertCurrentUser();
 
-  function getCanEditAttachments() {
-    if (message.user_id !== user.id) return false;
+    function getCanEditAttachments() {
+      if (message.user_id !== user.id) return false;
 
-    // For messages of non-text type, attachment is essential part of it, so entire message should be removed instead.
-    if (message.type !== "TEXT") return false;
+      // For messages of non-text type, attachment is essential part of it, so entire message should be removed instead.
+      if (message.type !== "TEXT") return false;
 
-    return true;
-  }
+      return true;
+    }
 
-  const canEditAttachments = getCanEditAttachments();
+    const canEditAttachments = getCanEditAttachments();
 
-  if (!attachment) return null;
+    if (!attachment) return null;
 
-  return (
-    <AnimateSharedLayout>
-      <UIInlineAttachmentHolder className={className}>
-        <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={`/attachments/${attachment.id}`} />
-        <AnimatePresence>
-          {canEditAttachments && (
-            <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
-          )}
-        </AnimatePresence>
-      </UIInlineAttachmentHolder>
-    </AnimateSharedLayout>
-  );
-})``;
-
-export const MessageAttachment = observer(_MessageAttachment);
+    return (
+      <AnimateSharedLayout>
+        <UIInlineAttachmentHolder className={className}>
+          <MessageAttachmentDisplayer attachment={attachment} attachmentUrl={`/attachments/${attachment.id}`} />
+          <AnimatePresence>
+            {canEditAttachments && (
+              <MessageAttachmentActions onRemoveRequest={() => onAttachmentRemoveRequest?.(attachment)} />
+            )}
+          </AnimatePresence>
+        </UIInlineAttachmentHolder>
+      </AnimateSharedLayout>
+    );
+  })
+)``;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
   height: 100%;

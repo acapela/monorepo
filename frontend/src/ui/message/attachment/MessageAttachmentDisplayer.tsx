@@ -1,13 +1,10 @@
-import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 import { AttachmentEntity } from "~frontend/clientdb/attachment";
-import { withFragments } from "~frontend/gql/utils";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { MessageAttachmentDisplayer_AttachmentFragment } from "~gql";
 import { TranscriptData } from "~shared/types/transcript";
 import { AudioPlayer } from "~ui/media/AudioPlayer";
 import { VideoPlayer } from "~ui/media/VideoPlayer";
@@ -21,52 +18,52 @@ interface AttachmentProps {
   className?: string;
 }
 
-const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
-  const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
-  // TODOC
-  const transcript: TranscriptData | undefined = undefined;
+export const MessageAttachmentDisplayer = styled<AttachmentProps>(
+  observer(({ attachment, className, attachmentUrl }) => {
+    const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
+    // TODOC add transcript
+    const transcript: TranscriptData | undefined = undefined;
 
-  // const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
+    // const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
 
-  function renderAttachment(): ReactNode {
-    switch (messageType) {
-      case "VIDEO":
-        return (
-          <PlayableMediaWrapper>
-            <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
-            <VideoPlayer fileUrl={attachmentUrl} transcript={transcript} />
-          </PlayableMediaWrapper>
-        );
-      case "AUDIO":
-        return (
-          <PlayableMediaWrapper>
-            <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
-            <AudioPlayer fileUrl={attachmentUrl} transcript={transcript} />
-          </PlayableMediaWrapper>
-        );
-    }
+    function renderAttachment(): ReactNode {
+      switch (messageType) {
+        case "VIDEO":
+          return (
+            <PlayableMediaWrapper>
+              <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
+              <VideoPlayer fileUrl={attachmentUrl} transcript={transcript} />
+            </PlayableMediaWrapper>
+          );
+        case "AUDIO":
+          return (
+            <PlayableMediaWrapper>
+              <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
+              <AudioPlayer fileUrl={attachmentUrl} transcript={transcript} />
+            </PlayableMediaWrapper>
+          );
+      }
 
-    const [attachmentMimeType] = attachment.mime_type.split("/");
+      const [attachmentMimeType] = attachment.mime_type.split("/");
 
-    if (attachmentMimeType === "image") {
-      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
+      if (attachmentMimeType === "image") {
+        return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
+      }
+
+      return (
+        <a href={attachmentUrl} target="_blank">
+          <span>{attachment.original_name}</span>
+        </a>
+      );
     }
 
     return (
-      <a href={attachmentUrl} target="_blank">
-        <span>{attachment.original_name}</span>
-      </a>
+      <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
+        {renderAttachment()}
+      </UIHolder>
     );
-  }
-
-  return (
-    <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
-      {renderAttachment()}
-    </UIHolder>
-  );
-})``;
-
-export const MessageAttachmentDisplayer = observer(_MessageAttachmentDisplayer);
+  })
+)``;
 
 const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;

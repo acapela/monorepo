@@ -4,8 +4,6 @@ import { Fragment, useRef } from "react";
 import styled from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
-import { withFragments } from "~frontend/gql/utils";
-import { Message_MessageFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 

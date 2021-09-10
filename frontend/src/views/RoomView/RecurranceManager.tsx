@@ -1,21 +1,10 @@
-import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
 import React from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { RoomEntity } from "~frontend/clientdb/room";
-import { withFragments } from "~frontend/gql/utils";
 import { RecurranceIntervalInDays } from "~frontend/rooms/recurrance/RecurranceIntervalInDays";
 import { RecurrancePicker } from "~frontend/rooms/recurrance/RecurrancePicker";
-
-const fragments = {
-  room: gql`
-    fragment RecurranceManager_room on room {
-      id
-      recurrance_interval_in_days
-    }
-  `,
-};
 
 type Props = { room: RoomEntity; isReadonly?: boolean };
 
@@ -29,8 +18,6 @@ export const RecurranceManager = observer(({ room, isReadonly }: Props) => {
       trackEvent("Made Room Non-recurring", { roomId: room.id });
     }
   };
-
-  console.log("manager", { room });
 
   return (
     <RecurrancePicker

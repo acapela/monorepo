@@ -1,12 +1,9 @@
-import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { clientdb } from "~frontend/clientdb";
-import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { withFragments } from "~frontend/gql/utils";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
@@ -123,13 +120,7 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
           <UITopicsCard>
             <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={room.isOpen} />
           </UITopicsCard>
-          <CloseRoomButton
-            onClick={() => {
-              // TODOC
-            }}
-          >
-            {room.finished_at ? "Reopen Room" : "Close Room"}
-          </CloseRoomButton>
+          <CloseRoomButton onClick={handleCloseRoom}>{room.finished_at ? "Reopen Room" : "Close Room"}</CloseRoomButton>
         </UISidebar>
 
         <UIContentHolder>{children}</UIContentHolder>

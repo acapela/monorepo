@@ -11,7 +11,7 @@ import { teamEntity } from "./team";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 
 export const clientdb = createClientDb(
   {

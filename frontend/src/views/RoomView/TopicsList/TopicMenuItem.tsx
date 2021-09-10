@@ -180,7 +180,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   );
 });
 
-export const TopicMenuItem = observer(styled<Props>(observer(_TopicMenuItem))``);
+export const TopicMenuItem = styled<Props>(observer(_TopicMenuItem))``;
 
 const PADDING = "12px";
 

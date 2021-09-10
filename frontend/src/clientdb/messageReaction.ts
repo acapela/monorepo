@@ -66,4 +66,4 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
   };
 });
 
-export type MessageReactionEntity = EntityByDefinition<typeof messageEntity>;
+export type MessageReactionEntity = EntityByDefinition<typeof messageReactionEntity>;

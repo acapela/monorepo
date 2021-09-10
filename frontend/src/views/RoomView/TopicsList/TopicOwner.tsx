@@ -31,7 +31,7 @@ export const TopicOwner = observer(({ room, topic }: Props) => {
   return (
     <>
       <UIHolder ref={openerRef} onClick={toggleMenu} isInteractive={isTopicManager}>
-        {topic.owner && <UserAvatar size="extra-small" user={topic.owner!} disableNameTooltip />}
+        {topic.owner && <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />}
         {topic.owner?.name}
         {isTopicManager && <IconChevronDown />}
       </UIHolder>

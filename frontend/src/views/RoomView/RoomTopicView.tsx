@@ -1,10 +1,9 @@
 import { observer } from "mobx-react";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
+import styled from "styled-components";
 
-import { clientdb } from "~frontend/clientdb";
 import { RoomEntity } from "~frontend/clientdb/room";
 import { routes } from "~frontend/router";
-import { byIndexAscending } from "~frontend/topics/utils";
 
 import { RoomView } from "./RoomView";
 import { TopicWithMessages } from "./TopicWithMessages";
@@ -20,7 +19,7 @@ export const RoomTopicView = observer(function RoomTopicView({ room, topicId }: 
 
   const selectedTopicId = topicId ?? firstTopic?.id ?? null;
 
-  const selectedTopic = selectedTopicId ? clientdb.topic.findById(selectedTopicId) : null;
+  const selectedTopic = selectedTopicId ? room.topics.findById(selectedTopicId) : null;
 
   /*
     Routing on changes to topic
@@ -70,8 +69,6 @@ export const RoomTopicView = observer(function RoomTopicView({ room, topicId }: 
       }
     }
   }, [topicId, firstTopic, room, openTopics]);
-
-  console.log("elomel2o");
 
   return (
     <RoomView roomId={room.id} selectedTopicId={selectedTopicId}>

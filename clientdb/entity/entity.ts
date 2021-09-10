@@ -24,20 +24,6 @@ export type EntityByDefinition<Def> = Def extends EntityDefinition<infer Data, i
   ? Entity<Data, Connections>
   : never;
 
-function mergeProperties<I, A>(input: I, propertiesToAdd: A): I & A {
-  const keysToAdd = Object.keys(propertiesToAdd);
-
-  for (const keyToAdd of keysToAdd) {
-    const descriptor = Object.getOwnPropertyDescriptor(propertiesToAdd, keyToAdd);
-
-    if (!descriptor) continue;
-
-    Object.defineProperty(input, keyToAdd, descriptor);
-  }
-
-  return input as I & A;
-}
-
 export type EntityFromDefinition<Def extends EntityDefinition<any, any>> = Def extends EntityDefinition<
   infer Data,
   infer Connections
@@ -65,7 +51,7 @@ export function createEntity<D, C>(
 
   const entityMethods: EntityMethods<D, C> = {
     remove() {
-      throw "unimplemented";
+      store.removeById(entityMethods.getKey());
     },
     getKey() {
       return `${entity[config.keyField]}`;
@@ -73,8 +59,14 @@ export function createEntity<D, C>(
     getUpdatedAt() {
       const rawInfo = entity[config.updatedAtField];
 
-      // TODO Validate
-      return new Date(rawInfo as string);
+      const updatedAt = new Date(rawInfo as string);
+
+      if (isNaN(updatedAt.getTime())) {
+        console.error({ entity });
+        throw new Error(`Incorrect updated at value for key "${config.updatedAtField}"`);
+      }
+
+      return updatedAt;
     },
     getData() {
       const rawObject = toJS(entity);

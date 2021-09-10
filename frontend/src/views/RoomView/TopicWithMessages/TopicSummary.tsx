@@ -1,12 +1,9 @@
-import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { withFragments } from "~frontend/gql/utils";
 import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
-import { TopicSummaryMessage_TopicFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
 import { borderRadius } from "~ui/baseStyles";
@@ -16,8 +13,8 @@ type Props = {
   className?: string;
 };
 
-export const TopicSummaryMessage = observer(
-  styled<Props>(({ topic, className }) => {
+export const TopicSummaryMessage = styled<Props>(
+  observer(({ topic, className }) => {
     const { closedByUser, closed_at, closing_summary } = topic;
 
     if (!closedByUser || !closed_at) {
@@ -40,8 +37,8 @@ export const TopicSummaryMessage = observer(
         </UIHolder>
       </MessageLikeContent>
     );
-  })``
-);
+  })
+)``;
 
 const UIHolder = styled.div<{}>`
   padding: 10px;

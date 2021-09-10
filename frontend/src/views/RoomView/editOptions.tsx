@@ -52,10 +52,10 @@ export const getPopoverEditMenuOptions = ({ room, onEditRoomNameRequest, onClose
 
         if (!didConfirm) return;
 
+        await routes.space.push({ spaceId: room.space_id });
+
         room.remove();
         trackEvent("Deleted Room", { roomId: room.id });
-
-        await routes.space.push({ spaceId: room.space_id });
       },
       icon: <IconTrash />,
       isDestructive: true,

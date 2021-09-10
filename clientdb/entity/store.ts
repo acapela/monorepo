@@ -60,8 +60,12 @@ export function createEntityStore<Data, Connections>(
 
       if (entity === null) return false;
 
-      const didRemove = items.remove(entity);
-      delete itemsMap[id];
+      let didRemove = false;
+
+      runInAction(() => {
+        didRemove = items.remove(entity);
+        delete itemsMap[id];
+      });
 
       events.emit("itemRemoved", entity);
 

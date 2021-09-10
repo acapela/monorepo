@@ -1,50 +1,24 @@
 import { gql, useMutation } from "@apollo/client";
+import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { withFragments } from "~frontend/gql/utils";
+import { RoomEntity } from "~frontend/clientdb/room";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { getCanTopicBeArchived } from "~frontend/topics/getCanTopicBeArchived";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { useDeleteTopic, useUpdateTopicName } from "~frontend/views/RoomView/TopicsList/shared";
-import {
-  ArchiveTopicMutation,
-  ArchiveTopicMutationVariables,
-  ManageTopic_RoomFragment,
-  ManageTopic_TopicFragment,
-} from "~gql";
+import { ArchiveTopicMutation, ArchiveTopicMutationVariables } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconArchive, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
 
-const fragments = {
-  room: gql`
-    ${useIsCurrentUserTopicManager.fragments.room}
-
-    fragment ManageTopic_room on room {
-      id
-      ...IsCurrentUserTopicManager_room
-    }
-  `,
-  topic: gql`
-    ${useIsCurrentUserTopicManager.fragments.topic}
-
-    fragment ManageTopic_topic on topic {
-      id
-      name
-      closed_at
-      archived_at
-      ...IsCurrentUserTopicManager_topic
-    }
-  `,
-};
-
 interface Props {
-  room: ManageTopic_RoomFragment;
-  topic: ManageTopic_TopicFragment;
+  room: RoomEntity;
+  topic: TopicEntity;
   onRenameRequest?: () => void;
 }
 
@@ -70,13 +44,9 @@ export const useArchiveTopic = () =>
     }
   );
 
-export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequest }: Props) => {
-  const [updateTopicName] = useUpdateTopicName();
-  const [archiveTopic] = useArchiveTopic();
-  const [deleteTopic] = useDeleteTopic();
-
-  const handleArchiveTopic = async () => {
-    await archiveTopic({ variables: { id: topic.id, roomId: room.id, archivedAt: new Date().toISOString() } });
+export const ManageTopic = observer(({ room, topic, onRenameRequest }: Props) => {
+  const handleArchiveTopic = () => {
+    topic.update({ archived_at: new Date().toISOString() });
   };
 
   const handleDeleteSelect = useCallback(async () => {
@@ -86,7 +56,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
       confirmLabel: "Delete",
     });
     if (isDeleteConfirmed) {
-      await deleteTopic({ variables: { id: topic.id, roomId: room.id } });
+      topic.remove();
       trackEvent("Deleted Topic", { topicId: topic.id });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,7 +74,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
     if (!name?.trim()) {
       return;
     }
-    await updateTopicName({ variables: { id: topic.id, name } });
+    topic.update({ name });
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: name, oldTopicName: topic.name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);

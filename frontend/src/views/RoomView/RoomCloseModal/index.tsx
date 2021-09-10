@@ -4,9 +4,8 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomEntity } from "~frontend/clientdb/room";
-import { withFragments } from "~frontend/gql/utils";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { Modal } from "~frontend/ui/Modal";
-import { RoomCloseModal_RoomFragment } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { createPromiseUI } from "~ui/createPromiseUI";
 import { TextBody, TextH3 } from "~ui/typo";
@@ -18,8 +17,7 @@ const MAX_TOPICS_PER_COLUMN = 5;
 // When there's more than 5 open topics, the height of the modal starts increasing significantly
 // We're dividing the topics into columns after they pass a certain threshold
 // Each of the columns will be of similar in size e.g, 6 topics = 2 columns of 3 topics each
-type Topics = RoomCloseModal_RoomFragment["topics"];
-function splitTopicsIntoColumns(topics: Topics): Topics[] {
+function splitTopicsIntoColumns(topics: TopicEntity[]): TopicEntity[][] {
   const columns = [];
 
   const numberOfColumns = Math.ceil(topics.length / MAX_TOPICS_PER_COLUMN);

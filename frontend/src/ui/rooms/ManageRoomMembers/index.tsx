@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import { useRef, useState } from "react";
 import styled from "styled-components";
 
@@ -7,8 +8,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomEntity } from "~frontend/clientdb/room";
 import { createRoomInvitation, removeRoomInvitation } from "~frontend/gql/roomInvitations";
-import { useDeleteRoom, useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { withFragments } from "~frontend/gql/utils";
+import { useDeleteRoom } from "~frontend/gql/rooms";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { JoinToggleButton } from "~frontend/ui/buttons/JoinToggleButton";
 import { MembersManagerModal } from "~frontend/ui/MembersManager/MembersManagerModal";
@@ -19,7 +19,6 @@ import {
   ManageRoomMembers_InvitationsQueryVariables,
   ManageRoomMembers_MembersSubscription,
   ManageRoomMembers_MembersSubscriptionVariables,
-  ManageRoomMembers_RoomFragment,
   RemoveRoomMemberMutation,
   RemoveRoomMemberMutationVariables,
 } from "~gql";
@@ -34,51 +33,12 @@ import { addToast } from "~ui/toasts/data";
 import { openLastPrivateRoomMemberDeletionPrompt } from "./openLastPrivateRoomMemberDeletionPrompt";
 import { RoomOwner } from "./RoomOwner";
 
-const roomMemberFragment = gql`
-  ${MembersManagerModal.fragments.user}
-  ${AvatarList.fragments.user}
-
-  fragment ManageRoomMembers_member on room_member {
-    user {
-      id
-      email
-      ...MembersManagerModal_user
-      ...AvatarList_user
-    }
-  }
-`;
-
-const fragments = {
-  room: gql`
-    ${useIsCurrentUserRoomMember.fragments.room}
-    ${openLastPrivateRoomMemberDeletionPrompt.fragments.room}
-    ${roomMemberFragment}
-    ${RoomOwner.fragments.room}
-
-    fragment ManageRoomMembers_room on room {
-      id
-      is_private
-      owner_id
-      members {
-        ...ManageRoomMembers_member
-      }
-      invitations {
-        id
-        email
-      }
-      ...IsCurrentUserRoomMember_room
-      ...PrivateRoomDeletionPrompt_room
-      ...RoomOwner_room
-    }
-  `,
-};
-
 interface Props {
   room: RoomEntity;
   onCurrentUserLeave?: () => void;
 }
 
-export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUserLeave }: Props) => {
+export const ManageRoomMembers = observer(({ room, onCurrentUserLeave }: Props) => {
   const teamId = useAssertCurrentTeamId();
 
   const { data: invitationResult } = useQuery<
@@ -95,27 +55,12 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
     { variables: { teamId } }
   );
 
-  useSubscription<ManageRoomMembers_MembersSubscription, ManageRoomMembers_MembersSubscriptionVariables>(
-    gql`
-      ${roomMemberFragment}
-
-      subscription ManageRoomMembers_members($roomId: uuid!) {
-        room_by_pk(id: $roomId) {
-          id
-          members {
-            ...ManageRoomMembers_member
-          }
-        }
-      }
-    `,
-    { variables: { roomId: room.id } }
-  );
-
   const currentUser = useCurrentUser();
   const members = room.members.all;
   const amIMember = room.isCurrentUserMember;
 
   const [deleteRoom] = useDeleteRoom();
+  // TODOC
   const [addRoomMember] = useMutation(
     gql`
       mutation AddRoomMember($roomId: uuid!, $userId: uuid!) {

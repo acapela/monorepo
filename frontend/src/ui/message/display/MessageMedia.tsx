@@ -1,12 +1,9 @@
-import { gql } from "@apollo/client";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { MessageEntity } from "~frontend/clientdb/message";
 import { removeAttachment } from "~frontend/gql/attachments";
-import { withFragments } from "~frontend/gql/utils";
 import { MessageAttachment } from "~frontend/ui/message/attachment/MessageAttachment";
-import { MessageMedia_MessageFragment } from "~gql";
 
 interface Props {
   message: MessageEntity;

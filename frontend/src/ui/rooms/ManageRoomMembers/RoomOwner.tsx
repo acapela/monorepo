@@ -1,31 +1,16 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { RoomEntity } from "~frontend/clientdb/room";
-import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { RoomOwner_RoomFragment } from "~gql";
 import { theme } from "~ui/theme";
-
-const fragments = {
-  room: gql`
-    ${UserAvatar.fragments.user}
-
-    fragment RoomOwner_room on room {
-      owner {
-        name
-        ...UserAvatar_user
-      }
-    }
-  `,
-};
 
 type Props = { room: RoomEntity };
 
-export const RoomOwner = withFragments(fragments, ({ room }: Props) => (
+export const RoomOwner = observer(({ room }: Props) => (
   <UIHolder data-tooltip={`${room.owner?.name} (Room Owner)`}>
     {/* TODOC */}
-    <UserAvatar disableNameTooltip size="medium" user={room.owner!} />
+    {room.owner && <UserAvatar disableNameTooltip size="medium" user={room.owner} />}
   </UIHolder>
 ));
 

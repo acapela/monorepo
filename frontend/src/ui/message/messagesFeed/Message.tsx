@@ -1,4 +1,3 @@
-import { gql, useMutation } from "@apollo/client";
 import { MotionProps } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
@@ -6,9 +5,7 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { withFragments } from "~frontend/gql/utils";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
@@ -20,14 +17,12 @@ import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables } from "~gql";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
 import { IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
-import { MessageTask } from "./MessageTask";
 import { MessageTasks } from "./MessageTasks";
 
 interface Props extends MotionProps {
@@ -36,19 +31,8 @@ interface Props extends MotionProps {
   className?: string;
 }
 
-const _Message = styled<Props>(
+export const Message = styled<Props>(
   observer(({ message, className, isReadonly }) => {
-    const user = useCurrentUser();
-    const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
-      gql`
-        mutation DeleteTextMessage($id: uuid!) {
-          message: delete_message_by_pk(id: $id) {
-            id
-          }
-        }
-      `
-    );
-
     const topicContext = useTopicStoreContext();
 
     const isInEditMode = select(() => topicContext.editedMessageId === message.id);
@@ -80,7 +64,7 @@ const _Message = styled<Props>(
       });
 
       if (didConfirm) {
-        await deleteMessage({ variables: { id: message.id } });
+        message.remove();
         trackEvent("Deleted Message", { messageId: message.id });
       }
     }
@@ -151,8 +135,6 @@ const _Message = styled<Props>(
     );
   })
 )``;
-
-export const Message = observer(_Message);
 
 const UIHolder = styled.div<{}>``;
 

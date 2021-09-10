@@ -6,8 +6,10 @@ import { assert } from "~frontend/../../shared/assert";
 import { createResolvablePromise } from "~frontend/../../shared/promises";
 
 async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
-  const db = await openDB(`${dbPrefix}-localdb`, dbVersion, {
+  console.log("initialize db");
+  const db = await openDB(`${dbPrefix}-clientdb`, dbVersion, {
     upgrade(database, oldVersion, newVersion) {
+      console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
       for (const existingStore of database.objectStoreNames) {
         database.deleteObjectStore(existingStore);
       }

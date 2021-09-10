@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { getUUID } from "~frontend/../../shared/uuid";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { clientdb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
@@ -32,8 +33,14 @@ export const MessageReaction = observer(({ message, emoji, reactions }: Props) =
       return;
     }
 
-    // TODOC
-    // clientdb.messageReaction.create({})
+    clientdb.messageReaction.create({
+      __typename: "message_reaction",
+      message_id: message.id,
+      emoji: emoji,
+      updated_at: new Date().toISOString(),
+      id: getUUID(),
+      user_id: user.id,
+    });
   };
 
   const buttonRef = useRef<HTMLButtonElement>(null);

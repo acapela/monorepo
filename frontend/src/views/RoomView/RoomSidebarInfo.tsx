@@ -1,34 +1,19 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
 import { RoomEntity } from "~frontend/clientdb/room";
-import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
-import { withFragments } from "~frontend/gql/utils";
 import { ManageRoomMembers } from "~frontend/ui/rooms/ManageRoomMembers";
 import { InputLabel } from "~ui/theme/functional";
 
 import { DeadlineManager } from "./DeadlineManager";
 import { RecurranceManager } from "./RecurranceManager";
 
-const fragments = {
-  room: gql`
-    ${useIsCurrentUserRoomMember.fragments.room}
-    ${ManageRoomMembers.fragments.room}
-
-    fragment RoomSidebarInfo_room on room {
-      space_id
-      ...IsCurrentUserRoomMember_room
-      ...ManageRoomMembers_room
-    }
-  `,
-};
-
 interface Props {
   room: RoomEntity;
 }
 
-export const RoomSidebarInfo = withFragments(fragments, function RoomSidebarInfo({ room }: Props) {
+export const RoomSidebarInfo = observer(function RoomSidebarInfo({ room }: Props) {
   const router = useRouter();
 
   const handleRoomLeave = () => {

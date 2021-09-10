@@ -1,28 +1,15 @@
-import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
+import { observer } from "mobx-react";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { UserEntity } from "~frontend/clientdb/user";
-import { withFragments } from "~frontend/gql/utils";
-import { MessageLikeContent_UserFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
 
 import { MessageMetaData } from "./MessageMetaData";
-
-const fragments = {
-  user: gql`
-    ${MessageMetaData.fragments.user}
-
-    fragment MessageLikeContent_user on user {
-      id
-      ...MessageMetaData_user
-    }
-  `,
-};
 
 interface Props {
   user: UserEntity;
@@ -32,23 +19,23 @@ interface Props {
   className?: string;
 }
 
-const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className }) => {
-  const holderRef = useRef<HTMLDivElement>(null);
-  const currentUser = useCurrentUser();
+export const MessageLikeContent = styled<Props>(
+  observer(({ user, date, children, tools, className }) => {
+    const holderRef = useRef<HTMLDivElement>(null);
+    const currentUser = useCurrentUser();
 
-  const isOwnMessage = currentUser?.id === user.id;
+    const isOwnMessage = currentUser?.id === user.id;
 
-  return (
-    <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
-      <MessageMetaData user={user} date={date}>
-        {children}
-      </MessageMetaData>
-      {tools && <UITools>{tools}</UITools>}
-    </UIAnimatedMessageWrapper>
-  );
-})``;
-
-export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
+    return (
+      <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
+        <MessageMetaData user={user} date={date}>
+          {children}
+        </MessageMetaData>
+        {tools && <UITools>{tools}</UITools>}
+      </UIAnimatedMessageWrapper>
+    );
+  })
+)``;
 
 const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
   display: flex;
