@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@sentry/nextjs";
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
@@ -34,7 +35,11 @@ const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, r
   return (
     <div className={className} onClick={(event) => event.stopPropagation()}>
       <SearchInput autoFocus ref={ref} value={value} onChangeText={(text) => setValue(text)} />
-      {term && results && <SearchResults {...{ term, results }} />}
+      {term && results && (
+        <ErrorBoundary fallback={<>An error occurred while searching. We are looking into it!</>}>
+          <SearchResults {...{ term, results }} />
+        </ErrorBoundary>
+      )}
     </div>
   );
 });

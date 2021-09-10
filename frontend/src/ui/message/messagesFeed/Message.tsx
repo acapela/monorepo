@@ -71,12 +71,13 @@ const fragments = {
 
 interface Props extends MotionProps {
   message: Message_MessageFragment;
+  isBundledWithPreviousMessage?: boolean;
   isReadonly?: boolean;
   className?: string;
 }
 
 const _Message = styled<Props>(
-  observer(({ message, className, isReadonly }) => {
+  observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
     const user = useCurrentUser();
     const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
       gql`
@@ -165,6 +166,7 @@ const _Message = styled<Props>(
             )
           }
           user={message.user}
+          hasHiddenMetadata={isBundledWithPreviousMessage}
           date={new Date(message.created_at)}
         >
           <UIMessageBody>
@@ -201,11 +203,11 @@ const UITools = styled.div<{}>`
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  gap: 16px;
+  gap: 8px;
 `;
 
 const UIMessageBody = styled.div<{}>`
   ${MessageTasks} {
-    margin-top: 24px;
+    margin-top: 8px;
   }
 `;

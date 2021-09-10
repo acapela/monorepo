@@ -1,5 +1,8 @@
 import { App, GlobalShortcut, MessageShortcut, SlackShortcut } from "@slack/bolt";
-import { ViewsOpenArguments } from "@slack/web-api";
+import { ViewsOpenArguments, WebClient } from "@slack/web-api";
+
+import { db } from "~db";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
@@ -110,17 +113,39 @@ const createRoomModalViewOpen = (shortcut: SlackShortcut): ViewsOpenArguments =>
   },
 });
 
+async function findUserBySlackId(client: WebClient, slackUserId: string) {
+  const user = await db.user.findFirst({
+    where: { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
+  });
+  if (user) {
+    return user;
+  }
+  const { profile } = await client.users.profile.get({ user: slackUserId });
+  if (!profile) {
+    return;
+  }
+  return await db.user.findFirst({ where: { email: profile.email } });
+}
+
 export function setupSlackShortcuts(slackApp: App) {
   slackApp.action("select_space", ({ ack }) => ack());
   slackApp.action("members_select", ({ ack }) => ack());
 
-  slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client }) => {
+  slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body }) => {
     await ack();
     await client.views.open(createRoomModalViewOpen(shortcut));
+    const user = await findUserBySlackId(client, body.user.id);
+    if (user) {
+      trackBackendUserEvent(user.id, "Started creating Room with Slack Global Shortcut");
+    }
   });
 
-  slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client }) => {
+  slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client, body }) => {
     await ack();
     await client.views.open(createRoomModalViewOpen(shortcut));
+    const user = await findUserBySlackId(client, body.user.id);
+    if (user) {
+      trackBackendUserEvent(user.id, "Started creating Room with Slack Message Action");
+    }
   });
 }

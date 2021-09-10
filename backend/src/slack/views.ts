@@ -5,6 +5,7 @@ import { WebClient } from "@slack/web-api";
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
 import { assertDefined } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 
 const createPlainMessageContent = (text: string) => ({
@@ -58,7 +59,7 @@ const createRoomWithTopic = async ({
       },
     },
   });
-  return [room, topic];
+  return [room, topic] as const;
 };
 
 async function findUsersThroughSlackProfiles(client: WebClient, slackUserIds: string[]) {
@@ -213,6 +214,7 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       });
     }
 
+    const shortcut = JSON.parse(view.private_metadata) as SlackShortcut;
     await client.views.update({
       response_action: "update",
       view_id: body.view.id,
@@ -229,10 +231,22 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
                 }
               )) ?? null
             : null,
-        shortcut: JSON.parse(view.private_metadata) as SlackShortcut,
+        shortcut,
       }),
     });
     await ack({ response_action: "errors", errors: {} });
+    if (currentUser) {
+      const origin = ({ shortcut: "slack-shortcut", message_action: "slack-message-action" } as const)[shortcut.type];
+      trackBackendUserEvent(currentUser.id, "Created Room", {
+        origin,
+        roomId: room.id,
+        roomName: room.name,
+        roomDeadline: room.deadline,
+        spaceId: room.space_id,
+        numberOfInitialMembers: users.length,
+        isRecurring: !!room.recurrance_interval_in_days,
+      });
+    }
   });
 
   slackApp.view("send_message_modal", async ({ ack, view, client, context }) => {

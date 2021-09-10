@@ -130,7 +130,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
             <UITopicHeaderHolder>{topic && <TopicHeader room={room} topic={topic} />}</UITopicHeaderHolder>
 
-            <ScrollableMessages ref={scrollerRef as any}>
+            <ScrollableMessages ref={scrollerRef as never}>
               <AnimateSharedLayout>
                 <MessagesFeed isReadonly={!isMember} messages={messages} />
 

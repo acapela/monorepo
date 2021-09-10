@@ -1,6 +1,8 @@
 import styled, { css } from "styled-components";
 
-export const CornerButtonWrapper = styled.div<{ showOnlyIfParentHovered?: boolean }>`
+import { PopPresenceAnimator } from "../animations";
+
+export const CornerButtonWrapper = styled(PopPresenceAnimator)<{ showOnlyIfParentHovered?: boolean }>`
   position: absolute;
   top: 8px;
   right: 8px;

@@ -4,6 +4,7 @@ import { DocumentNode } from "graphql";
 import { isArray, isObject, mapValues } from "lodash";
 
 import { tryParseStringDate } from "~shared/dates/parseJSONWithDates";
+import { isServer } from "~shared/isServer";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mapObjectValues<T>(object: T, callback: (value: unknown) => unknown): any {
@@ -18,7 +19,7 @@ export function mapObjectValues<T>(object: T, callback: (value: unknown) => unkn
   return mapValues(object, (value) => mapObjectValues(value, callback));
 }
 
-if (typeof window !== "undefined") {
+if (!isServer) {
   Reflect.set(window, "par", tryParseStringDate);
 }
 

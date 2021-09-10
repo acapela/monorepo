@@ -43,60 +43,22 @@ insert_permissions:
       _and:
       - topic:
           room:
-            space:
-              team:
-                memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-      - _or:
-        - topic:
-            room:
-              is_private:
-                _eq: false
-        - _and:
-          - topic:
-              room:
-                is_private:
-                  _eq: true
-          - topic:
-              room:
-                members:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-    columns:
-    - content
-    - id
-    - is_draft
-    - is_draft
-    - replied_to_message_id
-    - topic_id
-    - type
-    set:
-      user_id: x-hasura-User-Id
-  role: user
-select_permissions:
-- permission:
-    allow_aggregations: true
-    columns:
-    - content
-    - content_text
-    - created_at
-    - id
-    - is_draft
-    - replied_to_message_id
-    - topic_id
-    - type
-    - updated_at
-    - user_id
-    filter:
-      topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-  role: user
+            _or:
+              - _and:
+                  - is_private:
+                      _eq: true
+                  - members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+              - _and:
+                  - is_private:
+                      _eq: false
+                  - space:
+                      team:
+                        memberships:
+                          user_id:
+                            _eq: X-Hasura-User-Id
+    role: user
 update_permissions:
 - permission:
     check: null
@@ -126,6 +88,7 @@ event_triggers:
       - content
       - type
       - created_at
+      - updated_at
       - id
       - replied_to_message_id
       - topic_id

@@ -13,7 +13,6 @@ import {
 } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
-import { makePromiseVoidable } from "~shared/promises";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
@@ -99,15 +98,12 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
-    const updatingMessagePromise = makePromiseVoidable(
-      updateMessageContent({
-        variables: {
-          id: message.id,
-          content,
-        },
-      })
-    );
+    const updatingMessagePromise = updateMessageContent({
+      variables: {
+        id: message.id,
+        content,
+      },
+    }) as Promise<unknown>;
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
     trackEvent("Edited Message", { messageId: message.id });
