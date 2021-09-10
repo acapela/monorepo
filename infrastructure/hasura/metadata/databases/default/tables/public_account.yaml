@@ -2,6 +2,6 @@ table:
   name: account
   schema: public
 object_relationships:
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+- name: user
+  using:
+    foreign_key_constraint_on: user_id

@@ -2,75 +2,75 @@ table:
   name: team_member
   schema: public
 object_relationships:
-  - name: team
-    using:
-      foreign_key_constraint_on: team_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+- name: team
+  using:
+    foreign_key_constraint_on: team_id
+- name: user
+  using:
+    foreign_key_constraint_on: user_id
 insert_permissions:
-  - permission:
-      backend_only: false
-      check:
-        team:
-          memberships:
-            _and:
-              - user_id:
-                  _eq: X-Hasura-User-Id
-              - user_id:
-                  _ceq: user_id
-      columns:
-        - team_id
-        - user_id
-    role: user
-select_permissions:
-  - permission:
-      columns:
-        - id
-        - notify_email
-        - notify_slack
-        - team_id
-        - user_id
-      filter:
-        team:
-          memberships:
-            user_id:
+- permission:
+    backend_only: false
+    check:
+      team:
+        memberships:
+          _and:
+          - user_id:
               _eq: X-Hasura-User-Id
-    role: user
-update_permissions:
-  - permission:
-      check: null
-      columns:
-        - notify_email
-        - notify_slack
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
-delete_permissions:
-  - permission:
-      filter:
-        team:
-          owner_id:
+          - user_id:
+              _ceq: user_id
+    columns:
+    - team_id
+    - user_id
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - id
+    - notify_email
+    - notify_slack
+    - team_id
+    - user_id
+    filter:
+      team:
+        memberships:
+          user_id:
             _eq: X-Hasura-User-Id
-    role: user
+  role: user
+update_permissions:
+- permission:
+    check: null
+    columns:
+    - notify_email
+    - notify_slack
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      team:
+        owner_id:
+          _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - definition:
-      delete:
-        columns: "*"
-      enable_manual: false
-      insert:
-        columns: "*"
-      update:
-        columns:
-          - team_id
-          - user_id
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-    name: team_member_updates
-    retry_conf:
-      interval_sec: 10
-      num_retries: 0
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+- definition:
+    delete:
+      columns: "*"
+    enable_manual: false
+    insert:
+      columns: "*"
+    update:
+      columns:
+      - team_id
+      - user_id
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: team_member_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
