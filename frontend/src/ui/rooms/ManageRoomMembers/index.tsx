@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { gql, useApolloClient, useMutation, useSubscription } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import styled from "styled-components";
@@ -78,20 +78,8 @@ interface Props {
 }
 
 export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUserLeave }: Props) => {
+  const apolloClient = useApolloClient();
   const teamId = useAssertCurrentTeamId();
-  const { data: invitationResult } = useQuery<
-    ManageRoomMembers_InvitationsQuery,
-    ManageRoomMembers_InvitationsQueryVariables
-  >(
-    gql`
-      query ManageRoomMembers_invitations($teamId: uuid!) {
-        invitations: team_invitation(where: { team_id: { _eq: $teamId } }) {
-          email
-        }
-      }
-    `,
-    { variables: { teamId } }
-  );
 
   useSubscription<ManageRoomMembers_MembersSubscription, ManageRoomMembers_MembersSubscriptionVariables>(
     gql`
@@ -210,10 +198,23 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
     trackEvent("Invited To Room", { roomId: room.id, userEmail: email });
   }
 
-  function handleInviteByEmailRequest(email: string) {
+  async function handleInviteByEmailRequest(email: string) {
+    const { data } = await apolloClient.query<
+      ManageRoomMembers_InvitationsQuery,
+      ManageRoomMembers_InvitationsQueryVariables
+    >({
+      query: gql`
+        query ManageRoomMembers_invitations($teamId: uuid!, $email: String!) {
+          teamInvitations: team_invitation(where: { team_id: { _eq: $teamId }, email: { _eq: $email } }) {
+            id
+          }
+        }
+      `,
+      variables: { teamId, email },
+    });
     requestedEmail.current = email;
 
-    if (invitationResult?.invitations.some((invitation) => invitation.email == email)) {
+    if (data.teamInvitations.length > 0) {
       handleInviteByEmail();
     } else {
       setShouldShowWarning(true);
