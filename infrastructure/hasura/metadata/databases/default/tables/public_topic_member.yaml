@@ -2,52 +2,52 @@ table:
   name: topic_member
   schema: public
 object_relationships:
-- name: topic
-  using:
-    foreign_key_constraint_on: topic_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: topic
+    using:
+      foreign_key_constraint_on: topic_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      topic:
-        room:
-          space:
-            team:
-              memberships:
-                _and:
-                - user_id:
-                    _eq: X-Hasura-User-Id
-                - user_id:
-                    _ceq: user_id
-    columns:
-    - topic_id
-    - user_id
-  role: user
+  - permission:
+      backend_only: false
+      check:
+        topic:
+          room:
+            space:
+              team:
+                memberships:
+                  _and:
+                    - user_id:
+                        _eq: X-Hasura-User-Id
+                    - user_id:
+                        _ceq: user_id
+      columns:
+        - topic_id
+        - user_id
+    role: user
 select_permissions:
-- permission:
-    columns:
-    - topic_id
-    - user_id
-    filter:
-      topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-  role: user
+  - permission:
+      columns:
+        - topic_id
+        - user_id
+      filter:
+        topic:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+    role: user
 delete_permissions:
-- permission:
-    filter:
-      topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-  role: user
+  - permission:
+      filter:
+        topic:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+    role: user

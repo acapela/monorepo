@@ -2,139 +2,138 @@ table:
   name: user
   schema: public
 object_relationships:
-- name: current_team
-  using:
-    foreign_key_constraint_on: current_team_id
+  - name: current_team
+    using:
+      foreign_key_constraint_on: current_team_id
 array_relationships:
-- name: created_room_invitations
-  using:
-    foreign_key_constraint_on:
-      column: inviting_user_id
-      table:
-        name: room_invitation
-        schema: public
-- name: created_rooms
-  using:
-    foreign_key_constraint_on:
-      column: creator_id
-      table:
-        name: room
-        schema: public
-- name: created_team_invitations
-  using:
-    foreign_key_constraint_on:
-      column: inviting_user_id
-      table:
-        name: team_invitation
-        schema: public
-- name: messages
-  using:
-    manual_configuration:
-      column_mapping:
-        id: user_id
-      insertion_order: null
-      remote_table:
-        name: message
-        schema: public
-- name: notifications
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: notification
-        schema: public
-- name: owned_teams
-  using:
-    foreign_key_constraint_on:
-      column: owner_id
-      table:
-        name: team
-        schema: public
-- name: rooms
-  using:
-    manual_configuration:
-      column_mapping:
-        id: user_id
-      insertion_order: null
-      remote_table:
-        name: room_member
-        schema: public
-- name: space_memberships
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: space_member
-        schema: public
-- name: team_memberships
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: team_member
-        schema: public
-- name: topic_memberships
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: topic_member
-        schema: public
+  - name: created_room_invitations
+    using:
+      foreign_key_constraint_on:
+        column: inviting_user_id
+        table:
+          name: room_invitation
+          schema: public
+  - name: created_rooms
+    using:
+      foreign_key_constraint_on:
+        column: creator_id
+        table:
+          name: room
+          schema: public
+  - name: created_team_invitations
+    using:
+      foreign_key_constraint_on:
+        column: inviting_user_id
+        table:
+          name: team_invitation
+          schema: public
+  - name: messages
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: message
+          schema: public
+  - name: notifications
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: notification
+          schema: public
+  - name: owned_teams
+    using:
+      foreign_key_constraint_on:
+        column: owner_id
+        table:
+          name: team
+          schema: public
+  - name: rooms
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: room_member
+          schema: public
+  - name: space_memberships
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: space_member
+          schema: public
+  - name: team_memberships
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: team_member
+          schema: public
+  - name: topic_memberships
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: topic_member
+          schema: public
 select_permissions:
-- permission:
-    columns:
-    - avatar_url
-    - email
-    - id
-    - name
-    - updated_at
-    filter:
-      _or:
-      - team_memberships:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-      - messages:
-          topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-  role: user
-update_permissions:
-- permission:
-    check: null
-    columns:
-    - avatar_url
-    - current_team_id
-    - name
-    filter:
-      id:
-        _eq: X-Hasura-User-Id
-  role: user
-event_triggers:
-- definition:
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
+  - permission:
       columns:
-      - avatar_url
-      - email
-      - name
-      - created_at
-      - email_verified
-      - current_team_id
-      - id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: user_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+        - avatar_url
+        - email
+        - id
+        - name
+      filter:
+        _or:
+          - team_memberships:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+          - messages:
+              topic:
+                room:
+                  space:
+                    team:
+                      memberships:
+                        user_id:
+                          _eq: X-Hasura-User-Id
+    role: user
+update_permissions:
+  - permission:
+      check: null
+      columns:
+        - avatar_url
+        - current_team_id
+        - name
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+    role: user
+event_triggers:
+  - definition:
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - avatar_url
+          - email
+          - name
+          - created_at
+          - email_verified
+          - current_team_id
+          - id
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: user_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
