@@ -8,6 +8,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
+import { UploadingAttachmentPreview } from "../attachment/UploadingAttachmentPreview";
 import { EditorAttachmentInfo } from "./attachments";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
   onSubmit?: () => void;
   content: RichEditorNode;
   onContentChange: (content: RichEditorNode) => void;
+  uploadingAttachments?: File[];
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
@@ -30,6 +32,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
     onSubmit,
     content,
     onContentChange,
+    uploadingAttachments = [],
     attachments,
     onFilesSelected,
     onAttachmentRemoveRequest,
@@ -65,7 +68,7 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
       additionalTopContent={additionalContent}
       onEditorReady={onEditorReady}
       additionalBottomContent={
-        attachments.length > 0 && (
+        (uploadingAttachments.length > 0 || attachments.length > 0) && (
           <UIAttachmentsPreviews>
             {attachments.map((attachment) => {
               return (
@@ -76,6 +79,9 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
                 />
               );
             })}
+            {uploadingAttachments.map((file, index) => (
+              <UploadingAttachmentPreview key={index} />
+            ))}
           </UIAttachmentsPreviews>
         )
       }
@@ -84,6 +90,8 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
 });
 
 const UIAttachmentsPreviews = styled.div<{}>`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  grid-template-rows: repeat(auto-fill, 120px);
   gap: 12px;
 `;
