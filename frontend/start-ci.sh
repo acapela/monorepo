@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup node ./next-server.js & echo $! > frontend.pid
+nohup yarn node ./next-server.js & echo $! > frontend.pid
