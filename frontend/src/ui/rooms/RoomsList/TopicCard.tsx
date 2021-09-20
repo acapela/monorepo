@@ -37,8 +37,10 @@ export const TopicCard = styled(function TopicCard({ topic, className }: Props) 
 
   return (
     <RouteLink
-      route={routes.spaceRoomTopic}
-      params={{ roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id }}
+      route={topic.room ? routes.spaceRoomTopic : routes.topic}
+      params={
+        topic.room ? { roomId: topic.room.id, spaceId: topic.room.space_id, topicId: topic.id } : { topicId: topic.id }
+      }
     >
       <UIHolder className={className}>
         <UIInfo>

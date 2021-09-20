@@ -66,7 +66,7 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
   assert(topicInfo, "Message has no topic attached");
 
   await Promise.all([
-    updateRoomLastActivityDate(topicInfo.room_id),
+    topicInfo.room_id ? updateRoomLastActivityDate(topicInfo.room_id) : Promise.resolve(),
     prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
     createMessageMentionNotifications(event.item, event.itemBefore),

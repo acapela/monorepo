@@ -197,11 +197,13 @@ export const NotificationLabel = withFragments(fragments, ({ notification }: Pro
   const { user, titleNode } = data;
   const url =
     "topic" in data
-      ? routes.spaceRoomTopic.getUrlWithParams({
-          spaceId: data.topic.room.space_id,
-          roomId: data.topic.room.id,
-          topicId: data.topic.id,
-        })
+      ? data.topic.room
+        ? routes.spaceRoomTopic.getUrlWithParams({
+            spaceId: data.topic.room.space_id,
+            roomId: data.topic.room.id,
+            topicId: data.topic.id,
+          })
+        : routes.topic.getUrlWithParams({ topicId: data.topic.id })
       : routes.spaceRoom.getUrlWithParams({ spaceId: data.room.space_id, roomId: data.room.id });
 
   return (

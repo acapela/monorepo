@@ -4,7 +4,7 @@ import { WebClient } from "@slack/web-api";
 
 import { getSlackInstallURL } from "~backend/src/slack/install";
 import { db } from "~db";
-import { assertDefined } from "~shared/assert";
+import { assert, assertDefined } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
 
@@ -14,6 +14,7 @@ const createPlainMessageContent = (text: string) => ({
 });
 
 const createRoomWithTopic = async ({
+  teamId,
   spaceId,
   roomName,
   creatorId,
@@ -21,6 +22,7 @@ const createRoomWithTopic = async ({
   topicName,
   topicMessage,
 }: {
+  teamId: string;
   spaceId: string;
   roomName: string;
   creatorId: string;
@@ -41,6 +43,7 @@ const createRoomWithTopic = async ({
   const topic = await db.topic.create({
     data: {
       room_id: room.id,
+      team_id: teamId,
       name: topicName,
       slug: topicName,
       index: "a",
@@ -195,8 +198,10 @@ export function setupSlackViews(slackApp: SlackBolt.App) {
       users.unshift(currentUser);
     }
 
-    const creatorId = assertDefined(currentUser?.id ?? team?.owner_id, "needs to at least have a team");
+    assert(team, "must have a team");
+    const creatorId = currentUser?.id ?? team.owner_id;
     const [room, topic] = await createRoomWithTopic({
+      teamId: team.id,
       spaceId,
       roomName,
       creatorId,

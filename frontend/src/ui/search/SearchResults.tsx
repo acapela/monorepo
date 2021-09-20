@@ -38,18 +38,22 @@ function getItemURL(result: ResultItem): string {
 
     case "topic": {
       const { room } = result;
-      return routes.spaceRoomTopic.getUrlWithParams({
-        spaceId: room.space.id,
-        roomId: room.id,
-        topicId: result.id,
-      });
+      return room
+        ? routes.spaceRoomTopic.getUrlWithParams({
+            spaceId: room.space.id,
+            roomId: room.id,
+            topicId: result.id,
+          })
+        : routes.topic.getUrlWithParams({ topicId: result.id });
     }
 
     case "message": {
       const {
         topic: { room, id: topicId },
       } = result;
-      return routes.spaceRoomTopic.getUrlWithParams({ spaceId: room.space.id, roomId: room.id, topicId });
+      return room
+        ? routes.spaceRoomTopic.getUrlWithParams({ spaceId: room.space.id, roomId: room.id, topicId })
+        : routes.topic.getUrlWithParams({ topicId });
     }
   }
 }
@@ -65,14 +69,14 @@ function composeBreadcrumb(result: ResultItem): string[] {
 
     case "topic": {
       const { room } = result;
-      return [room.space.name, room.name, result.name];
+      return room ? [room.space.name, room.name, result.name] : [result.name];
     }
 
     case "message": {
       const {
         topic: { room, ...topic },
       } = result;
-      return [room.space.name, room.name, topic.name];
+      return room ? [room.space.name, room.name, topic.name] : [topic.name];
     }
   }
 }

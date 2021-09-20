@@ -5,7 +5,9 @@ import { updateRoomLastActivityDate } from "../rooms/rooms";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
-  await updateRoomLastActivityDate(event.item.room_id);
+  if (event.item.room_id) {
+    await updateRoomLastActivityDate(event.item.room_id);
+  }
 
   if (event.type === "create") {
     await inheritTopicMembersFromParentRoom(event.item);

@@ -11,7 +11,6 @@ export type {
   room_member as RoomMember,
   topic as Topic,
   user as User,
-  verification_requests as VerificationRequest,
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,
@@ -26,8 +25,6 @@ export type {
   team_member as TeamMember,
   whitelist as Whitelist,
   notification as Notification,
-  notification_room_added_to as NotificationRoomAddedTo,
-  notification_topic_mention as NotificationTopicMention,
   PrismaPromise,
   Prisma,
 } from "@prisma/client";
