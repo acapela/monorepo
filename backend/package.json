@@ -7,7 +7,7 @@
     "test": "APP=backend jest src --runInBand",
     "test:watch": "APP=backend jest src --runInBand --watch",
     "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
-    "start:ci": "nohup ts-node --transpile-only ./src/index.ts & echo $! > backend.pid",
+    "start:ci": "./start-ci.sh",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
@@ -33,6 +33,7 @@
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.32",
     "pg": "^8.5.1",
+    "ts-node": "^10.2.1",
     "uuid": "^8.3.2",
     "~config": "0.1.0"
   },
