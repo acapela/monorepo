@@ -53,7 +53,6 @@ const TeamInvitationBasicInfoFragment = createFragment<TeamInvitationBasicInfoFr
 
 export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentType>(
   () => gql`
-    ${SpaceBasicInfoFragment()}
     ${UserBasicInfoFragment()}
     ${TeamInvitationBasicInfoFragment()}
 
