@@ -9,7 +9,6 @@ import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 
 import { RoomBasicInfoFragment } from "./rooms";
-import { TeamDetailedInfoFragment } from "./teams";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation } from "./utils";
 
@@ -70,13 +69,6 @@ export const [useCreateSpaceMutation, { mutate: createSpace }] = createMutation<
           members: [],
         },
       };
-    },
-    onOptimisticOrActualResponse(space, { input }) {
-      if (!input.team_id) return;
-
-      TeamDetailedInfoFragment.update(input.team_id, (team) => {
-        team.spaces.push(space);
-      });
     },
   }
 );
