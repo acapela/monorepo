@@ -2,7 +2,6 @@ import { Room, db } from "~db";
 import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
-import { createNotification } from "../notifications/entity";
 import { addRoomParticipant, getIfParticipantExists, updateRoomLastActivityDate } from "./rooms";
 
 async function ensureOwnerIsRoomMember(room: Room) {
@@ -32,10 +31,11 @@ async function createRoomClosedNotifications(room: Room, closedByUserId: string)
     .map((roomMember) => {
       // Don't send notification to user who closed the room.
 
-      return createNotification({
-        type: "roomClosed",
-        userId: roomMember.user_id,
-        payload: { roomId: room.id, closedByUserId },
+      return db.notification.create({
+        data: {
+          user_id: roomMember.user_id,
+          notification_room_closed: { create: { room_id: room.id, closed_by_user_id: closedByUserId } },
+        },
       });
     });
 

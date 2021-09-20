@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { withFragments } from "~frontend/gql/utils";
+import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import {
   EditMessageEditor_MessageFragment,
   UpdateMessageContentMutation,
@@ -13,12 +14,11 @@ import {
 } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
-import { makePromiseVoidable } from "~shared/promises";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
 
-import { EditorAttachmentInfo, uploadFiles } from "./attachments";
+import { EditorAttachmentInfo } from "./attachments";
 import { MessageComposerContext } from "./MessageComposerContext";
 import { MessageContentEditor } from "./MessageContentComposer";
 
@@ -50,6 +50,9 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
       };
     })
   );
+  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
+    onUploadFinish: (attachment) => attachmentsList.push(attachment),
+  });
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
 
@@ -99,15 +102,12 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    // TS below want Promise.all all promises to return the same type if we use ... on array. Let's use void as we don't care about the result.
-    const updatingMessagePromise = makePromiseVoidable(
-      updateMessageContent({
-        variables: {
-          id: message.id,
-          content,
-        },
-      })
-    );
+    const updatingMessagePromise = updateMessageContent({
+      variables: {
+        id: message.id,
+        content,
+      },
+    }) as Promise<unknown>;
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
     trackEvent("Edited Message", { messageId: message.id });
@@ -126,11 +126,8 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
         <MessageContentEditor
           content={content}
           onContentChange={setContent}
-          onFilesSelected={async (files) => {
-            const newAttachments = await uploadFiles(files);
-
-            attachmentsList.push(...newAttachments);
-          }}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
           attachments={attachments}
           onAttachmentRemoveRequest={(attachmentId) => {
             attachmentsList.filter((existingAttachment) => {

@@ -8,6 +8,7 @@ import { createCleanupObject } from "~shared/cleanup";
 import { createDocumentEvent } from "~shared/domEvents";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { useValueRef } from "~shared/hooks/useValueRef";
+import { isServer } from "~shared/isServer";
 import { BodyPortal } from "~ui/BodyPortal";
 import { zIndex } from "~ui/zIndex";
 
@@ -39,7 +40,7 @@ export function createNullDomRect() {
 
 const selectionVirtualElement: VirtualElement = {
   getBoundingClientRect(): DOMRect {
-    if (typeof window === "undefined") return createNullDomRect();
+    if (isServer) return createNullDomRect();
 
     const selection = getSelection();
 

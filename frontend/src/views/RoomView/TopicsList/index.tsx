@@ -16,6 +16,7 @@ import {
 } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
 import { CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables, TopicList_RoomFragment } from "~gql";
@@ -94,6 +95,7 @@ const useCreateTopic = () =>
 
       mutation CreateRoomViewTopic(
         $id: uuid!
+        $team_id: uuid!
         $name: String!
         $slug: String!
         $index: String!
@@ -101,7 +103,15 @@ const useCreateTopic = () =>
         $owner_id: uuid!
       ) {
         topic: insert_topic_one(
-          object: { id: $id, name: $name, slug: $slug, index: $index, room_id: $room_id, owner_id: $owner_id }
+          object: {
+            id: $id
+            team_id: $team_id
+            name: $name
+            slug: $slug
+            index: $index
+            room_id: $room_id
+            owner_id: $owner_id
+          }
         ) {
           ...TopicListCreateTopic
         }
@@ -158,6 +168,7 @@ const _TopicsList = observer(function TopicsList({
   isRoomOpen,
 }: Props) {
   const user = useAssertCurrentUser();
+  const teamId = useAssertCurrentTeamId();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { id: roomId, space_id: spaceId, topics } = roomWithoutAppliedFilters;
@@ -192,6 +203,7 @@ const _TopicsList = observer(function TopicsList({
         slug: "new-topic",
         owner_id: user.id,
         room_id: roomId,
+        team_id: teamId,
         index: getNewTopicIndex(topics, activeTopicId),
       },
     });

@@ -23,6 +23,7 @@ import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
+import { isServer } from "~shared/isServer";
 import { addToast } from "~ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
@@ -193,9 +194,7 @@ interface ApolloClientOptions {
 }
 
 export const getApolloClient = memoize((options: ApolloClientOptions = {}): ApolloClient<unknown> => {
-  const ssrMode = typeof window === "undefined";
-
-  if (!ssrMode) {
+  if (!isServer) {
     // Client side - never use forced token and always read one dynamically
     options.forcedAuthToken = undefined;
   }
@@ -203,7 +202,7 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
   const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
 
   function getLink() {
-    if (ssrMode) {
+    if (isServer) {
       return authTokenLink.concat(httpLink);
     }
 
@@ -227,7 +226,7 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
   }
 
   return new ApolloClient({
-    ssrMode,
+    ssrMode: isServer,
     link,
     cache,
   });

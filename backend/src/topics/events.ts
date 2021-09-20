@@ -1,12 +1,13 @@
 import { Topic, db } from "~db";
 
 import { HasuraEvent } from "../hasura";
-import { createNotification } from "../notifications/entity";
 import { updateRoomLastActivityDate } from "../rooms/rooms";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
-  await updateRoomLastActivityDate(event.item.room_id);
+  if (event.item.room_id) {
+    await updateRoomLastActivityDate(event.item.room_id);
+  }
 
   if (event.type === "create") {
     await inheritTopicMembersFromParentRoom(event.item);
@@ -26,12 +27,10 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     const shouldNotifyAssignee = ownerId && hasNewOwner && assignedByUserId && assignedByUserId !== ownerId;
 
     if (shouldNotifyAssignee) {
-      await createNotification({
-        type: "topicAssigned",
-        userId: ownerId,
-        payload: {
-          topicId: event.item.id,
-          assignedByUserId,
+      await db.notification.create({
+        data: {
+          user_id: ownerId,
+          notification_topic_assigned: { create: { topic_id: event.item.id, assigned_by_user_id: assignedByUserId } },
         },
       });
     }
@@ -44,13 +43,14 @@ async function createTopicClosedNotifications(topic: Topic, closedByUserId: stri
   const createNotificationRequests = topicMembers
     // Don't send notification to user who closed the topic
     .filter((topicMembers) => topicMembers.user_id !== closedByUserId)
-    .map((topicMember) => {
-      return createNotification({
-        type: "topicClosed",
-        userId: topicMember.user_id,
-        payload: { topicId: topic.id, closedByUserId },
-      });
-    });
+    .map((topicMember) =>
+      db.notification.create({
+        data: {
+          user_id: topicMember.user_id,
+          notification_topic_closed: { create: { topic_id: topic.id, closed_by_user_id: closedByUserId } },
+        },
+      })
+    );
 
   return db.$transaction(createNotificationRequests);
 }

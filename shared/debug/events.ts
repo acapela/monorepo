@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { createCleanupObject } from "~shared/cleanup";
 import { createDocumentEvent, createWindowEvent } from "~shared/domEvents";
+import { isServer } from "~shared/isServer";
 
 function getEventNamesFromProperties(properties: string[]) {
   return properties
@@ -14,7 +15,7 @@ function getEventNamesFromProperties(properties: string[]) {
 }
 
 function getAllWindowEventNames(): Array<keyof WindowEventMap> {
-  if (typeof window === "undefined") return [];
+  if (isServer) return [];
 
   return getEventNamesFromProperties(Object.keys(window)) as Array<keyof WindowEventMap>;
 }

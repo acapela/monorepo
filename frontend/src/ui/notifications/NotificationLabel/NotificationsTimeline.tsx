@@ -1,8 +1,9 @@
+import { gql, useSubscription } from "@apollo/client";
 import { ErrorBoundary } from "@sentry/nextjs";
 import { startOfDay } from "date-fns";
 import styled from "styled-components";
 
-import { NotificationInfoFragment } from "~gql";
+import { NotificationsTimelineSubscription } from "~gql";
 import { relativeFormatDate } from "~shared/dates/format";
 import { groupByDate } from "~shared/dates/groupByDate";
 import { sortByDate } from "~shared/dates/utils";
@@ -12,15 +13,29 @@ import { CategoryNameLabel } from "~ui/theme/functional";
 
 import { NotificationLabel } from "./NotificationLabel";
 
-interface Props {
-  notifications: NotificationInfoFragment[];
-}
-
-function sortNotificationsByDate(notifications: NotificationInfoFragment[]) {
+function sortNotificationsByDate(notifications: NotificationsTimelineSubscription["notifications"]) {
   return sortByDate(notifications, (notification) => new Date(notification.created_at), "newer-first");
 }
 
-export function NotificationsTimeline({ notifications }: Props) {
+export function NotificationsTimeline() {
+  const { data } = useSubscription<NotificationsTimelineSubscription>(
+    gql`
+      ${NotificationLabel.fragments.notification}
+
+      subscription NotificationsTimeline {
+        notifications: notification {
+          created_at
+          ...NotificationLabel_notification
+        }
+      }
+    `
+  );
+
+  if (!data) {
+    return null;
+  }
+  const notifications = data.notifications;
+
   const notificationsByDay = groupByDate(notifications, (notification) =>
     startOfDay(new Date(notification.created_at))
   );
@@ -30,22 +45,18 @@ export function NotificationsTimeline({ notifications }: Props) {
       {notificationsByDay.length === 0 && (
         <EmptyStatePlaceholder description="No notifications yet" icon={<IconNotificationIndicator />} />
       )}
-      {notificationsByDay.map((dayNotificationsGroup) => {
-        return (
-          <UINotificationsDayGroup key={dayNotificationsGroup.date.getTime()}>
-            <CategoryNameLabel>{relativeFormatDate(dayNotificationsGroup.date)}</CategoryNameLabel>
-            <UINotificationsList>
-              {sortNotificationsByDate(dayNotificationsGroup.items).map((notification) => {
-                return (
-                  <ErrorBoundary fallback={<></>}>
-                    <NotificationLabel key={notification.id} notification={notification} />
-                  </ErrorBoundary>
-                );
-              })}
-            </UINotificationsList>
-          </UINotificationsDayGroup>
-        );
-      })}
+      {notificationsByDay.map((dayNotificationsGroup) => (
+        <UINotificationsDayGroup key={dayNotificationsGroup.date.getTime()}>
+          <CategoryNameLabel>{relativeFormatDate(dayNotificationsGroup.date)}</CategoryNameLabel>
+          <UINotificationsList>
+            {sortNotificationsByDate(dayNotificationsGroup.items).map((notification) => (
+              <ErrorBoundary key={notification.id} fallback={<></>}>
+                <NotificationLabel notification={notification} />
+              </ErrorBoundary>
+            ))}
+          </UINotificationsList>
+        </UINotificationsDayGroup>
+      ))}
     </UIHolder>
   );
 }

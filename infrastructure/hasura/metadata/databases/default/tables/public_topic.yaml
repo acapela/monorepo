@@ -59,6 +59,7 @@ insert_permissions:
         - owner_id
         - room_id
         - slug
+        - team_id
     role: user
 select_permissions:
   - permission:
@@ -74,6 +75,7 @@ select_permissions:
         - owner_id
         - room_id
         - slug
+        - team_id
       filter:
         _and:
           - room:

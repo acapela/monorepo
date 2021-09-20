@@ -11,7 +11,6 @@ export type {
   room_member as RoomMember,
   topic as Topic,
   user as User,
-  verification_requests as VerificationRequest,
   attachment as Attachment,
   transcription_status as TranscriptionStatus,
   transcription as Transcription,

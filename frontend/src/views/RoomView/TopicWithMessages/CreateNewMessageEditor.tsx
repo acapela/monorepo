@@ -13,6 +13,7 @@ import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer
 import { MessageComposerContext } from "~frontend/ui/message/composer/MessageComposerContext";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
 import { Recorder } from "~frontend/ui/message/composer/Recorder";
+import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
@@ -154,6 +155,10 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const editorRef = useRef<Editor>(null);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
+  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
+    onUploadFinish: (attachment) => attachmentsList.push(attachment),
+  });
+
   const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
   const [value, setValue] = useLocalStorageState<RichEditorNode>({
     key: "message-draft-for-topic:" + topicId,
@@ -192,12 +197,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const handleStopReplyingToMessage = () => {
     topicContext.currentlyReplyingToMessageId = null;
   };
-
-  async function handleNewFiles(files: File[]) {
-    const uploadedAttachments = await uploadFiles(files);
-
-    attachmentsList.push(...uploadedAttachments);
-  }
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
     const messageId = getUUID();
@@ -269,7 +268,8 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
               setValue(value);
             }
           }}
-          onFilesSelected={handleNewFiles}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
           attachments={attachments}
           onEditorReady={focusEditor}
           onAttachmentRemoveRequest={(attachmentId) => {
