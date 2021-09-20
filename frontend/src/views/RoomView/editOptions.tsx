@@ -81,8 +81,6 @@ export const usePopoverEditMenuOptions = withFragments(
       {
         label: "Delete room...",
         onSelect: async () => {
-          routes.space.prefetch({ spaceId: room.space_id });
-
           const didConfirm = await openConfirmPrompt({
             title: `Remove room`,
             description: (

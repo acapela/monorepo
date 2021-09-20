@@ -25,9 +25,6 @@ function assertTypename(typename: ResultItem["__typename"]): asserts typename {
 function getItemURL(result: ResultItem): string {
   assertTypename(result.__typename);
   switch (result.__typename) {
-    case "space":
-      return routes.space.getUrlWithParams({ spaceId: result.id });
-
     case "room":
       return routes.spaceRoom.getUrlWithParams({ spaceId: result.space.id, roomId: result.id });
 
@@ -52,9 +49,6 @@ function getItemURL(result: ResultItem): string {
 function composeBreadcrumb(result: ResultItem): string[] {
   assertTypename(result.__typename);
   switch (result.__typename) {
-    case "space":
-      return [result.name];
-
     case "room":
       return [result.space.name, result.name];
 
