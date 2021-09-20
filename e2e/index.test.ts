@@ -7,12 +7,6 @@ test("find login button", async ({ page }) => {
   await page.click("text=Log in");
 });
 
-test("view spaces", async ({ page, db, auth }) => {
-  await auth.login(db.user2);
-  await page.goto(basePath + "/spaces");
-  await page.waitForSelector(`text=${db.space.name}`);
-});
-
 test("create a room", async ({ page, db, auth }) => {
   await auth.login(db.user2);
   await createAndGotoRoom(page, { spaceName: db.space.name, roomName: "Roomba" });
