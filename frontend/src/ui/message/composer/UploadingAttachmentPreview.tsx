@@ -4,12 +4,19 @@ import styled, { keyframes } from "styled-components";
 import { IconLoader } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-export const UploadingAttachmentPreview = () => {
+interface Props {
+  percentage: number;
+}
+
+export const UploadingAttachmentPreview = ({ percentage }: Props) => {
   return (
     <UIHolder>
-      <UIHolderWr>
-        <IconLoader />
-      </UIHolderWr>
+      <UIContentHolder>
+        <UIIconHolder>
+          <IconLoader />
+        </UIIconHolder>
+        <UIPercentageHolder>{percentage}%</UIPercentageHolder>
+      </UIContentHolder>
     </UIHolder>
   );
 };
@@ -27,7 +34,22 @@ const spinAnimation = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const UIHolderWr = styled.div`
+const UIContentHolder = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const UIIconHolder = styled.div`
   font-size: 2rem;
   animation: ${spinAnimation} 2s linear infinite;
+`;
+
+const UIPercentageHolder = styled.div`
+  position: absolute;
+  bottom: -20px;
+  ${theme.font.body12.build};
+  color: ${theme.colors.layout.supportingText()};
 `;

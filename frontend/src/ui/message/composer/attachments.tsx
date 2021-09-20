@@ -39,6 +39,11 @@ export interface EditorAttachmentInfo {
   mimeType: string;
 }
 
+export interface EditorUploadingAttachmentInfo {
+  file: File;
+  percentage: number;
+}
+
 export async function uploadFiles(files: File[]): Promise<EditorAttachmentInfo[]> {
   const uploadedAttachments = await Promise.all(
     files.map(async (file): Promise<EditorAttachmentInfo> => {

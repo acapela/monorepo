@@ -1,6 +1,6 @@
 import { useList } from "react-use";
 
-import { uploadFile } from "~frontend/ui/message/composer/attachments";
+import { EditorUploadingAttachmentInfo, uploadFile } from "~frontend/ui/message/composer/attachments";
 import { addToast } from "~ui/toasts/data";
 
 import { EditorAttachmentInfo } from "./attachments";
@@ -10,21 +10,34 @@ interface UseUploadAttachmentsParams {
 }
 
 export const useUploadAttachments = ({ onUploadFinish }: UseUploadAttachmentsParams) => {
-  const [uploadingAttachments, uploadingAttachmentsList] = useList<File>([]);
+  const [uploadingAttachments, uploadingAttachmentsList] = useList<EditorUploadingAttachmentInfo>([]);
 
   const uploadAttachments = async (files: File[]) => {
     await Promise.all(
       files.map(async (file) => {
-        uploadingAttachmentsList.push(file);
+        uploadingAttachmentsList.push({
+          file,
+          percentage: 0,
+        });
 
         try {
-          const newAttachment = await uploadFile(file);
+          const newAttachment = await uploadFile(file, {
+            onUploadProgress: (percentage) => {
+              uploadingAttachmentsList.update((attachment) => attachment.file === file, {
+                file,
+                percentage,
+              });
+            },
+          });
+
           onUploadFinish(newAttachment);
         } catch (err) {
           addToast({ type: "error", title: "Unable to upload file" });
         }
 
-        uploadingAttachmentsList.set(uploadingAttachments.filter((attachment) => attachment !== file));
+        uploadingAttachmentsList.filter((attachment) => attachment.file !== file);
+
+        // uploadingAttachmentsList.set(uploadingAttachments.filter((attachment) => attachment !== file));
 
         return;
       })

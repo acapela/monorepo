@@ -8,7 +8,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
-import { EditorAttachmentInfo } from "./attachments";
+import { EditorAttachmentInfo, EditorUploadingAttachmentInfo } from "./attachments";
 import { UploadingAttachmentPreview } from "./UploadingAttachmentPreview";
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
   onSubmit?: () => void;
   content: RichEditorNode;
   onContentChange: (content: RichEditorNode) => void;
-  uploadingAttachments?: File[];
+  uploadingAttachments?: EditorUploadingAttachmentInfo[];
   attachments: EditorAttachmentInfo[];
   onFilesSelected: (files: File[]) => void;
   onAttachmentRemoveRequest: (attachmentId: string) => void;
@@ -79,8 +79,8 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
                 />
               );
             })}
-            {uploadingAttachments.map((file, index) => (
-              <UploadingAttachmentPreview key={index} />
+            {uploadingAttachments.map(({ percentage }, index) => (
+              <UploadingAttachmentPreview percentage={percentage} key={index} />
             ))}
           </UIAttachmentsPreviews>
         )
