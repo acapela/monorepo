@@ -42,7 +42,7 @@ export const openLastPrivateRoomMemberDeletionPrompt = withFragments(
       setRoomOngoingDeletion();
 
       await onDeleteRoom({ id: room.id });
-      await routes.space.push({ spaceId: room.space_id });
+      await routes.home.push({});
 
       trackEvent("Deleted Room", { roomId: room.id });
 

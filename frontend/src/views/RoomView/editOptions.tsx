@@ -98,7 +98,7 @@ export const usePopoverEditMenuOptions = withFragments(
           await deleteRoom({ variables: { id: room.id } });
           trackEvent("Deleted Room", { roomId: room.id });
 
-          await routes.space.push({ spaceId: room.space_id });
+          await routes.home.push({});
         },
         icon: <IconTrash />,
         isDestructive: true,

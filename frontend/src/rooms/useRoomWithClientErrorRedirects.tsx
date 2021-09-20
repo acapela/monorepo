@@ -35,7 +35,7 @@ export const useRoomWithClientErrorRedirects = ({ roomId, spaceId, hasRoom, load
       } else {
         await openNotFoundModal({ place: "room" });
       }
-      routes.space.replace({ spaceId });
+      routes.home.push({});
     }
     if (!loading) redirectOnClientError();
   }, [hasRoom, loading, privateRoomResult, roomId, spaceId]);
