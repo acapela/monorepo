@@ -7,10 +7,6 @@ import { createQuery } from "./utils";
 export const [useFullTextSearchQuery] = createQuery<SearchResultsQuery, SearchResultsQueryVariables>(
   () => gql`
     query SearchResults($term: String!) {
-      spaces: space(where: { name: { _ilike: $term } }, limit: 10) {
-        id
-        name
-      }
       rooms: room(where: { name: { _ilike: $term } }, limit: 10) {
         id
         name

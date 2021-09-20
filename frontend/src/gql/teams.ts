@@ -28,7 +28,6 @@ import {
 import { slugify } from "~shared/slugify";
 import { addToast } from "~ui/toasts/data";
 
-import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 
@@ -63,9 +62,6 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
       name
       slug
       owner_id
-      spaces {
-        ...SpaceBasicInfo
-      }
       invitations(where: { used_at: { _is_null: true } }) {
         ...TeamInvitationBasicInfo
       }

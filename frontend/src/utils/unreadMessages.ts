@@ -17,7 +17,7 @@ import { onDocumentReady } from "~shared/document";
  *
  * It is constructed in a way that there is only one actual subscription listening to all user unread info.
  *
- * This 'master info' is then properly 'distributed' to scoped hooks of spaces/topics/rooms.
+ * This 'master info' is then properly 'distributed' to scoped hooks of topics/rooms.
  */
 
 const UnreadMessageFragment = () => gql`

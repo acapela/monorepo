@@ -235,7 +235,7 @@ export const ManageRoomMembers = withFragments(fragments, ({ room, onCurrentUser
           <WarningModal
             warning="Just a heads-up..."
             title="Adding new team member"
-            description="Inviting new team member to a room also adds them to your team. This means they will be able to see any open spaces or rooms within the app. Are you sure you want to add them?"
+            description="Inviting new team member to a room also adds them to your team. This means they will be able to see any open rooms within the app. Are you sure you want to add them?"
             onCloseRequest={closeInviteWarning}
           >
             <UIWarningOptions>

@@ -16,12 +16,7 @@ interface Props {
   results: SearchResultsQuery;
 }
 
-type ResultItem = (
-  | SearchResultsQuery["spaces"]
-  | SearchResultsQuery["rooms"]
-  | SearchResultsQuery["topics"]
-  | SearchResultsQuery["messages"]
-)[0];
+type ResultItem = (SearchResultsQuery["rooms"] | SearchResultsQuery["topics"] | SearchResultsQuery["messages"])[0];
 
 function assertTypename(typename: ResultItem["__typename"]): asserts typename {
   assert(typename, "__typename should always be set by apollo");
@@ -95,7 +90,7 @@ function SearchResultMatch({ result, term }: { result: ResultItem; term: string 
 
 // TODO: Attempt to use ItemsDropdown when we have a clearer idea of where search is going to move
 const PureSearchResults = ({ className, term, results }: Props) => {
-  const allItems = [...results.spaces, ...results.rooms, ...results.topics, ...results.messages].slice(0, 10);
+  const allItems = [...results.rooms, ...results.topics, ...results.messages].slice(0, 10);
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(allItems, {
     enableKeyboard: true,
   });
