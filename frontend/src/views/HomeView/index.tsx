@@ -20,7 +20,6 @@ export function HomeView() {
     where: getHomeViewRoomsQueryWhere(user.id),
   });
 
-  if (typeof window !== "undefined") throw new Error("ja lol");
   const [filteredRooms] = useRoomsCriteria(rooms, [sortByLatestActivity]);
 
   return (
