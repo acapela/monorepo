@@ -8,7 +8,6 @@ export const routes = {
   home: createRoute("/", {}),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
-  calendar: createRoute("/calendar", {}),
 
   spaceRoom: createRoute("/space/[spaceId]/[roomId]", { spaceId: "string", roomId: "string" }),
   spaceRoomSummary: createRoute("/space/[spaceId]/[roomId]/summary", { spaceId: "string", roomId: "string" }),
