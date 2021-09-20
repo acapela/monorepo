@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useTopicsQuery } from "~frontend/gql/topics";
 import { routes } from "~frontend/router";
-import { fillParamsInUrl } from "~frontend/router/utils";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { theme } from "~ui/theme";
 import { CategoryNameLabel } from "~ui/theme/functional";
@@ -34,14 +33,19 @@ export const OpenTopics = () => {
         {topics?.map((topic) => (
           <ToDoItem
             key={topic.id}
-            href={fillParamsInUrl(routes.spaceRoomTopic.path, {
-              topicId: topic.id,
-              roomId: topic.room.id,
-              spaceId: topic.room.space.id,
-            })}
+            href={
+              topic.room
+                ? routes.spaceRoomTopic.getUrlWithParams({
+                    topicId: topic.id,
+                    roomId: topic.room.id,
+                    spaceId: topic.room.space.id,
+                  })
+                : routes.topic.getUrlWithParams({ topicId: topic.id })
+            }
           >
             <UITopic>
-              {topic.room.space.name} / {topic.room.name} / <UITopicName>{topic.name}</UITopicName>
+              {topic.room && `${topic.room.space.name} / ${topic.room.name} / `}
+              <UITopicName>{topic.name}</UITopicName>
             </UITopic>
           </ToDoItem>
         ))}

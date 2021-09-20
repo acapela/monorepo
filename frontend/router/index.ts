@@ -8,6 +8,9 @@ export const routes = {
   home: createRoute("/", {}),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
+  topic: createRoute("/topics/:topicId", { topicId: "string" }),
+
+  // <likely-to-be-deprecated>
   spaces: createRoute("/spaces", {}),
   calendar: createRoute("/calendar", {}),
   space: createRoute("/space/[spaceId]", { spaceId: "string" }),
@@ -19,6 +22,8 @@ export const routes = {
     roomId: "string",
     topicId: "string",
   }),
+  // </likely-to-be-deprecated>
+
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 

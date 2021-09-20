@@ -6,6 +6,7 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RoomBasicInfoFragment } from "~frontend/gql/rooms";
 import { getIndexBetweenCurrentAndLast } from "~frontend/rooms/order";
 import { routes } from "~frontend/router";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { useDetailedRoomMessagesCount } from "~frontend/utils/unreadMessages";
 import { CreateTopicMutation, CreateTopicMutationVariables, TopicDetailedInfoFragment } from "~gql";
@@ -28,6 +29,7 @@ interface Props {
 const MINIMIZED_TOPICS_SHOWN_LIMIT = 3;
 
 function useStartCreateNewTopicFlow() {
+  const teamId = useAssertCurrentTeamId();
   const [createTopic] = useMutation<CreateTopicMutation, CreateTopicMutationVariables>(gql`
     mutation CreateTopic($input: topic_insert_input!) {
       insert_topic_one(object: $input) {
@@ -52,6 +54,7 @@ function useStartCreateNewTopicFlow() {
     return createTopic({
       variables: {
         input: {
+          team_id: teamId,
           name,
           slug: name.split(" ").join("-").toLowerCase(),
           ...input,
