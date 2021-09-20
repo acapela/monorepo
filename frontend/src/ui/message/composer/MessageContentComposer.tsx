@@ -8,8 +8,8 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, RichEditor, RichEditorSubmitMode } from "~richEditor/RichEditor";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 
-import { UploadingAttachmentPreview } from "../attachment/UploadingAttachmentPreview";
 import { EditorAttachmentInfo } from "./attachments";
+import { UploadingAttachmentPreview } from "./UploadingAttachmentPreview";
 
 interface Props {
   autofocusKey?: string;
