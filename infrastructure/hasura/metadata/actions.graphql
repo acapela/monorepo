@@ -1,4 +1,8 @@
 type Query {
+  find_slack_user(input: FindSlackUserInput!): FindSlackUserOutput
+}
+
+type Query {
   get_team_slack_installation_url(input: GetTeamSlackInstallationURLInput!): GetTeamSlackInstallationURLOutput
 }
 
@@ -24,7 +28,12 @@ type Mutation {
 
 input GetTeamSlackInstallationURLInput {
   redirectURL: String!
-  teamId: uuid!
+  team_id: uuid!
+  with_bot: Boolean!
+}
+
+input FindSlackUserInput {
+  team_id: uuid!
 }
 
 type UpgradeUserResponse {
@@ -57,4 +66,8 @@ type ResendInvitationResponse {
 
 type GetTeamSlackInstallationURLOutput {
   url: String!
+}
+
+type FindSlackUserOutput {
+  has_slack_user: Boolean!
 }
