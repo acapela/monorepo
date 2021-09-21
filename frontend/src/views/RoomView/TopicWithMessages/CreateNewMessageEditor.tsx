@@ -25,7 +25,6 @@ import {
   TopicWithMessagesQuery,
   TopicWithMessagesQueryVariables,
 } from "~gql";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
