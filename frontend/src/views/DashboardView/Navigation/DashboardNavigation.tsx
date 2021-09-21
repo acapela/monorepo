@@ -59,7 +59,7 @@ export function DashboardNavigation() {
 
   return (
     <UIHolder>
-      <CollapsePanel headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
+      <CollapsePanel isInitiallyOpen headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
         <TaskList tasks={receivedTasks} />
       </CollapsePanel>
       <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
