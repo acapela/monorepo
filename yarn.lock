@@ -18570,6 +18570,7 @@ __metadata:
   resolution: "~shared@workspace:shared"
   dependencies:
     "@sendgrid/mail": ^7.4.4
+    "@sentry/nextjs": ^6.8.0
     "@types/analytics-node": ^3.1.5
     "@types/color": ^3.0.2
     "@types/is-hotkey": ^0.1.3
