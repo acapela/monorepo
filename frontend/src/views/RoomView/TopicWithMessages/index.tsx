@@ -1,6 +1,6 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
@@ -17,6 +17,8 @@ import {
   UpdateLastSeenMessageMutation,
   UpdateLastSeenMessageMutationVariables,
 } from "~gql";
+import { getNodesFromContentByType } from "~richEditor/content/helper";
+import { RichEditorNode } from "~richEditor/content/types";
 import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
@@ -119,6 +121,22 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   const scrollerRef = useRef<ScrollHandle>();
 
+  const isMentionRequired = messages.length === 0;
+
+  const validateMessage = useCallback(
+    (value: RichEditorNode) => {
+      if (isMentionRequired) {
+        const mentionNodes = getNodesFromContentByType(value, "mention");
+        if (mentionNodes.length < 1) {
+          return "The first message should have a mention.";
+        }
+      }
+
+      return null;
+    },
+    [isMentionRequired]
+  );
+
   return (
     <TopicStoreContext>
       <UIHolder>
@@ -154,6 +172,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                   <CreateNewMessageEditor
                     topicId={topic.id}
                     isDisabled={isComposerDisabled}
+                    validate={validateMessage}
                     onMessageSent={() => {
                       scrollerRef.current?.scrollToBottom("auto");
                     }}

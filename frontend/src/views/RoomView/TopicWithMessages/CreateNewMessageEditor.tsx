@@ -1,9 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
@@ -24,6 +25,7 @@ import {
   TopicWithMessagesQuery,
   TopicWithMessagesQueryVariables,
 } from "~gql";
+import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
@@ -35,6 +37,7 @@ import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 interface Props {
   topicId: string;
   isDisabled: boolean;
+  validate?: (content: RichEditorNode) => string | null;
   onMessageSent: () => void;
 }
 
@@ -151,7 +154,7 @@ function useLocalStorageState<S>({
   return [value, setValue];
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, validate }: Props) => {
   const editorRef = useRef<Editor>(null);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
@@ -172,6 +175,13 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const isEditingAnyMessage = select(() => !!topicContext.editedMessageId);
   const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessageId);
+
+  const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
+  const validationErrorMessage = useMemo(() => {
+    if (!shouldValidateOnChange || !validate) return null;
+
+    return validate(value);
+  }, [shouldValidateOnChange, validate, value]);
 
   function focusEditor() {
     // Don't focus editor if editing some topic name
@@ -253,6 +263,14 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           onSubmit={async () => {
             if (isCreatingMessage) return;
 
+            if (validate) {
+              const isValid = !validate(value);
+              if (!isValid) {
+                setShouldValidateOnChange(true);
+                return;
+              }
+            }
+
             attachmentsList.clear();
             setValue(getEmptyRichContent());
 
@@ -278,18 +296,27 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
             });
           }}
           additionalContent={
-            topicContext.currentlyReplyingToMessageId && (
-              <ReplyingToMessageById
-                onRemove={handleStopReplyingToMessage}
-                messageId={topicContext.currentlyReplyingToMessageId}
-              />
-            )
+            <>
+              {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
+              {topicContext.currentlyReplyingToMessageId && (
+                <ReplyingToMessageById
+                  onRemove={handleStopReplyingToMessage}
+                  messageId={topicContext.currentlyReplyingToMessageId}
+                />
+              )}
+            </>
           }
         />
       </MessageComposerContext.Provider>
     </UIEditorContainer>
   );
 });
+
+const UIValidationError = styled.div`
+  margin-top: 12px;
+  color: ${theme.colors.layout.supportingText()};
+  ${theme.font.body14.build()};
+`;
 
 const UIEditorContainer = styled.div<{}>`
   display: flex;
