@@ -60,7 +60,7 @@
     "lint": "eslint . && prettier --check .",
     "test": "yarn frontend:test && yarn backend:test",
     "format": "eslint --fix . && prettier --write .",
-    "prepare": "husky install",
+    "postinstall": "husky install",
     "start:backend": "yarn backend start",
     "start:frontend": "yarn frontend start",
     "build": "yarn frontend:build",
