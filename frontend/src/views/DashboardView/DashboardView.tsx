@@ -13,7 +13,11 @@ export function DashboardView() {
   );
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-gap: 24px;
+`;
 
 const UINavigationHolder = styled.div`
   padding: 20px;
