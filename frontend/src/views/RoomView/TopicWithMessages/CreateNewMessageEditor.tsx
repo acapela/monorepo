@@ -312,7 +312,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 });
 
 const UIValidationError = styled.div`
-  margin-top: 12px;
   color: ${theme.colors.layout.supportingText()};
   ${theme.font.body14.build()};
 `;
