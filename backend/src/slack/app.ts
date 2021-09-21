@@ -28,8 +28,7 @@ const sharedOptions: Options<typeof SlackBolt.ExpressReceiver> & Options<typeof 
   installationStore: {
     async storeInstallation(installation) {
       const { teamId, userId } = parseMetadata(installation);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const slackTeamId = installation.team!.id;
+      const slackTeamId = assertDefined(installation.team, "installation must have team").id;
       if (installation.bot) {
         const teamData = _.omit(installation, "user", "metadata");
         await db.team_slack_installation.upsert({

@@ -32,7 +32,15 @@ type Props = {
   isCurrentUserTeamOwner: boolean;
 };
 
-function AddSlackInstallationButton({ teamId }: { teamId: string }) {
+export function AddSlackInstallationButton({
+  teamId,
+  tooltip,
+  withBot,
+}: {
+  teamId: string;
+  tooltip: string;
+  withBot?: boolean;
+}) {
   const { data: slackInstallationData } = useQuery<GetSlackInstallationUrlQuery, GetSlackInstallationUrlQueryVariables>(
     gql`
       query GetSlackInstallationURL($input: GetTeamSlackInstallationURLInput!) {
@@ -43,7 +51,7 @@ function AddSlackInstallationButton({ teamId }: { teamId: string }) {
     `,
     {
       skip: isServer,
-      variables: { input: { teamId, redirectURL: isServer ? "" : location.href } },
+      variables: { input: { team_id: teamId, with_bot: !!withBot, redirectURL: isServer ? "" : location.href } },
     }
   );
 
@@ -57,7 +65,7 @@ function AddSlackInstallationButton({ teamId }: { teamId: string }) {
       }}
       icon={<IconPlus />}
       iconPosition="start"
-      tooltip="Enable your team to receive notifications through Slack"
+      tooltip={tooltip}
     >
       Add Slack integration
     </UISlackButton>
@@ -117,7 +125,13 @@ function _SlackInstallationButton({ team, isCurrentUserTeamOwner }: Props) {
   if (team.slack_installation) {
     return isCurrentUserTeamOwner ? <RemoveSlackInstallationButton teamId={team.id} /> : null;
   } else {
-    return <AddSlackInstallationButton teamId={team.id} />;
+    return (
+      <AddSlackInstallationButton
+        teamId={team.id}
+        tooltip="Enable your team to receive notifications through Slack"
+        withBot
+      />
+    );
   }
 }
 
