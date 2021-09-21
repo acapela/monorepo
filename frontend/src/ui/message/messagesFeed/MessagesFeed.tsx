@@ -13,13 +13,14 @@ import { Message } from "./Message";
 interface Props {
   messages: Message_MessageFragment[];
   isReadonly?: boolean;
+  onCloseTopicRequest?: (summary: string) => void;
 }
 
 const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
 
 function shouldBundleCurrentMessageWithPrevious(
   currentMsg: Message_MessageFragment,
-  prevMsg: Message_MessageFragment | null
+  prevMsg: Message_MessageFragment | null,
 ): boolean {
   if (!prevMsg) {
     return false;
@@ -38,7 +39,7 @@ function shouldBundleCurrentMessageWithPrevious(
   return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
-export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly }: Props) {
+export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly, onCloseTopicRequest }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
 
   function renderMessageHeader(message: Message_MessageFragment, previousMessage: Message_MessageFragment | null) {
@@ -65,6 +66,7 @@ export const MessagesFeed = withFragments(Message.fragments, function MessagesFe
           <Fragment key={message.id}>
             {renderMessageHeader(message, previousMessage)}
             <Message
+              onCloseTopicRequest={onCloseTopicRequest}
               isReadonly={isReadonly}
               message={message}
               key={message.id}

@@ -29,6 +29,9 @@ import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
 import { useMessagesSubscription } from "./useMessagesSubscription";
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useUpdateTopic } from './shared'
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 const fragments = {
   room: gql`
@@ -119,6 +122,23 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   const scrollerRef = useRef<ScrollHandle>();
 
+  const [updateTopic] = useUpdateTopic();
+  const user = useAssertCurrentUser();
+  const handleCloseTopic = (topicSummary: string) => {
+    updateTopic({
+      variables: {
+        id: topic.id,
+        roomId: room.id,
+        input: {
+          closed_at: new Date().toISOString(),
+          closed_by_user_id: user.id,
+          closing_summary: topicSummary,
+        },
+      },
+    });
+    trackEvent("Closed Topic", { topicId: topic.id });
+  };
+
   return (
     <TopicStoreContext>
       <UIHolder>
@@ -128,11 +148,11 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
           <UIBackDrop />
           <UIMainContainer>
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-            <UITopicHeaderHolder>{topic && <TopicHeader room={room} topic={topic} />}</UITopicHeaderHolder>
+            <UITopicHeaderHolder>{topic && <TopicHeader onCloseTopicRequest={handleCloseTopic} room={room} topic={topic} />}</UITopicHeaderHolder>
 
             <ScrollableMessages ref={scrollerRef as never}>
               <AnimateSharedLayout>
-                <MessagesFeed isReadonly={!isMember} messages={messages} />
+                <MessagesFeed onCloseTopicRequest={handleCloseTopic} isReadonly={!isMember} messages={messages} />
 
                 {topic && isClosed && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>

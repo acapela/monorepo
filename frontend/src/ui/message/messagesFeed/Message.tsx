@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -22,7 +23,7 @@ import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconEdit, IconTrash, IconCheck } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
@@ -72,12 +73,13 @@ const fragments = {
 interface Props extends MotionProps {
   message: Message_MessageFragment;
   isBundledWithPreviousMessage?: boolean;
+  onCloseTopicRequest?: (summary: string) => void;
   isReadonly?: boolean;
   className?: string;
 }
 
 const _Message = styled<Props>(
-  observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false }) => {
+  observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
     const user = useCurrentUser();
     const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
       gql`
@@ -128,7 +130,15 @@ const _Message = styled<Props>(
     const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
 
     const getMessageActionsOptions = () => {
-      const options = [];
+      const options: PopoverMenuOption[] = [];
+
+      if (onCloseTopicRequest) {
+        options.push({
+          label: "Close with message",
+          onSelect: () => onCloseTopicRequest('Summary!'),
+          icon: <IconCheck/>
+        })
+      }
 
       if (isOwnMessage) {
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
