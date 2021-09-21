@@ -4,7 +4,6 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRe
 import { useList } from "react-use";
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
@@ -30,6 +29,7 @@ import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
+import { theme } from "~ui/theme";
 
 import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
