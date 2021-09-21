@@ -10,10 +10,7 @@ import { getDevPublicTunnel } from "./localtunnel";
 
 if (["staging", "production"].includes(process.env.STAGE)) {
   Sentry.init({
-    dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
-
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
+    dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
     environment: process.env.STAGE,
   });

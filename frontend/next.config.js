@@ -79,9 +79,11 @@ const envVariables = (nextConfig = {}) => {
       const allEnvVariablesMap = dotenv.parse(envFileRawContent);
 
       // Prepare list of var names.
-      // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be avaliable. (this follows official docs)
+      // Note: On frontend, only vars prefixed with NEXT_PUBLIC_ will be available. (this follows official docs)
       const allEnvVariableNames = Object.keys(allEnvVariablesMap);
-      const clientSideEnvVarNames = allEnvVariableNames.filter((varName) => varName.startsWith("NEXT_PUBLIC_"));
+      const clientSideEnvVarNames = allEnvVariableNames.filter(
+        (varName) => varName === "SENTRY_DSN" || varName.startsWith("NEXT_PUBLIC_")
+      );
 
       // Populate node process env variables from parsed file so webpack plugin will 'see' those vars.
       allEnvVariableNames.forEach((varName) => {
@@ -92,7 +94,7 @@ const envVariables = (nextConfig = {}) => {
 
       const webpack = require("webpack");
 
-      // Depending on client/server side, allow proper set of vars to be accessable.
+      // Depending on client/server side, allow proper set of vars to be accessible.
       if (isServer) {
         config.plugins.push(new webpack.EnvironmentPlugin(allEnvVariableNames));
 
