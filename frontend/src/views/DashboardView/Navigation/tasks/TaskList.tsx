@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { RouteLink, routes } from "~frontend/../router";
+import { RouteLink, routes } from "~frontend/router";
 import { DashboardTaskCard_TaskFragment } from "~gql";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 

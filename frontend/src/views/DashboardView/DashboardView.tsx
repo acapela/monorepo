@@ -26,7 +26,7 @@ const UIHolder = styled.div`
 `;
 
 const UINavigationHolder = styled.div`
-  padding: 20px;
+  padding: 16px;
 `;
 
 const UIActiveContentHolder = styled.div``;
