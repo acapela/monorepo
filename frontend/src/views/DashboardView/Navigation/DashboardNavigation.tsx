@@ -24,6 +24,7 @@ export function useDashboardTasks() {
           }
         ) {
           ...DashboardTaskCard_task
+          user_id
         }
       }
     `,
@@ -31,8 +32,6 @@ export function useDashboardTasks() {
   );
 
   const openTasksRelatedToUser = data?.task ?? [];
-
-  console.log({ openTasksRelatedToUser, currentUser });
 
   const receivedTasks = openTasksRelatedToUser.filter((task) => {
     return task.user_id === currentUser.id;
@@ -55,15 +54,17 @@ export function useDashboardTasks() {
 export function DashboardNavigation() {
   const { receivedTasks, sentTasks } = useDashboardTasks();
 
-  console.log({ receivedTasks, sentTasks });
-
   return (
     <UIHolder>
       <CollapsePanel isInitiallyOpen headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
-        <TaskList tasks={receivedTasks} />
+        <UISectionContent>
+          <TaskList tasks={receivedTasks} hideUserInfo />
+        </UISectionContent>
       </CollapsePanel>
       <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
-        <TaskList tasks={sentTasks} />
+        <UISectionContent>
+          <TaskList tasks={sentTasks} />
+        </UISectionContent>
       </CollapsePanel>
     </UIHolder>
   );
@@ -73,4 +74,8 @@ const UIHolder = styled.div``;
 
 const UISectionTitle = styled.h3`
   ${theme.font.h4.spezia.semibold.build()};
+`;
+
+const UISectionContent = styled.div`
+  padding: 16px 0;
 `;
