@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 import { DashboardTaskCard_TaskFragment } from "~frontend/../../gql";
 import { EmptyStatePlaceholder } from "~frontend/../../ui/empty/EmptyStatePlaceholder";
+import { RouteLink, routes } from "~frontend/../router";
 
 import { DashboardTaskCard } from "./TaskCard";
 
@@ -14,10 +15,17 @@ export function TaskList({ tasks, hideUserInfo }: Props) {
   if (!tasks.length) {
     return <EmptyStatePlaceholder description="No tasks to show" />;
   }
+
   return (
     <UITasksHolder>
       {tasks.map((task) => {
-        return <DashboardTaskCard key={task.id} task={task} hideUserInfo={hideUserInfo} />;
+        return (
+          <RouteLink key={task.id} passHref route={routes.dashboardTopic} params={{ topicId: task.message.topic.id }}>
+            <a>
+              <DashboardTaskCard task={task} hideUserInfo={hideUserInfo} />
+            </a>
+          </RouteLink>
+        );
       })}
     </UITasksHolder>
   );

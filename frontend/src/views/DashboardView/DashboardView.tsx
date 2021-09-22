@@ -2,13 +2,17 @@ import styled from "styled-components";
 
 import { DashboardNavigation } from "./Navigation/DashboardNavigation";
 
-export function DashboardView() {
+interface Props {
+  topicId?: string;
+}
+
+export function DashboardView({ topicId }: Props) {
   return (
     <UIHolder>
       <UINavigationHolder>
         <DashboardNavigation />
       </UINavigationHolder>
-      <UIActiveContentHolder>elsf</UIActiveContentHolder>
+      <UIActiveContentHolder>{topicId}</UIActiveContentHolder>
     </UIHolder>
   );
 }
