@@ -156,6 +156,7 @@ const _Message = styled<Props>(
 
       return options;
     };
+    const messageActionsOptions = getMessageActionsOptions();
 
     return (
       <UIHolder id={message.id}>
@@ -166,13 +167,15 @@ const _Message = styled<Props>(
               <UITools>
                 <MakeReactionButton message={message} />
                 <ReplyButton messageId={message.id} />
-                <PopoverMenuTrigger
-                  onOpen={() => setIsActive(true)}
-                  onClose={() => setIsActive(false)}
-                  options={getMessageActionsOptions()}
-                >
-                  <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-                </PopoverMenuTrigger>
+                {messageActionsOptions.length > 0 && (
+                  <PopoverMenuTrigger
+                    onOpen={() => setIsActive(true)}
+                    onClose={() => setIsActive(false)}
+                    options={messageActionsOptions}
+                  >
+                    <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                  </PopoverMenuTrigger>
+                )}
               </UITools>
             )
           }
