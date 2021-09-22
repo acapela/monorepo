@@ -24,6 +24,7 @@ import {
   TopicWithMessagesQuery,
   TopicWithMessagesQueryVariables,
 } from "~gql";
+import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
@@ -36,7 +37,7 @@ import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 interface Props {
   topicId: string;
   isDisabled: boolean;
-  validator?: (content: RichEditorNode) => string | null;
+  isFirstMessage: boolean;
   onMessageSent: () => void;
 }
 
@@ -153,7 +154,7 @@ function useLocalStorageState<S>({
   return [value, setValue];
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, validator }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, isFirstMessage }: Props) => {
   const editorRef = useRef<Editor>(null);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
@@ -176,8 +177,21 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessageId);
 
   const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
+  const validator = useCallback(
+    (value: RichEditorNode) => {
+      if (isFirstMessage) {
+        const mentionNodes = getNodesFromContentByType(value, "mention");
+        if (mentionNodes.length < 1) {
+          return "The first message should have a mention.";
+        }
+      }
+
+      return null;
+    },
+    [isFirstMessage]
+  );
   const validationErrorMessage = useMemo(() => {
-    if (!shouldValidateOnChange || !validator) return null;
+    if (!shouldValidateOnChange) return null;
 
     return validator(value);
   }, [shouldValidateOnChange, validator, value]);
@@ -262,12 +276,9 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           onSubmit={async () => {
             if (isCreatingMessage) return;
 
-            if (validator) {
-              const isValid = !validator(value);
-              if (!isValid) {
-                setShouldValidateOnChange(true);
-                return;
-              }
+            if (!validator(value)) {
+              setShouldValidateOnChange(true);
+              return;
             }
 
             attachmentsList.clear();
