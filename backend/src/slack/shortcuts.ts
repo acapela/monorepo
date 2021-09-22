@@ -1,151 +1,259 @@
-import { App, GlobalShortcut, MessageShortcut, SlackShortcut } from "@slack/bolt";
-import { ViewsOpenArguments, WebClient } from "@slack/web-api";
+import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
+import { ViewsOpenArguments } from "@slack/web-api";
+import { IncomingWebhook } from "@slack/webhook";
 
 import { db } from "~db";
+import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { isNotNullish } from "~shared/nullish";
+import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+
+import { findUserBySlackId } from "./utils";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
 
-const createRoomModalViewOpen = (shortcut: SlackShortcut): ViewsOpenArguments => ({
-  trigger_id: shortcut.trigger_id,
+type ShortcutMetadata = { userId: string } & (
+  | { isMessageShortcut: false }
+  | { isMessageShortcut: true; channelId: string; messageTs: string; responseURL: string }
+);
+
+const createPlainMessageContent = (text: string) => ({
+  type: "doc",
+  content: [{ type: "paragraph", content: [{ type: "text", text }] }],
+});
+
+const createAuthModalView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
+  trigger_id: triggerId,
   view: {
     type: "modal",
-    callback_id: "create_room_modal",
-    title: {
-      type: "plain_text",
-      text: "Create a new room",
-    },
-    close: {
-      type: "plain_text",
-      text: "Close",
-    },
+    title: { type: "plain_text", text: "We could not find you" },
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: [
+            "It looks like there is no one with your email in your team's Acapela.",
+            `<${process.env.FRONTEND_URL}/team|Connect Acapela with Slack> to use this feature.`,
+          ].join(" "),
+        },
+      },
+    ],
+  },
+});
+
+const createTopicModalView = ({
+  triggerId,
+  messageText,
+  metadata,
+}: {
+  triggerId: string;
+  messageText: string;
+  metadata: ShortcutMetadata;
+}): ViewsOpenArguments => ({
+  trigger_id: triggerId,
+  view: {
+    type: "modal",
+    callback_id: "create_topic_modal",
+    title: { type: "plain_text", text: "Create a new request" },
     blocks: [
       {
         type: "input",
-        block_id: "space_block",
-        label: {
-          type: "plain_text",
-          text: "Pick the space for the discussion",
-        },
-        element: {
-          type: "external_select",
-          action_id: "select_space",
-          placeholder: {
-            type: "plain_text",
-            text: "Select a Space",
-          },
-          min_query_length: 2,
-        },
-      },
-      {
-        type: "input",
-        block_id: "room_block",
-        label: {
-          type: "plain_text",
-          text: "Enter room name",
-        },
-        element: {
-          type: "plain_text_input",
-          action_id: "room_name",
-          placeholder: {
-            type: "plain_text",
-            text: "Eg design discussion",
-          },
-        },
-      },
-      {
-        type: "input",
         block_id: "topic_block",
-        label: {
-          type: "plain_text",
-          text: "Enter topic name",
-        },
+        label: { type: "plain_text", text: "Topic Title" },
         element: {
           type: "plain_text_input",
           action_id: "topic_name",
-          placeholder: {
-            type: "plain_text",
-            text: "Eg feedback for Figma v12",
-          },
-        },
-      },
-      {
-        type: "input",
-        block_id: "message_block",
-        label: {
-          type: "plain_text",
-          text: "Message to start the discussion",
-        },
-        element: {
-          type: "plain_text_input",
-          action_id: "topic_message",
-          multiline: true,
-          initial_value: shortcut.type == "message_action" ? shortcut.message.text : "",
-          placeholder: {
-            type: "plain_text",
-            text: "Message to start the discussion",
-          },
+          placeholder: { type: "plain_text", text: "Eg feedback for Figma v12" },
         },
       },
       {
         type: "section",
         block_id: "members_block",
-        text: {
-          type: "mrkdwn",
-          text: "Add members from Slack",
+        text: { type: "mrkdwn", text: "Request to" },
+        accessory: { action_id: "members_select", type: "multi_users_select" },
+      },
+      {
+        type: "input",
+        block_id: "request_type_block",
+        label: { type: "plain_text", text: "Type" },
+        element: {
+          type: "static_select",
+          action_id: "request_type_select",
+          initial_option: { text: { type: "plain_text", text: "Read Request" }, value: REQUEST_READ },
+          options: [
+            {
+              text: { type: "plain_text", text: "Read Request" },
+              value: REQUEST_READ,
+            },
+            {
+              text: { type: "plain_text", text: "Response Request" },
+              value: REQUEST_RESPONSE,
+            },
+          ],
         },
-        accessory: {
-          action_id: "members_select",
-          type: "multi_users_select",
-          placeholder: {
-            type: "plain_text",
-            text: "Select users",
-          },
+      },
+      {
+        type: "input",
+        block_id: "message_block",
+        label: { type: "plain_text", text: "Request Message" },
+        element: {
+          type: "plain_text_input",
+          action_id: "topic_message",
+          multiline: true,
+          initial_value: messageText,
         },
       },
     ],
-    submit: {
-      type: "plain_text",
-      text: "Create a new room",
-    },
-    private_metadata: JSON.stringify(shortcut as SlackShortcut),
+    submit: { type: "plain_text", text: "Create" },
+    private_metadata: JSON.stringify(metadata),
   },
 });
 
-async function findUserBySlackId(client: WebClient, slackUserId: string) {
-  const user = await db.user.findFirst({
-    where: { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
-  });
-  if (user) {
-    return user;
-  }
-  const { profile } = await client.users.profile.get({ user: slackUserId });
-  if (!profile) {
-    return;
-  }
-  return await db.user.findFirst({ where: { email: profile.email } });
-}
-
 export function setupSlackShortcuts(slackApp: App) {
-  slackApp.action("select_space", ({ ack }) => ack());
-  slackApp.action("members_select", ({ ack }) => ack());
-
-  slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body }) => {
+  slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body, context }) => {
     await ack();
-    await client.views.open(createRoomModalViewOpen(shortcut));
-    const user = await findUserBySlackId(client, body.user.id);
+
+    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+
+    if (!user) {
+      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      return;
+    }
+
+    await client.views.open(
+      createTopicModalView({
+        triggerId: shortcut.trigger_id,
+        messageText: "",
+        metadata: { userId: shortcut.user.id, isMessageShortcut: false },
+      })
+    );
+
     if (user) {
-      trackBackendUserEvent(user.id, "Started creating Room with Slack Global Shortcut");
+      trackBackendUserEvent(user.id, "Started creating Topic with Slack Global Shortcut");
     }
   });
 
-  slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client, body }) => {
+  slackApp.shortcut(ACAPELA_MESSAGE, async ({ shortcut, ack, client, body, context }) => {
     await ack();
-    await client.views.open(createRoomModalViewOpen(shortcut));
-    const user = await findUserBySlackId(client, body.user.id);
+
+    const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
+
+    if (!user) {
+      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      return;
+    }
+
+    await client.views.open(
+      createTopicModalView({
+        triggerId: shortcut.trigger_id,
+        messageText: shortcut.message.text || "",
+        metadata: {
+          userId: shortcut.user.id,
+          isMessageShortcut: true,
+          messageTs: shortcut.message_ts,
+          channelId: shortcut.channel.id,
+          responseURL: shortcut.response_url,
+        },
+      })
+    );
+
     if (user) {
-      trackBackendUserEvent(user.id, "Started creating Room with Slack Message Action");
+      trackBackendUserEvent(user.id, "Started creating Topic with Slack Message Action");
+    }
+  });
+
+  slackApp.action("members_select", ({ ack }) => ack());
+
+  slackApp.view("create_topic_modal", async ({ ack, view, body, client, context }) => {
+    const {
+      topic_block: {
+        topic_name: { value: topicName },
+      },
+      message_block: {
+        topic_message: { value: topicMessage },
+      },
+      members_block: {
+        members_select: { selected_users: members },
+      },
+      request_type_block: {
+        request_type_select: { selected_option: requestType },
+      },
+    } = view.state.values;
+
+    if (!(topicName && topicMessage && members)) {
+      return ack({
+        response_action: "errors",
+        errors: { room_block: "Sorry, this isn’t valid input" },
+      });
+    }
+
+    const token = context.botToken || body.token;
+    const [team, users, currentUser] = await Promise.all([
+      db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
+      Promise.all(members.map((slackUserId) => findUserBySlackId(token, slackUserId))),
+      findUserBySlackId(token, body.user.id),
+    ]);
+
+    assert(team, "must have a team");
+    assert(currentUser, "must have a user");
+
+    const topic = await db.topic.create({
+      data: {
+        team_id: team.id,
+        name: topicName,
+        slug: topicName,
+        index: "a",
+        owner_id: currentUser.id,
+        message: {
+          create: {
+            type: "TEXT",
+            user_id: currentUser.id,
+            content: createPlainMessageContent(topicMessage),
+            content_text: topicMessage,
+            task: {
+              createMany: {
+                data: users.filter(isNotNullish).map((user) => ({ user_id: user.id, type: requestType?.value })),
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!topic) {
+      return await ack({
+        response_action: "errors",
+        errors: {
+          email_address: "Topic creation failed",
+        },
+      });
+    }
+
+    await ack({ response_action: "clear" });
+
+    const metadata = JSON.parse(view.private_metadata) as ShortcutMetadata;
+    const topicURL = `${process.env.FRONTEND_URL}/topics/${topic.id}`;
+    if (metadata.isMessageShortcut) {
+      await new IncomingWebhook(metadata.responseURL).send({
+        response_type: "in_channel",
+        text: `<@${metadata.userId}> has created a new request using Acapela!\n${topicURL}`,
+        channel: metadata.channelId,
+        thread_ts: metadata.messageTs,
+      } as never);
+    } else {
+      await client.chat.postMessage({
+        channel: metadata.userId,
+        text: `Your request was created on Acapela: ${topicURL}`,
+      });
+    }
+
+    if (currentUser) {
+      trackBackendUserEvent(currentUser.id, "Created Topic", {
+        origin: metadata.isMessageShortcut ? "slack-message-action" : "slack-shortcut",
+        topicName: topicName,
+      });
     }
   });
 }

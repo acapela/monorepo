@@ -83,7 +83,10 @@ export type AnalyticsEventsMap = {
 
   // Topic related events
 
-  "Created Topic": { topicName: string };
+  "Created Topic": {
+    origin: "slack-command" | "slack-shortcut" | "slack-message-action";
+    topicName: string;
+  };
   "Reopened Topic": { topicId: string };
   "Closed Topic": { topicId: string };
   "Updated Topic Summary": { topicId: string };
@@ -106,8 +109,8 @@ export type AnalyticsEventsMap = {
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 
   // Slack
-  "Started creating Room with Slack Global Shortcut": void;
-  "Started creating Room with Slack Message Action": void;
+  "Started creating Topic with Slack Global Shortcut": { slackUserName: string };
+  "Started creating Topic with Slack Message Action": { slackUserName: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

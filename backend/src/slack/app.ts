@@ -101,6 +101,7 @@ export const slackApp = new SlackBolt.App({
 });
 
 slackApp.error(async (error) => {
+  console.error("Error occurred during a slack flow:", error);
   Sentry.captureException(error);
 });
 
