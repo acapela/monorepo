@@ -2,9 +2,9 @@ import { uniq, uniqBy } from "lodash";
 
 import { createAndSendTopicMentionNotification } from "~backend/src/notifications/create-and-send";
 import { Message, PrismaPromise, Task, db } from "~db";
-import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
+import { getMentionNodesFromContent } from "~shared/editor/mentions";
 import { EditorMentionData } from "~shared/types/editor";
 import { TaskType } from "~shared/types/task";
 
@@ -12,7 +12,7 @@ const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${us
 
 function getMentionNodesFromMessage(message: Message) {
   const content = message.content as RichEditorNode;
-  const mentionNodes = getNodesFromContentByType<{ data: EditorMentionData }>(content, "mention");
+  const mentionNodes = getMentionNodesFromContent(content);
 
   return uniqBy(mentionNodes, (mention) => toUniqueMentionIdentifier(mention.attrs.data));
 }
