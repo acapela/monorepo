@@ -97,7 +97,7 @@ export const UnresolvedRequests = () => {
                 </UITopArea>
                 <UIMessageArea>
                   <UserAvatar user={user} size={"extra-small"} />
-                  <UIMessageText message={message} />
+                  <UIMessageText content={message.content} />
                 </UIMessageArea>
                 <UIRightArea>
                   <PopoverMenuTrigger options={getMenuOptions(task)}>
