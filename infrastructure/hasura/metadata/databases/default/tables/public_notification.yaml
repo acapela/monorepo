@@ -2,76 +2,76 @@ table:
   name: notification
   schema: public
 object_relationships:
-  - name: room_added_to
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_room_added_to
-          schema: public
-  - name: room_closed
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_room_closed
-          schema: public
-  - name: topic_added_to
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_topic_added_to
-          schema: public
-  - name: topic_assigned
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_topic_assigned
-          schema: public
-  - name: topic_closed
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_topic_closed
-          schema: public
-  - name: topic_mention
-    using:
-      foreign_key_constraint_on:
-        column: notification_id
-        table:
-          name: notification_topic_mention
-          schema: public
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
+- name: room_added_to
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_room_added_to
+        schema: public
+- name: room_closed
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_room_closed
+        schema: public
+- name: topic_added_to
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_added_to
+        schema: public
+- name: topic_assigned
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_assigned
+        schema: public
+- name: topic_closed
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_closed
+        schema: public
+- name: topic_mention
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_mention
+        schema: public
+- name: user
+  using:
+    foreign_key_constraint_on: user_id
 select_permissions:
-  - permission:
-      allow_aggregations: true
-      columns:
-        - created_at
-        - id
-        - read_at
-        - user_id
-        - updated_at
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    allow_aggregations: true
+    columns:
+    - created_at
+    - id
+    - read_at
+    - user_id
+    - updated_at
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - permission:
-      check: null
-      columns:
-        - read_at
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    check: null
+    columns:
+    - read_at
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user
 delete_permissions:
-  - permission:
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
+  role: user

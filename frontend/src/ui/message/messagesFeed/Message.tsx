@@ -21,6 +21,7 @@ import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { assert } from "~shared/assert";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
@@ -94,14 +95,15 @@ const _Message = styled<Props>(
 
     const topicContext = useTopicStoreContext();
 
-    const isInEditMode = select(() => topicContext.editedMessageId === message.id);
+    const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
 
     function handleStartEditing() {
+      assert(topicContext, "Topic context required");
       topicContext.editedMessageId = message.id;
     }
 
     function handleStopEditing() {
-      if (topicContext.editedMessageId !== message.id) return;
+      if (topicContext?.editedMessageId !== message.id) return;
 
       topicContext.editedMessageId = null;
     }
@@ -190,7 +192,7 @@ const _Message = styled<Props>(
             {!isInEditMode && (
               <UIMessageContent>
                 {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
-                <MessageText message={message} />
+                <MessageText content={message.content} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />
                 <MessageReactions message={message} />

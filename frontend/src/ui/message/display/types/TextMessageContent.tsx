@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client";
 import { ErrorBoundary } from "@sentry/nextjs";
+import { JSONContent } from "@tiptap/core";
 import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
 import { messageComposerExtensions } from "~frontend/message/extensions";
-import { MessageText_MessageFragment } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichContentRenderer } from "~richEditor/content/RichContentRenderer";
 import { richEditorContentCss } from "~richEditor/Theme";
@@ -18,17 +18,17 @@ const fragments = {
 };
 
 type Props = {
-  message: MessageText_MessageFragment;
+  content: JSONContent;
   className?: string;
 };
 
 export const MessageText = withFragments(
   fragments,
-  styled<Props>(({ message, className }) =>
-    isRichEditorContentEmpty(message.content) ? null : (
+  styled<Props>(({ content, className }) =>
+    isRichEditorContentEmpty(content) ? null : (
       <UIHolder className={className}>
         <ErrorBoundary fallback={<div>Failed to render message content</div>}>
-          <RichContentRenderer extensions={messageComposerExtensions} content={message.content} />
+          <RichContentRenderer extensions={messageComposerExtensions} content={content} />
         </ErrorBoundary>
       </UIHolder>
     )

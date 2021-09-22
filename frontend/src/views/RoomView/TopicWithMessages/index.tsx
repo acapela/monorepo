@@ -5,7 +5,6 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
@@ -58,7 +57,7 @@ const fragments = {
 };
 
 interface Props {
-  room: TopicWithMessages_RoomFragment;
+  room?: TopicWithMessages_RoomFragment;
   topic: TopicWithMessages_TopicFragment;
 }
 
@@ -112,13 +111,11 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     { variables: { topicId: topic.id } }
   );
 
-  const isMember = useIsCurrentUserRoomMember(room);
-
   useMarkTopicAsRead(topic.id, existingMessageIds);
 
   const isClosed = isTopicClosed(topic);
 
-  const isComposerDisabled = !isMember || isLoadingMessages;
+  const isComposerDisabled = isLoadingMessages;
 
   const scrollerRef = useRef<ScrollHandle>();
 
@@ -128,7 +125,6 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     updateTopic({
       variables: {
         id: topic.id,
-        roomId: room.id,
         input: {
           closed_at: new Date().toISOString(),
           closed_by_user_id: user.id,
@@ -138,7 +134,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     });
     trackEvent("Closed Topic", { topicId: topic.id });
   };
-  const onCloseTopicRequest = isClosed || room.finished_at ? undefined : handleCloseTopic;
+  const onCloseTopicRequest = isClosed || room?.finished_at ? undefined : handleCloseTopic;
 
   return (
     <TopicStoreContext>
@@ -155,7 +151,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
             <ScrollableMessages ref={scrollerRef as never}>
               <AnimateSharedLayout>
-                <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} isReadonly={!isMember} messages={messages} />
+                <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
 
                 {topic && isClosed && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>
@@ -168,7 +164,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                 </UIContentWrapper>
               )}
 
-              {isClosed && <TopicClosureNote isParentRoomOpen={!room.finished_at} />}
+              {isClosed && <TopicClosureNote isParentRoomOpen={!room?.finished_at} />}
             </ScrollableMessages>
 
             {!isClosed && (

@@ -28,6 +28,7 @@ const fragments = {
     }
   `,
 };
+
 type Props = {
   title: string;
   currentUsers: MembersManagerModal_UserFragment[];

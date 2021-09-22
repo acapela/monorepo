@@ -190,7 +190,7 @@ const _TopicsList = observer(function TopicsList({
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
-  const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
+  const isEditingAnyMessage = select(() => !!roomContext?.editingNameTopicId);
 
   const [createTopic] = useCreateTopic();
 
@@ -209,6 +209,7 @@ const _TopicsList = observer(function TopicsList({
     });
 
     runInAction(() => {
+      if (!roomContext) return;
       roomContext.newTopicId = topicId;
       roomContext.editingNameTopicId = topicId;
     });

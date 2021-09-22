@@ -3,7 +3,6 @@ import { PropsWithChildren, createContext, useContext, useEffect } from "react";
 
 import { useConst } from "~shared/hooks/useConst";
 
-import { assert } from "./assert";
 import { useMethod } from "./hooks/useMethod";
 
 export function select<T>(selector: () => T): T {
@@ -40,7 +39,9 @@ export function createStoreContext<T extends object, P = {}>(
   function useSharedStateContext() {
     const rawContextValue = useContext(context);
 
-    assert(rawContextValue, "Accessing shared state context is only allowed inside corresponding context provider.");
+    // TODO: Topic now has room nullable, we have multiple legacy components being used both inside RoomContext and outside of it.
+    // This is suboptimal and requires this context assert to be removed before components will be simplified and legacy dropped.
+    // assert(rawContextValue, "Accessing shared state context is only allowed inside corresponding context provider.");
     return rawContextValue;
   }
 

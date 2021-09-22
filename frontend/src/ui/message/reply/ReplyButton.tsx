@@ -13,6 +13,8 @@ export const ReplyButton = observer(({ messageId }: Props) => {
   const topicContext = useTopicStoreContext();
 
   async function handleMarkAsBeingRepliedTo() {
+    if (!topicContext) return;
+
     topicContext.currentlyReplyingToMessageId = messageId;
   }
 

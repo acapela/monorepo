@@ -16,7 +16,7 @@ export const ScrollableMessages = styled<Props>(
     const holderRef = useRef<HTMLDivElement>(null);
 
     const topicContext = useTopicStoreContext();
-    const isInEditMode = select(() => !!topicContext.editedMessageId);
+    const isInEditMode = select(() => !!topicContext?.editedMessageId);
 
     return (
       <UIHolder className={className} ref={holderRef}>

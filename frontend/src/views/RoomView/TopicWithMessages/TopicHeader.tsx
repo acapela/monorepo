@@ -20,15 +20,11 @@ import { useUpdateTopic } from "./shared";
 const fragments = {
   room: gql`
     ${useIsCurrentUserRoomMember.fragments.room}
-    ${useIsCurrentUserTopicManager.fragments.room}
-    ${ManageTopic.fragments.room}
 
     fragment TopicHeader_room on room {
       id
       finished_at
       ...IsCurrentUserRoomMember_room
-      ...IsCurrentUserTopicManager_room
-      ...ManageTopic_room
     }
   `,
   topic: gql`
@@ -48,7 +44,7 @@ const fragments = {
 };
 
 interface Props {
-  room: TopicHeader_RoomFragment;
+  room?: TopicHeader_RoomFragment;
   topic: TopicHeader_TopicFragment;
   onCloseTopicRequest?: (summary: string) => void;
   className?: string;
@@ -59,13 +55,12 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
   const isMember = useIsCurrentUserRoomMember(room);
   const [updateTopic] = useUpdateTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
-  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const handleRestoreTopic = () => {
     updateTopic({
       variables: {
         id: topic.id,
-        roomId: room.id,
         input: { closed_at: null, closed_by_user_id: null, archived_at: null },
       },
     });
@@ -73,7 +68,7 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
   };
 
   const handleReopenTopic = () => {
-    updateTopic({ variables: { id: topic.id, roomId: room.id, input: { closed_at: null, closed_by_user_id: null } } });
+    updateTopic({ variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null } } });
     trackEvent("Reopened Topic");
   };
 
@@ -81,7 +76,7 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
     <UIHolder>
       <UITitle isClosed={isClosed}>{topic.name}</UITitle>
 
-      {!room.finished_at && (
+      {!room?.finished_at && (
         <UIActions>
           {isClosed &&
             (topic.archived_at ? (
@@ -107,7 +102,7 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
               Close Topic
             </UIToggleCloseButton>
           )}
-          {isMember && <ManageTopic room={room} topic={topic} />}
+          {isMember && <ManageTopic topic={topic} />}
         </UIActions>
       )}
       <AnimatePresence>
