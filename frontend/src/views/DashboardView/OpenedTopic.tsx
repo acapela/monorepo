@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function OpenedTopic({ topicId }: Props) {
-  const { data, loading } = useQuery<OpenedTopicQuery, OpenedTopicQueryVariables>(
+  const { data } = useQuery<OpenedTopicQuery, OpenedTopicQueryVariables>(
     gql`
       ${TopicWithMessages.fragments.topic}
       query OpenedTopic($topicId: uuid!) {

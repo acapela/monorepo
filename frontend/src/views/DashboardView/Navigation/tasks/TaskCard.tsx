@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 import styled from "styled-components";
 
-import { DashboardTaskCard_TaskFragment } from "~frontend/../../gql";
-import { theme } from "~frontend/../../ui/theme";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { DashboardTaskCard_TaskFragment } from "~gql";
+import { theme } from "~ui/theme";
 
 import { getMessageMentionSnippet } from "./messageContentSnippet";
 

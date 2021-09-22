@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-import { DashboardTaskCard_TaskFragment } from "~frontend/../../gql";
-import { EmptyStatePlaceholder } from "~frontend/../../ui/empty/EmptyStatePlaceholder";
 import { RouteLink, routes } from "~frontend/../router";
+import { DashboardTaskCard_TaskFragment } from "~gql";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 
 import { DashboardTaskCard } from "./TaskCard";
 

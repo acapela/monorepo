@@ -2,17 +2,17 @@ import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import styled from "styled-components";
 
-import { DashboardTasksQuery, DashboardTasksQueryVariables } from "~frontend/../../gql";
-import { CollapsePanel } from "~frontend/../../ui/collapse/CollapsePanel";
-import { theme } from "~frontend/../../ui/theme";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { DashboardTasksQuery, DashboardTasksQueryVariables } from "~gql";
+import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { theme } from "~ui/theme";
 
 import { DashboardTaskCard } from "./tasks/TaskCard";
 import { TaskList } from "./tasks/TaskList";
 
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
-  const { data, loading } = useQuery<DashboardTasksQuery, DashboardTasksQueryVariables>(
+  const { data } = useQuery<DashboardTasksQuery, DashboardTasksQueryVariables>(
     gql`
       ${DashboardTaskCard.fragments.task}
 

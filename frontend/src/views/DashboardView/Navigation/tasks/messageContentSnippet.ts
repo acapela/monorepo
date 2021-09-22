@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 
-import { getIsMentionNode } from "~frontend/../../shared/editor/mentions";
+import { getIsMentionNode } from "~shared/editor/mentions";
 
 /**
  * Will return part of the content of message that includes mention to given user.

@@ -5,7 +5,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { assert } from "~frontend/../../shared/assert";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
@@ -21,6 +20,7 @@ import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage"
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
+import { assert } from "~shared/assert";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
 import { IconEdit, IconTrash } from "~ui/icons";

@@ -7,7 +7,6 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { assert } from "~frontend/../../shared/assert";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -22,6 +21,7 @@ import {
   TopicWithMessagesQuery,
   TopicWithMessagesQueryVariables,
 } from "~gql";
+import { assert } from "~shared/assert";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { select } from "~shared/sharedState";
