@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
-import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
@@ -21,9 +20,11 @@ import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage"
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { IconEdit, IconTrash, IconCheck } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
@@ -135,9 +136,9 @@ const _Message = styled<Props>(
       if (onCloseTopicRequest) {
         options.push({
           label: "Close with message",
-          onSelect: () => onCloseTopicRequest('Summary!'),
-          icon: <IconCheck/>
-        })
+          onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
+          icon: <IconCheck />,
+        });
       }
 
       if (isOwnMessage) {

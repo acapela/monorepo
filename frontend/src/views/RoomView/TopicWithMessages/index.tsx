@@ -3,6 +3,8 @@ import { AnimateSharedLayout } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+import { trackEvent } from "~frontend/analytics/tracking";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
 import { withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
@@ -25,13 +27,11 @@ import { theme } from "~ui/theme";
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
+import { useUpdateTopic } from "./shared";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
 import { useMessagesSubscription } from "./useMessagesSubscription";
-import { trackEvent } from "~frontend/analytics/tracking";
-import { useUpdateTopic } from './shared'
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 
 const fragments = {
   room: gql`
@@ -138,6 +138,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     });
     trackEvent("Closed Topic", { topicId: topic.id });
   };
+  const onCloseTopicRequest = isClosed || room.finished_at ? undefined : handleCloseTopic;
 
   return (
     <TopicStoreContext>
@@ -148,11 +149,13 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
           <UIBackDrop />
           <UIMainContainer>
             {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-            <UITopicHeaderHolder>{topic && <TopicHeader onCloseTopicRequest={handleCloseTopic} room={room} topic={topic} />}</UITopicHeaderHolder>
+            <UITopicHeaderHolder>
+              {topic && <TopicHeader onCloseTopicRequest={onCloseTopicRequest} room={room} topic={topic} />}
+            </UITopicHeaderHolder>
 
             <ScrollableMessages ref={scrollerRef as never}>
               <AnimateSharedLayout>
-                <MessagesFeed onCloseTopicRequest={handleCloseTopic} isReadonly={!isMember} messages={messages} />
+                <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} isReadonly={!isMember} messages={messages} />
 
                 {topic && isClosed && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>

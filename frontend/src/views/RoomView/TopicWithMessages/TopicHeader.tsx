@@ -8,17 +8,14 @@ import { withFragments } from "~frontend/gql/utils";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { isTopicClosed } from "~frontend/topics/utils";
 import { ManageTopic } from "~frontend/views/RoomView/TopicsList/ManageTopic";
-import {
-  TopicHeader_RoomFragment,
-  TopicHeader_TopicFragment
-} from "~gql";
+import { TopicHeader_RoomFragment, TopicHeader_TopicFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
 import { TextH3 } from "~ui/typo";
-import { useUpdateTopic } from './shared'
 
 import { CloseTopicModal } from "./CloseTopicModal";
+import { useUpdateTopic } from "./shared";
 
 const fragments = {
   room: gql`
@@ -53,7 +50,7 @@ const fragments = {
 interface Props {
   room: TopicHeader_RoomFragment;
   topic: TopicHeader_TopicFragment;
-  onCloseTopicRequest: (summary: string) => void;
+  onCloseTopicRequest?: (summary: string) => void;
   className?: string;
 }
 
@@ -102,7 +99,7 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
                 Reopen Topic
               </UIToggleCloseButton>
             ))}
-          {!isClosed && (
+          {onCloseTopicRequest && (
             <UIToggleCloseButton
               onClick={openClosingTopicModal}
               isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
@@ -114,7 +111,7 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
         </UIActions>
       )}
       <AnimatePresence>
-        {isClosingTopic && (
+        {isClosingTopic && onCloseTopicRequest && (
           <CloseTopicModal
             loading={false}
             topicId={topic.id}
