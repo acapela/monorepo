@@ -37,6 +37,15 @@ array_relationships:
       remote_table:
         name: room_member
         schema: public
+- name: room_access
+  using:
+    manual_configuration:
+      column_mapping:
+        id: room_id
+      insertion_order: null
+      remote_table:
+        name: room_access
+        schema: public
 - name: topics
   using:
     foreign_key_constraint_on:
@@ -85,21 +94,9 @@ select_permissions:
     - summary
     - updated_at
     filter:
-      _and:
-      - space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-      - _or:
-        - is_private:
-            _eq: false
-        - _and:
-          - is_private:
-              _eq: true
-          - members:
-              user_id:
-                _eq: X-Hasura-User-Id
+      room_access:
+        user_id:
+          _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

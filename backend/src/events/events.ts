@@ -19,7 +19,7 @@ import { hasuraEvents } from "./eventHandlers";
 export const router = Router();
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
-hasuraEvents.addHandler("topic_updates", ["INSERT", "UPDATE"], handleTopicUpdates);
+hasuraEvents.addHandler("topic_updates", ["UPDATE"], handleTopicUpdates);
 hasuraEvents.addHandler("room_updates", ["INSERT", "UPDATE"], handleRoomUpdates);
 hasuraEvents.addHandler("team_invitation_updates", "INSERT", handleTeamInvitationCreated);
 hasuraEvents.addHandler("team_invitation_updates", "DELETE", handleTeamInvitationDeleted);
