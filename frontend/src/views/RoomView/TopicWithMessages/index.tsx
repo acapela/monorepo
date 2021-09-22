@@ -141,7 +141,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                 <UIContentWrapper>
                   {isLoadingMessages
                     ? "Loading messages..."
-                    : "Start the conversation and add your first message below."}
+                    : "Start a request by adding a first message with an @-mention below."}
                 </UIContentWrapper>
               )}
 
@@ -154,6 +154,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                   <CreateNewMessageEditor
                     topicId={topic.id}
                     isDisabled={isComposerDisabled}
+                    isFirstMessage={messages.length === 0}
                     onMessageSent={() => {
                       scrollerRef.current?.scrollToBottom("auto");
                     }}
