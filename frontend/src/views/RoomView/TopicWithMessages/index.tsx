@@ -55,7 +55,7 @@ const fragments = {
 };
 
 interface Props {
-  room: TopicWithMessages_RoomFragment;
+  room?: TopicWithMessages_RoomFragment;
   topic: TopicWithMessages_TopicFragment;
 }
 
@@ -109,13 +109,11 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
     { variables: { topicId: topic.id } }
   );
 
-  const isMember = useIsCurrentUserRoomMember(room);
-
   useMarkTopicAsRead(topic.id, existingMessageIds);
 
   const isClosed = isTopicClosed(topic);
 
-  const isComposerDisabled = !isMember || isLoadingMessages;
+  const isComposerDisabled = isLoadingMessages;
 
   const scrollerRef = useRef<ScrollHandle>();
 
@@ -132,7 +130,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
             <ScrollableMessages ref={scrollerRef as never}>
               <AnimateSharedLayout>
-                <MessagesFeed isReadonly={!isMember} messages={messages} />
+                <MessagesFeed messages={messages} />
 
                 {topic && isClosed && <TopicSummaryMessage topic={topic} />}
               </AnimateSharedLayout>
@@ -145,7 +143,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                 </UIContentWrapper>
               )}
 
-              {isClosed && <TopicClosureNote isParentRoomOpen={!room.finished_at} />}
+              {isClosed && <TopicClosureNote isParentRoomOpen={!room?.finished_at} />}
             </ScrollableMessages>
 
             {!isClosed && (

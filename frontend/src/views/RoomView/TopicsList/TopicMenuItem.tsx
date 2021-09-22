@@ -7,6 +7,7 @@ import { observer } from "mobx-react";
 import React, { useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { assert } from "~frontend/../../shared/assert";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { withFragments } from "~frontend/gql/utils";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
@@ -37,13 +38,11 @@ import { TopicOwner } from "./TopicOwner";
 
 const fragments = {
   room: gql`
-    ${ManageTopic.fragments.room}
     ${TopicOwner.fragments.room}
 
     fragment TopicMenuItem_room on room {
       id
       space_id
-      ...ManageTopic_room
       ...TopicOwner_room
     }
   `,
@@ -128,8 +127,8 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const isHovered = useIsElementOrChildHovered(innerRef);
-  const isNewTopic = select(() => roomContext.newTopicId === topic.id);
-  const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
+  const isNewTopic = select(() => roomContext?.newTopicId === topic.id);
+  const isInEditMode = select(() => roomContext?.editingNameTopicId === topic.id);
 
   const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,6 +160,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: newName, oldTopicName: topic.name });
     updateTopicName({ variables: { id: topic.id, name: newName } });
 
+    assert(roomContext, "Room Context required");
     roomContext.editingNameTopicId = null;
 
     if (isNewTopic) {
@@ -185,9 +185,11 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
               isInEditMode={isInEditMode}
               focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
               onEditModeRequest={() => {
+                assert(roomContext, "Room Context required");
                 roomContext.editingNameTopicId = topic.id;
               }}
               onExitEditModeChangeRequest={() => {
+                assert(roomContext, "Room Context required");
                 if (roomContext.editingNameTopicId === topic.id) {
                   roomContext.editingNameTopicId = null;
                 }
@@ -223,7 +225,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
             <ManageTopic
               room={room}
               topic={topic}
-              onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)}
+              onRenameRequest={() => roomContext && (roomContext.editingNameTopicId = topic.id)}
             />
           )}
         </UIManageTopicWrapper>

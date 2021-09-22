@@ -170,12 +170,12 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const topicContext = useTopicStoreContext();
   const roomContext = useRoomStoreContext();
 
-  const isEditingAnyMessage = select(() => !!topicContext.editedMessageId);
-  const replyingToMessageId = select(() => topicContext.currentlyReplyingToMessageId);
+  const isEditingAnyMessage = select(() => !!topicContext?.editedMessageId);
+  const replyingToMessageId = select(() => topicContext?.currentlyReplyingToMessageId ?? null);
 
   function focusEditor() {
     // Don't focus editor if editing some topic name
-    if (roomContext.editingNameTopicId) {
+    if (roomContext?.editingNameTopicId) {
       return;
     }
 
@@ -183,7 +183,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   }
 
   useAutorun(() => {
-    if (!roomContext.editingNameTopicId) {
+    if (!roomContext?.editingNameTopicId) {
       focusEditor();
     }
   });
@@ -195,7 +195,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   useDependencyChangeEffect(focusEditor, [replyingToMessageId]);
 
   const handleStopReplyingToMessage = () => {
-    topicContext.currentlyReplyingToMessageId = null;
+    topicContext && (topicContext.currentlyReplyingToMessageId = null);
   };
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
@@ -206,14 +206,14 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
         topicId,
         type,
         content,
-        replied_to_message_id: topicContext.currentlyReplyingToMessageId,
+        replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
       },
     });
 
     if (data) {
       trackEvent("Sent Message", {
         messageType: type,
-        isReply: !!topicContext.currentlyReplyingToMessageId,
+        isReply: !!topicContext?.currentlyReplyingToMessageId,
         hasAttachments: attachments.length > 0,
       });
       await Promise.all(
@@ -278,7 +278,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
             });
           }}
           additionalContent={
-            topicContext.currentlyReplyingToMessageId && (
+            topicContext?.currentlyReplyingToMessageId && (
               <ReplyingToMessageById
                 onRemove={handleStopReplyingToMessage}
                 messageId={topicContext.currentlyReplyingToMessageId}

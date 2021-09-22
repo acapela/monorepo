@@ -21,14 +21,6 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
 
 const fragments = {
-  room: gql`
-    ${useIsCurrentUserTopicManager.fragments.room}
-
-    fragment ManageTopic_room on room {
-      id
-      ...IsCurrentUserTopicManager_room
-    }
-  `,
   topic: gql`
     ${useIsCurrentUserTopicManager.fragments.topic}
 
@@ -43,7 +35,7 @@ const fragments = {
 };
 
 interface Props {
-  room: ManageTopic_RoomFragment;
+  room?: ManageTopic_RoomFragment;
   topic: ManageTopic_TopicFragment;
   onRenameRequest?: () => void;
 }
@@ -109,7 +101,7 @@ export const ManageTopic = withFragments(fragments, ({ room, topic, onRenameRequ
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
-  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const options = [];
   if (isTopicManager) {

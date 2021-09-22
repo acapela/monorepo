@@ -21,10 +21,7 @@ import { theme } from "~ui/theme";
 
 const fragments = {
   room: gql`
-    ${useIsCurrentUserTopicManager.fragments.room}
-
     fragment TopicOwner_room on room {
-      ...IsCurrentUserTopicManager_room
       members {
         user {
           id
@@ -75,7 +72,7 @@ const useUpdateTopicOwner = () =>
   );
 
 export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
-  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
   const [updateTopicOwner] = useUpdateTopicOwner();
 
   const openerRef = useRef<HTMLDivElement>(null);
