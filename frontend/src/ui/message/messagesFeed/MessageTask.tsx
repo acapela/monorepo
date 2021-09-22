@@ -1,4 +1,6 @@
 import { gql } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
+import React, { ReactNode, useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -8,8 +10,11 @@ import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
 import { niceFormatDateTime } from "~shared/dates/format";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
+import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
+import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   task: MessageTask_TaskFragment;
@@ -110,14 +115,50 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
           {!isTaskRead && <UITextButton onClick={handleMarkAsRead}>Mark as read</UITextButton>}
         </>
       )}
-      {isTaskOwner && task.due_at === null && (
-        <UITextButton onClick={() => console.log("clicked")}>Add due date</UITextButton>
-      )}
+      {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
     </UISingleTask>
   );
 })``;
 
 export const MessageTask = withFragments(fragments, _MessageTask);
+
+const TaskDueDateSetter = ({
+  task,
+  children,
+  previousDueDate,
+}: {
+  task: MessageTask_TaskFragment;
+  children: ReactNode;
+  previousDueDate?: Date;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [isPickerOpen, { set: openPicker, unset: closePicker }] = useBoolean(false);
+
+  const handleSubmit = async (date: Date) => {
+    closePicker();
+    updateTask({ taskId: task.id, input: { due_at: date.toISOString() } });
+  };
+
+  return (
+    <>
+      <AnimatePresence>
+        {isPickerOpen && (
+          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
+            <DateTimePicker
+              shouldSkipConfirmation={false}
+              onSubmit={handleSubmit}
+              initialValue={previousDueDate ?? new Date()}
+            />
+          </Popover>
+        )}
+      </AnimatePresence>
+      <UITextButton ref={ref} onClick={openPicker}>
+        {children}
+      </UITextButton>
+    </>
+  );
+};
 
 const TaskStatusIcon = ({ task, taskAssigneeName }: { task: MessageTask_TaskFragment; taskAssigneeName: string }) => {
   function getTaskStatus(): "unseen" | "seen" | "done" {
