@@ -34,7 +34,7 @@ const createAuthModalView = ({ triggerId }: { triggerId: string }): ViewsOpenArg
         text: {
           type: "mrkdwn",
           text: [
-            "It looks like there is no one with your email in your team's Acapela.",
+            "We could not find a user with your email on Acapela.",
             `<${process.env.FRONTEND_URL}/team|Connect Acapela with Slack> to use this feature.`,
           ].join(" "),
         },
@@ -131,7 +131,7 @@ export function setupSlackShortcuts(slackApp: App) {
     );
 
     if (user) {
-      trackBackendUserEvent(user.id, "Started creating Topic with Slack Global Shortcut");
+      trackBackendUserEvent(user.id, "Used Slack Global Shortcut");
     }
   });
 
@@ -160,7 +160,7 @@ export function setupSlackShortcuts(slackApp: App) {
     );
 
     if (user) {
-      trackBackendUserEvent(user.id, "Started creating Topic with Slack Message Action");
+      trackBackendUserEvent(user.id, "Used Slack Message Action");
     }
   });
 

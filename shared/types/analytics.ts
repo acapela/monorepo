@@ -109,8 +109,8 @@ export type AnalyticsEventsMap = {
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
 
   // Slack
-  "Started creating Topic with Slack Global Shortcut": { slackUserName: string };
-  "Started creating Topic with Slack Message Action": { slackUserName: string };
+  "Used Slack Global Shortcut": { slackUserName: string };
+  "Used Slack Message Action": { slackUserName: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;
