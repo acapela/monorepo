@@ -56,7 +56,6 @@ function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMention
 
 type MentionTypeLabel = string;
 const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
-  "notification-only": "Notify only",
   "request-read": "Request read receipt",
   "request-response": "Request response",
 };
@@ -156,15 +155,6 @@ const UIMention = styled.span<{ mentionType: MentionType }>`
 
   ${(props) => {
     switch (props.mentionType) {
-      case "notification-only":
-        return css`
-          color: ${theme.colors.tags.action.foreground()};
-          background-color: ${theme.colors.tags.action.background()};
-
-          svg {
-            color: ${theme.colors.tags.action.foreground()};
-          }
-        `;
       case "request-read":
         return css`
           color: ${theme.colors.tags.shareInformation.foreground()};

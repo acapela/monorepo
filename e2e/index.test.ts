@@ -20,14 +20,14 @@ test("create a room", async ({ page, db, auth }) => {
 
 const COMPOSER_SELECTOR = '[class^="RichEditor__UIEditorContent"]';
 
-test("send a message", async ({ page, db, auth }) => {
+test("it should not allow sending the first message without a mention", async ({ page, db, auth }) => {
   await auth.login(db.user2);
   await createAndGotoTopic(page, { spaceName: db.space.name, roomName: "Mailbox", topicName: "hot takes" });
   await page.click(COMPOSER_SELECTOR);
   const message = "What is happening";
   await page.keyboard.type(message);
   await page.keyboard.press("Enter");
-  await page.waitForSelector("text=" + message);
+  await page.waitForSelector("text=The first message should have a mention.");
 });
 
 test("replying to a request-response marks it as done", async ({ page, db, auth }) => {
@@ -57,7 +57,7 @@ test("sending a message with tasks for read and response, asks for the latter", 
 
   await page.keyboard.type("What is happening @u");
   await page.click(`text='${db.user1.name}'`);
-  await page.click("text=Notify only");
+  await page.click("text=Request read receipt");
 
   await page.click(COMPOSER_SELECTOR);
 
