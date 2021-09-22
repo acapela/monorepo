@@ -52,7 +52,7 @@ export const ReplyingToMessage = withFragments(fragments, ({ onRemove, message }
       <UIContent>
         <MessageMetaDataWrapper user={message.user} date={new Date(message.created_at)}>
           <UIMessageContent>
-            <UIMessageText message={message} />
+            <UIMessageText content={message.content} />
             <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
         </MessageMetaDataWrapper>

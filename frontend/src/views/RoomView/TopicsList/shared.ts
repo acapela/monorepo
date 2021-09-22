@@ -28,7 +28,7 @@ export const useUpdateTopicName = () =>
   );
 
 export const useDeleteTopic = () =>
-  useMutation<DeleteTopicMutation, DeleteTopicMutationVariables & { roomId: string }>(
+  useMutation<DeleteTopicMutation, DeleteTopicMutationVariables & { roomId?: string }>(
     gql`
       mutation DeleteTopic($id: uuid!) {
         topic: delete_topic_by_pk(id: $id) {

@@ -5,6 +5,7 @@ export function getNodesFromContentByType<AttributesType = unknown>(
   type: string
 ): RichEditorNodeWithAttributes<AttributesType>[] {
   let nodesOfRequestedType: RichEditorNodeWithAttributes<AttributesType>[] = [];
+
   if (node.type === type) {
     nodesOfRequestedType.push(node as RichEditorNodeWithAttributes<AttributesType>);
   }
@@ -15,4 +16,11 @@ export function getNodesFromContentByType<AttributesType = unknown>(
     nodesOfRequestedType = nodesOfRequestedType.concat(getNodesFromContentByType<AttributesType>(childNode, type));
   }
   return nodesOfRequestedType;
+}
+
+export function getIsContentNodeOfType<AttributesType = unknown>(
+  node: RichEditorNode,
+  type: string
+): node is RichEditorNodeWithAttributes<AttributesType> {
+  return node.type === type;
 }
