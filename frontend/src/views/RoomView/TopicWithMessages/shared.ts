@@ -1,8 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
-import {
-  UpdateTopicMutation,
-  UpdateTopicMutationVariables,
-} from "~gql";
+
+import { UpdateTopicMutation, UpdateTopicMutationVariables } from "~gql";
 
 export const useUpdateTopic = () =>
   useMutation<UpdateTopicMutation, UpdateTopicMutationVariables & { roomId: string }>(

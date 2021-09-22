@@ -20,7 +20,7 @@ const CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES = 15;
 
 function shouldBundleCurrentMessageWithPrevious(
   currentMsg: Message_MessageFragment,
-  prevMsg: Message_MessageFragment | null,
+  prevMsg: Message_MessageFragment | null
 ): boolean {
   if (!prevMsg) {
     return false;
@@ -39,45 +39,48 @@ function shouldBundleCurrentMessageWithPrevious(
   return minutesBetweenCurrentAndPreviousMessage < CONSECUTIVE_MESSAGE_BUNDLING_THRESHOLD_IN_MINUTES;
 }
 
-export const MessagesFeed = withFragments(Message.fragments, function MessagesFeed({ messages, isReadonly, onCloseTopicRequest }: Props) {
-  const holderRef = useRef<HTMLDivElement>(null);
+export const MessagesFeed = withFragments(
+  Message.fragments,
+  function MessagesFeed({ messages, isReadonly, onCloseTopicRequest }: Props) {
+    const holderRef = useRef<HTMLDivElement>(null);
 
-  function renderMessageHeader(message: Message_MessageFragment, previousMessage: Message_MessageFragment | null) {
-    if (!previousMessage) {
-      return <DateHeader date={new Date(message.created_at)} />;
+    function renderMessageHeader(message: Message_MessageFragment, previousMessage: Message_MessageFragment | null) {
+      if (!previousMessage) {
+        return <DateHeader date={new Date(message.created_at)} />;
+      }
+
+      const currentDate = new Date(message.created_at);
+      const previousDate = new Date(previousMessage.created_at);
+
+      if (isSameDay(currentDate, previousDate)) {
+        return null;
+      }
+
+      return <DateHeader date={currentDate} />;
     }
 
-    const currentDate = new Date(message.created_at);
-    const previousDate = new Date(previousMessage.created_at);
+    return (
+      <UIHolder ref={holderRef}>
+        {messages.map((message, index) => {
+          const previousMessage = messages[index - 1] ?? null;
 
-    if (isSameDay(currentDate, previousDate)) {
-      return null;
-    }
-
-    return <DateHeader date={currentDate} />;
+          return (
+            <Fragment key={message.id}>
+              {renderMessageHeader(message, previousMessage)}
+              <Message
+                onCloseTopicRequest={onCloseTopicRequest}
+                isReadonly={isReadonly}
+                message={message}
+                key={message.id}
+                isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
+              />
+            </Fragment>
+          );
+        })}
+      </UIHolder>
+    );
   }
-
-  return (
-    <UIHolder ref={holderRef}>
-      {messages.map((message, index) => {
-        const previousMessage = messages[index - 1] ?? null;
-
-        return (
-          <Fragment key={message.id}>
-            {renderMessageHeader(message, previousMessage)}
-            <Message
-              onCloseTopicRequest={onCloseTopicRequest}
-              isReadonly={isReadonly}
-              message={message}
-              key={message.id}
-              isBundledWithPreviousMessage={shouldBundleCurrentMessageWithPrevious(message, previousMessage)}
-            />
-          </Fragment>
-        );
-      })}
-    </UIHolder>
-  );
-});
+);
 
 function DateHeader({ date }: { date: Date }) {
   return <UIDateHeader>{niceFormatDate(date, { showWeekDay: "long" })}</UIDateHeader>;
