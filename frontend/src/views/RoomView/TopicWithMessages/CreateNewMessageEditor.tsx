@@ -36,7 +36,7 @@ import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 interface Props {
   topicId: string;
   isDisabled: boolean;
-  validate?: (content: RichEditorNode) => string | null;
+  validator?: (content: RichEditorNode) => string | null;
   onMessageSent: () => void;
 }
 
@@ -153,7 +153,7 @@ function useLocalStorageState<S>({
   return [value, setValue];
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, validate }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, validator }: Props) => {
   const editorRef = useRef<Editor>(null);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
@@ -177,10 +177,10 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
   const validationErrorMessage = useMemo(() => {
-    if (!shouldValidateOnChange || !validate) return null;
+    if (!shouldValidateOnChange || !validator) return null;
 
-    return validate(value);
-  }, [shouldValidateOnChange, validate, value]);
+    return validator(value);
+  }, [shouldValidateOnChange, validator, value]);
 
   function focusEditor() {
     // Don't focus editor if editing some topic name
@@ -262,8 +262,8 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           onSubmit={async () => {
             if (isCreatingMessage) return;
 
-            if (validate) {
-              const isValid = !validate(value);
+            if (validator) {
+              const isValid = !validator(value);
               if (!isValid) {
                 setShouldValidateOnChange(true);
                 return;

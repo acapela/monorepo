@@ -123,7 +123,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   const isMentionRequired = messages.length === 0;
 
-  const validateMessage = useCallback(
+  const messageValidator = useCallback(
     (value: RichEditorNode) => {
       if (isMentionRequired) {
         const mentionNodes = getNodesFromContentByType(value, "mention");
@@ -172,7 +172,7 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
                   <CreateNewMessageEditor
                     topicId={topic.id}
                     isDisabled={isComposerDisabled}
-                    validate={validateMessage}
+                    validator={messageValidator}
                     onMessageSent={() => {
                       scrollerRef.current?.scrollToBottom("auto");
                     }}
