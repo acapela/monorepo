@@ -276,7 +276,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           onSubmit={async () => {
             if (isCreatingMessage) return;
 
-            if (!validator(value)) {
+            if (validator(value)) {
               setShouldValidateOnChange(true);
               return;
             }
