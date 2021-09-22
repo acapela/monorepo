@@ -223,7 +223,6 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
             />
           ) : (
             <ManageTopic
-              room={room}
               topic={topic}
               onRenameRequest={() => roomContext && (roomContext.editingNameTopicId = topic.id)}
             />

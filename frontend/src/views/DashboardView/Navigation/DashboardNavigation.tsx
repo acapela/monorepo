@@ -25,6 +25,9 @@ export function useDashboardTasks() {
         ) {
           ...DashboardTaskCard_task
           user_id
+          message {
+            user_id
+          }
         }
       }
     `,

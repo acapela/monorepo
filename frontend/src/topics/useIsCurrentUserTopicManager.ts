@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
-import { IsCurrentUserTopicManager_RoomFragment, IsCurrentUserTopicManager_TopicFragment } from "~gql";
+import { IsCurrentUserTopicManager_TopicFragment } from "~gql";
 
 const fragments = {
   topic: gql`

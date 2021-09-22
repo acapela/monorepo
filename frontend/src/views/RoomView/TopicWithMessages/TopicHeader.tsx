@@ -130,7 +130,7 @@ const _TopicHeader = ({ room, topic }: Props) => {
               </UIToggleCloseButton>
             ))}
           {!isClosed && <UIToggleCloseButton onClick={openClosingTopicModal}>Close Topic</UIToggleCloseButton>}
-          {<ManageTopic room={room} topic={topic} />}
+          {<ManageTopic topic={topic} />}
         </UIActions>
       )}
       <AnimatePresence>

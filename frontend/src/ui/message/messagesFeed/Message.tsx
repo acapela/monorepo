@@ -5,6 +5,7 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
+import { assert } from "~frontend/../../shared/assert";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { withFragments } from "~frontend/gql/utils";
@@ -91,14 +92,15 @@ const _Message = styled<Props>(
 
     const topicContext = useTopicStoreContext();
 
-    const isInEditMode = select(() => topicContext.editedMessageId === message.id);
+    const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
 
     function handleStartEditing() {
+      assert(topicContext, "Topic context required");
       topicContext.editedMessageId = message.id;
     }
 
     function handleStopEditing() {
-      if (topicContext.editedMessageId !== message.id) return;
+      if (topicContext?.editedMessageId !== message.id) return;
 
       topicContext.editedMessageId = null;
     }
