@@ -6,7 +6,7 @@ import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { EditorMentionData } from "~shared/types/editor";
-import { TaskType } from "~shared/types/task";
+import { MentionType } from "~shared/types/mention";
 
 const toUniqueMentionIdentifier = ({ userId, type }: EditorMentionData) => `${userId}-${type}`;
 
@@ -73,7 +73,7 @@ export async function createMessageMentionNotifications(message: Message, messag
   );
 }
 
-function getHighestPriorityTaskType(types: TaskType[]): TaskType {
+function getHighestPriorityTaskType(types: MentionType[]): MentionType {
   if (types.includes("request-response")) return "request-response";
   return "request-read";
 }
@@ -105,15 +105,10 @@ async function hasUserAccessToTopic(user_id: string, topic_id: string): Promise<
 export async function createTasksFromNewMentions(message: Message, messageBefore: Message | null) {
   const allMentionsInMessage = getNewMentionNodesFromMessage(message, messageBefore);
 
-  const possibleNewTasksPerUserInMessage: Record<string, Array<TaskType>> = {};
+  const possibleNewTasksPerUserInMessage: Record<string, Array<MentionType>> = {};
 
   for (const mention of allMentionsInMessage) {
     const { userId: mentionedUserId, type } = mention.attrs.data;
-
-    // Exclude directly mention types that don't generate a task
-    if (type === "notification-only") {
-      continue;
-    }
 
     if (possibleNewTasksPerUserInMessage[mentionedUserId]) {
       possibleNewTasksPerUserInMessage[mentionedUserId].push(type);
@@ -122,7 +117,7 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
     }
   }
 
-  const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: TaskType }> = Object.keys(
+  const mostImportantSingleTaskPerUserInMessage: Array<{ user_id: string; type: MentionType }> = Object.keys(
     possibleNewTasksPerUserInMessage
   ).map((user_id) => ({
     user_id,

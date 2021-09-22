@@ -57,7 +57,7 @@ test("sending a message with tasks for read and response, asks for the latter", 
 
   await page.keyboard.type("What is happening @u");
   await page.click(`text='${db.user1.name}'`);
-  await page.click("text=Notify only");
+  await page.click("text=Request read receipt");
 
   await page.click(COMPOSER_SELECTOR);
 
