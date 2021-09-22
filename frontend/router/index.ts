@@ -8,7 +8,7 @@ export const routes = {
   home: createRoute("/", {}),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
-  topic: createRoute("/topics/:topicId", { topicId: "string" }),
+  topic: createRoute("/topics/[topicId]", { topicId: "string" }),
 
   // <likely-to-be-deprecated>
   spaces: createRoute("/spaces", {}),

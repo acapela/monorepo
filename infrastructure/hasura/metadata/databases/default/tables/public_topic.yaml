@@ -34,21 +34,32 @@ array_relationships:
         remote_table:
           name: message
           schema: public
+  - name: room_access
+    using:
+      manual_configuration:
+        column_mapping:
+          room_id: room_id
+        insertion_order: null
+        remote_table:
+          name: room_access
+          schema: public
+  - name: topic_access
+    using:
+      manual_configuration:
+        column_mapping:
+          id: topic_id
+        insertion_order: null
+        remote_table:
+          name: topic_access
+          schema: public
 insert_permissions:
   - permission:
       backend_only: false
       check:
         _and:
-          - room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - room:
-              members:
-                user_id:
-                  _eq: X-Hasura-User-Id
+          - room_access:
+              user_id:
+                _eq: X-Hasura-User-Id
           - room:
               finished_at:
                 _is_null: true
@@ -78,25 +89,9 @@ select_permissions:
         - team_id
         - updated_at
       filter:
-        _and:
-          - room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - _or:
-              - room:
-                  is_private:
-                    _eq: false
-              - _and:
-                  - room:
-                      is_private:
-                        _eq: true
-                  - room:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
+        topic_access:
+          user_id:
+            _eq: X-Hasura-User-Id
     role: user
 update_permissions:
   - permission:
@@ -111,40 +106,20 @@ update_permissions:
         - owner_id
         - slug
       filter:
-        _and:
-          - room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - room:
-              members:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        topic_access:
+          user_id:
+            _eq: X-Hasura-User-Id
     role: user
 delete_permissions:
   - permission:
       filter:
-        _and:
-          - room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - room:
-              members:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        topic_access:
+          user_id:
+            _eq: X-Hasura-User-Id
     role: user
 event_triggers:
   - definition:
-      delete:
-        columns: "*"
       enable_manual: false
-      insert:
-        columns: "*"
       update:
         columns:
           - closing_summary

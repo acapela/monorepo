@@ -36,27 +36,22 @@ array_relationships:
         table:
           name: task
           schema: public
+  - name: topic_access
+    using:
+      manual_configuration:
+        column_mapping:
+          topic_id: topic_id
+        insertion_order: null
+        remote_table:
+          name: topic_access
+          schema: public
 insert_permissions:
   - permission:
       backend_only: false
       check:
-        topic:
-          room:
-            _or:
-              - _and:
-                  - is_private:
-                      _eq: true
-                  - members:
-                      user_id:
-                        _eq: X-Hasura-User-Id
-              - _and:
-                  - is_private:
-                      _eq: false
-                  - space:
-                      team:
-                        memberships:
-                          user_id:
-                            _eq: X-Hasura-User-Id
+        topic_access:
+          user_id:
+            _eq: X-Hasura-User-Id
       columns:
         - content
         - id
@@ -83,23 +78,9 @@ select_permissions:
         - updated_at
         - user_id
       filter:
-        topic:
-          room:
-            _or:
-              - _and:
-                  - is_private:
-                      _eq: true
-                  - members:
-                      user_id:
-                        _eq: X-Hasura-User-Id
-              - _and:
-                  - is_private:
-                      _eq: false
-                  - space:
-                      team:
-                        memberships:
-                          user_id:
-                            _eq: X-Hasura-User-Id
+        topic_access:
+          user_id:
+            _eq: X-Hasura-User-Id
     role: user
 update_permissions:
   - permission:
