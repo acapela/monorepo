@@ -110,11 +110,6 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
   for (const mention of allMentionsInMessage) {
     const { userId: mentionedUserId, type } = mention.attrs.data;
 
-    // Exclude directly mention types that don't generate a task
-    if (type === "notification-only") {
-      continue;
-    }
-
     if (possibleNewTasksPerUserInMessage[mentionedUserId]) {
       possibleNewTasksPerUserInMessage[mentionedUserId].push(type);
     } else {

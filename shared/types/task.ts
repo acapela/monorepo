@@ -1,3 +1,3 @@
 import { MentionType } from "./mention";
 
-export type TaskType = Exclude<MentionType, "notification-only">;
+export type TaskType = MentionType;
