@@ -13,6 +13,7 @@ import { theme } from "~ui/theme";
 
 interface Props {
   task: MessageTask_TaskFragment;
+  taskOwnerId: string;
   taskAssignee: UserBasicInfoFragment;
   className?: string;
 }
@@ -25,15 +26,17 @@ const fragments = {
       message_id
       seen_at
       done_at
+      due_at
       type
     }
   `,
 };
 
-const _MessageTask = styled(function MessageTask({ task, taskAssignee, className }: Props) {
+const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssignee, className }: Props) {
   const currentUser = useCurrentUser();
 
   const isCurrentUserTask = currentUser?.id === taskAssignee.id;
+  const isTaskOwner = currentUser?.id === taskOwnerId;
   const isDone = !!task.done_at;
   const isTaskRead = !!task.seen_at;
 
@@ -80,20 +83,12 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
     });
   }
 
-  function getTaskStatus(): "unseen" | "seen" | "done" {
-    if (task.done_at) return "done";
-    if (task.seen_at) return "seen";
-
-    return "unseen";
-  }
-
   function getTaskRequestLabel(): string {
     if (task.type === "request-read") return "Read receipt";
     // Null tasks are handled as "Request read" until all has been migrated to new types
     return "Response";
   }
 
-  const taskStatus = getTaskStatus();
   const taskRequestLabel = getTaskRequestLabel();
 
   return (
@@ -103,22 +98,7 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
       data-test-task-is-done={isDone ? true : undefined}
       className={className}
     >
-      {taskStatus === "unseen" && (
-        <UIIconHolder data-tooltip={`Was not yet seen by ${taskAssignee.name}`}>
-          <IconTime />
-        </UIIconHolder>
-      )}
-      {taskStatus === "seen" && (
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        <UIIconHolder data-tooltip={`Seen by ${taskAssignee.name} at ${niceFormatDateTime(new Date(task.seen_at!))} `}>
-          <IconUserCheck />
-        </UIIconHolder>
-      )}
-      {taskStatus === "done" && (
-        <UIIconHolder>
-          <IconCheck />
-        </UIIconHolder>
-      )}
+      <TaskStatusIcon task={task} taskAssigneeName={taskAssignee.name ?? ""} />
       {taskRequestLabel} from&nbsp;
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
@@ -130,11 +110,45 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
           {!isTaskRead && <UITextButton onClick={handleMarkAsRead}>Mark as read</UITextButton>}
         </>
       )}
+      {isTaskOwner && task.due_at === null && (
+        <UITextButton onClick={() => console.log("clicked")}>Add due date</UITextButton>
+      )}
     </UISingleTask>
   );
 })``;
 
 export const MessageTask = withFragments(fragments, _MessageTask);
+
+const TaskStatusIcon = ({ task, taskAssigneeName }: { task: MessageTask_TaskFragment; taskAssigneeName: string }) => {
+  function getTaskStatus(): "unseen" | "seen" | "done" {
+    if (task.done_at) return "done";
+    if (task.seen_at) return "seen";
+
+    return "unseen";
+  }
+
+  const taskStatus = getTaskStatus();
+  return (
+    <>
+      {taskStatus === "unseen" && (
+        <UIIconHolder data-tooltip={`Was not yet seen by ${taskAssigneeName}`}>
+          <IconTime />
+        </UIIconHolder>
+      )}
+      {taskStatus === "seen" && (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <UIIconHolder data-tooltip={`Seen by ${taskAssigneeName} at ${niceFormatDateTime(new Date(task.seen_at!))} `}>
+          <IconUserCheck />
+        </UIIconHolder>
+      )}
+      {taskStatus === "done" && (
+        <UIIconHolder>
+          <IconCheck />
+        </UIIconHolder>
+      )}
+    </>
+  );
+};
 
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;

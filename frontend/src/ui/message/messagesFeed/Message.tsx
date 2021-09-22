@@ -199,7 +199,7 @@ const _Message = styled<Props>(
               </UIMessageContent>
             )}
 
-            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} />}
+            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
