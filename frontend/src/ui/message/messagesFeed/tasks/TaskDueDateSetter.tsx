@@ -1,15 +1,13 @@
-import {} from "date-fns/esm";
-
 import { isFriday, nextMonday, setHours, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { Popover } from "~frontend/../../ui/popovers/Popover";
-import { DateTimePicker } from "~frontend/../../ui/time/DateTimePicker";
 import { updateTask } from "~frontend/gql/tasks";
 import { MessageTask_TaskFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
+import { Popover } from "~ui/popovers/Popover";
+import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
   task: MessageTask_TaskFragment;
@@ -42,11 +40,7 @@ export const TaskDueDateSetter = ({ task, children }: Props) => {
       <AnimatePresence>
         {isPickerOpen && (
           <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker
-              shouldSkipConfirmation={false}
-              onSubmit={handleSubmit}
-              initialValue={calendarInitialValue}
-            />
+            <DateTimePicker shouldSkipConfirmation={true} onSubmit={handleSubmit} initialValue={calendarInitialValue} />
           </Popover>
         )}
       </AnimatePresence>
