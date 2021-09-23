@@ -29,12 +29,45 @@ export async function prepareMessagePlainTextData(message: Message) {
 /**
  * Each time user creates a message in a topic, we mark all previous tasks of the message author in this topic as done.
  */
-async function markPendingTasksAsDone(message: Message) {
-  const { topic_id, user_id } = message;
+async function markPendingTasksAsDone(newMessage: Message) {
+  const { topic_id, user_id } = newMessage;
 
   const taskCompletionTime = new Date();
 
-  const pendingTasks = await db.task.findMany({ where: { message: { topic_id }, user_id, done_at: null } });
+  const pendingTasks = await db.task.findMany({
+    where: {
+      message: {
+        topic_id,
+        /**
+         * This check prevents messages from closing its own tasks.
+         *
+         * Use case:
+         * 1. MessageA: hi @adam can you read it?
+         * 2. Task is created
+         * 3. You eg. edit MessageA, adding "please???" at the end.
+         *
+         * Message update is picked and it actually resolves task.
+         *
+         * Thus this check makes sure that message updates will never solve tasks attached to itself.
+         *
+         * Note: it is also possible that lack of this check introduces race condition eg. in `handleMessageChanges`
+         * we have `Promise.all` that first creates message tasks and then solves pending tasks.
+         *
+         * As Promise.all executes all promises in parallel it is possible that
+         *
+         * 1. new message is created
+         * 2. handler is called
+         * 3. task is created
+         * 4. then! markPendingTasksAsDone is called after (race condition)
+         * 5. task is resolved instantly after it was created.
+         *
+         */
+        id: { not: newMessage.id },
+      },
+      user_id,
+      done_at: null,
+    },
+  });
 
   await db.task.updateMany({
     where: { id: { in: pendingTasks.map((t) => t.id) } },
