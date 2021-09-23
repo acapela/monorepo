@@ -4,6 +4,7 @@ import { findRoomById } from "~backend/src/rooms/rooms";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
 import { db } from "~db";
 import { assert } from "~shared/assert";
+import { Sentry } from "~shared/sentry";
 
 export async function createAndSendAddedToRoomNotification({
   userId,
@@ -38,14 +39,17 @@ export async function createAndSendAddedToRoomNotification({
   assert(room.space_id, new UnprocessableEntityError(`invalid room entry: ${roomId}`));
 
   const inviterName = getNormalizedUserName(inviter);
-  await sendNotificationPerPreference(addedTeamMember, {
+
+  // Note! We're not awaiting on sending notifications as we shouldn't depend on third-party failure or timeouts
+  // for core business logic flows
+  sendNotificationPerPreference(addedTeamMember, {
     subject: `${inviterName} has invited you to collaborate on ${room.name}`,
     content: [
       `Hey!`,
       `${inviterName} has invited you to collaborate on ${room.name} using acapela, a tool for asynchronous collaboration.`,
       `Follow this link to join the discussion: ${process.env.FRONTEND_URL}/space/${room.space_id}/${room.id}`,
     ].join("\n"),
-  });
+  }).catch((error) => Sentry.captureException(error));
 }
 
 export async function createAndSendTopicMentionNotification({
@@ -89,11 +93,14 @@ export async function createAndSendTopicMentionNotification({
   const link =
     process.env.FRONTEND_URL +
     (topic.room ? `/space/${topic.room.space_id}/${topic.room.id}/${topic.id}` : `/topic/${topic.id}`);
-  await sendNotificationPerPreference(mentionedTeamMember, {
+
+  // Note! We're not awaiting on sending notifications as we shouldn't depend on third-party failure or timeouts
+  // for core business logic flows
+  sendNotificationPerPreference(mentionedTeamMember, {
     subject: `${authorName} has tagged you in ${topicName}`,
     content: [
       `Hi ${getNormalizedUserName(mentionedTeamMember.user)}!`,
       `${authorName} has tagged you in ${topicName}. To read the message, simply click the following link: ${link}`,
     ].join("\n"),
-  });
+  }).catch((error) => Sentry.captureException(error));
 }
