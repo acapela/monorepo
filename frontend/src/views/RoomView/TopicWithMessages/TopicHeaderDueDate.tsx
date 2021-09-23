@@ -1,9 +1,9 @@
-import { gql, useSubscription } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
 
-import { IconFlag } from "~frontend/../../ui/icons";
-import { FirstTaskInTopic_TaskSubscription, FirstTaskInTopic_TaskSubscriptionVariables } from "~gql";
+import { FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables } from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
+import { IconFlag } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 const firstTaskInTopicFragment = gql`
@@ -19,11 +19,11 @@ interface Props {
 }
 
 export const TopicHeaderDueDate = function ({ topicId }: Props) {
-  const result = useSubscription<FirstTaskInTopic_TaskSubscription, FirstTaskInTopic_TaskSubscriptionVariables>(
+  const result = useQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(
     gql`
       ${firstTaskInTopicFragment}
 
-      subscription FirstTaskInTopic_task($topicId: uuid!) {
+      query FirstTaskInTopic_task($topicId: uuid!) {
         task(where: { message: { topic_id: { _eq: $topicId } } }, limit: 1, order_by: { created_at: asc }) {
           ...FirstTaskInTopic_task
         }
