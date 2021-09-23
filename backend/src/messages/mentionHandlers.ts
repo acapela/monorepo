@@ -5,6 +5,7 @@ import { Message, PrismaPromise, Task, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
+import { log } from "~shared/logger";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 
@@ -79,6 +80,16 @@ function getHighestPriorityTaskType(types: MentionType[]): MentionType {
 }
 
 async function hasUserAccessToTopic(user_id: string, topic_id: string): Promise<boolean> {
+  const topic = await db.topic.findFirst({ where: { id: topic_id } });
+
+  if (!topic) {
+    return false;
+  }
+
+  if (topic.owner_id === user_id) {
+    return true;
+  }
+
   const room = await db.room.findFirst({ where: { topic: { some: { id: topic_id } } } });
 
   if (!room) {
@@ -128,6 +139,7 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   for (const { user_id, type } of mostImportantSingleTaskPerUserInMessage) {
     if (!(await hasUserAccessToTopic(user_id, message.topic_id))) {
+      log.warn(`Cannot create new task - user has no access to topic`);
       continue;
     }
 
