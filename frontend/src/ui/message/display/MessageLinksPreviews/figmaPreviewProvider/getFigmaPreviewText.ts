@@ -1,9 +1,5 @@
 export const getFigmaPreviewText = (url: string) => {
-  const [fileNameWithNode] = url.split("/").reverse();
+  const { pathname } = new URL(url);
 
-  const [fileName] = fileNameWithNode.split("?");
-
-  const previewText = fileName.split("-").join(" ");
-
-  return previewText;
+  return pathname.split("/").pop()?.split("-").join(" ");
 };
