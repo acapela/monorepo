@@ -1,10 +1,13 @@
-import { useQuery } from "@apollo/client";
+import { useSubscription } from "@apollo/client";
 import gql from "graphql-tag";
 import styled from "styled-components";
 
+import { RouteLink, routes } from "~frontend/../router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { DashboardTasksQuery, DashboardTasksQueryVariables } from "~gql";
+import { DashboardTasksSubscription, DashboardTasksSubscriptionVariables } from "~gql";
+import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
+import { IconPlusSquare } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { DashboardTaskCard } from "./tasks/TaskCard";
@@ -12,11 +15,11 @@ import { TaskList } from "./tasks/TaskList";
 
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
-  const { data } = useQuery<DashboardTasksQuery, DashboardTasksQueryVariables>(
+  const { data } = useSubscription<DashboardTasksSubscription, DashboardTasksSubscriptionVariables>(
     gql`
       ${DashboardTaskCard.fragments.task}
 
-      query DashboardTasks($userId: uuid!) {
+      subscription DashboardTasks($userId: uuid!) {
         task(
           where: {
             done_at: { _is_null: true }
@@ -59,21 +62,41 @@ export function DashboardNavigation() {
 
   return (
     <UIHolder>
-      <CollapsePanel isInitiallyOpen headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
-        <UISectionContent>
-          <TaskList tasks={receivedTasks} hideUserInfo />
-        </UISectionContent>
-      </CollapsePanel>
-      <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
-        <UISectionContent>
-          <TaskList tasks={sentTasks} />
-        </UISectionContent>
-      </CollapsePanel>
+      <UISectionsHolder>
+        <CollapsePanel isInitiallyOpen headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
+          <UISectionContent>
+            <TaskList tasks={receivedTasks} hideUserInfo />
+          </UISectionContent>
+        </CollapsePanel>
+        <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
+          <UISectionContent>
+            <TaskList tasks={sentTasks} />
+          </UISectionContent>
+        </CollapsePanel>
+      </UISectionsHolder>
+
+      <UINewTopicButtonHolder>
+        <RouteLink route={routes.dashboardNewTopic} params={{}}>
+          <a>
+            <Button kind="secondary" onClick={console.log} icon={<IconPlusSquare />} iconPosition="start">
+              New Topic
+            </Button>
+          </a>
+        </RouteLink>
+      </UINewTopicButtonHolder>
     </UIHolder>
   );
 }
 
-const UIHolder = styled.div``;
+const UIHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+`;
+
+const UISectionsHolder = styled.div`
+  flex-grow: 1;
+`;
 
 const UISectionTitle = styled.h3`
   ${theme.font.h4.spezia.semibold.build()};
@@ -81,4 +104,9 @@ const UISectionTitle = styled.h3`
 
 const UISectionContent = styled.div`
   padding: 16px 0;
+`;
+
+const UINewTopicButtonHolder = styled.div`
+  display: flex;
+  justify-content: center;
 `;
