@@ -9,7 +9,7 @@ import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
-import { niceFormatDateTime } from "~shared/dates/format";
+import { niceFormatDateTime, relativeFormatDateTime } from "~shared/dates/format";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
@@ -108,7 +108,15 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
       <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
-      &nbsp;was requested.&nbsp;
+      &nbsp;was requested&nbsp;
+      {isTaskOwner && task.due_at !== null && (
+        <TaskDueDateSetter task={task}>
+          by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}
+        </TaskDueDateSetter>
+      )}
+      {!isTaskOwner && task.due_at !== null && (
+        <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}.&nbsp;</>
+      )}
       {isCurrentUserTask && (
         <>
           {isTaskRead && <UITextButton onClick={handleMarkAsUnread}>Mark as unread</UITextButton>}
@@ -122,15 +130,7 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
 
 export const MessageTask = withFragments(fragments, _MessageTask);
 
-const TaskDueDateSetter = ({
-  task,
-  children,
-  previousDueDate,
-}: {
-  task: MessageTask_TaskFragment;
-  children: ReactNode;
-  previousDueDate?: Date;
-}) => {
+const TaskDueDateSetter = ({ task, children }: { task: MessageTask_TaskFragment; children: ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isPickerOpen, { set: openPicker, unset: closePicker }] = useBoolean(false);
@@ -140,6 +140,8 @@ const TaskDueDateSetter = ({
     updateTask({ taskId: task.id, input: { due_at: date.toISOString() } });
   };
 
+  const calendarInitialValue = task.due_at ? new Date(task.due_at) : new Date();
+
   return (
     <>
       <AnimatePresence>
@@ -148,7 +150,7 @@ const TaskDueDateSetter = ({
             <DateTimePicker
               shouldSkipConfirmation={false}
               onSubmit={handleSubmit}
-              initialValue={previousDueDate ?? new Date()}
+              initialValue={calendarInitialValue}
             />
           </Popover>
         )}
