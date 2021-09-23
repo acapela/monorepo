@@ -119,8 +119,10 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
       )}
       {isCurrentUserTask && (
         <>
+          &nbsp;
           {isTaskRead && <UITextButton onClick={handleMarkAsUnread}>Mark as unread</UITextButton>}
           {!isTaskRead && <UITextButton onClick={handleMarkAsRead}>Mark as read</UITextButton>}
+          &nbsp;
         </>
       )}
       {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
