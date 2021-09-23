@@ -1,0 +1,6 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- CREATE VIEW team_invitation_info AS SELECT team_invitation.id, team.name AS team_name, inviting_user.name AS inviter_name
+-- FROM team_invitation
+-- LEFT JOIN team ON team.id = team_invitation.team_id
+-- LEFT JOIN "user" inviting_user ON inviting_user.id = team_invitation.inviting_user_id;

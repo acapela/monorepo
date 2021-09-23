@@ -115,14 +115,14 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
 
   const createdTasks = (await db.$transaction(createTasksPromises)) as Task[];
 
-  createdTasks.forEach((task: Task) => {
+  for (const task of createdTasks) {
     trackBackendUserEvent(message.user_id, "Created Task", {
       taskType: task.type as string,
       mentionedUserId: task.user_id,
       taskId: task.id,
       messageId: task.message_id,
     });
-  });
+  }
 
   return createdTasks;
 }

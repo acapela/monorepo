@@ -1,4 +1,13 @@
 actions:
+- name: accept_invitations
+  definition:
+    kind: synchronous
+    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
+    headers:
+    - name: Authorization
+      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
+  permissions:
+  - role: user
 - name: find_slack_user
   definition:
     kind: ""
@@ -26,16 +35,6 @@ actions:
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
   permissions:
   - role: user
-- name: lookup_team_name
-  definition:
-    kind: ""
-    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-    headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-  permissions:
-  - role: public
-  - role: user
 - name: resend_invitation
   definition:
     kind: synchronous
@@ -44,16 +43,6 @@ actions:
     - name: Authorization
       value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
   permissions:
-  - role: user
-- name: room_invitation_view
-  definition:
-    kind: ""
-    handler: '{{HASURA_ACTIONS_WEBHOOK_URL}}'
-    headers:
-    - name: Authorization
-      value_from_env: HASURA_ACTIONS_WEBHOOK_AUTHORIZATION_HEADER
-  permissions:
-  - role: public
   - role: user
 - name: upgrade_current_user
   definition:
@@ -82,9 +71,8 @@ custom_types:
         user_id: id
   - name: UploadUrlResponse
   - name: DownloadUrlResponse
-  - name: LookupTeamNameResponse
-  - name: RoomInvitationViewResponse
   - name: ResendInvitationResponse
   - name: GetTeamSlackInstallationURLOutput
   - name: FindSlackUserOutput
+  - name: AcceptInvitationsOutput
   scalars: []

@@ -1,7 +1,6 @@
 import { getUploadUrl } from "~backend/src/attachments/attachments";
-import { roomInvitationView } from "~backend/src/roomInvitation/roomInvitationView";
 import { findSlackUser, getTeamSlackInstallationURL } from "~backend/src/slack/install";
-import { lookupTeamName } from "~backend/src/teamInvitation/lookupTeamName";
+import { acceptInvitations } from "~backend/src/teamInvitation/acceptInvitations";
 import { resendInvitation } from "~backend/src/teamInvitation/resendInvitation";
 
 export interface ActionHandler<DataT, ResponseT> {
@@ -11,10 +10,9 @@ export interface ActionHandler<DataT, ResponseT> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const handlers: ActionHandler<any, any>[] = [
+  acceptInvitations,
   findSlackUser,
   getTeamSlackInstallationURL,
   getUploadUrl,
-  lookupTeamName,
   resendInvitation,
-  roomInvitationView,
 ];

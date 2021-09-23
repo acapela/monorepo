@@ -113,11 +113,11 @@ export function readTokenFromRequest(req?: IncomingMessage): string | null {
 
 const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
   new ApolloLink((operation, forward) => {
-    const { headers = {} } = operation.getContext();
+    const { noAuth, headers = {} } = operation.getContext();
 
     const authToken = forcedAuthToken ?? readCurrentToken();
 
-    if (!authToken) {
+    if (!authToken || noAuth) {
       return forward(operation);
     }
 

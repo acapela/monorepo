@@ -11,7 +11,6 @@ import { handleTeamInvitationCreated, handleTeamInvitationDeleted } from "~backe
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
-import { handleUserCreated } from "~backend/src/users/events";
 
 import { handleTranscriptionUpdates } from "../transcriptions/events";
 import { hasuraEvents } from "./eventHandlers";
@@ -26,7 +25,6 @@ hasuraEvents.addHandler("team_invitation_updates", "DELETE", handleTeamInvitatio
 hasuraEvents.addHandler("room_invitation_updates", "INSERT", handleRoomInvitationCreated);
 hasuraEvents.addHandler("attachment_updates", ["UPDATE"], handleAttachmentUpdates);
 hasuraEvents.addHandler("space_updates", ["INSERT", "UPDATE"], handleSpaceUpdates);
-hasuraEvents.addHandler("user_updates", ["INSERT"], handleUserCreated);
 hasuraEvents.addHandler("room_member_updates", ["INSERT"], handleRoomMemberCreated);
 // Create plain text version of each message so it can be used by search views.
 hasuraEvents.addHandler("message_updates", ["INSERT", "UPDATE"], handleMessageChanges);

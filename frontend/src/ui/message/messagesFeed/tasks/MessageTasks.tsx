@@ -15,15 +15,14 @@ export const MessageTasks = styled(function MessageTasks({ tasks, className, tas
   const allTeamMembers = useCurrentTeamMembers();
   return (
     <UITasks className={className}>
-      {tasks.map((task) => {
-        const taskAssignee = allTeamMembers.find((member) => member.id === task.user_id);
-
-        if (!taskAssignee) {
-          return;
-        }
-
-        return <MessageTask key={task.id} task={task} taskAssignee={taskAssignee} taskOwnerId={taskOwnerId} />;
-      })}
+      {tasks.map((task) => (
+        <MessageTask
+          key={task.id}
+          task={task}
+          taskAssignee={allTeamMembers.find((member) => member.id === task.user_id) ?? null}
+          taskOwnerId={taskOwnerId}
+        />
+      ))}
     </UITasks>
   );
 })``;

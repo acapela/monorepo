@@ -1,11 +1,15 @@
+import { gql, useQuery } from "@apollo/client";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { removeTeamInvitation, removeTeamMember, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { removeTeamInvitation, removeTeamMember } from "~frontend/gql/teams";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
+import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
+import { CurrentTeamMembersManagerQuery, CurrentTeamMembersManagerQueryVariables } from "~gql";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
@@ -15,7 +19,35 @@ import { ResendInviteButton } from "./ResendInviteButton";
 import { SlackInstallationButton } from "./SlackInstallationButton";
 
 export const CurrentTeamMembersManager = () => {
-  const [team] = useCurrentTeamDetails();
+  const teamId = useAssertCurrentTeamId();
+  const { data: teamData } = useQuery<CurrentTeamMembersManagerQuery, CurrentTeamMembersManagerQueryVariables>(
+    gql`
+      ${UserBasicInfo.fragments.user}
+
+      query CurrentTeamMembersManager($teamId: uuid!) {
+        team: team_by_pk(id: $teamId) {
+          id
+          name
+          owner_id
+          memberships {
+            id
+            user {
+              id
+              email
+              ...UserBasicInfo_user
+            }
+          }
+          invitations {
+            id
+            email
+            slack_user_id
+          }
+        }
+      }
+    `,
+    { variables: { teamId } }
+  );
+  const team = teamData?.team;
   const currentUser = useAssertCurrentUser();
   const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
@@ -63,14 +95,14 @@ export const CurrentTeamMembersManager = () => {
               )}
             </UIItemHolder>
           ))}
-          {pendingInvitations.map(({ email, id }) => (
-            <UIItemHolder key={id}>
-              <InvitationPendingIndicator email={email} />
+          {pendingInvitations.map((invitation) => (
+            <UIItemHolder key={invitation.id}>
+              <InvitationPendingIndicator label={invitation.email || getTeamInvitationDisplayName(invitation)} />
               <UIActionsHolder>
-                <ResendInviteButton invitationId={id} />
+                <ResendInviteButton invitationId={invitation.id} />
                 <CircleCloseIconButton
                   isDisabled={!isCurrentUserTeamOwner}
-                  onClick={() => handleRemoveInvitation(id)}
+                  onClick={() => handleRemoveInvitation(invitation.id)}
                   tooltip={!isCurrentUserTeamOwner ? "Only team owner can delete invitations" : undefined}
                 />
               </UIActionsHolder>

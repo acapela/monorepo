@@ -57,14 +57,17 @@ async function markPendingTasksAsDone(newMessage: Message) {
   });
 
   // Tracking
-  pendingTasks.forEach((task) => {
+  for (const task of pendingTasks) {
+    if (!task.user_id) {
+      continue;
+    }
     trackBackendUserEvent(task.user_id, "Completed Task", {
       taskType: task.type as string,
       taskId: task.id,
       messageId: task.message_id,
       doneAt: taskCompletionTime,
     });
-  });
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -6,8 +6,6 @@ import {
   CreateTeamInvitationMutationVariables,
   CreateTeamMutation,
   CreateTeamMutationVariables,
-  LookupTeamNameQuery,
-  LookupTeamNameQueryVariables,
   RemoveTeamInvitationMutation,
   RemoveTeamInvitationMutationVariables,
   RemoveTeamMemberMutation,
@@ -151,16 +149,6 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
 
-export function useCurrentTeamMember(userId: string): [UserBasicInfoFragmentType | null, boolean] {
-  const [teamDetails, { loading }] = useCurrentTeamDetails();
-
-  const teamMember = teamDetails?.memberships.find((membership) => membership.user.id === userId)?.user;
-
-  const teamMemberData = teamMember ?? null;
-
-  return [teamMemberData, loading];
-}
-
 export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
   CreateTeamInvitationMutation,
   CreateTeamInvitationMutationVariables
@@ -245,18 +233,6 @@ export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutatio
       addToast({ type: "success", title: `Team member was removed` });
     },
   }
-);
-
-export const [lookupTeamName] = createQuery<LookupTeamNameQuery, LookupTeamNameQueryVariables>(
-  () => gql`
-    query LookupTeamName($token: String!) {
-      invite: lookup_team_name(token: $token) {
-        team_name
-        inviter_name
-        email
-      }
-    }
-  `
 );
 
 export const [useResendInvitation] = createMutation<ResendInvitationMutation, ResendInvitationMutationVariables>(

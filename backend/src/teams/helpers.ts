@@ -1,4 +1,4 @@
-import { TeamMember, db } from "~db";
+import { db } from "~db";
 
 export async function getHasTeamMember(teamId: string, memberId: string): Promise<boolean> {
   const entry = await db.team_member.findFirst({
@@ -10,13 +10,4 @@ export async function getHasTeamMember(teamId: string, memberId: string): Promis
 
 export async function findTeamById(teamId: string) {
   return db.team.findUnique({ where: { id: teamId } });
-}
-
-export async function addTeamMember(teamId: string, participantId: string): Promise<TeamMember> {
-  return await db.team_member.create({
-    data: {
-      team_id: teamId,
-      user_id: participantId,
-    },
-  });
 }

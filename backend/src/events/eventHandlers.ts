@@ -11,7 +11,6 @@ import {
   TeamMember,
   Topic,
   Transcription,
-  User,
 } from "~db";
 
 import { createHasuraEventsHandler } from "../hasura";
@@ -25,7 +24,6 @@ export const hasuraEvents = createHasuraEventsHandler<{
   room_invitation_updates: RoomInvitation;
   team_updates: Team;
   topic_updates: Topic;
-  user_updates: User;
   room_member_updates: RoomMember;
   attachment_updates: Attachment;
   transcription_updates: Transcription;

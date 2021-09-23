@@ -103,7 +103,7 @@ export type AnalyticsEventsMap = {
   // Mention and task related events
 
   "Created Mention": { isToSelf: boolean; messageId: string; mentionedUserId: string };
-  "Created Task": { taskType: string; mentionedUserId: string; taskId: string; messageId: string };
+  "Created Task": { taskType: string; mentionedUserId: string | null; taskId: string; messageId: string };
   "Marked Task As Seen": { taskType: string; taskId: string; messageId: string; seenAt: Date };
   "Marked Task As Unseen": { taskType: string; taskId: string; messageId: string };
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };

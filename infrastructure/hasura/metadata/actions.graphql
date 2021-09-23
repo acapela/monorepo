@@ -1,3 +1,7 @@
+type Mutation {
+  accept_invitations(token: uuid!): AcceptInvitationsOutput
+}
+
 type Query {
   find_slack_user(input: FindSlackUserInput!): FindSlackUserOutput
 }
@@ -10,16 +14,8 @@ type Query {
   get_upload_url(fileName: String!, mimeType: String!): UploadUrlResponse
 }
 
-type Query {
-  lookup_team_name(token: String!): LookupTeamNameResponse
-}
-
 type Mutation {
   resend_invitation(invitation_id: ID!): ResendInvitationResponse
-}
-
-type Query {
-  room_invitation_view(token: String!): RoomInvitationViewResponse
 }
 
 type Mutation {
@@ -49,17 +45,6 @@ type DownloadUrlResponse {
   downloadUrl: String!
 }
 
-type LookupTeamNameResponse {
-  team_name: String!
-  inviter_name: String!
-  email: String!
-}
-
-type RoomInvitationViewResponse {
-  room_name: String!
-  inviter_name: String!
-}
-
 type ResendInvitationResponse {
   sent_at: timestamptz
 }
@@ -70,4 +55,8 @@ type GetTeamSlackInstallationURLOutput {
 
 type FindSlackUserOutput {
   has_slack_user: Boolean!
+}
+
+type AcceptInvitationsOutput {
+  success: Boolean!
 }
