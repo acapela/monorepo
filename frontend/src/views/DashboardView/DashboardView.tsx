@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { DashboardNavigation } from "./Navigation/DashboardNavigation";
+import { NewTopicCreation } from "./NewTopicCreation";
 import { OpenedTopic } from "./OpenedTopic";
 
 interface Props {
@@ -13,7 +14,10 @@ export function DashboardView({ topicId }: Props) {
       <UINavigationHolder>
         <DashboardNavigation />
       </UINavigationHolder>
-      <UIActiveContentHolder>{topicId && <OpenedTopic key={topicId} topicId={topicId} />}</UIActiveContentHolder>
+      <UIActiveContentHolder>
+        {topicId && <OpenedTopic key={topicId} topicId={topicId} />}
+        {!topicId && <NewTopicCreation />}
+      </UIActiveContentHolder>
     </UIHolder>
   );
 }
@@ -27,6 +31,8 @@ const UIHolder = styled.div`
 
 const UINavigationHolder = styled.div`
   padding: 16px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UIActiveContentHolder = styled.div``;

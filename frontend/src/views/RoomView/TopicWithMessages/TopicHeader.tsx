@@ -53,7 +53,6 @@ interface Props {
 
 const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isMember = useIsCurrentUserRoomMember(room);
   const [updateTopic] = useUpdateTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
   const isTopicManager = useIsCurrentUserTopicManager(topic);
@@ -100,14 +99,9 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
               </UIToggleCloseButton>
             ))}
           {onCloseTopicRequest && (
-            <UIToggleCloseButton
-              onClick={openClosingTopicModal}
-              isDisabled={!isMember && { reason: `You have to be room member to close topics` }}
-            >
-              Close Topic
-            </UIToggleCloseButton>
+            <UIToggleCloseButton onClick={openClosingTopicModal}>Close Topic</UIToggleCloseButton>
           )}
-          {isMember && <ManageTopic topic={topic} />}
+          <ManageTopic topic={topic} />
         </UIActions>
       )}
       <AnimatePresence>

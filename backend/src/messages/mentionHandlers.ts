@@ -78,30 +78,6 @@ function getHighestPriorityTaskType(types: MentionType[]): MentionType {
   return "request-read";
 }
 
-async function hasUserAccessToTopic(user_id: string, topic_id: string): Promise<boolean> {
-  const room = await db.room.findFirst({ where: { topic: { some: { id: topic_id } } } });
-
-  if (!room) {
-    return false;
-  }
-
-  // Prevent creating a task if receiving user doesn't have access to room
-  if (room.is_private) {
-    const isMemberOfPrivateRoom =
-      (await db.room_member.findFirst({
-        where: {
-          AND: {
-            room_id: { equals: room.id },
-            user_id: { equals: user_id },
-          },
-        },
-      })) !== null;
-    return isMemberOfPrivateRoom;
-  }
-
-  return true;
-}
-
 export async function createTasksFromNewMentions(message: Message, messageBefore: Message | null) {
   const allMentionsInMessage = getNewMentionNodesFromMessage(message, messageBefore);
 
@@ -127,9 +103,8 @@ export async function createTasksFromNewMentions(message: Message, messageBefore
   const createTasksPromises: Array<PrismaPromise<Task>> = [];
 
   for (const { user_id, type } of mostImportantSingleTaskPerUserInMessage) {
-    if (!(await hasUserAccessToTopic(user_id, message.topic_id))) {
-      continue;
-    }
+    // We're not checking for user permission to the topic, as it is possible that task creation actually gives the user
+    // access to the topic.
 
     createTasksPromises.push(
       db.task.create({
