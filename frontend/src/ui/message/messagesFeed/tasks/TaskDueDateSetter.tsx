@@ -1,3 +1,6 @@
+import {} from "date-fns/esm";
+
+import { isFriday, nextMonday, setHours, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
@@ -13,6 +16,15 @@ interface Props {
   children: ReactNode;
 }
 
+const DEFAULT_MIDDLE_OF_WORK_DAY = 14;
+
+function getDefaultInitialDueDate() {
+  const now = new Date();
+  const nextWorkDay = isFriday(now) ? nextMonday(now) : startOfTomorrow();
+
+  return setHours(nextWorkDay, DEFAULT_MIDDLE_OF_WORK_DAY);
+}
+
 export const TaskDueDateSetter = ({ task, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -23,7 +35,7 @@ export const TaskDueDateSetter = ({ task, children }: Props) => {
     updateTask({ taskId: task.id, input: { due_at: date.toISOString() } });
   };
 
-  const calendarInitialValue = task.due_at ? new Date(task.due_at) : new Date();
+  const calendarInitialValue = task.due_at ? new Date(task.due_at) : getDefaultInitialDueDate();
 
   return (
     <>
