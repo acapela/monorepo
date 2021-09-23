@@ -74,7 +74,7 @@ export async function createAndSendTopicMentionNotification({
     db.team_member.findFirst({
       where: {
         user_id: userId,
-        team: { space: { some: { room: { some: { topic: { some: { id: { equals: topicId } } } } } } } },
+        team: { topic: { some: { id: { equals: topicId } } } },
       },
       include: { user: true },
     }),
