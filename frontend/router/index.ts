@@ -7,6 +7,7 @@ export { RouteLink } from "./RouteLink";
 export const routes = {
   home: createRoute("/", {}),
   dashboard: createRoute("/dashboard", {}),
+  dashboardNewTopic: createRoute("/dashboard/new", {}),
   dashboardTopic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
