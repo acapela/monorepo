@@ -117,6 +117,7 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
       {!isTaskOwner && task.due_at !== null && (
         <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}.&nbsp;</>
       )}
+      {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
       {isCurrentUserTask && (
         <>
           &nbsp;
@@ -125,7 +126,6 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
           &nbsp;
         </>
       )}
-      {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
     </UISingleTask>
   );
 })``;
