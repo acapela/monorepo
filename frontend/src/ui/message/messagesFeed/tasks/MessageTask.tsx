@@ -16,6 +16,8 @@ import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
+import { TaskStatusIcon } from "./TaskStatusIcon";
+
 interface Props {
   task: MessageTask_TaskFragment;
   taskOwnerId: string;
@@ -164,37 +166,6 @@ const TaskDueDateSetter = ({ task, children }: { task: MessageTask_TaskFragment;
   );
 };
 
-const TaskStatusIcon = ({ task, taskAssigneeName }: { task: MessageTask_TaskFragment; taskAssigneeName: string }) => {
-  function getTaskStatus(): "unseen" | "seen" | "done" {
-    if (task.done_at) return "done";
-    if (task.seen_at) return "seen";
-
-    return "unseen";
-  }
-
-  const taskStatus = getTaskStatus();
-  return (
-    <>
-      {taskStatus === "unseen" && (
-        <UIIconHolder data-tooltip={`Was not yet seen by ${taskAssigneeName}`}>
-          <IconTime />
-        </UIIconHolder>
-      )}
-      {taskStatus === "seen" && (
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        <UIIconHolder data-tooltip={`Seen by ${taskAssigneeName} at ${niceFormatDateTime(new Date(task.seen_at!))} `}>
-          <IconUserCheck />
-        </UIIconHolder>
-      )}
-      {taskStatus === "done" && (
-        <UIIconHolder>
-          <IconCheck />
-        </UIIconHolder>
-      )}
-    </>
-  );
-};
-
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;
   flex-grow: 1;
@@ -223,9 +194,4 @@ const UITextButton = styled.span<{}>`
   white-space: nowrap;
   cursor: pointer;
   text-decoration: underline;
-`;
-
-const UIIconHolder = styled.span<{}>`
-  font-size: 1.5em;
-  margin-right: 8px;
 `;
