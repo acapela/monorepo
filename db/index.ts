@@ -20,7 +20,6 @@ export type {
   team_invitation as TeamInvitation,
   room_invitation as RoomInvitation,
   membership_status as MembershipStatus,
-  topic_member as TopicMember,
   space_member as SpaceMember,
   team_member as TeamMember,
   whitelist as Whitelist,
