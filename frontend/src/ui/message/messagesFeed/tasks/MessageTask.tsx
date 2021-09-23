@@ -106,19 +106,22 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
       <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
-      &nbsp;was requested&nbsp;
-      {isTaskOwner && task.due_at !== null && (
-        <TaskDueDateSetter task={task}>
-          by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}
-        </TaskDueDateSetter>
+      &nbsp;was requested
+      {task.due_at !== null && (
+        <>
+          &nbsp;
+          {isTaskOwner && (
+            <TaskDueDateSetter task={task}>
+              by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}
+            </TaskDueDateSetter>
+          )}
+          {!isTaskOwner && <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}</>}
+        </>
       )}
-      {!isTaskOwner && task.due_at !== null && (
-        <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}.&nbsp;</>
-      )}
+      .&nbsp;
       {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
       {isCurrentUserTask && (
         <>
-          &nbsp;
           {isTaskRead && <UITextButton onClick={handleMarkAsUnread}>Mark as unread</UITextButton>}
           {!isTaskRead && <UITextButton onClick={handleMarkAsRead}>Mark as read</UITextButton>}
           &nbsp;
