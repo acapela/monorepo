@@ -6,8 +6,11 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
+import { createLastItemIndex } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageComposerContext } from "~frontend/ui/message/composer/MessageComposerContext";
@@ -20,25 +23,30 @@ import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType
 import {
   CreateNewMessageMutation,
   CreateNewMessageMutationVariables,
+  CreateNewTopicForMessageMutation,
+  CreateNewTopicForMessageMutationVariables,
   Message_Type_Enum,
   TopicWithMessagesQuery,
   TopicWithMessagesQueryVariables,
 } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
+import { slugify } from "~shared/slugify";
 import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
 import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
 interface Props {
-  topicId: string;
-  isDisabled: boolean;
-  isFirstMessage: boolean;
-  onMessageSent: () => void;
+  topicId?: string;
+  isDisabled?: boolean;
+  requireMention: boolean;
+  onMessageSent: (messageData: NonNullable<CreateNewMessageMutation["message"]>) => void;
 }
 
 interface SubmitMessageParams {
@@ -47,8 +55,51 @@ interface SubmitMessageParams {
   attachments: EditorAttachmentInfo[];
 }
 
-const useCreateMessageMutation = () =>
-  useMutation<CreateNewMessageMutation, CreateNewMessageMutationVariables>(
+function pickFirstLineFromPlainTextContent(plainTextContent: string): string {
+  return plainTextContent.split("\n")[0];
+}
+
+const useCreateNewTopicForMessage = () => {
+  const user = useAssertCurrentUser();
+  const teamId = useCurrentTeamId();
+  const [createNewTopic] = useMutation<CreateNewTopicForMessageMutation, CreateNewTopicForMessageMutationVariables>(gql`
+    mutation CreateNewTopicForMessage($input: topic_insert_input!) {
+      topic: insert_topic_one(object: $input) {
+        id
+      }
+    }
+  `);
+
+  async function createNewTopicForMessageContent(content: RichEditorNode) {
+    const contentPlainText = convertMessageContentToPlainText(content);
+
+    const titleFromPlainText = pickFirstLineFromPlainTextContent(contentPlainText);
+
+    const slug = slugify(titleFromPlainText);
+
+    const newTopicCreationResult = await createNewTopic({
+      variables: {
+        input: {
+          id: getUUID(),
+          name: titleFromPlainText,
+          owner_id: user.id,
+          team_id: teamId,
+          slug,
+          index: createLastItemIndex(),
+        },
+      },
+    });
+
+    const newTopic = newTopicCreationResult.data?.topic ?? null;
+
+    return newTopic;
+  }
+
+  return createNewTopicForMessageContent;
+};
+
+const useCreateMessageMutation = () => {
+  return useMutation<CreateNewMessageMutation, CreateNewMessageMutationVariables>(
     gql`
       ${Message.fragments.message}
 
@@ -128,6 +179,7 @@ const useCreateMessageMutation = () =>
       },
     }
   );
+};
 
 function useLocalStorageState<S>({
   key,
@@ -154,7 +206,7 @@ function useLocalStorageState<S>({
   return [value, setValue];
 }
 
-export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, isFirstMessage }: Props) => {
+export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
   const editorRef = useRef<Editor>(null);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
@@ -164,11 +216,12 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
   const [value, setValue] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + topicId,
+    key: "message-draft-for-topic:" + (topicId ?? "new-topic"),
     getInitialValue: getEmptyRichContent,
     checkShouldStore,
   });
   const [createMessage, { loading: isCreatingMessage }] = useCreateMessageMutation();
+  const createNewTopicForMessage = useCreateNewTopicForMessage();
 
   const topicContext = useTopicStoreContext();
   const roomContext = useRoomStoreContext();
@@ -179,7 +232,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const [shouldValidateOnChange, setShouldValidateOnChange] = useState(false);
   const validator = useCallback(
     (value: RichEditorNode) => {
-      if (isFirstMessage) {
+      if (requireMention) {
         const mentionNodes = getNodesFromContentByType(value, "mention");
         if (mentionNodes.length < 1) {
           return "The first message should have a mention.";
@@ -188,7 +241,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
       return null;
     },
-    [isFirstMessage]
+    [requireMention]
   );
   const validationErrorMessage = useMemo(() => {
     if (!shouldValidateOnChange) return null;
@@ -223,33 +276,53 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
     const messageId = getUUID();
+    /**
+     * We'll either use topicId provided from props, or if not provided - will create new topic.
+     * New topic title will be created from first 'paragraph' of plain text content in the message.
+     */
+    let finalTopicId = topicId;
+
+    if (!finalTopicId) {
+      const newTopicForMessage = await createNewTopicForMessage(content);
+
+      finalTopicId = newTopicForMessage?.id;
+    }
+
+    assert(
+      finalTopicId,
+      "Cannot create new message - no topicId provided and could not create new topic for this message"
+    );
+
     const { data } = await createMessage({
       variables: {
         id: messageId,
-        topicId,
+        topicId: finalTopicId,
         type,
         content,
         replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
       },
     });
 
-    if (data) {
-      trackEvent("Sent Message", {
-        messageType: type,
-        isReply: !!topicContext?.currentlyReplyingToMessageId,
-        hasAttachments: attachments.length > 0,
-      });
-      await Promise.all(
-        bindAttachmentsToMessage(
-          messageId,
-          attachments.map(({ uuid }) => uuid)
-        )
-      );
+    if (!data?.message) {
+      console.warn(`Failed to create message`);
+      return;
     }
+
+    trackEvent("Sent Message", {
+      messageType: type,
+      isReply: !!topicContext?.currentlyReplyingToMessageId,
+      hasAttachments: attachments.length > 0,
+    });
+    await Promise.all(
+      bindAttachmentsToMessage(
+        messageId,
+        attachments.map(({ uuid }) => uuid)
+      )
+    );
 
     handleStopReplyingToMessage();
 
-    onMessageSent();
+    onMessageSent(data.message);
   };
 
   return (
@@ -331,4 +404,5 @@ const UIEditorContainer = styled.div<{}>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  width: 100%;
 `;

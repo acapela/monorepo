@@ -9,6 +9,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
+import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
 import {
   TopicClosureSubscription,
@@ -18,10 +19,8 @@ import {
   UpdateLastSeenMessageMutation,
   UpdateLastSeenMessageMutationVariables,
 } from "~gql";
-import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { disabledCss } from "~ui/disabled";
-import { theme } from "~ui/theme";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
@@ -138,113 +137,52 @@ export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Prop
 
   return (
     <TopicStoreContext>
-      <UIHolder>
+      <UITopicViewCard
+        headerNode={topic && <TopicHeader onCloseTopicRequest={onCloseTopicRequest} room={room} topic={topic} />}
+      >
         {/* Absolutely placed backdrop will take it's width relative to the width its container */}
         {/* This works as this nested container holds no padding/margin left or right */}
-        <UIBackdropContainer>
-          <UIBackDrop />
-          <UIMainContainer>
-            {/* We need to render the topic header wrapper or else flex bugs out on page reload */}
-            <UITopicHeaderHolder>
-              {topic && <TopicHeader onCloseTopicRequest={onCloseTopicRequest} room={room} topic={topic} />}
-            </UITopicHeaderHolder>
 
-            <ScrollableMessages ref={scrollerRef as never}>
-              <AnimateSharedLayout>
-                <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
+        <>
+          <ScrollableMessages ref={scrollerRef as never}>
+            <AnimateSharedLayout>
+              <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
 
-                {topic && isClosed && <TopicSummaryMessage topic={topic} />}
-              </AnimateSharedLayout>
+              {topic && isClosed && <TopicSummaryMessage topic={topic} />}
+            </AnimateSharedLayout>
 
-              {!messages.length && !isClosed && (
-                <UIContentWrapper>
-                  {isLoadingMessages
-                    ? "Loading messages..."
-                    : "Start a request by adding a first message with an @-mention below."}
-                </UIContentWrapper>
-              )}
-
-              {isClosed && <TopicClosureNote isParentRoomOpen={!room?.finished_at} />}
-            </ScrollableMessages>
-
-            {!isClosed && (
-              <ClientSideOnly>
-                <UIMessageComposer isDisabled={isComposerDisabled}>
-                  <CreateNewMessageEditor
-                    topicId={topic.id}
-                    isDisabled={isComposerDisabled}
-                    isFirstMessage={messages.length === 0}
-                    onMessageSent={() => {
-                      scrollerRef.current?.scrollToBottom("auto");
-                    }}
-                  />
-                </UIMessageComposer>
-              </ClientSideOnly>
+            {!messages.length && !isClosed && (
+              <UIContentWrapper>
+                {isLoadingMessages
+                  ? "Loading messages..."
+                  : "Start a request by adding a first message with an @-mention below."}
+              </UIContentWrapper>
             )}
-          </UIMainContainer>
-        </UIBackdropContainer>
-      </UIHolder>
+
+            {isClosed && <TopicClosureNote isParentRoomOpen={!room?.finished_at} />}
+          </ScrollableMessages>
+
+          {!isClosed && (
+            <ClientSideOnly>
+              <UIMessageComposer isDisabled={isComposerDisabled}>
+                <CreateNewMessageEditor
+                  topicId={topic.id}
+                  isDisabled={isComposerDisabled}
+                  requireMention={messages.length === 0}
+                  onMessageSent={() => {
+                    scrollerRef.current?.scrollToBottom("auto");
+                  }}
+                />
+              </UIMessageComposer>
+            </ClientSideOnly>
+          )}
+        </>
+      </UITopicViewCard>
     </TopicStoreContext>
   );
 });
 
-const UIHolder = styled(DropFileContext)<{}>`
-  height: 100%;
-  padding-right: 24px;
-`;
-
-const UIBackdropContainer = styled.div<{}>`
-  position: relative;
-  padding-top: 24px;
-
-  display: flex;
-  flex-direction: column;
-
-  height: 100%;
-`;
-
-const UIBackDrop = styled.div<{}>`
-  position: absolute;
-  top: 16px;
-
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-
-  height: 60px;
-  width: 94%;
-
-  background-color: ${theme.colors.layout.foreground()};
-  border: 1px solid ${theme.colors.layout.softLine()};
-
-  ${theme.borderRadius.card};
-`;
-
-const UITopicHeaderHolder = styled.div<{}>`
-  background: ${theme.colors.layout.foreground()};
-
-  ${theme.borderRadius.card}
-  border-bottom-left-radius: 0%;
-  border-bottom-right-radius: 0%;
-`;
-
-const UIMainContainer = styled.div<{}>`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  background: ${theme.colors.layout.foreground((modifiers) => [modifiers.opacity(0.65)])};
-  border: 1px solid ${theme.colors.layout.softLine()};
-  box-sizing: border-box;
-
-  ${theme.borderRadius.card}
-  border-bottom-left-radius: 0%;
-  border-bottom-right-radius: 0%;
-
-  ${theme.shadow.largeFrame}
-
+const UITopicViewCard = styled(TopicViewCard)`
   ${ScrollableMessages} {
     flex: 1 1 100%;
     padding: 16px 24px;
