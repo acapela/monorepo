@@ -8,11 +8,22 @@ object_relationships:
 - name: user
   using:
     foreign_key_constraint_on: user_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      message:
+        user_id:
+          _eq: X-Hasura-User-Id
+    columns:
+    - due_at
+  role: user
 select_permissions:
 - permission:
     columns:
     - created_at
     - done_at
+    - due_at
     - id
     - message_id
     - seen_at
@@ -30,8 +41,13 @@ update_permissions:
     check: null
     columns:
     - done_at
+    - due_at
     - seen_at
     filter:
-      user_id:
-        _eq: X-Hasura-User-Id
+      _or:
+      - user_id:
+          _eq: X-Hasura-User-Id
+      - message:
+          user_id:
+            _eq: X-Hasura-User-Id
   role: user

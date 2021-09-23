@@ -29,8 +29,8 @@ import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
-import { MessageTask } from "./MessageTask";
-import { MessageTasks } from "./MessageTasks";
+import { MessageTask } from "./tasks/MessageTask";
+import { MessageTasks } from "./tasks/MessageTasks";
 
 const fragments = {
   message: gql`
@@ -199,7 +199,7 @@ const _Message = styled<Props>(
               </UIMessageContent>
             )}
 
-            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} />}
+            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>

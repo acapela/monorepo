@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import React from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -7,12 +8,15 @@ import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
-import { niceFormatDateTime } from "~shared/dates/format";
-import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
+import { relativeFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
+
+import { TaskDueDateSetter } from "./TaskDueDateSetter";
+import { TaskStatusIcon } from "./TaskStatusIcon";
 
 interface Props {
   task: MessageTask_TaskFragment;
+  taskOwnerId: string;
   taskAssignee: UserBasicInfoFragment;
   className?: string;
 }
@@ -25,15 +29,17 @@ const fragments = {
       message_id
       seen_at
       done_at
+      due_at
       type
     }
   `,
 };
 
-const _MessageTask = styled(function MessageTask({ task, taskAssignee, className }: Props) {
+const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssignee, className }: Props) {
   const currentUser = useCurrentUser();
 
   const isCurrentUserTask = currentUser?.id === taskAssignee.id;
+  const isTaskOwner = currentUser?.id === taskOwnerId;
   const isDone = !!task.done_at;
   const isTaskRead = !!task.seen_at;
 
@@ -80,20 +86,12 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
     });
   }
 
-  function getTaskStatus(): "unseen" | "seen" | "done" {
-    if (task.done_at) return "done";
-    if (task.seen_at) return "seen";
-
-    return "unseen";
-  }
-
   function getTaskRequestLabel(): string {
     if (task.type === "request-read") return "Read receipt";
     // Null tasks are handled as "Request read" until all has been migrated to new types
     return "Response";
   }
 
-  const taskStatus = getTaskStatus();
   const taskRequestLabel = getTaskRequestLabel();
 
   return (
@@ -103,31 +101,30 @@ const _MessageTask = styled(function MessageTask({ task, taskAssignee, className
       data-test-task-is-done={isDone ? true : undefined}
       className={className}
     >
-      {taskStatus === "unseen" && (
-        <UIIconHolder data-tooltip={`Was not yet seen by ${taskAssignee.name}`}>
-          <IconTime />
-        </UIIconHolder>
-      )}
-      {taskStatus === "seen" && (
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        <UIIconHolder data-tooltip={`Seen by ${taskAssignee.name} at ${niceFormatDateTime(new Date(task.seen_at!))} `}>
-          <IconUserCheck />
-        </UIIconHolder>
-      )}
-      {taskStatus === "done" && (
-        <UIIconHolder>
-          <IconCheck />
-        </UIIconHolder>
-      )}
+      <TaskStatusIcon task={task} taskAssigneeName={taskAssignee.name ?? ""} />
       {taskRequestLabel} from&nbsp;
       <UserAvatar user={taskAssignee} size={"extra-small"} />
       &nbsp;
       <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
-      &nbsp;was requested.&nbsp;
+      &nbsp;was requested
+      {task.due_at !== null && (
+        <>
+          &nbsp;
+          {isTaskOwner && (
+            <TaskDueDateSetter task={task}>
+              by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}
+            </TaskDueDateSetter>
+          )}
+          {!isTaskOwner && <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}</>}
+        </>
+      )}
+      .&nbsp;
+      {isTaskOwner && task.due_at === null && <TaskDueDateSetter task={task}>Add due date</TaskDueDateSetter>}
       {isCurrentUserTask && (
         <>
           {isTaskRead && <UITextButton onClick={handleMarkAsUnread}>Mark as unread</UITextButton>}
           {!isTaskRead && <UITextButton onClick={handleMarkAsRead}>Mark as read</UITextButton>}
+          &nbsp;
         </>
       )}
     </UISingleTask>
@@ -164,9 +161,4 @@ const UITextButton = styled.span<{}>`
   white-space: nowrap;
   cursor: pointer;
   text-decoration: underline;
-`;
-
-const UIIconHolder = styled.span<{}>`
-  font-size: 1.5em;
-  margin-right: 8px;
 `;

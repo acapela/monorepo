@@ -21,6 +21,7 @@ export const TaskBasicInfoFragment = createFragment<TaskBasicInfoFragmentType>(
       message_id
       created_at
       seen_at
+      due_at
       done_at
       type
     }

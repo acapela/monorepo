@@ -7,10 +7,11 @@ import { MessageTask } from "./MessageTask";
 
 interface Props {
   tasks: MessageTask_TaskFragment[];
+  taskOwnerId: string;
   className?: string;
 }
 
-export const MessageTasks = styled(function MessageTasks({ tasks, className }: Props) {
+export const MessageTasks = styled(function MessageTasks({ tasks, className, taskOwnerId }: Props) {
   const allTeamMembers = useCurrentTeamMembers();
   return (
     <UITasks className={className}>
@@ -21,7 +22,7 @@ export const MessageTasks = styled(function MessageTasks({ tasks, className }: P
           return;
         }
 
-        return <MessageTask key={task.id} task={task} taskAssignee={taskAssignee} />;
+        return <MessageTask key={task.id} task={task} taskAssignee={taskAssignee} taskOwnerId={taskOwnerId} />;
       })}
     </UITasks>
   );

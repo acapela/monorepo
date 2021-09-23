@@ -38,7 +38,8 @@ export async function createAndSendAddedToRoomNotification({
   assert(room.space_id, new UnprocessableEntityError(`invalid room entry: ${roomId}`));
 
   const inviterName = getNormalizedUserName(inviter);
-  await sendNotificationPerPreference(addedTeamMember, {
+
+  sendNotificationPerPreference(addedTeamMember, {
     subject: `${inviterName} has invited you to collaborate on ${room.name}`,
     content: [
       `Hey!`,
@@ -89,7 +90,8 @@ export async function createAndSendTopicMentionNotification({
   const link =
     process.env.FRONTEND_URL +
     (topic.room ? `/space/${topic.room.space_id}/${topic.room.id}/${topic.id}` : `/topic/${topic.id}`);
-  await sendNotificationPerPreference(mentionedTeamMember, {
+
+  sendNotificationPerPreference(mentionedTeamMember, {
     subject: `${authorName} has tagged you in ${topicName}`,
     content: [
       `Hi ${getNormalizedUserName(mentionedTeamMember.user)}!`,
