@@ -1,15 +1,18 @@
-import React from "react";
-
 import { MessageEmbedPreviewConfig } from "~frontend/ui/message/display/MessageLinksPreviews/MessageEmbedPreviewConfig";
-import { MessageLinkPreviewIFrame } from "~frontend/ui/message/display/MessageLinksPreviews/MessageLinkPreviewIFrame";
+import { MessageLinkCard } from "~frontend/ui/message/display/MessageLinksPreviews/MessageLinkCard";
+import { IconFigmaLogo } from "~ui/icons";
 
-import { getFigmaEmbedUrl } from "./getFigmaEmbedUrl";
-
-const PREVIEW_DIMENTIONS_RATIO = 800 / 450;
+import { getFigmaPreviewText } from "./getFigmaPreviewText";
 
 export const figmaPreviewProvider: MessageEmbedPreviewConfig = {
   isUrlSupported: (url) => url.includes("figma.com/file"),
-  PreviewComponent: ({ url }) => (
-    <MessageLinkPreviewIFrame ratio={PREVIEW_DIMENTIONS_RATIO} url={getFigmaEmbedUrl(url)} />
-  ),
+  PreviewComponent: ({ url }) => {
+    const previewText = getFigmaPreviewText(url);
+
+    if (!previewText) {
+      return null;
+    }
+
+    return <MessageLinkCard href={url} text={previewText} icon={<IconFigmaLogo />} />;
+  },
 };

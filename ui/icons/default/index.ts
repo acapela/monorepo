@@ -580,4 +580,5 @@ export { default as IconZoomOut } from "./ZoomOut";
 export { default as IconVerticalThreeDots } from "./VerticalThreeDots";
 export { default as IconDragAndDrop } from "./DragAndDrop";
 export { default as IconNotionLogo } from "./NotionLogo";
+export { default as IconFigmaLogo } from "./FigmaLogo";
 export * from "./index";
