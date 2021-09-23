@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
-import { AnimatePresence } from "framer-motion";
-import React, { ReactNode, useRef } from "react";
+import React from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -9,13 +8,10 @@ import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
-import { niceFormatDateTime, relativeFormatDateTime } from "~shared/dates/format";
-import { useBoolean } from "~shared/hooks/useBoolean";
-import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
-import { Popover } from "~ui/popovers/Popover";
+import { relativeFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
-import { DateTimePicker } from "~ui/time/DateTimePicker";
 
+import { TaskDueDateSetter } from "./TaskDueDateSetter";
 import { TaskStatusIcon } from "./TaskStatusIcon";
 
 interface Props {
@@ -133,38 +129,6 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
 })``;
 
 export const MessageTask = withFragments(fragments, _MessageTask);
-
-const TaskDueDateSetter = ({ task, children }: { task: MessageTask_TaskFragment; children: ReactNode }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [isPickerOpen, { set: openPicker, unset: closePicker }] = useBoolean(false);
-
-  const handleSubmit = async (date: Date) => {
-    closePicker();
-    updateTask({ taskId: task.id, input: { due_at: date.toISOString() } });
-  };
-
-  const calendarInitialValue = task.due_at ? new Date(task.due_at) : new Date();
-
-  return (
-    <>
-      <AnimatePresence>
-        {isPickerOpen && (
-          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker
-              shouldSkipConfirmation={false}
-              onSubmit={handleSubmit}
-              initialValue={calendarInitialValue}
-            />
-          </Popover>
-        )}
-      </AnimatePresence>
-      <UITextButton ref={ref} onClick={openPicker}>
-        {children}
-      </UITextButton>
-    </>
-  );
-};
 
 const UISingleTask = styled.div<{ isDone: boolean }>`
   display: flex;
