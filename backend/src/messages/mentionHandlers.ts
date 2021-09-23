@@ -5,7 +5,6 @@ import { Message, PrismaPromise, Task, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { getMentionNodesFromContent } from "~shared/editor/mentions";
-import { log } from "~shared/logger";
 import { EditorMentionData } from "~shared/types/editor";
 import { MentionType } from "~shared/types/mention";
 
