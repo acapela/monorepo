@@ -68,8 +68,8 @@ insert_permissions:
       _or:
         - _and:
           - room_access:
-            user_id:
-              _eq: X-Hasura-User-Id
+              user_id:
+                _eq: X-Hasura-User-Id
           - room:
               finished_at:
                 _is_null: true
