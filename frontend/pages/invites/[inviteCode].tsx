@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
+import { ApolloContext } from "~frontend/apollo/client";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { routes } from "~frontend/router";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
@@ -33,7 +34,7 @@ export default function InvitePage() {
     `,
     {
       // The only way to access team_invitation_info is with that header and no Authorization
-      context: { noAuth: true, headers: { "X-Hasura-Team-Invitation-Token": token } },
+      context: { noAuth: true, headers: { "X-Hasura-Team-Invitation-Token": token } } as ApolloContext,
     }
   );
   const teamInvitationInfo = teamInvitationInfoData?.team_invitation_info[0];
