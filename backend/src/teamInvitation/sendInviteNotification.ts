@@ -8,7 +8,7 @@ import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { log } from "~shared/logger";
 
-async function sendSlackInvitation(teamId: string, inviter: User, slackUserId: string, inviteURL: string) {
+async function sendInvitationSlackMessage(teamId: string, inviter: User, slackUserId: string, inviteURL: string) {
   const [botToken, invitingUserSlackId] = await Promise.all([
     fetchTeamBotToken(teamId),
     findSlackUserId(teamId, inviter),
@@ -21,7 +21,7 @@ async function sendSlackInvitation(teamId: string, inviter: User, slackUserId: s
   });
 }
 
-async function sendEmailInvitation(teamId: string, email: string, inviter: User, inviteURL: string) {
+async function sendInvitationEmail(teamId: string, email: string, inviter: User, inviteURL: string) {
   const team = await findTeamById(teamId);
 
   assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
@@ -52,12 +52,13 @@ export const sendInviteNotification = async (invite: TeamInvitation, userId: str
 
   const inviteURL = `${process.env.FRONTEND_URL}/invites/${invite.token}`;
   const inviter = await findUserById(invitingUserId);
+
   assert(inviter, new UnprocessableEntityError(`Inviter ${invitingUserId} does not exist`));
 
   if (slack_user_id) {
-    await sendSlackInvitation(teamId, inviter, slack_user_id, inviteURL);
+    await sendInvitationSlackMessage(teamId, inviter, slack_user_id, inviteURL);
   } else if (email) {
-    await sendEmailInvitation(teamId, email, inviter, inviteURL);
+    await sendInvitationEmail(teamId, email, inviter, inviteURL);
   } else {
     return;
   }
