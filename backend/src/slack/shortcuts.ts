@@ -113,6 +113,25 @@ const createTopicModalView = ({
 
 type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
 
+async function inviteSlackUsers(teamId: string, invitingUserId: string, slackUserIds: string[]) {
+  await db.team_invitation.createMany({
+    data: slackUserIds.map((slackUserId) => ({
+      slack_user_id: slackUserId,
+      team_id: teamId,
+      inviting_user_id: invitingUserId,
+    })),
+    skipDuplicates: true,
+  });
+  return db.team_invitation.findMany({
+    where: {
+      team_id: teamId,
+      slack_user_id: { in: slackUserIds },
+      // we get existing accepted invitations through findUsersBySlackId
+      used_by_user_id: null,
+    },
+  });
+}
+
 async function findUsersOrCreateTeamInvitations({
   slackToken,
   teamId,
@@ -137,29 +156,9 @@ async function findUsersOrCreateTeamInvitations({
     return userIds;
   }
 
-  await db.team_invitation.createMany({
-    data: missingUsersSlackIds.map((slackUserId) => ({
-      slack_user_id: slackUserId,
-      team_id: teamId,
-      inviting_user_id: invitingUserId,
-    })),
-    skipDuplicates: true,
-  });
-  const teamInvitations = await db.team_invitation.findMany({
-    where: {
-      team_id: teamId,
-      slack_user_id: { in: missingUsersSlackIds },
-      // we get existing accepted invitations through findUsersBySlackId
-      used_by_user_id: null,
-    },
-  });
+  const teamInvitations = await inviteSlackUsers(teamId, invitingUserId, missingUsersSlackIds);
 
-  return [
-    ...userIds,
-    ...teamInvitations
-      .filter((row) => !row.used_by_user_id)
-      .map((row) => ({ type: "team_invitation", id: row.id } as const)),
-  ];
+  return [...userIds, ...teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const))];
 }
 
 export function setupSlackShortcuts(slackApp: App) {
