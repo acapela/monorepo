@@ -1,12 +1,12 @@
-import gql from "graphql-tag";
-import styled from "styled-components";
-
 import { withFragments } from "~frontend/gql/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
+import { DashboardNavigationCard } from "~frontend/views/DashboardView/Navigation/DashboardNavigationCard";
 import { DashboardTaskCard_TaskFragment } from "~gql";
 import { theme } from "~ui/theme";
+import gql from "graphql-tag";
+import styled from "styled-components";
 
 import { getMessageMentionSnippet } from "./messageContentSnippet";
 
@@ -51,7 +51,7 @@ export const DashboardTaskCard = withFragments(fragments, function DashboardTask
     : task.message.content;
 
   return (
-    <UIHolder>
+    <DashboardNavigationCard>
       <UITitle>{topicTitle}</UITitle>
       {messageMentionSnippet && (
         <UISnippet>
@@ -67,18 +67,9 @@ export const DashboardTaskCard = withFragments(fragments, function DashboardTask
         ) : (
           task.team_invitation && <UIUserInfo>{getTeamInvitationDisplayName(task.team_invitation)}</UIUserInfo>
         ))}
-    </UIHolder>
+    </DashboardNavigationCard>
   );
 });
-
-const UIHolder = styled.div`
-  background-color: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.item};
-  padding: 12px 16px;
-  gap: 8px;
-  display: flex;
-  flex-direction: column;
-`;
 
 const UITitle = styled.h4`
   ${theme.font.semibold.build()};
