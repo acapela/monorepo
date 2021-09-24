@@ -42,7 +42,7 @@ export const TopicHeaderDueDate = function ({ topicId }: Props) {
   const task = result.data?.task[0] ?? null;
 
   if (!task) {
-    return <div></div>;
+    return null;
   }
 
   const isTaskOwner = task.message.user_id === currentUser?.id;
