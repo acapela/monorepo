@@ -9,7 +9,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
-import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
+import { MessageTask_TaskFragment } from "~gql";
 import { assert } from "~shared/assert";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
@@ -19,15 +19,20 @@ import { TaskStatusIcon } from "./TaskStatusIcon";
 interface Props {
   task: MessageTask_TaskFragment;
   taskOwnerId: string;
-  taskAssignee: UserBasicInfoFragment | null;
   className?: string;
 }
 
 const fragments = {
   task: gql`
+    ${UserAvatar.fragments.user}
+
     fragment MessageTask_task on task {
       id
-      user_id
+      user {
+        id
+        name
+        ...UserAvatar_user
+      }
       team_invitation {
         slack_user_id
       }
@@ -40,10 +45,10 @@ const fragments = {
   `,
 };
 
-const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssignee, className }: Props) {
+const _MessageTask = styled(function MessageTask({ task, taskOwnerId, className }: Props) {
   const currentUser = useCurrentUser();
 
-  const isCurrentUserTask = taskAssignee && currentUser?.id === taskAssignee.id;
+  const isCurrentUserTask = currentUser?.id === task.user?.id;
   const isTaskOwner = currentUser?.id === taskOwnerId;
   const isDone = !!task.done_at;
   const isTaskRead = !!task.seen_at;
@@ -96,9 +101,9 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
   const taskRequestLabel = getTaskRequestLabel();
 
   const teamInvitation = task.team_invitation;
-  assert(taskAssignee || teamInvitation, "task has neither user nor invitation");
+  assert(task.user || teamInvitation, "task has neither user nor invitation");
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const assigneeName = taskAssignee?.name ?? getTeamInvitationDisplayName(teamInvitation!);
+  const assigneeName = task.user?.name ?? getTeamInvitationDisplayName(teamInvitation!);
 
   return (
     <UISingleTask
@@ -109,9 +114,9 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
     >
       <TaskStatusIcon task={task} taskAssigneeName={assigneeName} />
       {taskRequestLabel} from&nbsp;
-      {taskAssignee && (
+      {task.user && (
         <>
-          <UserAvatar user={taskAssignee} size="extra-small" />
+          <UserAvatar user={task.user} size="extra-small" />
           &nbsp;
         </>
       )}

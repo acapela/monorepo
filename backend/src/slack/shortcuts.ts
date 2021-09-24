@@ -111,6 +111,8 @@ const createTopicModalView = ({
   },
 });
 
+type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
+
 async function findUsersOrCreateTeamInvitations({
   token,
   teamId,
@@ -121,7 +123,7 @@ async function findUsersOrCreateTeamInvitations({
   teamId: string;
   invitingUserId: string;
   slackUserIds: string[];
-}) {
+}): Promise<UserOrTeamInvitation[]> {
   const usersForSlackIds = await Promise.all(
     slackUserIds.map(async (slackUserId) => ({ slackUserId, user: await findUserBySlackId(token, slackUserId) }))
   );
@@ -131,7 +133,7 @@ async function findUsersOrCreateTeamInvitations({
     .map((user) => ({ type: "user", id: user.id } as const));
   const missingUsersSlackIds = usersForSlackIds.filter((item) => !item.user).map((item) => item.slackUserId);
 
-  if (missingUsersSlackIds.length == 0) {
+  if (missingUsersSlackIds.length === 0) {
     return userIds;
   }
 
