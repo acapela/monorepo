@@ -31,18 +31,15 @@ async function sendEmailInvitation(teamId: string, email: string, inviter: User,
     include: { room: true },
   });
 
-  if (!roomInvitation) {
-    return;
-  }
-
   const inviterName = getNormalizedUserName(inviter);
+  const roomName = roomInvitation?.room?.name;
   await sendEmail({
     from: DEFAULT_NOTIFICATION_EMAIL,
     to: email,
-    subject: `${inviterName} has invited you to collaborate on ${roomInvitation.room?.name ?? team.name}`,
+    subject: `${inviterName} has invited you to collaborate on ${roomName ?? team.name}`,
     html: [
       "Hey!",
-      `${inviterName} has invited you to ${roomInvitation.room ? `collaborate on ${inviteURL} room and ` : ""}join ${
+      `${inviterName} has invited you to ${roomName ? `collaborate on ${roomName} room and ` : ""}join ${
         team.name
       } team on Acapela.`,
       `Follow this link to sign up and join the discussion: ${inviteURL}`,
