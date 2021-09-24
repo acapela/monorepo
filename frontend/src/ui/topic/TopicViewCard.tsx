@@ -75,7 +75,7 @@ const UIMainContainer = styled.div<{}>`
   height: 100%;
   flex-direction: column;
 
-  background: ${theme.colors.layout.foreground((modifiers) => [modifiers.opacity(0.65)])};
+  background: ${theme.colors.layout.foreground()};
   border: 1px solid ${theme.colors.layout.softLine()};
   box-sizing: border-box;
 
