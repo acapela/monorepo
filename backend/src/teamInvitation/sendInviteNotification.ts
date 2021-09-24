@@ -20,14 +20,11 @@ export const sendInviteNotification = async (invite: TeamInvitation, userId: str
       fetchTeamBotToken(teamId),
       findSlackUserId(teamId, inviter),
     ]);
-    assert(
-      invitingUserSlackId,
-      new UnprocessableEntityError(`Inviting user ${invitingUserId} through Slack does not have a Slack id`)
-    );
+    const inviterName = invitingUserSlackId ? `<@${invitingUserSlackId}>` : "A colleague";
     await slackClient.chat.postMessage({
       token: botToken,
-      channel: invitingUserSlackId || slack_user_id, //TODO should be the latter
-      text: `<@${invitingUserSlackId}> has invited you to join Acapela: ${inviteURL}`,
+      channel: slack_user_id,
+      text: `${inviterName} has invited you to join Acapela: ${inviteURL}`,
     });
     return;
   }
