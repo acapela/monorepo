@@ -27,12 +27,17 @@ const UIHolder = styled.div`
   grid-template-columns: 380px 1fr;
   grid-gap: 24px;
   flex-grow: 1;
+  overflow-y: hidden;
 `;
 
 const UINavigationHolder = styled.div`
   padding: 16px;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 `;
 
-const UIActiveContentHolder = styled.div``;
+const UIActiveContentHolder = styled.div`
+  overflow-y: auto;
+`;

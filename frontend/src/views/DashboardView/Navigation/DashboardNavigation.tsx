@@ -112,6 +112,7 @@ const UIHolder = styled.div`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  overflow-y: auto;
 `;
 
 const UISectionsHolder = styled.div`
