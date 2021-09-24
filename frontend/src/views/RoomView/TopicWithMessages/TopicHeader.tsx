@@ -16,6 +16,7 @@ import { TextH3 } from "~ui/typo";
 
 import { CloseTopicModal } from "./CloseTopicModal";
 import { useUpdateTopic } from "./shared";
+import { TopicHeaderDueDate } from "./TopicHeaderDueDate";
 
 const fragments = {
   room: gql`
@@ -73,7 +74,11 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
 
   return (
     <UIHolder>
-      <UITitle isClosed={isClosed}>{topic.name}</UITitle>
+      <UITopicMeta>
+        <UITitle isClosed={isClosed}>{topic.name}</UITitle>
+        {/* Only display due date when not in a room */}
+        {!room && <TopicHeaderDueDate topicId={topic.id} />}
+      </UITopicMeta>
 
       {!room?.finished_at && (
         <UIActions>
@@ -121,6 +126,12 @@ const UIHolder = styled.div<{}>`
   justify-content: space-between;
   padding: 0 24px;
   height: 96px;
+`;
+
+const UITopicMeta = styled.div<{}>`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const UITitle = styled(TextH3)<{ isClosed: boolean }>`
