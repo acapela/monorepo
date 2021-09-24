@@ -9,7 +9,6 @@ import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
 import { DashboardNavigationCard } from "~frontend/views/DashboardView/Navigation/DashboardNavigationCard";
 import { DashboardTopicCard_TopicFragment } from "~gql";
 import { theme } from "~ui/theme";
-import { hoverActionCss } from "~ui/transitions";
 
 const fragments = {
   topic: gql`
@@ -48,19 +47,6 @@ export const DashboardTopicCard = withFragments(fragments, ({ topic }: Props) =>
     </DashboardNavigationCard>
   );
 });
-
-const UIHolder = styled.div`
-  background-color: ${theme.colors.layout.foreground()};
-  ${theme.borderRadius.item};
-  padding: 12px 16px;
-  gap: 8px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  cursor: pointer;
-
-  ${hoverActionCss}
-`;
 
 const UITopicNameHolder = styled.div<{}>`
   display: flex;
