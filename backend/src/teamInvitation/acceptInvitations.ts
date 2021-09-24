@@ -29,19 +29,18 @@ export const acceptInvitations: ActionHandler<{ token: string }, AcceptInvitatio
 
     await db.$transaction([
       db.team_invitation.update({ where: { id: teamInvitation.id }, data }),
-      db.task.updateMany({
-        where: { team_invitation_id: teamInvitation.id },
-        data: { team_invitation_id: null, user_id: user.id },
-      }),
-
       db.room_invitation.updateMany({ where: { email: userEmail, team_id: teamInvitation.id }, data }),
 
       db.team_member.createMany({
         data: [{ team_id: teamId, user_id: user.id }],
         skipDuplicates: true,
       }),
-
       db.user.update({ where: { id: user.id }, data: { current_team_id: teamId } }),
+
+      db.task.updateMany({
+        where: { team_invitation_id: teamInvitation.id },
+        data: { team_invitation_id: null, user_id: user.id },
+      }),
     ]);
 
     return { success: true };
