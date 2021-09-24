@@ -2,8 +2,8 @@ import { useSubscription } from "@apollo/client";
 import gql from "graphql-tag";
 import styled from "styled-components";
 
-import { RouteLink, routes } from "~frontend/../router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { RouteLink, routes } from "~frontend/router";
 import { DashboardTasksSubscription, DashboardTasksSubscriptionVariables } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
@@ -12,6 +12,7 @@ import { theme } from "~ui/theme";
 
 import { DashboardTaskCard } from "./tasks/TaskCard";
 import { TaskList } from "./tasks/TaskList";
+import { TopicList } from "./topics/TopicList";
 
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
@@ -71,6 +72,11 @@ export function DashboardNavigation() {
         <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
           <UISectionContent>
             <TaskList tasks={sentTasks} />
+          </UISectionContent>
+        </CollapsePanel>
+        <CollapsePanel headerNode={<UISectionTitle>Topics</UISectionTitle>}>
+          <UISectionContent>
+            <TopicList />
           </UISectionContent>
         </CollapsePanel>
       </UISectionsHolder>
