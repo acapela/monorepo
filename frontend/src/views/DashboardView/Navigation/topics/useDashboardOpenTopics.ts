@@ -14,7 +14,7 @@ export const useDashboardOpenTopics = () => {
   const { data } = useSubscription<DashboardOpenTopicsSubscription, DashboardOpenTopicsSubscriptionVariables>(
     gql`
       ${DashboardTopicCard.fragments.topic}
-      subscription DashboardTopics($teamId: uuid!, $userId: uuid!) {
+      subscription DashboardOpenTopics($teamId: uuid!, $userId: uuid!) {
         topic(
           where: {
             team_id: { _eq: $teamId }
