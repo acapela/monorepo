@@ -1,11 +1,12 @@
 import gql from "graphql-tag";
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { withFragments } from "~frontend/gql/utils";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { DashboardNavigationCard } from "~frontend/views/DashboardView/Navigation/DashboardNavigationCard";
 import { DashboardTopicCard_TopicFragment } from "~gql";
 import { theme } from "~ui/theme";
 import { hoverActionCss } from "~ui/transitions";
@@ -35,7 +36,7 @@ export const DashboardTopicCard = withFragments(fragments, ({ topic }: Props) =>
   const hasUnreadMessages = unreadMessagesCount > 0;
 
   return (
-    <UIHolder isClosed={!!topic.closed_at}>
+    <DashboardNavigationCard>
       <UITopicNameHolder>
         {hasUnreadMessages && <NotificationCount value={unreadMessagesCount} />}
         <UITopicName>{topic.name}</UITopicName>
@@ -44,35 +45,21 @@ export const DashboardTopicCard = withFragments(fragments, ({ topic }: Props) =>
         <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />
         {topic.owner.name}
       </UITopicOwnerHolder>
-    </UIHolder>
+    </DashboardNavigationCard>
   );
 });
 
-const PADDING = "12px";
-
-const UIHolder = styled.div<{ isClosed: boolean }>`
+const UIHolder = styled.div`
   background-color: ${theme.colors.layout.foreground()};
-  position: relative;
-  padding: ${PADDING} 24px;
-  cursor: pointer;
+  ${theme.borderRadius.item};
+  padding: 12px 16px;
+  gap: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  touch-action: none;
-
-  ${theme.borderRadius.button}
+  position: relative;
+  cursor: pointer;
 
   ${hoverActionCss}
-
-  ${(props) => {
-    if (props.isClosed) {
-      return css`
-        text-decoration: line-through;
-        opacity: 0.5;
-      `;
-    }
-  }}
 `;
 
 const UITopicNameHolder = styled.div<{}>`

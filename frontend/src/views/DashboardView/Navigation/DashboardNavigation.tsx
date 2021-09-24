@@ -80,7 +80,7 @@ export function DashboardNavigation() {
             </UIListHolder>
           </UISectionContent>
         </CollapsePanel>
-        <CollapsePanel headerNode={<UISectionTitle>Topics</UISectionTitle>}>
+        <CollapsePanel headerNode={<UISectionTitle>Open Topics</UISectionTitle>}>
           <UISectionContent>
             <UIListHolder>
               <TopicList topics={openTopics} />
