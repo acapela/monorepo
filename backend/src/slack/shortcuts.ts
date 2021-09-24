@@ -2,11 +2,11 @@ import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { ViewsOpenArguments } from "@slack/web-api";
 import { IncomingWebhook } from "@slack/webhook";
 
-import { db } from "~db";
+import { Prisma, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
-import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
 import { findUserBySlackId } from "./utils";
 
@@ -255,10 +255,13 @@ export function setupSlackShortcuts(slackApp: App) {
       slackUserIds: members,
     });
 
-    const taskData = usersAndTeamInvitations.map((item) => ({
-      type: requestType?.value,
-      [item.type == "user" ? "user_id" : "team_invitation_id"]: item.id,
-    }));
+    const taskData = usersAndTeamInvitations.map(
+      (item) =>
+        ({
+          type: requestType?.value,
+          [item.type == "user" ? "user_id" : "team_invitation_id"]: item.id,
+        } as Prisma.taskUncheckedCreateWithoutMessageInput)
+    );
     const topic = await db.topic.create({
       data: {
         team_id: team.id,

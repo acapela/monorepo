@@ -1,6 +1,6 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { findUserById } from "~backend/src/users/users";
-import { db } from "~db";
+import { Prisma, db } from "~db";
 import { AcceptInvitationsOutput } from "~gql";
 import { assert } from "~shared/assert";
 
@@ -22,7 +22,7 @@ export const acceptInvitations: ActionHandler<{ token: string }, AcceptInvitatio
     }
 
     const teamId = teamInvitation.team_id;
-    const data = {
+    const data: Pick<Prisma.team_invitationUncheckedUpdateManyInput, "used_at" | "used_by_user_id"> = {
       used_at: new Date(),
       used_by_user_id: user.id,
     };
