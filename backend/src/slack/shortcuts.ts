@@ -157,8 +157,8 @@ async function findUsersOrCreateTeamInvitations({
   }
 
   const teamInvitations = await createMissingTeamInvitations(teamId, invitingUserId, missingUsersSlackIds);
-
-  return [...userIds, ...teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const))];
+  const teamInvitationIds = teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const));
+  return [...userIds, ...teamInvitationIds];
 }
 
 export function setupSlackShortcuts(slackApp: App) {
