@@ -113,7 +113,7 @@ const createTopicModalView = ({
 
 type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
 
-async function inviteSlackUsers(teamId: string, invitingUserId: string, slackUserIds: string[]) {
+async function createMissingTeamInvitations(teamId: string, invitingUserId: string, slackUserIds: string[]) {
   await db.team_invitation.createMany({
     data: slackUserIds.map((slackUserId) => ({
       slack_user_id: slackUserId,
@@ -156,7 +156,7 @@ async function findUsersOrCreateTeamInvitations({
     return userIds;
   }
 
-  const teamInvitations = await inviteSlackUsers(teamId, invitingUserId, missingUsersSlackIds);
+  const teamInvitations = await createMissingTeamInvitations(teamId, invitingUserId, missingUsersSlackIds);
 
   return [...userIds, ...teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const))];
 }
