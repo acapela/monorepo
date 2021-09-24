@@ -146,18 +146,16 @@ async function findUsersOrCreateTeamInvitations({
     skipDuplicates: true,
   });
   const teamInvitations = await db.team_invitation.findMany({
-    where: { team_id: teamId, slack_user_id: { in: missingUsersSlackIds } },
+    where: {
+      team_id: teamId,
+      slack_user_id: { in: missingUsersSlackIds },
+      // we get existing accepted invitations through findUsersBySlackId
+      used_by_user_id: null,
+    },
   });
 
   return [
     ...userIds,
-
-    // there might already be accepted invitations for given slack user ids, we use them to find users
-    ...teamInvitations
-      .map((row) => row.used_by_user_id)
-      .filter(isNotNullish)
-      .map((id) => ({ type: "user", id } as const)),
-
     ...teamInvitations
       .filter((row) => !row.used_by_user_id)
       .map((row) => ({ type: "team_invitation", id: row.id } as const)),
