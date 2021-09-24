@@ -21,23 +21,14 @@ async function sendSlackInvitation(teamId: string, inviter: User, slackUserId: s
   });
 }
 
-async function sendEmailInvitation(teamId: string, email: null | string, inviter: User, inviteURL: string) {
+async function sendEmailInvitation(teamId: string, email: string, inviter: User, inviteURL: string) {
   const team = await findTeamById(teamId);
 
   assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
 
-  if (!email) {
-    return;
-  }
-
   const roomInvitation = await db.room_invitation.findFirst({
-    where: {
-      email,
-      team_id: teamId,
-    },
-    include: {
-      room: true,
-    },
+    where: { email, team_id: teamId },
+    include: { room: true },
   });
 
   if (!roomInvitation) {
@@ -68,8 +59,10 @@ export const sendInviteNotification = async (invite: TeamInvitation, userId: str
 
   if (slack_user_id) {
     await sendSlackInvitation(teamId, inviter, slack_user_id, inviteURL);
-  } else {
+  } else if (email) {
     await sendEmailInvitation(teamId, email, inviter, inviteURL);
+  } else {
+    return;
   }
 
   log.info("Sent invite notification", {
