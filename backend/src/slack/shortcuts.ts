@@ -146,10 +146,17 @@ async function findUsersOrCreateTeamInvitations({
   const usersForSlackIds = await Promise.all(
     slackUserIds.map(async (slackUserId) => ({ slackUserId, user: await findUserBySlackId(slackToken, slackUserId) }))
   );
+
   const userIds = usersForSlackIds
     .map((item) => item.user)
     .filter(isNotNullish)
     .map((user) => ({ type: "user", id: user.id } as const));
+
+  await db.team_member.createMany({
+    data: userIds.map(({ id }) => ({ team_id: teamId, user_id: id })),
+    skipDuplicates: true,
+  });
+
   const missingUsersSlackIds = usersForSlackIds.filter((item) => !item.user).map((item) => item.slackUserId);
 
   if (missingUsersSlackIds.length === 0) {
