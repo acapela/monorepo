@@ -114,18 +114,18 @@ const createTopicModalView = ({
 type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
 
 async function findUsersOrCreateTeamInvitations({
-  token,
+  slackToken,
   teamId,
   invitingUserId,
   slackUserIds,
 }: {
-  token: string;
+  slackToken: string;
   teamId: string;
   invitingUserId: string;
   slackUserIds: string[];
 }): Promise<UserOrTeamInvitation[]> {
   const usersForSlackIds = await Promise.all(
-    slackUserIds.map(async (slackUserId) => ({ slackUserId, user: await findUserBySlackId(token, slackUserId) }))
+    slackUserIds.map(async (slackUserId) => ({ slackUserId, user: await findUserBySlackId(slackToken, slackUserId) }))
   );
   const userIds = usersForSlackIds
     .map((item) => item.user)
@@ -250,7 +250,7 @@ export function setupSlackShortcuts(slackApp: App) {
     assert(owner, "must have a user");
 
     const usersAndTeamInvitations = await findUsersOrCreateTeamInvitations({
-      token,
+      slackToken: token,
       teamId: team.id,
       invitingUserId: owner.id,
       slackUserIds: members,
