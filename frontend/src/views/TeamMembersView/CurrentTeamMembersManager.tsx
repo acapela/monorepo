@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useSubscription } from "@apollo/client";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -9,7 +9,7 @@ import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/Invitati
 import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
-import { CurrentTeamMembersManagerQuery, CurrentTeamMembersManagerQueryVariables } from "~gql";
+import { CurrentTeamMembersManagerSubscription, CurrentTeamMembersManagerSubscriptionVariables } from "~gql";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
@@ -20,15 +20,22 @@ import { SlackInstallationButton } from "./SlackInstallationButton";
 
 export const CurrentTeamMembersManager = () => {
   const teamId = useAssertCurrentTeamId();
-  const { data: teamData } = useQuery<CurrentTeamMembersManagerQuery, CurrentTeamMembersManagerQueryVariables>(
+  const { data: teamData } = useSubscription<
+    CurrentTeamMembersManagerSubscription,
+    CurrentTeamMembersManagerSubscriptionVariables
+  >(
     gql`
       ${UserBasicInfo.fragments.user}
+      ${SlackInstallationButton.fragments.team}
 
-      query CurrentTeamMembersManager($teamId: uuid!) {
+      subscription CurrentTeamMembersManager($teamId: uuid!) {
         team: team_by_pk(id: $teamId) {
           id
           name
           owner_id
+
+          ...SlackInstallationButton_team
+
           memberships {
             id
             user {
@@ -37,6 +44,7 @@ export const CurrentTeamMembersManager = () => {
               ...UserBasicInfo_user
             }
           }
+
           invitations {
             id
             email
