@@ -27,128 +27,128 @@ object_relationships:
           name: team
           schema: public
 array_relationships:
-  - name: members
-    using:
-      foreign_key_constraint_on:
-        column: topic_id
-        table:
-          name: topic_member
-          schema: public
-  - name: messages
-    using:
-      manual_configuration:
-        column_mapping:
-          id: topic_id
-        insertion_order: null
-        remote_table:
-          name: message
-          schema: public
-  - name: room_access
-    using:
-      manual_configuration:
-        column_mapping:
-          room_id: room_id
-        insertion_order: null
-        remote_table:
-          name: room_access
-          schema: public
-  - name: topic_access
-    using:
-      manual_configuration:
-        column_mapping:
-          id: topic_id
-        insertion_order: null
-        remote_table:
-          name: topic_access
-          schema: public
+- name: members
+  using:
+    foreign_key_constraint_on:
+      column: topic_id
+      table:
+        name: topic_member
+        schema: public
+- name: messages
+  using:
+    manual_configuration:
+      column_mapping:
+        id: topic_id
+      insertion_order: null
+      remote_table:
+        name: message
+        schema: public
+- name: room_access
+  using:
+    manual_configuration:
+      column_mapping:
+        room_id: room_id
+      insertion_order: null
+      remote_table:
+        name: room_access
+        schema: public
+- name: topic_access
+  using:
+    manual_configuration:
+      column_mapping:
+        id: topic_id
+      insertion_order: null
+      remote_table:
+        name: topic_access
+        schema: public
 insert_permissions:
-  - permission:
-      backend_only: false
-      check:
-        _or:
-          - _and:
-              - room_access:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-              - room:
-                  finished_at:
-                    _is_null: true
-          - owner_id:
-              _eq: X-Hasura-User-Id
-      columns:
-        - id
-        - index
-        - name
-        - owner_id
-        - room_id
-        - slug
-        - team_id
-    role: user
+- permission:
+    backend_only: false
+    check:
+      _or:
+        - _and:
+          - room_access:
+              user_id:
+                _eq: X-Hasura-User-Id
+          - room:
+              finished_at:
+                _is_null: true
+        - owner_id:
+            _eq: X-Hasura-User-Id
+    columns:
+    - id
+    - index
+    - name
+    - owner_id
+    - room_id
+    - slug
+    - team_id
+  role: user
 select_permissions:
-  - permission:
-      allow_aggregations: true
-      columns:
-        - archived_at
-        - closed_at
-        - closed_by_user_id
-        - closing_summary
-        - id
-        - index
-        - name
-        - owner_id
-        - room_id
-        - slug
-        - team_id
-        - updated_at
-      filter:
-        topic_access:
-          user_id:
-            _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    allow_aggregations: true
+    columns:
+    - archived_at
+    - closed_at
+    - closed_by_user_id
+    - closing_summary
+    - id
+    - index
+    - name
+    - owner_id
+    - room_id
+    - slug
+    - team_id
+    - updated_at
+    filter:
+      topic_access:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
 update_permissions:
-  - permission:
-      check: null
-      columns:
-        - archived_at
-        - closed_at
-        - closed_by_user_id
-        - closing_summary
-        - index
-        - name
-        - owner_id
-        - slug
-      filter:
-        topic_access:
-          user_id:
-            _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    check: null
+    columns:
+    - archived_at
+    - closed_at
+    - closed_by_user_id
+    - closing_summary
+    - index
+    - name
+    - owner_id
+    - slug
+    filter:
+      topic_access:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
 delete_permissions:
-  - permission:
-      filter:
-        topic_access:
-          user_id:
-            _eq: X-Hasura-User-Id
-    role: user
+- permission:
+    filter:
+      topic_access:
+        user_id:
+          _eq: X-Hasura-User-Id
+  role: user
 event_triggers:
-  - definition:
-      enable_manual: false
-      update:
-        columns:
-          - closing_summary
-          - index
-          - name
-          - slug
-          - closed_at
-          - closed_by_user_id
-          - id
-          - owner_id
-          - room_id
-    headers:
-      - name: Authorization
-        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-    name: topic_updates
-    retry_conf:
-      interval_sec: 10
-      num_retries: 0
-      timeout_sec: 60
-    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL
+- definition:
+    enable_manual: false
+    update:
+      columns:
+      - closing_summary
+      - index
+      - name
+      - slug
+      - closed_at
+      - closed_by_user_id
+      - id
+      - owner_id
+      - room_id
+  headers:
+  - name: Authorization
+    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+  name: topic_updates
+  retry_conf:
+    interval_sec: 10
+    num_retries: 0
+    timeout_sec: 60
+  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

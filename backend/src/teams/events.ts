@@ -1,9 +1,9 @@
-import { Team } from "~db";
+import { Team, db } from "~db";
 import { log } from "~shared/logger";
 
 import { UnprocessableEntityError } from "../errors/errorTypes";
 import { HasuraEvent } from "../hasura";
-import { addTeamMember, getHasTeamMember } from "./helpers";
+import { getHasTeamMember } from "./helpers";
 
 export async function handleTeamUpdates({ userId, item: team }: HasuraEvent<Team>) {
   const { owner_id: ownerId, id: teamId } = team;
@@ -28,5 +28,10 @@ export async function handleTeamUpdates({ userId, item: team }: HasuraEvent<Team
     roomId: team.id,
     ownerId,
   });
-  await addTeamMember(teamId, ownerId);
+  await db.team_member.create({
+    data: {
+      team_id: teamId,
+      user_id: ownerId,
+    },
+  });
 }

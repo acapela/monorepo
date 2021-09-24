@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { withFragments } from "~frontend/gql/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { DashboardTaskCard_TaskFragment } from "~gql";
 import { theme } from "~ui/theme";
 
@@ -17,7 +18,11 @@ const fragments = {
       id
       user {
         id
+        name
         ...UserAvatar_user
+      }
+      team_invitation {
+        slack_user_id
       }
       message {
         id
@@ -41,9 +46,9 @@ interface Props {
 export const DashboardTaskCard = withFragments(fragments, function DashboardTaskCard({ task, hideUserInfo }: Props) {
   const topicTitle = task.message.topic.name;
 
-  const assignedUserId = task.user.id;
-
-  const messageMentionSnippet = getMessageMentionSnippet(task.message.content, assignedUserId);
+  const messageMentionSnippet = task.user
+    ? getMessageMentionSnippet(task.message.content, task.user.id)
+    : task.message.content;
 
   return (
     <UIHolder>
@@ -53,12 +58,15 @@ export const DashboardTaskCard = withFragments(fragments, function DashboardTask
           <MessageText content={messageMentionSnippet} />
         </UISnippet>
       )}
-      {!hideUserInfo && (
-        <UIUserInfo>
-          <UserAvatar user={task.user} size="extra-small" />
-          <span>{task.user.name}</span>
-        </UIUserInfo>
-      )}
+      {!hideUserInfo &&
+        (task.user ? (
+          <UIUserInfo>
+            <UserAvatar user={task.user} size="extra-small" />
+            <span>{task.user.name}</span>
+          </UIUserInfo>
+        ) : (
+          task.team_invitation && <UIUserInfo>{getTeamInvitationDisplayName(task.team_invitation)}</UIUserInfo>
+        ))}
     </UIHolder>
   );
 });

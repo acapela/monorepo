@@ -33,15 +33,21 @@ export async function findSlackUserId(teamId: string, user: User) {
   }
 }
 
-// Finds a user for a Slack user id either through a team_member's slack installation or by email
-export async function findUserBySlackId(token: string, slackUserId: string) {
+// Finds a user for a Slack user id either through a team_member's slack installation, team_invitation or by email
+export async function findUserBySlackId(slackToken: string, slackUserId: string) {
   const user = await db.user.findFirst({
-    where: { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
+    where: {
+      OR: [
+        { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
+        { team_invitation_team_invitation_used_by_user_idTouser: { some: { slack_user_id: slackUserId } } },
+      ],
+    },
   });
   if (user) {
     return user;
   }
-  const { profile } = await slackClient.users.profile.get({ token, user: slackUserId });
+
+  const { profile } = await slackClient.users.profile.get({ token: slackToken, user: slackUserId });
   if (!profile) {
     return;
   }

@@ -111,13 +111,15 @@ export function readTokenFromRequest(req?: IncomingMessage): string | null {
   return nextRequest.cookies?.[TOKEN_COOKIE_NAME] ?? null;
 }
 
+export type ApolloContext = Partial<{ noAuth: boolean; headers: Record<string, unknown> }>;
+
 const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
   new ApolloLink((operation, forward) => {
-    const { headers = {} } = operation.getContext();
+    const { noAuth, headers = {} } = operation.getContext() as ApolloContext;
 
     const authToken = forcedAuthToken ?? readCurrentToken();
 
-    if (!authToken) {
+    if (!authToken || noAuth) {
       return forward(operation);
     }
 

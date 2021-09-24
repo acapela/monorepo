@@ -2,7 +2,7 @@ import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { ViewsOpenArguments } from "@slack/web-api";
 import { IncomingWebhook } from "@slack/webhook";
 
-import { db } from "~db";
+import { Prisma, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { isNotNullish } from "~shared/nullish";
@@ -111,6 +111,56 @@ const createTopicModalView = ({
   },
 });
 
+type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
+
+async function createMissingTeamInvitations(teamId: string, invitingUserId: string, slackUserIds: string[]) {
+  await db.team_invitation.createMany({
+    data: slackUserIds.map((slackUserId) => ({
+      slack_user_id: slackUserId,
+      team_id: teamId,
+      inviting_user_id: invitingUserId,
+    })),
+    skipDuplicates: true,
+  });
+  return db.team_invitation.findMany({
+    where: {
+      team_id: teamId,
+      slack_user_id: { in: slackUserIds },
+      // we get existing accepted invitations through findUsersBySlackId
+      used_by_user_id: null,
+    },
+  });
+}
+
+async function findUsersOrCreateTeamInvitations({
+  slackToken,
+  teamId,
+  invitingUserId,
+  slackUserIds,
+}: {
+  slackToken: string;
+  teamId: string;
+  invitingUserId: string;
+  slackUserIds: string[];
+}): Promise<UserOrTeamInvitation[]> {
+  const usersForSlackIds = await Promise.all(
+    slackUserIds.map(async (slackUserId) => ({ slackUserId, user: await findUserBySlackId(slackToken, slackUserId) }))
+  );
+  const userIds = usersForSlackIds
+    .map((item) => item.user)
+    .filter(isNotNullish)
+    .map((user) => ({ type: "user", id: user.id } as const));
+  const missingUsersSlackIds = usersForSlackIds.filter((item) => !item.user).map((item) => item.slackUserId);
+
+  if (missingUsersSlackIds.length === 0) {
+    return userIds;
+  }
+
+  const teamInvitations = await createMissingTeamInvitations(teamId, invitingUserId, missingUsersSlackIds);
+  const teamInvitationIds = teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const));
+  return [...userIds, ...teamInvitationIds];
+}
+
 export function setupSlackShortcuts(slackApp: App) {
   slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body, context }) => {
     await ack();
@@ -190,33 +240,42 @@ export function setupSlackShortcuts(slackApp: App) {
     }
 
     const token = context.botToken || body.token;
-    const [team, users, currentUser] = await Promise.all([
+    const [team, owner] = await Promise.all([
       db.team.findFirst({ where: { team_slack_installation: { slack_team_id: body.user.team_id } } }),
-      Promise.all(members.map((slackUserId) => findUserBySlackId(token, slackUserId))),
       findUserBySlackId(token, body.user.id),
     ]);
 
     assert(team, "must have a team");
-    assert(currentUser, "must have a user");
+    assert(owner, "must have a user");
 
+    const usersAndTeamInvitations = await findUsersOrCreateTeamInvitations({
+      slackToken: token,
+      teamId: team.id,
+      invitingUserId: owner.id,
+      slackUserIds: members,
+    });
+
+    const taskData = usersAndTeamInvitations.map(
+      (item) =>
+        ({
+          type: requestType?.value,
+          [item.type == "user" ? "user_id" : "team_invitation_id"]: item.id,
+        } as Prisma.taskUncheckedCreateWithoutMessageInput)
+    );
     const topic = await db.topic.create({
       data: {
         team_id: team.id,
         name: topicName,
         slug: topicName,
         index: "a",
-        owner_id: currentUser.id,
+        owner_id: owner.id,
         message: {
           create: {
             type: "TEXT",
-            user_id: currentUser.id,
+            user_id: owner.id,
             content: createPlainMessageContent(topicMessage),
             content_text: topicMessage,
-            task: {
-              createMany: {
-                data: users.filter(isNotNullish).map((user) => ({ user_id: user.id, type: requestType?.value })),
-              },
-            },
+            task: { createMany: { data: taskData } },
           },
         },
       },
@@ -234,7 +293,7 @@ export function setupSlackShortcuts(slackApp: App) {
     await ack({ response_action: "clear" });
 
     const metadata = JSON.parse(view.private_metadata) as ShortcutMetadata;
-    const topicURL = `${process.env.FRONTEND_URL}/topics/${topic.id}`;
+    const topicURL = `${process.env.FRONTEND_URL}/dashboard/${topic.id}`;
     if (metadata.isMessageShortcut) {
       await new IncomingWebhook(metadata.responseURL).send({
         response_type: "in_channel",
@@ -249,8 +308,8 @@ export function setupSlackShortcuts(slackApp: App) {
       });
     }
 
-    if (currentUser) {
-      trackBackendUserEvent(currentUser.id, "Created Topic", {
+    if (owner) {
+      trackBackendUserEvent(owner.id, "Created Topic", {
         origin: metadata.isMessageShortcut ? "slack-message-action" : "slack-shortcut",
         topicName: topicName,
       });

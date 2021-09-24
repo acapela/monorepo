@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import React from "react";
 
 import { withFragments } from "~frontend/gql/utils";
-import { UserBasicInfoFragment } from "~gql";
+import { UserBasicInfo_UserFragment } from "~gql";
 import { TextBody14, TextMeta10 } from "~ui/typo";
 
 import { Avatar } from "./Avatar";
@@ -13,11 +13,12 @@ const fragments = {
     fragment UserBasicInfo_user on user {
       name
       email
+      avatar_url
     }
   `,
 };
 
-type Props = { user: UserBasicInfoFragment };
+type Props = { user: UserBasicInfo_UserFragment };
 
 export const UserBasicInfo = withFragments(fragments, ({ user }: Props) => (
   <UserBasicInfoContainer>

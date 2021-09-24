@@ -11,7 +11,7 @@ export const routes = {
   dashboardTopic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
-  topic: createRoute("/topics/[topicId]", { topicId: "string" }),
+  topic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
 
   // <likely-to-be-deprecated>
   spaces: createRoute("/spaces", {}),

@@ -8,7 +8,9 @@ import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { MessageTask_TaskFragment, UserBasicInfoFragment } from "~gql";
+import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
+import { MessageTask_TaskFragment } from "~gql";
+import { assert } from "~shared/assert";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 
@@ -17,15 +19,23 @@ import { TaskStatusIcon } from "./TaskStatusIcon";
 interface Props {
   task: MessageTask_TaskFragment;
   taskOwnerId: string;
-  taskAssignee: UserBasicInfoFragment;
   className?: string;
 }
 
 const fragments = {
   task: gql`
+    ${UserAvatar.fragments.user}
+
     fragment MessageTask_task on task {
       id
-      user_id
+      user {
+        id
+        name
+        ...UserAvatar_user
+      }
+      team_invitation {
+        slack_user_id
+      }
       message_id
       seen_at
       done_at
@@ -35,17 +45,13 @@ const fragments = {
   `,
 };
 
-const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssignee, className }: Props) {
+const _MessageTask = styled(function MessageTask({ task, taskOwnerId, className }: Props) {
   const currentUser = useCurrentUser();
 
-  const isCurrentUserTask = currentUser?.id === taskAssignee.id;
+  const isCurrentUserTask = currentUser?.id === task.user?.id;
   const isTaskOwner = currentUser?.id === taskOwnerId;
   const isDone = !!task.done_at;
   const isTaskRead = !!task.seen_at;
-
-  if (!taskAssignee) {
-    return null;
-  }
 
   function handleMarkAsRead() {
     const now = new Date();
@@ -94,6 +100,11 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
 
   const taskRequestLabel = getTaskRequestLabel();
 
+  const teamInvitation = task.team_invitation;
+  assert(task.user || teamInvitation, "task has neither user nor invitation");
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const assigneeName = task.user?.name ?? getTeamInvitationDisplayName(teamInvitation!);
+
   return (
     <UISingleTask
       key={task.id}
@@ -101,11 +112,15 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, taskAssign
       data-test-task-is-done={isDone ? true : undefined}
       className={className}
     >
-      <TaskStatusIcon task={task} taskAssigneeName={taskAssignee.name ?? ""} />
+      <TaskStatusIcon task={task} taskAssigneeName={assigneeName} />
       {taskRequestLabel} from&nbsp;
-      <UserAvatar user={taskAssignee} size={"extra-small"} />
-      &nbsp;
-      <UIUserNameLabel>{taskAssignee.name}</UIUserNameLabel>
+      {task.user && (
+        <>
+          <UserAvatar user={task.user} size="extra-small" />
+          &nbsp;
+        </>
+      )}
+      <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
       &nbsp;was requested
       {task.due_at !== null && (
         <>
