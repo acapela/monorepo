@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 import { theme } from "~ui/theme";
-import { hoverActionCss } from "~ui/transitions";
 
 export const DashboardNavigationCard = styled.div`
   background-color: ${theme.colors.layout.foreground()};
@@ -13,5 +12,5 @@ export const DashboardNavigationCard = styled.div`
   position: relative;
   cursor: pointer;
 
-  ${hoverActionCss}
+  ${theme.transitions.hover()}
 `;
