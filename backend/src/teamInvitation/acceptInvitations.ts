@@ -15,7 +15,7 @@ export const acceptInvitations: ActionHandler<{ token: string }, AcceptInvitatio
     assert(userEmail, "missing email");
 
     const teamInvitation = await db.team_invitation.findFirst({
-      where: { AND: { token, OR: [{ email: null }, { email: userEmail }] } },
+      where: { AND: { token, OR: [{ email: undefined }, { email: userEmail }] } },
     });
     if (!teamInvitation) {
       return { success: false };
