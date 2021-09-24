@@ -13,6 +13,7 @@ import { theme } from "~ui/theme";
 import { DashboardTaskCard } from "./tasks/TaskCard";
 import { TaskList } from "./tasks/TaskList";
 import { TopicList } from "./topics/TopicList";
+import { useDashboardOpenTopics } from "./topics/useDashboardOpenTopics";
 
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
@@ -60,23 +61,30 @@ export function useDashboardTasks() {
 
 export function DashboardNavigation() {
   const { receivedTasks, sentTasks } = useDashboardTasks();
+  const openTopics = useDashboardOpenTopics();
 
   return (
     <UIHolder>
       <UISectionsHolder>
         <CollapsePanel isInitiallyOpen headerNode={<UISectionTitle>Received Requests</UISectionTitle>}>
           <UISectionContent>
-            <TaskList tasks={receivedTasks} hideUserInfo />
+            <UIListHolder>
+              <TaskList tasks={receivedTasks} hideUserInfo />
+            </UIListHolder>
           </UISectionContent>
         </CollapsePanel>
         <CollapsePanel headerNode={<UISectionTitle>Sent Requests</UISectionTitle>}>
           <UISectionContent>
-            <TaskList tasks={sentTasks} />
+            <UIListHolder>
+              <TaskList tasks={sentTasks} />
+            </UIListHolder>
           </UISectionContent>
         </CollapsePanel>
         <CollapsePanel headerNode={<UISectionTitle>Topics</UISectionTitle>}>
           <UISectionContent>
-            <TopicList />
+            <UIListHolder>
+              <TopicList topics={openTopics} />
+            </UIListHolder>
           </UISectionContent>
         </CollapsePanel>
       </UISectionsHolder>
@@ -93,6 +101,12 @@ export function DashboardNavigation() {
     </UIHolder>
   );
 }
+
+const UIListHolder = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
 
 const UIHolder = styled.div`
   display: flex;
