@@ -31,7 +31,10 @@ export default function InvitePage() {
         }
       }
     `,
-    { context: { noAuth: true, headers: { "X-Hasura-Team-Invitation-Token": token } } }
+    {
+      // The only way to access team_invitation_info is with that header and no Authorization
+      context: { noAuth: true, headers: { "X-Hasura-Team-Invitation-Token": token } },
+    }
   );
   const teamInvitationInfo = teamInvitationInfoData?.team_invitation_info[0];
 
