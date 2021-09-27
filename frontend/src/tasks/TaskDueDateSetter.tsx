@@ -1,4 +1,4 @@
-import { isFriday, nextMonday, setHours, startOfTomorrow } from "date-fns";
+import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { updateTask } from "~frontend/gql/tasks";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
+import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
@@ -14,37 +15,78 @@ interface Props {
   children: ReactNode;
 }
 
-const DEFAULT_MIDDLE_OF_WORK_DAY = 14;
+const END_OF_WORK_DAY = 17;
 
-function getDefaultInitialDueDate() {
+function getTodayEndOfDay() {
+  return setHours(startOfToday(), END_OF_WORK_DAY);
+}
+
+function getTomorrowEndOfDay() {
   const now = new Date();
   const nextWorkDay = isFriday(now) ? nextMonday(now) : startOfTomorrow();
 
-  return setHours(nextWorkDay, DEFAULT_MIDDLE_OF_WORK_DAY);
+  return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
 export const TaskDueDateSetter = ({ taskId, previousDueDate, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const [isPickerOpen, { set: openPicker, unset: closePicker }] = useBoolean(false);
+  const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
+  const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
   const handleSubmit = async (date: Date) => {
-    closePicker();
+    closeCalendar();
     updateTask({ taskId: taskId, input: { due_at: date.toISOString() } });
   };
 
-  const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getDefaultInitialDueDate();
+  const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getTomorrowEndOfDay();
 
   return (
     <>
       <AnimatePresence>
-        {isPickerOpen && (
-          <Popover enableScreenCover onClickOutside={closePicker} placement={"bottom-start"} anchorRef={ref}>
-            <DateTimePicker shouldSkipConfirmation={true} onSubmit={handleSubmit} initialValue={calendarInitialValue} />
+        {isCalendarOpen && (
+          <Popover enableScreenCover onClickOutside={closeCalendar} placement={"bottom-start"} anchorRef={ref}>
+            <DateTimePicker
+              shouldSkipConfirmation={false}
+              onSubmit={handleSubmit}
+              initialValue={calendarInitialValue}
+            />
           </Popover>
         )}
       </AnimatePresence>
-      <UITextButton ref={ref} onClick={openPicker}>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <PopoverMenu
+            onCloseRequest={() => {
+              closeMenu();
+            }}
+            anchorRef={ref}
+            options={[
+              {
+                key: "today",
+                label: "Today, End of Day",
+                onSelect: () => handleSubmit(getTodayEndOfDay()),
+              },
+              {
+                key: "tomorrow",
+                label: "Tomorrow, End of Day",
+                onSelect: () => handleSubmit(getTomorrowEndOfDay()),
+              },
+              {
+                key: "other",
+                label: "Other...",
+                onSelect: () => {
+                  closeMenu();
+                  openCalendar();
+                },
+              },
+            ]}
+          />
+        )}
+      </AnimatePresence>
+
+      <UITextButton ref={ref} onClick={openMenu}>
         {children}
       </UITextButton>
     </>
