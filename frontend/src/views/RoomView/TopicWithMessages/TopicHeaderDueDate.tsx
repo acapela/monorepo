@@ -1,12 +1,22 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery, useSubscription } from "@apollo/client";
+import { useEffect } from "react";
 import styled from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
-import { FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables } from "~gql";
+import {
+  FirstTaskInTopic_TaskQuery,
+  FirstTaskInTopic_TaskQueryVariables,
+  WatchFirstTaskInTopic_TaskSubscription,
+  WatchFirstTaskInTopic_TaskSubscriptionVariables,
+} from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { IconFlag } from "~ui/icons";
 import { theme } from "~ui/theme";
+
+interface Props {
+  topicId: string;
+}
 
 const firstTaskInTopicFragment = gql`
   fragment FirstTaskInTopic_task on task {
@@ -19,18 +29,26 @@ const firstTaskInTopicFragment = gql`
   }
 `;
 
-interface Props {
-  topicId: string;
-}
+const FIRST_TASK_IN_TOPIC_QUERY = gql`
+  ${firstTaskInTopicFragment}
 
-export const TopicHeaderDueDate = function ({ topicId }: Props) {
-  const currentUser = useCurrentUser();
+  query FirstTaskInTopic_task($topicId: uuid!) {
+    task(where: { message: { topic_id: { _eq: $topicId } } }, limit: 1, order_by: { created_at: asc }) {
+      ...FirstTaskInTopic_task
+    }
+  }
+`;
 
-  const result = useQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(
+// This is used to update the First Task In Topic query after the initial request is created
+function useFirstTaskSubscription(topicId: string) {
+  const { data } = useSubscription<
+    WatchFirstTaskInTopic_TaskSubscription,
+    WatchFirstTaskInTopic_TaskSubscriptionVariables
+  >(
     gql`
       ${firstTaskInTopicFragment}
 
-      query FirstTaskInTopic_task($topicId: uuid!) {
+      subscription WatchFirstTaskInTopic_task($topicId: uuid!) {
         task(where: { message: { topic_id: { _eq: $topicId } } }, limit: 1, order_by: { created_at: asc }) {
           ...FirstTaskInTopic_task
         }
@@ -39,7 +57,43 @@ export const TopicHeaderDueDate = function ({ topicId }: Props) {
     { variables: { topicId } }
   );
 
-  const task = result.data?.task[0] ?? null;
+  const client = useApolloClient();
+
+  const task = data?.task[0] ?? null;
+
+  useEffect(() => {
+    if (!topicId || !task) {
+      return;
+    }
+    const options = {
+      query: FIRST_TASK_IN_TOPIC_QUERY,
+      variables: { topicId },
+    };
+    const data = client.readQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(options);
+    if (data) {
+      client.writeQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>({
+        ...options,
+        data: {
+          ...data,
+          task: [task],
+        },
+      });
+    }
+  }, [client, task, topicId]);
+
+  return;
+}
+
+export const TopicHeaderDueDate = function ({ topicId }: Props) {
+  const currentUser = useCurrentUser();
+
+  useFirstTaskSubscription(topicId);
+  const { data } = useQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(
+    FIRST_TASK_IN_TOPIC_QUERY,
+    { variables: { topicId } }
+  );
+
+  const task = data?.task[0] ?? null;
 
   if (!task) {
     return null;
