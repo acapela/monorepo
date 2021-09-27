@@ -18,7 +18,6 @@ import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
 
 import { TOKEN_COOKIE_NAME, readCurrentToken } from "~frontend/authentication/cookie";
-import { getApolloInitialState } from "~frontend/gql/utils/hydration";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
@@ -87,22 +86,6 @@ const typePolicies: TypedTypePolicies = {
     },
   },
 };
-
-/**
- * Create cache and try to populate it if there is pre-fetched data
- *
- * We keep it in module scope as it has to be re-used between server side page renders (1 render - data requirements collection, 2nd render - render with pre-fetched cache)
- *
- * We'll however have to clear this cache between requests.
- *
- * TODO: Maybe something like unique request id would simplify it so we'd attach cache-per-request, this way we can do pre-fetching
- * but it's harder to make security bug.
- */
-let cache = new InMemoryCache({ typePolicies });
-
-export function clearApolloCache() {
-  cache = new InMemoryCache({ typePolicies });
-}
 
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
@@ -221,16 +204,10 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
 
   const link = getLink();
 
-  const initialCacheState = getApolloInitialState();
-
-  if (initialCacheState) {
-    cache.restore(initialCacheState);
-  }
-
   return new ApolloClient({
     ssrMode: isServer,
     link,
-    cache,
+    cache: new InMemoryCache({ typePolicies }),
   });
 });
 
