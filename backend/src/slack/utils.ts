@@ -1,6 +1,6 @@
 import { SlackInstallation, slackClient } from "~backend/src/slack/app";
 import { isWebAPIErrorType } from "~backend/src/slack/errors";
-import { User, db } from "~db";
+import { Prisma, User, db } from "~db";
 
 export async function fetchTeamBotToken(teamId: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });
@@ -34,9 +34,10 @@ export async function findSlackUserId(teamId: string, user: User) {
 }
 
 // Finds a user for a Slack user id either through a team_member's slack installation, team_invitation or by email
-export async function findUserBySlackId(slackToken: string, slackUserId: string) {
+export async function findUserBySlackId(slackToken: string, slackUserId: string, teamId?: string) {
   const user = await db.user.findFirst({
     where: {
+      team_member: { some: { team_id: teamId } },
       OR: [
         { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
         { team_invitation_team_invitation_used_by_user_idTouser: { some: { slack_user_id: slackUserId } } },
@@ -51,5 +52,5 @@ export async function findUserBySlackId(slackToken: string, slackUserId: string)
   if (!profile) {
     return;
   }
-  return await db.user.findFirst({ where: { email: profile.email } });
+  return await db.user.findFirst({ where: { team_member: { some: { team_id: teamId } }, email: profile.email } });
 }
