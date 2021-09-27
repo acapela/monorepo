@@ -1,7 +1,6 @@
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
-import styled from "styled-components";
 
 import { updateTask } from "~frontend/gql/tasks";
 import { useBoolean } from "~shared/hooks/useBoolean";
@@ -86,15 +85,9 @@ export const TaskDueDateSetter = ({ taskId, previousDueDate, children }: Props) 
         )}
       </AnimatePresence>
 
-      <UITextButton ref={ref} onClick={openMenu}>
+      <div ref={ref} onClick={openMenu}>
         {children}
-      </UITextButton>
+      </div>
     </>
   );
 };
-
-const UITextButton = styled.span<{}>`
-  white-space: nowrap;
-  cursor: pointer;
-  text-decoration: underline;
-`;

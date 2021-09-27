@@ -6,7 +6,6 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { updateTask } from "~frontend/gql/tasks";
 import { withFragments } from "~frontend/gql/utils";
-import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { MessageTask_TaskFragment } from "~gql";
@@ -122,26 +121,8 @@ const _MessageTask = styled(function MessageTask({ task, taskOwnerId, className 
       )}
       <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
       &nbsp;was requested
-      {task.due_at !== null && (
-        <>
-          &nbsp;
-          {isTaskOwner && (
-            <TaskDueDateSetter taskId={task.id} previousDueDate={task.due_at}>
-              by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}
-            </TaskDueDateSetter>
-          )}
-          {!isTaskOwner && <>by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}</>}
-        </>
-      )}
+      {task.due_at !== null && <>&nbsp;by&nbsp;{relativeFormatDateTime(new Date(task.due_at as string))}</>}
       .&nbsp;
-      {isTaskOwner && task.due_at === null && (
-        <>
-          <TaskDueDateSetter taskId={task.id} previousDueDate={task.due_at}>
-            Add due date
-          </TaskDueDateSetter>
-          &nbsp;
-        </>
-      )}
       {isCurrentUserTask && (
         <>
           {isTaskRead && <UITextButton onClick={handleMarkAsUnread}>Mark as unread</UITextButton>}
