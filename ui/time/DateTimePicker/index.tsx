@@ -18,12 +18,9 @@ interface Props {
 
 export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation = false }: Props) => {
   const [dirtyDate, setDirtyDate] = useState<Date>(initialValue);
-  const didUserChangeInitialValue = dirtyDate === initialValue;
 
   const handleSubmit = () => {
-    if (!didUserChangeInitialValue) {
-      onSubmit(dirtyDate);
-    }
+    onSubmit(dirtyDate);
   };
 
   useEffect(() => {
@@ -60,7 +57,7 @@ export const DateTimePicker = ({ initialValue, onSubmit, shouldSkipConfirmation 
         </UITimePickerWrapper>
       </UIPickers>
       {!shouldSkipConfirmation && (
-        <Button type="button" isDisabled={didUserChangeInitialValue} onClick={handleSubmit}>
+        <Button type="button" onClick={handleSubmit}>
           Save
         </Button>
       )}
