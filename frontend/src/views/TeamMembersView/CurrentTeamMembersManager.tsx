@@ -45,7 +45,7 @@ export const CurrentTeamMembersManager = () => {
             }
           }
 
-          invitations {
+          invitations(where: { used_at: { _is_null: true } }) {
             id
             email
             slack_user_id
