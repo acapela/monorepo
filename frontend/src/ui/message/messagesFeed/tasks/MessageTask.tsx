@@ -17,7 +17,6 @@ import { TaskStatusIcon } from "./TaskStatusIcon";
 
 interface Props {
   task: MessageTask_TaskFragment;
-  taskOwnerId: string;
   className?: string;
 }
 
@@ -44,11 +43,10 @@ const fragments = {
   `,
 };
 
-const _MessageTask = styled(function MessageTask({ task, taskOwnerId, className }: Props) {
+const _MessageTask = styled(function MessageTask({ task, className }: Props) {
   const currentUser = useCurrentUser();
 
   const isCurrentUserTask = currentUser?.id === task.user?.id;
-  const isTaskOwner = currentUser?.id === taskOwnerId;
   const isDone = !!task.done_at;
   const isTaskRead = !!task.seen_at;
 
