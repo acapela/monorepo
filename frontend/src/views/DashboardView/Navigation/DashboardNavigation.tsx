@@ -1,51 +1,26 @@
-import { useSubscription } from "@apollo/client";
-import gql from "graphql-tag";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { RouteLink, routes } from "~frontend/router";
-import { DashboardTasksSubscription, DashboardTasksSubscriptionVariables } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { IconPlusSquare } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-import { DashboardTaskCard } from "./tasks/TaskCard";
 import { TaskList } from "./tasks/TaskList";
+import { useTasksSubscription } from "./tasks/useTasksSubscription";
 import { TopicList } from "./topics/TopicList";
 import { useDashboardOpenTopics } from "./topics/useDashboardOpenTopics";
 
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
-  const { data } = useSubscription<DashboardTasksSubscription, DashboardTasksSubscriptionVariables>(
-    gql`
-      ${DashboardTaskCard.fragments.task}
+  const { tasks } = useTasksSubscription();
 
-      subscription DashboardTasks($userId: uuid!) {
-        task(
-          where: {
-            done_at: { _is_null: true }
-            _or: [{ user_id: { _eq: $userId } }, { message: { user_id: { _eq: $userId } } }]
-          }
-        ) {
-          ...DashboardTaskCard_task
-          user_id
-          message {
-            user_id
-          }
-        }
-      }
-    `,
-    { variables: { userId: currentUser.id } }
-  );
-
-  const openTasksRelatedToUser = data?.task ?? [];
-
-  const receivedTasks = openTasksRelatedToUser.filter((task) => {
+  const receivedTasks = tasks.filter((task) => {
     return task.user_id === currentUser.id;
   });
 
-  const sentTasks = openTasksRelatedToUser.filter((task) => {
+  const sentTasks = tasks.filter((task) => {
     // If user has assigned some task to self - it is technically both sent and received. In such case we only show is at received.
     // There is no UX point in showing it as sent as you're not kinda waiting for info from yourself about the status of it.
     if (task.user_id === currentUser.id) return false;
