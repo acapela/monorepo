@@ -1,4 +1,5 @@
 import { gql, useApolloClient, useQuery, useSubscription } from "@apollo/client";
+import { isEqual } from "lodash";
 import { useEffect } from "react";
 import styled from "styled-components";
 
@@ -70,11 +71,12 @@ function useFirstTaskSubscription(topicId: string) {
       variables: { topicId },
     };
     const data = client.readQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(options);
-    if (data) {
+    if (!isEqual(task, data?.task[0])) {
+      const previousData = data ?? { __typename: "query_root" };
       client.writeQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>({
         ...options,
         data: {
-          ...data,
+          ...previousData,
           task: [task],
         },
       });
