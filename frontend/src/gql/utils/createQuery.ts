@@ -125,7 +125,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     return [data, subscriptionResult] as const;
   }
 
-  useAsSubscription.query = useQuery;
+  useAsSubscription.queryDocument = useQuery;
   useAsSubscription.requestPrefetch = requestPrefetch;
 
   function update(variables: Variables, updater: ValueUpdater<Data>) {

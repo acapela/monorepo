@@ -29,7 +29,7 @@ import { useUpdateTopic } from "./shared";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
-import { useMessagesSubscription } from "./useMessagesSubscription";
+import { useMessagesWithUpdates } from "./useMessagesWithUpdates";
 
 const fragments = {
   room: gql`
@@ -93,7 +93,7 @@ function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
 }
 
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
-  const { messages, existingMessageIds, isLoadingMessages } = useMessagesSubscription(topic.id);
+  const { messages, existingMessageIds, isLoadingMessages } = useMessagesWithUpdates(topic.id);
 
   useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
     gql`
