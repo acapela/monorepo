@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.13.0",
+    "@playwright/test": "^1.15.0",
     "jsonwebtoken": "^8.5.1"
   },
   "scripts": {
