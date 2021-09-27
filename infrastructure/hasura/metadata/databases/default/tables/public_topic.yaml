@@ -2,31 +2,38 @@ table:
   name: topic
   schema: public
 object_relationships:
-  - name: closed_by_user
-    using:
-      manual_configuration:
-        column_mapping:
-          closed_by_user_id: id
-        insertion_order: null
-        remote_table:
-          name: user
-          schema: public
-  - name: owner
-    using:
-      foreign_key_constraint_on: owner_id
-  - name: room
-    using:
-      foreign_key_constraint_on: room_id
-  - name: team
-    using:
-      manual_configuration:
-        column_mapping:
-          team_id: id
-        insertion_order: null
-        remote_table:
-          name: team
-          schema: public
+- name: closed_by_user
+  using:
+    manual_configuration:
+      column_mapping:
+        closed_by_user_id: id
+      insertion_order: null
+      remote_table:
+        name: user
+        schema: public
+- name: owner
+  using:
+    foreign_key_constraint_on: owner_id
+- name: room
+  using:
+    foreign_key_constraint_on: room_id
+- name: team
+  using:
+    manual_configuration:
+      column_mapping:
+        team_id: id
+      insertion_order: null
+      remote_table:
+        name: team
+        schema: public
 array_relationships:
+- name: last_seen_messages
+  using:
+    foreign_key_constraint_on:
+      column: topic_id
+      table:
+        name: last_seen_message
+        schema: public
 - name: members
   using:
     foreign_key_constraint_on:
@@ -66,15 +73,15 @@ insert_permissions:
     backend_only: false
     check:
       _or:
-        - _and:
-          - room_access:
-              user_id:
-                _eq: X-Hasura-User-Id
-          - room:
-              finished_at:
-                _is_null: true
-        - owner_id:
-            _eq: X-Hasura-User-Id
+      - _and:
+        - room_access:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - room:
+            finished_at:
+              _is_null: true
+      - owner_id:
+          _eq: X-Hasura-User-Id
     columns:
     - id
     - index
