@@ -21,7 +21,7 @@ const getTopicLastSeenMessageTimestamp = (topic: DashboardOpenTopicFragment) => 
   return message ? new Date(message.seen_at).getTime() : null;
 };
 
-const doesTopicHasUnreadMessage = (lastMessageTimestamp: number, topic: DashboardOpenTopicFragment) => {
+const hasTopicUnreadMesssage = (lastMessageTimestamp: number, topic: DashboardOpenTopicFragment) => {
   const lastSeenMessageTimestamp = getTopicLastSeenMessageTimestamp(topic);
   if (!lastSeenMessageTimestamp) return true;
 
@@ -34,8 +34,8 @@ const orderTopicsByUnreadMessage = (topics: DashboardOpenTopicFragment[]) =>
     const topicBLastMessageTimestamp = getTopicLastMessageTimestamp(topicB);
 
     if (topicALastMessageTimestamp && topicBLastMessageTimestamp) {
-      const topicAHasUnreadMessage = doesTopicHasUnreadMessage(topicALastMessageTimestamp, topicA);
-      const topicBHasUnreadMessage = doesTopicHasUnreadMessage(topicBLastMessageTimestamp, topicB);
+      const topicAHasUnreadMessage = hasTopicUnreadMesssage(topicALastMessageTimestamp, topicA);
+      const topicBHasUnreadMessage = hasTopicUnreadMesssage(topicBLastMessageTimestamp, topicB);
 
       if (topicAHasUnreadMessage && !topicBHasUnreadMessage) {
         return -1;
