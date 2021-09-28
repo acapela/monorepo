@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+import { routes } from "~frontend/../router";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createTeam, useTeamsQuery } from "~frontend/gql/teams";
@@ -44,6 +45,8 @@ export function TeamPickerView() {
 
     trackEvent("Account Created", { teamName: name });
     trackEvent("Trial Started", { teamName: name });
+
+    await routes.team.push({});
   }
 
   return (
