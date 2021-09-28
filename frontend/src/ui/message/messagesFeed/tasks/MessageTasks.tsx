@@ -19,6 +19,9 @@ interface Props {
 export const MessageTasks = styled(({ tasks, className, taskOwnerId }: Props) => {
   const currentUser = useAssertCurrentUser();
   const isCurrentUserOwner = taskOwnerId === currentUser?.id;
+  const hasTasks = tasks.length > 0;
+  const isDueDateSet = hasTasks && !!tasks[0].due_at;
+
   return (
     <UIHolder>
       <UITasks className={className}>
@@ -26,12 +29,12 @@ export const MessageTasks = styled(({ tasks, className, taskOwnerId }: Props) =>
           <MessageTask key={task.id} task={task} />
         ))}
       </UITasks>
-      {isCurrentUserOwner && tasks.length > 0 && (
+      {isCurrentUserOwner && hasTasks && (
         <UITaskOwnerActions>
           <AnimateSharedLayout>
             <TaskDueDateSetter messageId={tasks[0].message_id}>
               <Button kind="secondary" key="add-filter" icon={<IconChevronDown />}>
-                Add due date
+                {isDueDateSet ? "Change due date" : "Add due date"}
               </Button>
             </TaskDueDateSetter>
           </AnimateSharedLayout>
