@@ -23,9 +23,9 @@ function getTodayEndOfDay() {
   return setHours(startOfToday(), END_OF_WORK_DAY);
 }
 
-function getTomorrowEndOfDay() {
-  const now = new Date();
-  const nextWorkDay = isFriday(now) ? nextMonday(now) : startOfTomorrow();
+function getNextWorkDayEndOfDay() {
+  const today = startOfToday();
+  const nextWorkDay = isFriday(today) ? nextMonday(today) : startOfTomorrow();
 
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
@@ -56,7 +56,7 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
     updateTasksInMessage({ messageId, input: { due_at: date.toISOString() } });
   };
 
-  const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getTomorrowEndOfDay();
+  const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -83,13 +83,13 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
             options={[
               {
                 key: "today",
-                label: "Today, End of Day",
+                label: "Today, End of day",
                 onSelect: () => handleSubmit(getTodayEndOfDay()),
               },
               {
                 key: "tomorrow",
-                label: isLastDayOfWorkWeek ? "Next Monday, End of Day" : "Tomorrow, End of Day",
-                onSelect: () => handleSubmit(getTomorrowEndOfDay()),
+                label: isLastDayOfWorkWeek ? "Next monday, End of day" : "Tomorrow, End of day",
+                onSelect: () => handleSubmit(getNextWorkDayEndOfDay()),
               },
               {
                 key: "other",
