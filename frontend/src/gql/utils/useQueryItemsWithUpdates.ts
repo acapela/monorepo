@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery, useSubscription } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { DocumentNode } from "graphql";
 import _ from "lodash";
 import { useEffect, useMemo } from "react";
@@ -7,6 +7,15 @@ import { Exact, Maybe } from "~gql";
 
 type UpdateableItem = { id: string; updated_at?: Maybe<string> };
 
+/**
+ * Queries for a list of items (using queryDocument), setting up subscriptions for keeping up with
+ * updates (updateSubscriptionDocument) and deletions (existenceSubscriptionDocument).
+ * The given query and subscriptions need to use the same conditions, which is semi-enforced by
+ * them all sharing the same variables parameter. They also need to have the same field, identifiable
+ * by itemsKey.
+ * You can optionally also pass in a getTimestamps function, if the lastUpdatedAt timestamp needs to be
+ * calculated based on nested fields.
+ */
 export function useQueryItemsWithUpdates<
   ItemsKey extends string,
   Query extends Record<ItemsKey, UpdateableItem[]>,
@@ -21,14 +30,14 @@ export function useQueryItemsWithUpdates<
   existenceSubscriptionDocument,
   variables,
   itemsKey,
-  getLastUpdatedAt,
+  getTimestamps,
 }: {
   queryDocument: DocumentNode;
   updateSubscriptionDocument: DocumentNode;
   existenceSubscriptionDocument: DocumentNode;
   variables: QueryVariables & Omit<UpdateSubscriptionVariables, "lastUpdatedAt"> & ExistenceSubscriptionVariables;
   itemsKey: ItemsKey;
-  getLastUpdatedAt?: (items: Query[ItemsKey]) => string | null;
+  getTimestamps?: (items: Query[ItemsKey]) => string[];
 }): { items: Query[ItemsKey]; existingItemIds: Set<string> | null; loading: boolean } {
   // This query fetches the initial data, we will also modify this query's cache in the rest of the function
   const { data, loading, subscribeToMore } = useQuery<Query, QueryVariables>(queryDocument, { variables });
@@ -36,13 +45,15 @@ export function useQueryItemsWithUpdates<
   // This last subscription listens to field changes and newly added items, the latter of which get added to
   // the original query's cache
   const items = useMemo(() => (data ? data[itemsKey] : ([] as unknown as Query[ItemsKey])), [data, itemsKey]);
-  const lastUpdatedAt = useMemo(
-    () =>
-      (getLastUpdatedAt ? getLastUpdatedAt(items) : _.max(items.map((t) => t.updated_at))) ??
+  const lastUpdatedAt = useMemo(() => {
+    const timestamps = getTimestamps ? getTimestamps(items) : items.map((t) => t.updated_at);
+    const lastTimestamp = _.max(timestamps.map((timestamp) => (timestamp ? new Date(timestamp) : null)));
+    return (
+      lastTimestamp ??
       // if there are no items (yet), we need a zero point in time, so I picked my birthday
-      new Date(1991, 6, 3),
-    [getLastUpdatedAt, items]
-  );
+      new Date(1991, 6, 3)
+    );
+  }, [getTimestamps, items]);
   useEffect(() => {
     if (!data) {
       return;

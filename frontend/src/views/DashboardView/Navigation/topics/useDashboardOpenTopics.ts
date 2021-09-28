@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import _ from "lodash";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useQueryItemsWithUpdates } from "~frontend/gql/utils/useQueryItemsWithUpdates";
@@ -11,8 +12,23 @@ import {
   DashboardOpenTopicsUpdatesSubscription,
   DashboardOpenTopicsUpdatesSubscriptionVariables,
 } from "~gql";
+import { isNotNullish } from "~shared/nullish";
 
 import { DashboardTopicCard } from "./TopicCard";
+
+const topicFragment = gql`
+  ${DashboardTopicCard.fragments.topic}
+  fragment DashboardOpenTopic on topic {
+    id
+    updated_at
+    ...DashboardTopicCard_topic
+    messages {
+      tasks {
+        updated_at
+      }
+    }
+  }
+`;
 
 export const useDashboardOpenTopics = () => {
   const teamId = useAssertCurrentTeamId();
@@ -28,16 +44,15 @@ export const useDashboardOpenTopics = () => {
     DashboardOpenTopicsExistenceSubscriptionVariables
   >({
     queryDocument: gql`
-      ${DashboardTopicCard.fragments.topic}
+      ${topicFragment}
       query DashboardOpenTopics($topicsFilter: topic_bool_exp!) {
         topics: topic(where: $topicsFilter) {
-          ...DashboardTopicCard_topic
-          id
+          ...DashboardOpenTopic
         }
       }
     `,
     updateSubscriptionDocument: gql`
-      ${DashboardTopicCard.fragments.topic}
+      ${topicFragment}
       subscription DashboardOpenTopicsUpdates($topicsFilter: topic_bool_exp!, $lastUpdatedAt: timestamptz!) {
         topics: topic(
           where: {
@@ -52,14 +67,7 @@ export const useDashboardOpenTopics = () => {
             ]
           }
         ) {
-          ...DashboardTopicCard_topic
-          id
-          updated_at
-          messages {
-            tasks {
-              updated_at
-            }
-          }
+          ...DashboardOpenTopic
         }
       }
     `,
@@ -86,6 +94,11 @@ export const useDashboardOpenTopics = () => {
       },
     },
     itemsKey: "topics",
+    getTimestamps: (items) =>
+      items
+        .flatMap((topic) => [topic, ...topic.messages.flatMap((message) => message.tasks)])
+        .map((t) => t.updated_at)
+        .filter(isNotNullish),
   });
 
   return topics;
