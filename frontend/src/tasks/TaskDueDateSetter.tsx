@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
+import styled from "styled-components";
 
 import { createMutation } from "~frontend/gql/utils";
 import { UpdateTasksInMessageMutation, UpdateTasksInMessageMutationVariables } from "~gql";
@@ -102,9 +103,13 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
         )}
       </AnimatePresence>
 
-      <div ref={ref} onClick={openMenu}>
+      <UITriggerHolder ref={ref} onClick={openMenu}>
         {children}
-      </div>
+      </UITriggerHolder>
     </>
   );
 };
+
+const UITriggerHolder = styled.div<{}>`
+  display: inline-block;
+`;
