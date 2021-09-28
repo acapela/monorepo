@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { IconSelection } from "~ui/icons";
 import { theme } from "~ui/theme";
@@ -8,11 +8,12 @@ interface Props {
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
+  noSpacing?: boolean;
 }
 
-export function EmptyStatePlaceholder({ title, description, icon = <IconSelection /> }: Props) {
+export function EmptyStatePlaceholder({ title, description, noSpacing = false, icon = <IconSelection /> }: Props) {
   return (
-    <UIHolder>
+    <UIHolder noSpacing={noSpacing}>
       {icon && <UIIcon>{icon}</UIIcon>}
       {title && <UITitle>{title}</UITitle>}
       {description && <UIBody>{description}</UIBody>}
@@ -26,16 +27,22 @@ const UIIcon = styled.div<{}>`
   opacity: 0.4;
 `;
 
-const UIHolder = styled.div<{}>`
-  padding: 16px;
+const UIHolder = styled.div<{ noSpacing: boolean }>`
   display: flex;
   flex-direction: column;
   text-align: center;
   align-items: center;
 
-  background-color: ${theme.colors.layout.background()};
-  border: 1px solid ${theme.colors.layout.softLine()};
-  ${theme.borderRadius.card}
+  ${(props) => {
+    if (props.noSpacing) return;
+
+    return css`
+      padding: 16px;
+      background-color: ${theme.colors.layout.background()};
+      border: 1px solid ${theme.colors.layout.softLine()};
+      ${theme.borderRadius.card}
+    `;
+  }}
 `;
 
 const UITitle = styled.div<{}>`

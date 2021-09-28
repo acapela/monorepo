@@ -44,6 +44,7 @@ export function createAutocompletePlugin<D>(options: AutocompletePluginOptions<D
           data={data}
           node={props.node}
           isEditable={editor.isEditable}
+          editor={editor}
           update={(attributes) => {
             const previousAttributes = props.node.attrs.data;
             const mergedAttributes = { ...previousAttributes, ...attributes };

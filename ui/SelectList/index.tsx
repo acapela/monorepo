@@ -8,13 +8,14 @@ import { hoverActionActiveCss, hoverActionCss } from "~ui/transitions";
 
 interface Props<T> {
   items: T[];
+  noItemsPlaceholder?: ReactNode;
   keyGetter: (item: T) => string;
   renderItem: (item: T) => ReactNode;
   onItemSelected: (item: T) => void;
   className?: string;
 }
 
-export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: Props<T>) {
+export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected, noItemsPlaceholder }: Props<T>) {
   const { activeItem } = useListWithNavigation(items, { enableKeyboard: true });
 
   const activeKey = activeItem ? keyGetter(activeItem) : null;
@@ -35,6 +36,7 @@ export function SelectList<T>({ items, keyGetter, renderItem, onItemSelected }: 
 
   return (
     <UIHolder role="listbox">
+      {!items.length && noItemsPlaceholder}
       {items.map((item) => {
         const key = keyGetter(item);
         const isActive = activeKey === key;
