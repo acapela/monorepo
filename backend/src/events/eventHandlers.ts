@@ -6,6 +6,7 @@ import {
   RoomInvitation,
   RoomMember,
   Space,
+  Task,
   Team,
   TeamInvitation,
   TeamMember,
@@ -17,6 +18,7 @@ import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{
   message_updates: Message;
+  task_updates: Task;
   message_reaction_updates: MessageReaction;
   room_updates: Room;
   space_updates: Space;

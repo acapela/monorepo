@@ -13,8 +13,6 @@ type UpdateableItem = { id: string; updated_at?: Maybe<string> };
  * The given query and subscriptions need to use the same conditions, which is semi-enforced by
  * them all sharing the same variables parameter. They also need to have the same field, identifiable
  * by itemsKey.
- * You can optionally also pass in a getTimestamps function, if the lastUpdatedAt timestamp needs to be
- * calculated based on nested fields.
  */
 export function useQueryItemsWithUpdates<
   ItemsKey extends string,
@@ -30,14 +28,12 @@ export function useQueryItemsWithUpdates<
   existenceSubscriptionDocument,
   variables,
   itemsKey,
-  getTimestamps,
 }: {
   queryDocument: DocumentNode;
   updateSubscriptionDocument: DocumentNode;
   existenceSubscriptionDocument: DocumentNode;
   variables: QueryVariables & Omit<UpdateSubscriptionVariables, "lastUpdatedAt"> & ExistenceSubscriptionVariables;
   itemsKey: ItemsKey;
-  getTimestamps?: (items: Query[ItemsKey]) => string[];
 }): { items: Query[ItemsKey]; existingItemIds: Set<string> | null; loading: boolean } {
   // This query fetches the initial data, we will also modify this query's cache in the rest of the function
   const { data, loading, subscribeToMore } = useQuery<Query, QueryVariables>(queryDocument, { variables });
@@ -46,30 +42,28 @@ export function useQueryItemsWithUpdates<
   // the original query's cache
   const items = useMemo(() => (data ? data[itemsKey] : ([] as unknown as Query[ItemsKey])), [data, itemsKey]);
   const lastUpdatedAt = useMemo(() => {
-    const timestamps = getTimestamps ? getTimestamps(items) : items.map((t) => t.updated_at);
-    const lastTimestamp = _.max(timestamps.map((timestamp) => (timestamp ? new Date(timestamp) : null)));
+    const lastTimestamp = _.max(items.map((item) => (item.updated_at ? new Date(item.updated_at) : null)));
     return (
       lastTimestamp ??
       // if there are no items (yet), we need a zero point in time, so I picked my birthday
       new Date(1991, 6, 3)
     );
-  }, [getTimestamps, items]);
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-    return subscribeToMore<UpdateSubscription, UpdateSubscriptionVariables>({
-      document: updateSubscriptionDocument,
-      variables: { ...variables, lastUpdatedAt } as never,
-      updateQuery(previous, { subscriptionData }) {
-        const updatedItems = subscriptionData.data[itemsKey];
-        const previousItems = previous[itemsKey];
-        const previousItemIds = new Set(previousItems.map((t) => t.id));
-        const newItems = updatedItems.filter((t) => !previousItemIds.has(t.id));
-        return { ...previous, [itemsKey]: [...previousItems, ...newItems] };
-      },
-    });
-  }, [data, itemsKey, lastUpdatedAt, subscribeToMore, updateSubscriptionDocument, variables]);
+  }, [items]);
+  useEffect(
+    () =>
+      subscribeToMore<UpdateSubscription, UpdateSubscriptionVariables>({
+        document: updateSubscriptionDocument,
+        variables: { ...variables, lastUpdatedAt } as never,
+        updateQuery(previous, { subscriptionData }) {
+          const updatedItems = subscriptionData.data[itemsKey];
+          const previousItems = previous[itemsKey];
+          const previousItemIds = new Set(previousItems.map((t) => t.id));
+          const newItems = updatedItems.filter((t) => !previousItemIds.has(t.id));
+          return { ...previous, [itemsKey]: [...previousItems, ...newItems] };
+        },
+      }),
+    [itemsKey, lastUpdatedAt, subscribeToMore, updateSubscriptionDocument, variables]
+  );
 
   // This subscription only listens to absence/presence changes of the queried items for the same condition.
   // It is type-checked to only subscribe to their id, to prevent over-subscribing.

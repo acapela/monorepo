@@ -13,7 +13,6 @@ import {
   DashboardOpenTopicsUpdatesSubscription,
   DashboardOpenTopicsUpdatesSubscriptionVariables,
 } from "~gql";
-import { isNotNullish } from "~shared/nullish";
 
 import { DashboardTopicCard } from "./TopicCard";
 
@@ -23,15 +22,6 @@ const topicFragment = gql`
     id
     updated_at
     ...DashboardTopicCard_topic
-    messages {
-      lastTask: tasks_aggregate {
-        aggregate {
-          max {
-            updated_at
-          }
-        }
-      }
-    }
     last_seen_messages {
       seen_at
     }
@@ -89,23 +79,7 @@ export const useDashboardOpenTopics = () => {
     updateSubscriptionDocument: gql`
       ${topicFragment}
       subscription DashboardOpenTopicsUpdates($topicsFilter: topic_bool_exp!, $lastUpdatedAt: timestamptz!) {
-        topics: topic(
-          where: {
-            _and: [
-              $topicsFilter
-              {
-                _or: [
-                  { updated_at: { _gt: $lastUpdatedAt } }
-                  {
-                    messages: {
-                      _or: [{ updated_at: { _gt: $lastUpdatedAt } }, { tasks: { updated_at: { _gt: $lastUpdatedAt } } }]
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        ) {
+        topics: topic(where: { _and: [$topicsFilter, { updated_at: { _gt: $lastUpdatedAt } }] }) {
           ...DashboardOpenTopic
         }
       }
@@ -133,14 +107,6 @@ export const useDashboardOpenTopics = () => {
       },
     },
     itemsKey: "topics",
-    getTimestamps: (items) =>
-      items
-        .flatMap((topic) => [
-          topic.updated_at,
-          topic.lastMessage.aggregate?.max?.updated_at,
-          ...topic.messages.map((message) => message.lastTask.aggregate?.max?.updated_at),
-        ])
-        .filter(isNotNullish),
   });
 
   return orderBy(topics, (topic) => [getTopicLastUnreadMessageTimestamp(topic), getTopicLastMessageTimestamp(topic)], [
