@@ -118,7 +118,7 @@ jobs:
           ./start-ci.sh
           cd -
       - name: Build frontend
-        run: yarn run frontend:build
+        run: CI_BUILD=1 yarn run frontend:build
       - name: Start frontend
         run: |
           cd frontend/
