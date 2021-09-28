@@ -129,6 +129,8 @@ jobs:
           curl -v localhost:3000/healthz
           curl -v localhost:1337/healthz
       - run: yarn e2e test
+      - uses: mxschmitt/action-tmate@v3
+        if: ${{ failure() }}
       - uses: actions/upload-artifact@v2
         if: ${{ failure() }}
         with:
