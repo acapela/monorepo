@@ -1,5 +1,6 @@
 import { useSubscription } from "@apollo/client";
 import gql from "graphql-tag";
+import { orderBy } from "lodash";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
@@ -21,41 +22,15 @@ const getTopicLastSeenMessageTimestamp = (topic: DashboardOpenTopicFragment) => 
   return message ? new Date(message.seen_at).getTime() : null;
 };
 
-const hasTopicUnreadMesssage = (lastMessageTimestamp: number, topic: DashboardOpenTopicFragment) => {
+const getTopicLastUnreadMessageTimestamp = (topic: DashboardOpenTopicFragment): number | null => {
+  const lastMessageTimestamp = getTopicLastMessageTimestamp(topic);
+  if (!lastMessageTimestamp) return null;
+
   const lastSeenMessageTimestamp = getTopicLastSeenMessageTimestamp(topic);
-  if (!lastSeenMessageTimestamp) return true;
+  const hasUnreadMessage = !lastSeenMessageTimestamp || lastSeenMessageTimestamp < lastMessageTimestamp;
 
-  return lastSeenMessageTimestamp < lastMessageTimestamp;
+  return hasUnreadMessage ? lastMessageTimestamp : null;
 };
-
-const orderTopicsByUnreadMessage = (topics: DashboardOpenTopicFragment[]) =>
-  topics.sort((topicA, topicB) => {
-    const topicALastMessageTimestamp = getTopicLastMessageTimestamp(topicA);
-    const topicBLastMessageTimestamp = getTopicLastMessageTimestamp(topicB);
-
-    if (topicALastMessageTimestamp && topicBLastMessageTimestamp) {
-      const topicAHasUnreadMessage = hasTopicUnreadMesssage(topicALastMessageTimestamp, topicA);
-      const topicBHasUnreadMessage = hasTopicUnreadMesssage(topicBLastMessageTimestamp, topicB);
-
-      if (topicAHasUnreadMessage && !topicBHasUnreadMessage) {
-        return -1;
-      }
-      if (!topicAHasUnreadMessage && topicBHasUnreadMessage) {
-        return 1;
-      }
-
-      return topicALastMessageTimestamp > topicBLastMessageTimestamp ? -1 : 1;
-    }
-
-    if (topicALastMessageTimestamp && !topicBLastMessageTimestamp) {
-      return -1;
-    }
-    if (!topicALastMessageTimestamp && topicBLastMessageTimestamp) {
-      return 1;
-    }
-
-    return 0;
-  });
 
 export const useDashboardOpenTopics = () => {
   const teamId = useAssertCurrentTeamId();
@@ -105,5 +80,8 @@ export const useDashboardOpenTopics = () => {
 
   const topics = data?.topic || [];
 
-  return orderTopicsByUnreadMessage(topics);
+  return orderBy(topics, (topic) => [getTopicLastUnreadMessageTimestamp(topic), getTopicLastMessageTimestamp(topic)], [
+    "desc",
+    "desc",
+  ]);
 };
