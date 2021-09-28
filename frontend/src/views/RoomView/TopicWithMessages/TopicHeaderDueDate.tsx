@@ -1,15 +1,15 @@
 import { gql, useApolloClient, useQuery, useSubscription } from "@apollo/client";
 import { isEqual } from "lodash";
 import { useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TaskDueDateSetter } from "~frontend/tasks/TaskDueDateSetter";
 import {
-  FirstTaskInTopic_TaskQuery,
-  FirstTaskInTopic_TaskQueryVariables,
-  WatchFirstTaskInTopic_TaskSubscription,
-  WatchFirstTaskInTopic_TaskSubscriptionVariables,
+  TasksInFirstTopicMessage_MessageQuery,
+  TasksInFirstTopicMessage_MessageQueryVariables,
+  WatchTasksInFirstTopicMessage_MessageSubscription,
+  WatchTasksInFirstTopicMessage_MessageSubscriptionVariables,
 } from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { IconFlag } from "~ui/icons";
@@ -19,23 +19,24 @@ interface Props {
   topicId: string;
 }
 
-const firstTaskInTopicFragment = gql`
-  fragment FirstTaskInTopic_task on task {
+const tasksInFirstTopicMessageFragment = gql`
+  fragment TasksInFirstTopicMessage_message on message {
     id
-    created_at
-    due_at
-    message {
-      user_id
+    user_id
+    tasks {
+      id
+      created_at
+      due_at
     }
   }
 `;
 
-const FIRST_TASK_IN_TOPIC_QUERY = gql`
-  ${firstTaskInTopicFragment}
+const TASKS_IN_FIRST_TOPIC_MESSAGE_QUERY = gql`
+  ${tasksInFirstTopicMessageFragment}
 
-  query FirstTaskInTopic_task($topicId: uuid!) {
-    task(where: { message: { topic_id: { _eq: $topicId } } }, limit: 1, order_by: { created_at: asc }) {
-      ...FirstTaskInTopic_task
+  query TasksInFirstTopicMessage_message($topicId: uuid!) {
+    message(where: { topic_id: { _eq: $topicId } }, limit: 1, order_by: { created_at: asc }) {
+      ...TasksInFirstTopicMessage_message
     }
   }
 `;
@@ -43,15 +44,15 @@ const FIRST_TASK_IN_TOPIC_QUERY = gql`
 // This is used to update the First Task In Topic query after the initial request is created
 function useFirstTaskSubscription(topicId: string) {
   const { data } = useSubscription<
-    WatchFirstTaskInTopic_TaskSubscription,
-    WatchFirstTaskInTopic_TaskSubscriptionVariables
+    WatchTasksInFirstTopicMessage_MessageSubscription,
+    WatchTasksInFirstTopicMessage_MessageSubscriptionVariables
   >(
     gql`
-      ${firstTaskInTopicFragment}
+      ${tasksInFirstTopicMessageFragment}
 
-      subscription WatchFirstTaskInTopic_task($topicId: uuid!) {
-        task(where: { message: { topic_id: { _eq: $topicId } } }, limit: 1, order_by: { created_at: asc }) {
-          ...FirstTaskInTopic_task
+      subscription WatchTasksInFirstTopicMessage_message($topicId: uuid!) {
+        message(where: { topic_id: { _eq: $topicId } }, limit: 1, order_by: { created_at: asc }) {
+          ...TasksInFirstTopicMessage_message
         }
       }
     `,
@@ -60,28 +61,31 @@ function useFirstTaskSubscription(topicId: string) {
 
   const client = useApolloClient();
 
-  const task = data?.task[0] ?? null;
+  const message = data?.message[0] ?? null;
 
   useEffect(() => {
-    if (!topicId || !task) {
+    if (!topicId || !message) {
       return;
     }
     const options = {
-      query: FIRST_TASK_IN_TOPIC_QUERY,
+      query: TASKS_IN_FIRST_TOPIC_MESSAGE_QUERY,
       variables: { topicId },
     };
-    const data = client.readQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(options);
-    if (!isEqual(task, data?.task[0])) {
+    const data = client.readQuery<
+      TasksInFirstTopicMessage_MessageQuery,
+      TasksInFirstTopicMessage_MessageQueryVariables
+    >(options);
+    if (!isEqual(message, data?.message[0])) {
       const previousData = data ?? { __typename: "query_root" };
-      client.writeQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>({
+      client.writeQuery<TasksInFirstTopicMessage_MessageQuery, TasksInFirstTopicMessage_MessageQueryVariables>({
         ...options,
         data: {
           ...previousData,
-          task: [task],
+          message: [message],
         },
       });
     }
-  }, [client, task, topicId]);
+  }, [client, message, topicId]);
 
   return;
 }
@@ -90,20 +94,20 @@ export const TopicHeaderDueDate = function ({ topicId }: Props) {
   const currentUser = useCurrentUser();
 
   useFirstTaskSubscription(topicId);
-  const { data } = useQuery<FirstTaskInTopic_TaskQuery, FirstTaskInTopic_TaskQueryVariables>(
-    FIRST_TASK_IN_TOPIC_QUERY,
+  const { data } = useQuery<TasksInFirstTopicMessage_MessageQuery, TasksInFirstTopicMessage_MessageQueryVariables>(
+    TASKS_IN_FIRST_TOPIC_MESSAGE_QUERY,
     { variables: { topicId } }
   );
 
-  const task = data?.task[0] ?? null;
+  const message = data?.message[0] ?? null;
 
-  if (!task) {
+  if (message === null || message.tasks.length === 0) {
     return null;
   }
 
-  const isTaskOwner = task.message.user_id === currentUser?.id;
-
-  const formattedDueDate = task.due_at ? relativeFormatDateTime(new Date(task.due_at as string)) : null;
+  const isTaskOwner = message.user_id === currentUser?.id;
+  const previousDueDate = message.tasks[0].due_at;
+  const formattedDueDate = previousDueDate ? relativeFormatDateTime(new Date(previousDueDate as string)) : null;
 
   return (
     <UIDueDateSection>
@@ -111,15 +115,15 @@ export const TopicHeaderDueDate = function ({ topicId }: Props) {
 
       {formattedDueDate && !isTaskOwner && <UIDueDate>{formattedDueDate}</UIDueDate>}
       {formattedDueDate && isTaskOwner && (
-        <TaskDueDateSetter taskId={task.id} previousDueDate={task.due_at}>
-          <UIDueDate>{formattedDueDate}</UIDueDate>
+        <TaskDueDateSetter messageId={message.id} previousDueDate={previousDueDate}>
+          <UIDueDate isClickable>{formattedDueDate}</UIDueDate>
         </TaskDueDateSetter>
       )}
 
       {!formattedDueDate && !isTaskOwner && <UIDueDate>No due date</UIDueDate>}
       {!formattedDueDate && isTaskOwner && (
-        <TaskDueDateSetter taskId={task.id}>
-          <UIDueDate>Add due date</UIDueDate>
+        <TaskDueDateSetter messageId={message.id}>
+          <UIDueDate isClickable>Add due date</UIDueDate>
         </TaskDueDateSetter>
       )}
     </UIDueDateSection>
@@ -139,6 +143,14 @@ const UIDueDateSection = styled.div<{}>`
   cursor: default;
 `;
 
-const UIDueDate = styled.div<{}>`
+const UIDueDate = styled.div<{ isClickable?: boolean }>`
   ${theme.font.body12.spezia.build()}
+
+  ${(props) =>
+    props.isClickable &&
+    css`
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: underline;
+    `}
 `;
