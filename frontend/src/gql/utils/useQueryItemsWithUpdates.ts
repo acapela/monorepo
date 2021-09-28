@@ -1,7 +1,8 @@
 import { useQuery, useSubscription } from "@apollo/client";
 import { DocumentNode } from "graphql";
 import _ from "lodash";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
+import { useDeepCompareEffect } from "react-use";
 
 import { Exact, Maybe } from "~gql";
 
@@ -49,21 +50,22 @@ export function useQueryItemsWithUpdates<
       new Date(1991, 6, 3)
     );
   }, [items]);
-  useEffect(
-    () =>
-      subscribeToMore<UpdateSubscription, UpdateSubscriptionVariables>({
-        document: updateSubscriptionDocument,
-        variables: { ...variables, lastUpdatedAt } as never,
-        updateQuery(previous, { subscriptionData }) {
-          const updatedItems = subscriptionData.data[itemsKey];
-          const previousItems = previous[itemsKey];
-          const previousItemIds = new Set(previousItems.map((t) => t.id));
-          const newItems = updatedItems.filter((t) => !previousItemIds.has(t.id));
-          return { ...previous, [itemsKey]: [...previousItems, ...newItems] };
-        },
-      }),
-    [itemsKey, lastUpdatedAt, subscribeToMore, updateSubscriptionDocument, variables]
-  );
+  useDeepCompareEffect(() => {
+    if (loading) {
+      return;
+    }
+    return subscribeToMore<UpdateSubscription, UpdateSubscriptionVariables>({
+      document: updateSubscriptionDocument,
+      variables: { ...variables, lastUpdatedAt } as never,
+      updateQuery(previous, { subscriptionData }) {
+        const updatedItems = subscriptionData.data[itemsKey];
+        const previousItems = previous[itemsKey];
+        const previousItemIds = new Set(previousItems.map((t) => t.id));
+        const newItems = updatedItems.filter((t) => !previousItemIds.has(t.id));
+        return { ...previous, [itemsKey]: [...previousItems, ...newItems] };
+      },
+    });
+  }, [loading, itemsKey, lastUpdatedAt, subscribeToMore, updateSubscriptionDocument, variables]);
 
   // This subscription only listens to absence/presence changes of the queried items for the same condition.
   // It is type-checked to only subscribe to their id, to prevent over-subscribing.
