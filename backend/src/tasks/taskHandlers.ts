@@ -1,4 +1,9 @@
-import { Topic, db } from "~db";
+import { HasuraEvent } from "~backend/src/hasura";
+import { Task, Topic, db } from "~db";
+
+export async function handleTaskChanges(event: HasuraEvent<Task>) {
+  await db.message.update({ where: { id: event.item.message_id }, data: { updated_at: new Date() } });
+}
 
 export async function markAllOpenTasksAsDone(topic: Topic) {
   const nowInTimestamp = new Date().toISOString();

@@ -54,3 +54,21 @@ update_permissions:
           user_id:
             _eq: X-Hasura-User-Id
   role: user
+event_triggers:
+  - definition:
+      delete:
+        columns: "*"
+      enable_manual: false
+      insert:
+        columns: "*"
+      update:
+        columns: "*"
+    headers:
+      - name: Authorization
+        value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
+    name: task_updates
+    retry_conf:
+      interval_sec: 10
+      num_retries: 5
+      timeout_sec: 30
+    webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

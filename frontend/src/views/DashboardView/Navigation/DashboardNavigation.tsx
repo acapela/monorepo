@@ -1,20 +1,91 @@
+import { gql } from "@apollo/client";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useQueryItemsWithUpdates } from "~frontend/gql/utils/useQueryItemsWithUpdates";
 import { RouteLink, routes } from "~frontend/router";
+import { DashboardTaskCard } from "~frontend/views/DashboardView/Navigation/tasks/TaskCard";
+import {
+  DashboardTaskExistenceSubscription,
+  DashboardTaskExistenceSubscriptionVariables,
+  DashboardTasksQuery,
+  DashboardTasksQueryVariables,
+  DashboardTasksUpdatesSubscription,
+  DashboardTasksUpdatesSubscriptionVariables,
+} from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { IconPlusSquare } from "~ui/icons";
 import { theme } from "~ui/theme";
 
 import { TaskList } from "./tasks/TaskList";
-import { useTasksSubscription } from "./tasks/useTasksSubscription";
 import { TopicList } from "./topics/TopicList";
 import { useDashboardOpenTopics } from "./topics/useDashboardOpenTopics";
 
+const TASK_FRAGMENT = gql`
+  ${DashboardTaskCard.fragments.task}
+  fragment DashboardNavigationTask_task on task {
+    ...DashboardTaskCard_task
+    user_id
+    message {
+      user_id
+    }
+    updated_at
+  }
+`;
+
+export function useTasksWithUpdates() {
+  const currentUser = useAssertCurrentUser();
+
+  const { items: tasks } = useQueryItemsWithUpdates<
+    "tasks",
+    DashboardTasksQuery,
+    DashboardTasksQueryVariables,
+    DashboardTasksUpdatesSubscription,
+    DashboardTasksUpdatesSubscriptionVariables,
+    DashboardTaskExistenceSubscription,
+    DashboardTaskExistenceSubscriptionVariables
+  >({
+    queryDocument: gql`
+      ${TASK_FRAGMENT}
+
+      query DashboardTasks($tasksFilter: task_bool_exp!) {
+        tasks: task(where: $tasksFilter) {
+          ...DashboardNavigationTask_task
+        }
+      }
+    `,
+    updateSubscriptionDocument: gql`
+      ${TASK_FRAGMENT}
+
+      subscription DashboardTasksUpdates($lastUpdatedAt: timestamptz!, $tasksFilter: task_bool_exp!) {
+        tasks: task(where: { _and: [{ updated_at: { _gt: $lastUpdatedAt } }, $tasksFilter] }) {
+          ...DashboardNavigationTask_task
+        }
+      }
+    `,
+    existenceSubscriptionDocument: gql`
+      subscription DashboardTaskExistence($tasksFilter: task_bool_exp!) {
+        tasks: task(where: $tasksFilter) {
+          id
+        }
+      }
+    `,
+    variables: {
+      tasksFilter: {
+        done_at: { _is_null: true },
+        _or: [{ user_id: { _eq: currentUser.id } }, { message: { user_id: { _eq: currentUser.id } } }],
+      },
+    },
+    itemsKey: "tasks",
+  });
+
+  return tasks;
+}
+
 export function useDashboardTasks() {
   const currentUser = useAssertCurrentUser();
-  const { tasks } = useTasksSubscription();
+  const tasks = useTasksWithUpdates();
 
   const receivedTasks = tasks.filter((task) => {
     return task.user_id === currentUser.id;

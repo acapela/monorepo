@@ -70,8 +70,9 @@ async function markPendingTasksAsDone(newMessage: Message) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleMessageChanges(event: HasuraEvent<Message>) {
+  await db.topic.update({ where: { id: event.item.topic_id }, data: { updated_at: new Date() } });
+
   if (event.type === "delete") return;
 
   const topicInfo = await db.topic.findFirst({ where: { id: event.item.topic_id } });
