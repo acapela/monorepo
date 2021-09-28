@@ -39,6 +39,8 @@ export const [, { mutate: updateTasksInMessage }] = createMutation<
       update_task(where: { message_id: { _eq: $messageId } }, _set: $input) {
         returning {
           id
+          message_id
+          due_at
         }
       }
     }
