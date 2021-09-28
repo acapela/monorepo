@@ -1,11 +1,36 @@
 import { useSubscription } from "@apollo/client";
 import gql from "graphql-tag";
+import { orderBy } from "lodash";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { DashboardOpenTopicsSubscription, DashboardOpenTopicsSubscriptionVariables } from "~gql";
+import {
+  DashboardOpenTopicFragment,
+  DashboardOpenTopicsSubscription,
+  DashboardOpenTopicsSubscriptionVariables,
+} from "~gql";
 
 import { DashboardTopicCard } from "./TopicCard";
+
+const getTopicLastMessageTimestamp = (topic: DashboardOpenTopicFragment) => {
+  const date = topic.lastMessage.aggregate?.max?.updated_at;
+  return date ? new Date(date).getTime() : null;
+};
+
+const getTopicLastSeenMessageTimestamp = (topic: DashboardOpenTopicFragment) => {
+  const [message] = topic.last_seen_messages;
+  return message ? new Date(message.seen_at).getTime() : null;
+};
+
+const getTopicLastUnreadMessageTimestamp = (topic: DashboardOpenTopicFragment): number | null => {
+  const lastMessageTimestamp = getTopicLastMessageTimestamp(topic);
+  if (!lastMessageTimestamp) return null;
+
+  const lastSeenMessageTimestamp = getTopicLastSeenMessageTimestamp(topic);
+  const hasUnreadMessage = !lastSeenMessageTimestamp || lastSeenMessageTimestamp < lastMessageTimestamp;
+
+  return hasUnreadMessage ? lastMessageTimestamp : null;
+};
 
 export const useDashboardOpenTopics = () => {
   const teamId = useAssertCurrentTeamId();
@@ -14,6 +39,22 @@ export const useDashboardOpenTopics = () => {
   const { data } = useSubscription<DashboardOpenTopicsSubscription, DashboardOpenTopicsSubscriptionVariables>(
     gql`
       ${DashboardTopicCard.fragments.topic}
+
+      fragment DashboardOpenTopic on topic {
+        ...DashboardTopicCard_topic
+        id
+        last_seen_messages {
+          seen_at
+        }
+        lastMessage: messages_aggregate {
+          aggregate {
+            max {
+              updated_at
+            }
+          }
+        }
+      }
+
       subscription DashboardOpenTopics($teamId: uuid!, $userId: uuid!) {
         topic(
           where: {
@@ -28,14 +69,19 @@ export const useDashboardOpenTopics = () => {
               }
             }
           }
+          order_by: { updated_at: desc }
         ) {
-          ...DashboardTopicCard_topic
-          id
+          ...DashboardOpenTopic
         }
       }
     `,
     { variables: { teamId, userId: currentUser.id } }
   );
 
-  return data?.topic || [];
+  const topics = data?.topic || [];
+
+  return orderBy(topics, (topic) => [getTopicLastUnreadMessageTimestamp(topic), getTopicLastMessageTimestamp(topic)], [
+    "desc",
+    "desc",
+  ]);
 };
