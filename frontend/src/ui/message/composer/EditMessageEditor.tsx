@@ -19,7 +19,6 @@ import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
 
 import { EditorAttachmentInfo } from "./attachments";
-import { MessageComposerContext } from "./MessageComposerContext";
 import { MessageContentEditor } from "./MessageContentComposer";
 
 const fragments = {
@@ -122,22 +121,20 @@ export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRe
 
   return (
     <UIHolder>
-      <MessageComposerContext.Provider value={{ mode: "editing" }}>
-        <MessageContentEditor
-          content={content}
-          onContentChange={setContent}
-          onFilesSelected={uploadAttachments}
-          uploadingAttachments={uploadingAttachments}
-          attachments={attachments}
-          onAttachmentRemoveRequest={(attachmentId) => {
-            attachmentsList.filter((existingAttachment) => {
-              return existingAttachment.uuid !== attachmentId;
-            });
-          }}
-          autofocusKey={message.id}
-          hideEditorSubmitButton
-        />
-      </MessageComposerContext.Provider>
+      <MessageContentEditor
+        content={content}
+        onContentChange={setContent}
+        onFilesSelected={uploadAttachments}
+        uploadingAttachments={uploadingAttachments}
+        attachments={attachments}
+        onAttachmentRemoveRequest={(attachmentId) => {
+          attachmentsList.filter((existingAttachment) => {
+            return existingAttachment.uuid !== attachmentId;
+          });
+        }}
+        autofocusKey={message.id}
+        hideEditorSubmitButton
+      />
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel
