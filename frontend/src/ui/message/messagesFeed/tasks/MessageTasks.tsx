@@ -32,7 +32,7 @@ export const MessageTasks = styled(({ tasks, className, taskOwnerId }: Props) =>
       {isCurrentUserOwner && hasTasks && (
         <UITaskOwnerActions>
           <AnimateSharedLayout>
-            <TaskDueDateSetter messageId={tasks[0].message_id}>
+            <TaskDueDateSetter messageId={tasks[0].message_id} previousDueDate={tasks[0].due_at}>
               <Button kind="secondary" key="add-filter" icon={<IconChevronDown />}>
                 {isDueDateSet ? "Change due date" : "Add due date"}
               </Button>

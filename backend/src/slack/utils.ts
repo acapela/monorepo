@@ -1,6 +1,6 @@
 import { SlackInstallation, slackClient } from "~backend/src/slack/app";
 import { isWebAPIErrorType } from "~backend/src/slack/errors";
-import { Prisma, User, db } from "~db";
+import { User, db } from "~db";
 
 export async function fetchTeamBotToken(teamId: string) {
   const slackInstallation = await db.team_slack_installation.findUnique({ where: { team_id: teamId } });

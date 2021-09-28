@@ -8,7 +8,7 @@ import { createMutation } from "~frontend/gql/utils";
 import { UpdateTasksInMessageMutation, UpdateTasksInMessageMutationVariables } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
-import { PopoverMenu } from "~ui/popovers/PopoverMenu";
+import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
@@ -53,9 +53,9 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
   const [isCalendarOpen, { set: openCalendar, unset: closeCalendar }] = useBoolean(false);
 
-  const handleSubmit = async (date: Date) => {
+  const handleSubmit = async (date: Date | null) => {
     closeCalendar();
-    updateTasksInMessage({ messageId, input: { due_at: date.toISOString() } });
+    updateTasksInMessage({ messageId, input: { due_at: date?.toISOString() ?? null } });
   };
 
   const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getNextWorkDayEndOfDay();
@@ -82,26 +82,40 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
               closeMenu();
             }}
             anchorRef={ref}
-            options={[
-              {
-                key: "today",
-                label: "Today, End of day",
-                onSelect: () => handleSubmit(getTodayEndOfDay()),
-              },
-              {
-                key: "tomorrow",
-                label: isLastDayOfWorkWeek ? "Next monday, End of day" : "Tomorrow, End of day",
-                onSelect: () => handleSubmit(getNextWorkDayEndOfDay()),
-              },
-              {
-                key: "other",
-                label: "Other...",
-                onSelect: () => {
-                  closeMenu();
-                  openCalendar();
+            options={(
+              [
+                {
+                  key: "today",
+                  label: "Today, End of day",
+                  onSelect: () => handleSubmit(getTodayEndOfDay()),
                 },
-              },
-            ]}
+                {
+                  key: "tomorrow",
+                  label: isLastDayOfWorkWeek ? "Next monday, End of day" : "Tomorrow, End of day",
+                  onSelect: () => handleSubmit(getNextWorkDayEndOfDay()),
+                },
+                {
+                  key: "other",
+                  label: "Other...",
+                  onSelect: () => {
+                    closeMenu();
+                    openCalendar();
+                  },
+                },
+              ] as PopoverMenuOption[]
+            ).concat(
+              // Add option to delete due date if previously present
+              previousDueDate
+                ? [
+                    {
+                      key: "delete",
+                      label: "Remove due date",
+                      onSelect: () => handleSubmit(null),
+                      isDestructive: true,
+                    },
+                  ]
+                : []
+            )}
           />
         )}
       </AnimatePresence>
