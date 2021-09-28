@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
-import _ from "lodash";
+import { orderBy } from "lodash";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useQueryItemsWithUpdates } from "~frontend/gql/utils/useQueryItemsWithUpdates";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
+  DashboardOpenTopicFragment,
   DashboardOpenTopicsExistenceSubscription,
   DashboardOpenTopicsExistenceSubscriptionVariables,
   DashboardOpenTopicsQuery,
@@ -23,12 +24,46 @@ const topicFragment = gql`
     updated_at
     ...DashboardTopicCard_topic
     messages {
-      tasks {
-        updated_at
+      lastTask: tasks_aggregate {
+        aggregate {
+          max {
+            updated_at
+          }
+        }
+      }
+    }
+    last_seen_messages {
+      seen_at
+    }
+    lastMessage: messages_aggregate {
+      aggregate {
+        max {
+          updated_at
+        }
       }
     }
   }
 `;
+
+const getTopicLastMessageTimestamp = (topic: DashboardOpenTopicFragment) => {
+  const date = topic.lastMessage.aggregate?.max?.updated_at;
+  return date ? new Date(date).getTime() : null;
+};
+
+const getTopicLastSeenMessageTimestamp = (topic: DashboardOpenTopicFragment) => {
+  const [message] = topic.last_seen_messages;
+  return message ? new Date(message.seen_at).getTime() : null;
+};
+
+const getTopicLastUnreadMessageTimestamp = (topic: DashboardOpenTopicFragment): number | null => {
+  const lastMessageTimestamp = getTopicLastMessageTimestamp(topic);
+  if (!lastMessageTimestamp) return null;
+
+  const lastSeenMessageTimestamp = getTopicLastSeenMessageTimestamp(topic);
+  const hasUnreadMessage = !lastSeenMessageTimestamp || lastSeenMessageTimestamp < lastMessageTimestamp;
+
+  return hasUnreadMessage ? lastMessageTimestamp : null;
+};
 
 export const useDashboardOpenTopics = () => {
   const teamId = useAssertCurrentTeamId();
@@ -61,7 +96,11 @@ export const useDashboardOpenTopics = () => {
               {
                 _or: [
                   { updated_at: { _gt: $lastUpdatedAt } }
-                  { messages: { tasks: { updated_at: { _gt: $lastUpdatedAt } } } }
+                  {
+                    messages: {
+                      _or: [{ updated_at: { _gt: $lastUpdatedAt } }, { tasks: { updated_at: { _gt: $lastUpdatedAt } } }]
+                    }
+                  }
                 ]
               }
             ]
@@ -96,10 +135,16 @@ export const useDashboardOpenTopics = () => {
     itemsKey: "topics",
     getTimestamps: (items) =>
       items
-        .flatMap((topic) => [topic, ...topic.messages.flatMap((message) => message.tasks)])
-        .map((t) => t.updated_at)
+        .flatMap((topic) => [
+          topic.updated_at,
+          topic.lastMessage.aggregate?.max?.updated_at,
+          ...topic.messages.map((message) => message.lastTask.aggregate?.max?.updated_at),
+        ])
         .filter(isNotNullish),
   });
 
-  return topics;
+  return orderBy(topics, (topic) => [getTopicLastUnreadMessageTimestamp(topic), getTopicLastMessageTimestamp(topic)], [
+    "desc",
+    "desc",
+  ]);
 };

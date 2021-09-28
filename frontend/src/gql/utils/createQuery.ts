@@ -15,7 +15,6 @@ import { VoidableIfEmpty } from "~shared/types";
 import { ValueUpdater, updateValue } from "~shared/updateValue";
 
 import { waitForAllRunningMutationsToFinish } from "./createMutation";
-import { reportQueryUsage } from "./hydration";
 import { getCurrentApolloClientHandler } from "./proxy";
 import { unwrapQueryData } from "./unwrapQueryData";
 
@@ -27,16 +26,7 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   const getQuery = memoize(query);
   const getSubscriptionQuery = memoize(() => getSubscriptionNodeFromQueryNode(getQuery()));
 
-  function requestPrefetch(variables: VoidableVariables) {
-    reportQueryUsage({ query: getQuery(), variables: variables });
-  }
-
   function useQuery(variables: VoidableVariables, options?: QueryHookOptions<Data, Variables>) {
-    // Don't report query usage if skip option is enabled.
-    if (!options?.skip) {
-      reportQueryUsage({ query: getQuery(), variables: variables });
-    }
-
     const { data, ...rest } = useRawQuery(getQuery(), {
       ...options,
       variables: variables as Variables,
@@ -126,7 +116,6 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
   }
 
   useAsSubscription.queryDocument = useQuery;
-  useAsSubscription.requestPrefetch = requestPrefetch;
 
   function update(variables: Variables, updater: ValueUpdater<Data>) {
     const client = getCurrentApolloClientHandler();
@@ -183,7 +172,6 @@ export function createQuery<Data, Variables>(query: () => DocumentNode) {
     read,
     fetch,
     subscribe,
-    requestPrefetch,
   };
 
   return [useAsSubscription, manager] as const;
