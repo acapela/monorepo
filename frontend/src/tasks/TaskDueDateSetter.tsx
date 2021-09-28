@@ -61,7 +61,7 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
     <>
       <AnimatePresence>
         {isCalendarOpen && (
-          <Popover enableScreenCover onClickOutside={closeCalendar} placement={"bottom-start"} anchorRef={ref}>
+          <Popover enableScreenCover onClickOutside={closeCalendar} anchorRef={ref}>
             <DateTimePicker
               shouldSkipConfirmation={false}
               onSubmit={handleSubmit}
