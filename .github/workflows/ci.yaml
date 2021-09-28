@@ -47,7 +47,6 @@ jobs:
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -77,7 +76,6 @@ jobs:
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -108,7 +106,6 @@ jobs:
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -174,7 +171,6 @@ jobs:
       - name: Run hasura migrations
         run: |
           cp .env.sample .env
-          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update

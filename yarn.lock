@@ -9977,6 +9977,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hasura-cli@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "hasura-cli@npm:2.0.9"
+  dependencies:
+    axios: ^0.21.1
+    chalk: ^2.4.2
+  bin:
+    hasura: hasura
+  checksum: 6e8e3e563c58c798f357a1a0a75ee393b3b8dffb97ac44b57ada92c622f5bd242d9f9d4fea2cced81e96ae428f274fa6dac888938ad38a8d37093c5325bb39e2
+  languageName: node
+  linkType: hard
+
 "he@npm:1.2.0, he@npm:^1.2.0":
   version: 1.2.0
   resolution: "he@npm:1.2.0"
@@ -20063,6 +20075,7 @@ __metadata:
     eslint: ^7.32.0
     eslint-config-prettier: ^8.3.0
     express: ^4.17.1
+    hasura-cli: ^2.0.9
     husky: ^7.0.2
     idb: ^6.1.4
     import-sort-style-module-and-prefix: ^0.1.3
