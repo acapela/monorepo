@@ -57,6 +57,7 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
   };
 
   const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getTomorrowEndOfDay();
+  const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
     <>
@@ -87,7 +88,7 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
               },
               {
                 key: "tomorrow",
-                label: "Tomorrow, End of Day",
+                label: isLastDayOfWorkWeek ? "Next Monday, End of Day" : "Tomorrow, End of Day",
                 onSelect: () => handleSubmit(getTomorrowEndOfDay()),
               },
               {
