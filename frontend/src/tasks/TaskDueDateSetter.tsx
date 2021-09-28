@@ -1,15 +1,17 @@
+import { gql } from "@apollo/client";
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 
-import { updateTask } from "~frontend/gql/tasks";
+import { createMutation } from "~frontend/gql/utils";
+import { UpdateTasksInMessageMutation, UpdateTasksInMessageMutationVariables } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
-  taskId: string;
+  messageId: string;
   previousDueDate?: string | null;
   children: ReactNode;
 }
@@ -27,7 +29,22 @@ function getTomorrowEndOfDay() {
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
-export const TaskDueDateSetter = ({ taskId, previousDueDate, children }: Props) => {
+export const [, { mutate: updateTasksInMessage }] = createMutation<
+  UpdateTasksInMessageMutation,
+  UpdateTasksInMessageMutationVariables
+>(
+  () => gql`
+    mutation UpdateTasksInMessage($messageId: uuid!, $input: task_set_input!) {
+      update_task(where: { message_id: { _eq: $messageId } }, _set: $input) {
+        returning {
+          id
+        }
+      }
+    }
+  `
+);
+
+export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
@@ -35,7 +52,7 @@ export const TaskDueDateSetter = ({ taskId, previousDueDate, children }: Props) 
 
   const handleSubmit = async (date: Date) => {
     closeCalendar();
-    updateTask({ taskId: taskId, input: { due_at: date.toISOString() } });
+    updateTasksInMessage({ messageId, input: { due_at: date.toISOString() } });
   };
 
   const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getTomorrowEndOfDay();

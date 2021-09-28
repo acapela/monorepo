@@ -26,10 +26,10 @@ export const MessageTasks = styled(({ tasks, className, taskOwnerId }: Props) =>
           <MessageTask key={task.id} task={task} />
         ))}
       </UITasks>
-      {isCurrentUserOwner && (
+      {isCurrentUserOwner && tasks.length > 0 && (
         <UITaskOwnerActions>
           <AnimateSharedLayout>
-            <TaskDueDateSetter taskId={tasks[0].id}>
+            <TaskDueDateSetter messageId={tasks[0].message_id}>
               <Button kind="secondary" key="add-filter" icon={<IconChevronDown />}>
                 Add due date
               </Button>
