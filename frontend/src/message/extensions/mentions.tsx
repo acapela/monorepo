@@ -43,6 +43,8 @@ function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMent
     setSelectedUserId(null);
   }, [keyword]);
 
+  if (!teamMembers.length) return null;
+
   // Picker has 2 stages. First we select user, then we select mention type.
 
   if (!selectedUserId) {
@@ -124,6 +126,7 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
     return () => {
       props.editor.off("update", closeMentionTypePicker);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMentionPickerOpen]);
 
   useShortcut("Escape", closeMentionTypePicker);
