@@ -37,6 +37,7 @@ import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { slugify } from "~shared/slugify";
+import { truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
@@ -59,6 +60,8 @@ function pickFirstLineFromPlainTextContent(plainTextContent: string): string {
   return plainTextContent.split("\n")[0];
 }
 
+const AUTOMATIC_TOPIC_TITLE_MAX_LENGTH = 60;
+
 const useCreateNewTopicForMessage = () => {
   const user = useAssertCurrentUser();
   const teamId = useCurrentTeamId();
@@ -75,13 +78,15 @@ const useCreateNewTopicForMessage = () => {
 
     const titleFromPlainText = pickFirstLineFromPlainTextContent(contentPlainText);
 
-    const slug = slugify(titleFromPlainText);
+    const truncatedTitle = truncateTextWithEllipsis(titleFromPlainText, AUTOMATIC_TOPIC_TITLE_MAX_LENGTH);
+
+    const slug = slugify(truncatedTitle);
 
     const newTopicCreationResult = await createNewTopic({
       variables: {
         input: {
           id: getUUID(),
-          name: titleFromPlainText,
+          name: truncatedTitle,
           owner_id: user.id,
           team_id: teamId,
           slug,
