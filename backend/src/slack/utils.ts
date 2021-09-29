@@ -1,3 +1,5 @@
+import { ViewsOpenArguments } from "@slack/web-api";
+
 import { SlackInstallation, slackClient } from "~backend/src/slack/app";
 import { isWebAPIErrorType } from "~backend/src/slack/errors";
 import { User, db } from "~db";
@@ -54,3 +56,23 @@ export async function findUserBySlackId(slackToken: string, slackUserId: string,
   }
   return await db.user.findFirst({ where: { team_member: { some: { team_id: teamId } }, email: profile.email } });
 }
+
+export const createAuthModalView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
+  trigger_id: triggerId,
+  view: {
+    type: "modal",
+    title: { type: "plain_text", text: "We could not find you" },
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: [
+            "We could not find a user with your email on Acapela.",
+            `<${process.env.FRONTEND_URL}/team|Connect Acapela with Slack> to use this feature.`,
+          ].join(" "),
+        },
+      },
+    ],
+  },
+});
