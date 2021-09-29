@@ -13,9 +13,19 @@ insert_permissions:
     backend_only: false
     check:
       message:
-        topic_access:
-          user_id:
-            _eq: X-Hasura-User-Id
+        _or:
+        - topic:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        - topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
     columns:
     - emoji
     - message_id
@@ -30,9 +40,19 @@ select_permissions:
     - user_id
     filter:
       message:
-        topic_access:
-          user_id:
-            _eq: X-Hasura-User-Id
+        _or:
+        - topic:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        - topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

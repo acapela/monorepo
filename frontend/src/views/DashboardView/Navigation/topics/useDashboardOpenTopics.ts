@@ -97,6 +97,7 @@ export const useDashboardOpenTopics = () => {
         team_id: { _eq: teamId },
         closed_at: { _is_null: true },
         _not: {
+          room: { is_private: { _eq: true } },
           messages: {
             tasks: {
               done_at: { _is_null: true },
