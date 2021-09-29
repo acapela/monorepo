@@ -99,10 +99,13 @@ select_permissions:
     - updated_at
     filter:
       _or:
-      - team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+      - _and:
+        - team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - room_id:
+            _is_null: true
       - room:
           _or:
           - _and:
@@ -131,10 +134,13 @@ update_permissions:
     - slug
     filter:
       _or:
-      - team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+      - _and:
+        - team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - room_id:
+            _is_null: true
       - room:
           _or:
           - _and:
@@ -153,10 +159,13 @@ delete_permissions:
 - permission:
     filter:
       _or:
-      - team:
-          memberships:
-            user_id:
-              _eq: X-Hasura-User-Id
+      - _and:
+        - team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - room_id:
+            _is_null: true
       - room:
           _or:
           - _and:
