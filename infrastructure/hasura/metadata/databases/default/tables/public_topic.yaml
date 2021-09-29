@@ -104,11 +104,18 @@ select_permissions:
             user_id:
               _eq: X-Hasura-User-Id
       - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+          _or:
+          - _and:
+            - is_private:
+                _eq: false
+            - space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -129,11 +136,18 @@ update_permissions:
             user_id:
               _eq: X-Hasura-User-Id
       - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+          _or:
+          - _and:
+            - is_private:
+                _eq: false
+            - space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
@@ -144,11 +158,18 @@ delete_permissions:
             user_id:
               _eq: X-Hasura-User-Id
       - room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+          _or:
+          - _and:
+            - is_private:
+                _eq: false
+            - space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+          - members:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
