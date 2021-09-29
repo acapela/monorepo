@@ -37,10 +37,7 @@ export function useMessagesWithUpdates(topicId: string) {
     `,
     existenceSubscriptionDocument: gql`
       subscription TopicMessagesExistence($topicId: uuid!) {
-        messages: message(
-          where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: { _is_null: false } }
-          order_by: [{ created_at: asc }]
-        ) {
+        messages: message(where: { topic_id: { _eq: $topicId } }, order_by: [{ created_at: asc }]) {
           id
         }
       }
