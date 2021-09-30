@@ -18573,6 +18573,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"~clientdb@0.1.0, ~clientdb@workspace:clientdb":
+  version: 0.0.0-use.local
+  resolution: "~clientdb@workspace:clientdb"
+  languageName: unknown
+  linkType: soft
+
 "~config@0.1.0, ~config@workspace:config":
   version: 0.0.0-use.local
   resolution: "~config@workspace:config"
@@ -18655,6 +18661,7 @@ __metadata:
     typescript: "*"
     validator: ^13.6.0
     whatwg-fetch: ^3.6.2
+    ~clientdb: 0.1.0
     ~config: 0.1.0
     ~db: 0.1.0
     ~gql: 0.1.0
