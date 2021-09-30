@@ -11,10 +11,23 @@ object_relationships:
 insert_permissions:
 - permission:
     backend_only: false
-    check: {}
+    check:
+      message:
+        _or:
+        - topic:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        - topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
     columns:
     - emoji
-    - id
     - message_id
     - user_id
   role: user
@@ -22,11 +35,24 @@ select_permissions:
 - permission:
     columns:
     - emoji
-    - id
     - message_id
     - updated_at
     - user_id
-    filter: {}
+    filter:
+      message:
+        _or:
+        - topic:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
+        - topic:
+            room:
+              space:
+                team:
+                  memberships:
+                    user_id:
+                      _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -35,11 +61,15 @@ update_permissions:
     - emoji
     - message_id
     - user_id
-    filter: {}
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
-    filter: {}
+    filter:
+      user_id:
+        _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:

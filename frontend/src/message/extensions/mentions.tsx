@@ -1,22 +1,22 @@
 import { toPairs } from "lodash";
-import React, { PropsWithChildren, useRef, useState } from "react";
-import { useContext } from "react";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useCurrentTeamMembers } from "~frontend/gql/teams";
-import { MessageComposerContext } from "~frontend/ui/message/composer/MessageComposerContext";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/autocomplete/component";
+import { assert } from "~shared/assert";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
 import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
+import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
-import { IconChevronUp } from "~ui/icons";
+import { IconChevronUp, IconUser } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
@@ -27,36 +27,64 @@ import { theme } from "~ui/theme";
  * to create notifications.
  */
 
-function UserPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
+function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
   // TODO: Discussion -> Show only room members when inside a private room
   const teamMembers = useCurrentTeamMembers();
+
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const getMatchingUsers = useSearch(teamMembers, (user) => [user.email, user.name]);
 
   const matchingUsers = getMatchingUsers(keyword);
 
+  useEffect(() => {
+    // In case user is selected, but then we continue typing (aka searching for different user)
+    // return selected user choice
+    setSelectedUserId(null);
+  }, [keyword]);
+
+  if (!teamMembers.length) return null;
+
+  // Picker has 2 stages. First we select user, then we select mention type.
+
+  if (!selectedUserId) {
+    return (
+      <SelectList<UserBasicInfoFragment>
+        items={matchingUsers}
+        noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
+        keyGetter={(user) => user.id}
+        onItemSelected={(user) => {
+          setSelectedUserId(user.id);
+        }}
+        renderItem={(user) => {
+          return (
+            <UISelectItem>
+              <UserAvatar user={user} size="inherit" /> {user.name}
+            </UISelectItem>
+          );
+        }}
+      />
+    );
+  }
+
+  const selectedUser = teamMembers.find((teamMember) => teamMember.id === selectedUserId);
+
+  assert(selectedUser, "Incorrect user selected");
+
   return (
-    <SelectList<UserBasicInfoFragment>
-      items={matchingUsers}
-      keyGetter={(user) => user.id}
-      onItemSelected={(user) => {
+    <MentionTypePicker
+      selected="request-read"
+      onSelect={(mentionType) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        onSelect({ originalName: user.name!, userId: user.id, type: DEFAULT_MENTION_TYPE });
-      }}
-      renderItem={(user) => {
-        return (
-          <UISelectItem>
-            <UserAvatar user={user} size="inherit" /> {user.name}
-          </UISelectItem>
-        );
+        onSelect({ originalName: selectedUser.name!, userId: selectedUser.id, type: mentionType });
       }}
     />
   );
 }
 
 type MentionTypeLabel = string;
+
 const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
-  "notification-only": "Notify only",
   "request-read": "Request read receipt",
   "request-response": "Request response",
 };
@@ -87,12 +115,19 @@ function MentionTypePicker({
 function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) {
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
-  const { mode: composerMode } = useContext(MessageComposerContext);
-
-  const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(
-    composerMode !== "editing" && props.isEditable
-  );
+  const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(false);
   const [mentionType, setMentionType] = useState<MentionType>(props.data.type ?? DEFAULT_MENTION_TYPE);
+
+  useEffect(() => {
+    if (!isMentionPickerOpen) return;
+
+    props.editor.on("update", closeMentionTypePicker);
+
+    return () => {
+      props.editor.off("update", closeMentionTypePicker);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMentionPickerOpen]);
 
   useShortcut("Escape", closeMentionTypePicker);
 
@@ -143,7 +178,7 @@ export const userMentionExtension = createAutocompletePlugin<EditorMentionData>(
   nodeComponent(props) {
     return <TypedMention {...props} />;
   },
-  pickerComponent: UserPicker,
+  pickerComponent: MentionPicker,
 });
 
 const UIMention = styled.span<{ mentionType: MentionType }>`
@@ -156,15 +191,6 @@ const UIMention = styled.span<{ mentionType: MentionType }>`
 
   ${(props) => {
     switch (props.mentionType) {
-      case "notification-only":
-        return css`
-          color: ${theme.colors.tags.action.foreground()};
-          background-color: ${theme.colors.tags.action.background()};
-
-          svg {
-            color: ${theme.colors.tags.action.foreground()};
-          }
-        `;
       case "request-read":
         return css`
           color: ${theme.colors.tags.shareInformation.foreground()};

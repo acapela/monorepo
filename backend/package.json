@@ -7,7 +7,7 @@
     "test": "APP=backend jest src --runInBand",
     "test:watch": "APP=backend jest src --runInBand --watch",
     "start": "yarn hasura:migrate && berglas exec -- ts-node --transpile-only ./src/index.ts",
-    "start:ci": "nohup ts-node --transpile-only ./src/index.ts & echo $! > backend.pid",
+    "start:ci": "./start-ci.sh",
     "dev": "ts-node-dev --transpile-only --inspect=9230 -- ./src/index.ts",
     "hasura:migrate": "berglas exec -- ./scripts/migrate-hasura.sh"
   },
@@ -19,12 +19,13 @@
     "typescript": "*"
   },
   "dependencies": {
-    "@godaddy/terminus": "^4.8.0",
-    "@google-cloud/secret-manager": "^3.7.3",
-    "@google-cloud/storage": "^5.8.5",
-    "@sentry/node": "^6.8.0",
+    "@godaddy/terminus": "^4.9.0",
+    "@google-cloud/secret-manager": "^3.10.1",
+    "@google-cloud/storage": "^5.14.3",
+    "@sentry/node": "^6.13.2",
     "@slack/bolt": "^3.6.0",
     "@slack/web-api": "^6.4.0",
+    "@slack/webhook": "^6.0.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express-async-errors": "^3.1.1",
@@ -32,7 +33,8 @@
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.32",
-    "pg": "^8.5.1",
+    "pg": "^8.7.1",
+    "ts-node": "^10.2.1",
     "uuid": "^8.3.2",
     "~config": "0.1.0"
   },
@@ -43,14 +45,14 @@
     "@types/jest": "26.0.24",
     "@types/localtunnel": "^2.0.1",
     "@types/mime-types": "^2.1.1",
-    "@types/supertest": "^2.0.10",
+    "@types/supertest": "^2.0.11",
     "@types/uuid": "^8.3.1",
-    "jest": "27.0.6",
-    "localtunnel": "^2.0.1",
-    "pino-pretty": "^5.1.1",
-    "supertest": "^6.1.3",
-    "ts-jest": "^27.0.3",
+    "jest": "27.2.2",
+    "localtunnel": "^2.0.2",
+    "pino-pretty": "^7.0.1",
+    "supertest": "^6.1.6",
+    "ts-jest": "^27.0.5",
     "ts-node-dev": "^1.1.8",
-    "tsc-watch": "^4.2.9"
+    "tsc-watch": "^4.5.0"
   }
 }

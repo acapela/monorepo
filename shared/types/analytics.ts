@@ -59,12 +59,12 @@ export type AnalyticsEventsMap = {
   "Toggled Closed Rooms": { isShowingClosedRooms: boolean };
   // current user or when current user adds someone else
   "Created Room": {
+    origin: "create-modal" | "calendar" | "slack-command" | "slack-shortcut" | "slack-message-action";
     roomId: string;
     roomName: string;
     roomDeadline: Date;
     spaceId: string;
     numberOfInitialMembers: number;
-    isCalendarEvent: boolean;
     isRecurring: boolean;
   };
   "Joined Room": { roomId: string; userId: string };
@@ -83,7 +83,10 @@ export type AnalyticsEventsMap = {
 
   // Topic related events
 
-  "Created Topic": { topicName: string };
+  "Created Topic": {
+    origin: "slack-command" | "slack-shortcut" | "slack-message-action";
+    topicName: string;
+  };
   "Reopened Topic": { topicId: string };
   "Closed Topic": { topicId: string };
   "Updated Topic Summary": { topicId: string };
@@ -100,10 +103,14 @@ export type AnalyticsEventsMap = {
   // Mention and task related events
 
   "Created Mention": { isToSelf: boolean; messageId: string; mentionedUserId: string };
-  "Created Task": { taskType: string; mentionedUserId: string; taskId: string; messageId: string };
+  "Created Task": { taskType: string; mentionedUserId: string | null; taskId: string; messageId: string };
   "Marked Task As Seen": { taskType: string; taskId: string; messageId: string; seenAt: Date };
   "Marked Task As Unseen": { taskType: string; taskId: string; messageId: string };
   "Completed Task": { taskType: string; taskId: string; messageId: string; doneAt: Date };
+
+  // Slack
+  "Used Slack Global Shortcut": { slackUserName: string };
+  "Used Slack Message Action": { slackUserName: string };
 };
 
 export type AnalyticsEventName = keyof AnalyticsEventsMap;

@@ -7,14 +7,20 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { clientdb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
+import { withFragments } from "~frontend/gql/utils";
+import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
+import {
+  EditMessageEditor_MessageFragment,
+  UpdateMessageContentMutation,
+  UpdateMessageContentMutationVariables,
+} from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
 
-import { EditorAttachmentInfo, uploadFiles } from "./attachments";
-import { MessageComposerContext } from "./MessageComposerContext";
+import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 
 interface Props {
@@ -32,6 +38,9 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       };
     })
   );
+  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
+    onUploadFinish: (attachment) => attachmentsList.push(attachment),
+  });
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
 
@@ -61,7 +70,12 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    message.update({ content });
+    const updatingMessagePromise = updateMessageContent({
+      variables: {
+        id: message.id,
+        content,
+      },
+    }) as Promise<unknown>;
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
     trackEvent("Edited Message", { messageId: message.id });
@@ -76,25 +90,20 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   return (
     <UIHolder>
-      <MessageComposerContext.Provider value={{ mode: "editing" }}>
-        <MessageContentEditor
-          content={content}
-          onContentChange={setContent}
-          onFilesSelected={async (files) => {
-            const newAttachments = await uploadFiles(files);
-
-            attachmentsList.push(...newAttachments);
-          }}
-          attachments={attachments}
-          onAttachmentRemoveRequest={(attachmentId) => {
-            attachmentsList.filter((existingAttachment) => {
-              return existingAttachment.uuid !== attachmentId;
-            });
-          }}
-          autofocusKey={message.id}
-          hideEditorSubmitButton
-        />
-      </MessageComposerContext.Provider>
+      <MessageContentEditor
+        content={content}
+        onContentChange={setContent}
+        onFilesSelected={uploadAttachments}
+        uploadingAttachments={uploadingAttachments}
+        attachments={attachments}
+        onAttachmentRemoveRequest={(attachmentId) => {
+          attachmentsList.filter((existingAttachment) => {
+            return existingAttachment.uuid !== attachmentId;
+          });
+        }}
+        autofocusKey={message.id}
+        hideEditorSubmitButton
+      />
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel

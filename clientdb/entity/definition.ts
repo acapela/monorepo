@@ -4,8 +4,11 @@ import { EntitySyncConfig } from "./sync";
 
 interface DefineEntityConfig<Data> {
   name: string;
+  keys?: Array<keyof Data>;
   keyField: keyof Data;
   updatedAtField: keyof Data;
+  getIsDeleted?: (item: Data) => boolean;
+  getDefaultValues?: () => Partial<Data>;
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
 }

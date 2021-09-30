@@ -10,10 +10,12 @@ export async function handleTeamInvitationCreated({ item: invite, userId }: Hasu
 export const handleTeamInvitationDeleted = async ({ item: invite }: HasuraEvent<TeamInvitation>) => {
   const { team_id: teamId, email } = invite;
 
-  await db.room_invitation.deleteMany({
-    where: {
-      team_id: teamId,
-      email,
-    },
-  });
+  if (email) {
+    await db.room_invitation.deleteMany({
+      where: {
+        team_id: teamId,
+        email,
+      },
+    });
+  }
 };

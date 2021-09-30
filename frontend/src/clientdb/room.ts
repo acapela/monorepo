@@ -1,11 +1,10 @@
-import gql from "graphql-tag";
-import { computed } from "mobx";
-
-import { EntityByDefinition } from "~frontend/../../clientdb/entity/entity";
-import { RoomFragment, UpdatedRoomsQuery, UpdatedRoomsQueryVariables } from "~frontend/../../gql";
 import { defineEntity } from "~clientdb";
+import { EntityByDefinition } from "~clientdb/entity/entity";
 import { renderedApolloClientPromise } from "~frontend/apollo/client";
 import { createQuery } from "~frontend/gql/utils";
+import { RoomFragment, UpdatedRoomsQuery, UpdatedRoomsQueryVariables } from "~gql";
+import gql from "graphql-tag";
+import { computed } from "mobx";
 
 import { spaceEntity } from "./space";
 import { topicEntity } from "./topic";

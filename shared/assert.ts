@@ -1,4 +1,5 @@
 import { Nullish, isNotNullish } from "./nullish";
+import { Sentry } from "./sentry";
 
 export class AssertError extends Error {
   constructor(message: string) {
@@ -28,7 +29,7 @@ export function assert(input: unknown, messageOrError: MessageOrError): asserts 
   }
 
   const error = getErrorFromMessageOrError(messageOrError);
-
+  Sentry.captureException(error);
   throw error;
 }
 

@@ -85,21 +85,21 @@ select_permissions:
     - summary
     - updated_at
     filter:
-      _and:
-      - space:
-          team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-      - _or:
+      _or:
+      - _and:
+        - is_private:
+            _eq: true
+        - members:
+            user_id:
+              _eq: X-Hasura-User-Id
+      - _and:
         - is_private:
             _eq: false
-        - _and:
-          - is_private:
-              _eq: true
-          - members:
-              user_id:
-                _eq: X-Hasura-User-Id
+        - space:
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

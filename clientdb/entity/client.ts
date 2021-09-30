@@ -2,7 +2,6 @@ import { runInAction } from "mobx";
 
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
-import { EntityDraft } from "./draft";
 import { EntitiesConnectionsConfig } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
 import { EntityQuery, EntityQueryConfig } from "./query";
@@ -13,10 +12,9 @@ export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   removeById(id: string): boolean;
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
-  createDraft(input: Data): EntityDraft<Data & Connections>;
-  create(input: Data): Entity<Data, Connections>;
+  create(input: Partial<Data>): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>): Entity<Data, Connections>;
-  createOrUpdate(input: Data): Entity<Data, Connections>;
+  createOrUpdate(input: Partial<Data>): Entity<Data, Connections>;
   destroy(): void;
 };
 
@@ -126,9 +124,6 @@ export function createEntityClient<Data, Connections>(
   }
 
   const client: EntityClient<Data, Connections> = {
-    createDraft(input) {
-      throw "unimplemented";
-    },
     findById(id) {
       return store.findById(id);
     },

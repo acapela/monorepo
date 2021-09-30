@@ -89,6 +89,11 @@ export const UIButton = styled(motion.button)<Props & { isClickable: boolean; si
 
   cursor: ${(props) => (props.isLoading ? "wait" : props.isClickable ? "pointer" : "initial")};
 
+  a & {
+    /* It is possible that button is inside <a> tag without having onClick handler. It means it should also have cursor pointer. */
+    cursor: pointer;
+  }
+
   ${theme.transitions.hover()}
 
   ${theme.borderRadius.circle}

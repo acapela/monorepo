@@ -18,12 +18,11 @@ import { NextApiRequest } from "next";
 import React, { ReactNode } from "react";
 
 import { TOKEN_COOKIE_NAME, readCurrentToken } from "~frontend/authentication/cookie";
-import { getApolloInitialState } from "~frontend/gql/utils/hydration";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
 import { useConst } from "~shared/hooks/useConst";
-import { createResolvablePromise } from "~shared/promises";
+import { isServer } from "~shared/isServer";
 import { addToast } from "~ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
@@ -88,22 +87,6 @@ const typePolicies: TypedTypePolicies = {
   },
 };
 
-/**
- * Create cache and try to populate it if there is pre-fetched data
- *
- * We keep it in module scope as it has to be re-used between server side page renders (1 render - data requirements collection, 2nd render - render with pre-fetched cache)
- *
- * We'll however have to clear this cache between requests.
- *
- * TODO: Maybe something like unique request id would simplify it so we'd attach cache-per-request, this way we can do pre-fetching
- * but it's harder to make security bug.
- */
-let cache = new InMemoryCache({ typePolicies });
-
-export function clearApolloCache() {
-  cache = new InMemoryCache({ typePolicies });
-}
-
 export function readTokenFromRequest(req?: IncomingMessage): string | null {
   if (!req) return null;
 
@@ -111,13 +94,15 @@ export function readTokenFromRequest(req?: IncomingMessage): string | null {
   return nextRequest.cookies?.[TOKEN_COOKIE_NAME] ?? null;
 }
 
+export type ApolloContext = Partial<{ noAuth: boolean; headers: Record<string, unknown> }>;
+
 const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
   new ApolloLink((operation, forward) => {
-    const { headers = {} } = operation.getContext();
+    const { noAuth, headers = {} } = operation.getContext() as ApolloContext;
 
     const authToken = forcedAuthToken ?? readCurrentToken();
 
-    if (!authToken) {
+    if (!authToken || noAuth) {
       return forward(operation);
     }
 
@@ -194,9 +179,7 @@ interface ApolloClientOptions {
 }
 
 export const getApolloClient = memoize((options: ApolloClientOptions = {}): ApolloClient<unknown> => {
-  const ssrMode = typeof window === "undefined";
-
-  if (!ssrMode) {
+  if (!isServer) {
     // Client side - never use forced token and always read one dynamically
     options.forcedAuthToken = undefined;
   }
@@ -204,7 +187,7 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
   const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
 
   function getLink() {
-    if (ssrMode) {
+    if (isServer) {
       return authTokenLink.concat(httpLink);
     }
 
@@ -221,16 +204,10 @@ export const getApolloClient = memoize((options: ApolloClientOptions = {}): Apol
 
   const link = getLink();
 
-  const initialCacheState = getApolloInitialState();
-
-  if (initialCacheState) {
-    cache.restore(initialCacheState);
-  }
-
   return new ApolloClient({
-    ssrMode,
+    ssrMode: isServer,
     link,
-    cache,
+    cache: new InMemoryCache({ typePolicies }),
   });
 });
 

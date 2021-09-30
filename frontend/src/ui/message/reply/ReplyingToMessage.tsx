@@ -6,11 +6,30 @@ import { clientdb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
-import { MessageMetaData } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
+import { ReplyingToMessageQuery, ReplyingToMessageQueryVariables, ReplyingToMessage_MessageFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_1 } from "~ui/theme/colors/base";
+
+const fragments = {
+  message: gql`
+    ${MessageMetaDataWrapper.fragments.user}
+    ${MessageText.fragments.message}
+    ${MessageMedia.fragments.message}
+
+    fragment ReplyingToMessage_message on message {
+      id
+      created_at
+      ...MessageText_message
+      ...MessageMedia_message
+      user {
+        ...MessageMetaData_user
+      }
+    }
+  `,
+};
 
 type Props = {
   message: MessageEntity;
@@ -32,12 +51,12 @@ export const ReplyingToMessage = observer(({ onRemove, message }: Props) => {
     <UIHolder onClick={handleClick}>
       <UIBorder />
       <UIContent>
-        <MessageMetaData user={message.user!} date={new Date(message.created_at)}>
+        <MessageMetaDataWrapper user={message.user} date={new Date(message.created_at)}>
           <UIMessageContent>
-            <UIMessageText message={message} />
+            <UIMessageText content={message.content} />
             <MessageMedia nonInteractive message={message} />
           </UIMessageContent>
-        </MessageMetaData>
+        </MessageMetaDataWrapper>
       </UIContent>
       {onRemove && (
         <CornerButtonWrapper>

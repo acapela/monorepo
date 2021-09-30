@@ -17,32 +17,51 @@ import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
+import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
+import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
+import { assert } from "~shared/assert";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
-import { IconEdit, IconTrash } from "~ui/icons";
+import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
+import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
-import { MessageTasks } from "./MessageTasks";
+import { MessageTask } from "./tasks/MessageTask";
+import { MessageTasks } from "./tasks/MessageTasks";
 
 interface Props extends MotionProps {
-  message: MessageEntity;
+  message: Message_MessageFragment;
+  isBundledWithPreviousMessage?: boolean;
+  onCloseTopicRequest?: (summary: string) => void;
   isReadonly?: boolean;
   className?: string;
 }
 
-export const Message = styled<Props>(
-  observer(({ message, className, isReadonly }) => {
+const _Message = styled<Props>(
+  observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
+    const user = useCurrentUser();
+    const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
+      gql`
+        mutation DeleteTextMessage($id: uuid!) {
+          message: delete_message_by_pk(id: $id) {
+            id
+          }
+        }
+      `
+    );
+
     const topicContext = useTopicStoreContext();
 
-    const isInEditMode = select(() => topicContext.editedMessageId === message.id);
+    const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
 
     function handleStartEditing() {
+      assert(topicContext, "Topic context required");
       topicContext.editedMessageId = message.id;
     }
 
     function handleStopEditing() {
-      if (topicContext.editedMessageId !== message.id) return;
+      if (topicContext?.editedMessageId !== message.id) return;
 
       topicContext.editedMessageId = null;
     }
@@ -72,7 +91,15 @@ export const Message = styled<Props>(
     const shouldShowTools = useDebouncedValue(!isInEditMode && !isReadonly, { onDelay: 0, offDelay: 200 });
 
     const getMessageActionsOptions = () => {
-      const options = [];
+      const options: PopoverMenuOption[] = [];
+
+      if (onCloseTopicRequest) {
+        options.push({
+          label: "Close with message",
+          onSelect: () => onCloseTopicRequest(convertMessageContentToPlainText(message.content)),
+          icon: <IconCheck />,
+        });
+      }
 
       if (isOwnMessage) {
         options.push({ label: "Edit message", onSelect: handleStartEditing, icon: <IconEdit /> });
@@ -89,6 +116,7 @@ export const Message = styled<Props>(
 
       return options;
     };
+    const messageActionsOptions = getMessageActionsOptions();
 
     return (
       <UIHolder id={message.id}>
@@ -99,18 +127,20 @@ export const Message = styled<Props>(
               <UITools>
                 <MakeReactionButton message={message} />
                 <ReplyButton messageId={message.id} />
-                <PopoverMenuTrigger
-                  onOpen={() => setIsActive(true)}
-                  onClose={() => setIsActive(false)}
-                  options={getMessageActionsOptions()}
-                >
-                  <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-                </PopoverMenuTrigger>
+                {messageActionsOptions.length > 0 && (
+                  <PopoverMenuTrigger
+                    onOpen={() => setIsActive(true)}
+                    onClose={() => setIsActive(false)}
+                    options={messageActionsOptions}
+                  >
+                    <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                  </PopoverMenuTrigger>
+                )}
               </UITools>
             )
           }
-          // TODOC
-          user={message.user!}
+          user={message.user}
+          hasHiddenMetadata={isBundledWithPreviousMessage}
           date={new Date(message.created_at)}
         >
           <UIMessageBody>
@@ -119,16 +149,15 @@ export const Message = styled<Props>(
             )}
             {!isInEditMode && (
               <UIMessageContent>
-                {/* TODOC */}
-                {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
-                <MessageText message={message} />
+                {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
+                <MessageText content={message.content} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />
                 <MessageReactions message={message} />
               </UIMessageContent>
             )}
 
-            {message.tasks?.all.length > 0 && <MessageTasks tasks={message.tasks.all} />}
+            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
@@ -146,11 +175,11 @@ const UITools = styled.div<{}>`
 const UIMessageContent = styled.div<{}>`
   display: grid;
   grid-auto-columns: minmax(0, auto);
-  gap: 16px;
+  gap: 8px;
 `;
 
 const UIMessageBody = styled.div<{}>`
   ${MessageTasks} {
-    margin-top: 24px;
+    margin-top: 8px;
   }
 `;

@@ -27,13 +27,17 @@ insert_permissions:
   role: user
 select_permissions:
 - permission:
+    columns: []
+    filter: {}
+  role: public
+- permission:
     columns:
     - created_at
     - email
     - id
     - inviting_user_id
+    - slack_user_id
     - team_id
-    - token
     - updated_at
     - used_at
     - used_by_user_id

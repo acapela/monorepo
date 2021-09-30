@@ -4,6 +4,7 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createTeam, useTeamsQuery } from "~frontend/gql/teams";
 import { changeCurrentTeamId } from "~frontend/gql/user";
+import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { Button } from "~ui/buttons/Button";
@@ -44,6 +45,8 @@ export function TeamPickerView() {
 
     trackEvent("Account Created", { teamName: name });
     trackEvent("Trial Started", { teamName: name });
+
+    await routes.team.push({});
   }
 
   return (

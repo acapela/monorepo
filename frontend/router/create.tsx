@@ -2,6 +2,7 @@ import { pick } from "lodash";
 import router, { NextRouter, useRouter } from "next/router";
 
 import { assertDefined } from "~shared/assert";
+import { isDev } from "~shared/dev";
 import { groupByFilter } from "~shared/groupByFilter";
 
 import { InferParamsFromDefinition, RouteParamsDefinition } from "./params";
@@ -30,6 +31,10 @@ export function createRoute<D extends RouteParamsDefinition>(
   definition: D
 ): Route<InferParamsFromDefinition<D>> {
   type RouteParams = InferParamsFromDefinition<D>;
+
+  if (isDev() && path.includes(":")) {
+    console.warn(`createRoute path is incorrect - ${path}. Did you use /foo/:bar instead of /foo/[bar]?`);
+  }
 
   const requiredRouteKeys = Object.keys(definition);
   const isRouteKey = (paramKey: string) => requiredRouteKeys.includes(paramKey);

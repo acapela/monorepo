@@ -16,16 +16,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - run: yarn run lint
 
   frontend:
@@ -39,20 +36,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
+          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -71,20 +66,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
+          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
@@ -102,32 +95,35 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --prefer-offline
+      - run: yarn
       - run: npx playwright install
       - name: Setup dotenv
         run: cp .env.sample .env
       - name: Run hasura migrations
         run: |
+          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update
           yarn generate
       - name: Start backend
-        run: yarn workspace ~backend start:ci
+        run: |
+          cd backend/
+          ./start-ci.sh
+          cd -
       - name: Build frontend
-        run: yarn run frontend:build
+        run: CI_BUILD=1 yarn run frontend:build
       - name: Start frontend
         run: |
-          yarn workspace ~frontend start:ci
+          cd frontend/
+          ./start-ci.sh
+          cd -
       - name: Test Connection
         run: |
           curl -v localhost:3000/healthz
@@ -156,22 +152,19 @@ jobs:
           update-file: package.json
       - run: rm -f .npmrc
         if: steps.semrel.outputs.version != ''
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        if: steps.semrel.outputs.version != ''
       - uses: actions/cache@v2
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
         if: steps.semrel.outputs.version != ''
-      - run: yarn --prefer-offline
+      - run: yarn
         if: steps.semrel.outputs.version != ''
       - name: Run hasura migrations
         run: |
           cp .env.sample .env
+          npm install -g hasura-cli
           docker-compose -f ./docker-compose.ci.yaml --env-file .env up -d
           sleep 5
           yarn hasura:update

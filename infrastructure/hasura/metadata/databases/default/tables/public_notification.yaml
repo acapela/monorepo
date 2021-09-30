@@ -2,18 +2,60 @@ table:
   name: notification
   schema: public
 object_relationships:
+- name: room_added_to
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_room_added_to
+        schema: public
+- name: room_closed
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_room_closed
+        schema: public
+- name: topic_added_to
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_added_to
+        schema: public
+- name: topic_assigned
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_assigned
+        schema: public
+- name: topic_closed
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_closed
+        schema: public
+- name: topic_mention
+  using:
+    foreign_key_constraint_on:
+      column: notification_id
+      table:
+        name: notification_topic_mention
+        schema: public
 - name: user
   using:
     foreign_key_constraint_on: user_id
 select_permissions:
 - permission:
+    allow_aggregations: true
     columns:
     - created_at
-    - data
     - id
     - read_at
-    - updated_at
     - user_id
+    - updated_at
     filter:
       user_id:
         _eq: X-Hasura-User-Id
@@ -33,27 +75,3 @@ delete_permissions:
       user_id:
         _eq: X-Hasura-User-Id
   role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
-      columns:
-      - data
-      - created_at
-      - read_at
-      - updated_at
-      - id
-      - user_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: notification_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

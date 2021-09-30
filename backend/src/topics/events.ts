@@ -1,15 +1,12 @@
 import { Topic, db } from "~db";
 
 import { HasuraEvent } from "../hasura";
-import { createNotification } from "../notifications/entity";
 import { updateRoomLastActivityDate } from "../rooms/rooms";
 import { markAllOpenTasksAsDone } from "../tasks/taskHandlers";
 
 export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
-  await updateRoomLastActivityDate(event.item.room_id);
-
-  if (event.type === "create") {
-    await inheritTopicMembersFromParentRoom(event.item);
+  if (event.item.room_id) {
+    await updateRoomLastActivityDate(event.item.room_id);
   }
 
   if (event.type === "update") {
@@ -26,12 +23,10 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
     const shouldNotifyAssignee = ownerId && hasNewOwner && assignedByUserId && assignedByUserId !== ownerId;
 
     if (shouldNotifyAssignee) {
-      await createNotification({
-        type: "topicAssigned",
-        userId: ownerId,
-        payload: {
-          topicId: event.item.id,
-          assignedByUserId,
+      await db.notification.create({
+        data: {
+          user_id: ownerId,
+          notification_topic_assigned: { create: { topic_id: event.item.id, assigned_by_user_id: assignedByUserId } },
         },
       });
     }
@@ -39,40 +34,19 @@ export async function handleTopicUpdates(event: HasuraEvent<Topic>) {
 }
 
 async function createTopicClosedNotifications(topic: Topic, closedByUserId: string) {
-  const topicMembers = await db.topic_member.findMany({ where: { topic_id: topic.id } });
-
-  const createNotificationRequests = topicMembers
-    // Don't send notification to user who closed the topic
-    .filter((topicMembers) => topicMembers.user_id !== closedByUserId)
-    .map((topicMember) => {
-      return createNotification({
-        type: "topicClosed",
-        userId: topicMember.user_id,
-        payload: { topicId: topic.id, closedByUserId },
-      });
-    });
-
-  return db.$transaction(createNotificationRequests);
-}
-
-async function inheritTopicMembersFromParentRoom(topic: Topic) {
-  if (!topic.room_id) return;
-
-  // Get all parent space members.
   const roomMembers = await db.room_member.findMany({
-    where: { room_id: topic.room_id },
+    // Don't send notification to user who closed the topic
+    where: { room: { topic: { some: { id: topic.id } } }, user_id: { not: closedByUserId } },
   });
 
-  const roomMembersUserIds = roomMembers.map((member) => member.user_id);
-
-  await db.topic_member.createMany({
-    data: roomMembersUserIds.map((userId) => {
-      return {
-        user_id: userId,
-        topic_id: topic.id,
-      };
-    }),
-    // This should never happen as the room is just created so it should have no members yet.
-    skipDuplicates: true,
-  });
+  return db.$transaction(
+    roomMembers.map((member) =>
+      db.notification.create({
+        data: {
+          user_id: member.user_id,
+          notification_topic_closed: { create: { topic_id: topic.id, closed_by_user_id: closedByUserId } },
+        },
+      })
+    )
+  );
 }

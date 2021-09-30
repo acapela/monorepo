@@ -14,11 +14,61 @@ import { IconChevronDown } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 import { theme } from "~ui/theme";
 
-type Props = { room: RoomEntity; topic: TopicEntity };
+const fragments = {
+  room: gql`
+    fragment TopicOwner_room on room {
+      members {
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  `,
+  topic: gql`
+    ${useIsCurrentUserTopicManager.fragments.topic}
+    ${UserAvatar.fragments.user}
 
-export const TopicOwner = observer(({ room, topic }: Props) => {
-  // TODOC
-  const isTopicManager = true;
+    fragment TopicOwner_topic on topic {
+      id
+      ...IsCurrentUserTopicManager_topic
+      owner {
+        id
+        name
+        ...UserAvatar_user
+      }
+    }
+  `,
+};
+
+type Props = { room: TopicOwner_RoomFragment; topic: TopicOwner_TopicFragment };
+
+type Owner = TopicOwner_TopicFragment["owner"];
+
+const useUpdateTopicOwner = () =>
+  useMutation<UpdateTopicOwnerMutation, UpdateTopicOwnerMutationVariables & { owner: Owner }>(
+    gql`
+      ${fragments.topic}
+
+      mutation UpdateTopicOwner($id: uuid!, $ownerId: uuid!) {
+        topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { owner_id: $ownerId }) {
+          id
+          ...TopicOwner_topic
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        topic: { __typename: "topic", id: vars.id, owner_id: vars.ownerId, owner: vars.owner },
+      }),
+    }
+  );
+
+export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
+  const [updateTopicOwner] = useUpdateTopicOwner();
 
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);

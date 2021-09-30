@@ -1,15 +1,13 @@
+import { assert } from "~shared/assert";
+import { typedKeys } from "~shared/object";
 import { pick } from "lodash";
 import { extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
-import { typedKeys } from "~shared/object";
-
 import { EntityDefinition } from "./definition";
-import { EntityDraft, createEntityDraft } from "./draft";
 import { EntitiesConnectionsConfig } from "./entitiesConnections";
 import { EntityStore } from "./store";
 
 type EntityMethods<Data, Connections> = {
-  createDraft(): EntityDraft<Data>;
   clone(): Entity<Data, Connections>;
   update(data: Partial<Data>): void;
   getData(): Data;
@@ -32,15 +30,21 @@ export type EntityFromDefinition<Def extends EntityDefinition<any, any>> = Def e
   : never;
 
 export function createEntity<D, C>(
-  data: D,
+  data: Partial<D>,
   definition: EntityDefinition<D, C>,
   store: EntityStore<D, C>,
   { getEntityClientByDefinition }: EntitiesConnectionsConfig
 ): Entity<D, C> {
   const { config, getConnections } = definition;
-  const rawDataKeys = typedKeys(data);
+  const dataWithDefaults: D = { ...config.getDefaultValues?.(), ...data } as D;
 
-  const observableData = makeAutoObservable(data as D & object);
+  const rawDataKeys = typedKeys(dataWithDefaults);
+
+  for (const requiredKey of config.keys ?? []) {
+    assert(rawDataKeys.includes(requiredKey), `Required field "${requiredKey}" is missing when creating new entity`);
+  }
+
+  const observableData = makeAutoObservable(dataWithDefaults as D & object);
 
   const connections =
     getConnections?.(observableData, {
@@ -87,12 +91,6 @@ export function createEntity<D, C>(
       });
 
       store.events.emit("itemUpdated", entity);
-    },
-    createDraft() {
-      return createEntityDraft(entity, (draft) => {
-        entity.update(draft);
-        throw "un";
-      });
     },
   };
 

@@ -2,13 +2,14 @@
 import "focus-visible";
 
 import * as Sentry from "@sentry/nextjs";
+import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import { Session } from "next-auth";
 import { Provider as SessionProvider, getSession } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { ThemeProvider } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
@@ -28,14 +29,8 @@ import { ToastsRenderer } from "~ui/toasts/ToastsRenderer";
 const stage = process.env.STAGE || process.env.NEXT_PUBLIC_STAGE;
 if (["staging", "production"].includes(stage)) {
   Sentry.init({
-    dsn: "https://017fa51dedd44c1185871241d2257ce6@o485543.ingest.sentry.io/5541047",
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
+    dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
-    // ...
-    // Note: if you want to override the automatic release value, do not set a
-    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
-    // that it will also get attached to your source maps
     environment: stage,
     // we can safely ignore this error: https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded
     ignoreErrors: ["ResizeObserver loop limit exceeded"],
@@ -68,7 +63,14 @@ export default function App({
   }, []);
 
   return (
-    <>
+    <ErrorBoundary
+      fallback={
+        <UIErrorBox>
+          <h1>It's not you, it's us!</h1>
+          <p>An error occurred. We will look into it.</p>
+        </UIErrorBox>
+      }
+    >
       <BuiltInStyles />
       <CommonMetadata />
       <AnalyticsManager />
@@ -90,7 +92,7 @@ export default function App({
           </ApolloProvider>
         </MotionConfig>
       </SessionProvider>
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -137,3 +139,12 @@ App.getInitialProps = async (context: AppContext) => {
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };
+
+const UIErrorBox = styled.div<{}>`
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
+`;

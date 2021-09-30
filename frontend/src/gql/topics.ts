@@ -4,8 +4,6 @@ import { gql } from "@apollo/client";
 import {
   RoomTopicsQuery,
   RoomTopicsQueryVariables,
-  SingleTopicQuery,
-  SingleTopicQueryVariables,
   TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
   TopicMessagesQuery,
   TopicMessagesQueryVariables,
@@ -86,18 +84,6 @@ export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
         limit: $limit
       ) {
         ...MessageFeedInfo
-      }
-    }
-  `
-);
-
-export const [useSingleTopicQuery, singleTopicQueryManager] = createQuery<SingleTopicQuery, SingleTopicQueryVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-
-    query SingleTopic($id: uuid!) {
-      topic: topic_by_pk(id: $id) {
-        ...TopicDetailedInfo
       }
     }
   `

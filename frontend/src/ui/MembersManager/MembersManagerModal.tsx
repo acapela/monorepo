@@ -28,6 +28,7 @@ const fragments = {
     }
   `,
 };
+
 type Props = {
   title: string;
   currentUsers: MembersManagerModal_UserFragment[];
@@ -73,7 +74,7 @@ export const MembersManagerModal = withFragments(
                   ))}
                   {invitations.map(({ email, id }) => (
                     <UIItemHolder key={id}>
-                      <InvitationPendingIndicator email={email} />
+                      <InvitationPendingIndicator label={email} />
                       {onRemoveInvitation && <CircleCloseIconButton onClick={() => onRemoveInvitation(id)} />}
                     </UIItemHolder>
                   ))}

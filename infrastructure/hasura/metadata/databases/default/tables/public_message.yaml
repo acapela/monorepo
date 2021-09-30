@@ -40,27 +40,17 @@ insert_permissions:
 - permission:
     backend_only: false
     check:
-      _and:
+      _or:
+      - topic:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
       - topic:
           room:
             space:
               team:
                 memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-      - _or:
-        - topic:
-            room:
-              is_private:
-                _eq: false
-        - _and:
-          - topic:
-              room:
-                is_private:
-                  _eq: true
-          - topic:
-              room:
-                members:
                   user_id:
                     _eq: X-Hasura-User-Id
     columns:
@@ -89,13 +79,19 @@ select_permissions:
     - updated_at
     - user_id
     filter:
-      topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+      _or:
+      - topic:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
+      - topic:
+          room:
+            space:
+              team:
+                memberships:
+                  user_id:
+                    _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

@@ -12,6 +12,16 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
+import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/RoomView/TopicWithMessages/gql";
+import {
+  TopicMenuItemSubscription,
+  TopicMenuItemSubscriptionVariables,
+  TopicMenuItem_RoomFragment,
+  TopicMenuItem_TopicFragment,
+  TopicWithMessagesQuery,
+  TopicWithMessagesQueryVariables,
+} from "~gql";
+import { assert } from "~shared/assert";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
 import { useSharedRef } from "~shared/hooks/useSharedRef";
 import { select } from "~shared/sharedState";
@@ -25,6 +35,30 @@ import { hoverActionCss } from "~ui/transitions";
 import { ManageTopic } from "./ManageTopic";
 import { useDeleteTopic } from "./shared";
 import { TopicOwner } from "./TopicOwner";
+
+const fragments = {
+  room: gql`
+    ${TopicOwner.fragments.room}
+
+    fragment TopicMenuItem_room on room {
+      id
+      space_id
+      ...TopicOwner_room
+    }
+  `,
+  topic: gql`
+    ${ManageTopic.fragments.topic}
+    ${TopicOwner.fragments.topic}
+
+    fragment TopicMenuItem_topic on topic {
+      id
+      name
+      closed_at
+      ...ManageTopic_topic
+      ...TopicOwner_topic
+    }
+  `,
+};
 
 type Props = {
   room: RoomEntity;
@@ -78,8 +112,8 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const isHovered = useIsElementOrChildHovered(innerRef);
-  const isNewTopic = select(() => roomContext.newTopicId === topic.id);
-  const isInEditMode = select(() => roomContext.editingNameTopicId === topic.id);
+  const isNewTopic = select(() => roomContext?.newTopicId === topic.id);
+  const isInEditMode = select(() => roomContext?.editingNameTopicId === topic.id);
 
   const manageWrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -104,6 +138,7 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
 
     topic.update({ name: newName });
 
+    assert(roomContext, "Room Context required");
     roomContext.editingNameTopicId = null;
 
     if (isNewTopic) {
@@ -127,9 +162,11 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
               isInEditMode={isInEditMode}
               focusSelectMode={isNewTopic ? "select" : "cursor-at-end"}
               onEditModeRequest={() => {
+                assert(roomContext, "Room Context required");
                 roomContext.editingNameTopicId = topic.id;
               }}
               onExitEditModeChangeRequest={() => {
+                assert(roomContext, "Room Context required");
                 if (roomContext.editingNameTopicId === topic.id) {
                   roomContext.editingNameTopicId = null;
                 }
@@ -163,9 +200,8 @@ const _TopicMenuItem = React.forwardRef<HTMLDivElement, Props>(function TopicMen
             />
           ) : (
             <ManageTopic
-              room={room}
               topic={topic}
-              onRenameRequest={() => (roomContext.editingNameTopicId = topic.id)}
+              onRenameRequest={() => roomContext && (roomContext.editingNameTopicId = topic.id)}
             />
           )}
         </UIManageTopicWrapper>

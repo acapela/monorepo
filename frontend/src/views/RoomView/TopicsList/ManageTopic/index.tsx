@@ -10,33 +10,46 @@ import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserT
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
-import { ArchiveTopicMutation, ArchiveTopicMutationVariables } from "~gql";
+import { useDeleteTopic, useUpdateTopicName } from "~frontend/views/RoomView/TopicsList/shared";
+import { ArchiveTopicMutation, ArchiveTopicMutationVariables, ManageTopic_TopicFragment } from "~gql";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { IconArchive, IconEdit, IconTrash } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
 
+const fragments = {
+  topic: gql`
+    ${useIsCurrentUserTopicManager.fragments.topic}
+
+    fragment ManageTopic_topic on topic {
+      id
+      name
+      closed_at
+      archived_at
+      ...IsCurrentUserTopicManager_topic
+    }
+  `,
+};
+
 interface Props {
-  room: RoomEntity;
-  topic: TopicEntity;
+  topic: ManageTopic_TopicFragment;
   onRenameRequest?: () => void;
 }
 
 export const useArchiveTopic = () =>
-  useMutation<ArchiveTopicMutation, ArchiveTopicMutationVariables & { roomId: string }>(
+  useMutation<ArchiveTopicMutation, ArchiveTopicMutationVariables>(
     gql`
       mutation ArchiveTopic($id: uuid!, $archivedAt: timestamptz!) {
         topic: update_topic_by_pk(pk_columns: { id: $id }, _set: { archived_at: $archivedAt }) {
           id
-          room_id
           archived_at
         }
       }
     `,
     {
-      optimisticResponse: ({ id, roomId, archivedAt }) => ({
+      optimisticResponse: ({ id, archivedAt }) => ({
         __typename: "mutation_root",
-        topic: { __typename: "topic", id, room_id: roomId, archived_at: archivedAt },
+        topic: { __typename: "topic", id, archived_at: archivedAt },
       }),
       onCompleted() {
         addToast({ type: "success", title: "Topic was archived" });
@@ -44,9 +57,13 @@ export const useArchiveTopic = () =>
     }
   );
 
-export const ManageTopic = observer(({ room, topic, onRenameRequest }: Props) => {
-  const handleArchiveTopic = () => {
-    topic.update({ archived_at: new Date().toISOString() });
+export const ManageTopic = withFragments(fragments, ({ topic, onRenameRequest }: Props) => {
+  const [updateTopicName] = useUpdateTopicName();
+  const [archiveTopic] = useArchiveTopic();
+  const [deleteTopic] = useDeleteTopic();
+
+  const handleArchiveTopic = async () => {
+    await archiveTopic({ variables: { id: topic.id, archivedAt: new Date().toISOString() } });
   };
 
   const handleDeleteSelect = useCallback(async () => {
@@ -56,7 +73,7 @@ export const ManageTopic = observer(({ room, topic, onRenameRequest }: Props) =>
       confirmLabel: "Delete",
     });
     if (isDeleteConfirmed) {
-      topic.remove();
+      await deleteTopic({ variables: { id: topic.id } });
       trackEvent("Deleted Topic", { topicId: topic.id });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,7 +96,7 @@ export const ManageTopic = observer(({ room, topic, onRenameRequest }: Props) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
-  const isTopicManager = useIsCurrentUserTopicManager(room, topic);
+  const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const options = [];
   if (isTopicManager) {

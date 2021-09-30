@@ -1,8 +1,14 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { getDevPublicTunnel } from "~backend/src/localtunnel";
+import { findSlackUserId } from "~backend/src/slack/utils";
 import { db } from "~db";
-import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
+import {
+  FindSlackUserInput,
+  FindSlackUserOutput,
+  GetTeamSlackInstallationUrlInput,
+  GetTeamSlackInstallationUrlOutput,
+} from "~gql";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
@@ -31,20 +37,29 @@ export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, meta
   });
 };
 
+export const findSlackUser: ActionHandler<{ input: FindSlackUserInput }, FindSlackUserOutput> = {
+  actionName: "find_slack_user",
+
+  async handle(userId, { input: { team_id } }) {
+    const user = await db.user.findUnique({ where: { id: userId } });
+    return { has_slack_user: Boolean(user && (await findSlackUserId(team_id, user))) };
+  },
+};
+
 export const getTeamSlackInstallationURL: ActionHandler<
   { input: GetTeamSlackInstallationUrlInput },
   GetTeamSlackInstallationUrlOutput
 > = {
   actionName: "get_team_slack_installation_url",
 
-  async handle(userId, { input: { teamId, redirectURL } }) {
+  async handle(userId, { input: { team_id, redirectURL } }) {
     const team = await db.team.findFirst({
-      where: { id: teamId, team_member: { some: { user_id: userId } } },
+      where: { id: team_id, team_member: { some: { user_id: userId } } },
       include: { team_member: true },
     });
-    assert(team, new UnprocessableEntityError(`Team ${teamId} for member ${userId} not found`));
-    const url = await getSlackInstallURL({ withBot: true }, { teamId, redirectURL, userId });
+    assert(team, new UnprocessableEntityError(`Team ${team_id} for member ${userId} not found`));
+    const url = await getSlackInstallURL({ withBot: true }, { teamId: team_id, redirectURL, userId });
     assert(url, new UnprocessableEntityError("could not get Slack installation URL"));
-    return { __typename: "GetTeamSlackInstallationURLOutput", url };
+    return { url };
   },
 };

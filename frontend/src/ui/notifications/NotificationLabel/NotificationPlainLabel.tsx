@@ -1,12 +1,17 @@
+import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { MouseEvent, ReactNode } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { markNotificationAsRead, markNotificationAsUnread } from "~frontend/gql/notifications";
-import { useCurrentTeamMember } from "~frontend/gql/teams";
+import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { NotificationInfoFragment } from "~gql";
+import {
+  NotificationPlainLabel_NotificationFragment,
+  NotificationPlainLabel_UserFragment,
+  UpdateNotificationReadAtMutation,
+  UpdateNotificationReadAtMutationVariables,
+} from "~gql";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { handleWithStopPropagation } from "~shared/events";
 import { useIsElementOrChildHovered } from "~shared/hooks/useIsElementOrChildHovered";
@@ -20,24 +25,60 @@ import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, NOTIFICATION_COLOR } from "~
 import { hoverTransition } from "~ui/transitions";
 import { TextBody, TextBody14 } from "~ui/typo";
 
+const fragments = {
+  notification: gql`
+    fragment NotificationPlainLabel_notification on notification {
+      id
+      created_at
+      read_at
+    }
+  `,
+  user: gql`
+    ${UserAvatar.fragments.user}
+
+    fragment NotificationPlainLabel_user on user {
+      ...UserAvatar_user
+    }
+  `,
+};
+
 interface Props {
-  userId: string;
+  notification: NotificationPlainLabel_NotificationFragment;
+  user: NotificationPlainLabel_UserFragment;
   date?: Date;
-  titleNode: ReactNode;
   onClick?: (event: MouseEvent) => void;
-  notification: NotificationInfoFragment;
+  children: ReactNode;
 }
 
-export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(function NotificationPlainLabel(
-  { userId, titleNode, onClick, notification, date = new Date(notification.created_at) },
+const _NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(function NotificationPlainLabel(
+  { user, children, onClick, notification, date = new Date(notification.created_at) },
   ref
 ) {
   const holderRef = useSharedRef<HTMLDivElement | null>(null, [ref]);
   const id = notification.id;
-  const [user] = useCurrentTeamMember(userId);
   const isRead = !!notification.read_at;
 
   const isHovered = useIsElementOrChildHovered(holderRef);
+
+  const [updateNotificationReadAt] = useMutation<
+    UpdateNotificationReadAtMutation,
+    UpdateNotificationReadAtMutationVariables
+  >(
+    gql`
+      mutation UpdateNotificationReadAt($id: uuid!, $readAt: timestamptz) {
+        notification: update_notification_by_pk(pk_columns: { id: $id }, _set: { read_at: $readAt }) {
+          id
+          read_at
+        }
+      }
+    `,
+    {
+      optimisticResponse: ({ id, readAt }) => ({
+        __typename: "mutation_root",
+        notification: { __typename: "notification", id, read_at: readAt },
+      }),
+    }
+  );
 
   function handleClick(event: MouseEvent) {
     markAsRead();
@@ -46,20 +87,20 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
   }
 
   function markAsRead() {
-    markNotificationAsRead({ id, date: new Date().toISOString() });
+    updateNotificationReadAt({ variables: { id, readAt: new Date().toISOString() } });
     trackEvent("Marked Notification As Read");
   }
 
   function markAsUnread() {
-    markNotificationAsUnread({ id });
+    updateNotificationReadAt({ variables: { id, readAt: null } });
     trackEvent("Marked Notification As Unread");
   }
 
   return (
     <UIHolder onClick={handleClick} ref={holderRef}>
-      {user && <UserAvatar user={user} />}
+      <UserAvatar user={user} />
       <UIContent>
-        <UITitle>{titleNode}</UITitle>
+        <UITitle>{children}</UITitle>
         <UIDate secondary semibold>
           {relativeFormatDateTime(date)}
         </UIDate>
@@ -92,6 +133,8 @@ export const NotificationPlainLabel = namedForwardRef<HTMLDivElement, Props>(fun
     </UIHolder>
   );
 });
+
+export const NotificationPlainLabel = withFragments(fragments, _NotificationPlainLabel);
 
 const UIHolder = styled.div<{}>`
   display: flex;

@@ -6,8 +6,14 @@ export { RouteLink } from "./RouteLink";
 
 export const routes = {
   home: createRoute("/", {}),
+  dashboard: createRoute("/dashboard", {}),
+  dashboardNewTopic: createRoute("/dashboard/new", {}),
+  dashboardTopic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
+  topic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
+
+  // <likely-to-be-deprecated>
   spaces: createRoute("/spaces", {}),
   calendar: createRoute("/calendar", {}),
   space: createRoute("/space/[spaceId]", { spaceId: "string" }),
@@ -19,6 +25,8 @@ export const routes = {
     roomId: "string",
     topicId: "string",
   }),
+  // </likely-to-be-deprecated>
+
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 

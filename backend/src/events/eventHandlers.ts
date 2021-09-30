@@ -2,23 +2,23 @@ import {
   Attachment,
   Message,
   MessageReaction,
-  Notification,
   Room,
   RoomInvitation,
   RoomMember,
   Space,
+  Task,
   Team,
   TeamInvitation,
   TeamMember,
   Topic,
   Transcription,
-  User,
 } from "~db";
 
 import { createHasuraEventsHandler } from "../hasura";
 
 export const hasuraEvents = createHasuraEventsHandler<{
   message_updates: Message;
+  task_updates: Task;
   message_reaction_updates: MessageReaction;
   room_updates: Room;
   space_updates: Space;
@@ -26,10 +26,8 @@ export const hasuraEvents = createHasuraEventsHandler<{
   room_invitation_updates: RoomInvitation;
   team_updates: Team;
   topic_updates: Topic;
-  user_updates: User;
   room_member_updates: RoomMember;
   attachment_updates: Attachment;
   transcription_updates: Transcription;
   team_member_updates: TeamMember;
-  notification_updates: Notification;
 }>();

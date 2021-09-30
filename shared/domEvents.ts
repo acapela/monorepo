@@ -1,6 +1,8 @@
 import { noop } from "lodash";
 import { RefObject, useEffect } from "react";
 
+import { isServer } from "~shared/isServer";
+
 import { useBoolean } from "./hooks/useBoolean";
 
 export function createWindowEvent<K extends keyof WindowEventMap>(
@@ -8,7 +10,7 @@ export function createWindowEvent<K extends keyof WindowEventMap>(
   handler: (event: WindowEventMap[K]) => void,
   options?: AddEventListenerOptions
 ) {
-  if (typeof window === "undefined") return noop;
+  if (isServer) return noop;
 
   window.addEventListener(type, handler, options);
 

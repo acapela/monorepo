@@ -3,28 +3,53 @@ import { observer } from "mobx-react";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { UserEntity } from "~frontend/clientdb/user";
-import { borderRadius } from "~ui/baseStyles";
-import { ITEM_BACKGROUND_WEAK_TRANSPARENT } from "~ui/theme/colors/base";
-import { hoverTransition } from "~ui/transitions";
+import { withFragments } from "~frontend/gql/utils";
+import { MessageLikeContent_UserFragment } from "~gql";
+import { useBoolean } from "~shared/hooks/useBoolean";
+import { theme } from "~ui/theme";
 
-import { MessageMetaData } from "./MessageMetaData";
+import { MessageMetaDataWrapper } from "./MessageMetaData";
+
+const fragments = {
+  user: gql`
+    ${MessageMetaDataWrapper.fragments.user}
+
+    fragment MessageLikeContent_user on user {
+      id
+      ...MessageMetaData_user
+    }
+  `,
+};
 
 interface Props {
   user: UserEntity;
   date: Date;
   children: ReactNode;
+  hasHiddenMetadata?: boolean;
   tools?: ReactNode;
   className?: string;
 }
 
-export const MessageLikeContent = styled<Props>(
-  observer(({ user, date, children, tools, className }) => {
-    const holderRef = useRef<HTMLDivElement>(null);
-    const currentUser = useCurrentUser();
+const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
+  const holderRef = useRef<HTMLDivElement>(null);
+  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
-    const isOwnMessage = currentUser?.id === user.id;
+  return (
+    <UIAnimatedMessageWrapper
+      ref={holderRef}
+      className={className}
+      onMouseEnter={() => setHovered()}
+      onMouseLeave={() => unsetHovered()}
+    >
+      <UIContentContainer>
+        <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
+          {children}
+        </MessageMetaDataWrapper>
+        {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
+      </UIContentContainer>
+    </UIAnimatedMessageWrapper>
+  );
+})``;
 
     return (
       <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
@@ -37,28 +62,43 @@ export const MessageLikeContent = styled<Props>(
   })
 )``;
 
-const UIAnimatedMessageWrapper = styled.div<{ isOwnMessage: boolean }>`
+const UIFlyingTools = styled(motion.div)<{}>`
+  position: absolute;
+  /* Doesn't block text */
+  top: -16px;
+  right: 0;
+`;
+
+const UIContentContainer = styled.div<{}>`
+  position: relative;
+
+  /* Needed to have tools fly close to text */
+  min-width: 332px;
+  max-width: 732px;
+
+  ${MessageMetaDataWrapper} {
+    /* About half text size in padding */
+    padding: 0.5rem 8px;
+  }
+`;
+
+const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
-  gap: 20px;
-  padding: 14px 8px;
-  ${borderRadius.item};
-  ${hoverTransition()}
 
-  ${() => UITools} {
+  ${theme.borderRadius.item}
+  ${theme.transitions.hover()}
+
+  ${UIFlyingTools} {
     opacity: 0;
     transition: 0.1s all;
   }
 
   &:hover {
-    background: ${ITEM_BACKGROUND_WEAK_TRANSPARENT};
+    background: ${theme.colors.interactive.selected()};
 
-    ${() => UITools} {
+    ${UIFlyingTools} {
       opacity: 1;
     }
   }
-`;
-
-const UITools = styled(motion.div)<{}>`
-  margin-top: 0.25rem;
 `;

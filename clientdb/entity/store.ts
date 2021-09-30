@@ -1,7 +1,6 @@
-import { IObservableArray, computed, makeObservable, observable, runInAction } from "mobx";
+import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { EntityDefinition } from "./definition";
-import { EntityDraft } from "./draft";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
@@ -36,6 +35,29 @@ export function createEntityStore<Data, Connections>(
 
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
 
+  const existingItems = computed(() => {
+    const { getIsDeleted } = definition.config;
+    if (!getIsDeleted) {
+      return items;
+    }
+
+    return items.filter((item) => !getIsDeleted(item));
+  });
+
+  function getExistingItemById(id: string) {
+    const item = itemsMap[id];
+
+    if (!item) {
+      return null;
+    }
+
+    if (definition.config.getIsDeleted?.(item)) {
+      return null;
+    }
+
+    return item;
+  }
+
   const store: EntityStore<Data, Connections> = {
     events,
     items,
@@ -52,11 +74,12 @@ export function createEntityStore<Data, Connections>(
       return entity;
     },
     findById(id) {
-      console.log({ id, itemsMap, items });
-      return computed(() => itemsMap[id] ?? null).get();
+      return computed(() => {
+        return getExistingItemById(id);
+      }).get();
     },
     removeById(id) {
-      const entity = store.findById(id);
+      const entity = itemsMap[id] ?? null;
 
       if (entity === null) return false;
 
@@ -72,7 +95,7 @@ export function createEntityStore<Data, Connections>(
       return didRemove;
     },
     query(config: EntityQueryConfig<Data, Connections>) {
-      return createEntityQuery(items, config, definition);
+      return createEntityQuery(existingItems.get(), config, definition);
     },
   };
 

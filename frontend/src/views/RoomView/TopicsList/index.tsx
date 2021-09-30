@@ -14,6 +14,7 @@ import {
 } from "~frontend/rooms/order";
 import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
+import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { byIndexAscending } from "~frontend/topics/utils";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
@@ -50,8 +51,99 @@ function getNewTopicIndex(topics: TopicEntity[], activeTopicId: string | null): 
   return getIndexBetweenItems(activeTopicIndex, nextTopic.index);
 }
 
-export const TopicsList = observer(function TopicsList({ room, activeTopicId, isRoomOpen }: Props) {
+const createTopicFragment = gql`
+  ${topicListTopicFragment}
+  ${TopicWithMessages.fragments.topic}
+
+  fragment TopicListCreateTopic on topic {
+    id
+    room_id
+    ...TopicList_topic
+    ...TopicWithMessages_topic
+  }
+`;
+
+const useCreateTopic = () =>
+  useMutation<CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables>(
+    gql`
+      ${createTopicFragment}
+
+      mutation CreateRoomViewTopic(
+        $id: uuid!
+        $team_id: uuid!
+        $name: String!
+        $slug: String!
+        $index: String!
+        $room_id: uuid!
+        $owner_id: uuid!
+      ) {
+        topic: insert_topic_one(
+          object: {
+            id: $id
+            team_id: $team_id
+            name: $name
+            slug: $slug
+            index: $index
+            room_id: $room_id
+            owner_id: $owner_id
+          }
+        ) {
+          ...TopicListCreateTopic
+        }
+      }
+    `,
+    {
+      optimisticResponse(vars) {
+        const userData = assertReadUserDataFromCookie();
+        return {
+          __typename: "mutation_root",
+          topic: {
+            __typename: "topic",
+            ...vars,
+            owner: {
+              __typename: "user",
+              ...userData,
+              avatar_url: userData.picture,
+            },
+            closed_at: null,
+            closed_by_user_id: null,
+            closed_by_user: null,
+            closing_summary: null,
+            archived_at: null,
+          },
+        };
+      },
+      async update(cache, result) {
+        const topic = result.data?.topic;
+        if (!topic) {
+          return;
+        }
+        const newTopicRef = cache.writeFragment({
+          data: topic,
+          fragment: topicListTopicFragment,
+          fragmentName: "TopicList_topic",
+        });
+        if (!newTopicRef) {
+          return;
+        }
+        cache.modify({
+          id: cache.identify({ __typename: "room", id: topic.room_id }),
+          fields: {
+            topics: (existing: Reference[]) =>
+              existing.some((ref) => ref.__ref == newTopicRef.__ref) ? existing : existing.concat(newTopicRef),
+          },
+        });
+      },
+    }
+  );
+
+const _TopicsList = observer(function TopicsList({
+  room: roomWithoutAppliedFilters,
+  activeTopicId,
+  isRoomOpen,
+}: Props) {
   const user = useAssertCurrentUser();
+  const teamId = useAssertCurrentTeamId();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const allTopics = room.topics.all;
@@ -75,8 +167,8 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
 
   const roomContext = useRoomStoreContext();
 
-  const amIMember = room.isCurrentUserMember;
-  const isEditingAnyMessage = select(() => !!roomContext.editingNameTopicId);
+  const amIMember = useIsCurrentUserRoomMember(room);
+  const isEditingAnyMessage = select(() => !!roomContext?.editingNameTopicId);
 
   // TODOC
   function createTopic(input: any) {
@@ -85,11 +177,20 @@ export const TopicsList = observer(function TopicsList({ room, activeTopicId, is
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
-
-    return;
-    // TODOC
+    const { data } = await createTopic({
+      variables: {
+        id: topicId,
+        name: "New Topic",
+        slug: "new-topic",
+        owner_id: user.id,
+        room_id: roomId,
+        team_id: teamId,
+        index: getNewTopicIndex(topics, activeTopicId),
+      },
+    });
 
     runInAction(() => {
+      if (!roomContext) return;
       roomContext.newTopicId = topicId;
       roomContext.editingNameTopicId = topicId;
     });

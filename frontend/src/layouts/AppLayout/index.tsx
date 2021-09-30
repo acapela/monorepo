@@ -20,12 +20,13 @@ import { UserMenu } from "./UserMenu";
 
 interface Props {
   children?: ReactNode;
+  legacyHideNavigation?: boolean;
 }
 
 const DEFAULT_SEARCH_BAR_WIDTH_IN_PX = 208;
 const TOP_BAR_TOOLS_GAP_IN_PX = 24;
 
-export const AppLayout = ({ children }: Props): JSX.Element => {
+export const AppLayout = ({ children, legacyHideNavigation = false }: Props): JSX.Element => {
   const user = useCurrentUser();
 
   const currentTeamId = useCurrentTeamId();
@@ -91,16 +92,22 @@ export const AppLayout = ({ children }: Props): JSX.Element => {
               <SmallLogo />
             </UILogo>
           </Link>
-          {shouldShowBreadcrumbs && (
-            <UIBreadcrumbsHolder>
-              <Breadcrumbs />
-            </UIBreadcrumbsHolder>
-          )}
-          {!shouldShowBreadcrumbs && (
-            <UIPrimaryNavigation>
-              <PrimaryNavigation />
-            </UIPrimaryNavigation>
-          )}
+          <UINavigationCentralPart>
+            {!legacyHideNavigation && (
+              <>
+                {shouldShowBreadcrumbs && (
+                  <UIBreadcrumbsHolder>
+                    <Breadcrumbs />
+                  </UIBreadcrumbsHolder>
+                )}
+                {!shouldShowBreadcrumbs && (
+                  <UIPrimaryNavigation>
+                    <PrimaryNavigation />
+                  </UIPrimaryNavigation>
+                )}
+              </>
+            )}
+          </UINavigationCentralPart>
 
           <UITopbarTools ref={topBarToolsRef}>
             <TopBarSearchBar
@@ -142,6 +149,11 @@ const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
   padding: 12px 24px;
   background: ${theme.colors.layout.foreground()};
   box-shadow: ${theme.shadow.topBar};
+`;
+
+const UINavigationCentralPart = styled.div<{}>`
+  align-self: center;
+  justify-self: center;
 `;
 
 const UIBreadcrumbsHolder = styled.div<{}>`

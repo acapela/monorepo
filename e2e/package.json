@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@playwright/test": "^1.13.0",
+    "@playwright/test": "^1.15.0",
     "jsonwebtoken": "^8.5.1"
   },
   "scripts": {
-    "test": "APP=e2e playwright test"
+    "test": "APP=e2e playwright test --workers 1",
+    "test:debug": "PWDEBUG=1 APP=e2e playwright test"
   }
 }

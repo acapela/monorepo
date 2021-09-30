@@ -7,16 +7,16 @@ import { PRIMARY_PURPLE_1, WHITE } from "~ui/theme/colors/base";
 import { TextMeta10, TextMeta12 } from "~ui/typo";
 
 interface Props {
-  email: string;
+  label: string;
 }
 
-export const InvitationPendingIndicator = ({ email }: Props) => {
+export const InvitationPendingIndicator = ({ label }: Props) => {
   return (
     <UserBasicInfoContainer>
       <UIIconHolder>
         <IconUserPlus />
       </UIIconHolder>
-      <TextMeta10 secondary>{email}</TextMeta10>
+      <TextMeta10 secondary>{label}</TextMeta10>
       <TextMeta12 primary speziaMono>
         (Invite pending)
       </TextMeta12>

@@ -81,11 +81,15 @@ export const UnresolvedRequests = () => {
         return (
           <Fragment key={id}>
             <ToDoItem
-              href={fillParamsInUrl(routes.spaceRoomTopic.path, {
-                topicId: topic.id,
-                roomId: topic.room.id,
-                spaceId: topic.room.space.id,
-              })}
+              href={
+                topic.room
+                  ? fillParamsInUrl(routes.spaceRoomTopic.path, {
+                      topicId: topic.id,
+                      roomId: topic.room.id,
+                      spaceId: topic.room.space.id,
+                    })
+                  : routes.topic.getUrlWithParams({ topicId: topic.id })
+              }
             >
               <UIInfo>
                 <UITopArea data-tooltip={tooltip}>
@@ -93,7 +97,7 @@ export const UnresolvedRequests = () => {
                 </UITopArea>
                 <UIMessageArea>
                   <UserAvatar user={user} size={"extra-small"} />
-                  <UIMessageText message={message} />
+                  <UIMessageText content={message.content} />
                 </UIMessageArea>
                 <UIRightArea>
                   <PopoverMenuTrigger options={getMenuOptions(task)}>
