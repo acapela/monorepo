@@ -57,7 +57,7 @@ export async function findUserBySlackId(slackToken: string, slackUserId: string,
   return await db.user.findFirst({ where: { team_member: { some: { team_id: teamId } }, email: profile.email } });
 }
 
-export const createAuthModalView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
+export const createLinkSlackWithAcapelaView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
   trigger_id: triggerId,
   view: {
     type: "modal",

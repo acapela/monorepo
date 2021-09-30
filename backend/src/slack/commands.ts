@@ -3,10 +3,11 @@ import * as SlackBolt from "@slack/bolt";
 import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
 import { db } from "~db";
 import { assert } from "~shared/assert";
+import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { createAuthModalView, findUserBySlackId } from "./utils";
+import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 /**
  * Turns a text like "Hi <@123SOMEID456|gregor>, let's talk in <#13CHNID36|dev>" into "Hi @gregor, let's talk in #dev"
@@ -41,7 +42,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     ]);
     if (!user) {
       await ack();
-      await client.views.open(createAuthModalView({ triggerId: command.trigger_id }));
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: command.trigger_id }));
       return;
     }
 
@@ -58,11 +59,12 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
     );
 
     const topicMessage = stringifySlackText(body.text);
+    const topicName = truncateTextWithEllipsis(topicMessage, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
     const topic = await createTopicForSlackUsers({
       token: context.botToken || body.token,
       teamId: team.id,
       ownerId: user.id,
-      topicName: truncateTextWithEllipsis(topicMessage, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
+      topicName,
       topicMessage,
       slackUserIdsWithRequestType,
     });
@@ -72,5 +74,6 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       response_type: "in_channel",
       text: `<@${command.user_id}> has created a new request using Acapela!\n${topicURL}`,
     });
+    trackBackendUserEvent(user.id, "Created Topic", { origin: "slack-command", topicName });
   });
 }

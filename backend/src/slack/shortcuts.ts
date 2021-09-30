@@ -8,7 +8,7 @@ import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { createAuthModalView, findUserBySlackId } from "./utils";
+import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
@@ -93,7 +93,7 @@ export function setupSlackShortcuts(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
 
     if (!user) {
-      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: shortcut.trigger_id }));
       return;
     }
 
@@ -116,7 +116,7 @@ export function setupSlackShortcuts(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
 
     if (!user) {
-      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: shortcut.trigger_id }));
       return;
     }
 

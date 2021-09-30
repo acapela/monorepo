@@ -96,6 +96,15 @@ export const useDashboardOpenTopics = () => {
       topicsFilter: {
         team_id: { _eq: teamId },
         closed_at: { _is_null: true },
+        // topic should either be from a room, or a request the user was part of
+        _or: [
+          { room_id: { _is_null: false } },
+          {
+            messages: {
+              tasks: { _or: [{ user_id: { _eq: currentUser.id } }, { message: { user_id: { _eq: currentUser.id } } }] },
+            },
+          },
+        ],
         _not: {
           messages: {
             tasks: {
