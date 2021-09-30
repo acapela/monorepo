@@ -3,6 +3,7 @@ import * as SlackBolt from "@slack/bolt";
 import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
 import { db } from "~db";
 import { assert } from "~shared/assert";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
 import { createAuthModalView, findUserBySlackId } from "./utils";
@@ -61,7 +62,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       token: context.botToken || body.token,
       teamId: team.id,
       ownerId: user.id,
-      topicName: topicMessage,
+      topicName: truncateTextWithEllipsis(topicMessage, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH),
       topicMessage,
       slackUserIdsWithRequestType,
     });

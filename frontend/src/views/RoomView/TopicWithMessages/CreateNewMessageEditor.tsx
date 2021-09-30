@@ -36,7 +36,7 @@ import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select, useAutorun } from "~shared/sharedState";
 import { slugify } from "~shared/slugify";
-import { truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
@@ -59,8 +59,6 @@ function pickFirstLineFromPlainTextContent(plainTextContent: string): string {
   return plainTextContent.split("\n")[0];
 }
 
-const AUTOMATIC_TOPIC_TITLE_MAX_LENGTH = 60;
-
 const useCreateNewTopicForMessage = () => {
   const user = useAssertCurrentUser();
   const teamId = useCurrentTeamId();
@@ -77,7 +75,7 @@ const useCreateNewTopicForMessage = () => {
 
     const titleFromPlainText = pickFirstLineFromPlainTextContent(contentPlainText);
 
-    const truncatedTitle = truncateTextWithEllipsis(titleFromPlainText, AUTOMATIC_TOPIC_TITLE_MAX_LENGTH);
+    const truncatedTitle = truncateTextWithEllipsis(titleFromPlainText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
 
     const slug = slugify(truncatedTitle);
 
