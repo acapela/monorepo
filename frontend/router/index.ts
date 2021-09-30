@@ -5,6 +5,10 @@ import { createRoute } from "./create";
 export { RouteLink } from "./RouteLink";
 
 export const routes = {
+  // <temporary-test>
+  newRequest: createRoute("/new-request", {}),
+  // </temporary-test>
+
   home: createRoute("/", {}),
   dashboard: createRoute("/dashboard", {}),
   dashboardNewTopic: createRoute("/dashboard/new", {}),
