@@ -1,17 +1,17 @@
 import { differenceInMinutes } from "date-fns";
 import { isSameDay } from "date-fns";
-import { observer } from "mobx-react";
 import { Fragment, useRef } from "react";
 import styled from "styled-components";
 
-import { MessageEntity } from "~frontend/clientdb/message";
+import { withFragments } from "~frontend/gql/utils";
+import { Message_MessageFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { fontSize } from "~ui/baseStyles";
 
 import { Message } from "./Message";
 
 interface Props {
-  messages: MessageEntity[];
+  messages: Message_MessageFragment[];
   isReadonly?: boolean;
   onCloseTopicRequest?: (summary: string) => void;
 }

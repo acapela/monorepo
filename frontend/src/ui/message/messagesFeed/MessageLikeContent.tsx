@@ -1,5 +1,5 @@
+import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
-import { observer } from "mobx-react";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
@@ -22,7 +22,7 @@ const fragments = {
 };
 
 interface Props {
-  user: UserEntity;
+  user: MessageLikeContent_UserFragment;
   date: Date;
   children: ReactNode;
   hasHiddenMetadata?: boolean;
@@ -51,16 +51,7 @@ const _MessageLikeContent = styled<Props>(({ user, date, children, tools, classN
   );
 })``;
 
-    return (
-      <UIAnimatedMessageWrapper ref={holderRef} isOwnMessage={isOwnMessage} className={className}>
-        <MessageMetaData user={user} date={date}>
-          {children}
-        </MessageMetaData>
-        {tools && <UITools>{tools}</UITools>}
-      </UIAnimatedMessageWrapper>
-    );
-  })
-)``;
+export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
 
 const UIFlyingTools = styled(motion.div)<{}>`
   position: absolute;

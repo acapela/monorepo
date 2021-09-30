@@ -1,11 +1,9 @@
-import { observer } from "mobx-react";
+import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { clientdb } from "~frontend/clientdb";
-import { MessageEntity } from "~frontend/clientdb/message";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
 import { withFragments } from "~frontend/gql/utils";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
@@ -23,15 +21,28 @@ import { HStack } from "~ui/Stack";
 import { EditorAttachmentInfo } from "./attachments";
 import { MessageContentEditor } from "./MessageContentComposer";
 
+const fragments = {
+  message: gql`
+    fragment EditMessageEditor_message on message {
+      id
+      content
+      message_attachments {
+        id
+        mime_type
+      }
+    }
+  `,
+};
+
 interface Props {
-  message: MessageEntity;
+  message: EditMessageEditor_MessageFragment;
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
 
-export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
+export const EditMessageEditor = withFragments(fragments, ({ message, onCancelRequest, onSaved }: Props) => {
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
-    message.attachments.all.map((messageAttachment) => {
+    message.message_attachments.map((messageAttachment) => {
       return {
         mimeType: messageAttachment.mime_type,
         uuid: messageAttachment.id,
@@ -44,6 +55,26 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   const [content, setContent] = useState<RichEditorNode>(message.content);
 
+  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
+    gql`
+      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
+        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
+          id
+          content
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        message: {
+          __typename: "message",
+          ...vars,
+        },
+      }),
+    }
+  );
+
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
     handleSubmit();
@@ -54,10 +85,10 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   async function handleSubmit() {
     const attachmentsToAdd = attachments.filter((attachmentNow) => {
-      return !message.attachments.all.some((messageAttachment) => messageAttachment.id === attachmentNow.uuid);
+      return !message.message_attachments.some((messageAttachment) => messageAttachment.id === attachmentNow.uuid);
     });
 
-    const existingAttachmentsToRemove = message.attachments.all.filter((existingMessageAttachment) => {
+    const existingAttachmentsToRemove = message.message_attachments.filter((existingMessageAttachment) => {
       return !attachments.some((attachmentNow) => attachmentNow.uuid === existingMessageAttachment.id);
     });
 
@@ -77,7 +108,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       },
     }) as Promise<unknown>;
 
-    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
+    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
     trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }

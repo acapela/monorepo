@@ -12,7 +12,7 @@ import { VideoPreview } from "./VideoPreview";
 
 interface RecorderControlsProps {
   handlerRef: RefObject<HTMLElement>;
-  onFinish: () => void;
+  onStop: () => void;
   onCancel: () => void;
   previewStream?: MediaStream | null;
   className?: string;
@@ -35,7 +35,7 @@ function useElapsedTime() {
 }
 
 export const RecorderControls = styled<RecorderControlsProps>(
-  ({ className, handlerRef, onFinish, onCancel, previewStream, flipVideoPreview = false, showInCorner }) => {
+  ({ className, handlerRef, onStop, onCancel, previewStream, flipVideoPreview = false, showInCorner }) => {
     const elapsedTime = useElapsedTime();
 
     const controlsNode = (
@@ -47,7 +47,7 @@ export const RecorderControls = styled<RecorderControlsProps>(
           <Button kind="transparent" onClick={() => onCancel()}>
             Cancel
           </Button>
-          <Button onClick={() => onFinish()}>Submit</Button>
+          <Button onClick={() => onStop()}>Submit</Button>
         </UIControls>
       </UIHolder>
     );

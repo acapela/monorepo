@@ -4,8 +4,8 @@ import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { TaskEntity } from "~frontend/clientdb/task";
 import { updateTask } from "~frontend/gql/tasks";
+import { withFragments } from "~frontend/gql/utils";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { MessageTask_TaskFragment } from "~gql";
@@ -54,44 +54,40 @@ const _MessageTask = styled(function MessageTask({ task, className }: Props) {
     const now = new Date();
     const nowAsIsoString = now.toISOString();
 
-    function handleMarkAsRead() {
-      const now = new Date();
-      const nowAsIsoString = now.toISOString();
+    const isTaskToBeMarkedAsDone = task.type === "request-read";
+    const doneParams = isTaskToBeMarkedAsDone ? { done_at: nowAsIsoString } : {};
 
-      const isTaskToBeMarkedAsDone = task.type === "request-read";
-      const doneParams = isTaskToBeMarkedAsDone ? { done_at: nowAsIsoString } : {};
+    updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, ...doneParams } });
 
-      updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, ...doneParams } });
+    trackEvent("Marked Task As Seen", {
+      taskId: task.id,
+      taskType: task.type as string,
+      messageId: task.message_id,
+      seenAt: now,
+    });
 
-      trackEvent("Marked Task As Seen", {
+    if (isTaskToBeMarkedAsDone) {
+      trackEvent("Completed Task", {
         taskId: task.id,
         taskType: task.type as string,
         messageId: task.message_id,
-        seenAt: now,
-      });
-
-      if (isTaskToBeMarkedAsDone) {
-        trackEvent("Completed Task", {
-          taskId: task.id,
-          taskType: task.type as string,
-          messageId: task.message_id,
-          doneAt: now,
-        });
-      }
-    }
-
-    function handleMarkAsUnread() {
-      const isTaskToBeMarkedAsIncomplete = task.type === "request-read";
-      const doneParams = isTaskToBeMarkedAsIncomplete ? { done_at: null } : {};
-
-      updateTask({ taskId: task.id, input: { seen_at: null, ...doneParams } });
-
-      trackEvent("Marked Task As Unseen", {
-        taskId: task.id,
-        taskType: task.type as string,
-        messageId: task.message_id,
+        doneAt: now,
       });
     }
+  }
+
+  function handleMarkAsUnread() {
+    const isTaskToBeMarkedAsIncomplete = task.type === "request-read";
+    const doneParams = isTaskToBeMarkedAsIncomplete ? { done_at: null } : {};
+
+    updateTask({ taskId: task.id, input: { seen_at: null, ...doneParams } });
+
+    trackEvent("Marked Task As Unseen", {
+      taskId: task.id,
+      taskType: task.type as string,
+      messageId: task.message_id,
+    });
+  }
 
   function getTaskRequestLabel(): string {
     if (task.type === "request-read") return "Read receipt";

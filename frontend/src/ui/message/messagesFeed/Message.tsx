@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { MotionProps } from "framer-motion";
 import { observer } from "mobx-react";
 import React, { useRef, useState } from "react";
@@ -5,7 +6,8 @@ import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { MessageEntity } from "~frontend/clientdb/message";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { withFragments } from "~frontend/gql/utils";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
@@ -29,6 +31,46 @@ import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { MessageLikeContent } from "./MessageLikeContent";
 import { MessageTask } from "./tasks/MessageTask";
 import { MessageTasks } from "./tasks/MessageTasks";
+
+const fragments = {
+  message: gql`
+    ${MessageLikeContent.fragments.user}
+    ${MakeReactionButton.fragments.message}
+    ${ReplyingToMessage.fragments.message}
+    ${MessageText.fragments.message}
+    ${MessageMedia.fragments.message}
+    ${MessageLinksPreviews.fragments.message}
+    ${EditMessageEditor.fragments.message}
+    ${MessageReactions.fragments.message}
+    ${MessageTask.fragments.task}
+
+    fragment Message_message on message {
+      id
+      created_at
+      topic_id
+      ...MakeReactionButton_message
+
+      replied_to_message {
+        ...ReplyingToMessage_message
+      }
+
+      ...MessageText_message
+      ...MessageMedia_message
+      ...MessageLinksPreviews_message
+      ...EditMessageEditor_message
+      ...MessageReactions_message
+
+      user {
+        id
+        ...MessageLikeContent_user
+      }
+
+      tasks {
+        ...MessageTask_task
+      }
+    }
+  `,
+};
 
 interface Props extends MotionProps {
   message: Message_MessageFragment;
@@ -69,7 +111,7 @@ const _Message = styled<Props>(
     const [isActive, setIsActive] = useState(false);
     const holderRef = useRef<HTMLDivElement>(null);
 
-    const isOwnMessage = message.isOwnMessage;
+    const isOwnMessage = user?.id === message.user.id;
 
     useClickAway(holderRef, () => {
       setIsActive(false);
@@ -83,7 +125,7 @@ const _Message = styled<Props>(
       });
 
       if (didConfirm) {
-        message.remove();
+        await deleteMessage({ variables: { id: message.id } });
         trackEvent("Deleted Message", { messageId: message.id });
       }
     }
@@ -164,6 +206,8 @@ const _Message = styled<Props>(
     );
   })
 )``;
+
+export const Message = withFragments(fragments, _Message);
 
 const UIHolder = styled.div<{}>``;
 

@@ -1,10 +1,11 @@
+import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
-import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { AttachmentEntity } from "~frontend/clientdb/attachment";
+import { withFragments } from "~frontend/gql/utils";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
+import { MessageAttachmentDisplayer_AttachmentFragment } from "~gql";
 import { TranscriptData } from "~shared/types/transcript";
 import { IconFile } from "~ui/icons";
 import { AudioPlayer } from "~ui/media/AudioPlayer";
@@ -13,19 +14,30 @@ import { theme } from "~ui/theme";
 
 import { MessageImageAttachment } from "./MessageImageAttachment";
 
+const fragments = {
+  attachment: gql`
+    fragment MessageAttachmentDisplayer_attachment on attachment {
+      mimeType: mime_type
+      originalName: original_name
+      transcription {
+        id
+        status
+        transcript
+      }
+    }
+  `,
+};
+
 interface AttachmentProps {
-  attachment: AttachmentEntity;
+  attachment: MessageAttachmentDisplayer_AttachmentFragment;
   attachmentUrl: string;
   className?: string;
 }
 
-export const MessageAttachmentDisplayer = styled<AttachmentProps>(
-  observer(({ attachment, className, attachmentUrl }) => {
-    const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
-    // TODOC add transcript
-    const transcript: TranscriptData | undefined = undefined;
+const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
+  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
 
-    // const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
+  const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
 
   function renderAttachment(): ReactNode {
     switch (messageType) {
@@ -45,17 +57,10 @@ export const MessageAttachmentDisplayer = styled<AttachmentProps>(
         );
     }
 
-      const [attachmentMimeType] = attachment.mime_type.split("/");
+    const [attachmentMimeType] = attachment.mimeType.split("/");
 
-      if (attachmentMimeType === "image") {
-        return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
-      }
-
-      return (
-        <a href={attachmentUrl} target="_blank">
-          <span>{attachment.original_name}</span>
-        </a>
-      );
+    if (attachmentMimeType === "image") {
+      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
     }
 
     return (
@@ -64,8 +69,16 @@ export const MessageAttachmentDisplayer = styled<AttachmentProps>(
         <UIFileName>{attachment.originalName}</UIFileName>
       </UIFileAttachmentDisplayer>
     );
-  })
-)``;
+  }
+
+  return (
+    <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
+      {renderAttachment()}
+    </UIHolder>
+  );
+})``;
+
+export const MessageAttachmentDisplayer = withFragments(fragments, _MessageAttachmentDisplayer);
 
 const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;
