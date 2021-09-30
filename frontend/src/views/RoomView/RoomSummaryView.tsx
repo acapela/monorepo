@@ -1,12 +1,11 @@
 import { gql, useMutation } from "@apollo/client";
 import * as clipboard from "clipboard-polyfill";
-import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
 
-import { RoomEntity } from "~frontend/clientdb/room";
-import { UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { RoomSummaryView_RoomFragment, UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables } from "~gql";
 import { handleWithStopPropagation } from "~shared/events";
 import { Button } from "~ui/buttons/Button";
 import { TextArea } from "~ui/forms/TextArea";
@@ -14,18 +13,35 @@ import { IconClipboardCheck, IconCopy } from "~ui/icons";
 import { theme } from "~ui/theme";
 import { addToast } from "~ui/toasts/data";
 
-import { convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
+import { convertRoomFragment, convertRoomToHtml, convertRoomToPlainText } from "./RoomSummary/roomConverter";
 import { RoomView } from "./RoomView";
 import { formatDate } from "./shared";
 import { TopicSummary } from "./TopicSummary";
 
+const fragments = {
+  room: gql`
+    ${RoomView.fragments.room}
+    ${TopicSummary.fragments.topic}
+    ${convertRoomFragment}
+
+    fragment RoomSummaryView_room on room {
+      summary
+      ...RoomView_room
+      ...ConvertRoom_room
+      topics {
+        ...TopicSummary_topic
+      }
+    }
+  `,
+};
+
 interface Props {
-  room: RoomEntity;
+  room: RoomSummaryView_RoomFragment;
 }
 
 const AUTO_SAVE_DEBOUNCE_DELAY_MS = 400;
 
-export const RoomSummaryView = observer(function RoomSummaryView({ room }: Props) {
+export const RoomSummaryView = withFragments(fragments, function RoomSummaryView({ room }: Props) {
   const [roomSummary, setRoomSummary] = useState(room.summary ?? "");
 
   const [updateRoomSummary] = useMutation<UpdateRoomSummaryMutation, UpdateRoomSummaryMutationVariables>(
@@ -66,7 +82,7 @@ export const RoomSummaryView = observer(function RoomSummaryView({ room }: Props
   }
 
   return (
-    <RoomView roomId={room.id} selectedTopicId={null}>
+    <RoomView room={room} selectedTopicId={null}>
       <UIHolder>
         <UIHeader>
           <UITitle>Room Summary</UITitle>
@@ -76,7 +92,7 @@ export const RoomSummaryView = observer(function RoomSummaryView({ room }: Props
         <UILine />
 
         <UITopicSummaries>
-          {room.topics.all.map((topic) => (
+          {room.topics.map((topic) => (
             <TopicSummary key={topic.id} topic={topic} />
           ))}
         </UITopicSummaries>
@@ -111,8 +127,8 @@ const UITitle = styled.div<{}>`
 `;
 
 const UIRoomClosingTime = styled.div<{}>`
-  ${theme.font.body12.speziaMono.semibold.build};
-  color: ${theme.colors.layout.supportingText()};
+  ${theme.font.body12.speziaMono.semibold.build}
+  color: ${theme.colors.layout.supportingText()}
 `;
 
 const UIHeader = styled.div<{}>`

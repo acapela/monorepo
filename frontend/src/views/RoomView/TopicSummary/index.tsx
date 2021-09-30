@@ -1,22 +1,35 @@
 import { gql, useMutation } from "@apollo/client";
-import { observer } from "mobx-react";
 import React, { useState } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { UpdateTopicSummaryMutation, UpdateTopicSummaryMutationVariables } from "~gql";
+import { withFragments } from "~frontend/gql/utils";
+import { TopicSummary_TopicFragment, UpdateTopicSummaryMutation, UpdateTopicSummaryMutationVariables } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { TextArea } from "~ui/forms/TextArea";
 import { theme } from "~ui/theme";
 
 import { formatDate } from "../shared";
 
+const fragments = {
+  topic: gql`
+    fragment TopicSummary_topic on topic {
+      id
+      name
+      closing_summary
+      closed_at
+      closed_by_user {
+        name
+      }
+    }
+  `,
+};
+
 interface Props {
-  topic: TopicEntity;
+  topic: TopicSummary_TopicFragment;
 }
 
-export const TopicSummary = observer(({ topic }: Props) => {
+export const TopicSummary = withFragments(fragments, ({ topic }: Props) => {
   const summaryBeforeEdit = topic.closing_summary || "";
   const [summary, setSummary] = useState(summaryBeforeEdit);
 
@@ -53,7 +66,7 @@ export const TopicSummary = observer(({ topic }: Props) => {
         <UITopicName>{topic.name}</UITopicName>
         <UITopicClosingInfo>
           {" "}
-          was closed by <UIClosingMember>{topic.closedByUser?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
+          was closed by <UIClosingMember>{topic.closed_by_user?.name}</UIClosingMember> · {formatDate(topic.closed_at)}
         </UITopicClosingInfo>
       </UITopicSummaryMetadata>
       <UITopicSummaryContent

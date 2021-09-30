@@ -1,11 +1,13 @@
+import { Reference, gql, useMutation } from "@apollo/client";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled from "styled-components";
 
+import { assertReadUserDataFromCookie } from "~frontend/authentication/cookie";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { RoomEntity } from "~frontend/clientdb/room";
-import { TopicEntity } from "~frontend/clientdb/topic";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import {
   createLastItemIndex,
   getIndexBetweenCurrentAndLast,
@@ -16,6 +18,8 @@ import { useRoomStoreContext } from "~frontend/rooms/RoomStore";
 import { RouteLink, routes } from "~frontend/router";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { byIndexAscending } from "~frontend/topics/utils";
+import { TopicWithMessages } from "~frontend/views/RoomView/TopicWithMessages";
+import { CreateRoomViewTopicMutation, CreateRoomViewTopicMutationVariables, TopicList_RoomFragment } from "~gql";
 import { select } from "~shared/sharedState";
 import { getUUID } from "~shared/uuid";
 import { Button } from "~ui/buttons/Button";
@@ -26,15 +30,36 @@ import { Toggle } from "~ui/toggle";
 import { TextH6 } from "~ui/typo";
 
 import { LazyTopicsList } from "./LazyTopicsList";
+import { StaticTopicsList, topicListTopicFragment } from "./StaticTopicsList";
+import { getIsTopicArchived, getIsTopicPresent } from "./TopicsFilter";
 import { useTopicsFilter } from "./useTopicsFilter";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+    ${StaticTopicsList.fragments.room}
+
+    fragment TopicList_room on room {
+      id
+      space_id
+      topics {
+        archived_at
+        id
+        index
+      }
+      ...IsCurrentUserRoomMember_room
+      ...StaticTopicList_room
+    }
+  `,
+};
+
 interface Props {
-  room: RoomEntity;
+  room: TopicList_RoomFragment;
   activeTopicId: string | null;
   isRoomOpen: boolean;
 }
 
-function getNewTopicIndex(topics: TopicEntity[], activeTopicId: string | null): string {
+function getNewTopicIndex(topics: TopicList_RoomFragment["topics"], activeTopicId: string | null): string {
   if (topics.length == 0) {
     return getInitialIndexes(1)[0];
   }
@@ -146,34 +171,28 @@ const _TopicsList = observer(function TopicsList({
   const teamId = useAssertCurrentTeamId();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const allTopics = room.topics.all;
-
-  const { id: roomId, space_id: spaceId } = room;
+  const { id: roomId, space_id: spaceId, topics } = roomWithoutAppliedFilters;
 
   const { topicsFilter, requestChangeTopicsFilter } = useTopicsFilter({
-    topics: allTopics,
+    topics,
     activeTopicId,
     isRoomOpen,
   });
 
-  function getFilteredTopics() {
-    if (topicsFilter === "all") return allTopics;
-    if (topicsFilter === "archived") return allTopics.filter((topic) => topic.isArchived);
-
-    return allTopics.filter((topic) => !topic.isArchived);
-  }
-
-  const filteredTopics = getFilteredTopics();
+  const room: TopicList_RoomFragment = {
+    ...roomWithoutAppliedFilters,
+    topics:
+      topicsFilter === "all"
+        ? topics
+        : (topics.filter(topicsFilter === "archived" ? getIsTopicArchived : getIsTopicPresent) as typeof topics),
+  };
 
   const roomContext = useRoomStoreContext();
 
   const amIMember = useIsCurrentUserRoomMember(room);
   const isEditingAnyMessage = select(() => !!roomContext?.editingNameTopicId);
 
-  // TODOC
-  function createTopic(input: any) {
-    //
-  }
+  const [createTopic] = useCreateTopic();
 
   async function handleCreateNewTopic() {
     const topicId = getUUID();
@@ -195,7 +214,9 @@ const _TopicsList = observer(function TopicsList({
       roomContext.editingNameTopicId = topicId;
     });
 
-    routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
+    if (data) {
+      routes.spaceRoomTopic.push({ topicId, spaceId, roomId });
+    }
   }
 
   return (
@@ -224,7 +245,7 @@ const _TopicsList = observer(function TopicsList({
         )}
       </UIHeader>
       <UIBody>
-        {allTopics.length > 0 && (
+        {topics.length > 0 && (
           <UITopicsListHolder>
             <LazyTopicsList
               room={room}
@@ -235,7 +256,7 @@ const _TopicsList = observer(function TopicsList({
           </UITopicsListHolder>
         )}
 
-        {allTopics.length === 0 && (
+        {room.topics.length === 0 && (
           <UINoTopicsMessage>
             {topicsFilter === "archived" ? "This room has no archived topics." : "This room has no topics yet."}{" "}
           </UINoTopicsMessage>
@@ -260,6 +281,8 @@ const _TopicsList = observer(function TopicsList({
     </UIHolder>
   );
 });
+
+export const TopicsList = withFragments(fragments, _TopicsList);
 
 const UIHolder = styled.div`
   display: flex;

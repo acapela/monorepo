@@ -1,6 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useSubscription } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
-import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
@@ -62,8 +61,7 @@ interface Props {
 }
 
 // Marks last message as read
-// TODOC use it
-export function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
+function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   const [updateLastSeenMessage] = useMutation<
     UpdateLastSeenMessageMutation,
     UpdateLastSeenMessageMutationVariables
@@ -97,7 +95,20 @@ export function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | nu
 export const TopicWithMessages = withFragments(fragments, ({ room, topic }: Props) => {
   const { messages, existingMessageIds, isLoadingMessages } = useMessagesWithUpdates(topic.id);
 
-  console.log({ messages });
+  useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
+    gql`
+      ${TopicSummaryMessage.fragments.topic}
+      ${TopicHeader.fragments.topic}
+
+      subscription TopicClosure($topicId: uuid!) {
+        topic_by_pk(id: $topicId) {
+          ...TopicSummaryMessage_topic
+          ...TopicHeader_topic
+        }
+      }
+    `,
+    { variables: { topicId: topic.id } }
+  );
 
   useMarkTopicAsRead(topic.id, existingMessageIds);
 

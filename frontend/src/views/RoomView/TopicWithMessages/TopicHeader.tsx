@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -117,7 +116,9 @@ const _TopicHeader = ({ room, topic, onCloseTopicRequest }: Props) => {
       </AnimatePresence>
     </UIHolder>
   );
-});
+};
+
+export const TopicHeader = withFragments(fragments, _TopicHeader);
 
 const UIHolder = styled.div<{}>`
   display: flex;

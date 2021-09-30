@@ -1,13 +1,22 @@
-import { observer } from "mobx-react";
+import { gql, useMutation } from "@apollo/client";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { clientdb } from "~frontend/clientdb";
+import { useIsCurrentUserRoomMember } from "~frontend/gql/rooms";
+import { withFragments } from "~frontend/gql/utils";
 import { RoomStoreContext } from "~frontend/rooms/RoomStore";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { PageMeta } from "~frontend/utils/PageMeta";
-import { getPopoverEditMenuOptions } from "~frontend/views/RoomView/editOptions";
+import { usePopoverEditMenuOptions } from "~frontend/views/RoomView/editOptions";
+import { closeOpenTopicsPrompt } from "~frontend/views/RoomView/RoomCloseModal";
+import {
+  RoomView_RoomFragment,
+  UpdateRoomFinishedAtMutation,
+  UpdateRoomFinishedAtMutationVariables,
+  UpdateRoomNameMutation,
+  UpdateRoomNameMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { CardBase } from "~ui/card/Base";
@@ -15,53 +24,100 @@ import { CollapsePanel } from "~ui/collapse/CollapsePanel";
 import { EditableText } from "~ui/forms/EditableText";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { GoogleCalendarIcon } from "~ui/social/GoogleCalendarIcon";
-import { PrivateTag, Tag } from "~ui/tags";
+import { PrivateTag } from "~ui/tags";
+import { Tag } from "~ui/tags";
 import { TextH4 } from "~ui/typo";
 
-import { closeOpenTopicsPrompt } from "./RoomCloseModal";
 import { RoomSidebarInfo } from "./RoomSidebarInfo";
 import { TopicsList } from "./TopicsList";
 
+const fragments = {
+  room: gql`
+    ${useIsCurrentUserRoomMember.fragments.room}
+    ${usePopoverEditMenuOptions.fragments.room}
+    ${RoomSidebarInfo.fragments.room}
+    ${TopicsList.fragments.room}
+
+    fragment RoomView_room on room {
+      id
+      name
+      finished_at
+      is_private
+      recurrance_interval_in_days
+      source_google_calendar_event_id
+      ...IsCurrentUserRoomMember_room
+      ...EditOptions_room
+      ...RoomSidebarInfo_room
+      ...TopicList_room
+    }
+  `,
+};
+
 interface Props {
-  roomId: string;
+  room: RoomView_RoomFragment;
   selectedTopicId: string | null;
   children: React.ReactNode;
 }
 
-export const RoomView = observer(function RoomView(props: Props) {
+export const RoomView = withFragments(fragments, function RoomView(props: Props) {
   return (
     // Re-create context if re-rendered for a different room
-    <RoomStoreContext key={props.roomId}>
+    <RoomStoreContext key={props.room.id}>
       <RoomViewDisplayer {...props} />
     </RoomStoreContext>
   );
 });
 
-const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selectedTopicId, children }: Props) {
-  const room = clientdb.room.findById(roomId);
-
+function RoomViewDisplayer({ room, selectedTopicId, children }: Props) {
   const titleHolderRef = useRef<HTMLDivElement>(null);
   const [isEditingRoomName, { set: enterNameEditMode, unset: exitNameEditMode }] = useBoolean(false);
-  // const amIMember = useIsCurrentUserRoomMember(room);
-  const amIMember = true;
+  const amIMember = useIsCurrentUserRoomMember(room);
 
-  if (!room) return <div>no room</div>;
+  const [updateRoomFinishedAt] = useMutation<UpdateRoomFinishedAtMutation, UpdateRoomFinishedAtMutationVariables>(
+    gql`
+      mutation UpdateRoomFinishedAt($id: uuid!, $finishedAt: timestamptz) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { finished_at: $finishedAt }) {
+          id
+          finished_at
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({
+        __typename: "mutation_root",
+        room: { __typename: "room", id: vars.id, finished_at: vars.finishedAt },
+      }),
+    }
+  );
+  const [updateRoomName] = useMutation<UpdateRoomNameMutation, UpdateRoomNameMutationVariables>(
+    gql`
+      mutation UpdateRoomName($id: uuid!, $name: String!) {
+        room: update_room_by_pk(pk_columns: { id: $id }, _set: { name: $name }) {
+          id
+          name
+        }
+      }
+    `,
+    {
+      optimisticResponse: (vars) => ({ __typename: "mutation_root", room: { __typename: "room", ...vars } }),
+    }
+  );
 
-  const editOptions = getPopoverEditMenuOptions({
-    room,
-    onEditRoomNameRequest: () => enterNameEditMode(),
-    onCloseRoom: handleCloseRoom,
-  });
+  async function handleRoomNameChange(newName: string) {
+    const oldRoomName = room.name;
+    await updateRoomName({ variables: { id: room.id, name: newName } });
+    trackEvent("Renamed Room", { roomId: room.id, newRoomName: newName, oldRoomName });
+  }
 
   async function handleCloseRoom() {
-    if (!room) return;
+    const roomId = room.id;
 
     if (room.finished_at) {
-      room.update({ finished_at: null });
+      updateRoomFinishedAt({ variables: { id: roomId, finishedAt: null } });
       trackEvent("Reopened Room", { roomId });
       return;
     }
-    const openTopics = room.topics.all.filter((topic) => !topic.closed_at);
+    const openTopics = room.topics.filter((topic) => !topic.closed_at);
 
     if (openTopics.length > 0) {
       const canCloseRoom = await closeOpenTopicsPrompt(room);
@@ -70,10 +126,17 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
       }
     }
 
-    room.update({ finished_at: new Date().toISOString() });
-
+    updateRoomFinishedAt({ variables: { id: roomId, finishedAt: new Date().toISOString() } });
     trackEvent("Closed Room", { roomId, hasRoomOpenTopics: openTopics.length > 0 });
   }
+
+  const editOptions = usePopoverEditMenuOptions({
+    room,
+    onEditRoomNameRequest: () => enterNameEditMode(),
+    onCloseRoom: handleCloseRoom,
+  });
+
+  const isRoomOpen = !room.finished_at;
 
   return (
     <>
@@ -88,9 +151,7 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
                 <UIRoomTitle ref={titleHolderRef}>
                   <EditableText
                     value={room.name ?? ""}
-                    onValueSubmit={(name) => {
-                      room.update({ name });
-                    }}
+                    onValueSubmit={handleRoomNameChange}
                     isInEditMode={isEditingRoomName}
                     onEditModeRequest={enterNameEditMode}
                     onExitEditModeChangeRequest={exitNameEditMode}
@@ -98,7 +159,7 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
 
                   <UIRoomTags>
                     {room.is_private && <PrivateTag tooltipLabel="Room is only visible to participants" />}
-                    {room.isRecurring && <Tag kind="shareInformation">Recurring</Tag>}
+                    {room.recurrance_interval_in_days && <Tag kind="shareInformation">Recurring</Tag>}
 
                     {room.source_google_calendar_event_id && (
                       <GoogleCalendarIcon data-tooltip="Connected to Google Calendar event" />
@@ -118,7 +179,7 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
           </CollapsePanel>
 
           <UITopicsCard>
-            <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={room.isOpen} />
+            <TopicsList room={room} activeTopicId={selectedTopicId} isRoomOpen={isRoomOpen} />
           </UITopicsCard>
           <CloseRoomButton onClick={handleCloseRoom}>{room.finished_at ? "Reopen Room" : "Close Room"}</CloseRoomButton>
         </UISidebar>
@@ -127,7 +188,7 @@ const RoomViewDisplayer = observer(function RoomViewDisplayer({ roomId, selected
       </UIHolder>
     </>
   );
-});
+}
 
 const UIHolder = styled.div<{}>`
   display: grid;

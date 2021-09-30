@@ -1,13 +1,18 @@
+import { gql, useMutation } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
-import { observer } from "mobx-react";
 import { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { RoomEntity } from "~frontend/clientdb/room";
-import { TopicEntity } from "~frontend/clientdb/topic";
-import { UserEntity } from "~frontend/clientdb/user";
+import { withFragments } from "~frontend/gql/utils";
+import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getUserDisplayName } from "~frontend/utils/getUserDisplayName";
+import {
+  TopicOwner_RoomFragment,
+  TopicOwner_TopicFragment,
+  UpdateTopicOwnerMutation,
+  UpdateTopicOwnerMutationVariables,
+} from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { ItemsDropdown } from "~ui/forms/OptionsDropdown/ItemsDropdown";
 import { IconChevronDown } from "~ui/icons";
@@ -73,28 +78,28 @@ export const TopicOwner = withFragments(fragments, ({ room, topic }: Props) => {
   const openerRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, { unset: closeMenu, toggle: toggleMenu }] = useBoolean(false);
 
-  const onOwnerSelect = (user: UserEntity) => {
-    topic.update({ owner_id: user.id });
+  const onOwnerSelect = (user: Owner) => {
+    updateTopicOwner({ variables: { id: topic.id, ownerId: user.id, owner: user } });
     closeMenu();
   };
 
   return (
     <>
       <UIHolder ref={openerRef} onClick={toggleMenu} isInteractive={isTopicManager}>
-        {topic.owner && <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />}
-        {topic.owner?.name}
+        <UserAvatar size="extra-small" user={topic.owner} disableNameTooltip />
+        {topic.owner.name}
         {isTopicManager && <IconChevronDown />}
       </UIHolder>
       <AnimatePresence>
         {isMenuOpen && (
           <Popover anchorRef={openerRef} placement="bottom-start" enableScreenCover>
-            <ItemsDropdown<UserEntity>
-              items={room.members.all}
+            <ItemsDropdown
+              items={room.members.map(({ user }) => user)}
               keyGetter={(user) => user.id}
               labelGetter={getUserDisplayName}
               onItemSelected={onOwnerSelect}
               onCloseRequest={closeMenu}
-              selectedItems={[topic.owner!]}
+              selectedItems={[topic.owner]}
               iconGetter={(user) => <UserAvatar size="small" user={user} />}
             />
           </Popover>

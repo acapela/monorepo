@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import { convert as convertToPlainText } from "html-to-text";
 
-import { RoomEntity } from "~frontend/clientdb/room";
 import { routes } from "~frontend/router";
 import { ConvertRoom_RoomFragment } from "~gql";
 
@@ -28,7 +27,7 @@ export const convertRoomFragment = gql`
   }
 `;
 
-export function convertRoomToHtml(room: RoomEntity): string {
+export function convertRoomToHtml(room: ConvertRoom_RoomFragment): string {
   const roomSummaryUrl = routes.spaceRoomSummary.getUrlWithParams({ spaceId: room.space_id, roomId: room.id });
   return `
     <div>
@@ -37,11 +36,11 @@ export function convertRoomToHtml(room: RoomEntity): string {
 
       ${htmlLineBreak}
       
-      ${room.topics.all
+      ${room.topics
         .map(
           (topic) =>
             `      
-        <div><strong>${topic.name}</strong> was closed by <strong>${topic.closedByUser?.name}</strong> · ${formatDate(
+        <div><strong>${topic.name}</strong> was closed by <strong>${topic.closed_by_user?.name}</strong> · ${formatDate(
               topic.closed_at
             )}</div>
           <p>${topic.closing_summary || "No summary"}</p>
@@ -61,7 +60,7 @@ export function convertRoomToHtml(room: RoomEntity): string {
   `;
 }
 
-export function convertRoomToPlainText(room: RoomEntity): string {
+export function convertRoomToPlainText(room: ConvertRoom_RoomFragment): string {
   // We're reusing a library already in use for our content editor
   return convertToPlainText(convertRoomToHtml(room), {
     selectors: [

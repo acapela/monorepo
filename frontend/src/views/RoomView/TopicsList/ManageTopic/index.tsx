@@ -1,10 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
-import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { RoomEntity } from "~frontend/clientdb/room";
-import { TopicEntity } from "~frontend/clientdb/topic";
+import { withFragments } from "~frontend/gql/utils";
 import { getCanTopicBeArchived } from "~frontend/topics/getCanTopicBeArchived";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
@@ -91,7 +89,7 @@ export const ManageTopic = withFragments(fragments, ({ topic, onRenameRequest }:
     if (!name?.trim()) {
       return;
     }
-    topic.update({ name });
+    await updateTopicName({ variables: { id: topic.id, name } });
     trackEvent("Renamed Topic", { topicId: topic.id, newTopicName: name, oldTopicName: topic.name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);

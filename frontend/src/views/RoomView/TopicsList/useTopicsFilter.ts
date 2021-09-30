@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { usePrevious } from "react-use";
 
-import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicList_RoomFragment } from "~gql";
 
 import { TopicsFilter } from "./TopicsFilter";
 
 interface UseTopicsFilterParams {
-  topics: TopicEntity[];
+  topics: TopicList_RoomFragment["topics"];
   activeTopicId: string | null;
   isRoomOpen: boolean;
 }

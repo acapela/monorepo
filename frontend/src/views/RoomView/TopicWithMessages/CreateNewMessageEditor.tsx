@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useList } from "react-use";
@@ -38,6 +39,8 @@ import { slugify } from "~shared/slugify";
 import { truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
+
+import { TOPIC_WITH_MESSAGES_QUERY } from "./gql";
 
 interface Props {
   topicId?: string;

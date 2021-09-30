@@ -1,7 +1,8 @@
-import { observer } from "mobx-react";
+import { gql, useSubscription } from "@apollo/client";
 import React, { Suspense } from "react";
 
-import { RoomEntity } from "~frontend/clientdb/room";
+import { withFragments } from "~frontend/gql/utils";
+import { LazyTopicList_RoomFragment, TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables } from "~gql";
 import { namedLazy } from "~shared/namedLazy";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
@@ -10,13 +11,38 @@ import { StaticTopicsList } from "./StaticTopicsList";
 const SortableTopicsList = namedLazy(() => import("./SortableTopicsList"), "SortableTopicsList");
 
 interface Props {
-  room: RoomEntity;
+  room: LazyTopicList_RoomFragment;
   activeTopicId: string | null;
   isStatic: boolean;
   isDisabled?: boolean;
 }
 
-export const LazyTopicsList = observer(({ room, activeTopicId, isStatic, isDisabled }: Props) => {
+const fragments = {
+  room: gql`
+    ${StaticTopicsList.fragments.room}
+
+    fragment LazyTopicList_room on room {
+      id
+      ...StaticTopicList_room
+    }
+  `,
+};
+export const LazyTopicsList = withFragments(fragments, ({ room, activeTopicId, isStatic, isDisabled }: Props) => {
+  useSubscription<TopicList_RoomSubscription, TopicList_RoomSubscriptionVariables>(
+    gql`
+      subscription TopicList_room($roomId: uuid!) {
+        room_by_pk(id: $roomId) {
+          id
+          topics {
+            id
+            index
+          }
+        }
+      }
+    `,
+    { variables: { roomId: room.id } }
+  );
+
   const staticTopicsList = <StaticTopicsList {...{ room, activeTopicId }} />;
 
   if (isStatic) {
