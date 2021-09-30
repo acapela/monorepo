@@ -14,8 +14,6 @@ const UISidebar = styled.div<{}>`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-
-  padding-top: 20px;
 `;
 
 const UIHolder = styled.div<{}>`
