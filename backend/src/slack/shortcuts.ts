@@ -2,13 +2,13 @@ import { App, GlobalShortcut, MessageShortcut } from "@slack/bolt";
 import { ViewsOpenArguments } from "@slack/web-api";
 import { IncomingWebhook } from "@slack/webhook";
 
-import { Prisma, db } from "~db";
+import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
+import { db } from "~db";
 import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isNotNullish } from "~shared/nullish";
-import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { findUserBySlackId } from "./utils";
+import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
 
 const ACAPELA_GLOBAL = { callback_id: "global_acapela", type: "shortcut" } as const as GlobalShortcut;
 const ACAPELA_MESSAGE = { callback_id: "message_acapela", type: "message_action" } as const as MessageShortcut;
@@ -17,31 +17,6 @@ type ShortcutMetadata = { userId: string } & (
   | { isMessageShortcut: false }
   | { isMessageShortcut: true; channelId: string; messageTs: string; responseURL: string }
 );
-
-const createPlainMessageContent = (text: string) => ({
-  type: "doc",
-  content: [{ type: "paragraph", content: [{ type: "text", text }] }],
-});
-
-const createAuthModalView = ({ triggerId }: { triggerId: string }): ViewsOpenArguments => ({
-  trigger_id: triggerId,
-  view: {
-    type: "modal",
-    title: { type: "plain_text", text: "We could not find you" },
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: [
-            "We could not find a user with your email on Acapela.",
-            `<${process.env.FRONTEND_URL}/team|Connect Acapela with Slack> to use this feature.`,
-          ].join(" "),
-        },
-      },
-    ],
-  },
-});
 
 const createTopicModalView = ({
   triggerId,
@@ -111,61 +86,6 @@ const createTopicModalView = ({
   },
 });
 
-type UserOrTeamInvitation = { type: "user" | "team_invitation"; id: string };
-
-async function createMissingTeamInvitations(teamId: string, invitingUserId: string, slackUserIds: string[]) {
-  await db.team_invitation.createMany({
-    data: slackUserIds.map((slackUserId) => ({
-      slack_user_id: slackUserId,
-      team_id: teamId,
-      inviting_user_id: invitingUserId,
-    })),
-    skipDuplicates: true,
-  });
-  return db.team_invitation.findMany({
-    where: {
-      team_id: teamId,
-      slack_user_id: { in: slackUserIds },
-      // we get existing accepted invitations through findUsersBySlackId
-      used_by_user_id: null,
-    },
-  });
-}
-
-async function findUsersOrCreateTeamInvitations({
-  slackToken,
-  teamId,
-  invitingUserId,
-  slackUserIds,
-}: {
-  slackToken: string;
-  teamId: string;
-  invitingUserId: string;
-  slackUserIds: string[];
-}): Promise<UserOrTeamInvitation[]> {
-  const usersForSlackIds = await Promise.all(
-    slackUserIds.map(async (slackUserId) => ({
-      slackUserId,
-      user: await findUserBySlackId(slackToken, slackUserId, teamId),
-    }))
-  );
-
-  const userIds = usersForSlackIds
-    .map((item) => item.user)
-    .filter(isNotNullish)
-    .map((user) => ({ type: "user", id: user.id } as const));
-
-  const missingUsersSlackIds = usersForSlackIds.filter((item) => !item.user).map((item) => item.slackUserId);
-
-  if (missingUsersSlackIds.length === 0) {
-    return userIds;
-  }
-
-  const teamInvitations = await createMissingTeamInvitations(teamId, invitingUserId, missingUsersSlackIds);
-  const teamInvitationIds = teamInvitations.map((row) => ({ type: "team_invitation", id: row.id } as const));
-  return [...userIds, ...teamInvitationIds];
-}
-
 export function setupSlackShortcuts(slackApp: App) {
   slackApp.shortcut(ACAPELA_GLOBAL, async ({ shortcut, ack, client, body, context }) => {
     await ack();
@@ -173,7 +93,7 @@ export function setupSlackShortcuts(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
 
     if (!user) {
-      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: shortcut.trigger_id }));
       return;
     }
 
@@ -196,7 +116,7 @@ export function setupSlackShortcuts(slackApp: App) {
     const user = await findUserBySlackId(context.botToken || body.token, body.user.id);
 
     if (!user) {
-      await client.views.open(createAuthModalView({ triggerId: shortcut.trigger_id }));
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: shortcut.trigger_id }));
       return;
     }
 
@@ -237,7 +157,7 @@ export function setupSlackShortcuts(slackApp: App) {
       },
     } = view.state.values;
 
-    if (!(topicName && topicMessage && members)) {
+    if (!(topicName && topicMessage && members && requestType)) {
       return ack({
         response_action: "errors",
         errors: { room_block: "Sorry, this isn’t valid input" },
@@ -253,37 +173,16 @@ export function setupSlackShortcuts(slackApp: App) {
     assert(team, "must have a team");
     assert(owner, "must have a user");
 
-    const usersAndTeamInvitations = await findUsersOrCreateTeamInvitations({
-      slackToken: token,
+    const topic = await createTopicForSlackUsers({
+      token,
       teamId: team.id,
-      invitingUserId: owner.id,
-      slackUserIds: members,
-    });
-
-    const taskData = usersAndTeamInvitations.map(
-      (item) =>
-        ({
-          type: requestType?.value,
-          [item.type == "user" ? "user_id" : "team_invitation_id"]: item.id,
-        } as Prisma.taskUncheckedCreateWithoutMessageInput)
-    );
-    const topic = await db.topic.create({
-      data: {
-        team_id: team.id,
-        name: topicName,
-        slug: topicName,
-        index: "a",
-        owner_id: owner.id,
-        message: {
-          create: {
-            type: "TEXT",
-            user_id: owner.id,
-            content: createPlainMessageContent(topicMessage),
-            content_text: topicMessage,
-            task: { createMany: { data: taskData } },
-          },
-        },
-      },
+      ownerId: owner.id,
+      topicName,
+      topicMessage,
+      slackUserIdsWithRequestType: members.map((id) => ({
+        slackUserId: id,
+        requestType: requestType.value as MentionType,
+      })),
     });
 
     if (!topic) {
