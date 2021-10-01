@@ -19,7 +19,6 @@ const UISidebar = styled.div<{}>`
 const UIHolder = styled.div<{}>`
   display: flex;
   min-height: 100vh;
-  background: black;
 `;
 
 const UIMainContent = styled.div<{}>`
