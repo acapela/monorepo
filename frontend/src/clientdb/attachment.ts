@@ -1,12 +1,20 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition } from "~frontend/../../clientdb/entity/entity";
-import { AttachmentFragment, UpdatedAttachmentsQuery, UpdatedAttachmentsQueryVariables } from "~frontend/../../gql";
 import { defineEntity } from "~clientdb";
-import { renderedApolloClientPromise } from "~frontend/apollo/client";
-import { createQuery } from "~frontend/gql/utils";
+import { EntityByDefinition } from "~clientdb/entity/entity";
+import { createMutation, createQuery } from "~frontend/gql/utils";
+import {
+  AttachmentFragment,
+  Attachment_Insert_Input,
+  Attachment_Set_Input,
+  PushUpdateAttachmentMutation,
+  PushUpdateAttachmentMutationVariables,
+  UpdatedAttachmentsQuery,
+  UpdatedAttachmentsQueryVariables,
+} from "~gql";
 
 import { messageEntity } from "./message";
+import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 
 const attachmentFragment = gql`
   fragment Attachment on attachment {
@@ -34,16 +42,53 @@ const [, { subscribe: subscribeToAttachmentUpdates }] = createQuery<
   `
 );
 
+const [, { mutate: updateAttachment }] = createMutation<
+  PushUpdateAttachmentMutation,
+  PushUpdateAttachmentMutationVariables
+>(
+  () => gql`
+    ${attachmentFragment}
+    mutation PushUpdateAttachment($input: attachment_insert_input!) {
+      insert_attachment_one(
+        object: $input
+        on_conflict: { constraint: attachment_id_key, update_columns: [mime_type, original_name] }
+      ) {
+        ...Attachment
+      }
+    }
+  `
+);
+
+function convertChangedDataToInput({
+  id,
+  message_id,
+  mime_type,
+  original_name,
+}: Partial<AttachmentFragment>): Attachment_Insert_Input {
+  return { id, message_id, mime_type, original_name };
+}
+
 export const attachmentEntity = defineEntity<AttachmentFragment>({
   name: "attachment",
   updatedAtField: "updated_at",
   keyField: "id",
+  keys: ["created_at", "id", "message_id", "mime_type", "original_name", "updated_at"],
+  getDefaultValues() {
+    return {
+      __typename: "attachment",
+      ...getGenericDefaultData(),
+    };
+  },
   sync: {
-    initPromise: () => renderedApolloClientPromise,
     pull({ lastSyncDate, updateItems }) {
       return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.attachment);
       });
+    },
+    async push(task) {
+      const result = await updateAttachment({ input: convertChangedDataToInput(task) });
+
+      return result[0] ?? false;
     },
   },
 }).addConnections((attachment, { getEntity }) => {

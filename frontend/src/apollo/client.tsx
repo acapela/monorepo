@@ -225,9 +225,6 @@ export function getRenderedApolloClient() {
   return assertDefined(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
 }
 
-export const [renderedApolloClientPromise, resolveApolloClientPromise] =
-  createResolvablePromise<ApolloClient<unknown>>();
-
 export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
   const client = useConst(() =>
     getApolloClient({
@@ -235,8 +232,6 @@ export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint
       websocketEndpoint: websocketEndpoint ?? undefined,
     })
   );
-
-  resolveApolloClientPromise(client);
 
   renderedApolloClient = client;
 

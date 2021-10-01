@@ -1,13 +1,23 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition } from "~frontend/../../clientdb/entity/entity";
-import { TaskFragment, UpdatedTasksQuery, UpdatedTasksQueryVariables } from "~frontend/../../gql";
 import { defineEntity } from "~clientdb";
-import { renderedApolloClientPromise } from "~frontend/apollo/client";
-import { createQuery } from "~frontend/gql/utils";
+import { EntityByDefinition } from "~clientdb/entity/entity";
+import { createMutation, createQuery } from "~frontend/gql/utils";
+import {
+  PushUpdateTaskMutation,
+  PushUpdateTaskMutationVariables,
+  TaskFragment,
+  Task_Insert_Input,
+  Task_Set_Input,
+  UpdatedTasksQuery,
+  UpdatedTasksQueryVariables,
+} from "~gql";
 
+import { userIdContext } from "./context";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
+import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 
 const taskFragment = gql`
   fragment Task on task {
@@ -34,30 +44,68 @@ const [, { subscribe: subscribeToMessageUpdates }] = createQuery<UpdatedTasksQue
   `
 );
 
+const [, { mutate: updateTask }] = createMutation<PushUpdateTaskMutation, PushUpdateTaskMutationVariables>(
+  () => gql`
+    ${taskFragment}
+    mutation PushUpdateTask($input: task_insert_input!) {
+      insert_task_one(
+        object: $input
+        on_conflict: { constraint: task_pkey, update_columns: [done_at, due_at, seen_at, type, user_id] }
+      ) {
+        ...Task
+      }
+    }
+  `
+);
+
+function convertChangedDataToInput({
+  done_at,
+  user_id,
+  seen_at,
+  type,
+  message_id,
+  id,
+}: Partial<TaskFragment>): Task_Insert_Input {
+  return { done_at, user_id, seen_at, type, message_id, id };
+}
+
 export const taskEntity = defineEntity<TaskFragment>({
   name: "task",
   keyField: "id",
   updatedAtField: "updated_at",
+  getDefaultValues() {
+    return {
+      __typename: "task",
+      ...getGenericDefaultData(),
+    };
+  },
+  keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: {
-    initPromise: () => renderedApolloClientPromise,
     pull({ lastSyncDate, updateItems }) {
-      console.log("pull messages");
       return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.task);
       });
     },
+    async push(task) {
+      const result = await updateTask({ input: convertChangedDataToInput(task) });
+
+      return result[0] ?? false;
+    },
   },
-}).addConnections((task, { getEntity }) => {
+}).addConnections((task, { getEntity, getContext }) => {
   return {
     get message() {
       return getEntity(messageEntity).findById(task.message_id);
     },
     get user() {
+      if (!task.user_id) {
+        return null;
+      }
+
       return getEntity(userEntity).findById(task.user_id);
     },
     get isOwn() {
-      // TODOC
-      return false;
+      return task.user_id === getContext(userIdContext);
     },
   };
 });

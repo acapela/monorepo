@@ -1,4 +1,5 @@
 import { EntityClient } from "./client";
+import { DbContext } from "./context";
 import { SortResult } from "./query";
 import { EntitySyncConfig } from "./sync";
 
@@ -30,6 +31,7 @@ interface GetConnectionsManager<Data> {
   getEntity<OtherData, OtherConnections>(
     definition: EntityDefinition<OtherData, OtherConnections>
   ): EntityClient<OtherData, OtherConnections>;
+  getContext<D>(context: DbContext<D>): D;
 }
 
 export function defineEntity<Data, Connections = {}>(

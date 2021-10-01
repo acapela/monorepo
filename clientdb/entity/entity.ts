@@ -1,7 +1,8 @@
-import { assert } from "~shared/assert";
-import { typedKeys } from "~shared/object";
 import { pick } from "lodash";
 import { extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
+
+import { assert } from "~shared/assert";
+import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
 import { EntitiesConnectionsConfig } from "./entitiesConnections";
@@ -29,19 +30,29 @@ export type EntityFromDefinition<Def extends EntityDefinition<any, any>> = Def e
   ? Entity<Data, Connections>
   : never;
 
+export interface CreateEntityConfig {
+  needsSync: boolean;
+}
+
 export function createEntity<D, C>(
   data: Partial<D>,
   definition: EntityDefinition<D, C>,
   store: EntityStore<D, C>,
-  { getEntityClientByDefinition }: EntitiesConnectionsConfig
+  { getEntityClientByDefinition, getContextValue }: EntitiesConnectionsConfig,
+  { needsSync }: CreateEntityConfig = { needsSync: true }
 ): Entity<D, C> {
   const { config, getConnections } = definition;
   const dataWithDefaults: D = { ...config.getDefaultValues?.(), ...data } as D;
 
   const rawDataKeys = typedKeys(dataWithDefaults);
 
+  console.log({ dataWithDefaults, data });
+
   for (const requiredKey of config.keys ?? []) {
-    assert(rawDataKeys.includes(requiredKey), `Required field "${requiredKey}" is missing when creating new entity`);
+    assert(
+      rawDataKeys.includes(requiredKey),
+      `Required field "${requiredKey}" is missing when creating new entity ${definition.config.name}`
+    );
   }
 
   const observableData = makeAutoObservable(dataWithDefaults as D & object);
@@ -49,6 +60,9 @@ export function createEntity<D, C>(
   const connections =
     getConnections?.(observableData, {
       getEntity: getEntityClientByDefinition,
+      getContext(context) {
+        return getContextValue(context);
+      },
     }) ?? ({} as C);
 
   const observableDataAndConnections = extendObservable(observableData, connections);
@@ -95,6 +109,10 @@ export function createEntity<D, C>(
   };
 
   const entity: Entity<D, C> = extendObservable(observableDataAndConnections, entityMethods);
+
+  if (needsSync) {
+    // definition.config.sync.push?.()
+  }
 
   return entity;
 }

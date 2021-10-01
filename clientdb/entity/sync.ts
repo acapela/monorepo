@@ -1,9 +1,13 @@
 import { runInAction } from "mobx";
 
+import { DbContext } from "./context";
 import { EntityDefinition } from "./definition";
+import { EntitiesConnectionsConfig } from "./entitiesConnections";
+import { EntityStore } from "./store";
 
 interface SyncManager<Data> {
   updateItems(items: Data[]): void;
+  getContextValue<V>(context: DbContext<V>): V;
   removeItems(items: Data[]): void;
   lastSyncDate: Date;
 }
@@ -26,18 +30,37 @@ interface EntitySyncManager<Data> {
   cancel: () => void;
 }
 
-export function createEntitySyncManager<Data>(
-  definition: EntityDefinition<Data, any>,
-  config: EntitySyncManagerConfig<Data>
+export function createEntitySyncManager<Data, Connections>(
+  store: EntityStore<Data, Connections>,
+  config: EntitySyncManagerConfig<Data>,
+  { getEntityClientByDefinition, getContextValue }: EntitiesConnectionsConfig
 ): EntitySyncManager<Data> {
-  const syncConfig = definition.config.sync;
+  const syncConfig = store.definition.config.sync;
 
   if (!syncConfig) {
     throw new Error("no sync");
   }
 
+  function initializePushSync() {
+    return store.events.on("itemUpdated", async (entity) => {
+      const data = entity.getData();
+
+      const serverData = await store.definition.config.sync.push?.(data);
+      console.log("item updated push", serverData);
+    });
+  }
+
   function getLastSyncDate() {
-    const lastSyncDate = config.getLastSyncDate();
+    // TODO: optimize by creating index or cached value modified on each remove/update/addition
+    let initialDate = new Date(0);
+
+    store.items.forEach((item) => {
+      const nextItemUpdatedAt = item.getUpdatedAt();
+
+      if (nextItemUpdatedAt > initialDate) {
+        initialDate = nextItemUpdatedAt;
+      }
+    });
 
     /**
      * Note, this is a bit interesting.
@@ -60,7 +83,7 @@ export function createEntitySyncManager<Data>(
      * This introduces very unlikely risk of race condition when some element was updated eg 0.5ms (server time) after our last sync date.
      * In such case we'd skip this element and never receive update about it until it is updated next time.
      */
-    return new Date(lastSyncDate.getTime() + 1);
+    return new Date(initialDate.getTime() + 1);
   }
 
   function startNextSync() {
@@ -73,6 +96,9 @@ export function createEntitySyncManager<Data>(
     }
 
     const maybeCleanup = syncConfig.pull?.({
+      getContextValue(context) {
+        return getContextValue(context);
+      },
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
         if (!items.length) return;
@@ -110,9 +136,12 @@ export function createEntitySyncManager<Data>(
 
   let cancelCurrent: SyncCleanup | undefined | void = undefined;
 
+  const cancelPush = initializePushSync();
+
   function cancel() {
     if (cancelCurrent) {
       cancelCurrent();
+      cancelPush();
     }
   }
 

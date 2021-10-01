@@ -73,6 +73,10 @@ insert_permissions:
       - owner_id:
           _eq: X-Hasura-User-Id
     columns:
+    - archived_at
+    - closed_at
+    - closed_by_user_id
+    - closing_summary
     - id
     - index
     - name

@@ -12,6 +12,7 @@ export type EntityStore<Data, Connections> = {
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   add(input: Entity<Data, Connections>): Entity<Data, Connections>;
   events: EntityStoreEventsEmmiter<Data, Connections>;
+  definition: EntityDefinition<Data, Connections>;
 };
 
 export type EntityStoreFromDefinition<Definition extends EntityDefinition<any, any>> =
@@ -59,6 +60,7 @@ export function createEntityStore<Data, Connections>(
   }
 
   const store: EntityStore<Data, Connections> = {
+    definition,
     events,
     items,
     add(entity) {

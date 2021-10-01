@@ -6,6 +6,7 @@ import {
   GetEntityClientByDefinition,
   createEntityClient,
 } from "./entity/client";
+import { DbContext, DbContextInstance } from "./entity/context";
 import { ClientAdapterConfig, DbEntityInfo, LocalDbAdapter } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { EntitiesConnectionsConfig } from "./entity/entitiesConnections";
@@ -15,7 +16,7 @@ export * from "./entity/index";
 
 interface ClientDbConfig {
   db?: ClientAdapterConfig;
-  //
+  contexts?: DbContextInstance<unknown>[];
 }
 
 type ClientDb<Entities extends EntitiesMap> = {
@@ -23,7 +24,7 @@ type ClientDb<Entities extends EntitiesMap> = {
 };
 
 export function createClientDb<Entities extends EntitiesMap>(
-  { db }: ClientDbConfig,
+  { db, contexts }: ClientDbConfig,
   entitiesMap: Entities
 ): ClientDb<Entities> {
   const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
@@ -42,6 +43,19 @@ export function createClientDb<Entities extends EntitiesMap>(
 
       return client;
     },
+    getContextValue<V>(context: DbContext<V>) {
+      if (!contexts) {
+        throw new Error(`No context are defined for this db`);
+      }
+
+      const correspondingContextInstance = contexts.find((contextInstance) => contextInstance.context === context);
+
+      if (!correspondingContextInstance) {
+        throw new Error(`No context in this db matching requested one`);
+      }
+
+      return correspondingContextInstance.value as V;
+    },
   };
 
   typedKeys(entitiesMap).forEach((entityKey) => {
@@ -53,6 +67,8 @@ export function createClientDb<Entities extends EntitiesMap>(
 
     definitionClientMap.set(definition, entityClient);
 
+    entityClient;
+
     clientdb[entityKey] = entityClient;
   });
 
@@ -61,7 +77,11 @@ export function createClientDb<Entities extends EntitiesMap>(
       const definition = entitiesMap[entityName];
       return { name: definition.config.name, keyField: definition.config.keyField as string };
     });
-    db.dbAdapter.initialize({ dbPrefix: db.dbPrefix, dbVersion: db.dbVersion, entities: entitiesInfo });
+    const dbInitializePromise = db.dbAdapter.initialize({
+      dbPrefix: db.dbPrefix,
+      dbVersion: db.dbVersion,
+      entities: entitiesInfo,
+    });
   }
 
   return clientdb;

@@ -1,9 +1,9 @@
 import { IDBPDatabase, openDB } from "idb";
 import { memoize } from "lodash";
 
-import { DbInfo, LocalDbAdapter } from "~frontend/../../clientdb/entity/db/adapter";
-import { assert } from "~frontend/../../shared/assert";
-import { createResolvablePromise } from "~frontend/../../shared/promises";
+import { DbInfo, LocalDbAdapter } from "~clientdb/entity/db/adapter";
+import { assert } from "~shared/assert";
+import { createResolvablePromise } from "~shared/promises";
 
 async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
   console.log("initialize db");

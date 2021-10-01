@@ -1,15 +1,22 @@
 import gql from "graphql-tag";
 
-import { EntityByDefinition } from "~frontend/../../clientdb/entity/entity";
-import { TopicFragment, UpdatedTopicsQuery, UpdatedTopicsQueryVariables } from "~frontend/../../gql";
 import { defineEntity } from "~clientdb";
-import { renderedApolloClientPromise } from "~frontend/apollo/client";
-import { createQuery } from "~frontend/gql/utils";
+import { EntityByDefinition } from "~clientdb/entity/entity";
+import { createMutation, createQuery } from "~frontend/gql/utils";
+import {
+  PushUpdateTopicMutation,
+  PushUpdateTopicMutationVariables,
+  TopicFragment,
+  Topic_Insert_Input,
+  Topic_Set_Input,
+  UpdatedTopicsQuery,
+  UpdatedTopicsQueryVariables,
+} from "~gql";
 
 import { messageEntity } from "./message";
-import { roomEntity } from "./room";
-import { spaceEntity } from "./space";
 import { userEntity } from "./user";
+import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 
 const topicFragment = gql`
   fragment Topic on topic {
@@ -24,9 +31,7 @@ const topicFragment = gql`
     name
     room_id
     slug
-    membersIds: members {
-      user_id
-    }
+    team_id
   }
 `;
 
@@ -42,35 +47,66 @@ const [, { subscribe: subscribeToTopicUpdates }] = createQuery<UpdatedTopicsQuer
   `
 );
 
+const [, { mutate: updateTopic }] = createMutation<PushUpdateTopicMutation, PushUpdateTopicMutationVariables>(
+  () => gql`
+    ${topicFragment}
+    mutation PushUpdateTopic($input: topic_insert_input!) {
+      insert_topic_one(
+        object: $input
+        on_conflict: {
+          constraint: thread_pkey
+          update_columns: [archived_at, closed_at, closed_by_user_id, closing_summary, index, name, owner_id, slug]
+        }
+      ) {
+        ...Topic
+      }
+    }
+  `
+);
+
+function convertChangedDataToInput({
+  id,
+  archived_at,
+  name,
+  slug,
+  index,
+  closed_at,
+  closed_by_user_id,
+  closing_summary,
+  owner_id,
+  team_id,
+}: Partial<TopicFragment>): Topic_Insert_Input {
+  return { id, archived_at, name, slug, index, closed_at, closed_by_user_id, closing_summary, owner_id, team_id };
+}
+
+console.log("list of keys", getFragmentKeys<TopicFragment>(topicFragment));
+
 export const topicEntity = defineEntity<TopicFragment>({
   name: "topic",
   updatedAtField: "updated_at",
   keyField: "id",
+  keys: getFragmentKeys<TopicFragment>(topicFragment),
   defaultSort: (topic) => topic.index,
+  getDefaultValues() {
+    return {
+      __typename: "topic",
+      ...getGenericDefaultData(),
+    };
+  },
   sync: {
-    initPromise: () => renderedApolloClientPromise,
     pull({ lastSyncDate, updateItems }) {
       return subscribeToTopicUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.topic);
       });
     },
+    async push(task) {
+      const result = await updateTopic({ input: convertChangedDataToInput(task) });
+
+      return result[0] ?? false;
+    },
   },
 }).addConnections((topic, { getEntity }) => {
-  const memberIds = topic.membersIds.map((member) => member.user_id);
   return {
-    get members() {
-      return getEntity(userEntity).query((user) => memberIds.includes(user.id));
-    },
-    get room() {
-      return getEntity(roomEntity).findById(topic.room_id);
-    },
-    get space() {
-      const room = getEntity(roomEntity).findById(topic.room_id);
-
-      if (!room) return null;
-
-      return getEntity(spaceEntity).findById(room.space_id);
-    },
     get owner() {
       return getEntity(userEntity).findById(topic.owner_id);
     },

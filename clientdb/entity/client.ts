@@ -3,7 +3,7 @@ import { runInAction } from "mobx";
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { EntitiesConnectionsConfig } from "./entitiesConnections";
-import { Entity, createEntity } from "./entity";
+import { CreateEntityConfig, Entity, createEntity } from "./entity";
 import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
@@ -11,8 +11,9 @@ import { createEntitySyncManager } from "./sync";
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   removeById(id: string): boolean;
+  all: Entity<Data, Connections>[];
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
-  create(input: Partial<Data>): Entity<Data, Connections>;
+  create(input: Partial<Data>, config?: CreateEntityConfig): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>): Entity<Data, Connections>;
   createOrUpdate(input: Partial<Data>): Entity<Data, Connections>;
   destroy(): void;
@@ -91,24 +92,28 @@ export function createEntityClient<Data, Connections>(
   }
 
   async function initializeSync() {
-    const syncManager = createEntitySyncManager<Data>(definition, {
-      getLastSyncDate,
-      onPulledItems(items) {
-        runInAction(() => {
-          items.forEach((item) => {
-            client.createOrUpdate(item);
+    const syncManager = createEntitySyncManager<Data>(
+      store,
+      {
+        getLastSyncDate,
+        onPulledItems(items) {
+          runInAction(() => {
+            items.forEach((item) => {
+              client.createOrUpdate(item);
+            });
           });
-        });
-      },
-      onItemRemoveRequest(items) {
-        runInAction(() => {
-          items.forEach((item) => {
-            const itemId = `${item[definition.config.keyField]}`;
-            client.removeById(itemId);
+        },
+        onItemRemoveRequest(items) {
+          runInAction(() => {
+            items.forEach((item) => {
+              const itemId = `${item[definition.config.keyField]}`;
+              client.removeById(itemId);
+            });
           });
-        });
+        },
       },
-    });
+      connectionsConfig
+    );
 
     return syncManager.cancel;
   }
@@ -127,14 +132,17 @@ export function createEntityClient<Data, Connections>(
     findById(id) {
       return store.findById(id);
     },
+    get all() {
+      return client.query(() => true).all;
+    },
     query(config) {
       return store.query(config);
     },
     removeById(id) {
       return store.removeById(id);
     },
-    create(input) {
-      const newEntity = createEntity(input, definition, store, connectionsConfig);
+    create(input, config) {
+      const newEntity = createEntity(input, definition, store, connectionsConfig, config);
       return store.add(newEntity);
     },
     update(id, input) {
