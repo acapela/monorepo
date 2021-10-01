@@ -5,9 +5,13 @@ import { theme } from "~frontend/../../ui/theme";
 import { UserMenu } from "~frontend/layouts/AppLayout/UserMenu";
 import { Button } from "~ui/buttons/Button";
 
-import { RequestFeed } from "./RequestFeed";
+import { RequestFeed } from "./requestFeed/RequestFeed";
 
-export function SidebarContent() {
+interface Props {
+  selectedRequestId?: string;
+}
+
+export function SidebarContent({ selectedRequestId }: Props) {
   return (
     <UIHolder>
       <UIHeader>
@@ -23,7 +27,7 @@ export function SidebarContent() {
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed />
+        <RequestFeed selectedItemId={selectedRequestId} />
       </UIRequestFeed>
     </UIHolder>
   );
