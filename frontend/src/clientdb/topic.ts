@@ -13,6 +13,7 @@ import {
   UpdatedTopicsQueryVariables,
 } from "~gql";
 
+import { teamIdContext, userIdContext } from "./context";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/getFragmentKeys";
@@ -87,9 +88,17 @@ export const topicEntity = defineEntity<TopicFragment>({
   keyField: "id",
   keys: getFragmentKeys<TopicFragment>(topicFragment),
   defaultSort: (topic) => topic.index,
-  getDefaultValues() {
+  getDefaultValues({ getContextValue }) {
     return {
       __typename: "topic",
+      archived_at: null,
+      closed_at: null,
+      closed_by_user_id: null,
+      closing_summary: null,
+      team_id: getContextValue(teamIdContext) ?? undefined,
+      owner_id: getContextValue(userIdContext),
+      room_id: null,
+      index: "0",
       ...getGenericDefaultData(),
     };
   },
@@ -105,13 +114,16 @@ export const topicEntity = defineEntity<TopicFragment>({
       return result[0] ?? false;
     },
   },
-}).addConnections((topic, { getEntity }) => {
+}).addConnections((topic, { getEntity, getContextValue }) => {
   return {
     get owner() {
       return getEntity(userEntity).findById(topic.owner_id);
     },
     get messages() {
       return getEntity(messageEntity).query((message) => message.topic_id === topic.id);
+    },
+    get isOwn() {
+      return topic.owner_id === getContextValue(userIdContext);
     },
     get isArchived() {
       return !!topic.archived_at;

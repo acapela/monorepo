@@ -9,7 +9,7 @@ import {
 import { DbContext, DbContextInstance } from "./entity/context";
 import { ClientAdapterConfig, DbEntityInfo, LocalDbAdapter } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
-import { EntitiesConnectionsConfig } from "./entity/entitiesConnections";
+import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
 
 export * from "./entity/index";
@@ -31,10 +31,8 @@ export function createClientDb<Entities extends EntitiesMap>(
 
   const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
 
-  const entitiesConnectionConfig: EntitiesConnectionsConfig = {
-    getEntityClientByDefinition<Data, Connections>(
-      definition: EntityDefinition<Data, Connections>
-    ): EntityClient<Data, Connections> {
+  const databaseUtilities: DatabaseUtilities = {
+    getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const client = definitionClientMap.get(definition);
 
       if (!client) {
@@ -61,7 +59,7 @@ export function createClientDb<Entities extends EntitiesMap>(
   typedKeys(entitiesMap).forEach((entityKey) => {
     const definition = entitiesMap[entityKey];
     const entityClient = createEntityClient(definition, {
-      connectionsConfig: entitiesConnectionConfig,
+      databaseUtilities: databaseUtilities,
       dbAdapterConfig: db,
     });
 

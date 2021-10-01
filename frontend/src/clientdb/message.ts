@@ -14,6 +14,7 @@ import {
 } from "~gql";
 
 import { attachmentEntity } from "./attachment";
+import { userIdContext } from "./context";
 import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
@@ -50,10 +51,7 @@ const [, { mutate: updateMessage }] = createMutation<PushUpdateMessageMutation, 
   () => gql`
     ${messageFragment}
     mutation PushUpdateMessage($input: message_insert_input!) {
-      insert_message_one(
-        object: $input
-        on_conflict: { constraint: message_id_key, update_columns: [content, type, replied_to_message_id] }
-      ) {
+      insert_message_one(object: $input, on_conflict: { constraint: message_id_key, update_columns: [content] }) {
         ...Message
       }
     }
@@ -66,9 +64,15 @@ function convertChangedDataToInput({
   replied_to_message_id,
   topic_id,
   type,
-  user_id,
 }: Partial<MessageFragment>): Message_Insert_Input {
-  return { id, content, replied_to_message_id, topic_id, type, user_id };
+  return {
+    id,
+    content,
+    replied_to_message_id,
+    topic_id,
+    type,
+    // user_id is managed by backend
+  };
 }
 
 export const messageEntity = defineEntity<MessageFragment>({
@@ -77,9 +81,11 @@ export const messageEntity = defineEntity<MessageFragment>({
   updatedAtField: "updated_at",
   keys: getFragmentKeys<MessageFragment>(messageFragment),
   defaultSort: (message) => new Date(message.created_at).getTime(),
-  getDefaultValues() {
+  getDefaultValues({ getContextValue }) {
     return {
       __typename: "message",
+      user_id: getContextValue(userIdContext),
+      replied_to_message_id: null,
       ...getGenericDefaultData(),
     };
   },

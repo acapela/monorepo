@@ -76,6 +76,8 @@ export const taskEntity = defineEntity<TaskFragment>({
   getDefaultValues() {
     return {
       __typename: "task",
+      done_at: null,
+      seen_at: null,
       ...getGenericDefaultData(),
     };
   },
@@ -92,7 +94,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return result[0] ?? false;
     },
   },
-}).addConnections((task, { getEntity, getContext }) => {
+}).addConnections((task, { getEntity, getContextValue }) => {
   return {
     get message() {
       return getEntity(messageEntity).findById(task.message_id);
@@ -105,7 +107,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       return getEntity(userEntity).findById(task.user_id);
     },
     get isOwn() {
-      return task.user_id === getContext(userIdContext);
+      return task.user_id === getContextValue(userIdContext);
     },
   };
 });

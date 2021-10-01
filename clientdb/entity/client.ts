@@ -2,20 +2,21 @@ import { runInAction } from "mobx";
 
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
-import { EntitiesConnectionsConfig } from "./entitiesConnections";
+import { DatabaseUtilities } from "./entitiesConnections";
 import { CreateEntityConfig, Entity, createEntity } from "./entity";
 import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
+import { EntityChangeSource } from "./types";
 
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
-  removeById(id: string): boolean;
+  removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
-  create(input: Partial<Data>, config?: CreateEntityConfig): Entity<Data, Connections>;
-  update(id: string, input: Partial<Data>): Entity<Data, Connections>;
-  createOrUpdate(input: Partial<Data>): Entity<Data, Connections>;
+  create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
+  update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
+  createOrUpdate(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   destroy(): void;
 };
 
@@ -27,7 +28,7 @@ export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unkno
   : never;
 
 interface EntityClientConfig {
-  connectionsConfig: EntitiesConnectionsConfig;
+  databaseUtilities: DatabaseUtilities;
   dbAdapterConfig?: ClientAdapterConfig;
 }
 
@@ -35,7 +36,7 @@ const noop = () => void 0;
 
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { connectionsConfig, dbAdapterConfig }: EntityClientConfig
+  { databaseUtilities, dbAdapterConfig }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition);
 
@@ -53,7 +54,7 @@ export function createEntityClient<Data, Connections>(
 
     runInAction(() => {
       allItems.forEach((item) => {
-        client.create(item);
+        client.create(item, "persistance");
       });
     });
 
@@ -92,14 +93,15 @@ export function createEntityClient<Data, Connections>(
   }
 
   async function initializeSync() {
-    const syncManager = createEntitySyncManager<Data>(
+    const syncManager = createEntitySyncManager<Data, Connections>(
       store,
       {
         getLastSyncDate,
         onPulledItems(items) {
           runInAction(() => {
             items.forEach((item) => {
-              client.createOrUpdate(item);
+              console.log("sync pull", { item });
+              client.createOrUpdate(item, "sync");
             });
           });
         },
@@ -107,12 +109,12 @@ export function createEntityClient<Data, Connections>(
           runInAction(() => {
             items.forEach((item) => {
               const itemId = `${item[definition.config.keyField]}`;
-              client.removeById(itemId);
+              client.removeById(itemId, "sync");
             });
           });
         },
       },
-      connectionsConfig
+      databaseUtilities
     );
 
     return syncManager.cancel;
@@ -133,37 +135,37 @@ export function createEntityClient<Data, Connections>(
       return store.findById(id);
     },
     get all() {
-      return client.query(() => true).all;
+      return client.query({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
     query(config) {
       return store.query(config);
     },
-    removeById(id) {
-      return store.removeById(id);
+    removeById(id, source) {
+      return store.removeById(id, source);
     },
-    create(input, config) {
-      const newEntity = createEntity(input, definition, store, connectionsConfig, config);
-      return store.add(newEntity);
+    create(input, source = "user") {
+      const newEntity = createEntity(input, definition, store, databaseUtilities, source);
+      return store.add(newEntity, source);
     },
-    update(id, input) {
+    update(id, input, source = "user") {
       const entity = client.findById(id);
 
       if (!entity) {
         throw new Error("no update with this id");
       }
 
-      entity.update(input);
+      entity.update(input, source);
 
       return entity;
     },
-    createOrUpdate(input) {
+    createOrUpdate(input, source = "user") {
       const id = `${input[definition.config.keyField]}`;
       if (client.findById(id)) {
-        return client.update(id, input);
+        return client.update(id, input, source);
       }
 
-      const newEntity = createEntity(input, definition, store, connectionsConfig);
-      return store.add(newEntity);
+      const newEntity = createEntity(input, definition, store, databaseUtilities, source);
+      return store.add(newEntity, source);
     },
     destroy() {
       cancelSyncAndPersistancePromise.then((cancel) => {

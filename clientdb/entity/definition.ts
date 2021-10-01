@@ -1,5 +1,6 @@
 import { EntityClient } from "./client";
 import { DbContext } from "./context";
+import { DatabaseUtilities } from "./entitiesConnections";
 import { SortResult } from "./query";
 import { EntitySyncConfig } from "./sync";
 
@@ -9,7 +10,7 @@ interface DefineEntityConfig<Data> {
   keyField: keyof Data;
   updatedAtField: keyof Data;
   getIsDeleted?: (item: Data) => boolean;
-  getDefaultValues?: () => Partial<Data>;
+  getDefaultValues?: (utilities: DatabaseUtilities) => Partial<Data>;
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
 }
@@ -22,17 +23,7 @@ export interface EntityDefinition<Data, Connections> {
   ): EntityDefinition<Data, Connections & AddedConnections>;
 }
 
-type EntityDefinitionGetConnections<Data, Connections> = (
-  item: Data,
-  manager: GetConnectionsManager<Data>
-) => Connections;
-
-interface GetConnectionsManager<Data> {
-  getEntity<OtherData, OtherConnections>(
-    definition: EntityDefinition<OtherData, OtherConnections>
-  ): EntityClient<OtherData, OtherConnections>;
-  getContext<D>(context: DbContext<D>): D;
-}
+type EntityDefinitionGetConnections<Data, Connections> = (item: Data, manager: DatabaseUtilities) => Connections;
 
 export function defineEntity<Data, Connections = {}>(
   config: DefineEntityConfig<Data>,

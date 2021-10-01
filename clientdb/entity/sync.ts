@@ -2,12 +2,12 @@ import { runInAction } from "mobx";
 
 import { DbContext } from "./context";
 import { EntityDefinition } from "./definition";
-import { EntitiesConnectionsConfig } from "./entitiesConnections";
+import { DatabaseUtilities } from "./entitiesConnections";
+import { Entity } from "./entity";
 import { EntityStore } from "./store";
 
-interface SyncManager<Data> {
+interface SyncManager<Data> extends DatabaseUtilities {
   updateItems(items: Data[]): void;
-  getContextValue<V>(context: DbContext<V>): V;
   removeItems(items: Data[]): void;
   lastSyncDate: Date;
 }
@@ -33,7 +33,7 @@ interface EntitySyncManager<Data> {
 export function createEntitySyncManager<Data, Connections>(
   store: EntityStore<Data, Connections>,
   config: EntitySyncManagerConfig<Data>,
-  { getEntityClientByDefinition, getContextValue }: EntitiesConnectionsConfig
+  databaseUtilities: DatabaseUtilities
 ): EntitySyncManager<Data> {
   const syncConfig = store.definition.config.sync;
 
@@ -42,12 +42,34 @@ export function createEntitySyncManager<Data, Connections>(
   }
 
   function initializePushSync() {
-    return store.events.on("itemUpdated", async (entity) => {
+    async function handlePushEntity(entity: Entity<Data, Connections>) {
       const data = entity.getData();
 
       const serverData = await store.definition.config.sync.push?.(data);
-      console.log("item updated push", serverData);
+
+      if (!serverData) {
+        console.warn(`Sync push failed`);
+        return;
+      }
+
+      entity.update(serverData, "sync");
+    }
+    const cancelUpdates = store.events.on("itemUpdated", async (entity, source) => {
+      if (source !== "user") return;
+
+      await handlePushEntity(entity);
     });
+
+    const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
+      console.log("push", { entity, source });
+      if (source !== "user") return;
+      await handlePushEntity(entity);
+    });
+
+    return () => {
+      cancelUpdates();
+      cancelCreates();
+    };
   }
 
   function getLastSyncDate() {
@@ -96,9 +118,7 @@ export function createEntitySyncManager<Data, Connections>(
     }
 
     const maybeCleanup = syncConfig.pull?.({
-      getContextValue(context) {
-        return getContextValue(context);
-      },
+      ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
         if (!items.length) return;

@@ -3,14 +3,15 @@ import { IObservableArray, computed, observable, runInAction } from "mobx";
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
+import { EntityChangeSource } from "./types";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
 export type EntityStore<Data, Connections> = {
   items: IObservableArray<Entity<Data, Connections>>;
   findById(id: string): Entity<Data, Connections> | null;
-  removeById(id: string): boolean;
+  removeById(id: string, source?: EntityChangeSource): boolean;
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
-  add(input: Entity<Data, Connections>): Entity<Data, Connections>;
+  add(input: Entity<Data, Connections>, source?: EntityChangeSource): Entity<Data, Connections>;
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
 };
@@ -19,9 +20,9 @@ export type EntityStoreFromDefinition<Definition extends EntityDefinition<any, a
   Definition extends EntityDefinition<infer Data, infer Connections> ? EntityStore<Data, Connections> : never;
 
 type EntityStoreEvents<Data, Connections> = {
-  itemAdded: Entity<Data, Connections>;
-  itemUpdated: Entity<Data, Connections>;
-  itemRemoved: Entity<Data, Connections>;
+  itemAdded: [Entity<Data, Connections>, EntityChangeSource];
+  itemUpdated: [Entity<Data, Connections>, EntityChangeSource];
+  itemRemoved: [Entity<Data, Connections>, EntityChangeSource];
 };
 
 type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntityStoreEvents<Data, Connections>>;
@@ -63,7 +64,7 @@ export function createEntityStore<Data, Connections>(
     definition,
     events,
     items,
-    add(entity) {
+    add(entity, source = "user") {
       const id = `${entity[config.keyField]}`;
 
       runInAction(() => {
@@ -71,7 +72,7 @@ export function createEntityStore<Data, Connections>(
         itemsMap[id] = entity;
       });
 
-      events.emit("itemAdded", entity);
+      events.emit("itemAdded", entity, source);
 
       return entity;
     },
@@ -80,7 +81,7 @@ export function createEntityStore<Data, Connections>(
         return getExistingItemById(id);
       }).get();
     },
-    removeById(id) {
+    removeById(id, source = "user") {
       const entity = itemsMap[id] ?? null;
 
       if (entity === null) return false;
@@ -92,7 +93,7 @@ export function createEntityStore<Data, Connections>(
         delete itemsMap[id];
       });
 
-      events.emit("itemRemoved", entity);
+      events.emit("itemRemoved", entity, source);
 
       return didRemove;
     },
