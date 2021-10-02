@@ -1,13 +1,8 @@
 import { typedKeys } from "~shared/object";
 
-import {
-  EntityClient,
-  EntityClientByDefinition,
-  GetEntityClientByDefinition,
-  createEntityClient,
-} from "./entity/client";
+import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
 import { DbContext, DbContextInstance } from "./entity/context";
-import { ClientAdapterConfig, DbEntityInfo, LocalDbAdapter } from "./entity/db/adapter";
+import { ClientAdapterConfig, DbEntityInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
@@ -29,6 +24,7 @@ export function createClientDb<Entities extends EntitiesMap>(
 ): ClientDb<Entities> {
   const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
 
   const databaseUtilities: DatabaseUtilities = {
@@ -75,6 +71,7 @@ export function createClientDb<Entities extends EntitiesMap>(
       const definition = entitiesMap[entityName];
       return { name: definition.config.name, keyField: definition.config.keyField as string };
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const dbInitializePromise = db.dbAdapter.initialize({
       dbPrefix: db.dbPrefix,
       dbVersion: db.dbVersion,

@@ -9,6 +9,7 @@ interface UpdatesSyncManager<Data> extends DatabaseUtilities {
   lastSyncDate: Date;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface RemovesSyncManager<Data> extends DatabaseUtilities {
   removeItems(idsToRemove: string[], lastUpdateDate?: Date): void;
   lastSyncDate: Date;
@@ -17,7 +18,7 @@ interface RemovesSyncManager<Data> extends DatabaseUtilities {
 type SyncCleanup = () => void;
 
 export interface EntitySyncConfig<Data> {
-  initPromise?: () => Promise<any>;
+  initPromise?: () => Promise<void>;
   pullUpdated?: (manager: UpdatesSyncManager<Data>) => SyncCleanup | void;
   push?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<Data | false>;
   remove?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<boolean>;
@@ -155,7 +156,6 @@ export function createEntitySyncManager<Data, Connections>(
       ...databaseUtilities,
       lastSyncDate: lastRemoveSyncDate,
       removeItems(itemsIds, lastUpdateDate = new Date()) {
-        console.log("remove sync call", itemsIds);
         if (!itemsIds.length) return;
 
         maybeCleanup?.();

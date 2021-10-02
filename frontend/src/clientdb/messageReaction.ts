@@ -6,7 +6,6 @@ import { createMutation, createQuery } from "~frontend/gql/utils";
 import {
   MessageReactionFragment,
   Message_Reaction_Insert_Input,
-  Message_Reaction_Set_Input,
   PushUpdateMessageReactionMutation,
   PushUpdateMessageReactionMutationVariables,
   UpdatedMessageReactionsQuery,

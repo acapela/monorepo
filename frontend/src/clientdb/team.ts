@@ -7,7 +7,6 @@ import {
   PushUpdateTeamMutationVariables,
   TeamFragment,
   Team_Insert_Input,
-  Team_Set_Input,
   UpdatedTeamsQuery,
   UpdatedTeamsQueryVariables,
 } from "~gql";

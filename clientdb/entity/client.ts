@@ -3,7 +3,7 @@ import { runInAction } from "mobx";
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
-import { CreateEntityConfig, Entity, createEntity } from "./entity";
+import { Entity, createEntity } from "./entity";
 import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
@@ -106,7 +106,6 @@ export function createEntityClient<Data, Connections>(
           });
         },
         onItemRemoveRequest(idsToRemove) {
-          console.log("callback to remove", idsToRemove);
           runInAction(() => {
             idsToRemove.forEach((idToRemove) => {
               client.removeById(idToRemove, "sync");

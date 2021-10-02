@@ -1,5 +1,3 @@
-import { EntityClient } from "./client";
-import { DbContext } from "./context";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { SortResult } from "./query";
 import { EntitySyncConfig } from "./sync";

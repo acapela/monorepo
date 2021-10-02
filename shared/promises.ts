@@ -16,5 +16,6 @@ export function createResolvablePromise<T>() {
     };
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return [promise, pickedResolve!] as const;
 }

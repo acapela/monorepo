@@ -16,7 +16,7 @@ export type EntityStore<Data, Connections> = {
   definition: EntityDefinition<Data, Connections>;
 };
 
-export type EntityStoreFromDefinition<Definition extends EntityDefinition<any, any>> =
+export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknown, unknown>> =
   Definition extends EntityDefinition<infer Data, infer Connections> ? EntityStore<Data, Connections> : never;
 
 type EntityStoreEvents<Data, Connections> = {
@@ -65,7 +65,6 @@ export function createEntityStore<Data, Connections>(
     events,
     items,
     add(entity, source = "user") {
-      console.log("adding ent", { entity, source });
       const id = `${entity[config.keyField]}`;
 
       runInAction(() => {
@@ -83,10 +82,7 @@ export function createEntityStore<Data, Connections>(
       }).get();
     },
     removeById(id, source = "user") {
-      console.log("removing by id", id, source);
       const entity = itemsMap[id] ?? null;
-
-      console.log("removing by id", { entity });
 
       if (entity === null) return false;
 

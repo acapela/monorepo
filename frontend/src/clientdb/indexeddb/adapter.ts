@@ -32,6 +32,7 @@ export function createIndexedDbAdapter(): LocalDbAdapter {
     return true;
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function getTableTransaction(name: string, keyField: string) {
     assert(dbPromise, "not initialized");
 

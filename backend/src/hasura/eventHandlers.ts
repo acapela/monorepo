@@ -59,8 +59,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
       return;
     }
 
-    console.log("will handle");
-
     anyEventHandles.forEach((anyEventHandler) => {
       anyEventHandler(normalizedEvent);
     });

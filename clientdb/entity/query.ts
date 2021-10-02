@@ -13,6 +13,7 @@ type EntityQueryResolvedConfig<Data> = {
   sort?: (item: Data) => SortResult;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type EntityQueryConfig<Data, Connections> = EntityQueryFilter<Data> | EntityQueryResolvedConfig<Data>;
 
 function resolveEntityQueryConfig<Data, Connections>(

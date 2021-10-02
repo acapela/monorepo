@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useDb } from "~frontend/clientdb";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { HomeView } from "~frontend/views/HomeView";
 
 function createMessageContent(text: string) {
   return {

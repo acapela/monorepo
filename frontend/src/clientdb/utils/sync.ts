@@ -167,8 +167,6 @@ export function createHasuraSyncSetupFromFragment<T>(
         return;
       }
 
-      console.log("subscribing for dels", { type, lastSyncDate });
-
       const observer = apollo.subscribe<PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables>({
         query: pullSyncRequestsSubscription,
         variables: {
@@ -179,7 +177,6 @@ export function createHasuraSyncSetupFromFragment<T>(
       });
 
       const subscription = observer.subscribe(async (nextResult) => {
-        console.log({ nextResult });
         const syncRequests = nextResult.data?.sync_request ?? [];
 
         const idsToRemove: string[] = [];
@@ -201,13 +198,10 @@ export function createHasuraSyncSetupFromFragment<T>(
 
         const allItemsToRemove = [...idsToRemove, ...itemsWithLostAccess];
 
-        console.log({ allItemsToRemove });
-
         removeItems(allItemsToRemove, lastSyncRequestDate);
       });
 
       return () => {
-        console.log("cancel");
         subscription.unsubscribe();
       };
     },
