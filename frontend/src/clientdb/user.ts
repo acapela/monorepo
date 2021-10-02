@@ -2,19 +2,12 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb/entity/entity";
-import { createMutation, createQuery } from "~frontend/gql/utils";
-import {
-  PushUpdateUserMutation,
-  PushUpdateUserMutationVariables,
-  UpdatedUsersQuery,
-  UpdatedUsersQueryVariables,
-  UserFragment,
-  User_Set_Input,
-} from "~gql";
+import { UserFragment } from "~gql";
 
 import { taskEntity } from "./task";
 import { getFragmentKeys } from "./utils/getFragmentKeys";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const userFragment = gql`
   fragment User on user {
@@ -25,33 +18,6 @@ const userFragment = gql`
     updated_at
   }
 `;
-
-const [, { subscribe: subscribeToUserUpdates }] = createQuery<UpdatedUsersQuery, UpdatedUsersQueryVariables>(
-  () => gql`
-    ${userFragment}
-
-    query UpdatedUsers($lastSyncDate: timestamptz) {
-      user(where: { updated_at: { _gt: $lastSyncDate } }) {
-        ...User
-      }
-    }
-  `
-);
-
-const [, { mutate: updateUser }] = createMutation<PushUpdateUserMutation, PushUpdateUserMutationVariables>(
-  () => gql`
-    ${userFragment}
-    mutation PushUpdateUser($id: uuid!, $input: user_set_input!) {
-      update_user_by_pk(pk_columns: { id: $id }, _set: $input) {
-        ...User
-      }
-    }
-  `
-);
-
-function convertChangedDataToInput({ avatar_url, name }: Partial<UserFragment>): User_Set_Input {
-  return { avatar_url, name };
-}
 
 export const userEntity = defineEntity<UserFragment>({
   name: "user",
@@ -64,18 +30,11 @@ export const userEntity = defineEntity<UserFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: {
-    pullUpdated({ lastSyncDate, updateItems }) {
-      return subscribeToUserUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-        updateItems(newData.user);
-      });
-    },
-    async push(task) {
-      const result = await updateUser({ id: task.id, input: convertChangedDataToInput(task) });
-
-      return result[0] ?? false;
-    },
-  },
+  sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment, {
+    upsertIdKey: "user_pkey",
+    insertColumns: ["avatar_url", "name"],
+    updateColumns: ["avatar_url", "name"],
+  }),
 }).addConnections((user, { getEntity }) => {
   return {
     get tasks() {

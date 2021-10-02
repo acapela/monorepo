@@ -2,20 +2,13 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb/entity/entity";
-import { createMutation, createQuery } from "~frontend/gql/utils";
-import {
-  MessageReactionFragment,
-  Message_Reaction_Insert_Input,
-  PushUpdateMessageReactionMutation,
-  PushUpdateMessageReactionMutationVariables,
-  UpdatedMessageReactionsQuery,
-  UpdatedMessageReactionsQueryVariables,
-} from "~gql";
+import { MessageReactionFragment } from "~gql";
 
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/getFragmentKeys";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const messageReactionFragment = gql`
   fragment MessageReaction on message_reaction {
@@ -26,46 +19,6 @@ const messageReactionFragment = gql`
     updated_at
   }
 `;
-
-const [, { subscribe: subscribeToMessageUpdates }] = createQuery<
-  UpdatedMessageReactionsQuery,
-  UpdatedMessageReactionsQueryVariables
->(
-  () => gql`
-    ${messageReactionFragment}
-
-    query UpdatedMessageReactions($lastSyncDate: timestamptz) {
-      message_reaction(where: { updated_at: { _gt: $lastSyncDate } }) {
-        ...MessageReaction
-      }
-    }
-  `
-);
-
-const [, { mutate: updateMessageReaction }] = createMutation<
-  PushUpdateMessageReactionMutation,
-  PushUpdateMessageReactionMutationVariables
->(
-  () => gql`
-    ${messageReactionFragment}
-    mutation PushUpdateMessageReaction($input: message_reaction_insert_input!) {
-      insert_message_reaction_one(
-        object: $input
-        on_conflict: { constraint: message_reaction_id_key, update_columns: [emoji] }
-      ) {
-        ...MessageReaction
-      }
-    }
-  `
-);
-
-function convertChangedDataToInput({
-  emoji,
-  user_id,
-  message_id,
-}: Partial<MessageReactionFragment>): Message_Reaction_Insert_Input {
-  return { emoji, user_id, message_id };
-}
 
 export const messageReactionEntity = defineEntity<MessageReactionFragment>({
   name: "messageReaction",
@@ -78,18 +31,11 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: {
-    pullUpdated({ lastSyncDate, updateItems }) {
-      return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-        updateItems(newData.message_reaction);
-      });
-    },
-    async push(task) {
-      const result = await updateMessageReaction({ input: convertChangedDataToInput(task) });
-
-      return result[0] ?? false;
-    },
-  },
+  sync: createHasuraSyncSetupFromFragment<MessageReactionFragment>(messageReactionFragment, {
+    upsertIdKey: "message_reaction_pkey",
+    insertColumns: ["id", "emoji", "user_id", "message_id"],
+    updateColumns: ["emoji"],
+  }),
 }).addConnections((message, { getEntity }) => {
   return {
     get message() {

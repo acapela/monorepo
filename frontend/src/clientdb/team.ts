@@ -1,19 +1,12 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
-import { createMutation, createQuery } from "~frontend/gql/utils";
-import {
-  PushUpdateTeamMutation,
-  PushUpdateTeamMutationVariables,
-  TeamFragment,
-  Team_Insert_Input,
-  UpdatedTeamsQuery,
-  UpdatedTeamsQueryVariables,
-} from "~gql";
+import { TeamFragment } from "~gql";
 
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/getFragmentKeys";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const teamFragment = gql`
   fragment Team on team {
@@ -28,33 +21,6 @@ const teamFragment = gql`
   }
 `;
 
-const [, { subscribe: subscribeToSpaceUpdates }] = createQuery<UpdatedTeamsQuery, UpdatedTeamsQueryVariables>(
-  () => gql`
-    ${teamFragment}
-
-    query UpdatedTeams($lastSyncDate: timestamptz) {
-      team(where: { updated_at: { _gt: $lastSyncDate } }) {
-        ...Team
-      }
-    }
-  `
-);
-
-const [, { mutate: updateTeam }] = createMutation<PushUpdateTeamMutation, PushUpdateTeamMutationVariables>(
-  () => gql`
-    ${teamFragment}
-    mutation PushUpdateTeam($input: team_insert_input!) {
-      insert_team_one(object: $input, on_conflict: { constraint: team_id_key, update_columns: [name, slug] }) {
-        ...Team
-      }
-    }
-  `
-);
-
-function convertChangedDataToInput({ name, slug, owner_id, id }: Partial<TeamFragment>): Team_Insert_Input {
-  return { name, slug, owner_id, id };
-}
-
 export const teamEntity = defineEntity<TeamFragment>({
   name: "team",
   updatedAtField: "updated_at",
@@ -66,18 +32,11 @@ export const teamEntity = defineEntity<TeamFragment>({
       ...getGenericDefaultData(),
     };
   },
-  sync: {
-    pullUpdated({ lastSyncDate, updateItems }) {
-      return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-        updateItems(newData.team);
-      });
-    },
-    async push(task) {
-      const result = await updateTeam({ input: convertChangedDataToInput(task) });
-
-      return result[0] ?? false;
-    },
-  },
+  sync: createHasuraSyncSetupFromFragment<TeamFragment>(teamFragment, {
+    upsertIdKey: "team_id_key",
+    insertColumns: ["id", "slug", "owner_id", "name"],
+    updateColumns: ["name", "slug"],
+  }),
 }).addConnections((team, { getEntity }) => {
   const memberIds = team.membershipsIds.map((member) => member.user_id);
   return {

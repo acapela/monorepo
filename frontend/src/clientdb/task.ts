@@ -39,6 +39,7 @@ export const taskEntity = defineEntity<TaskFragment>({
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
+    upsertIdKey: "task_pkey",
     insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
     updateColumns: ["done_at", "due_at", "seen_at", "type", "user_id"],
   }),

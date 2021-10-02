@@ -4,10 +4,34 @@ import gql from "graphql-tag";
 import { max, pick } from "lodash";
 
 import { EntitySyncConfig } from "~clientdb/entity/sync";
-import { PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables } from "~gql";
+import {
+  Attachment_Constraint,
+  Message_Constraint,
+  Message_Reaction_Constraint,
+  PullSyncRequestsSubscription,
+  PullSyncRequestsSubscriptionVariables,
+  Task_Constraint,
+  Team_Constraint,
+  Topic_Constraint,
+  User_Constraint,
+} from "~gql";
 
 import { apolloContext, teamIdContext } from "../context";
 import { analyzeFragment } from "./analyzeFragment";
+
+type ConstraintsMap = {
+  task: Task_Constraint;
+  topic: Topic_Constraint;
+  user: User_Constraint;
+  team: Team_Constraint;
+  message: Message_Constraint;
+  message_reaction: Message_Reaction_Constraint;
+  attachment: Attachment_Constraint;
+};
+
+type UpsertConstrainForFragment<T> = T extends { __typename: keyof ConstraintsMap }
+  ? ConstraintsMap[T["__typename"]]
+  : never;
 
 const syncRequestFragment = gql`
   fragment SyncRequest on sync_request {
@@ -32,7 +56,7 @@ const pullSyncRequestsSubscription = gql`
 const gqlTag = gql;
 
 interface HasuraSyncSettings<T> {
-  upsertIdKey?: string;
+  upsertIdKey?: UpsertConstrainForFragment<T>;
   updateColumns: Array<keyof T>;
   insertColumns?: Array<keyof T>;
 }
