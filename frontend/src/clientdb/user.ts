@@ -65,7 +65,7 @@ export const userEntity = defineEntity<UserFragment>({
     };
   },
   sync: {
-    pull({ lastSyncDate, updateItems }) {
+    pullUpdated({ lastSyncDate, updateItems }) {
       return subscribeToUserUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.user);
       });

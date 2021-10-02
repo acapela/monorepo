@@ -14,6 +14,7 @@ import {
 } from "~gql";
 
 import { messageEntity } from "./message";
+import { getFragmentKeys } from "./utils/getFragmentKeys";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 
 const attachmentFragment = gql`
@@ -72,7 +73,7 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
   name: "attachment",
   updatedAtField: "updated_at",
   keyField: "id",
-  keys: ["created_at", "id", "message_id", "mime_type", "original_name", "updated_at"],
+  keys: getFragmentKeys<AttachmentFragment>(attachmentFragment),
   getDefaultValues() {
     return {
       __typename: "attachment",
@@ -80,7 +81,7 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
     };
   },
   sync: {
-    pull({ lastSyncDate, updateItems }) {
+    pullUpdated({ lastSyncDate, updateItems }) {
       return subscribeToAttachmentUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.attachment);
       });

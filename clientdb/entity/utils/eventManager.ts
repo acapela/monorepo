@@ -8,7 +8,7 @@ export type EventsEmmiter<EventsMap extends Record<string, unknown[]>> = {
 };
 
 export function createEventsEmmiter<EventsMap extends Record<string, unknown[]>>(
-  debug = true
+  debug = false
 ): EventsEmmiter<EventsMap> {
   const subscribersMap = new Map<keyof EventsMap, Set<EventHandler<unknown[]>>>();
 

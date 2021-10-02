@@ -80,8 +80,7 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
     };
   },
   sync: {
-    pull({ lastSyncDate, updateItems }) {
-      console.log("pull messages");
+    pullUpdated({ lastSyncDate, updateItems }) {
       return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.message_reaction);
       });

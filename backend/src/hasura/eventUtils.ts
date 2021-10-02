@@ -3,7 +3,9 @@ import { HasuraSessionVariables } from "./session";
 type OperationType = "INSERT" | "UPDATE" | "DELETE" | "MANUAL";
 
 type CommonHasuraEventData = {
+  date: Date;
   userId: string | null;
+  tableName: string;
 };
 
 export type CrateHasuraEvent<T> = {
@@ -34,7 +36,15 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
   const item = rawEvent.event.data.new;
   const itemBefore = rawEvent.event.data.old ?? null;
 
+  const date = new Date(rawEvent.created_at);
+
   const eventType = rawEvent.event.op;
+
+  const commonEventData: CommonHasuraEventData = {
+    userId: getUserIdFromRawHasuraEvent(rawEvent),
+    tableName: rawEvent.table.name,
+    date,
+  };
 
   if (eventType === "INSERT") {
     return {
@@ -42,7 +52,7 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       item: item!,
       itemBefore: null,
-      userId: getUserIdFromRawHasuraEvent(rawEvent),
+      ...commonEventData,
     };
   }
 
@@ -53,7 +63,7 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
       item: item!,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       itemBefore: itemBefore!,
-      userId: getUserIdFromRawHasuraEvent(rawEvent),
+      ...commonEventData,
     };
   }
 
@@ -63,7 +73,7 @@ export function normalizeHasuraEvent<T>(rawEvent: RawHasuraEvent<T>): HasuraEven
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       item: itemBefore!,
       itemBefore: null,
-      userId: getUserIdFromRawHasuraEvent(rawEvent),
+      ...commonEventData,
     };
   }
 

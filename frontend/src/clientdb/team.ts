@@ -68,7 +68,7 @@ export const teamEntity = defineEntity<TeamFragment>({
     };
   },
   sync: {
-    pull({ lastSyncDate, updateItems }) {
+    pullUpdated({ lastSyncDate, updateItems }) {
       return subscribeToSpaceUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
         updateItems(newData.team);
       });

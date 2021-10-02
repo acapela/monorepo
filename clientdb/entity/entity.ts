@@ -14,6 +14,7 @@ type EntityMethods<Data, Connections> = {
   update(data: Partial<Data>, source?: EntityChangeSource): void;
   getData(): Data;
   getKey(): string;
+  getKeyName(): string;
   getUpdatedAt(): Date;
   remove(): void;
 };
@@ -47,8 +48,6 @@ export function createEntity<D, C>(
 
   const rawDataKeys = typedKeys(dataWithDefaults);
 
-  console.log({ dataWithDefaults, data });
-
   for (const requiredKey of config.keys ?? []) {
     assert(
       rawDataKeys.includes(requiredKey),
@@ -71,6 +70,9 @@ export function createEntity<D, C>(
     },
     getKey() {
       return `${entity[config.keyField]}`;
+    },
+    getKeyName() {
+      return config.keyField as string;
     },
     getUpdatedAt() {
       const rawInfo = entity[config.updatedAtField];

@@ -65,6 +65,7 @@ export function createEntityStore<Data, Connections>(
     events,
     items,
     add(entity, source = "user") {
+      console.log("adding ent", { entity, source });
       const id = `${entity[config.keyField]}`;
 
       runInAction(() => {
@@ -82,7 +83,10 @@ export function createEntityStore<Data, Connections>(
       }).get();
     },
     removeById(id, source = "user") {
+      console.log("removing by id", id, source);
       const entity = itemsMap[id] ?? null;
+
+      console.log("removing by id", { entity });
 
       if (entity === null) return false;
 

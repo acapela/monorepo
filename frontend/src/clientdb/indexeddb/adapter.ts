@@ -6,7 +6,6 @@ import { assert } from "~shared/assert";
 import { createResolvablePromise } from "~shared/promises";
 
 async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
-  console.log("initialize db");
   const db = await openDB(`${dbPrefix}-clientdb`, dbVersion, {
     upgrade(database, oldVersion, newVersion) {
       console.info(`New database version - handling upgrade`, { oldVersion, newVersion });

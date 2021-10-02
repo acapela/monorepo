@@ -96,20 +96,20 @@ export function createEntityClient<Data, Connections>(
     const syncManager = createEntitySyncManager<Data, Connections>(
       store,
       {
+        entitySyncConfig: definition.config.sync,
         getLastSyncDate,
         onPulledItems(items) {
           runInAction(() => {
             items.forEach((item) => {
-              console.log("sync pull", { item });
               client.createOrUpdate(item, "sync");
             });
           });
         },
-        onItemRemoveRequest(items) {
+        onItemRemoveRequest(idsToRemove) {
+          console.log("callback to remove", idsToRemove);
           runInAction(() => {
-            items.forEach((item) => {
-              const itemId = `${item[definition.config.keyField]}`;
-              client.removeById(itemId, "sync");
+            idsToRemove.forEach((idToRemove) => {
+              client.removeById(idToRemove, "sync");
             });
           });
         },

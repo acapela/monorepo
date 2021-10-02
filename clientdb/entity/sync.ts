@@ -1,14 +1,16 @@
 import { runInAction } from "mobx";
 
-import { DbContext } from "./context";
-import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityStore } from "./store";
 
-interface SyncManager<Data> extends DatabaseUtilities {
+interface UpdatesSyncManager<Data> extends DatabaseUtilities {
   updateItems(items: Data[]): void;
-  removeItems(items: Data[]): void;
+  lastSyncDate: Date;
+}
+
+interface RemovesSyncManager<Data> extends DatabaseUtilities {
+  removeItems(idsToRemove: string[], lastUpdateDate?: Date): void;
   lastSyncDate: Date;
 }
 
@@ -16,14 +18,17 @@ type SyncCleanup = () => void;
 
 export interface EntitySyncConfig<Data> {
   initPromise?: () => Promise<any>;
-  pull?: (manager: SyncManager<Data>) => SyncCleanup | void;
-  push?: (entityToSync: Data) => Promise<Data | false>;
+  pullUpdated?: (manager: UpdatesSyncManager<Data>) => SyncCleanup | void;
+  push?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<Data | false>;
+  remove?: (entityToSync: Entity<Data, unknown>, utils: DatabaseUtilities) => Promise<boolean>;
+  pullRemoves?: (manager: RemovesSyncManager<Data>) => SyncCleanup | void;
 }
 
 interface EntitySyncManagerConfig<Data> {
   onPulledItems(items: Data[]): void;
-  onItemRemoveRequest(items: Data[]): void;
+  onItemRemoveRequest(itemsIds: string[]): void;
   getLastSyncDate(): Date;
+  entitySyncConfig: EntitySyncConfig<Data>;
 }
 
 interface EntitySyncManager<Data> {
@@ -43,9 +48,7 @@ export function createEntitySyncManager<Data, Connections>(
 
   function initializePushSync() {
     async function handlePushEntity(entity: Entity<Data, Connections>) {
-      const data = entity.getData();
-
-      const serverData = await store.definition.config.sync.push?.(data);
+      const serverData = await store.definition.config.sync.push?.(entity, databaseUtilities);
 
       if (!serverData) {
         console.warn(`Sync push failed`);
@@ -54,6 +57,16 @@ export function createEntitySyncManager<Data, Connections>(
 
       entity.update(serverData, "sync");
     }
+    const cancelRemoves = store.events.on("itemRemoved", async (entity, source) => {
+      if (source !== "user") return;
+
+      const result = await config.entitySyncConfig.remove?.(entity, databaseUtilities);
+
+      if (result !== true) {
+        // TODO: Handle restore local entity in case of failure
+      }
+    });
+
     const cancelUpdates = store.events.on("itemUpdated", async (entity, source) => {
       if (source !== "user") return;
 
@@ -61,12 +74,12 @@ export function createEntitySyncManager<Data, Connections>(
     });
 
     const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
-      console.log("push", { entity, source });
       if (source !== "user") return;
       await handlePushEntity(entity);
     });
 
     return () => {
+      cancelRemoves();
       cancelUpdates();
       cancelCreates();
     };
@@ -108,16 +121,12 @@ export function createEntitySyncManager<Data, Connections>(
     return new Date(initialDate.getTime() + 1);
   }
 
-  function startNextSync() {
-    let didScheduleAgain = false;
+  function startNextUpdatesSync() {
     function scheduleAgain() {
-      if (didScheduleAgain) return;
-      didScheduleAgain = true;
-
-      cancelCurrent = startNextSync();
+      cancelCurrentUpdates = startNextUpdatesSync();
     }
 
-    const maybeCleanup = syncConfig.pull?.({
+    const maybeCleanup = syncConfig.pullUpdated?.({
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
@@ -130,12 +139,31 @@ export function createEntitySyncManager<Data, Connections>(
 
         scheduleAgain();
       },
-      removeItems(items) {
-        if (!items.length) return;
+    });
+
+    return maybeCleanup;
+  }
+
+  let lastRemoveSyncDate = getLastSyncDate();
+
+  function startNextRemovesSync() {
+    function scheduleAgain() {
+      cancelCurrentDeletes = startNextRemovesSync();
+    }
+
+    const maybeCleanup = syncConfig.pullRemoves?.({
+      ...databaseUtilities,
+      lastSyncDate: lastRemoveSyncDate,
+      removeItems(itemsIds, lastUpdateDate = new Date()) {
+        console.log("remove sync call", itemsIds);
+        if (!itemsIds.length) return;
+
         maybeCleanup?.();
         runInAction(() => {
-          config.onItemRemoveRequest(items);
+          config.onItemRemoveRequest(itemsIds);
         });
+
+        lastRemoveSyncDate = lastUpdateDate;
 
         scheduleAgain();
       },
@@ -147,22 +175,29 @@ export function createEntitySyncManager<Data, Connections>(
   async function init() {
     if (typeof document === "undefined") return;
 
-    const foo = await syncConfig.initPromise?.();
+    await syncConfig.initPromise?.();
 
-    cancelCurrent = startNextSync();
+    cancelCurrentUpdates = startNextUpdatesSync();
+    cancelCurrentDeletes = startNextRemovesSync();
   }
 
   init();
 
-  let cancelCurrent: SyncCleanup | undefined | void = undefined;
+  let cancelCurrentUpdates: SyncCleanup | undefined | void = undefined;
+  let cancelCurrentDeletes: SyncCleanup | undefined | void = undefined;
 
   const cancelPush = initializePushSync();
 
   function cancel() {
-    if (cancelCurrent) {
-      cancelCurrent();
-      cancelPush();
+    if (cancelCurrentUpdates) {
+      cancelCurrentUpdates();
     }
+
+    if (cancelCurrentDeletes) {
+      cancelCurrentDeletes();
+    }
+
+    cancelPush();
   }
 
   return {

@@ -1,8 +1,8 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
-import { PropsWithChildren, createContext, useContext, useMemo } from "react";
+import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { createClientDb } from "~clientdb";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useAssertCurrentUser, useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
 
@@ -18,13 +18,13 @@ import { userEntity } from "./user";
 
 const DB_VERSION = 4;
 
-export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
+export function createNewClientDb(userId: string | null, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
     {
       db: {
         dbAdapter: createIndexedDbAdapter(),
         dbVersion: DB_VERSION,
-        dbPrefix: `acapela-team-${teamId}-user-${userId}`,
+        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId ?? "no-user"}`,
       },
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
     },
@@ -47,12 +47,27 @@ type ClientDb = ReturnType<typeof createNewClientDb>;
 const reactContext = createContext<ClientDb | null>(null);
 
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
+  const [db, setDb] = useState<ClientDb | null>(null);
   const teamId = useCurrentTeamId();
-  const user = useAssertCurrentUser();
+  const userId = useCurrentUser()?.id ?? null;
   const apolloClient = useApolloClient();
-  const db = useMemo(() => createNewClientDb(user.id, teamId, apolloClient), [user.id, teamId, apolloClient]);
 
-  return <reactContext.Provider value={db}>{children}</reactContext.Provider>;
+  useEffect(() => {
+    const newDb = createNewClientDb(userId, teamId, apolloClient);
+
+    setDb(newDb);
+
+    return () => {
+      // todoc db.destroy()
+    };
+  }, [userId, teamId, apolloClient]);
+
+  return (
+    <reactContext.Provider value={db}>
+      {!!db && children}
+      {!db && <div>Loading...</div>}
+    </reactContext.Provider>
+  );
 }
 
 export function useDb() {

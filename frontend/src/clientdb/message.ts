@@ -2,16 +2,7 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb/entity/entity";
-import { createMutation, createQuery } from "~frontend/gql/utils";
-import {
-  MessageFragment,
-  Message_Insert_Input,
-  Message_Set_Input,
-  PushUpdateMessageMutation,
-  PushUpdateMessageMutationVariables,
-  UpdatedMessagesQuery,
-  UpdatedMessagesQueryVariables,
-} from "~gql";
+import { MessageFragment } from "~gql";
 
 import { attachmentEntity } from "./attachment";
 import { userIdContext } from "./context";
@@ -21,6 +12,7 @@ import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/getFragmentKeys";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
+import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
 const messageFragment = gql`
   fragment Message on message {
@@ -35,46 +27,6 @@ const messageFragment = gql`
   }
 `;
 
-const [, { subscribe: subscribeToMessageUpdates }] = createQuery<UpdatedMessagesQuery, UpdatedMessagesQueryVariables>(
-  () => gql`
-    ${messageFragment}
-
-    query UpdatedMessages($lastSyncDate: timestamptz) {
-      message(where: { created_at: { _gt: $lastSyncDate } }) {
-        ...Message
-      }
-    }
-  `
-);
-
-const [, { mutate: updateMessage }] = createMutation<PushUpdateMessageMutation, PushUpdateMessageMutationVariables>(
-  () => gql`
-    ${messageFragment}
-    mutation PushUpdateMessage($input: message_insert_input!) {
-      insert_message_one(object: $input, on_conflict: { constraint: message_id_key, update_columns: [content] }) {
-        ...Message
-      }
-    }
-  `
-);
-
-function convertChangedDataToInput({
-  id,
-  content,
-  replied_to_message_id,
-  topic_id,
-  type,
-}: Partial<MessageFragment>): Message_Insert_Input {
-  return {
-    id,
-    content,
-    replied_to_message_id,
-    topic_id,
-    type,
-    // user_id is managed by backend
-  };
-}
-
 export const messageEntity = defineEntity<MessageFragment>({
   name: "message",
   keyField: "id",
@@ -84,24 +36,16 @@ export const messageEntity = defineEntity<MessageFragment>({
   getDefaultValues({ getContextValue }) {
     return {
       __typename: "message",
-      user_id: getContextValue(userIdContext),
+      user_id: getContextValue(userIdContext) ?? undefined,
       replied_to_message_id: null,
       ...getGenericDefaultData(),
     };
   },
-  sync: {
-    pull({ lastSyncDate, updateItems }) {
-      console.log("pull messages");
-      return subscribeToMessageUpdates({ lastSyncDate: lastSyncDate.toISOString() }, (newData) => {
-        updateItems(newData.message);
-      });
-    },
-    async push(task) {
-      const result = await updateMessage({ input: convertChangedDataToInput(task) });
-
-      return result[0] ?? false;
-    },
-  },
+  sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
+    upsertIdKey: "message_id_key",
+    insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
+    updateColumns: ["content"],
+  }),
 }).addConnections((message, { getEntity }) => {
   return {
     get topic() {
