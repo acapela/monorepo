@@ -34,6 +34,11 @@ interface EntityClientConfig {
 
 const noop = () => void 0;
 
+/**
+ * Client is 'public api' surface for entity.
+ *
+ * It also initializes synchronization and persistance.
+ */
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
   { databaseUtilities, dbAdapterConfig }: EntityClientConfig
@@ -50,14 +55,17 @@ export function createEntityClient<Data, Connections>(
 
     const persistanceTable = await persistanceTablePromise;
 
+    // Instantly fetch all already persisted items
     const allItems = await persistanceTable.fetchAllItems();
 
     runInAction(() => {
+      // For all persisted items, create entities and add them
       allItems.forEach((item) => {
         client.create(item, "persistance");
       });
     });
 
+    // Persist all changes locally
     const cancelAdded = store.events.on("itemAdded", (entity) => {
       persistanceTable.saveItem(entity.getKey(), entity.getData());
     });
@@ -77,31 +85,19 @@ export function createEntityClient<Data, Connections>(
     };
   }
 
-  function getLastSyncDate() {
-    // TODO: optimize by creating index or cached value modified on each remove/update/addition
-    let initialDate = new Date(0);
-
-    store.items.forEach((item) => {
-      const nextItemUpdatedAt = item.getUpdatedAt();
-
-      if (nextItemUpdatedAt > initialDate) {
-        initialDate = nextItemUpdatedAt;
-      }
-    });
-
-    return new Date(initialDate.getTime());
-  }
-
+  // Initialize remote sync
   async function initializeSync() {
     const syncManager = createEntitySyncManager<Data, Connections>(
       store,
       {
         entitySyncConfig: definition.config.sync,
-        getLastSyncDate,
-        onPulledItems(items) {
+        // We're passing callbacks that connects sync layer with client
+        onItemsData(items) {
           runInAction(() => {
-            items.forEach((item) => {
-              client.createOrUpdate(item, "sync");
+            runInAction(() => {
+              items.forEach((item) => {
+                client.createOrUpdate(item, "sync");
+              });
             });
           });
         },
@@ -129,6 +125,10 @@ export function createEntityClient<Data, Connections>(
     };
   }
 
+  function createEntityWithData(input: Partial<Data>) {
+    return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });
+  }
+
   const client: EntityClient<Data, Connections> = {
     findById(id) {
       return store.findById(id);
@@ -137,13 +137,13 @@ export function createEntityClient<Data, Connections>(
       return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
     find(config) {
-      return store.query(config);
+      return store.find(config);
     },
     removeById(id, source) {
       return store.removeById(id, source);
     },
     create(input, source = "user") {
-      const newEntity = createEntity(input, definition, store, databaseUtilities, source);
+      const newEntity = createEntityWithData(input);
       return store.add(newEntity, source);
     },
     update(id, input, source = "user") {
@@ -163,7 +163,7 @@ export function createEntityClient<Data, Connections>(
         return client.update(id, input, source);
       }
 
-      const newEntity = createEntity(input, definition, store, databaseUtilities, source);
+      const newEntity = createEntityWithData(input);
       return store.add(newEntity, source);
     },
     destroy() {

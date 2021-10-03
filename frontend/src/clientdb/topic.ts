@@ -4,10 +4,10 @@ import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb/entity/entity";
 import { TopicFragment } from "~gql";
 
-import { teamIdContext, userIdContext } from "./context";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
+import { teamIdContext, userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 

@@ -7,6 +7,7 @@ import { MessageReactionFragment } from "~gql";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
+import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -35,17 +36,16 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
     insertColumns: ["id", "emoji", "user_id", "message_id"],
     updateColumns: ["emoji"],
   }),
-}).addConnections((message, { getEntity }) => {
+}).addConnections((reaction, { getEntity, getContextValue }) => {
   return {
     get message() {
-      return getEntity(messageEntity).findById(message.message_id);
+      return getEntity(messageEntity).findById(reaction.message_id);
     },
     get user() {
-      return getEntity(userEntity).findById(message.user_id);
+      return getEntity(userEntity).findById(reaction.user_id);
     },
     get isOwn() {
-      // TODOC
-      return false;
+      return getContextValue(userIdContext) === reaction.user_id;
     },
   };
 });

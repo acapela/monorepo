@@ -10,8 +10,7 @@ import { EntityStore } from "./store";
 import { EntityChangeSource } from "./types";
 
 type EntityMethods<Data, Connections> = {
-  clone(): Entity<Data, Connections>;
-  update(data: Partial<Data>, source?: EntityChangeSource): void;
+  update(data: Partial<Data>, source?: EntityChangeSource): boolean;
   getData(): Data;
   getKey(): string;
   getKeyName(): string;
@@ -36,13 +35,19 @@ export interface CreateEntityConfig {
   needsSync: boolean;
 }
 
-export function createEntity<D, C>(
-  data: Partial<D>,
-  definition: EntityDefinition<D, C>,
-  store: EntityStore<D, C>,
-  databaseUtilities: DatabaseUtilities,
-  source: EntityChangeSource
-): Entity<D, C> {
+interface CreateEntityInput<D, C> {
+  data: Partial<D>;
+  definition: EntityDefinition<D, C>;
+  store: EntityStore<D, C>;
+  databaseUtilities: DatabaseUtilities;
+}
+
+export function createEntity<D, C>({
+  data,
+  definition,
+  store,
+  databaseUtilities,
+}: CreateEntityInput<D, C>): Entity<D, C> {
   const { config, getConnections } = definition;
   const dataWithDefaults: D = { ...config.getDefaultValues?.(databaseUtilities), ...data } as D;
 
@@ -62,7 +67,26 @@ export function createEntity<D, C>(
       ...databaseUtilities,
     }) ?? ({} as C);
 
+  // Note: we dont want to add connections as {...data, ...connections}. Connections might have getters so it would simply unwrap them.
+
   const observableDataAndConnections = extendObservable(observableData, connections);
+
+  function touchUpdatedAt() {
+    // We dont know weather updated at is kept as date, string, or number stamp. Let's try to keep the type the same
+    const existingDate = entity[config.updatedAtField];
+
+    if (typeof existingDate === "string") {
+      Reflect.set(entity, config.updatedAtField, new Date().toISOString());
+      return;
+    }
+
+    if (typeof existingDate === "number") {
+      Reflect.set(entity, config.updatedAtField, new Date().getTime());
+      return;
+    }
+
+    Reflect.set(entity, config.updatedAtField, new Date());
+  }
 
   const entityMethods: EntityMethods<D, C> = {
     remove() {
@@ -90,29 +114,40 @@ export function createEntity<D, C>(
       const rawObject = toJS(entity);
       return pick(rawObject, rawDataKeys);
     },
-    clone() {
-      throw "un";
-    },
     update(input, source: EntityChangeSource = "user") {
+      let updatedFieldsCount = 0;
       runInAction(() => {
         typedKeys(input).forEach((keyToUpdate) => {
-          const value = input[keyToUpdate]!;
+          const value = input[keyToUpdate];
 
           if (value === undefined) return;
 
-          (entity as D)[keyToUpdate] = value;
+          const existingValue = entity[keyToUpdate];
+
+          if (existingValue === value) {
+            return;
+          }
+
+          updatedFieldsCount++;
+
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          (entity as D)[keyToUpdate] = value!;
         });
+
+        if (updatedFieldsCount) {
+          touchUpdatedAt();
+        }
       });
 
-      store.events.emit("itemUpdated", entity, source);
+      if (updatedFieldsCount) {
+        store.events.emit("itemUpdated", entity, source);
+      }
+
+      return updatedFieldsCount > 0;
     },
   };
 
   const entity: Entity<D, C> = extendObservable(observableDataAndConnections, entityMethods);
-
-  if (source === "user") {
-    // definition.config.sync.push?.()
-  }
 
   return entity;
 }

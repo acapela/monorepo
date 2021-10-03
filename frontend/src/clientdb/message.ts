@@ -5,12 +5,12 @@ import { EntityByDefinition } from "~clientdb/entity/entity";
 import { MessageFragment } from "~gql";
 
 import { attachmentEntity } from "./attachment";
-import { userIdContext } from "./context";
 import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
+import { userIdContext } from "./utils/context";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -45,7 +45,7 @@ export const messageEntity = defineEntity<MessageFragment>({
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
     updateColumns: ["content"],
   }),
-}).addConnections((message, { getEntity }) => {
+}).addConnections((message, { getEntity, getContextValue }) => {
   return {
     get topic() {
       return getEntity(topicEntity).findById(message.topic_id);
@@ -62,8 +62,7 @@ export const messageEntity = defineEntity<MessageFragment>({
       return getEntity(messageEntity).findById(message.replied_to_message_id);
     },
     get isOwnMessage() {
-      // TODOC
-      return true;
+      return getContextValue(userIdContext) === message.user_id;
     },
   };
 });

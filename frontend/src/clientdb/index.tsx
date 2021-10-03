@@ -1,13 +1,12 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
 import { createClientDb } from "~clientdb";
-import { useAssertCurrentUser, useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
 
 import { attachmentEntity } from "./attachment";
-import { apolloContext, teamIdContext, userIdContext } from "./context";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
 import { messageEntity } from "./message";
 import { messageReactionEntity } from "./messageReaction";
@@ -15,6 +14,7 @@ import { taskEntity } from "./task";
 import { teamEntity } from "./team";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
+import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
 const DB_VERSION = 4;
 

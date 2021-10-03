@@ -17,8 +17,8 @@ import {
 } from "~gql";
 import { assert } from "~shared/assert";
 
-import { apolloContext, teamIdContext } from "../context";
 import { analyzeFragment } from "./analyzeFragment";
+import { apolloContext, teamIdContext } from "./context";
 
 type ConstraintsTypeMap = {
   task: Task_Constraint;

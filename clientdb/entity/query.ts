@@ -1,16 +1,18 @@
-import { memoize, sortBy } from "lodash";
+import { sortBy } from "lodash";
 import { IObservableArray, computed } from "mobx";
 
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
+import { createEntityCache } from "./utils/entityCache";
 
 type EntityQueryFilter<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
+type EntityQuerySorter<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
 
 type EntityQueryResolvedConfig<Data, Connections> = {
   filter?: EntityQueryFilter<Data, Connections>;
-  sort?: (item: Entity<Data, Connections>) => SortResult;
+  sort?: EntityQuerySorter<Data, Connections>;
 };
 
 export type EntityQueryConfig<Data, Connections> =
@@ -45,21 +47,28 @@ function truePredicate() {
   return true;
 }
 
+/**
+ * Query keeps track of all items passing given query filter and sorter.
+ *
+ * It will automatically update results if 'source list' changes.
+ */
 export function createEntityQuery<Data, Connections>(
+  // Might be plain array or any observable array. This allows creating nested queries of previously created queries
   source: MaybeObservableArray<Entity<Data, Connections>>,
   config: EntityQueryConfig<Data, Connections>,
   definition: EntityDefinition<Data, Connections>
 ): EntityQuery<Data, Connections> {
-  const { filter, sort = definition.config.defaultSort } = resolveEntityQueryConfig(config);
+  const { filter, sort = definition.config.defaultSort as EntityQuerySorter<Data, Connections> } =
+    resolveEntityQueryConfig(config);
 
-  const memoizedFilter = memoize(filter ?? truePredicate);
-  const memoizedSort = sort ? memoize(sort) : null;
+  const cachedFilter = filter ? createEntityCache(filter) : null;
+  const cachedSort = sort ? createEntityCache(sort) : null;
 
   const passingItems = computed(() => {
-    const passedItems = source.filter(memoizedFilter);
+    const passedItems = cachedFilter ? source.filter(cachedFilter) : source.slice();
 
-    if (memoizedSort) {
-      return sortBy(passedItems, memoizedSort);
+    if (cachedSort) {
+      return sortBy(passedItems, cachedSort);
     }
 
     return passedItems;

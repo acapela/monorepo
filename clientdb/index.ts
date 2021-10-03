@@ -63,7 +63,7 @@ export function createClientDb<Entities extends EntitiesMap>(
 
     entityClient;
 
-    clientdb[entityKey] = entityClient;
+    clientdb[entityKey] = entityClient as EntityClientByDefinition<Entities[keyof Entities]>;
   });
 
   if (db && typeof window !== "undefined") {

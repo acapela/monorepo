@@ -26,9 +26,8 @@ export interface EntitySyncConfig<Data> {
 }
 
 interface EntitySyncManagerConfig<Data> {
-  onPulledItems(items: Data[]): void;
+  onItemsData(items: Data[]): void;
   onItemRemoveRequest(itemsIds: string[]): void;
-  getLastSyncDate(): Date;
   entitySyncConfig: EntitySyncConfig<Data>;
 }
 
@@ -36,6 +35,9 @@ interface EntitySyncManager<Data> {
   cancel: () => void;
 }
 
+/**
+ * Sync manager sets manages running sync operations and repeating them after previous sync.
+ */
 export function createEntitySyncManager<Data, Connections>(
   store: EntityStore<Data, Connections>,
   config: EntitySyncManagerConfig<Data>,
@@ -47,16 +49,18 @@ export function createEntitySyncManager<Data, Connections>(
     throw new Error("no sync");
   }
 
+  // Watch for all local changes and as a side effect - push them to remote.
   function initializePushSync() {
-    async function handlePushEntity(entity: Entity<Data, Connections>) {
-      const serverData = await store.definition.config.sync.push?.(entity, databaseUtilities);
+    async function handleEntityCreatedOrUpdatedByUser(entity: Entity<Data, Connections>) {
+      const entityDataFromServer = await store.definition.config.sync.push?.(entity, databaseUtilities);
 
-      if (!serverData) {
+      if (!entityDataFromServer) {
         console.warn(`Sync push failed`);
         return;
       }
 
-      entity.update(serverData, "sync");
+      // After pushing entity to remote, always treat 'server' version as 'official' and make sure our local version is equal.
+      entity.update(entityDataFromServer, "sync");
     }
     const cancelRemoves = store.events.on("itemRemoved", async (entity, source) => {
       if (source !== "user") return;
@@ -71,12 +75,12 @@ export function createEntitySyncManager<Data, Connections>(
     const cancelUpdates = store.events.on("itemUpdated", async (entity, source) => {
       if (source !== "user") return;
 
-      await handlePushEntity(entity);
+      await handleEntityCreatedOrUpdatedByUser(entity);
     });
 
     const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
       if (source !== "user") return;
-      await handlePushEntity(entity);
+      await handleEntityCreatedOrUpdatedByUser(entity);
     });
 
     return () => {
@@ -99,59 +103,48 @@ export function createEntitySyncManager<Data, Connections>(
     });
 
     /**
-     * Note, this is a bit interesting.
+     * Hasura has more precision in dates than it is possible with javascript. eg
+     * JS date of
+     * 8:30:00.234 in hasura can be 8:30:00.2348
      *
-     * So Hasura keeps a bit more 'precise' data than native JS Date can keep.
-     *
-     * Native JS Date keeps milliseconds as integer, while Hasura describes also decimal parts of millisecond.
-     *
-     * eg (real example) we might have date client side 2021-09-08T10:23:53.037, but hasura will actually keep and return: 2021-09-08T10:23:53.0372
-     *
-     * They're nearly the same, but 'nearly' makes all the difference. looking at sub-second part it is
-     * .037 vs .0372
-     * aka. 37ms vs 37.2ms
-     *
-     * This is very slight difference of 0.2ms, however it will break sync as we'll keep receiving the same item over and over because
-     * .0372 is greater than .037.
-     *
-     * As there is no simple way to keep more precision than integer millisecond in javascript Date, I decided to add 1 MS to last sync date which solves the issue.
-     *
-     * This introduces very unlikely risk of race condition when some element was updated eg 0.5ms (server time) after our last sync date.
-     * In such case we'd skip this element and never receive update about it until it is updated next time.
+     * It means hasura data is 'a bit' bigger and we need to account for that when using updated_at queries.
+     * If we did not, we'd have infinite loop of syncing the same item as it would always have bigger updated_at than last sync.
      */
     return new Date(initialDate.getTime() + 1);
   }
 
+  // Start waiting for new 'updates' data.
   function startNextUpdatesSync() {
-    function scheduleAgain() {
-      cancelCurrentUpdates = startNextUpdatesSync();
-    }
-
     const maybeCleanup = syncConfig.pullUpdated?.({
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
+        // Ignore empty update list (initial one is usually empty)
         if (!items.length) return;
 
         maybeCleanup?.();
         runInAction(() => {
-          config.onPulledItems(items);
+          config.onItemsData(items);
         });
 
-        scheduleAgain();
+        // After new update is flushed - start waiting for next update
+        startNextUpdatesSync();
       },
     });
 
-    return maybeCleanup;
+    cancelCurrentUpdates = maybeCleanup;
   }
 
+  /**
+   * As deleted items 'disappear' we cannot use their updated_at to know when we got last update.
+   *
+   * Thus we will keep track of it during the lifecycle of sync.
+   *
+   * Initially set it to latest item date we locally have.
+   */
   let lastRemoveSyncDate = getLastSyncDate();
 
   function startNextRemovesSync() {
-    function scheduleAgain() {
-      cancelCurrentDeletes = startNextRemovesSync();
-    }
-
     const maybeCleanup = syncConfig.pullRemoves?.({
       ...databaseUtilities,
       lastSyncDate: lastRemoveSyncDate,
@@ -165,14 +158,15 @@ export function createEntitySyncManager<Data, Connections>(
 
         lastRemoveSyncDate = lastUpdateDate;
 
-        scheduleAgain();
+        startNextRemovesSync();
       },
     });
 
-    return maybeCleanup;
+    cancelCurrentDeletes = maybeCleanup;
   }
 
   async function init() {
+    // Only perform sync on client side
     if (typeof document === "undefined") return;
 
     await syncConfig.initPromise?.();
