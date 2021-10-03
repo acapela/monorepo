@@ -63,7 +63,7 @@ export function createEntityQuery<Data, Connections>(
     }
 
     return passedItems;
-  });
+  }, {});
 
   return {
     get all() {

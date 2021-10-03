@@ -78,7 +78,7 @@ export const topicEntity = defineEntity<TopicFragment>({
     get owner() {
       return getEntity(userEntity).findById(topic.owner_id);
     },
-    messages: getEntity(messageEntity).query((message) => message.topic_id === topic.id),
+    messages: getEntity(messageEntity).find((message) => message.topic_id === topic.id),
     get isOwn() {
       return topic.owner_id === getContextValue(userIdContext);
     },

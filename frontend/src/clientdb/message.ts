@@ -54,9 +54,9 @@ export const messageEntity = defineEntity<MessageFragment>({
     get user() {
       return getEntity(userEntity).findById(message.user_id);
     },
-    tasks: getEntity(taskEntity).query((task) => task.message_id === message.id),
-    reactions: getEntity(messageReactionEntity).query((reaction) => reaction.message_id === message.id),
-    attachments: getEntity(attachmentEntity).query((attachment) => attachment.message_id === message.id),
+    tasks: getEntity(taskEntity).find((task) => task.message_id === message.id),
+    reactions: getEntity(messageReactionEntity).find((reaction) => reaction.message_id === message.id),
+    attachments: getEntity(attachmentEntity).find((attachment) => attachment.message_id === message.id),
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
 

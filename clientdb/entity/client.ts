@@ -13,7 +13,7 @@ export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
-  query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
+  find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   createOrUpdate(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
@@ -134,9 +134,9 @@ export function createEntityClient<Data, Connections>(
       return store.findById(id);
     },
     get all() {
-      return client.query({ filter: () => true, sort: definition.config.defaultSort }).all;
+      return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
-    query(config) {
+    find(config) {
       return store.query(config);
     },
     removeById(id, source) {

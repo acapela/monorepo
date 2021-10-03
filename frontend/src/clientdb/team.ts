@@ -40,6 +40,6 @@ export const teamEntity = defineEntity<TeamFragment>({
 }).addConnections((team, { getEntity }) => {
   const memberIds = team.membershipsIds.map((member) => member.user_id);
   return {
-    members: getEntity(userEntity).query((user) => memberIds.includes(user.id)),
+    members: getEntity(userEntity).find((user) => memberIds.includes(user.id)),
   };
 });
