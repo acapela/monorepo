@@ -15,11 +15,12 @@ import {
   Topic_Constraint,
   User_Constraint,
 } from "~gql";
+import { assert } from "~shared/assert";
 
 import { apolloContext, teamIdContext } from "../context";
 import { analyzeFragment } from "./analyzeFragment";
 
-type ConstraintsMap = {
+type ConstraintsTypeMap = {
   task: Task_Constraint;
   topic: Topic_Constraint;
   user: User_Constraint;
@@ -29,9 +30,19 @@ type ConstraintsMap = {
   attachment: Attachment_Constraint;
 };
 
-type UpsertConstrainForFragment<T> = T extends { __typename: keyof ConstraintsMap }
-  ? ConstraintsMap[T["__typename"]]
-  : never;
+type ConstraintsValueMap = {
+  [key in keyof ConstraintsTypeMap]: ConstraintsTypeMap[key];
+};
+
+const upsertConstraints: ConstraintsValueMap = {
+  task: "task_pkey",
+  topic: "thread_pkey",
+  user: "user_pkey",
+  team: "team_id_key",
+  message: "message_id_key",
+  message_reaction: "message_reaction_id_key",
+  attachment: "attachment_id_key",
+};
 
 const syncRequestFragment = gql`
   fragment SyncRequest on sync_request {
@@ -56,7 +67,6 @@ const pullSyncRequestsSubscription = gql`
 const gqlTag = gql;
 
 interface HasuraSyncSettings<T> {
-  upsertIdKey?: UpsertConstrainForFragment<T>;
   updateColumns: Array<keyof T>;
   insertColumns?: Array<keyof T>;
 }
@@ -67,11 +77,13 @@ function getFirstUpper(input: string) {
 
 export function createHasuraSyncSetupFromFragment<T>(
   fragment: DocumentNode,
-  { upsertIdKey, updateColumns, insertColumns }: HasuraSyncSettings<T>
+  { updateColumns, insertColumns }: HasuraSyncSettings<T>
 ): EntitySyncConfig<T> {
   const { name, type, keys } = analyzeFragment<T>(fragment);
 
-  const finalInsertPrimaryKey = upsertIdKey ?? `${type}_pkey`;
+  const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
+
+  assert(upsertConstraint, `${type} of entity has no upsert constraint defined`);
 
   const upperType = getFirstUpper(type);
 
@@ -141,7 +153,7 @@ export function createHasuraSyncSetupFromFragment<T>(
         { result: T },
         { input: Partial<T>; updateColumns: Array<keyof T>; constraint: string }
       >({
-        variables: { input, updateColumns, constraint: finalInsertPrimaryKey },
+        variables: { input, updateColumns, constraint: upsertConstraint },
         mutation: gqlTag`
           ${fragment}
           mutation PushUpdate${upperType}(

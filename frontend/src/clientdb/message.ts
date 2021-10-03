@@ -10,7 +10,7 @@ import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
 import { topicEntity } from "./topic";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -42,7 +42,6 @@ export const messageEntity = defineEntity<MessageFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
-    upsertIdKey: "message_id_key",
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
     updateColumns: ["content"],
   }),

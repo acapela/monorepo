@@ -5,7 +5,7 @@ import { EntityByDefinition } from "~clientdb/entity/entity";
 import { UserFragment } from "~gql";
 
 import { taskEntity } from "./task";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -31,7 +31,6 @@ export const userEntity = defineEntity<UserFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<UserFragment>(userFragment, {
-    upsertIdKey: "user_pkey",
     insertColumns: ["avatar_url", "name"],
     updateColumns: ["avatar_url", "name"],
   }),

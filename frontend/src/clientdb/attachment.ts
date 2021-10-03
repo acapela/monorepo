@@ -5,7 +5,7 @@ import { EntityByDefinition } from "~clientdb/entity/entity";
 import { AttachmentFragment } from "~gql";
 
 import { messageEntity } from "./message";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -32,7 +32,6 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<AttachmentFragment>(attachmentFragment, {
-    upsertIdKey: "attachment_id_key",
     insertColumns: ["id", "message_id", "mime_type", "original_name"],
     updateColumns: [],
   }),

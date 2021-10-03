@@ -7,7 +7,7 @@ import { TaskFragment } from "~gql";
 import { userIdContext } from "./context";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -39,7 +39,6 @@ export const taskEntity = defineEntity<TaskFragment>({
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
-    upsertIdKey: "task_pkey",
     insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
     updateColumns: ["done_at", "due_at", "seen_at", "type", "user_id"],
   }),

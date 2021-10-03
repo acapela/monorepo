@@ -6,7 +6,7 @@ import { MessageReactionFragment } from "~gql";
 
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -32,7 +32,6 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<MessageReactionFragment>(messageReactionFragment, {
-    upsertIdKey: "message_reaction_pkey",
     insertColumns: ["id", "emoji", "user_id", "message_id"],
     updateColumns: ["emoji"],
   }),

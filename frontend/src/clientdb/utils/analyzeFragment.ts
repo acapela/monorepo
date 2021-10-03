@@ -34,3 +34,9 @@ export function analyzeFragment<T>(fragment: DocumentNode) {
     keys,
   };
 }
+
+export function getFragmentKeys<FragmentType = Record<string, unknown>>(
+  fragment: DocumentNode
+): Array<keyof FragmentType> {
+  return analyzeFragment<FragmentType>(fragment).keys;
+}

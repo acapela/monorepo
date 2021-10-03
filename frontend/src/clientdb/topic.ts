@@ -7,7 +7,7 @@ import { TopicFragment } from "~gql";
 import { teamIdContext, userIdContext } from "./context";
 import { messageEntity } from "./message";
 import { userEntity } from "./user";
-import { getFragmentKeys } from "./utils/getFragmentKeys";
+import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
 
@@ -71,7 +71,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       "owner_id",
       "team_id",
     ],
-    upsertIdKey: "thread_pkey",
   }),
 }).addConnections((topic, { getEntity, getContextValue }) => {
   return {
