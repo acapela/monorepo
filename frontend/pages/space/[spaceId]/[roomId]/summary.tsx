@@ -1,24 +1,35 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 
 import { withServerSideAuthRedirect } from "~frontend/authentication/withServerSideAuthRedirect";
-import { clientdb } from "~frontend/clientdb";
 import { AppLayout } from "~frontend/layouts/AppLayout";
+import { useRoomWithClientErrorRedirects } from "~frontend/rooms/useRoomWithClientErrorRedirects";
 import { routes } from "~frontend/router";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { RoomSummaryView } from "~frontend/views/RoomView/RoomSummaryView";
+import { RoomSummaryPageQuery, RoomSummaryPageQueryVariables } from "~gql";
 
 const Page = () => {
   const { roomId, spaceId } = routes.spaceRoomSummary.useAssertParams().route;
+  const { data, loading } = useQuery<RoomSummaryPageQuery, RoomSummaryPageQueryVariables>(
+    gql`
+      ${RoomSummaryView.fragments.room}
 
-  // TODOC
-  // useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom: Boolean(data && data.room), loading });
+      query RoomSummaryPage($roomId: uuid!) {
+        room: room_by_pk(id: $roomId) {
+          ...RoomSummaryView_room
+        }
+      }
+    `,
+    { variables: { roomId } }
+  );
+  useRoomWithClientErrorRedirects({ spaceId, roomId, hasRoom: Boolean(data && data.room), loading });
 
-  const room = clientdb.room.findById(roomId);
+  if (!data || !data.room) {
+    return null; // Left blank on purpose. Won't render for clients.
+  }
 
-  // TODOC
-  if (!room) return <div>no room</div>;
-
-  return <RoomSummaryView room={room} />;
+  return <RoomSummaryView room={data.room} />;
 };
 
 export const getServerSideProps = withServerSideAuthRedirect();

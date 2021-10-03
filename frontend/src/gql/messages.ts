@@ -36,6 +36,7 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
 
     fragment MessageDetailedInfo on message {
       ...MessageBasicInfo
+
       message_attachments {
         ...AttachmentDetailedInfo
       }
