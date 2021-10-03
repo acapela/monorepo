@@ -37,9 +37,7 @@ export const userEntity = defineEntity<UserFragment>({
   }),
 }).addConnections((user, { getEntity }) => {
   return {
-    get tasks() {
-      return getEntity(taskEntity).query((task) => task.user_id === user.id);
-    },
+    tasks: getEntity(taskEntity).query((task) => task.user_id === user.id),
   };
 });
 
