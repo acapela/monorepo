@@ -112,11 +112,12 @@ export function createHasuraSyncSetupFromFragment<T>(
     pullUpdated({ lastSyncDate, updateItems, getContextValue }) {
       const apollo = getContextValue(apolloContext);
 
-      const observer = apollo.subscribe<{ updates: T[] }>({
+      const observer = apollo.subscribe<{ updates: T[] }, { lastSyncDate: Date }>({
+        variables: { lastSyncDate },
         query: gqlTag`
         ${fragment}
-        subscription Pull${upperType}Updates {
-          updates: ${type}(where: { updated_at: { _gt: "${lastSyncDate.toISOString()}" } }) {
+        subscription Pull${upperType}Updates($lastSyncDate: timestamptz!) {
+          updates: ${type}(where: { updated_at: { _gt: $lastSyncDate } }) {
             ...${name}
           }
         }
@@ -136,16 +137,23 @@ export function createHasuraSyncSetupFromFragment<T>(
     async push(entity, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
       const input = getPushInputFromData(entity);
-      const result = await apollo.mutate<{ result: T }, { input: Partial<T> }>({
-        variables: { input },
+      const result = await apollo.mutate<
+        { result: T },
+        { input: Partial<T>; updateColumns: Array<keyof T>; constraint: string }
+      >({
+        variables: { input, updateColumns, constraint: finalInsertPrimaryKey },
         mutation: gqlTag`
           ${fragment}
-          mutation PushUpdate${upperType}($input: ${type}_insert_input!) {
+          mutation PushUpdate${upperType}(
+            $input: ${type}_insert_input!, 
+            $updateColumns: [${type}_update_column!]!, 
+            $constraint: ${type}_constraint!
+          ) {
             result: insert_${type}_one(
               object: $input
               on_conflict: {
-                constraint: ${finalInsertPrimaryKey}
-                update_columns: [${updateColumns.join(", ")}]
+                constraint: $constraint
+                update_columns: $updateColumns
               }
             ) {
               ...${name}
