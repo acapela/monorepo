@@ -34,24 +34,14 @@ export function createEventsEmmiter<EventsMap extends Record<string, unknown[]>>
   }
 
   function emit<N extends keyof EventsMap>(name: N, ...data: EventsMap[N]) {
-    function doEmit() {
-      if (debug) {
-        console.info(`Event`, name, data);
-      }
-      const listeners = getHandlersForEvent(name);
-
-      Array.from(listeners).forEach((listener) => {
-        listener(...data);
-      });
+    if (debug) {
+      console.info(`Event`, name, data);
     }
+    const listeners = getHandlersForEvent(name);
 
-    return doEmit();
-
-    // if (!nextTick) {
-    //   return doEmit();
-    // }
-
-    // setImmediate(doEmit);
+    Array.from(listeners).forEach((listener) => {
+      listener(...data);
+    });
   }
 
   return {

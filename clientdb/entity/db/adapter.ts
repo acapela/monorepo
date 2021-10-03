@@ -1,3 +1,7 @@
+/**
+ * This module defines interfaces for persistance database adapter
+ */
+
 export interface DbEntityInfo {
   name: string;
   keyField: string;
@@ -30,7 +34,6 @@ export interface LocalDbTableAdapter<Data> {
   saveItem(key: string, input: Data): Promise<boolean>;
   removeItem(key: string): Promise<boolean>;
   fetchAllItems(): Promise<Data[]>;
-  removeTable(): Promise<boolean>;
   clearTable(): Promise<boolean>;
 }
 

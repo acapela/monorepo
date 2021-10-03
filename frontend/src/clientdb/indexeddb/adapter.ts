@@ -5,9 +5,14 @@ import { DbInfo, LocalDbAdapter } from "~clientdb/entity/db/adapter";
 import { assert } from "~shared/assert";
 import { createResolvablePromise } from "~shared/promises";
 
+/**
+ * This is IndexedDB adapter for clientdb that allows persisting all the data locally.
+ */
+
 async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
   const db = await openDB(`${dbPrefix}-clientdb`, dbVersion, {
     upgrade(database, oldVersion, newVersion) {
+      // Each time new version of database is detected - wipe out entire data and re-create it
       console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
       for (const existingStore of database.objectStoreNames) {
         database.deleteObjectStore(existingStore);
@@ -50,8 +55,6 @@ export function createIndexedDbAdapter(): LocalDbAdapter {
         return await getTableTransaction(name, keyField as string);
       }
 
-      const db = await dbPromise;
-
       return {
         async clearTable() {
           const tr = await getTransaction();
@@ -65,11 +68,6 @@ export function createIndexedDbAdapter(): LocalDbAdapter {
         async removeItem(itemId) {
           const tr = await getTransaction();
           await tr.delete(itemId);
-          return true;
-        },
-        async removeTable() {
-          // const tr = await getTransaction()
-          await db.deleteObjectStore(name);
           return true;
         },
         async saveItem(itemId, data) {
