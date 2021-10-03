@@ -4,21 +4,22 @@ import { IObservableArray, computed } from "mobx";
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 
-type EntityQueryFilter<Data> = (item: Data) => boolean;
+type EntityQueryFilter<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
 
-type EntityQueryResolvedConfig<Data> = {
-  filter?: EntityQueryFilter<Data>;
-  sort?: (item: Data) => SortResult;
+type EntityQueryResolvedConfig<Data, Connections> = {
+  filter?: EntityQueryFilter<Data, Connections>;
+  sort?: (item: Entity<Data, Connections>) => SortResult;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type EntityQueryConfig<Data, Connections> = EntityQueryFilter<Data> | EntityQueryResolvedConfig<Data>;
+export type EntityQueryConfig<Data, Connections> =
+  | EntityQueryFilter<Data, Connections>
+  | EntityQueryResolvedConfig<Data, Connections>;
 
 function resolveEntityQueryConfig<Data, Connections>(
   config: EntityQueryConfig<Data, Connections>
-): EntityQueryResolvedConfig<Data> {
+): EntityQueryResolvedConfig<Data, Connections> {
   if (typeof config === "function") {
     return {
       filter: config,
