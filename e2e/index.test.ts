@@ -15,6 +15,7 @@ test("view spaces", async ({ page, db, auth }) => {
 
 test("create a room", async ({ page, db, auth }) => {
   await auth.login(db.user2);
+  await page.goto(basePath + "/dashboard");
   await createAndGotoRoom(page, { spaceName: db.space.name, roomName: "Roomba" });
 });
 
