@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb/entity/entity";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { MessageReactionFragment } from "~gql";
 
 import { messageEntity } from "./message";

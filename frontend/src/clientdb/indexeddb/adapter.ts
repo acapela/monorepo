@@ -1,7 +1,7 @@
 import { IDBPDatabase, openDB } from "idb";
 import { memoize } from "lodash";
 
-import { DbInfo, LocalDbAdapter } from "~clientdb/entity/db/adapter";
+import { DbInfo, LocalDbAdapter } from "~clientdb";
 import { assert } from "~shared/assert";
 import { createResolvablePromise } from "~shared/promises";
 

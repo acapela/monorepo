@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb/entity/entity";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
 
 import { messageEntity } from "./message";
@@ -49,16 +48,6 @@ export const topicEntity = defineEntity<TopicFragment>({
     };
   },
   sync: createHasuraSyncSetupFromFragment<TopicFragment>(topicFragment, {
-    updateColumns: [
-      "archived_at",
-      "closed_at",
-      "closed_by_user_id",
-      "closing_summary",
-      "index",
-      "name",
-      "owner_id",
-      "slug",
-    ],
     insertColumns: [
       "id",
       "archived_at",
@@ -70,6 +59,16 @@ export const topicEntity = defineEntity<TopicFragment>({
       "closing_summary",
       "owner_id",
       "team_id",
+    ],
+    updateColumns: [
+      "archived_at",
+      "closed_at",
+      "closed_by_user_id",
+      "closing_summary",
+      "index",
+      "name",
+      "owner_id",
+      "slug",
     ],
   }),
 }).addConnections((topic, { getEntity, getContextValue }) => {

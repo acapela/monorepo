@@ -25,13 +25,6 @@ export type EntityByDefinition<Def> = Def extends EntityDefinition<infer Data, i
   ? Entity<Data, Connections>
   : never;
 
-export type EntityFromDefinition<Def extends EntityDefinition<unknown, unknown>> = Def extends EntityDefinition<
-  infer Data,
-  infer Connections
->
-  ? Entity<Data, Connections>
-  : never;
-
 export interface CreateEntityConfig {
   needsSync: boolean;
 }

@@ -1,3 +1,5 @@
+import { mapValues } from "lodash";
+
 import { typedKeys } from "~shared/object";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
@@ -6,7 +8,6 @@ import { ClientAdapterConfig, DbEntityInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
-import { mapRecord } from "./entity/utils/mapRecord";
 
 export * from "./entity/index";
 
@@ -51,7 +52,7 @@ export function createClientDb<Entities extends EntitiesMap>(
     },
   };
 
-  const entityClients = mapRecord(entitiesMap, (definition) => {
+  const entityClients = mapValues(entitiesMap, (definition) => {
     const entityClient = createEntityClient(definition, {
       databaseUtilities: databaseUtilities,
       dbAdapterConfig: db,

@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
-import { EntityByDefinition } from "~clientdb/entity/entity";
+import { EntityByDefinition } from "~clientdb";
 import { UserFragment } from "~gql";
 
 import { taskEntity } from "./task";

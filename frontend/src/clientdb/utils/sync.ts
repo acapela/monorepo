@@ -3,7 +3,7 @@ import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 import { max, pick } from "lodash";
 
-import { EntitySyncConfig } from "~clientdb/entity/sync";
+import { EntitySyncConfig } from "~clientdb";
 import {
   Attachment_Constraint,
   Message_Constraint,

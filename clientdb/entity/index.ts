@@ -1,2 +1,5 @@
 export { defineEntity } from "./definition";
-export type { EntityFromDefinition } from "./entity";
+export * from "./entity";
+export * from "./db/adapter";
+export * from "./context";
+export * from "./sync";
