@@ -14,14 +14,6 @@ object_relationships:
 - name: team
   using:
     foreign_key_constraint_on: team_id
-array_relationships:
-- name: members
-  using:
-    foreign_key_constraint_on:
-      column: space_id
-      table:
-        name: space_member
-        schema: public
 insert_permissions:
 - permission:
     backend_only: false
