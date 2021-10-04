@@ -1,5 +1,3 @@
-import { map } from "lodash";
-
 import { typedKeys } from "~shared/object";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
@@ -28,17 +26,6 @@ export function createClientDb<Entities extends EntitiesMap>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
 
-  const entityClients = mapRecord(entitiesMap, (definition) => {
-    const entityClient = createEntityClient(definition, {
-      databaseUtilities: databaseUtilities,
-      dbAdapterConfig: db,
-    });
-
-    definitionClientMap.set(definition, entityClient);
-
-    return entityClient;
-  }) as ClientDb<Entities>;
-
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const client = definitionClientMap.get(definition);
@@ -63,6 +50,17 @@ export function createClientDb<Entities extends EntitiesMap>(
       return correspondingContextInstance.value as V;
     },
   };
+
+  const entityClients = mapRecord(entitiesMap, (definition) => {
+    const entityClient = createEntityClient(definition, {
+      databaseUtilities: databaseUtilities,
+      dbAdapterConfig: db,
+    });
+
+    definitionClientMap.set(definition, entityClient);
+
+    return entityClient;
+  }) as ClientDb<Entities>;
 
   if (db && typeof window !== "undefined") {
     const entitiesInfo = typedKeys(entitiesMap).map((entityName): DbEntityInfo => {

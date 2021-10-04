@@ -31,6 +31,7 @@ interface EntitySyncManagerConfig<Data> {
   entitySyncConfig: EntitySyncConfig<Data>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface EntitySyncManager<Data> {
   cancel: () => void;
 }

@@ -9,6 +9,7 @@ import { DatabaseUtilities } from "./entitiesConnections";
 import { EntityStore } from "./store";
 import { EntityChangeSource } from "./types";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type EntityMethods<Data, Connections> = {
   update(data: Partial<Data>, source?: EntityChangeSource): boolean;
   getData(): Data;

@@ -73,7 +73,7 @@ const ClientDbPlayground = observer(function ClientDbPlayground(): JSX.Element {
                     })}
                   </ul>
                   <button
-                    onClick={(event) => {
+                    onClick={() => {
                       const content = prompt("name") ?? "new message";
 
                       db.message.create({ topic_id: topic.id, type: "TEXT", content: createMessageContent(content) });
@@ -118,4 +118,3 @@ const UIHolder = styled.div`
     font-weight: 700;
   }
 `;
-const UITopic = styled.div``;
