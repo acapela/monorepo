@@ -39,8 +39,6 @@ hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDelet
 hasuraEvents.addHandler("transcription_updates", ["INSERT", "UPDATE"], handleTranscriptionUpdates);
 hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
-// 2
-
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);
 });
