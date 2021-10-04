@@ -66,22 +66,38 @@ export function createEntitySyncManager<Data, Connections>(
     const cancelRemoves = store.events.on("itemRemoved", async (entity, source) => {
       if (source !== "user") return;
 
-      const result = await config.entitySyncConfig.remove?.(entity, databaseUtilities);
+      function restoreEntity() {
+        store.add(entity, "sync");
+      }
 
-      if (result !== true) {
-        // TODO: Handle restore local entity in case of failure
+      try {
+        const result = await config.entitySyncConfig.remove?.(entity, databaseUtilities);
+        if (result !== true) {
+          restoreEntity();
+          // TODO: Handle restore local entity in case of failure
+        }
+      } catch (error) {
+        restoreEntity();
       }
     });
 
-    const cancelUpdates = store.events.on("itemUpdated", async (entity, source) => {
+    const cancelUpdates = store.events.on("itemUpdated", async (entity, source, dataBefore) => {
       if (source !== "user") return;
 
-      await handleEntityCreatedOrUpdatedByUser(entity);
+      try {
+        await handleEntityCreatedOrUpdatedByUser(entity);
+      } catch (error) {
+        entity.update(dataBefore, "sync");
+      }
     });
 
     const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
       if (source !== "user") return;
-      await handleEntityCreatedOrUpdatedByUser(entity);
+      try {
+        await handleEntityCreatedOrUpdatedByUser(entity);
+      } catch (error) {
+        entity.remove("sync");
+      }
     });
 
     return () => {

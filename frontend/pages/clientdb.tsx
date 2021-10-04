@@ -24,7 +24,7 @@ const ClientDbPlayground = observer(function ClientDbPlayground(): JSX.Element {
       <div>
         Topics
         <ul>
-          {db.topic.all.map((topic) => {
+          {db.topic.all.map((topic, topicIndex) => {
             return (
               <li key={topic.id}>
                 <span
@@ -67,6 +67,17 @@ const ClientDbPlayground = observer(function ClientDbPlayground(): JSX.Element {
                             }}
                           >
                             Remove message
+                          </button>
+                          <button
+                            onClick={() => {
+                              const previousTopic = db.topic.all[topicIndex - 1];
+
+                              if (!previousTopic) return;
+
+                              message.update({ topic_id: previousTopic.id });
+                            }}
+                          >
+                            Move to previous topic
                           </button>
                         </li>
                       );

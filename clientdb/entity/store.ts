@@ -21,7 +21,7 @@ export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknow
 
 type EntityStoreEvents<Data, Connections> = {
   itemAdded: [Entity<Data, Connections>, EntityChangeSource];
-  itemUpdated: [Entity<Data, Connections>, EntityChangeSource];
+  itemUpdated: [entity: Entity<Data, Connections>, source: EntityChangeSource, dataBefore: Data];
   itemRemoved: [Entity<Data, Connections>, EntityChangeSource];
 };
 

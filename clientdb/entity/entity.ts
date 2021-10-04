@@ -16,7 +16,7 @@ type EntityMethods<Data, Connections> = {
   getKey(): string;
   getKeyName(): string;
   getUpdatedAt(): Date;
-  remove(): void;
+  remove(source?: EntityChangeSource): void;
 };
 
 export type Entity<Data, Connections> = Data & Connections & EntityMethods<Data, Connections>;
@@ -90,8 +90,8 @@ export function createEntity<D, C>({
   }
 
   const entityMethods: EntityMethods<D, C> = {
-    remove() {
-      store.removeById(entityMethods.getKey());
+    remove(source) {
+      store.removeById(entityMethods.getKey(), source);
     },
     getKey() {
       return `${entity[config.keyField]}`;
@@ -117,6 +117,7 @@ export function createEntity<D, C>({
     },
     update(input, source: EntityChangeSource = "user") {
       let updatedFieldsCount = 0;
+      const dataNow = entity.getData();
       runInAction(() => {
         typedKeys(input).forEach((keyToUpdate) => {
           const value = input[keyToUpdate];
@@ -141,7 +142,7 @@ export function createEntity<D, C>({
       });
 
       if (updatedFieldsCount) {
-        store.events.emit("itemUpdated", entity, source);
+        store.events.emit("itemUpdated", entity, source, dataNow);
       }
 
       return updatedFieldsCount > 0;
