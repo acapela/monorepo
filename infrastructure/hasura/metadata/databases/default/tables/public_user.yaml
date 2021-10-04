@@ -22,13 +22,6 @@ array_relationships:
       remote_table:
         name: message
         schema: public
-- name: notifications
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: notification
-        schema: public
 - name: owned_teams
   using:
     foreign_key_constraint_on:
@@ -42,13 +35,6 @@ array_relationships:
       column: user_id
       table:
         name: team_member
-        schema: public
-- name: topic_memberships
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: topic_member
         schema: public
 select_permissions:
 - permission:
