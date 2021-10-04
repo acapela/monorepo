@@ -8,9 +8,6 @@ object_relationships:
 - name: notification
   using:
     foreign_key_constraint_on: notification_id
-- name: room
-  using:
-    foreign_key_constraint_on: room_id
 select_permissions:
 - permission:
     columns:

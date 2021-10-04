@@ -14,48 +14,6 @@ object_relationships:
 - name: used_by_user
   using:
     foreign_key_constraint_on: used_by_user_id
-insert_permissions:
-- permission:
-    backend_only: false
-    check:
-      room:
-        members:
-          user_id:
-            _eq: X-Hasura-User-Id
-    columns:
-    - email
-    - room_id
-    - team_id
-    set:
-      inviting_user_id: x-hasura-User-Id
-  role: user
-select_permissions:
-- permission:
-    columns:
-    - created_at
-    - email
-    - id
-    - inviting_user_id
-    - room_id
-    - team_id
-    - token
-    - updated_at
-    - used_at
-    - used_by_user_id
-    filter:
-      room:
-        members:
-          user_id:
-            _eq: X-Hasura-User-Id
-  role: user
-delete_permissions:
-- permission:
-    filter:
-      room:
-        members:
-          user_id:
-            _eq: X-Hasura-User-Id
-  role: user
 event_triggers:
 - definition:
     enable_manual: false

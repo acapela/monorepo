@@ -13,15 +13,13 @@ insert_permissions:
     backend_only: false
     check:
       topic:
-        room:
-          space:
-            team:
-              memberships:
-                _and:
-                - user_id:
-                    _eq: X-Hasura-User-Id
-                - user_id:
-                    _ceq: user_id
+        team:
+          memberships:
+            _and:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - user_id:
+                _ceq: user_id
     columns:
     - topic_id
     - user_id
@@ -33,21 +31,17 @@ select_permissions:
     - user_id
     filter:
       topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
     filter:
       topic:
-        room:
-          space:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
   role: user
