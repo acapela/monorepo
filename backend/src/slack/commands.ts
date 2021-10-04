@@ -68,7 +68,7 @@ export function setupSlackCommands(slackApp: SlackBolt.App) {
       topicMessage,
       slackUserIdsWithRequestType,
     });
-    const topicURL = `${process.env.FRONTEND_URL}/dashboard/${topic.id}`;
+    const topicURL = `${process.env.FRONTEND_URL}/${topic.id}`;
     await ack();
     await respond({
       response_type: "in_channel",
