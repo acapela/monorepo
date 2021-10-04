@@ -241,7 +241,6 @@ const UIEditorContent = styled.div<{}>`
   flex-grow: 1;
   ${richEditorContentCss};
 
-  max-height: 25vh;
   min-height: 16px;
   overflow: auto;
   cursor: text;
