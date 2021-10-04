@@ -36,13 +36,6 @@ array_relationships:
       table:
         name: team
         schema: public
-- name: space_memberships
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: space_member
-        schema: public
 - name: team_memberships
   using:
     foreign_key_constraint_on:

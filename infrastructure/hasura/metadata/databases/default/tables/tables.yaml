@@ -10,8 +10,6 @@
 - "!include public_notification_topic_assigned.yaml"
 - "!include public_notification_topic_closed.yaml"
 - "!include public_notification_topic_mention.yaml"
-- "!include public_space.yaml"
-- "!include public_space_member.yaml"
 - "!include public_sync_request.yaml"
 - "!include public_task.yaml"
 - "!include public_team.yaml"

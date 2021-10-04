@@ -29,13 +29,6 @@ array_relationships:
       table:
         name: team_member
         schema: public
-- name: spaces
-  using:
-    foreign_key_constraint_on:
-      column: team_id
-      table:
-        name: space
-        schema: public
 - name: topics
   using:
     manual_configuration:
