@@ -16,12 +16,7 @@ interface Props {
   results: SearchResultsQuery;
 }
 
-type ResultItem = (
-  | SearchResultsQuery["spaces"]
-  | SearchResultsQuery["rooms"]
-  | SearchResultsQuery["topics"]
-  | SearchResultsQuery["messages"]
-)[0];
+type ResultItem = (SearchResultsQuery["topics"] | SearchResultsQuery["messages"])[0];
 
 function assertTypename(typename: ResultItem["__typename"]): asserts typename {
   assert(typename, "__typename should always be set by apollo");
@@ -30,59 +25,21 @@ function assertTypename(typename: ResultItem["__typename"]): asserts typename {
 function getItemURL(result: ResultItem): string {
   assertTypename(result.__typename);
   switch (result.__typename) {
-    case "space":
-      return routes.space.getUrlWithParams({ spaceId: result.id });
-
-    case "room":
-      return routes.spaceRoom.getUrlWithParams({ spaceId: result.space.id, roomId: result.id });
-
     case "topic": {
-      const { room } = result;
-      return room
-        ? routes.spaceRoomTopic.getUrlWithParams({
-            spaceId: room.space.id,
-            roomId: room.id,
-            topicId: result.id,
-          })
-        : routes.topic.getUrlWithParams({ topicId: result.id });
+      return routes.topic.getUrlWithParams({ topicId: result.id });
     }
 
     case "message": {
       const {
-        topic: { room, id: topicId },
+        topic: { id: topicId },
       } = result;
-      return room
-        ? routes.spaceRoomTopic.getUrlWithParams({ spaceId: room.space.id, roomId: room.id, topicId })
-        : routes.topic.getUrlWithParams({ topicId });
-    }
-  }
-}
-
-function composeBreadcrumb(result: ResultItem): string[] {
-  assertTypename(result.__typename);
-  switch (result.__typename) {
-    case "space":
-      return [result.name];
-
-    case "room":
-      return [result.space.name, result.name];
-
-    case "topic": {
-      const { room } = result;
-      return room ? [room.space.name, room.name, result.name] : [result.name];
-    }
-
-    case "message": {
-      const {
-        topic: { room, ...topic },
-      } = result;
-      return room ? [room.space.name, room.name, topic.name] : [topic.name];
+      return routes.topic.getUrlWithParams({ topicId });
     }
   }
 }
 
 function SearchResultBreadcrumb({ result }: { result: ResultItem }) {
-  return <UISearchResultBreadcrumb>{composeBreadcrumb(result).join("/")}</UISearchResultBreadcrumb>;
+  return <UISearchResultBreadcrumb>{"topic" in result ? result.topic.name : result.name}</UISearchResultBreadcrumb>;
 }
 
 function SearchResultMatch({ result, term }: { result: ResultItem; term: string }) {
@@ -99,7 +56,7 @@ function SearchResultMatch({ result, term }: { result: ResultItem; term: string 
 
 // TODO: Attempt to use ItemsDropdown when we have a clearer idea of where search is going to move
 const PureSearchResults = ({ className, term, results }: Props) => {
-  const allItems = [...results.spaces, ...results.rooms, ...results.topics, ...results.messages].slice(0, 10);
+  const allItems = [...results.topics, ...results.messages].slice(0, 10);
   const { activeItem: highlightedItem, setActiveItem: setHighlightedItem } = useListWithNavigation(allItems, {
     enableKeyboard: true,
   });

@@ -17,4 +17,4 @@ export function DashboardPage() {
   return <DashboardView />;
 }
 
-assignPageLayout(DashboardPage, AppLayout, { legacyHideNavigation: true });
+assignPageLayout(DashboardPage, AppLayout);

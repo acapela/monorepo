@@ -5,8 +5,6 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { removeTeamInvitation, removeTeamMember } from "~frontend/gql/teams";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import { InvitationPendingIndicator } from "~frontend/ui/MembersManager/InvitationPendingIndicator";
-import { UISelectGridContainer } from "~frontend/ui/MembersManager/UISelectGridContainer";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { CurrentTeamMembersManagerSubscription, CurrentTeamMembersManagerSubscriptionVariables } from "~gql";
@@ -14,6 +12,7 @@ import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
 import { ExitTeamButton } from "./ExitTeamButton";
+import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
 import { SlackInstallationButton } from "./SlackInstallationButton";
@@ -161,4 +160,16 @@ const UIActionsHolder = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+const UISelectGridContainer = styled.div<{}>`
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  width: 100%;
+  padding: 8px;
+  border: 1px solid ${theme.colors.layout.softLine()};
+  ${theme.borderRadius.menu}
 `;

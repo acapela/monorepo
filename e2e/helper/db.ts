@@ -68,22 +68,8 @@ export async function setupDatabase() {
     ],
   });
 
-  const space = await db.space.create({
-    data: {
-      name: PREFIX + "space is noise",
-      slug: PREFIX + "spacenoise",
-      team_id: team.id,
-      creator_id: user2.id,
-    },
-  });
-
   return {
-    data: {
-      user1,
-      user2,
-      space,
-      team,
-    },
+    data: { user1, user2, team },
     async cleanup() {
       await db.user.updateMany({ where: { id: { in: [user1.id, user2.id] } }, data: { current_team_id: null } });
       // Prisma does its own constraint checking, so we have to go raw SQL to make deletion cascade
