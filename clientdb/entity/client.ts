@@ -94,10 +94,8 @@ export function createEntityClient<Data, Connections>(
         // We're passing callbacks that connects sync layer with client
         onItemsData(items) {
           runInAction(() => {
-            runInAction(() => {
-              items.forEach((item) => {
-                client.createOrUpdate(item, "sync");
-              });
+            items.forEach((item) => {
+              client.createOrUpdate(item, "sync");
             });
           });
         },
