@@ -18,6 +18,7 @@ type SingleTriggerHandlers = Map<OperationType, OperationTypeHandler<any>[]>;
 
 export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
   const triggerHandlersMap = new Map<string, SingleTriggerHandlers>();
+  const anyEventHandlers = new Set<OperationTypeHandler<unknown>>();
   type TriggerName = keyof T & string;
 
   function getTriggerOperationTypeHandlers(triggerName: string, operationType: OperationType) {
@@ -41,6 +42,10 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
     }
   }
 
+  function addAnyEventHandler(handler: OperationTypeHandler<unknown>) {
+    anyEventHandlers.add(handler);
+  }
+
   async function handleHasuraEvent<T>(event: RawHasuraEvent<T>) {
     const triggerName = event.trigger.name;
     const operationType = event.event.op;
@@ -53,6 +58,10 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
       log.warn(`Failed to normalize hasura event`, { event });
       return;
     }
+
+    anyEventHandlers.forEach((anyEventHandler) => {
+      anyEventHandler(normalizedEvent);
+    });
 
     for (const handler of operationTypeHandlers) {
       await handler(normalizedEvent);
@@ -96,5 +105,6 @@ export function createHasuraEventsHandler<T extends EntitiesEventsMapBase>() {
   return {
     addHandler,
     requestHandler,
+    addAnyEventHandler,
   };
 }

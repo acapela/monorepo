@@ -15,6 +15,7 @@ import { ThemeProvider } from "styled-components";
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
 import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
+import { ClientDbProvider } from "~frontend/clientdb";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
 import { global } from "~frontend/styles/global";
 import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
@@ -79,14 +80,16 @@ export default function App({
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
             <ThemeProvider theme={getTheme("default")}>
               <CurrentTeamIdProvider>
-                <PromiseUIRenderer />
-                <TooltipsRenderer />
-                <ToastsRenderer />
-                <AnimatePresence>
-                  <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                    {renderWithPageLayout(Component, pageProps)}
-                  </PresenceAnimator>
-                </AnimatePresence>
+                <ClientDbProvider>
+                  <PromiseUIRenderer />
+                  <TooltipsRenderer />
+                  <ToastsRenderer />
+                  <AnimatePresence>
+                    <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                      {renderWithPageLayout(Component, pageProps)}
+                    </PresenceAnimator>
+                  </AnimatePresence>
+                </ClientDbProvider>
               </CurrentTeamIdProvider>
             </ThemeProvider>
           </ApolloProvider>

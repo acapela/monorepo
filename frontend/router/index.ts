@@ -5,17 +5,14 @@ import { createRoute } from "./create";
 export { RouteLink } from "./RouteLink";
 
 export const routes = {
-  // <temporary-test>
   newRequest: createRoute("/new-request", {}),
-  // </temporary-test>
-
-  home: createRoute("/", {}),
-  dashboard: createRoute("/dashboard", {}),
-  dashboardNewTopic: createRoute("/dashboard/new", {}),
-  dashboardTopic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
+  home: createRoute("/dashboard", {}),
+  dashboard: createRoute("/", {}),
+  dashboardNewTopic: createRoute("/new", {}),
+  dashboardTopic: createRoute("/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
-  topic: createRoute("/dashboard/[topicId]", { topicId: "string" }),
+  topic: createRoute("/[topicId]", { topicId: "string" }),
 
   // <likely-to-be-deprecated>
   spaces: createRoute("/spaces", {}),

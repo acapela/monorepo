@@ -1,114 +1,79 @@
 import * as SlackBolt from "@slack/bolt";
 
+import { createTopicForSlackUsers } from "~backend/src/slack/createTopicForSlackUsers";
 import { db } from "~db";
+import { assert } from "~shared/assert";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
-import { isNotNullish } from "~shared/nullish";
+import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
+import { REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 
-import { isChannelNotFoundError } from "./errors";
-import { getSlackInstallURL } from "./install";
+import { createLinkSlackWithAcapelaView, findUserBySlackId } from "./utils";
+
+/**
+ * Turns a text like "Hi <@123SOMEID456|gregor>, let's talk in <#13CHNID36|dev>" into "Hi @gregor, let's talk in #dev"
+ * It does so by matching with a (hopefully) simple enough regex matching for these texts and the inner symbol and name.
+ */
+const USER_OR_CHANNEL_REGEX = /<(@|#).+?\|(.+?)>/gm;
+function stringifySlackText(originalText: string) {
+  const matches = Array.from(originalText.matchAll(USER_OR_CHANNEL_REGEX));
+  return matches.reduce(
+    ({ text, offset }, { 0: fullMatch, 1: symbol, 2: name, index }) => {
+      if (!index) {
+        return { text, offset };
+      }
+      const offsetIndex = index + offset;
+      return {
+        text: text.slice(0, offsetIndex) + symbol + name + text.slice(offsetIndex + fullMatch.length),
+        offset: offset + symbol.length + name.length - fullMatch.length,
+      };
+    },
+    {
+      text: originalText,
+      offset: 0,
+    }
+  ).text;
+}
 
 export function setupSlackCommands(slackApp: SlackBolt.App) {
-  slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, respond, client, context }) => {
-    const getMembers = async (token?: string) =>
-      (
-        await client.conversations.members({
-          channel: command.channel_id,
-          token,
-        })
-      )?.members ?? [];
-
-    await ack();
-
-    let roomNameInput = command.text;
-    if (!roomNameInput) {
-      await respond(
-        `You can set a room name by writing it after the /acapela command (eg "/acapela Quick tech discussion") `
-      );
-      roomNameInput = `Slack Conversation with ${command.user_name}`;
-    }
-
-    const team = await db.team.findFirst({
-      where: { team_slack_installation: { slack_team_id: command.team_id } },
-    });
-
-    if (!team) {
-      return await respond("No Slack installation for your team found. Go to https://app.acape.la/team to install it.");
-    }
-
-    const [space, email] = await Promise.all([
-      db.space.findFirst({ where: { team_id: team.id } }),
-      command.user_id
-        ? client.users.profile.get({ user: command.user_id }).then(({ profile }) => profile?.email)
-        : null,
+  slackApp.command("/" + process.env.SLACK_SLASH_COMMAND, async ({ command, ack, respond, client, context, body }) => {
+    const [user, team] = await Promise.all([
+      findUserBySlackId(context.botToken || body.token, command.user_id),
+      db.team.findFirst({ where: { team_slack_installation: { slack_team_id: command.team_id } } }),
     ]);
-    if (!space) {
-      return respond(
-        "Your team does not have a space for Acapela rooms. Create one over at https://app.acape.la/spaces and try again."
-      );
+    if (!user) {
+      await ack();
+      await client.views.open(createLinkSlackWithAcapelaView({ triggerId: command.trigger_id }));
+      return;
     }
 
-    const user = email ? await db.user.findFirst({ where: { email } }) : null;
+    assert(team, "must have a team");
 
-    let slackMembers: string[] | null = null;
-    try {
-      slackMembers = await getMembers(context.userToken ?? context.botToken);
-    } catch (error) {
-      if (!isChannelNotFoundError(error)) {
-        throw error;
-      }
-
-      if (!user) {
-        return respond(
-          `There is no Acapela account for your email address (${email}). Ask your team's owner to invite you and run this command again.`
-        );
-      }
-      const slackInstallURL = await getSlackInstallURL({ withBot: false }, { teamId: team.id, userId: user.id });
-      return respond(
-        `Slack integration is required to open an Acapela from private conversations. ` +
-          `Please run the command again after connecting Acapela with your Slack <${slackInstallURL}|here>`
-      );
-    }
-
-    const slackProfileResponses = await Promise.all(
-      slackMembers?.map((memberId) => client.users.profile.get({ user: memberId })) ?? []
+    // we want to create read-only requests for all users mentioned after "cc"/"cc:"
+    const ccIndex = body.text.search(/\scc(\s|:)/gm);
+    const slackUserIdsWithRequestType = Array.from(body.text.matchAll(/<@(.+?)\|/gm)).map(
+      ({ 1: slackUserId, index }) =>
+        ({
+          slackUserId,
+          requestType: index && ccIndex !== -1 && index > ccIndex ? REQUEST_READ : REQUEST_RESPONSE,
+        } as const)
     );
-    const emails = slackProfileResponses.map((response) => response.profile?.email).filter(isNotNullish);
-    const users = await db.user.findMany({ where: { email: { in: emails } } });
 
-    const creatorId = user ? user.id : team.owner_id;
-    const room = await db.room.create({
-      data: {
-        name: roomNameInput,
-        slug: roomNameInput,
-        creator_id: creatorId,
-        owner_id: creatorId,
-        space_id: space.id,
-        room_member: { createMany: { data: users.map((u) => ({ user_id: u.id })) } },
-      },
+    const topicMessage = stringifySlackText(body.text);
+    const topicName = truncateTextWithEllipsis(topicMessage, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
+    const topic = await createTopicForSlackUsers({
+      token: context.botToken || body.token,
+      teamId: team.id,
+      ownerId: user.id,
+      topicName,
+      topicMessage,
+      slackUserIdsWithRequestType,
     });
-    if (!room) {
-      return respond("Room creation failed");
-    }
-
-    if (slackMembers && users.length < slackMembers.length) {
-      await respond(
-        "We could not find all conversation members in Acapela, they can still join the conversation through the link"
-      );
-    }
+    const topicURL = `${process.env.FRONTEND_URL}/${topic.id}`;
+    await ack();
     await respond({
       response_type: "in_channel",
-      text: `Please continue the discussion here: ${process.env.FRONTEND_URL}/space/${space.id}/${room.id}`,
+      text: `<@${command.user_id}> has created a new request using Acapela!\n${topicURL}`,
     });
-    if (user) {
-      trackBackendUserEvent(user.id, "Created Room", {
-        origin: "slack-command",
-        roomId: room.id,
-        roomName: room.name,
-        roomDeadline: room.deadline,
-        spaceId: room.space_id,
-        numberOfInitialMembers: users.length,
-        isRecurring: !!room.recurrance_interval_in_days,
-      });
-    }
+    trackBackendUserEvent(user.id, "Created Topic", { origin: "slack-command", topicName });
   });
 }

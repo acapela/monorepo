@@ -73,6 +73,10 @@ insert_permissions:
       - owner_id:
           _eq: X-Hasura-User-Id
     columns:
+    - archived_at
+    - closed_at
+    - closed_by_user_id
+    - closing_summary
     - id
     - index
     - name
@@ -182,7 +186,11 @@ delete_permissions:
   role: user
 event_triggers:
 - definition:
+    delete:
+      columns: "*"
     enable_manual: false
+    insert:
+      columns: "*"
     update:
       columns:
       - closing_summary
@@ -190,10 +198,13 @@ event_triggers:
       - name
       - slug
       - closed_at
+      - archived_at
+      - updated_at
       - closed_by_user_id
       - id
       - owner_id
       - room_id
+      - team_id
   headers:
   - name: Authorization
     value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER

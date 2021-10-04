@@ -12,11 +12,15 @@ import { handleTeamInvitationCreated, handleTeamInvitationDeleted } from "~backe
 import { handleTeamMemberDeleted } from "~backend/src/teamMember/events";
 import { handleTeamUpdates } from "~backend/src/teams/events";
 import { handleTopicUpdates } from "~backend/src/topics/events";
+import { log } from "~shared/logger";
 
 import { handleTranscriptionUpdates } from "../transcriptions/events";
 import { hasuraEvents } from "./eventHandlers";
+import { handleCreateSyncRequests } from "./handleCreateSyncRequests";
 
 export const router = Router();
+
+log.info("Initialize hasura event handlers");
 
 hasuraEvents.addHandler("team_updates", ["INSERT", "UPDATE"], handleTeamUpdates);
 hasuraEvents.addHandler("topic_updates", ["UPDATE"], handleTopicUpdates);
@@ -33,6 +37,7 @@ hasuraEvents.addHandler("task_updates", ["INSERT", "UPDATE", "DELETE"], handleTa
 hasuraEvents.addHandler("message_reaction_updates", ["INSERT", "UPDATE", "DELETE"], handleMessageReactionChanges);
 hasuraEvents.addHandler("team_member_updates", ["DELETE"], handleTeamMemberDeleted);
 hasuraEvents.addHandler("transcription_updates", ["INSERT", "UPDATE"], handleTranscriptionUpdates);
+hasuraEvents.addAnyEventHandler(handleCreateSyncRequests);
 
 router.post("/v1/events", middlewareAuthenticateHasura, async (req: Request, res: Response) => {
   await hasuraEvents.requestHandler(req, res);

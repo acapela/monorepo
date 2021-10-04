@@ -36,3 +36,5 @@ export interface AuthorizationUrlParams {
   access_type: "offline";
   hd?: string;
 }
+
+export type PromiseResult<T> = T extends PromiseLike<infer U> ? U : T;

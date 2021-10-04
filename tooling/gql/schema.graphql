@@ -1900,6 +1900,11 @@ enum message_select_column {
   """
   column name
   """
+  updated_at
+
+  """
+  column name
+  """
   user_id
 }
 
@@ -2125,6 +2130,11 @@ enum message_update_column {
   column name
   """
   type
+
+  """
+  column name
+  """
+  updated_at
 
   """
   column name

@@ -51,6 +51,7 @@
     "styled-reset": "^4.3.4",
     "subscriptions-transport-ws": "^0.9.19",
     "validator": "^13.6.0",
+    "~clientdb": "0.1.0",
     "~config": "0.1.0",
     "~db": "0.1.0",
     "~gql": "0.1.0",
