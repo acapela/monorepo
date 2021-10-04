@@ -22,6 +22,7 @@ const fragments = {
     ${MessageReactionTooltip.fragments.message_reaction}
 
     fragment MessageReaction_message_reaction on message_reaction {
+      id
       user_id
       ...MessageReactionTooltip_message_reaction
     }
@@ -37,14 +38,14 @@ interface Props {
 export const MessageReaction = withFragments(fragments, ({ message, emoji, reactions }: Props) => {
   const user = useAssertCurrentUser();
 
-  const isSelectedByCurrentUser = reactions.some((reaction) => reaction.user_id === user.id);
+  const currentUserReaction = reactions.find((reaction) => reaction.user_id === user.id);
+
+  const isSelectedByCurrentUser = !!currentUserReaction;
 
   const handleClick = () => {
-    if (isSelectedByCurrentUser) {
+    if (currentUserReaction) {
       removeMessageReaction({
-        emoji,
-        messageId: message.id,
-        userId: user.id,
+        id: currentUserReaction.id,
       });
     } else {
       addMessageReaction({
@@ -61,7 +62,7 @@ export const MessageReaction = withFragments(fragments, ({ message, emoji, react
 
   return (
     <>
-      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={isSelectedByCurrentUser}>
+      <UIReactionButton ref={buttonRef} onClick={handleClick} isSelected={!!isSelectedByCurrentUser}>
         <p>{emoji}</p>
         <p>{reactions.length}</p>
       </UIReactionButton>

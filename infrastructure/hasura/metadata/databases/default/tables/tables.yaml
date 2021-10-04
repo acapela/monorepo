@@ -19,6 +19,7 @@
 - "!include public_room_member.yaml"
 - "!include public_space.yaml"
 - "!include public_space_member.yaml"
+- "!include public_sync_request.yaml"
 - "!include public_task.yaml"
 - "!include public_team.yaml"
 - "!include public_team_invitation.yaml"

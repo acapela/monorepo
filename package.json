@@ -17,7 +17,8 @@
       "tooling",
       "richEditor",
       "gql",
-      "e2e"
+      "e2e",
+      "clientdb"
     ]
   },
   "scripts": {
@@ -47,7 +48,7 @@
     "e2e": "yarn workspace ~e2e",
     "start": "ntl --descriptions --autocomplete --no-rerun-cache --size 20 --exclude start frontend backend",
     "hasura:migrations": "hasura migrate apply --all-databases --project infrastructure/hasura --admin-secret dev",
-    "hasura:migrations:squash": "func(){ hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev; }; func",
+    "hasura:migrations:squash": "hasura migrate squash --name \"$1\" --from \"$2\" --project infrastructure/hasura --admin-secret dev",
     "hasura:migrations:mark-as-applied": "func(){ hasura migrate apply --version \"$1\" --skip-execution --project infrastructure/hasura --admin-secret dev; }; func",
     "hasura:seeds": "hasura seed apply --database-name default --project infrastructure/hasura --admin-secret dev",
     "hasura:seeds:create": "func(){ hasura seed create \"$1\" --project infrastructure/hasura --admin-secret dev; }; func",
@@ -97,7 +98,8 @@
         "commands": [
           "yarn frontend:dev",
           "yarn backend:dev",
-          "yarn tooling:gql-types"
+          "yarn tooling:gql-types",
+          "yarn hasura:console"
         ]
       }
     ]
@@ -120,6 +122,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "husky": "^7.0.2",
+    "idb": "^6.1.4",
     "mobx": "^6.3.3",
     "mobx-react": "^7.2.0",
     "react": "^17.0.2",
