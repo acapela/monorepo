@@ -149,12 +149,24 @@ export function createHasuraSyncSetupFromFragment<T>(
     return pick(data, keys);
   }
 
+  function fixLastUpdateDateForHasura(date: Date) {
+    /**
+     * Hasura has more precision in dates than it is possible with javascript. eg
+     * JS date of
+     * 8:30:00.234 in hasura can be 8:30:00.2348
+     *
+     * It means hasura data is 'a bit' bigger and we need to account for that when using updated_at queries.
+     * If we did not, we'd have infinite loop of syncing the same item as it would always have bigger updated_at than last sync.
+     */
+    return new Date(date.getTime() + 1);
+  }
+
   return {
     pullUpdated({ lastSyncDate, updateItems, getContextValue }) {
       const apollo = getContextValue(apolloContext);
 
       const observer = apollo.subscribe<{ updates: T[] }, { lastSyncDate: Date }>({
-        variables: { lastSyncDate },
+        variables: { lastSyncDate: fixLastUpdateDateForHasura(lastSyncDate) },
         query: gqlTag`
         ${fragment}
         subscription Pull${upperType}Updates($lastSyncDate: timestamptz!) {
@@ -243,7 +255,7 @@ export function createHasuraSyncSetupFromFragment<T>(
       const observer = apollo.subscribe<PullSyncRequestsSubscription, PullSyncRequestsSubscriptionVariables>({
         query: pullSyncRequestsSubscription,
         variables: {
-          lastSyncDate: lastSyncDate.toISOString(),
+          lastSyncDate: fixLastUpdateDateForHasura(lastSyncDate).toISOString(),
           entityName: type,
           teamId,
         },

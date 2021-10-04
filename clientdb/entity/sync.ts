@@ -103,15 +103,7 @@ export function createEntitySyncManager<Data, Connections>(
       }
     });
 
-    /**
-     * Hasura has more precision in dates than it is possible with javascript. eg
-     * JS date of
-     * 8:30:00.234 in hasura can be 8:30:00.2348
-     *
-     * It means hasura data is 'a bit' bigger and we need to account for that when using updated_at queries.
-     * If we did not, we'd have infinite loop of syncing the same item as it would always have bigger updated_at than last sync.
-     */
-    return new Date(initialDate.getTime() + 1);
+    return initialDate;
   }
 
   // Start waiting for new 'updates' data.
