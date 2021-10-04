@@ -31,13 +31,6 @@ array_relationships:
       table:
         name: last_seen_message
         schema: public
-- name: members
-  using:
-    foreign_key_constraint_on:
-      column: topic_id
-      table:
-        name: topic_member
-        schema: public
 - name: messages
   using:
     manual_configuration:
