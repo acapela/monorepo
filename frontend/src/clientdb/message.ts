@@ -43,7 +43,7 @@ export const messageEntity = defineEntity<MessageFragment>({
   },
   sync: createHasuraSyncSetupFromFragment<MessageFragment>(messageFragment, {
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
-    updateColumns: ["content", "topic_id"],
+    updateColumns: ["content"],
   }),
 }).addConnections((message, { getEntity, getContextValue }) => {
   return {
