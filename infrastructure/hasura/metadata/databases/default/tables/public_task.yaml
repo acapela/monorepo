@@ -35,19 +35,11 @@ select_permissions:
     - user_id
     filter:
       message:
-        _or:
-        - topic:
-            team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-        - topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+        topic:
+          team:
+            memberships:
+              user_id:
+                _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

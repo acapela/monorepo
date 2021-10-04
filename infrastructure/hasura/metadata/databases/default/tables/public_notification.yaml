@@ -2,20 +2,6 @@ table:
   name: notification
   schema: public
 object_relationships:
-- name: room_added_to
-  using:
-    foreign_key_constraint_on:
-      column: notification_id
-      table:
-        name: notification_room_added_to
-        schema: public
-- name: room_closed
-  using:
-    foreign_key_constraint_on:
-      column: notification_id
-      table:
-        name: notification_room_closed
-        schema: public
 - name: topic_added_to
   using:
     foreign_key_constraint_on:

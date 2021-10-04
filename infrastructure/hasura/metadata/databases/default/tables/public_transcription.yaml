@@ -21,17 +21,10 @@ select_permissions:
       attachments:
         message:
           topic:
-            _or:
-            - team:
-                memberships:
-                  user_id:
-                    _eq: X-Hasura-User-Id
-            - room:
-                space:
-                  team:
-                    memberships:
-                      user_id:
-                        _eq: X-Hasura-User-Id
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:

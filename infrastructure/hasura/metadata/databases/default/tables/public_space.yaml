@@ -22,13 +22,6 @@ array_relationships:
       table:
         name: space_member
         schema: public
-- name: rooms
-  using:
-    foreign_key_constraint_on:
-      column: space_id
-      table:
-        name: room
-        schema: public
 insert_permissions:
 - permission:
     backend_only: false

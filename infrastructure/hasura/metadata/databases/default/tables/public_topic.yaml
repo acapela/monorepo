@@ -14,9 +14,6 @@ object_relationships:
 - name: owner
   using:
     foreign_key_constraint_on: owner_id
-- name: room
-  using:
-    foreign_key_constraint_on: room_id
 - name: team
   using:
     manual_configuration:
@@ -55,21 +52,10 @@ insert_permissions:
     backend_only: false
     check:
       _or:
-      - _and:
-        - _or:
-          - team:
-              memberships:
-                user_id:
-                  _eq: X-Hasura-User-Id
-          - room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-        - room:
-            finished_at:
-              _is_null: true
+      - team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
       - owner_id:
           _eq: X-Hasura-User-Id
     columns:
@@ -81,7 +67,6 @@ insert_permissions:
     - index
     - name
     - owner_id
-    - room_id
     - slug
     - team_id
   role: user
@@ -97,32 +82,14 @@ select_permissions:
     - index
     - name
     - owner_id
-    - room_id
     - slug
     - team_id
     - updated_at
     filter:
-      _or:
-      - _and:
-        - team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-        - room_id:
-            _is_null: true
-      - room:
-          _or:
-          - _and:
-            - is_private:
-                _eq: false
-            - space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - members:
-              user_id:
-                _eq: X-Hasura-User-Id
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
@@ -137,52 +104,18 @@ update_permissions:
     - owner_id
     - slug
     filter:
-      _or:
-      - _and:
-        - team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-        - room_id:
-            _is_null: true
-      - room:
-          _or:
-          - _and:
-            - is_private:
-                _eq: false
-            - space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - members:
-              user_id:
-                _eq: X-Hasura-User-Id
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
   role: user
 delete_permissions:
 - permission:
     filter:
-      _or:
-      - _and:
-        - team:
-            memberships:
-              user_id:
-                _eq: X-Hasura-User-Id
-        - room_id:
-            _is_null: true
-      - room:
-          _or:
-          - _and:
-            - is_private:
-                _eq: false
-            - space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
-          - members:
-              user_id:
-                _eq: X-Hasura-User-Id
+      team:
+        memberships:
+          user_id:
+            _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
@@ -203,7 +136,6 @@ event_triggers:
       - closed_by_user_id
       - id
       - owner_id
-      - room_id
       - team_id
   headers:
   - name: Authorization

@@ -6,20 +6,6 @@ object_relationships:
   using:
     foreign_key_constraint_on: current_team_id
 array_relationships:
-- name: created_room_invitations
-  using:
-    foreign_key_constraint_on:
-      column: inviting_user_id
-      table:
-        name: room_invitation
-        schema: public
-- name: created_rooms
-  using:
-    foreign_key_constraint_on:
-      column: creator_id
-      table:
-        name: room
-        schema: public
 - name: created_team_invitations
   using:
     foreign_key_constraint_on:
@@ -49,15 +35,6 @@ array_relationships:
       column: owner_id
       table:
         name: team
-        schema: public
-- name: rooms
-  using:
-    manual_configuration:
-      column_mapping:
-        id: user_id
-      insertion_order: null
-      remote_table:
-        name: room_member
         schema: public
 - name: space_memberships
   using:
@@ -97,12 +74,10 @@ select_permissions:
                 _eq: X-Hasura-User-Id
       - messages:
           topic:
-            room:
-              space:
-                team:
-                  memberships:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+            team:
+              memberships:
+                user_id:
+                  _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:
