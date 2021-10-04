@@ -11,6 +11,20 @@ export async function handleCreateSyncRequests(event: HasuraEvent<unknown>) {
     return;
   }
 
+  /**
+   * For each change (update/delete) we want to create sync request. For permission and performance reasons we want
+   * to add team_id to each to narrow down the scope.
+   *
+   * TODO: currently we take a simple approach of just assuming the team = user.current_team_id.
+   *
+   * It has limitations of not supporting 'system' changes (eg. admin changing something in hasura panel).
+   * Also there is possible unlikely race condition that user changes current_team_id before sync request is created.
+   *
+   * Alternative is to read team id from updated/removed entity, but it is tricky and potentially not possible sometimes:
+   * eg. message is removed as result of SQL cascade, so when we try to get message > topic.team_id, we'll not be able to
+   * as topic no longer exists. TBH I'm not sure how to solve it nicely.
+   */
+
   if (!userId) {
     log.warn(`Cannot create sync request for system caused database changes (no way to get user.current_team_id)`);
     return;
