@@ -1,35 +1,29 @@
+import { IComputedValue, computed } from "mobx";
+
 import { Entity } from "~clientdb/entity/entity";
 
-interface CachedValue<D> {
-  entityUpdatedAt: Date;
-  value: D;
-}
-
 /**
- * Creates 'smart' entity cache that keeps result for given entity as long as 'updated at' column value is the same.
+ * Creates 'smart' entity cache that keeps result for given entity as no value it's getter uses.
  *
- * This is based on core assumption that this field is always required and no data change can happen without 'updated at'
- * being changed as well.
+ * It is also cached as long as it is in use by any 'observer'.
  */
 export function createEntityCache<Data, Connections, Result>(getter: (entity: Entity<Data, Connections>) => Result) {
-  const cacheMap = new WeakMap<Entity<Data, Connections>, CachedValue<Result>>();
+  const cacheMap = new WeakMap<Entity<Data, Connections>, IComputedValue<Result>>();
 
   function getCached(entity: Entity<Data, Connections>): Result {
     const cachedValue = cacheMap.get(entity);
 
-    // If we have cached value - make sure 'updated at' did not change since it was created.
     if (cachedValue) {
-      const entityUpdatedAt = entity.getUpdatedAt();
-      if (entityUpdatedAt.getTime() === cachedValue.entityUpdatedAt.getTime()) {
-        return cachedValue.value;
-      }
+      return cachedValue.get();
     }
 
-    const newValue = getter(entity);
+    const newCachedValue = computed(() => {
+      return getter(entity);
+    });
 
-    cacheMap.set(entity, { entityUpdatedAt: entity.getUpdatedAt(), value: newValue });
+    cacheMap.set(entity, newCachedValue);
 
-    return newValue;
+    return newCachedValue.get();
   }
 
   return getCached;
