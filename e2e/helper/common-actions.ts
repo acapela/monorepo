@@ -7,7 +7,7 @@ import { basePath } from "./constants";
 type RoomProps = { spaceName: string; roomName: string };
 
 export async function createAndGotoRoom(page: Page, { spaceName, roomName }: RoomProps) {
-  await page.goto(basePath);
+  await page.goto(basePath + "/dashboard");
   await page.click("text='New Room'");
   await page.click("text=Room name", { force: true });
   await page.keyboard.type(roomName);
