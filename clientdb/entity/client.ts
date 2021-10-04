@@ -1,3 +1,4 @@
+import { noop } from "lodash";
 import { runInAction } from "mobx";
 
 import { ClientAdapterConfig } from "./db/adapter";
@@ -31,8 +32,6 @@ interface EntityClientConfig {
   databaseUtilities: DatabaseUtilities;
   dbAdapterConfig?: ClientAdapterConfig;
 }
-
-const noop = () => void 0;
 
 /**
  * Client is 'public api' surface for entity.
@@ -137,7 +136,7 @@ export function createEntityClient<Data, Connections>(
     find(config) {
       return store.find(config);
     },
-    removeById(id, source) {
+    removeById(id, source = "user") {
       return store.removeById(id, source);
     },
     create(input, source = "user") {
