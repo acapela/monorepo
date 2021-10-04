@@ -197,7 +197,7 @@ export function setupSlackShortcuts(slackApp: App) {
     await ack({ response_action: "clear" });
 
     const metadata = JSON.parse(view.private_metadata) as ShortcutMetadata;
-    const topicURL = `${process.env.FRONTEND_URL}/dashboard/${topic.id}`;
+    const topicURL = `${process.env.FRONTEND_URL}/${topic.id}`;
     if (metadata.isMessageShortcut) {
       await new IncomingWebhook(metadata.responseURL).send({
         response_type: "in_channel",

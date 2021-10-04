@@ -89,7 +89,7 @@ export async function createAndSendTopicMentionNotification({
   const topicName = topic.name || "a topic";
   const link =
     process.env.FRONTEND_URL +
-    (topic.room ? `/space/${topic.room.space_id}/${topic.room.id}/${topic.id}` : `/dashboard/${topic.id}`);
+    (topic.room ? `/space/${topic.room.space_id}/${topic.room.id}/${topic.id}` : `/${topic.id}`);
 
   sendNotificationPerPreference(mentionedTeamMember, {
     subject: `${authorName} has tagged you in ${topicName}`,
