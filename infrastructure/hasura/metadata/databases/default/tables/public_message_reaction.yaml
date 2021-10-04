@@ -28,6 +28,7 @@ insert_permissions:
                       _eq: X-Hasura-User-Id
     columns:
     - emoji
+    - id
     - message_id
     - user_id
   role: user
@@ -35,6 +36,7 @@ select_permissions:
 - permission:
     columns:
     - emoji
+    - id
     - message_id
     - updated_at
     - user_id
