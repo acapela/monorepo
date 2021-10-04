@@ -1,3 +1,5 @@
+import { map } from "lodash";
+
 import { typedKeys } from "~shared/object";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
@@ -6,6 +8,7 @@ import { ClientAdapterConfig, DbEntityInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
+import { mapRecord } from "./entity/utils/mapRecord";
 
 export * from "./entity/index";
 
@@ -22,10 +25,19 @@ export function createClientDb<Entities extends EntitiesMap>(
   { db, contexts }: ClientDbConfig,
   entitiesMap: Entities
 ): ClientDb<Entities> {
-  const clientdb: ClientDb<Entities> = {} as ClientDb<Entities>;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
+
+  const entityClients = mapRecord(entitiesMap, (definition) => {
+    const entityClient = createEntityClient(definition, {
+      databaseUtilities: databaseUtilities,
+      dbAdapterConfig: db,
+    });
+
+    definitionClientMap.set(definition, entityClient);
+
+    return entityClient;
+  }) as ClientDb<Entities>;
 
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
@@ -52,20 +64,6 @@ export function createClientDb<Entities extends EntitiesMap>(
     },
   };
 
-  typedKeys(entitiesMap).forEach((entityKey) => {
-    const definition = entitiesMap[entityKey];
-    const entityClient = createEntityClient(definition, {
-      databaseUtilities: databaseUtilities,
-      dbAdapterConfig: db,
-    });
-
-    definitionClientMap.set(definition, entityClient);
-
-    entityClient;
-
-    clientdb[entityKey] = entityClient as EntityClientByDefinition<Entities[keyof Entities]>;
-  });
-
   if (db && typeof window !== "undefined") {
     const entitiesInfo = typedKeys(entitiesMap).map((entityName): DbEntityInfo => {
       const definition = entitiesMap[entityName];
@@ -79,5 +77,5 @@ export function createClientDb<Entities extends EntitiesMap>(
     });
   }
 
-  return clientdb;
+  return entityClients;
 }

@@ -64,6 +64,8 @@ export function createEntityQuery<Data, Connections>(
   const cachedFilter = filter ? createEntityCache(filter) : null;
   const cachedSort = sort ? createEntityCache(sort) : null;
 
+  // Note: this value will be cached as long as it is in use and nothing it uses changes.
+  // TLDR: query value is cached between renders if no items it used changed.
   const passingItems = computed(() => {
     const passedItems = cachedFilter ? source.filter(cachedFilter) : source.slice();
 

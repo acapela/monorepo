@@ -20,6 +20,20 @@ import { assert } from "~shared/assert";
 import { analyzeFragment } from "./analyzeFragment";
 import { apolloContext, teamIdContext } from "./context";
 
+/**
+ * This module sets up entire sync layer for hasura.
+ *
+ * Hasura api is 'predictable' so it is possible to 'generate' all graphql queries at runtime basing on 'mostly' only
+ * the fragment of data
+ *
+ * the only additional data needed is insert and update columns as those might be restricted by permissions
+ */
+
+/**
+ * In order to handle upserts (insert or update) we need to provide 'conflict' key. Usually it is primary key name.
+ *
+ * In hasura those names stay the same even if you eg. rename the table, so we have to provide them manually.
+ */
 type ConstraintsTypeMap = {
   task: Task_Constraint;
   topic: Topic_Constraint;
@@ -44,6 +58,14 @@ const upsertConstraints: ConstraintsValueMap = {
   attachment: "attachment_id_key",
 };
 
+/**
+ * We use special 'sync_request' table for 2 purposes:
+ * 1. To track deletes
+ * 2. To track updates that might cause lost access to some item due to permissions.
+ *
+ * We'll fetch all 'sync requests' since we last checked. For all deletes we'll simply remove those locally
+ * For updates we'll check if we still have access to them, if not - we'll also delete them locally.
+ */
 const syncRequestFragment = gql`
   fragment SyncRequest on sync_request {
     id
@@ -87,6 +109,11 @@ export function createHasuraSyncSetupFromFragment<T>(
 
   const upperType = getFirstUpper(type);
 
+  /**
+   * Provide array of ids you want to check if you have access to. Will return list of items you dont have access to.
+   *
+   * Note: this method is batched, so one request per list is needed.
+   */
   async function getLostAccessIds(idsToCheck: string[], apollo: ApolloClient<unknown>): Promise<string[] | null> {
     const result = await apollo.query<{ itemsWithAccess: Array<{ id: string }> }, { ids: string[] }>({
       variables: { ids: idsToCheck },
@@ -113,10 +140,12 @@ export function createHasuraSyncSetupFromFragment<T>(
   }
 
   function getPushInputFromData(data: T) {
+    // If we have specified input columns - use those
     if (insertColumns) {
       return pick(data, insertColumns);
     }
 
+    // Otherwise, pass all keys of data we have.
     return pick(data, keys);
   }
 
