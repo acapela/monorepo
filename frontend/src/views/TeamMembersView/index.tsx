@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { SpacedAppLayoutContainer } from "~frontend/layouts/AppLayout/SpacedAppLayoutContainer";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { NotificationSettings } from "~frontend/views/TeamMembersView/NotificationSettings";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { TextMeta10 } from "~ui/typo";
 
 import { CurrentTeamMembersManager } from "./CurrentTeamMembersManager";
@@ -22,9 +21,7 @@ export const TeamMembersView = () => {
     <SpacedAppLayoutContainer topSpaceSize="large">
       <UIHolder>
         <CurrentTeamMembersManager />
-        <ClientSideOnly>
-          <NotificationSettings />
-        </ClientSideOnly>
+        <NotificationSettings />
 
         {appVersion && (
           <TextMeta10 secondary>

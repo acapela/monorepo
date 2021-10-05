@@ -1,25 +1,28 @@
+import { observer } from "mobx-react";
 import { useState } from "react";
 import { useMemo } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { createTeamIvitation, useCurrentTeamDetails } from "~frontend/gql/teams";
+import { useDb } from "~frontend/clientdb";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { Button } from "~ui/buttons/Button";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { IconPlusSquare } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
-export const InviteMemberForm = () => {
+export const InviteMemberForm = observer(() => {
   const teamId = useAssertCurrentTeamId();
 
-  const [team] = useCurrentTeamDetails();
+  const db = useDb();
+  const team = db.team.findById(teamId);
+
   const teamEmails = useMemo(() => {
     const emails = team
       ? [
-          ...team.memberships.map((membership) => membership.user.email),
-          ...team.invitations.map((invitation) => invitation.email),
+          ...team.members.all.map((members) => members.user.email),
+          ...team.invitations.all.map((invitation) => invitation.email),
         ]
       : [];
 
@@ -31,7 +34,7 @@ export const InviteMemberForm = () => {
   const isEmailAcceptable = isEmail(email) && !teamEmails.has(email);
 
   const handleSubmit = () => {
-    createTeamIvitation({ email, teamId });
+    db.teamInvitation.create({ email, team_id: teamId });
     setEmail("");
     trackEvent("Invite Sent", { inviteEmail: email, teamId });
   };
@@ -46,7 +49,7 @@ export const InviteMemberForm = () => {
       </Button>
     </UIHolder>
   );
-};
+});
 
 const UIHolder = styled.div<{}>`
   display: grid;

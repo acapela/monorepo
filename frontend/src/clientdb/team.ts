@@ -1,9 +1,10 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
+import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { TeamFragment } from "~gql";
 
-import { userEntity } from "./user";
+import { teamMemberEntity } from "./teamMember";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { getGenericDefaultData } from "./utils/getGenericDefaultData";
 import { createHasuraSyncSetupFromFragment } from "./utils/sync";
@@ -15,8 +16,8 @@ const teamFragment = gql`
     slug
     owner_id
     updated_at
-    membershipsIds: memberships {
-      user_id
+    slack_installation {
+      team_id
     }
   }
 `;
@@ -36,9 +37,8 @@ export const teamEntity = defineEntity<TeamFragment>({
     insertColumns: ["id", "slug", "owner_id", "name"],
     updateColumns: ["name", "slug"],
   }),
-}).addConnections((team, { getEntity }) => {
-  const memberIds = team.membershipsIds.map((member) => member.user_id);
-  return {
-    members: getEntity(userEntity).find((user) => memberIds.includes(user.id)),
-  };
-});
+}).addConnections((team, { getEntity }) => ({
+  hasSlackInstallation: !!team.slack_installation?.team_id,
+  members: getEntity(teamMemberEntity).find((member) => member.team_id === team.id),
+  invitations: getEntity(teamInvitationEntity).find((invitation) => invitation.team_id === team.id),
+}));

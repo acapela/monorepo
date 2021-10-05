@@ -3,6 +3,8 @@ import { PropsWithChildren, createContext, useContext, useEffect, useState } fro
 
 import { createClientDb } from "~clientdb";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
+import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
 
@@ -34,6 +36,8 @@ export function createNewClientDb(userId: string | null, teamId: string | null, 
       message: messageEntity,
       attachment: attachmentEntity,
       team: teamEntity,
+      teamMember: teamMemberEntity,
+      teamInvitation: teamInvitationEntity,
       task: taskEntity,
       messageReaction: messageReactionEntity,
     }

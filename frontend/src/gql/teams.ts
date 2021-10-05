@@ -2,16 +2,8 @@ import { gql } from "@apollo/client";
 
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
-  CreateTeamInvitationMutation,
-  CreateTeamInvitationMutationVariables,
   CreateTeamMutation,
   CreateTeamMutationVariables,
-  RemoveTeamInvitationMutation,
-  RemoveTeamInvitationMutationVariables,
-  RemoveTeamMemberMutation,
-  RemoveTeamMemberMutationVariables,
-  ResendInvitationMutation,
-  ResendInvitationMutationVariables,
   TeamBasicInfoFragment as TeamBasicInfoFragmentType,
   TeamBasicInfoQuery,
   TeamBasicInfoQueryVariables,
@@ -24,7 +16,6 @@ import {
   UserBasicInfoFragment as UserBasicInfoFragmentType,
 } from "~gql";
 import { slugify } from "~shared/slugify";
-import { addToast } from "~ui/toasts/data";
 
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
@@ -143,104 +134,3 @@ export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
 
   return teamDetails?.memberships.map((membership) => membership.user) ?? [];
 }
-
-export const [useCreateTeamInvitationMutation, { mutate: createTeamIvitation }] = createMutation<
-  CreateTeamInvitationMutation,
-  CreateTeamInvitationMutationVariables
->(
-  () => gql`
-    ${TeamInvitationBasicInfoFragment()}
-    mutation CreateTeamInvitation($teamId: uuid!, $email: String!) {
-      insert_team_invitation_one(object: { team_id: $teamId, email: $email }) {
-        ...TeamInvitationBasicInfo
-      }
-    }
-  `,
-  {
-    onActualResponse() {
-      addToast({ type: "success", title: `New team member was invited` });
-    },
-  }
-);
-
-export const [useRemoveTeamInvitation, { mutate: removeTeamInvitation }] = createMutation<
-  RemoveTeamInvitationMutation,
-  RemoveTeamInvitationMutationVariables
->(
-  () => gql`
-    mutation RemoveTeamInvitation($id: uuid!) {
-      delete_team_invitation_by_pk(id: $id) {
-        team_id
-      }
-    }
-  `,
-  {
-    optimisticResponse(variables) {
-      return {
-        __typename: "mutation_root",
-        delete_message_reaction_by_pk: {
-          __typename: "team_invitation",
-          id: variables.id,
-        },
-      };
-    },
-    onOptimisticOrActualResponse(teamInvitation, variables) {
-      TeamDetailedInfoFragment.update(teamInvitation.team_id, (team) => {
-        team.invitations = team.invitations.filter(({ id }) => id !== variables.id);
-      });
-    },
-    onActualResponse() {
-      addToast({ type: "success", title: `Team invitation was removed` });
-    },
-  }
-);
-
-export const [useRemoveTeamMember, { mutate: removeTeamMember }] = createMutation<
-  RemoveTeamMemberMutation,
-  RemoveTeamMemberMutationVariables
->(
-  () => gql`
-    mutation RemoveTeamMember($teamId: uuid!, $userId: uuid!) {
-      delete_team_member(where: { team_id: { _eq: $teamId }, user_id: { _eq: $userId } }) {
-        returning {
-          user_id
-        }
-      }
-    }
-  `,
-  {
-    optimisticResponse(variables) {
-      return {
-        __typename: "mutation_root",
-        delete_message_reaction_by_pk: {
-          __typename: "team_member",
-          team_id: variables.teamId,
-          user_id: variables.userId,
-        },
-      };
-    },
-    onOptimisticOrActualResponse(teamMember, variables) {
-      TeamDetailedInfoFragment.update(variables.teamId, (team) => {
-        team.memberships = team.memberships.filter((member) => member.user.id !== variables.userId);
-      });
-    },
-    onActualResponse() {
-      addToast({ type: "success", title: `Team member was removed` });
-    },
-  }
-);
-
-export const [useResendInvitation] = createMutation<ResendInvitationMutation, ResendInvitationMutationVariables>(
-  () => gql`
-    mutation ResendInvitation($invitation_id: ID!) {
-      resend_invitation(invitation_id: $invitation_id) {
-        sent_at
-      }
-    }
-  `,
-  {
-    onActualResponse() {
-      addToast({ type: "success", title: `Team invitation was sent` });
-    },
-  }
-);

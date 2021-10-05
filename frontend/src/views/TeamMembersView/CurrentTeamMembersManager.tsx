@@ -1,13 +1,13 @@
-import { gql, useSubscription } from "@apollo/client";
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { removeTeamInvitation, removeTeamMember } from "~frontend/gql/teams";
+import { useDb } from "~frontend/clientdb";
 import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
-import { CurrentTeamMembersManagerSubscription, CurrentTeamMembersManagerSubscriptionVariables } from "~gql";
+import { assert } from "~shared/assert";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
@@ -17,66 +17,32 @@ import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
 import { SlackInstallationButton } from "./SlackInstallationButton";
 
-export const CurrentTeamMembersManager = () => {
+export const CurrentTeamMembersManager = observer(() => {
+  const db = useDb();
   const teamId = useAssertCurrentTeamId();
-  const { data: teamData } = useSubscription<
-    CurrentTeamMembersManagerSubscription,
-    CurrentTeamMembersManagerSubscriptionVariables
-  >(
-    gql`
-      ${UserBasicInfo.fragments.user}
-      ${SlackInstallationButton.fragments.team}
-
-      subscription CurrentTeamMembersManager($teamId: uuid!) {
-        team: team_by_pk(id: $teamId) {
-          id
-          name
-          owner_id
-
-          ...SlackInstallationButton_team
-
-          memberships {
-            id
-            user {
-              id
-              email
-              ...UserBasicInfo_user
-            }
-          }
-
-          invitations(where: { used_at: { _is_null: true } }) {
-            id
-            email
-            slack_user_id
-          }
-        }
-      }
-    `,
-    { variables: { teamId } }
-  );
-  const team = teamData?.team;
+  const team = db.team.findById(teamId);
   const currentUser = useAssertCurrentUser();
-  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
   if (!team) {
     return null;
   }
 
-  const teamMembers = team.memberships.map((membership) => membership.user) ?? [];
-  const teamMembersEmails = new Set(teamMembers.map(({ email }) => email));
+  const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
+
+  const teamUsers = team.members.all.map((teamMember) => teamMember.user) ?? [];
 
   const handleRemoveTeamMember = (userId: string) => {
-    if (!team) return;
-    removeTeamMember({ userId, teamId: team.id });
+    const teamMember = team.members.query((teamMember) => teamMember.user_id === userId).all[0];
+    assert(teamMember, "did not find teamMember");
+    teamMember.remove();
     trackEvent("Account Removed User", { teamId: team.id, userId });
   };
 
-  const invitations = team.invitations ?? [];
-  const pendingInvitations = invitations.filter(({ email }) => !teamMembersEmails.has(email));
+  const pendingInvitations = team.invitations.query(({ usedByUser }) => !usedByUser).all;
 
   const handleRemoveInvitation = (invitationId: string) => {
     if (!team) return;
-    removeTeamInvitation({ id: invitationId });
+    db.teamInvitation.findById(invitationId)?.remove();
     trackEvent("Deleted Team Invitation", { teamId: team.id, invitationId });
   };
 
@@ -88,9 +54,9 @@ export const CurrentTeamMembersManager = () => {
       </UIHeader>
       {team && <SlackInstallationButton {...{ team, isCurrentUserTeamOwner }} />}
       <InviteMemberForm />
-      {teamMembers.length > 0 && (
+      {teamUsers.length > 0 && (
         <UISelectGridContainer>
-          {teamMembers.map((user) => (
+          {teamUsers.map((user) => (
             <UIItemHolder key={user.id}>
               <UserBasicInfo user={user} />
               {!(user.id === team.owner_id) && (
@@ -119,7 +85,7 @@ export const CurrentTeamMembersManager = () => {
       )}
     </UIPanel>
   );
-};
+});
 
 const UIPanel = styled.div<{}>`
   display: flex;

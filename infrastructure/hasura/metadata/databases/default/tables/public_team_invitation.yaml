@@ -20,8 +20,11 @@ insert_permissions:
           user_id:
             _eq: X-Hasura-User-Id
     columns:
+    - created_at
     - email
+    - id
     - team_id
+    - updated_at
     set:
       inviting_user_id: x-hasura-User-Id
   role: user
