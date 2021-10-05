@@ -33,7 +33,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { select, useAutorun } from "~shared/sharedState";
+import { select } from "~shared/sharedState";
 import { slugify } from "~shared/slugify";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";

@@ -2,10 +2,10 @@ import { runInAction } from "mobx";
 import React, { useCallback, useRef } from "react";
 import styled from "styled-components";
 
-import { Editor, getEmptyRichContent } from "~frontend/../../richEditor/RichEditor";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
+import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "../editor/newRequestEditor";

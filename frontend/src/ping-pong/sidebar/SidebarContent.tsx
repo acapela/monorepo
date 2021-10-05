@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 
-import { IconPlus } from "~frontend/../../ui/icons";
-import { theme } from "~frontend/../../ui/theme";
 import { UserMenu } from "~frontend/layouts/AppLayout/UserMenu";
 import { Button } from "~ui/buttons/Button";
+import { IconPlus } from "~ui/icons";
+import { theme } from "~ui/theme";
 
 import { RequestFeed } from "./requestFeed/RequestFeed";
 

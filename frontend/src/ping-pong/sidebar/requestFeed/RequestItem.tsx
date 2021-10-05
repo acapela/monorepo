@@ -57,7 +57,7 @@ const UIFeedItem = styled.div<{ isHighlighted?: boolean }>`
 const UIFeedItemLabels = styled.div<{}>`
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 `;
 
 const UIFeedItemTitle = styled.h6<{ isSelected?: boolean }>`
