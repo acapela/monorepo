@@ -34,7 +34,7 @@ interface Props {
   sidebarAction?: ReactNode;
 }
 
-export const SidebarLayout = ({ children, sidebarContent, sidebarAction }: Props) => {
+export const LegacySidebarLayout = ({ children, sidebarContent, sidebarAction }: Props) => {
   return (
     <UIHolder>
       <UISidebar>

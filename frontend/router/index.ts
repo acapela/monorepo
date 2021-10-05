@@ -5,6 +5,7 @@ import { createRoute } from "./create";
 export { RouteLink } from "./RouteLink";
 
 export const routes = {
+  newRequest: createRoute("/new-request", {}),
   home: createRoute("/dashboard", {}),
   dashboard: createRoute("/", {}),
   dashboardNewTopic: createRoute("/new", {}),

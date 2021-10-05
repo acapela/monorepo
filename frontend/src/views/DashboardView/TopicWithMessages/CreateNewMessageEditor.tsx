@@ -1,6 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
@@ -17,6 +17,7 @@ import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAtt
 import { Message } from "~frontend/ui/message/messagesFeed/Message";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
+import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import {
   CreateNewMessageMutation,
   CreateNewMessageMutationVariables,
@@ -32,7 +33,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
-import { select, useAutorun } from "~shared/sharedState";
+import { select } from "~shared/sharedState";
 import { slugify } from "~shared/slugify";
 import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";
@@ -180,31 +181,6 @@ const useCreateMessageMutation = () => {
     }
   );
 };
-
-function useLocalStorageState<S>({
-  key,
-  getInitialValue,
-  checkShouldStore,
-}: {
-  key: string;
-  getInitialValue: () => S;
-  checkShouldStore: (value: S) => boolean;
-}): [S, Dispatch<SetStateAction<S>>] {
-  const [value, setValue] = useState(() => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : getInitialValue;
-  });
-
-  useEffect(() => {
-    if (checkShouldStore(value)) {
-      localStorage.setItem(key, JSON.stringify(value));
-    } else {
-      localStorage.removeItem(key);
-    }
-  }, [value, checkShouldStore, key]);
-
-  return [value, setValue];
-}
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
   const editorRef = useRef<Editor>(null);

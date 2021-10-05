@@ -9,8 +9,8 @@ interface Props {
   isInEditMode: boolean;
   value: string;
   onValueSubmit: (newValue: string) => void;
-  onEditModeRequest: () => void;
-  onExitEditModeChangeRequest: () => void;
+  onEditModeRequest?: () => void;
+  onExitEditModeChangeRequest?: () => void;
   focusSelectMode?: FocusSelectMode;
   className?: string;
   checkPreventClickAway?: (event: Event) => boolean;
@@ -95,9 +95,7 @@ export const EditableText = styled(function EditableText({
   function handleSubmit() {
     if (!ref.current) return;
     const currentValue = ref.current.innerText;
-    onExitEditModeChangeRequest();
-
-    if (currentValue === value) return true;
+    onExitEditModeChangeRequest?.();
 
     onValueSubmit(currentValue);
 
@@ -115,7 +113,7 @@ export const EditableText = styled(function EditableText({
     () => {
       if (!ref.current) return;
       ref.current.innerText = value;
-      onExitEditModeChangeRequest();
+      onExitEditModeChangeRequest?.();
     },
     { isEnabled: isInEditMode }
   );
@@ -158,8 +156,14 @@ const UIHolder = styled.span<{ isInEditMode: boolean }>`
 function setSelectionToElement(element: HTMLElement, mode: FocusSelectMode) {
   const selection = window.getSelection();
   const range = document.createRange();
-  range.setStart(element, mode === "cursor-at-end" ? 1 : 0);
-  range.setEnd(element, 1);
+
+  if (element.innerText.length === 0) {
+    range.setStart(element, 0);
+    range.setEnd(element, 0);
+  } else {
+    range.setStart(element, mode === "cursor-at-end" ? 1 : 0);
+    range.setEnd(element, 1);
+  }
 
   selection?.removeAllRanges();
   selection?.addRange(range);
