@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+import { IconPlus } from "~frontend/../../ui/icons";
 import { theme } from "~frontend/../../ui/theme";
 import { UserMenu } from "~frontend/layouts/AppLayout/UserMenu";
 import { Button } from "~ui/buttons/Button";
@@ -16,8 +17,8 @@ export function SidebarContent({ selectedRequestId }: Props) {
     <UIHolder>
       <UIHeader>
         <UserMenu />
-        <Button kind="secondary" size="small">
-          + New Topic
+        <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
+          New Request
         </Button>
       </UIHeader>
 
