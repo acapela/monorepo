@@ -44,12 +44,6 @@ export const TaskDetailedInfoFragment = createFragment<TaskDetailedInfoFragmentT
         topic {
           id
           name
-          room {
-            id
-            space {
-              id
-            }
-          }
         }
       }
     }

@@ -1,5 +1,4 @@
 import { test } from "./helper/base-test";
-import { createAndGotoRoom, createAndGotoTopic } from "./helper/common-actions";
 import { basePath } from "./helper/constants";
 
 test("find login button", async ({ page }) => {
@@ -7,23 +6,13 @@ test("find login button", async ({ page }) => {
   await page.click("text=Log in");
 });
 
-test("view spaces", async ({ page, db, auth }) => {
-  await auth.login(db.user2);
-  await page.goto(basePath + "/spaces");
-  await page.waitForSelector(`text=${db.space.name}`);
-});
-
-test("create a room", async ({ page, db, auth }) => {
-  await auth.login(db.user2);
-  await page.goto(basePath + "/dashboard");
-  await createAndGotoRoom(page, { spaceName: db.space.name, roomName: "Roomba" });
-});
-
 const COMPOSER_SELECTOR = '[class^="RichEditor__UIEditorContent"]';
 
 test("it should not allow sending the first message without a mention", async ({ page, db, auth }) => {
   await auth.login(db.user2);
-  await createAndGotoTopic(page, { spaceName: db.space.name, roomName: "Mailbox", topicName: "hot takes" });
+  await page.goto(basePath);
+  await page.click("text=New Topic");
+
   await page.click(COMPOSER_SELECTOR);
   const message = "What is happening";
   await page.keyboard.type(message);
@@ -33,7 +22,8 @@ test("it should not allow sending the first message without a mention", async ({
 
 test("replying to a request-response marks it as done", async ({ page, db, auth }) => {
   await auth.login(db.user2);
-  await createAndGotoTopic(page, { spaceName: db.space.name, roomName: "ResponsiveRoom", topicName: "cold takes" });
+  await page.goto(basePath);
+  await page.click("text=New Topic");
 
   await page.click(COMPOSER_SELECTOR);
   await page.keyboard.type("What is happening @u");
@@ -53,9 +43,10 @@ test("replying to a request-response marks it as done", async ({ page, db, auth 
 
 test("sending a message with tasks for read and response, asks for the latter", async ({ page, db, auth }) => {
   await auth.login(db.user2);
-  await createAndGotoTopic(page, { spaceName: db.space.name, roomName: "Mailbox", topicName: "hot takes" });
-  await page.click(COMPOSER_SELECTOR);
+  await page.goto(basePath);
+  await page.click("text=New Topic");
 
+  await page.click(COMPOSER_SELECTOR);
   await page.keyboard.type("What is happening @u");
   await page.click(`text='${db.user1.name}'`);
   await page.click("text=Request read receipt");

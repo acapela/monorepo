@@ -26,7 +26,6 @@ import {
 import { slugify } from "~shared/slugify";
 import { addToast } from "~ui/toasts/data";
 
-import { SpaceBasicInfoFragment } from "./spaces";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createMutation, createQuery } from "./utils";
 
@@ -52,7 +51,6 @@ const TeamInvitationBasicInfoFragment = createFragment<TeamInvitationBasicInfoFr
 
 export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentType>(
   () => gql`
-    ${SpaceBasicInfoFragment()}
     ${UserBasicInfoFragment()}
     ${TeamInvitationBasicInfoFragment()}
 
@@ -61,9 +59,6 @@ export const TeamDetailedInfoFragment = createFragment<TeamDetailedInfoFragmentT
       name
       slug
       owner_id
-      spaces {
-        ...SpaceBasicInfo
-      }
       invitations(where: { used_at: { _is_null: true } }) {
         ...TeamInvitationBasicInfo
       }

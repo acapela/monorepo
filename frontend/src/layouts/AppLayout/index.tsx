@@ -1,9 +1,8 @@
 import Link from "next/link";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { routes, useIsAnyRouteActive } from "~frontend/router";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { SmallLogo } from "~frontend/ui/Logo";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
@@ -11,22 +10,18 @@ import { WindowView } from "~frontend/views/WindowView";
 import { useResizeCallback } from "~shared/hooks/useResizeCallback";
 import { theme } from "~ui/theme";
 
-import { Breadcrumbs } from "./Breadcrumbs";
-import { NotificationsOpener } from "./NotificationsOpener";
-import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBarSearchBar } from "./Search";
 import { TeamPickerView } from "./TeamPicker";
 import { UserMenu } from "./UserMenu";
 
 interface Props {
   children?: ReactNode;
-  legacyHideNavigation?: boolean;
 }
 
 const DEFAULT_SEARCH_BAR_WIDTH_IN_PX = 208;
 const TOP_BAR_TOOLS_GAP_IN_PX = 24;
 
-export const AppLayout = ({ children, legacyHideNavigation = false }: Props): JSX.Element => {
+export const AppLayout = ({ children }: Props): JSX.Element => {
   const user = useCurrentUser();
 
   const currentTeamId = useCurrentTeamId();
@@ -35,13 +30,6 @@ export const AppLayout = ({ children, legacyHideNavigation = false }: Props): JS
   const searchBarRef = useRef<HTMLDivElement | null>(null);
   const [availableSpaceForSearchBarInPx, setAvailableSpaceForSearchBarInPx] =
     useState<number>(DEFAULT_SEARCH_BAR_WIDTH_IN_PX);
-
-  const shouldShowBreadcrumbs = useIsAnyRouteActive([
-    routes.space.path,
-    routes.spaceRoom.path,
-    routes.spaceRoomTopic.path,
-    routes.spaceRoomSummary.path,
-  ]);
 
   useEffect(() => {
     determineAvailableSpaceForSearchBar();
@@ -86,28 +74,12 @@ export const AppLayout = ({ children, legacyHideNavigation = false }: Props): JS
   return (
     <>
       <UIHolder>
-        <UITopBar isCenteringMiddleElement={!shouldShowBreadcrumbs}>
+        <UITopBar isCenteringMiddleElement={true}>
           <Link href="/" passHref>
             <UILogo>
               <SmallLogo />
             </UILogo>
           </Link>
-          <UINavigationCentralPart>
-            {!legacyHideNavigation && (
-              <>
-                {shouldShowBreadcrumbs && (
-                  <UIBreadcrumbsHolder>
-                    <Breadcrumbs />
-                  </UIBreadcrumbsHolder>
-                )}
-                {!shouldShowBreadcrumbs && (
-                  <UIPrimaryNavigation>
-                    <PrimaryNavigation />
-                  </UIPrimaryNavigation>
-                )}
-              </>
-            )}
-          </UINavigationCentralPart>
 
           <UITopbarTools ref={topBarToolsRef}>
             <TopBarSearchBar
@@ -115,7 +87,6 @@ export const AppLayout = ({ children, legacyHideNavigation = false }: Props): JS
               availableSpaceInPx={availableSpaceForSearchBarInPx}
               defaultWidthInPx={DEFAULT_SEARCH_BAR_WIDTH_IN_PX}
             />
-            <NotificationsOpener />
             <UserMenu />
           </UITopbarTools>
         </UITopBar>
@@ -132,38 +103,12 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UITopBar = styled.div<{ isCenteringMiddleElement: boolean }>`
-  ${(props) => {
-    if (!props.isCenteringMiddleElement) {
-      return css`
-        display: flex;
-        justify-content: space-around;
-      `;
-    }
-    return css`
-      display: grid;
-      grid-template-columns: minmax(200px, 1fr) 2fr minmax(200px, 1fr);
-    `;
-  }}
-
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
   background: ${theme.colors.layout.foreground()};
   box-shadow: ${theme.shadow.topBar};
-`;
-
-const UINavigationCentralPart = styled.div<{}>`
-  align-self: center;
-  justify-self: center;
-`;
-
-const UIBreadcrumbsHolder = styled.div<{}>`
-  flex: 1;
-  justify-self: flex-start;
-`;
-
-const UIPrimaryNavigation = styled.div<{}>`
-  align-self: center;
-  justify-self: center;
 `;
 
 const UILogo = styled.a<{}>`

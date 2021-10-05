@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 
 import { OpenedTopicQuery, OpenedTopicQueryVariables } from "~gql/generated";
 
-import { TopicWithMessages } from "../RoomView/TopicWithMessages";
+import { TopicWithMessages } from "./TopicWithMessages";
 
 interface Props {
   topicId: string;

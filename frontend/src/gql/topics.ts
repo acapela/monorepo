@@ -1,25 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { gql } from "@apollo/client";
 
-import {
-  RoomTopicsQuery,
-  RoomTopicsQueryVariables,
-  TopicDetailedInfoFragment as TopicDetailedInfoFragmentType,
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables,
-  TopicsQuery,
-  TopicsQueryVariables,
-} from "~gql";
+import { TopicDetailedInfoFragment as TopicDetailedInfoFragmentType, TopicsQuery, TopicsQueryVariables } from "~gql";
 
-import { MessageFeedInfoFragment } from "./messages";
-import { RoomBasicInfoFragment } from "./rooms";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment, createQuery } from "./utils";
 
 export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmentType>(
   () => gql`
     ${UserBasicInfoFragment()}
-    ${RoomBasicInfoFragment()}
 
     fragment TopicDetailedInfo on topic {
       id
@@ -34,9 +23,6 @@ export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmen
       closed_by_user {
         ...UserBasicInfo
       }
-      room {
-        ...RoomBasicInfo
-      }
       members {
         user {
           ...UserBasicInfo
@@ -48,42 +34,6 @@ export const TopicDetailedInfoFragment = createFragment<TopicDetailedInfoFragmen
             created_at
           }
         }
-      }
-    }
-  `
-);
-
-export const [useRoomTopicsQuery] = createQuery<RoomTopicsQuery, RoomTopicsQueryVariables>(
-  () => gql`
-    ${TopicDetailedInfoFragment()}
-
-    query RoomTopics($roomId: uuid!) {
-      topics: topic(where: { room_id: { _eq: $roomId } }, order_by: [{ index: asc }]) {
-        ...TopicDetailedInfo
-      }
-    }
-  `
-);
-
-export const [useTopicMessagesQuery, topicMessagesQueryManager] = createQuery<
-  TopicMessagesQuery,
-  TopicMessagesQueryVariables
->(
-  () => gql`
-    ${MessageFeedInfoFragment()}
-
-    query TopicMessages(
-      $topicId: uuid!
-      $limit: Int
-      $order: order_by = asc
-      $typeExpression: message_type_enum_comparison_exp = { _is_null: false }
-    ) {
-      messages: message(
-        where: { topic_id: { _eq: $topicId }, is_draft: { _eq: false }, type: $typeExpression }
-        order_by: [{ created_at: $order }]
-        limit: $limit
-      ) {
-        ...MessageFeedInfo
       }
     }
   `
