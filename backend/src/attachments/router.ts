@@ -43,20 +43,7 @@ router.get("/attachments/:id", async (req: Request, res: Response) => {
           // user created the attachment
           user_id: userId,
         },
-        {
-          message: {
-            topic: {
-              room: {
-                OR: [
-                  // public: user is a team_member
-                  { is_private: false, space: { team: { team_member: { some: { user_id: userId } } } } },
-                  // private: user is a room_member
-                  { is_private: true, room_member: { some: { user_id: userId } } },
-                ],
-              },
-            },
-          },
-        },
+        { message: { topic: { team: { team_member: { some: { user_id: userId } } } } } },
       ],
     },
   });
