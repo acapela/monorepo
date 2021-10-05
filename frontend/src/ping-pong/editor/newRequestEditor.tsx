@@ -14,7 +14,6 @@ import { getFocusedElement } from "~shared/focus";
 import { useConst } from "~shared/hooks/useConst";
 import { useEqualDependencyChangeEffect } from "~shared/hooks/useEqualEffect";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
-import { createTimeout, wait } from "~shared/time";
 import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
@@ -36,9 +35,7 @@ export interface Props {
   onChange?: (value: RichEditorNode) => void;
   onSubmit?: () => void;
   placeholder?: string;
-  autofocusKey?: string;
   isDisabled?: boolean;
-  onEditorReady?: (editor: Editor) => void;
 }
 
 /**
@@ -91,7 +88,7 @@ function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
 }
 
 export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function RichEditor(
-  { value = getEmptyRichContent(), onChange, onSubmit, placeholder, autofocusKey, isDisabled, onEditorReady },
+  { value = getEmptyRichContent(), onChange, onSubmit, placeholder, isDisabled },
   ref
 ) {
   const editor = useConst(
@@ -120,44 +117,6 @@ export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function Rich
   useImperativeHandle(ref, () => {
     return editor;
   });
-
-  useEffect(() => {
-    /**
-     * Under the hook, `EditorContent` is using 0ms timeout before it initializes the view.
-     *
-     * Sadly, there is no callback we can assign to be informed about when it's done. Therefore to be sure to
-     * avoid race condition with this timeout, we'll wait 2 times for 0ms timeout and then inform that editor is ready.
-     */
-
-    let isStillMounted = true;
-    async function waitAndInformEditorIsReady() {
-      // First timeout is fired 'in the tick' time as EditorContent (as it uses componentDidMount) which
-      // will be called together with this useEffect.
-      await wait(0);
-      // We want to make sure our callback will be fired after EditorContent init, so let's wait for another 'tick'
-      await wait(0);
-
-      // Make sure component was not unmounted in the meanwhile
-      if (!isStillMounted) return;
-
-      onEditorReady?.(editor);
-    }
-
-    waitAndInformEditorIsReady();
-
-    return () => {
-      isStillMounted = false;
-    };
-  }, [editor, onEditorReady]);
-
-  // Handle autofocus
-  useEffect(() => {
-    if (!editor || !autofocusKey) return;
-
-    return createTimeout(() => {
-      getFocusAtEndCommand().run();
-    }, 0);
-  }, [autofocusKey, editor, getFocusAtEndCommand]);
 
   // Attach onChange prop to editor content changes.
   useEffect(() => {
