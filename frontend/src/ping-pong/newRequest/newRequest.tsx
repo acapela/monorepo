@@ -1,7 +1,9 @@
+import { runInAction } from "mobx";
 import React, { useCallback, useRef } from "react";
 import styled from "styled-components";
 
 import { Editor, getEmptyRichContent } from "~frontend/../../richEditor/RichEditor";
+import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
 import { FreeTextInput } from "~ui/forms/FreeInputText";
@@ -10,6 +12,7 @@ import { NewRequestRichEditor } from "../editor/newRequestEditor";
 
 export function NewRequest() {
   const editorRef = useRef<Editor>(null);
+  const db = useDb();
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
@@ -28,13 +31,22 @@ export function NewRequest() {
   });
 
   function handleSubmitTopicName(submittedTopicName: string) {
-    setTopicName(submittedTopicName.trim());
+    setTopicName(submittedTopicName);
+  }
+
+  function submit() {
+    // TODO: Fix!
+    runInAction(() => {
+      const topic = db.topic.create({ name: topicName, slug: `slug-${topicName}` });
+      db.message.create({ content, topic_id: topic.id, type: "TEXT" });
+    });
   }
 
   return (
     <UIHolder>
       <UITopicNameInput value={topicName} onChangeText={handleSubmitTopicName} placeholder={"Add topic"} />
       <NewRequestRichEditor value={content} onChange={setContent} placeholder="Hello!" />
+      <button onClick={submit}>Submit</button>
     </UIHolder>
   );
 }
