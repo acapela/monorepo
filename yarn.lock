@@ -3968,13 +3968,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mudder@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@types/mudder@npm:1.0.0"
-  checksum: 78cc83f7b8699406b101a0d75ab0e2db224e34b8d0ea8e9630e24f2ae21d951abeaa54464f48f6353dac8e77280305e88855db50f7c112b9d397e975d55ce7fe
-  languageName: node
-  linkType: hard
-
 "@types/next-auth@npm:^3.15.0":
   version: 3.15.0
   resolution: "@types/next-auth@npm:3.15.0"
@@ -12544,13 +12537,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mudder@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "mudder@npm:1.1.0"
-  checksum: fc3bef232d5c9215ddcde7c1e61bd4c9dd45579f9d07ef5f06f9a51f6063e09492e71bedfe9f4134411fe029e6163436ad5564424c9a39e3f0c6ba30f4cfa8e1
-  languageName: node
-  linkType: hard
-
 "mute-stream@npm:0.0.7":
   version: 0.0.7
   resolution: "mute-stream@npm:0.0.7"
@@ -18600,6 +18586,7 @@ __metadata:
     cross-env: 7.0.3
     dotenv-cli: ^4.0.0
     prisma: ^2.30.3
+    ts-node-dev: ^1.1.8
     ~config: 0.1.0
     ~shared: 0.1.0
   languageName: unknown
@@ -18633,7 +18620,6 @@ __metadata:
     "@types/dom-mediacapture-record": ^1.0.10
     "@types/js-cookie": ^2.2.7
     "@types/jsonwebtoken": ^8.5.5
-    "@types/mudder": 1.0.0
     "@types/next-auth": ^3.15.0
     "@types/react-dom": ^17.0.9
     "@types/validator": ^13.6.3
@@ -18652,7 +18638,6 @@ __metadata:
     js-cookie: ^2.2.1
     jsonwebtoken: ^8.5.1
     msw: ^0.35.0
-    mudder: ^1.1.0
     next: ^11.1.2
     next-auth: ^3.29.0
     next-compose-plugins: ^2.2.1
