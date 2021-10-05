@@ -20,6 +20,7 @@ import { global } from "~frontend/styles/global";
 import { CurrentTeamIdProvider } from "~frontend/team/CurrentTeamIdProvider";
 import { renderWithPageLayout } from "~frontend/utils/pageLayout";
 import { POP_ANIMATION_CONFIG } from "~ui/animations";
+import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { PromiseUIRenderer } from "~ui/createPromiseUI";
 import { TooltipsRenderer } from "~ui/popovers/TooltipsRenderer";
 import { PresenceAnimator } from "~ui/PresenceAnimator";
@@ -75,22 +76,24 @@ export default function App({
       <CommonMetadata />
       <AnalyticsManager />
       <SessionProvider session={session}>
-        <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
-            <ThemeProvider theme={getTheme("default")}>
-              <CurrentTeamIdProvider>
-                <PromiseUIRenderer />
-                <TooltipsRenderer />
-                <ToastsRenderer />
-                <AnimatePresence>
-                  <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
-                    {renderWithPageLayout(Component, pageProps)}
-                  </PresenceAnimator>
-                </AnimatePresence>
-              </CurrentTeamIdProvider>
-            </ThemeProvider>
-          </ApolloProvider>
-        </MotionConfig>
+        <ClientSideOnly>
+          <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
+            <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+              <ThemeProvider theme={getTheme("default")}>
+                <CurrentTeamIdProvider>
+                  <PromiseUIRenderer />
+                  <TooltipsRenderer />
+                  <ToastsRenderer />
+                  <AnimatePresence>
+                    <PresenceAnimator presenceStyles={{ opacity: [0, 1] }}>
+                      {renderWithPageLayout(Component, pageProps)}
+                    </PresenceAnimator>
+                  </AnimatePresence>
+                </CurrentTeamIdProvider>
+              </ThemeProvider>
+            </ApolloProvider>
+          </MotionConfig>
+        </ClientSideOnly>
       </SessionProvider>
     </ErrorBoundary>
   );
