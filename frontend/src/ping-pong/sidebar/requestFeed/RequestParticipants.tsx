@@ -36,9 +36,11 @@ export const RequestParticipants = function RequestParticipants({ topicId }: Pro
 
   return (
     <span>
-      {participants.map((participant) => (
-        <UserAvatar key={participant.id} user={participant} size="small" />
-      ))}
+      {participants
+        .filter((participant) => participant !== null)
+        .map((participant) => (
+          <UserAvatar key={participant.id} user={participant} size="small" />
+        ))}
     </span>
   );
 };
