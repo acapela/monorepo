@@ -34,5 +34,7 @@ export const teamInvitationEntity = defineEntity<TeamInvitationFragment>({
     updateColumns: [],
   }),
 }).addConnections((teamInvitation, { getEntity }) => ({
-  usedByUser: teamInvitation.used_by_user_id ? getEntity(userEntity).findById(teamInvitation.used_by_user_id) : null,
+  get usedByUser() {
+    return teamInvitation.used_by_user_id ? getEntity(userEntity).findById(teamInvitation.used_by_user_id) : null;
+  },
 }));

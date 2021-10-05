@@ -5,9 +5,8 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
-import { assertDefined } from "~shared/assert";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
@@ -44,12 +43,10 @@ const LabeledToggle = ({
 );
 
 export const NotificationSettings = observer(() => {
-  const currentTeamId = useCurrentTeamId();
-  const teamId = assertDefined(currentTeamId, "must have team ID");
   const currentUser = useAssertCurrentUser();
 
   const db = useDb();
-  const team = db.team.findById(teamId);
+  const team = useAssertCurrentTeam();
   const teamMember = db.teamMember.find((teamMember) => teamMember.user_id == currentUser.id).all[0];
 
   const { data } = useQuery<FindSlackUserQuery, FindSlackUserQueryVariables>(
@@ -60,7 +57,7 @@ export const NotificationSettings = observer(() => {
         }
       }
     `,
-    { variables: { teamId } }
+    { variables: { teamId: team.id } }
   );
 
   if (!team || !teamMember || !data) {
@@ -89,7 +86,7 @@ export const NotificationSettings = observer(() => {
       )}
 
       {team.hasSlackInstallation && !hasSlackUser && (
-        <AddSlackInstallationButton teamId={teamId} tooltip="Connect Slack to receive notifications through it" />
+        <AddSlackInstallationButton teamId={team.id} tooltip="Connect Slack to receive notifications through it" />
       )}
     </UIPanel>
   );

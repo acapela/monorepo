@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useAssertCurrentTeam, useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { assert } from "~shared/assert";
@@ -19,13 +19,8 @@ import { SlackInstallationButton } from "./SlackInstallationButton";
 
 export const CurrentTeamMembersManager = observer(() => {
   const db = useDb();
-  const teamId = useAssertCurrentTeamId();
-  const team = db.team.findById(teamId);
+  const team = useAssertCurrentTeam();
   const currentUser = useAssertCurrentUser();
-
-  if (!team) {
-    return null;
-  }
 
   const isCurrentUserTeamOwner = currentUser.id === team?.owner_id;
 
