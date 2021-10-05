@@ -21,7 +21,6 @@ const topicFragment = gql`
     owner_id
     index
     name
-    room_id
     slug
     team_id
   }
@@ -42,7 +41,6 @@ export const topicEntity = defineEntity<TopicFragment>({
       closing_summary: null,
       team_id: getContextValue(teamIdContext) ?? undefined,
       owner_id: getContextValue(userIdContext) ?? undefined,
-      room_id: null,
       index: "0",
       ...getGenericDefaultData(),
     };

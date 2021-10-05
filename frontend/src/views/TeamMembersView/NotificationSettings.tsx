@@ -16,8 +16,7 @@ import { Toggle } from "~ui/toggle";
 
 import { AddSlackInstallationButton } from "./SlackInstallationButton";
 
-const getNotificationChannelDescription = (channel: string) =>
-  `Mentions and room invitations will be sent via ${channel}.`;
+const getNotificationChannelDescription = (channel: string) => `Requests will be sent via ${channel}.`;
 
 const LabeledToggle = ({
   title,

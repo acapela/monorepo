@@ -54,25 +54,6 @@ const typePolicies: TypedTypePolicies = {
       },
     },
   },
-  space_member: {
-    keyFields: ["space_id", "user_id"],
-    merge: mergeUsingIncoming,
-  },
-  space: {
-    fields: {
-      members: {
-        keyArgs: ["user_id"],
-        merge: mergeUsingIncoming,
-      },
-    },
-  },
-  room: {
-    fields: {
-      topics: {
-        merge: mergeUsingIncoming,
-      },
-    },
-  },
   topic: {
     fields: {
       messages: {

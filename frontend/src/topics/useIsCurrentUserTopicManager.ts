@@ -16,7 +16,7 @@ export const useIsCurrentUserTopicManager = withFragments(
   (topic: IsCurrentUserTopicManager_TopicFragment | null) => {
     const user = useAssertCurrentUser();
 
-    // if the topic has an owner - only the topic owner or room owner can modify the topic
+    // if the topic has an owner - only the topic owner can modify the topic
     return Boolean(topic && [topic.owner_id].includes(user.id));
   }
 );

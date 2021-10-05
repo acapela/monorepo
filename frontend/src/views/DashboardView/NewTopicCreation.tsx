@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import { routes } from "~frontend/router";
 import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
-import { CreateNewMessageEditor } from "~frontend/views/RoomView/TopicWithMessages/CreateNewMessageEditor";
+import { CreateNewMessageEditor } from "~frontend/views/DashboardView/TopicWithMessages/CreateNewMessageEditor";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 export function NewTopicCreation() {

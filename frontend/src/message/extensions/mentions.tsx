@@ -28,7 +28,6 @@ import { theme } from "~ui/theme";
  */
 
 function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
-  // TODO: Discussion -> Show only room members when inside a private room
   const teamMembers = useCurrentTeamMembers();
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);

@@ -1,10 +1,11 @@
+import { gql, useQuery } from "@apollo/client";
 import { ErrorBoundary } from "@sentry/nextjs";
 import { useState } from "react";
 import { useDebounce } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useFullTextSearchQuery } from "~frontend/gql/search";
+import { SearchResultsQuery, SearchResultsQueryVariables } from "~gql";
 import { namedForwardRef } from "~shared/react/namedForwardRef";
 import { borderRadius } from "~ui/baseStyles";
 import { SearchInput } from "~ui/forms/SearchInput";
@@ -21,7 +22,25 @@ const DEBOUNCE_DELAY_MS = 400;
 const PureSearchBar = namedForwardRef<HTMLInputElement, Props>(({ className }, ref) => {
   const [value, setValue] = useState("");
   const [term, setTerm] = useState(value);
-  const [results] = useFullTextSearchQuery({ term: `%${term}%` });
+  const { data: results } = useQuery<SearchResultsQuery, SearchResultsQueryVariables>(
+    gql`
+      query SearchResults($term: String!) {
+        topics: topic(where: { name: { _ilike: $term } }, limit: 10) {
+          id
+          name
+        }
+        messages: message(where: { content_text: { _ilike: $term } }, limit: 10) {
+          id
+          content_text
+          topic {
+            id
+            name
+          }
+        }
+      }
+    `,
+    { variables: { term: `%${term}%` } }
+  );
 
   useDebounce(
     () => {

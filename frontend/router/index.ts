@@ -13,21 +13,6 @@ export const routes = {
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
   topic: createRoute("/[topicId]", { topicId: "string" }),
-
-  // <likely-to-be-deprecated>
-  spaces: createRoute("/spaces", {}),
-  calendar: createRoute("/calendar", {}),
-  space: createRoute("/space/[spaceId]", { spaceId: "string" }),
-
-  spaceRoom: createRoute("/space/[spaceId]/[roomId]", { spaceId: "string", roomId: "string" }),
-  spaceRoomSummary: createRoute("/space/[spaceId]/[roomId]/summary", { spaceId: "string", roomId: "string" }),
-  spaceRoomTopic: createRoute("/space/[spaceId]/[roomId]/[topicId]", {
-    spaceId: "string",
-    roomId: "string",
-    topicId: "string",
-  }),
-  // </likely-to-be-deprecated>
-
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 
