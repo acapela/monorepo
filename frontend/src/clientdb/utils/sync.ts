@@ -12,6 +12,8 @@ import {
   PullSyncRequestsSubscriptionVariables,
   Task_Constraint,
   Team_Constraint,
+  Team_Invitation_Constraint,
+  Team_Member_Constraint,
   Topic_Constraint,
   User_Constraint,
 } from "~gql";
@@ -39,6 +41,8 @@ type ConstraintsTypeMap = {
   topic: Topic_Constraint;
   user: User_Constraint;
   team: Team_Constraint;
+  team_member: Team_Member_Constraint;
+  team_invitation: Team_Invitation_Constraint;
   message: Message_Constraint;
   message_reaction: Message_Reaction_Constraint;
   attachment: Attachment_Constraint;
@@ -53,6 +57,8 @@ const upsertConstraints: ConstraintsValueMap = {
   topic: "thread_pkey",
   user: "user_pkey",
   team: "team_id_key",
+  team_member: "team_member_id_key",
+  team_invitation: "team_invitation_pkey",
   message: "message_id_key",
   message_reaction: "message_reaction_id_key",
   attachment: "attachment_id_key",
@@ -190,23 +196,35 @@ export function createHasuraSyncSetupFromFragment<T>(
     async push(entity, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
       const input = getPushInputFromData(entity);
+      const hasUpdateColumns = updateColumns.length > 0;
       const result = await apollo.mutate<
         { result: T },
-        { input: Partial<T>; updateColumns: Array<keyof T>; constraint: string }
+        { input: Partial<T>; updateColumns?: Array<keyof T>; constraint?: string }
       >({
-        variables: { input, updateColumns, constraint: upsertConstraint },
+        variables: hasUpdateColumns ? { input, updateColumns, constraint: upsertConstraint } : { input },
         mutation: gqlTag`
           ${fragment}
           mutation PushUpdate${upperType}(
-            $input: ${type}_insert_input!, 
-            $updateColumns: [${type}_update_column!]!, 
+            $input: ${type}_insert_input!
+            ${
+              hasUpdateColumns
+                ? ` 
+            $updateColumns: [${type}_update_column!]! 
             $constraint: ${type}_constraint!
+            `
+                : ""
+            }
           ) {
             result: insert_${type}_one(
               object: $input
+              ${
+                hasUpdateColumns
+                  ? `
               on_conflict: {
                 constraint: $constraint
                 update_columns: $updateColumns
+              }`
+                  : ""
               }
             ) {
               ...${name}

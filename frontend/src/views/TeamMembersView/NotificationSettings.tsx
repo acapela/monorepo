@@ -1,16 +1,12 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
-import {
-  TeamMemberNotifyQuery,
-  TeamMemberNotifyQueryVariables,
-  UpdateTeamMemberMutation,
-  UpdateTeamMemberMutationVariables,
-} from "~gql";
-import { assertDefined } from "~shared/assert";
+import { useDb } from "~frontend/clientdb";
+import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
@@ -46,74 +42,29 @@ const LabeledToggle = ({
   </UILabel>
 );
 
-export function NotificationSettings() {
-  const currentTeamId = useCurrentTeamId();
-  const teamId = assertDefined(currentTeamId, "must have team ID");
+export const NotificationSettings = observer(() => {
   const currentUser = useAssertCurrentUser();
 
-  const { data } = useQuery<TeamMemberNotifyQuery, TeamMemberNotifyQueryVariables>(
+  const db = useDb();
+  const team = useAssertCurrentTeam();
+  const teamMember = db.teamMember.find((teamMember) => teamMember.user_id == currentUser.id).all[0];
+
+  const { data } = useQuery<FindSlackUserQuery, FindSlackUserQueryVariables>(
     gql`
-      query TeamMemberNotify($teamId: uuid!, $userId: uuid!) {
+      query FindSlackUser($teamId: uuid!) {
         findSlackUserOutput: find_slack_user(input: { team_id: $teamId }) {
           has_slack_user
         }
-        teamMember: team_member(where: { team_id: { _eq: $teamId }, user_id: { _eq: $userId } }) {
-          id
-          user_id
-          team_id
-          notify_email
-          notify_slack
-          team {
-            id
-            slack_installation {
-              team_id
-            }
-          }
-        }
       }
     `,
-    {
-      variables: { teamId, userId: currentUser.id },
-    }
-  );
-  const teamMember = data?.teamMember[0];
-
-  const [updateTeamMember] = useMutation<UpdateTeamMemberMutation, UpdateTeamMemberMutationVariables>(
-    gql`
-      mutation UpdateTeamMember($teamId: uuid!, $userId: uuid!, $notify_email: Boolean!, $notify_slack: Boolean!) {
-        update_team_member(
-          where: { team_id: { _eq: $teamId }, user_id: { _eq: $userId } }
-          _set: { notify_email: $notify_email, notify_slack: $notify_slack }
-        ) {
-          returning {
-            id
-            notify_email
-            notify_slack
-          }
-        }
-      }
-    `,
-    {
-      optimisticResponse: (vars) => ({
-        __typename: "mutation_root",
-        update_team_member: {
-          __typename: "team_member_mutation_response",
-          returning: [{ __typename: "team_member", id: teamMember?.id || "??", ...vars }],
-        },
-      }),
-    }
+    { variables: { teamId: team.id } }
   );
 
-  if (!teamMember) {
+  if (!team || !teamMember || !data) {
     return null;
   }
 
-  const handleUpdate = (data: Partial<UpdateTeamMemberMutationVariables>) => {
-    updateTeamMember({ variables: { teamId, userId: currentUser.id, ...teamMember, ...data } });
-  };
-
-  const hasSlackInstallation = Boolean(teamMember.team.slack_installation);
-  const hasSlackUser = Boolean(data?.findSlackUserOutput?.has_slack_user);
+  const hasSlackUser = Boolean(data.findSlackUserOutput?.has_slack_user);
 
   return (
     <UIPanel>
@@ -123,23 +74,23 @@ export function NotificationSettings() {
         title="Email"
         description={getNotificationChannelDescription("email")}
         isSet={teamMember.notify_email}
-        onChange={(isChecked) => handleUpdate({ notify_email: isChecked })}
+        onChange={(isChecked) => teamMember.update({ notify_email: isChecked })}
       />
-      {hasSlackInstallation && hasSlackUser && (
+      {team.hasSlackInstallation && hasSlackUser && (
         <LabeledToggle
           title="Slack"
           description={getNotificationChannelDescription("slack")}
           isSet={teamMember.notify_slack}
-          onChange={(isChecked) => handleUpdate({ notify_slack: isChecked })}
+          onChange={(isChecked) => teamMember.update({ notify_slack: isChecked })}
         />
       )}
 
-      {hasSlackInstallation && !hasSlackUser && (
-        <AddSlackInstallationButton teamId={teamId} tooltip="Connect Slack to receive notifications through it" />
+      {team.hasSlackInstallation && !hasSlackUser && (
+        <AddSlackInstallationButton teamId={team.id} tooltip="Connect Slack to receive notifications through it" />
       )}
     </UIPanel>
   );
-}
+});
 
 const UIPanel = styled.div<{}>`
   display: flex;

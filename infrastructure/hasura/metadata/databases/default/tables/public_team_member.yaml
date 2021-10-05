@@ -20,16 +20,23 @@ insert_permissions:
           - user_id:
               _ceq: user_id
     columns:
+    - created_at
+    - id
+    - notify_email
+    - notify_slack
     - team_id
+    - updated_at
     - user_id
   role: user
 select_permissions:
 - permission:
     columns:
+    - created_at
     - id
     - notify_email
     - notify_slack
     - team_id
+    - updated_at
     - user_id
     filter:
       team:
