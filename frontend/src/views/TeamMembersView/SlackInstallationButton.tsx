@@ -1,6 +1,8 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import styled from "styled-components";
 
+import { EntityByDefinition } from "~clientdb";
+import { teamEntity } from "~frontend/clientdb/team";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import {
   DeleteSlackInstallationMutation,
@@ -15,7 +17,7 @@ import { IconMinus, IconPlus } from "~ui/icons";
 import { addToast } from "~ui/toasts/data";
 
 type Props = {
-  team: any;
+  team: EntityByDefinition<typeof teamEntity>;
   isCurrentUserTeamOwner: boolean;
 };
 
