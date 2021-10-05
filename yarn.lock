@@ -18586,7 +18586,6 @@ __metadata:
     cross-env: 7.0.3
     dotenv-cli: ^4.0.0
     prisma: ^2.30.3
-    ts-node-dev: ^1.1.8
     ~config: 0.1.0
     ~shared: 0.1.0
   languageName: unknown
