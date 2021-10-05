@@ -4,6 +4,7 @@ import { computed } from "mobx";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
+import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 interface Props {
@@ -14,7 +15,7 @@ export const RequestParticipants = function RequestParticipants({ topicId }: Pro
   const db = useDb();
   const currentUser = useAssertCurrentUser();
 
-  const participants = computed(() => {
+  const participants: UserEntity[] = computed(() => {
     const topicOwner = db.topic.findById(topicId)?.owner_id;
     const allTasks = db.task.find((task) => task.message?.topic_id === topicId).all;
 
@@ -26,7 +27,7 @@ export const RequestParticipants = function RequestParticipants({ topicId }: Pro
 
     // Corner case: Your own avatar should only appear is you assigned a task to yourself and no one else
     if (participantsWithoutCurrentUser.length === 0) {
-      return [db.user.findById(currentUser.id)];
+      return [db.user.findById(currentUser.id) as UserEntity];
     }
 
     return db.user.find(({ id }) => participantsWithoutCurrentUser.includes(id)).all;
@@ -35,7 +36,7 @@ export const RequestParticipants = function RequestParticipants({ topicId }: Pro
   return (
     <span>
       {participants.map((participant) => (
-        <UserAvatar user={participant} size="small" />
+        <UserAvatar key={participant.id} user={participant} size="small" />
       ))}
     </span>
   );
