@@ -6,7 +6,7 @@ import { Editor, getEmptyRichContent } from "~frontend/../../richEditor/RichEdit
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
-import { FreeTextInput } from "~ui/forms/FreeInputText";
+import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "../editor/newRequestEditor";
 
@@ -35,7 +35,7 @@ export function NewRequest() {
   }
 
   function submit() {
-    // TODO: Fix!
+    // TODO: Fix! Mentions are not quite working correctly.
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: `slug-${topicName}` });
       db.message.create({ content, topic_id: topic.id, type: "TEXT" });
@@ -55,7 +55,7 @@ const UIHolder = styled.div<{}>`
   width: 600px;
 `;
 
-const UITopicNameInput = styled(FreeTextInput)<{}>`
+const UITopicNameInput = styled(TransparentTextInput)<{}>`
   font-weight: 700;
   font-family: "Inter", sans-serif;
 

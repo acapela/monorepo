@@ -11,6 +11,7 @@ interface Props {
   topicId: string;
 }
 
+// TODO: Extend this component so that it shows multiple participants accordingly
 export const RequestParticipants = function RequestParticipants({ topicId }: Props) {
   const db = useDb();
   const currentUser = useAssertCurrentUser();
