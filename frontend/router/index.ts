@@ -9,8 +9,6 @@ export const routes = {
   topic: createRoute("/[topicId]", { topicId: "string" }),
   home: createRoute("/", {}),
   settings: createRoute("/settings", {}),
-  legacyNewTopic: createRoute("/legacy", {}),
-  legacyTopic: createRoute("/legacy/[topicId]", { topicId: "string" }),
   logout: createRoute("/logout", {}),
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };

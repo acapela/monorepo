@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
+import { transcriptionEntity } from "~frontend/clientdb/transcription";
 import { AttachmentFragment } from "~gql";
 
 import { messageEntity } from "./message";
@@ -14,6 +15,7 @@ const attachmentFragment = gql`
     created_at
     mime_type
     original_name
+    transcription_id
     message_id
     updated_at
   }
@@ -34,14 +36,15 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
     insertColumns: ["id", "message_id", "mime_type", "original_name"],
     updateColumns: [],
   }),
-}).addConnections((attachment, { getEntity }) => {
-  return {
-    get message() {
-      if (!attachment.message_id) return;
+}).addConnections((attachment, { getEntity }) => ({
+  get message() {
+    if (!attachment.message_id) return;
 
-      return getEntity(messageEntity).findById(attachment.message_id);
-    },
-  };
-});
+    return getEntity(messageEntity).findById(attachment.message_id);
+  },
+  get transcription() {
+    return attachment.transcription_id ? getEntity(transcriptionEntity).findById(attachment.transcription_id) : null;
+  },
+}));
 
 export type AttachmentEntity = EntityByDefinition<typeof attachmentEntity>;

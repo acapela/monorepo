@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
+import { EntityByDefinition } from "~clientdb/entity/entity";
 import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { TeamFragment } from "~gql";
 
@@ -42,3 +43,5 @@ export const teamEntity = defineEntity<TeamFragment>({
   members: getEntity(teamMemberEntity).find((member) => member.team_id === team.id),
   invitations: getEntity(teamInvitationEntity).find((invitation) => invitation.team_id === team.id),
 }));
+
+export type TeamEntity = EntityByDefinition<typeof teamEntity>;

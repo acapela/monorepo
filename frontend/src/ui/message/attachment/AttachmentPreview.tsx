@@ -1,7 +1,8 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAttachmentQuery } from "~frontend/gql/attachments";
+import { useDb } from "~frontend/clientdb";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconCross } from "~ui/icons";
 
@@ -12,9 +13,9 @@ interface Props {
   onRemoveRequest?: (id: string) => void;
 }
 
-export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
-  const [attachment] = useAttachmentQuery({ id });
-
+export const AttachmentPreview = observer(({ id, onRemoveRequest }: Props) => {
+  const db = useDb();
+  const attachment = db.attachment.findById(id);
   if (!attachment) return null;
 
   return (
@@ -32,7 +33,7 @@ export const AttachmentPreview = ({ id, onRemoveRequest }: Props) => {
       )}
     </UIHolder>
   );
-};
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;
