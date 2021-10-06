@@ -48,7 +48,7 @@ export function UserMenu() {
           {
             label: "Sign out",
             onSelect: () => {
-              routes.logout.replace({});
+              routes.logout.push({});
               trackEvent("Signed Out");
             },
           },
