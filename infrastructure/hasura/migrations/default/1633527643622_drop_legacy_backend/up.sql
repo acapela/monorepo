@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS "public"."unread_messages";
 
 DROP VIEW "public"."room_last_posted_message";
 
@@ -57,8 +58,7 @@ EXECUTE PROCEDURE "public"."set_current_timestamp_updated_at"();
 COMMENT ON TRIGGER "set_public_team_member_updated_at" ON "public"."team_member"
 IS 'trigger to set value of column "updated_at" to current timestamp on row update';
 
-
-CREATE OR REPLACE VIEW "public"."unread_messages" AS
+CREATE VIEW "public"."unread_messages" AS
 SELECT tm.user_id,
        topic.team_id,
        topic.id AS topic_id,
