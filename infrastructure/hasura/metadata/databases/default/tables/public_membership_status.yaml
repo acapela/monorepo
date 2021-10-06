@@ -1,4 +1,0 @@
-table:
-  name: membership_status
-  schema: public
-is_enum: true
