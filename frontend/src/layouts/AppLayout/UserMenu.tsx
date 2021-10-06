@@ -22,7 +22,7 @@ export function UserMenu() {
       <UserAvatar user={user} size="regular" disableNameTooltip />
       <PopoverMenuTrigger
         onOpen={() => {
-          routes.team.prefetch({});
+          routes.settings.prefetch({});
         }}
         options={[
           {

@@ -48,7 +48,7 @@ export const TeamPickerView = observer(() => {
     trackEvent("Account Created", { teamName: name });
     trackEvent("Trial Started", { teamName: name });
 
-    await routes.team.push({});
+    await routes.settings.push({});
   }
 
   return (

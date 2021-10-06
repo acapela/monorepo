@@ -10,7 +10,7 @@ import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
-import { AddSlackInstallationButton } from "./SlackInstallationButton";
+import { AddSlackInstallationButton } from "./TeamMembersManager/SlackInstallationButton";
 
 const getNotificationChannelDescription = (channel: string) => `Requests will be sent via ${channel}.`;
 
