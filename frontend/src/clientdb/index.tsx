@@ -42,9 +42,9 @@ export function createNewClientDb(userId: string | null, teamId: string | null, 
   return clientdb;
 }
 
-type AsyncReturnType<T> = T extends (...args: unknown[]) => Promise<infer I> ? I : never;
+type ThenType<T> = T extends Promise<infer I> ? I : never;
 
-type ClientDb = AsyncReturnType<typeof createNewClientDb>;
+type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
 const reactContext = createContext<ClientDb | null>(null);
 
@@ -55,7 +55,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const apolloClient = useApolloClient();
 
   useEffect(() => {
-    const newDbPromise = createNewClientDb(userId, teamId, apolloClient);
+    const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamId, apolloClient);
 
     let isCancelled = false;
 
