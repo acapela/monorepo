@@ -50,11 +50,19 @@ const reactContext = createContext<ClientDb | null>(null);
 
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
+  const [canRender, setCanRender] = useState(false);
   const teamId = useCurrentTeamId();
   const userId = useCurrentUser()?.id ?? null;
   const apolloClient = useApolloClient();
 
   useEffect(() => {
+    setDb(null);
+    setCanRender(false);
+
+    if (!userId || !teamId || !apolloClient) {
+      setCanRender(true);
+      return;
+    }
     const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamId, apolloClient);
 
     let isCancelled = false;
@@ -62,6 +70,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     newDbPromise.then((newDb) => {
       if (isCancelled) return;
       setDb(newDb);
+      setCanRender(true);
     });
 
     return () => {
@@ -74,8 +83,8 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 
   return (
     <reactContext.Provider value={db}>
-      {!!db && children}
-      {!db && <div>Loading...</div>}
+      {canRender && children}
+      {!canRender && <div>Loading...</div>}
     </reactContext.Provider>
   );
 }
@@ -83,7 +92,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 export function useDb() {
   const db = useContext(reactContext);
 
-  assert(db, "Used outside ClientDbProvider");
+  assert(db, "Used outside ClientDbProvider or without being logged in");
 
   return db;
 }
