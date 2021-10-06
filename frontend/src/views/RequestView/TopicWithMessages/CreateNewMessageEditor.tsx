@@ -4,10 +4,8 @@ import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
@@ -18,19 +16,15 @@ import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { Message_Type_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
-import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
-import { assert } from "~shared/assert";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
-import { slugify } from "~shared/slugify";
-import { DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH, truncateTextWithEllipsis } from "~shared/text/ellipsis";
 import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
 interface Props {
-  topicId?: string;
+  topicId: string;
   isDisabled?: boolean;
   requireMention: boolean;
   onMessageSent: (messageData: unknown) => void;
@@ -41,36 +35,6 @@ interface SubmitMessageParams {
   content: RichEditorNode;
   attachments: EditorAttachmentInfo[];
 }
-
-function pickFirstLineFromPlainTextContent(plainTextContent: string): string {
-  return plainTextContent.split("\n")[0];
-}
-
-const useCreateNewTopicForMessage = () => {
-  const user = useAssertCurrentUser();
-  const teamId = useAssertCurrentTeamId();
-  const db = useDb();
-
-  async function createNewTopicForMessageContent(content: RichEditorNode) {
-    const contentPlainText = convertMessageContentToPlainText(content);
-
-    const titleFromPlainText = pickFirstLineFromPlainTextContent(contentPlainText);
-
-    const truncatedTitle = truncateTextWithEllipsis(titleFromPlainText, DEFAULT_TOPIC_TITLE_TRUNCATE_LENGTH);
-
-    const slug = slugify(truncatedTitle);
-
-    return db.topic.create({
-      name: truncatedTitle,
-      owner_id: user.id,
-      team_id: teamId,
-      slug,
-      index: "",
-    });
-  }
-
-  return createNewTopicForMessageContent;
-};
 
 export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessageSent, requireMention }: Props) => {
   const db = useDb();
@@ -88,7 +52,6 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     getInitialValue: getEmptyRichContent,
     checkShouldStore,
   });
-  const createNewTopicForMessage = useCreateNewTopicForMessage();
 
   const topicContext = useTopicStoreContext();
 
@@ -131,26 +94,10 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
     const messageId = getUUID();
-    /**
-     * We'll either use topicId provided from props, or if not provided - will create new topic.
-     * New topic title will be created from first 'paragraph' of plain text content in the message.
-     */
-    let finalTopicId = topicId;
-
-    if (!finalTopicId) {
-      const newTopicForMessage = await createNewTopicForMessage(content);
-
-      finalTopicId = newTopicForMessage?.id;
-    }
-
-    assert(
-      finalTopicId,
-      "Cannot create new message - no topicId provided and could not create new topic for this message"
-    );
 
     const newMessage = db.message.create({
       id: messageId,
-      topic_id: finalTopicId,
+      topic_id: topicId,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
