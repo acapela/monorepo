@@ -25,7 +25,7 @@ export const RequestItem = function RequestItem({ topicId, isHighlighted = false
   return (
     <RouteLink passHref route={routes.topic} params={{ topicId }}>
       <UIFeedItem isHighlighted={isHighlighted}>
-        <RequestParticipants topicId={topicId} />
+        <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
           <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
           <UIFeedItemSubTitle>{""}</UIFeedItemSubTitle>
