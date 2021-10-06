@@ -1,10 +1,10 @@
-import { noop } from "lodash";
 import { runInAction } from "mobx";
 
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
+import { createEntityPersistanceManager } from "./persistance";
 import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
@@ -19,6 +19,9 @@ export type EntityClient<Data, Connections> = {
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   createOrUpdate(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   destroy(): void;
+  definition: EntityDefinition<Data, Connections>;
+  persistanceLoaded: Promise<void>;
+  firstSyncLoaded: Promise<void>;
 };
 
 export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unknown>> = Def extends EntityDefinition<
@@ -44,89 +47,49 @@ export function createEntityClient<Data, Connections>(
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition);
 
-  const persistanceTablePromise = dbAdapterConfig?.dbAdapter?.getTable<Data>({
-    name: definition.config.name,
-    keyField: definition.config.keyField,
-  });
-
-  async function initializePersistance() {
-    if (!persistanceTablePromise) return noop;
-
-    const persistanceTable = await persistanceTablePromise;
-
-    // Instantly fetch all already persisted items
-    const allItems = await persistanceTable.fetchAllItems();
-
-    runInAction(() => {
-      // For all persisted items, create entities and add them
-      allItems.forEach((item) => {
-        client.create(item, "persistance");
-      });
-    });
-
-    // Persist all changes locally
-    const cancelAdded = store.events.on("itemAdded", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
-    });
-
-    const cancelRemoved = store.events.on("itemRemoved", (entity) => {
-      persistanceTable.removeItem(entity.getKey());
-    });
-
-    const cancelUpdated = store.events.on("itemUpdated", (entity) => {
-      persistanceTable.saveItem(entity.getKey(), entity.getData());
-    });
-
-    return () => {
-      cancelAdded();
-      cancelRemoved();
-      cancelUpdated();
-    };
-  }
-
-  // Initialize remote sync
-  async function initializeSync() {
-    const syncManager = createEntitySyncManager<Data, Connections>(
-      store,
-      {
-        entitySyncConfig: definition.config.sync,
-        // We're passing callbacks that connects sync layer with client
-        onItemsData(items) {
-          runInAction(() => {
-            items.forEach((item) => {
-              client.createOrUpdate(item, "sync");
-            });
-          });
-        },
-        onItemRemoveRequest(idsToRemove) {
-          runInAction(() => {
-            idsToRemove.forEach((idToRemove) => {
-              client.removeById(idToRemove, "sync");
-            });
-          });
-        },
-      },
-      databaseUtilities
-    );
-
-    return syncManager.cancel;
-  }
-
-  async function initialize() {
-    const cancelPersistance = await initializePersistance();
-    const cancelSync = await initializeSync();
-
-    return () => {
-      cancelPersistance();
-      cancelSync();
-    };
-  }
-
   function createEntityWithData(input: Partial<Data>) {
     return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });
   }
 
+  const persistanceManager = createEntityPersistanceManager(definition, {
+    dbAdapterConfig,
+    createNewEntity: (data) => {
+      const entity = createEntityWithData(data);
+      store.add(entity, "persistance");
+    },
+  });
+
+  const syncManager = createEntitySyncManager<Data, Connections>(
+    store,
+    {
+      entitySyncConfig: definition.config.sync,
+      // We're passing callbacks that connects sync layer with client
+      onItemsData(items) {
+        runInAction(() => {
+          items.forEach((item) => {
+            client.createOrUpdate(item, "sync");
+          });
+        });
+      },
+      onItemRemoveRequest(idsToRemove) {
+        runInAction(() => {
+          idsToRemove.forEach((idToRemove) => {
+            client.removeById(idToRemove, "sync");
+          });
+        });
+      },
+    },
+    databaseUtilities
+  );
+
+  async function initialize() {
+    await persistanceManager.loadPersistedData();
+    persistanceManager.startPersistingChanges();
+    syncManager.start();
+  }
+
   const client: EntityClient<Data, Connections> = {
+    definition,
     findById(id) {
       return store.findById(id);
     },
@@ -164,13 +127,14 @@ export function createEntityClient<Data, Connections>(
       return store.add(newEntity, source);
     },
     destroy() {
-      cancelSyncAndPersistancePromise.then((cancel) => {
-        cancel();
-      });
+      persistanceManager.destroy();
+      syncManager.cancel();
     },
+    firstSyncLoaded: syncManager.firstSyncPromise,
+    persistanceLoaded: persistanceManager.persistedItemsLoaded,
   };
 
-  const cancelSyncAndPersistancePromise = initialize();
+  initialize();
 
   return client;
 }

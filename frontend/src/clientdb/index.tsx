@@ -20,13 +20,13 @@ import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
 const DB_VERSION = 5;
 
-export function createNewClientDb(userId: string | null, teamId: string | null, apolloClient: ApolloClient<unknown>) {
+export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
     {
       db: {
         dbAdapter: createIndexedDbAdapter(),
         dbVersion: DB_VERSION,
-        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId ?? "no-user"}`,
+        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
       },
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
     },
@@ -46,30 +46,49 @@ export function createNewClientDb(userId: string | null, teamId: string | null, 
   return clientdb;
 }
 
-type ClientDb = ReturnType<typeof createNewClientDb>;
+type ThenType<T> = T extends Promise<infer I> ? I : never;
+
+type ClientDb = ThenType<ReturnType<typeof createNewClientDb>>;
 
 const reactContext = createContext<ClientDb | null>(null);
 
 export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
+  const [canRender, setCanRender] = useState(false);
   const teamId = useCurrentTeamId();
   const userId = useCurrentUser()?.id ?? null;
   const apolloClient = useApolloClient();
 
   useEffect(() => {
-    const newDb = createNewClientDb(userId, teamId, apolloClient);
+    setDb(null);
+    setCanRender(false);
 
-    setDb(newDb);
+    if (!userId || !apolloClient) {
+      setCanRender(true);
+      return;
+    }
+    const newDbPromise: Promise<ClientDb> = createNewClientDb(userId, teamId, apolloClient);
+
+    let isCancelled = false;
+
+    newDbPromise.then((newDb) => {
+      if (isCancelled) return;
+      setDb(newDb);
+      setCanRender(true);
+    });
 
     return () => {
-      // todoc db.destroy()
+      isCancelled = true;
+      newDbPromise.then((newDb) => {
+        newDb.destroy();
+      });
     };
   }, [userId, teamId, apolloClient]);
 
   return (
     <reactContext.Provider value={db}>
-      {!!db && children}
-      {!db && <div>Loading...</div>}
+      {canRender && children}
+      {!canRender && <div>Loading...</div>}
     </reactContext.Provider>
   );
 }
@@ -77,7 +96,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
 export function useDb() {
   const db = useContext(reactContext);
 
-  assert(db, "Used outside ClientDbProvider");
+  assert(db, "Used outside ClientDbProvider or without being logged in");
 
   return db;
 }
