@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 
 import { middlewareAuthenticateHasura } from "~backend/src/actions/actions";
-import { recurringMeetingCronHandler } from "~backend/src/cron/recurringMeetings";
 import { UnprocessableEntityError, isHttpError } from "~backend/src/errors/errorTypes";
 import { log } from "~shared/logger";
 
@@ -9,9 +8,7 @@ import { HttpStatus } from "../http";
 
 export const router = Router();
 
-const handlers: Record<string, Function> = {
-  "recurring-meetings": recurringMeetingCronHandler,
-};
+const handlers: Record<string, Function> = {};
 
 interface CronPayload {
   scheduled_time: string;

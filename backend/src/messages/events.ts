@@ -7,7 +7,6 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
-import { updateRoomLastActivityDate } from "../rooms/rooms";
 import { createMessageMentionNotifications, createTasksFromNewMentions } from "./mentionHandlers";
 
 export async function prepareMessagePlainTextData(message: Message) {
@@ -80,7 +79,6 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
   assert(topicInfo, "Message has no topic attached");
 
   await Promise.all([
-    topicInfo.room_id ? updateRoomLastActivityDate(topicInfo.room_id) : Promise.resolve(),
     prepareMessagePlainTextData(event.item),
     // In case message includes @mentions, create notifications for them
     createMessageMentionNotifications(event.item, event.itemBefore),
