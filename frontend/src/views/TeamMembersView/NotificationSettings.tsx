@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
@@ -46,7 +46,7 @@ export const NotificationSettings = observer(() => {
   const currentUser = useAssertCurrentUser();
 
   const db = useDb();
-  const team = useAssertCurrentTeam();
+  const team = useCurrentTeam();
   const teamMember = db.teamMember.find((teamMember) => teamMember.user_id == currentUser.id).all[0];
 
   const { data } = useQuery<FindSlackUserQuery, FindSlackUserQueryVariables>(
@@ -57,7 +57,7 @@ export const NotificationSettings = observer(() => {
         }
       }
     `,
-    { variables: { teamId: team.id } }
+    team ? { variables: { teamId: team.id } } : { skip: true }
   );
 
   if (!team || !teamMember || !data) {
