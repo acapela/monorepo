@@ -18,13 +18,13 @@ import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
 const DB_VERSION = 4;
 
-export function createNewClientDb(userId: string | null, teamId: string | null, apolloClient: ApolloClient<unknown>) {
+export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
     {
       db: {
         dbAdapter: createIndexedDbAdapter(),
         dbVersion: DB_VERSION,
-        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId ?? "no-user"}`,
+        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
       },
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
     },
@@ -59,7 +59,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     setDb(null);
     setCanRender(false);
 
-    if (!userId || !teamId || !apolloClient) {
+    if (!userId || !apolloClient) {
       setCanRender(true);
       return;
     }
