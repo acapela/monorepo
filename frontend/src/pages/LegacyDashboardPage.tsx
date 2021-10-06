@@ -3,18 +3,18 @@ import React from "react";
 import { AppLayout } from "~frontend/layouts/AppLayout";
 import { routes } from "~frontend/router";
 import { assignPageLayout } from "~frontend/utils/pageLayout";
-import { DashboardView } from "~frontend/views/DashboardView/DashboardView";
+import { LegacyDashboardView } from "~frontend/views/LegacyDashboardView/LegacyDashboardView";
 
-export function DashboardPage() {
+export function LegacyDashboardPage() {
   const topicParams = routes.dashboardTopic.useParams()?.route;
 
   // We're on topic route
   if (topicParams) {
     const { topicId } = topicParams;
-    return <DashboardView topicId={topicId} />;
+    return <LegacyDashboardView topicId={topicId} />;
   }
 
-  return <DashboardView />;
+  return <LegacyDashboardView />;
 }
 
-assignPageLayout(DashboardPage, AppLayout);
+assignPageLayout(LegacyDashboardPage, AppLayout);

@@ -6,7 +6,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { NotificationCount } from "~frontend/ui/NotificationCount";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { useTopicUnreadMessagesCount } from "~frontend/utils/unreadMessages";
-import { DashboardNavigationCard } from "~frontend/views/DashboardView/Navigation/DashboardNavigationCard";
+import { DashboardNavigationCard } from "~frontend/views/LegacyDashboardView/Navigation/DashboardNavigationCard";
 import { DashboardTopicCard_TopicFragment } from "~gql";
 import { theme } from "~ui/theme";
 

@@ -8,7 +8,7 @@ interface Props {
   topicId?: string;
 }
 
-export function DashboardView({ topicId }: Props) {
+export function LegacyDashboardView({ topicId }: Props) {
   return (
     <UIHolder>
       <UINavigationHolder>
