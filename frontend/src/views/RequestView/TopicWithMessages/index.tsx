@@ -1,56 +1,29 @@
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { withFragments } from "~frontend/gql/utils";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import {
-  TopicClosureSubscription,
-  TopicClosureSubscriptionVariables,
-  TopicWithMessages_TopicFragment,
-  UpdateLastSeenMessageMutation,
-  UpdateLastSeenMessageMutationVariables,
-} from "~gql";
+import { UpdateLastSeenMessageMutation, UpdateLastSeenMessageMutationVariables } from "~gql";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
-import { disabledCss } from "~ui/disabled";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
-import { useUpdateTopic } from "./shared";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
-import { useMessagesWithUpdates } from "./useMessagesWithUpdates";
-
-const fragments = {
-  topic: gql`
-    ${isTopicClosed.fragments.topic}
-    ${TopicSummaryMessage.fragments.topic}
-    ${TopicHeader.fragments.topic}
-
-    fragment TopicWithMessages_topic on topic {
-      id
-      ...IsTopicClosed_topic
-      ...TopicSummaryMessage_topic
-      ...TopicHeader_topic
-    }
-  `,
-};
-
-interface Props {
-  topic: TopicWithMessages_TopicFragment;
-}
 
 // Marks last message as read
-function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
+function useMarkTopicAsRead(topicId: string, messageIds: string[]) {
   const [updateLastSeenMessage] = useMutation<
     UpdateLastSeenMessageMutation,
     UpdateLastSeenMessageMutationVariables
@@ -71,7 +44,7 @@ function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
       return;
     }
 
-    const lastMessageId = Array.from(messageIds).pop();
+    const lastMessageId = messageIds[messageIds.length - 1];
 
     if (!lastMessageId) {
       return;
@@ -81,44 +54,25 @@ function useMarkTopicAsRead(topicId: string, messageIds: Set<string> | null) {
   }, [messageIds, topicId, updateLastSeenMessage]);
 }
 
-export const TopicWithMessages = withFragments(fragments, ({ topic }: Props) => {
-  const { messages, existingMessageIds, isLoadingMessages } = useMessagesWithUpdates(topic.id);
+export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
+  const messages = topic.messages.all;
 
-  useSubscription<TopicClosureSubscription, TopicClosureSubscriptionVariables>(
-    gql`
-      ${TopicSummaryMessage.fragments.topic}
-      ${TopicHeader.fragments.topic}
-
-      subscription TopicClosure($topicId: uuid!) {
-        topic_by_pk(id: $topicId) {
-          ...TopicSummaryMessage_topic
-          ...TopicHeader_topic
-        }
-      }
-    `,
-    { variables: { topicId: topic.id } }
-  );
-
-  useMarkTopicAsRead(topic.id, existingMessageIds);
+  // TODO figure out how to only run this for actually really existing messages
+  // useMarkTopicAsRead(
+  //   topic.id,
+  //   messages.map((m) => m.id)
+  // );
 
   const isClosed = isTopicClosed(topic);
 
-  const isComposerDisabled = isLoadingMessages;
-
   const scrollerRef = useRef<ScrollHandle>();
 
-  const [updateTopic] = useUpdateTopic();
   const user = useAssertCurrentUser();
   const handleCloseTopic = (topicSummary: string) => {
-    updateTopic({
-      variables: {
-        id: topic.id,
-        input: {
-          closed_at: new Date().toISOString(),
-          closed_by_user_id: user.id,
-          closing_summary: topicSummary,
-        },
-      },
+    topic.update({
+      closed_at: new Date().toISOString(),
+      closed_by_user_id: user.id,
+      closing_summary: topicSummary,
     });
     trackEvent("Closed Topic", { topicId: topic.id });
   };
@@ -139,11 +93,7 @@ export const TopicWithMessages = withFragments(fragments, ({ topic }: Props) => 
             </AnimateSharedLayout>
 
             {!messages.length && !isClosed && (
-              <UIContentWrapper>
-                {isLoadingMessages
-                  ? "Loading messages..."
-                  : "Start a request by adding a first message with an @-mention below."}
-              </UIContentWrapper>
+              <UIContentWrapper>Start a request by adding a first message with an @-mention below.</UIContentWrapper>
             )}
 
             {isClosed && <TopicClosureNote />}
@@ -151,10 +101,9 @@ export const TopicWithMessages = withFragments(fragments, ({ topic }: Props) => 
 
           {!isClosed && (
             <ClientSideOnly>
-              <UIMessageComposer isDisabled={isComposerDisabled}>
+              <UIMessageComposer>
                 <CreateNewMessageEditor
                   topicId={topic.id}
-                  isDisabled={isComposerDisabled}
                   requireMention={messages.length === 0}
                   onMessageSent={() => {
                     scrollerRef.current?.scrollToBottom("auto");
@@ -182,12 +131,10 @@ const UITopicViewCard = styled(TopicViewCard)`
   }
 `;
 
-const UIMessageComposer = styled.div<{ isDisabled: boolean }>`
+const UIMessageComposer = styled.div`
   flex: 1 0 auto;
   width: 100%;
   margin-top: 1rem;
   padding: 24px;
   padding-top: 0px;
-
-  ${(props) => props.isDisabled && disabledCss}
 `;

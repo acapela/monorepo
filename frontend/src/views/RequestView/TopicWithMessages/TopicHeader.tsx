@@ -1,12 +1,11 @@
-import { gql } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
+import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { withFragments } from "~frontend/gql/utils";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { isTopicClosed } from "~frontend/topics/utils";
-import { TopicHeader_TopicFragment } from "~gql";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -14,50 +13,26 @@ import { TextH3 } from "~ui/typo";
 
 import { CloseTopicModal } from "./CloseTopicModal";
 import { ManageTopic } from "./ManageTopic";
-import { useUpdateTopic } from "./shared";
 import { TopicHeaderDueDate } from "./TopicHeaderDueDate";
 
-const fragments = {
-  topic: gql`
-    ${isTopicClosed.fragments.topic}
-    ${useIsCurrentUserTopicManager.fragments.topic}
-    ${ManageTopic.fragments.topic}
-
-    fragment TopicHeader_topic on topic {
-      id
-      name
-      archived_at
-      ...IsTopicClosed_topic
-      ...IsCurrentUserTopicManager_topic
-      ...ManageTopic_topic
-    }
-  `,
-};
-
 interface Props {
-  topic: TopicHeader_TopicFragment;
+  topic: TopicEntity;
   onCloseTopicRequest?: (summary: string) => void;
   className?: string;
 }
 
-const _TopicHeader = ({ topic, onCloseTopicRequest }: Props) => {
+export const TopicHeader = observer(({ topic, onCloseTopicRequest }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const [updateTopic] = useUpdateTopic();
   const isClosed = Boolean(topic && isTopicClosed(topic));
   const isTopicManager = useIsCurrentUserTopicManager(topic);
 
   const handleRestoreTopic = () => {
-    updateTopic({
-      variables: {
-        id: topic.id,
-        input: { closed_at: null, closed_by_user_id: null, archived_at: null },
-      },
-    });
+    topic.update({ closed_at: null, closed_by_user_id: null, archived_at: null });
     trackEvent("Reopened Topic");
   };
 
   const handleReopenTopic = () => {
-    updateTopic({ variables: { id: topic.id, input: { closed_at: null, closed_by_user_id: null } } });
+    topic.update({ closed_at: null, closed_by_user_id: null });
     trackEvent("Reopened Topic");
   };
 
@@ -65,7 +40,7 @@ const _TopicHeader = ({ topic, onCloseTopicRequest }: Props) => {
     <UIHolder>
       <UITopicMeta>
         <UITitle isClosed={isClosed}>{topic.name}</UITitle>
-        <TopicHeaderDueDate topicId={topic.id} />
+        <TopicHeaderDueDate topic={topic} />
       </UITopicMeta>
 
       <UIActions>
@@ -100,9 +75,7 @@ const _TopicHeader = ({ topic, onCloseTopicRequest }: Props) => {
       </AnimatePresence>
     </UIHolder>
   );
-};
-
-export const TopicHeader = withFragments(fragments, _TopicHeader);
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

@@ -1,41 +1,23 @@
-import { gql, useQuery } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
+import { useDb } from "~frontend/clientdb";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageMedia } from "~frontend/ui/message/display/MessageMedia";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { MessageMetaDataWrapper } from "~frontend/ui/message/messagesFeed/MessageMetaData";
-import { ReplyingToMessageQuery, ReplyingToMessageQueryVariables, ReplyingToMessage_MessageFragment } from "~gql";
 import { borderRadius } from "~ui/baseStyles";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { CornerButtonWrapper } from "~ui/buttons/CornerButtonWrapper";
 import { ITEM_BACKGROUND_WEAK, PRIMARY_PINK_1, PRIMARY_TEAL_1, SECONDARY_ORANGE_1 } from "~ui/theme/colors/base";
 
-const fragments = {
-  message: gql`
-    ${MessageMetaDataWrapper.fragments.user}
-    ${MessageText.fragments.message}
-    ${MessageMedia.fragments.message}
-
-    fragment ReplyingToMessage_message on message {
-      id
-      created_at
-      ...MessageText_message
-      ...MessageMedia_message
-      user {
-        ...MessageMetaData_user
-      }
-    }
-  `,
-};
-
 type Props = {
-  message: ReplyingToMessage_MessageFragment;
+  message: MessageEntity;
   onRemove?: () => void;
 };
 
-export const ReplyingToMessage = withFragments(fragments, ({ onRemove, message }: Props) => {
+export const ReplyingToMessage = observer(({ onRemove, message }: Props) => {
   const handleClick = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const messageTextElement = document.getElementById(message!.id);
@@ -66,25 +48,16 @@ export const ReplyingToMessage = withFragments(fragments, ({ onRemove, message }
   );
 });
 
-export function ReplyingToMessageById({ messageId, ...props }: { messageId: string } & Omit<Props, "message">) {
-  const { data } = useQuery<ReplyingToMessageQuery, ReplyingToMessageQueryVariables>(
-    gql`
-      ${fragments.message}
-
-      query ReplyingToMessage($messageId: uuid!) {
-        message: message_by_pk(id: $messageId) {
-          ...ReplyingToMessage_message
-        }
-      }
-    `,
-    { variables: { messageId } }
-  );
-  const message = data?.message;
-  if (!message) {
-    return null;
+export const ReplyingToMessageById = observer(
+  ({ messageId, ...props }: { messageId: string } & Omit<Props, "message">) => {
+    const db = useDb();
+    const message = db.message.findById(messageId);
+    if (!message) {
+      return null;
+    }
+    return <ReplyingToMessage message={message} {...props} />;
   }
-  return <ReplyingToMessage message={message} {...props} />;
-}
+);
 
 const UIHolder = styled.div<{}>`
   display: flex;
