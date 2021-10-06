@@ -1,6 +1,7 @@
 import React from "emoji-mart/node_modules/@types/react";
 import { uniq } from "lodash";
 import { computed } from "mobx";
+import { observer } from "mobx-react";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
@@ -12,7 +13,7 @@ interface Props {
 }
 
 // TODO: Extend this component so that it shows multiple participants accordingly
-export const RequestParticipants = function RequestParticipants({ topicId }: Props) {
+export const RequestParticipants = observer(function RequestParticipants({ topicId }: Props) {
   const db = useDb();
   const currentUser = useAssertCurrentUser();
 
@@ -43,4 +44,4 @@ export const RequestParticipants = function RequestParticipants({ topicId }: Pro
         ))}
     </span>
   );
-};
+});
