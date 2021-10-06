@@ -7,7 +7,7 @@ import { trackBackendUserEvent } from "~shared/backendAnalytics";
 import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
-import { createMessageMentionNotifications, createTasksFromNewMentions } from "./mentionHandlers";
+import { createTasksFromNewMentions } from "./mentionHandlers";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {
@@ -80,8 +80,6 @@ export async function handleMessageChanges(event: HasuraEvent<Message>) {
 
   await Promise.all([
     prepareMessagePlainTextData(event.item),
-    // In case message includes @mentions, create notifications for them
-    createMessageMentionNotifications(event.item, event.itemBefore),
     createTasksFromNewMentions(event.item, event.itemBefore),
     markPendingTasksAsDone(event.item),
   ]);
