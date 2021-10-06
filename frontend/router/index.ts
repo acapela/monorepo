@@ -8,6 +8,7 @@ export const routes = {
   newRequest: createRoute("/new", {}),
   topic: createRoute("/[topicId]", { topicId: "string" }),
   home: createRoute("/", {}),
+  settings: createRoute("/settings", {}),
   legacyNewTopic: createRoute("/legacy", {}),
   legacyTopic: createRoute("/legacy/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
