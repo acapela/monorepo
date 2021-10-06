@@ -27,6 +27,13 @@ export function SettingsView() {
   );
 }
 
-const UIHolder = styled.div<{}>``;
+const UIHolder = styled.div<{}>`
+  padding: 26px 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+`;
 
 const UIHeader = styled.div<{}>``;

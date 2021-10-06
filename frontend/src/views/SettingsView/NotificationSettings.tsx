@@ -102,10 +102,7 @@ const UIPanel = styled.div<{}>`
   ${theme.borderRadius.modal};
   ${theme.shadow.popover}
 
-  width: 534px;
-  @media (max-width: 560px) {
-    width: 100%;
-  }
+  width: 100%;
 `;
 
 const UITitle = styled.h3<{}>`
