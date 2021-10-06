@@ -3,13 +3,12 @@ import styled from "styled-components";
 
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
-import { SidebarLayout } from "./Layout";
+import { SidebarLayout } from "../layouts/SidebarLayout";
 import { NewRequest } from "./newRequest";
-import { SidebarContent } from "./sidebar/SidebarContent";
 
 export function NewRequestView() {
   return (
-    <SidebarLayout sidebarContent={<SidebarContent />}>
+    <SidebarLayout>
       <UIHolder>
         <ClientSideOnly>
           <NewRequest />

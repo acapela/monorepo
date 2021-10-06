@@ -3,6 +3,23 @@ import styled from "styled-components";
 
 import { theme } from "~ui/theme";
 
+import { SidebarContent } from "./SidebarContent";
+
+interface Props {
+  children?: ReactNode;
+}
+
+export const SidebarLayout = ({ children }: Props) => {
+  return (
+    <UIHolder>
+      <UISidebar>
+        <SidebarContent />
+      </UISidebar>
+      <UIMainContent>{children}</UIMainContent>
+    </UIHolder>
+  );
+};
+
 const UISidebar = styled.div<{}>`
   min-height: 100vh;
   background-color: ${theme.colors.layout.background()};
@@ -26,17 +43,3 @@ const UIMainContent = styled.div<{}>`
   max-height: 100vh;
   background-color: ${theme.colors.layout.foreground()};
 `;
-
-interface Props {
-  children?: ReactNode;
-  sidebarContent?: ReactNode;
-}
-
-export const SidebarLayout = ({ children, sidebarContent }: Props) => {
-  return (
-    <UIHolder>
-      <UISidebar>{sidebarContent}</UISidebar>
-      <UIMainContent>{children}</UIMainContent>
-    </UIHolder>
-  );
-};

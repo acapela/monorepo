@@ -6,13 +6,13 @@ import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-import { RequestFeed } from "./requestFeed/RequestFeed";
+import { RequestFeed } from "./RequestFeed";
 
 interface Props {
-  selectedRequestId?: string;
+  selectedTopicId?: string;
 }
 
-export function SidebarContent({ selectedRequestId }: Props) {
+export function SidebarContent({ selectedTopicId }: Props) {
   return (
     <UIHolder>
       <UIHeader>
@@ -28,7 +28,7 @@ export function SidebarContent({ selectedRequestId }: Props) {
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed selectedItemId={selectedRequestId} />
+        <RequestFeed selectedItemId={selectedTopicId} />
       </UIRequestFeed>
     </UIHolder>
   );
