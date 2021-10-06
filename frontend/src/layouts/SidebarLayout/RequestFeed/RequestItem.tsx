@@ -2,6 +2,8 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
+import { routes } from "~frontend/router";
+import { RouteLink } from "~frontend/router/RouteLink";
 import { theme } from "~ui/theme";
 
 import { RequestParticipants } from "./RequestParticipants";
@@ -21,17 +23,19 @@ export const RequestItem = function RequestItem({ topicId, isHighlighted = false
   }
 
   return (
-    <UIFeedItem isHighlighted={isHighlighted}>
-      <RequestParticipants topicId={topicId} />
-      <UIFeedItemLabels>
-        <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
-        <UIFeedItemSubTitle>{""}</UIFeedItemSubTitle>
-      </UIFeedItemLabels>
-    </UIFeedItem>
+    <RouteLink passHref route={routes.topic} params={{ topicId }}>
+      <UIFeedItem isHighlighted={isHighlighted}>
+        <RequestParticipants topicId={topicId} />
+        <UIFeedItemLabels>
+          <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
+          <UIFeedItemSubTitle>{""}</UIFeedItemSubTitle>
+        </UIFeedItemLabels>
+      </UIFeedItem>
+    </RouteLink>
   );
 };
 
-const UIFeedItem = styled.div<{ isHighlighted?: boolean }>`
+const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   width: 100%;
 
   height: 60px;
