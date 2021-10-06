@@ -7,7 +7,7 @@ import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { theme } from "~ui/theme";
 
-import { TeamPickerView } from "../AppLayout/TeamPicker";
+import { TeamPickerView } from "../TeamPicker";
 import { SidebarContent } from "./SidebarContent";
 
 interface Props {
