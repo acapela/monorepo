@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -11,7 +12,7 @@ import { Button } from "~ui/buttons/Button";
 import { IconEmotionSmile } from "~ui/icons";
 import { addToast } from "~ui/toasts/data";
 
-export function TeamPickerView() {
+export const TeamPickerView = observer(() => {
   const db = useDb();
   const teams = db.team.all;
   const user = useAssertCurrentUser();
@@ -67,7 +68,7 @@ export function TeamPickerView() {
       <Button onClick={handleCreateNewTeam}>Create new team</Button>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   padding: 2rem;
