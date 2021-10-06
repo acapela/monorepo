@@ -6,7 +6,7 @@ import { assignPageLayout } from "~frontend/utils/pageLayout";
 import { LegacyDashboardView } from "~frontend/views/LegacyDashboardView/LegacyDashboardView";
 
 export function LegacyDashboardPage() {
-  const topicParams = routes.dashboardTopic.useParams()?.route;
+  const topicParams = routes.legacyTopic.useParams()?.route;
 
   // We're on topic route
   if (topicParams) {

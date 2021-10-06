@@ -18,7 +18,7 @@ export function TaskList({ tasks, hideUserInfo }: Props) {
     <>
       {tasks.map((task) => {
         return (
-          <RouteLink key={task.id} passHref route={routes.dashboardTopic} params={{ topicId: task.message.topic.id }}>
+          <RouteLink key={task.id} passHref route={routes.legacyTopic} params={{ topicId: task.message.topic.id }}>
             <a>
               <DashboardTaskCard task={task} hideUserInfo={hideUserInfo} />
             </a>

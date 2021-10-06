@@ -136,7 +136,7 @@ export function DashboardNavigation() {
       </UISectionsHolder>
 
       <UINewTopicButtonHolder>
-        <RouteLink route={routes.dashboardNewTopic} params={{}}>
+        <RouteLink route={routes.legacyNewTopic} params={{}}>
           <a>
             <Button kind="secondary" icon={<IconPlusSquare />} iconPosition="start">
               New Topic

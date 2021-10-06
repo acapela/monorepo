@@ -13,7 +13,7 @@ export function NewTopicCreation() {
           <CreateNewMessageEditor
             requireMention
             onMessageSent={(message) => {
-              routes.dashboardTopic.push({ topicId: message.topic_id });
+              routes.legacyTopic.push({ topicId: message.topic_id });
             }}
           />
         </UIMessageComposer>

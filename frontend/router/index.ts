@@ -5,14 +5,13 @@ import { createRoute } from "./create";
 export { RouteLink } from "./RouteLink";
 
 export const routes = {
-  newRequest: createRoute("/new-request", {}),
-  home: createRoute("/dashboard", {}),
-  dashboard: createRoute("/", {}),
-  dashboardNewTopic: createRoute("/new", {}),
-  dashboardTopic: createRoute("/[topicId]", { topicId: "string" }),
+  newRequest: createRoute("/new", {}),
+  topic: createRoute("/[topicId]", { topicId: "string" }),
+  home: createRoute("/", {}),
+  legacyNewTopic: createRoute("/legacy", {}),
+  legacyTopic: createRoute("/legacy/[topicId]", { topicId: "string" }),
   team: createRoute("/team", {}),
   logout: createRoute("/logout", {}),
-  topic: createRoute("/[topicId]", { topicId: "string" }),
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };
 

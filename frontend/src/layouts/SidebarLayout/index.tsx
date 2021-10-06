@@ -6,14 +6,15 @@ import { theme } from "~ui/theme";
 import { SidebarContent } from "./SidebarContent";
 
 interface Props {
+  selectedTopicId?: string;
   children?: ReactNode;
 }
 
-export const SidebarLayout = ({ children }: Props) => {
+export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
   return (
     <UIHolder>
       <UISidebar>
-        <SidebarContent />
+        <SidebarContent selectedTopicId={selectedTopicId} />
       </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>
