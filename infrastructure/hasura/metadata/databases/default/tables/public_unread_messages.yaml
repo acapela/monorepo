@@ -4,7 +4,7 @@ table:
 select_permissions:
 - permission:
     columns:
-    - room_id
+    - team_id
     - topic_id
     - unread_messages
     - user_id
