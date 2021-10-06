@@ -42,7 +42,9 @@ export function createNewClientDb(userId: string | null, teamId: string | null, 
   return clientdb;
 }
 
-type ClientDb = ReturnType<typeof createNewClientDb>;
+type AsyncReturnType<T> = T extends (...args: any[]) => Promise<infer I> ? I : never;
+
+type ClientDb = AsyncReturnType<typeof createNewClientDb>;
 
 const reactContext = createContext<ClientDb | null>(null);
 
@@ -53,17 +55,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const apolloClient = useApolloClient();
 
   useEffect(() => {
-    async function createNewDbAndWaitTillDataReady() {
-      const newDb = createNewClientDb(userId, teamId, apolloClient);
-
-      await newDb.loadingInfo.persistanceLoadedPromise;
-      // TODO: We might wait for first sync only on first time app is opened or db version changes.
-      await newDb.loadingInfo.firstSyncPromise;
-
-      return newDb;
-    }
-
-    const newDbPromise = createNewDbAndWaitTillDataReady();
+    const newDbPromise = createNewClientDb(userId, teamId, apolloClient);
 
     let isCancelled = false;
 

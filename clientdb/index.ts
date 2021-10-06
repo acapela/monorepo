@@ -20,22 +20,16 @@ type EntitiesClientsMap<Entities extends EntitiesMap> = {
   [key in keyof Entities]: EntityClientByDefinition<Entities[key]>;
 };
 
-type ClientDbLoadingInfo = {
-  persistanceLoadedPromise: Promise<void>;
-  firstSyncPromise: Promise<void>;
-};
-
 type ClientDbExtra = {
   destroy: () => void;
-  loadingInfo: ClientDbLoadingInfo;
 };
 
 type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
-export function createClientDb<Entities extends EntitiesMap>(
+export async function createClientDb<Entities extends EntitiesMap>(
   { db, contexts }: ClientDbConfig,
   entitiesMap: Entities
-): ClientDb<Entities> {
+): Promise<ClientDb<Entities>> {
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
@@ -94,16 +88,14 @@ export function createClientDb<Entities extends EntitiesMap>(
   const persistanceLoadedPromise = Promise.all(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
   );
+
   const firstSyncPromise = Promise.all(
     Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)
   );
 
+  await Promise.all([persistanceLoadedPromise, firstSyncPromise]);
+
   mapValues(entityClients, (client: EntityClient<unknown, unknown>) => client.persistanceLoaded);
 
-  const loadingInfo: ClientDbLoadingInfo = {
-    persistanceLoadedPromise: persistanceLoadedPromise.then(() => void 0),
-    firstSyncPromise: firstSyncPromise.then(() => void 0),
-  };
-
-  return { ...entityClients, destroy, loadingInfo };
+  return { ...entityClients, destroy };
 }
