@@ -18,7 +18,7 @@ import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
-const DB_VERSION = 5;
+const DB_VERSION = 4;
 
 export function createNewClientDb(userId: string | null, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
