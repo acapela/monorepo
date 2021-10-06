@@ -2,10 +2,12 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
 import { theme } from "~ui/theme";
 
+import { TeamPickerView } from "../AppLayout/TeamPicker";
 import { SidebarContent } from "./SidebarContent";
 
 interface Props {
@@ -15,11 +17,20 @@ interface Props {
 
 export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
   const user = useCurrentUser();
+  const currentTeamId = useCurrentTeamId();
 
   if (!user) {
     return (
       <WindowView>
         <LoginOptionsView />
+      </WindowView>
+    );
+  }
+
+  if (!currentTeamId) {
+    return (
+      <WindowView>
+        <TeamPickerView />
       </WindowView>
     );
   }
