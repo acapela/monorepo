@@ -1,6 +1,9 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
+import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
+import { WindowView } from "~frontend/views/WindowView";
 import { theme } from "~ui/theme";
 
 import { SidebarContent } from "./SidebarContent";
@@ -11,6 +14,16 @@ interface Props {
 }
 
 export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
+  const user = useCurrentUser();
+
+  if (!user) {
+    return (
+      <WindowView>
+        <LoginOptionsView />
+      </WindowView>
+    );
+  }
+
   return (
     <UIHolder>
       <UISidebar>
