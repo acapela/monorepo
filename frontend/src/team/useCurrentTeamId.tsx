@@ -15,8 +15,13 @@ export function useAssertCurrentTeamId(): string {
   return assertDefined(currentTeamId, "No team id");
 }
 
-export function useAssertCurrentTeam() {
-  const teamId = useAssertCurrentTeamId();
+export function useCurrentTeam() {
+  const teamId = useCurrentTeamId();
   const db = useDb();
-  return assertDefined(db.team.findById(teamId), "no team found");
+  return teamId ? db.team.findById(teamId) : null;
+}
+
+export function useAssertCurrentTeam() {
+  const team = useCurrentTeam();
+  return assertDefined(team, "no team found");
 }

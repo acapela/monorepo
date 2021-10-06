@@ -1,18 +1,18 @@
 import { ErrorBoundary } from "@sentry/nextjs";
+import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { fetchTeamBasicInfoQuery } from "~frontend/gql/teams";
-import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 import { SegmentScript } from "./SegmentScript";
 import { identifyUser, identifyUserGroup } from "./tracking";
 
-export function AnalyticsManager() {
+export const AnalyticsManager = observer(() => {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
   const currentUser = useCurrentUser();
-  const teamId = useCurrentTeamId();
+  const team = useCurrentTeam();
 
   function tryToInitialize() {
     if (!window.analytics) {
@@ -41,14 +41,9 @@ export function AnalyticsManager() {
       avatarUrl: picture ?? undefined,
     });
 
-    if (!teamId) return;
-    const updateUserGroup = async () => {
-      const result = await fetchTeamBasicInfoQuery({ teamId });
-      if (!result.team) return;
-      identifyUserGroup(teamId, { teamName: result.team.name, teamId });
-    };
-    updateUserGroup();
-  }, [currentUser, isSegmentLoaded, teamId]);
+    if (!team) return;
+    identifyUserGroup(team.id, { teamName: team.name, teamId: team.id });
+  }, [currentUser, isSegmentLoaded, team]);
 
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>
@@ -57,4 +52,4 @@ export function AnalyticsManager() {
       </ErrorBoundary>
     </ClientSideOnly>
   );
-}
+});

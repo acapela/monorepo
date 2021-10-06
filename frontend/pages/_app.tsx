@@ -74,13 +74,13 @@ export default function App({
     >
       <BuiltInStyles />
       <CommonMetadata />
-      <AnalyticsManager />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
           <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
             <ThemeProvider theme={getTheme("default")}>
               <CurrentTeamIdProvider>
                 <ClientDbProvider>
+                  <AnalyticsManager />
                   <PromiseUIRenderer />
                   <TooltipsRenderer />
                   <ToastsRenderer />
