@@ -53,12 +53,30 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const apolloClient = useApolloClient();
 
   useEffect(() => {
-    const newDb = createNewClientDb(userId, teamId, apolloClient);
+    async function createNewDbAndWaitTillDataReady() {
+      const newDb = createNewClientDb(userId, teamId, apolloClient);
 
-    setDb(newDb);
+      await newDb.loadingInfo.persistanceLoadedPromise;
+      // TODO: We might wait for first sync only on first time app is opened or db version changes.
+      await newDb.loadingInfo.firstSyncPromise;
+
+      return newDb;
+    }
+
+    const newDbPromise = createNewDbAndWaitTillDataReady();
+
+    let isCancelled = false;
+
+    newDbPromise.then((newDb) => {
+      if (isCancelled) return;
+      setDb(newDb);
+    });
 
     return () => {
-      // todoc db.destroy()
+      isCancelled = true;
+      newDbPromise.then((newDb) => {
+        newDb.destroy();
+      });
     };
   }, [userId, teamId, apolloClient]);
 

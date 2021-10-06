@@ -1,4 +1,4 @@
-import { mapValues } from "lodash";
+import { find, forEach, mapValues } from "lodash";
 
 import { typedKeys } from "~shared/object";
 
@@ -16,26 +16,37 @@ interface ClientDbConfig {
   contexts?: DbContextInstance<unknown>[];
 }
 
-type ClientDb<Entities extends EntitiesMap> = {
+type EntitiesClientsMap<Entities extends EntitiesMap> = {
   [key in keyof Entities]: EntityClientByDefinition<Entities[key]>;
 };
+
+type ClientDbLoadingInfo = {
+  persistanceLoadedPromise: Promise<void>;
+  firstSyncPromise: Promise<void>;
+};
+
+type ClientDbExtra = {
+  destroy: () => void;
+  loadingInfo: ClientDbLoadingInfo;
+};
+
+type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap<Entities>;
 
 export function createClientDb<Entities extends EntitiesMap>(
   { db, contexts }: ClientDbConfig,
   entitiesMap: Entities
 ): ClientDb<Entities> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const definitionClientMap = new Map<EntityDefinition<any, any>, EntityClient<any, any>>();
-
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
-      const client = definitionClientMap.get(definition);
+      const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
+        return client.definition === definition;
+      });
 
-      if (!client) {
+      if (!foundClient) {
         throw new Error("no client for given definition in this db");
       }
 
-      return client;
+      return foundClient;
     },
     getContextValue<V>(context: DbContext<V>) {
       if (!contexts) {
@@ -58,10 +69,8 @@ export function createClientDb<Entities extends EntitiesMap>(
       dbAdapterConfig: db,
     });
 
-    definitionClientMap.set(definition, entityClient);
-
     return entityClient;
-  }) as ClientDb<Entities>;
+  }) as EntitiesClientsMap<Entities>;
 
   if (db && typeof window !== "undefined") {
     const entitiesInfo = typedKeys(entitiesMap).map((entityName): DbEntityInfo => {
@@ -76,5 +85,25 @@ export function createClientDb<Entities extends EntitiesMap>(
     });
   }
 
-  return entityClients;
+  function destroy() {
+    forEach(entityClients, (client: EntityClient<unknown, unknown>) => {
+      client.destroy();
+    });
+  }
+
+  const persistanceLoadedPromise = Promise.all(
+    Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.persistanceLoaded)
+  );
+  const firstSyncPromise = Promise.all(
+    Object.values<EntityClient<unknown, unknown>>(entityClients).map((client) => client.firstSyncLoaded)
+  );
+
+  mapValues(entityClients, (client: EntityClient<unknown, unknown>) => client.persistanceLoaded);
+
+  const loadingInfo: ClientDbLoadingInfo = {
+    persistanceLoadedPromise: persistanceLoadedPromise.then(() => void 0),
+    firstSyncPromise: firstSyncPromise.then(() => void 0),
+  };
+
+  return { ...entityClients, destroy, loadingInfo };
 }

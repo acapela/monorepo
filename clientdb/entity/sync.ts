@@ -1,5 +1,7 @@
 import { runInAction } from "mobx";
 
+import { createResolvablePromise } from "~shared/promises";
+
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityStore } from "./store";
@@ -34,6 +36,8 @@ interface EntitySyncManagerConfig<Data> {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface EntitySyncManager<Data> {
   cancel: () => void;
+  start(): Promise<void>;
+  firstSyncPromise: Promise<void>;
 }
 
 /**
@@ -46,9 +50,7 @@ export function createEntitySyncManager<Data, Connections>(
 ): EntitySyncManager<Data> {
   const syncConfig = store.definition.config.sync;
 
-  if (!syncConfig) {
-    throw new Error("no sync");
-  }
+  const [firstSyncPromise, resolveFirstSyncPromise] = createResolvablePromise<void>();
 
   // Watch for all local changes and as a side effect - push them to remote.
   function initializePushSync() {
@@ -128,6 +130,7 @@ export function createEntitySyncManager<Data, Connections>(
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
+        resolveFirstSyncPromise();
         // Ignore empty update list (initial one is usually empty)
         if (!items.length) return;
 
@@ -174,7 +177,7 @@ export function createEntitySyncManager<Data, Connections>(
     cancelCurrentDeletes = maybeCleanup;
   }
 
-  async function init() {
+  async function start() {
     // Only perform sync on client side
     if (typeof document === "undefined") return;
 
@@ -183,8 +186,6 @@ export function createEntitySyncManager<Data, Connections>(
     cancelCurrentUpdates = startNextUpdatesSync();
     cancelCurrentDeletes = startNextRemovesSync();
   }
-
-  init();
 
   let cancelCurrentUpdates: SyncCleanup | undefined | void = undefined;
   let cancelCurrentDeletes: SyncCleanup | undefined | void = undefined;
@@ -205,5 +206,7 @@ export function createEntitySyncManager<Data, Connections>(
 
   return {
     cancel,
+    start,
+    firstSyncPromise,
   };
 }
