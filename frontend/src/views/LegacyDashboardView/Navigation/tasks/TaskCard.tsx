@@ -5,7 +5,7 @@ import { withFragments } from "~frontend/gql/utils";
 import { MessageText } from "~frontend/ui/message/display/types/TextMessageContent";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
-import { DashboardNavigationCard } from "~frontend/views/DashboardView/Navigation/DashboardNavigationCard";
+import { DashboardNavigationCard } from "~frontend/views/LegacyDashboardView/Navigation/DashboardNavigationCard";
 import { DashboardTaskCard_TaskFragment } from "~gql";
 import { theme } from "~ui/theme";
 

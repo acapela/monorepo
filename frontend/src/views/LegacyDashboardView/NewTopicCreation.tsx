@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import { routes } from "~frontend/router";
 import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
-import { CreateNewMessageEditor } from "~frontend/views/DashboardView/TopicWithMessages/CreateNewMessageEditor";
+import { CreateNewMessageEditor } from "~frontend/views/LegacyDashboardView/TopicWithMessages/CreateNewMessageEditor";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 export function NewTopicCreation() {
@@ -13,7 +13,7 @@ export function NewTopicCreation() {
           <CreateNewMessageEditor
             requireMention
             onMessageSent={(message) => {
-              routes.dashboardTopic.push({ topicId: message.topic_id });
+              routes.legacyTopic.push({ topicId: message.topic_id });
             }}
           />
         </UIMessageComposer>

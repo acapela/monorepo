@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useQueryItemsWithUpdates } from "~frontend/gql/utils/useQueryItemsWithUpdates";
 import { RouteLink, routes } from "~frontend/router";
-import { DashboardTaskCard } from "~frontend/views/DashboardView/Navigation/tasks/TaskCard";
+import { DashboardTaskCard } from "~frontend/views/LegacyDashboardView/Navigation/tasks/TaskCard";
 import {
   DashboardTaskExistenceSubscription,
   DashboardTaskExistenceSubscriptionVariables,
@@ -136,7 +136,7 @@ export function DashboardNavigation() {
       </UISectionsHolder>
 
       <UINewTopicButtonHolder>
-        <RouteLink route={routes.dashboardNewTopic} params={{}}>
+        <RouteLink route={routes.legacyNewTopic} params={{}}>
           <a>
             <Button kind="secondary" icon={<IconPlusSquare />} iconPosition="start">
               New Topic

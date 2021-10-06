@@ -26,14 +26,14 @@ function getItemURL(result: ResultItem): string {
   assertTypename(result.__typename);
   switch (result.__typename) {
     case "topic": {
-      return routes.topic.getUrlWithParams({ topicId: result.id });
+      return routes.legacyTopic.getUrlWithParams({ topicId: result.id });
     }
 
     case "message": {
       const {
         topic: { id: topicId },
       } = result;
-      return routes.topic.getUrlWithParams({ topicId });
+      return routes.legacyTopic.getUrlWithParams({ topicId });
     }
   }
 }

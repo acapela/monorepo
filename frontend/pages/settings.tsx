@@ -1,20 +1,13 @@
 import React from "react";
 
-import { LogoutButton } from "~frontend/authentication/logout";
-import { MainLayout } from "~frontend/MainLayout";
-import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { assignPageLayout } from "~frontend/utils/pageLayout";
+import { PageMeta } from "~frontend/utils/PageMeta";
+import { SettingsView } from "~frontend/views/SettingsView";
 
-const Page = function ActivePage() {
+export default function SettingsPage() {
   return (
     <>
-      <UIContentWrapper>
-        <LogoutButton />
-      </UIContentWrapper>
+      <PageMeta title="Settings" />
+      <SettingsView />
     </>
   );
-};
-
-assignPageLayout(Page, MainLayout);
-
-export default Page;
+}

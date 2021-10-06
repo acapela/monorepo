@@ -1,25 +1,30 @@
 import React from "react";
 import styled from "styled-components";
 
+import { RouteLink, routes } from "~frontend/../router";
 import { UserMenu } from "~frontend/layouts/AppLayout/UserMenu";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
 
-import { RequestFeed } from "./requestFeed/RequestFeed";
+import { RequestFeed } from "./RequestFeed";
 
 interface Props {
-  selectedRequestId?: string;
+  selectedTopicId?: string;
 }
 
-export function SidebarContent({ selectedRequestId }: Props) {
+export function SidebarContent({ selectedTopicId }: Props) {
   return (
     <UIHolder>
       <UIHeader>
         <UserMenu />
-        <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
-          New Request
-        </Button>
+        <RouteLink route={routes.newRequest} params={{}}>
+          <a>
+            <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
+              New Request
+            </Button>
+          </a>
+        </RouteLink>
       </UIHeader>
 
       <UISearch>
@@ -28,7 +33,7 @@ export function SidebarContent({ selectedRequestId }: Props) {
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed selectedItemId={selectedRequestId} />
+        <RequestFeed selectedItemId={selectedTopicId} />
       </UIRequestFeed>
     </UIHolder>
   );

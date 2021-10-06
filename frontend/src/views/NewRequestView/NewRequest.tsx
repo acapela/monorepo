@@ -8,7 +8,7 @@ import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
-import { NewRequestRichEditor } from "../editor/newRequestEditor";
+import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
 export function NewRequest() {
   const editorRef = useRef<Editor>(null);

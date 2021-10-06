@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 import { useQueryItemsWithUpdates } from "~frontend/gql/utils/useQueryItemsWithUpdates";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/DashboardView/TopicWithMessages/gql";
+import { TOPIC_WITH_MESSAGES_QUERY } from "~frontend/views/LegacyDashboardView/TopicWithMessages/gql";
 import {
   TopicMessagesExistenceSubscription,
   TopicMessagesExistenceSubscriptionVariables,

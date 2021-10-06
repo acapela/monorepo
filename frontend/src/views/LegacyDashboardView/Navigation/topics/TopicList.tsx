@@ -19,7 +19,7 @@ export const TopicList = ({ topics }: Props) => {
     <>
       {topics.map((topic) => {
         return (
-          <RouteLink key={topic.id} passHref route={routes.dashboardTopic} params={{ topicId: topic.id }}>
+          <RouteLink key={topic.id} passHref route={routes.legacyTopic} params={{ topicId: topic.id }}>
             <a>
               <DashboardTopicCard topic={topic} />
             </a>
