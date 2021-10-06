@@ -1,8 +1,9 @@
 import { toPairs } from "lodash";
+import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { useCurrentTeamMembers } from "~frontend/gql/teams";
+import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
@@ -26,13 +27,13 @@ import { theme } from "~ui/theme";
  * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions
  * to create notifications.
  */
-
-function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) {
-  const teamMembers = useCurrentTeamMembers();
+const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) => {
+  const team = useAssertCurrentTeam();
+  const teamMemberUsers = team.members.all.map((member) => member.user);
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const getMatchingUsers = useSearch(teamMembers, (user) => [user.email, user.name]);
+  const getMatchingUsers = useSearch(teamMemberUsers, (user) => [user.email, user.name]);
 
   const matchingUsers = getMatchingUsers(keyword);
 
@@ -42,7 +43,7 @@ function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMent
     setSelectedUserId(null);
   }, [keyword]);
 
-  if (!teamMembers.length) return null;
+  if (!teamMemberUsers.length) return null;
 
   // Picker has 2 stages. First we select user, then we select mention type.
 
@@ -66,7 +67,7 @@ function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMent
     );
   }
 
-  const selectedUser = teamMembers.find((teamMember) => teamMember.id === selectedUserId);
+  const selectedUser = teamMemberUsers.find((teamMember) => teamMember.id === selectedUserId);
 
   assert(selectedUser, "Incorrect user selected");
 
@@ -79,7 +80,7 @@ function MentionPicker({ keyword, onSelect }: AutocompletePickerProps<EditorMent
       }}
     />
   );
-}
+});
 
 type MentionTypeLabel = string;
 

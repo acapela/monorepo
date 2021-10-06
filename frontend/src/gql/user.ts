@@ -1,17 +1,12 @@
 import { gql } from "@apollo/client";
 
-import { useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import {
   ChangeCurrentTeamIdMutation,
   ChangeCurrentTeamIdMutationVariables,
-  TeamMembersQuery,
-  TeamMembersQueryVariables,
   UserBasicInfoFragment as UserBasicInfoFragmentType,
-  UserDetailedInfoFragment as UserDetailedInfoFragmentType,
 } from "~gql";
 
-import { TeamBasicInfoFragment } from "./teams";
-import { createFragment, createMutation, createQuery } from "./utils";
+import { createFragment, createMutation } from "./utils";
 
 export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
   () => gql`
@@ -20,20 +15,6 @@ export const UserBasicInfoFragment = createFragment<UserBasicInfoFragmentType>(
       name
       email
       avatar_url
-    }
-  `
-);
-
-export const UserDetailedInfoFragment = createFragment<UserDetailedInfoFragmentType>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-    ${TeamBasicInfoFragment()}
-
-    fragment UserDetailedInfo on user {
-      ...UserBasicInfo
-      current_team {
-        ...TeamBasicInfo
-      }
     }
   `
 );
@@ -55,23 +36,3 @@ export const [useChangeCurrentTeamIdMutation, { mutate: changeCurrentTeamId }] =
     }
   `
 );
-
-export const [useTeamMembersQuery] = createQuery<TeamMembersQuery, TeamMembersQueryVariables>(
-  () => gql`
-    ${UserBasicInfoFragment()}
-
-    query TeamMembers($teamId: uuid!) {
-      teamMembers: user(where: { team_memberships: { team_id: { _eq: $teamId } } }) {
-        ...UserBasicInfo
-      }
-    }
-  `
-);
-
-export function useCurrentTeamMembers(): UserBasicInfoFragmentType[] {
-  const teamId = useAssertCurrentTeamId();
-
-  const [teamMembers = []] = useTeamMembersQuery({ teamId: teamId });
-
-  return teamMembers;
-}

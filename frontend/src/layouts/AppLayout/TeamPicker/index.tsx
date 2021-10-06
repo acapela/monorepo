@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { createTeam, useTeamsQuery } from "~frontend/gql/teams";
+import { useDb } from "~frontend/clientdb";
 import { changeCurrentTeamId } from "~frontend/gql/user";
 import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -12,7 +12,8 @@ import { IconEmotionSmile } from "~ui/icons";
 import { addToast } from "~ui/toasts/data";
 
 export function TeamPickerView() {
-  const [teams = []] = useTeamsQuery();
+  const db = useDb();
+  const teams = db.team.all;
   const user = useAssertCurrentUser();
 
   async function handleChangeTeam(teamId: string) {
@@ -30,7 +31,7 @@ export function TeamPickerView() {
       return;
     }
 
-    const [team] = await createTeam({ input: { name } });
+    const team = await db.team.create({ name });
     if (team) {
       handleChangeTeam(team.id);
     }
