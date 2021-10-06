@@ -1,6 +1,5 @@
 import { uniq, uniqBy } from "lodash";
 
-import { createAndSendTopicMentionNotification } from "~backend/src/notifications/create-and-send";
 import { Message, PrismaPromise, Task, db } from "~db";
 import { RichEditorNode } from "~richEditor/content/types";
 import { trackBackendUserEvent } from "~shared/backendAnalytics";
@@ -64,11 +63,7 @@ export async function createMessageMentionNotifications(message: Message, messag
         messageId: message.id,
       });
 
-      return createAndSendTopicMentionNotification({
-        userId: mentionedUserId,
-        topicId: message.topic_id,
-        mentionedByUserId: message.user_id,
-      });
+      return Promise.resolve();
     })
   );
 }

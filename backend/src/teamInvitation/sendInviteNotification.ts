@@ -3,7 +3,7 @@ import { slackClient } from "~backend/src/slack/app";
 import { fetchTeamBotToken, findSlackUserId } from "~backend/src/slack/utils";
 import { findTeamById } from "~backend/src/teams/helpers";
 import { findUserById, getNormalizedUserName } from "~backend/src/users/users";
-import { TeamInvitation, User, db } from "~db";
+import { TeamInvitation, User } from "~db";
 import { assert } from "~shared/assert";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
 import { log } from "~shared/logger";
@@ -26,22 +26,14 @@ async function sendInvitationEmail(teamId: string, email: string, inviter: User,
 
   assert(team, new UnprocessableEntityError(`Team ${teamId} does not exist`));
 
-  const roomInvitation = await db.room_invitation.findFirst({
-    where: { email, team_id: teamId },
-    include: { room: true },
-  });
-
   const inviterName = getNormalizedUserName(inviter);
-  const roomName = roomInvitation?.room?.name;
   await sendEmail({
     from: DEFAULT_NOTIFICATION_EMAIL,
     to: email,
-    subject: `${inviterName} has invited you to collaborate on ${roomName ?? team.name}`,
+    subject: `${inviterName} has invited you to collaborate on ${team.name}`,
     html: [
       "Hey!",
-      `${inviterName} has invited you to ${roomName ? `collaborate on ${roomName} room and ` : ""}join ${
-        team.name
-      } team on Acapela.`,
+      `${inviterName} has invited you to join ${team.name} team on Acapela.`,
       `Follow this link to sign up and join the discussion: ${inviteURL}`,
     ].join("<br>"),
   });

@@ -27,7 +27,6 @@ export const acceptInvitations: ActionHandler<{ token: string }, AcceptInvitatio
 
     await db.$transaction([
       db.team_invitation.update({ where: { id: teamInvitation.id }, data }),
-      db.room_invitation.updateMany({ where: { email: userEmail, team_id: teamInvitation.id }, data }),
 
       db.team_member.createMany({
         data: [{ team_id: teamId, user_id: user.id }],
