@@ -1,7 +1,7 @@
 import React from "react";
 
-import { NewRequestView } from "~frontend/ping-pong/NewRequestView";
 import { PageMeta } from "~frontend/utils/PageMeta";
+import { NewRequestView } from "~frontend/views/NewRequestView";
 
 export default function NewRequestPage(): JSX.Element {
   return (
