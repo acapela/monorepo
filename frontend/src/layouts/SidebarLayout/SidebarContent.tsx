@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+import { RouteLink, routes } from "~frontend/../router";
 import { UserMenu } from "~frontend/layouts/AppLayout/UserMenu";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
@@ -17,9 +18,13 @@ export function SidebarContent({ selectedTopicId }: Props) {
     <UIHolder>
       <UIHeader>
         <UserMenu />
-        <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
-          New Request
-        </Button>
+        <RouteLink route={routes.newRequest} params={{}}>
+          <a>
+            <Button kind="secondary" size="small" icon={<IconPlus />} iconPosition="start">
+              New Request
+            </Button>
+          </a>
+        </RouteLink>
       </UIHeader>
 
       <UISearch>
