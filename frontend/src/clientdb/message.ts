@@ -50,7 +50,8 @@ export const messageEntity = defineEntity<MessageFragment>({
       return getEntity(topicEntity).findById(message.topic_id);
     },
     get user() {
-      return getEntity(userEntity).findById(message.user_id);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return getEntity(userEntity).findById(message.user_id)!;
     },
     tasks: getEntity(taskEntity).find((task) => task.message_id === message.id),
     reactions: getEntity(messageReactionEntity).find((reaction) => reaction.message_id === message.id),

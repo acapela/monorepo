@@ -1,11 +1,10 @@
-import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
+import { observer } from "mobx-react";
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
+import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { MessageAttachmentDisplayer_AttachmentFragment } from "~gql";
 import { TranscriptData } from "~shared/types/transcript";
 import { IconFile } from "~ui/icons";
 import { AudioPlayer } from "~ui/media/AudioPlayer";
@@ -14,71 +13,57 @@ import { theme } from "~ui/theme";
 
 import { MessageImageAttachment } from "./MessageImageAttachment";
 
-const fragments = {
-  attachment: gql`
-    fragment MessageAttachmentDisplayer_attachment on attachment {
-      mimeType: mime_type
-      originalName: original_name
-      transcription {
-        id
-        status
-        transcript
-      }
-    }
-  `,
-};
-
 interface AttachmentProps {
-  attachment: MessageAttachmentDisplayer_AttachmentFragment;
+  attachment: AttachmentEntity;
   attachmentUrl: string;
   className?: string;
 }
 
-const _MessageAttachmentDisplayer = styled<AttachmentProps>(({ attachment, className, attachmentUrl }) => {
-  const messageType = chooseMessageTypeFromMimeType(attachment.mimeType);
+export const MessageAttachmentDisplayer = styled<AttachmentProps>(
+  observer(({ attachment, className, attachmentUrl }) => {
+    const messageType = chooseMessageTypeFromMimeType(attachment.mime_type);
 
-  const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
+    const transcript: TranscriptData | undefined = attachment.transcription?.transcript;
 
-  function renderAttachment(): ReactNode {
-    switch (messageType) {
-      case "VIDEO":
-        return (
-          <UIPlayableMediaWrapper>
-            <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
-            <VideoPlayer fileUrl={attachmentUrl} transcript={transcript} />
-          </UIPlayableMediaWrapper>
-        );
-      case "AUDIO":
-        return (
-          <UIPlayableMediaWrapper>
-            <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
-            <AudioPlayer fileUrl={attachmentUrl} transcript={transcript} />
-          </UIPlayableMediaWrapper>
-        );
-    }
+    function renderAttachment(): ReactNode {
+      switch (messageType) {
+        case "VIDEO":
+          return (
+            <UIPlayableMediaWrapper>
+              <UIMediaTypeIndicator>Shared video</UIMediaTypeIndicator>
+              <VideoPlayer fileUrl={attachmentUrl} transcript={transcript} />
+            </UIPlayableMediaWrapper>
+          );
+        case "AUDIO":
+          return (
+            <UIPlayableMediaWrapper>
+              <UIMediaTypeIndicator>Shared audio</UIMediaTypeIndicator>
+              <AudioPlayer fileUrl={attachmentUrl} transcript={transcript} />
+            </UIPlayableMediaWrapper>
+          );
+      }
 
-    const [attachmentMimeType] = attachment.mimeType.split("/");
+      const [attachmentMimeType] = attachment.mime_type.split("/");
 
-    if (attachmentMimeType === "image") {
-      return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.originalName || ""} />;
+      if (attachmentMimeType === "image") {
+        return <MessageImageAttachment attachmentUrl={attachmentUrl} alt={attachment.original_name || ""} />;
+      }
+
+      return (
+        <UIFileAttachmentDisplayer href={attachmentUrl} target="_blank" data-tooltip={attachment.original_name}>
+          <IconFile />
+          <UIFileName>{attachment.original_name}</UIFileName>
+        </UIFileAttachmentDisplayer>
+      );
     }
 
     return (
-      <UIFileAttachmentDisplayer href={attachmentUrl} target="_blank" data-tooltip={attachment.originalName}>
-        <IconFile />
-        <UIFileName>{attachment.originalName}</UIFileName>
-      </UIFileAttachmentDisplayer>
+      <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
+        {renderAttachment()}
+      </UIHolder>
     );
-  }
-
-  return (
-    <UIHolder className={className} transition={{ type: "spring", stiffness: 400, damping: 40 }}>
-      {renderAttachment()}
-    </UIHolder>
-  );
-})``;
-
-export const MessageAttachmentDisplayer = withFragments(fragments, _MessageAttachmentDisplayer);
+  })
+)``;
 
 const UIHolder = styled(motion.div)<{}>`
   max-height: 100%;

@@ -70,15 +70,13 @@ export const MessageContentEditor = namedForwardRef<Editor, Props>(function Mess
       additionalBottomContent={
         (uploadingAttachments.length > 0 || attachments.length > 0) && (
           <UIAttachmentsPreviews>
-            {attachments.map((attachment) => {
-              return (
-                <AttachmentPreview
-                  id={attachment.uuid}
-                  key={attachment.uuid}
-                  onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
-                />
-              );
-            })}
+            {attachments.map((attachment) => (
+              <AttachmentPreview
+                id={attachment.uuid}
+                key={attachment.uuid}
+                onRemoveRequest={() => onAttachmentRemoveRequest(attachment.uuid)}
+              />
+            ))}
             {uploadingAttachments.map(({ percentage }, index) => (
               <UploadingAttachmentPreview percentage={percentage} key={index} />
             ))}

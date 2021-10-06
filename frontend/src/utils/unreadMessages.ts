@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import { memoize } from "lodash";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { createQuery } from "~frontend/gql/utils";
 import { UnreadMessageFragmentFragment, UserUnreadMessagesQuery, UserUnreadMessagesQueryVariables } from "~gql";
 import { createChannel } from "~shared/channel";
@@ -76,9 +75,3 @@ const getTopicUnreadMessagesChannel = memoize(
   // lodash memoize requires custom arguments serializer if function accepts more than one argument https://github.com/lodash/lodash/issues/2115
   (...args) => JSON.stringify(args)
 );
-
-export function useTopicUnreadMessagesCount(topicId: string) {
-  const user = useAssertCurrentUser();
-
-  return getTopicUnreadMessagesChannel(user.id, topicId).useLastValue() ?? 0;
-}

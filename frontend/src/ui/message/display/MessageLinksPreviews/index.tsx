@@ -1,8 +1,7 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
-import { MessageLinksPreviews_MessageFragment } from "~gql";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { extractLinksFromRichContent } from "~richEditor/links/extract";
 
 import { figmaPreviewProvider } from "./figmaPreviewProvider";
@@ -11,19 +10,7 @@ import { notionPreviewProvider } from "./notionPreviewProvider";
 
 const supportedPreviewProviders = [loomPreviewProvider, figmaPreviewProvider, notionPreviewProvider];
 
-const fragments = {
-  message: gql`
-    fragment MessageLinksPreviews_message on message {
-      content
-    }
-  `,
-};
-
-interface Props {
-  message: MessageLinksPreviews_MessageFragment;
-}
-
-export const MessageLinksPreviews = withFragments(fragments, ({ message }: Props) => {
+export const MessageLinksPreviews = observer(({ message }: { message: MessageEntity }) => {
   const links = extractLinksFromRichContent(message.content);
 
   const linksPreviews = links

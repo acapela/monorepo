@@ -1,52 +1,32 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { MessageLikeContent } from "~frontend/ui/message/messagesFeed/MessageLikeContent";
-import { TopicSummaryMessage_TopicFragment } from "~gql";
 import { niceFormatDate } from "~shared/dates/format";
 import { Badge } from "~ui/Badge";
 import { borderRadius } from "~ui/baseStyles";
 
-const fragments = {
-  topic: gql`
-    ${MessageLikeContent.fragments.user}
-
-    fragment TopicSummaryMessage_topic on topic {
-      id
-      closed_at
-      closing_summary
-      closed_by_user {
-        id
-        name
-        email
-        ...MessageLikeContent_user
-      }
-    }
-  `,
-};
-
 type Props = {
-  topic: TopicSummaryMessage_TopicFragment;
+  topic: TopicEntity;
   className?: string;
 };
 
-export const TopicSummaryMessage = withFragments(
-  fragments,
-  styled<Props>(({ topic, className }) => {
-    const { closed_by_user, closed_at, closing_summary } = topic;
+export const TopicSummaryMessage = styled<Props>(
+  observer(({ topic, className }) => {
+    const { closedByUser, closed_at, closing_summary } = topic;
 
-    if (!closed_by_user || !closed_at) {
+    if (!closedByUser || !closed_at) {
       return null;
     }
 
     const closedAtDate = new Date(closed_at);
     return (
-      <MessageLikeContent user={closed_by_user} date={closedAtDate} className={className}>
+      <MessageLikeContent user={closedByUser} date={closedAtDate} className={className}>
         <UIHolder>
           <UIHead>
-            Topic was closed by {closed_by_user.name ?? closed_by_user.email} on {niceFormatDate(closedAtDate)} 🎉
+            Topic was closed by {closedByUser.name ?? closedByUser.email} on {niceFormatDate(closedAtDate)} 🎉
           </UIHead>
           {closing_summary && (
             <UISummary>
@@ -57,8 +37,8 @@ export const TopicSummaryMessage = withFragments(
         </UIHolder>
       </MessageLikeContent>
     );
-  })``
-);
+  })
+)``;
 
 const UIHolder = styled.div<{}>`
   padding: 10px;

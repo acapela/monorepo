@@ -109,10 +109,6 @@ export function createHasuraSyncSetupFromFragment<T>(
 ): EntitySyncConfig<T> {
   const { name, type, keys } = analyzeFragment<T>(fragment);
 
-  const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
-
-  assert(upsertConstraint, `${type} of entity has no upsert constraint defined`);
-
   const upperType = getFirstUpper(type);
 
   /**
@@ -196,7 +192,12 @@ export function createHasuraSyncSetupFromFragment<T>(
     async push(entity, { getContextValue }) {
       const apollo = getContextValue(apolloContext);
       const input = getPushInputFromData(entity);
+
       const hasUpdateColumns = updateColumns.length > 0;
+
+      const upsertConstraint = upsertConstraints[type as keyof ConstraintsTypeMap];
+      assert(upsertConstraint, `${type} of entity has no upsert constraint defined`);
+
       const result = await apollo.mutate<
         { result: T },
         { input: Partial<T>; updateColumns?: Array<keyof T>; constraint?: string }

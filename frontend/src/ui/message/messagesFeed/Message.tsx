@@ -7,7 +7,7 @@ import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { withFragments } from "~frontend/gql/utils";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
@@ -19,7 +19,7 @@ import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables, Message_MessageFragment } from "~gql";
+import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
@@ -29,58 +29,17 @@ import { PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 
 import { MessageLikeContent } from "./MessageLikeContent";
-import { MessageTask } from "./tasks/MessageTask";
 import { MessageTasks } from "./tasks/MessageTasks";
 
-const fragments = {
-  message: gql`
-    ${MessageLikeContent.fragments.user}
-    ${MakeReactionButton.fragments.message}
-    ${ReplyingToMessage.fragments.message}
-    ${MessageText.fragments.message}
-    ${MessageMedia.fragments.message}
-    ${MessageLinksPreviews.fragments.message}
-    ${EditMessageEditor.fragments.message}
-    ${MessageReactions.fragments.message}
-    ${MessageTask.fragments.task}
-
-    fragment Message_message on message {
-      id
-      created_at
-      topic_id
-      ...MakeReactionButton_message
-
-      replied_to_message {
-        ...ReplyingToMessage_message
-      }
-
-      ...MessageText_message
-      ...MessageMedia_message
-      ...MessageLinksPreviews_message
-      ...EditMessageEditor_message
-      ...MessageReactions_message
-
-      user {
-        id
-        ...MessageLikeContent_user
-      }
-
-      tasks {
-        ...MessageTask_task
-      }
-    }
-  `,
-};
-
 interface Props extends MotionProps {
-  message: Message_MessageFragment;
+  message: MessageEntity;
   isBundledWithPreviousMessage?: boolean;
   onCloseTopicRequest?: (summary: string) => void;
   isReadonly?: boolean;
   className?: string;
 }
 
-const _Message = styled<Props>(
+export const Message = styled<Props>(
   observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
     const user = useCurrentUser();
     const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
@@ -111,7 +70,7 @@ const _Message = styled<Props>(
     const [isActive, setIsActive] = useState(false);
     const holderRef = useRef<HTMLDivElement>(null);
 
-    const isOwnMessage = user?.id === message.user.id;
+    const isOwnMessage = user?.id === message.user?.id;
 
     useClickAway(holderRef, () => {
       setIsActive(false);
@@ -191,7 +150,7 @@ const _Message = styled<Props>(
             )}
             {!isInEditMode && (
               <UIMessageContent>
-                {message.replied_to_message && <ReplyingToMessage message={message.replied_to_message} />}
+                {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
                 <MessageText content={message.content} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />
@@ -199,15 +158,13 @@ const _Message = styled<Props>(
               </UIMessageContent>
             )}
 
-            {message.tasks.length > 0 && <MessageTasks tasks={message.tasks} taskOwnerId={message.user_id} />}
+            {message.tasks.all.length > 0 && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
     );
   })
 )``;
-
-export const Message = withFragments(fragments, _Message);
 
 const UIHolder = styled.div<{}>``;
 
