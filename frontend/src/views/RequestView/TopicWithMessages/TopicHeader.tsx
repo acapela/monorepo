@@ -13,7 +13,6 @@ import { TextH3 } from "~ui/typo";
 
 import { CloseTopicModal } from "./CloseTopicModal";
 import { ManageTopic } from "./ManageTopic";
-import { TopicHeaderDueDate } from "./TopicHeaderDueDate";
 
 interface Props {
   topic: TopicEntity;
@@ -40,7 +39,6 @@ export const TopicHeader = observer(({ topic, onCloseTopicRequest }: Props) => {
     <UIHolder>
       <UITopicMeta>
         <UITitle isClosed={isClosed}>{topic.name}</UITitle>
-        <TopicHeaderDueDate topic={topic} />
       </UITopicMeta>
 
       <UIActions>
