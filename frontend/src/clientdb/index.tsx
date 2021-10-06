@@ -42,7 +42,7 @@ export function createNewClientDb(userId: string | null, teamId: string | null, 
   return clientdb;
 }
 
-type AsyncReturnType<T> = T extends (...args: any[]) => Promise<infer I> ? I : never;
+type AsyncReturnType<T> = T extends (...args: unknown[]) => Promise<infer I> ? I : never;
 
 type ClientDb = AsyncReturnType<typeof createNewClientDb>;
 
