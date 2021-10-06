@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
-import { useAssertCurrentTeam, useAssertCurrentTeamId } from "~frontend/team/useCurrentTeamId";
+import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserBasicInfo } from "~frontend/ui/users/UserBasicInfo";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { assert } from "~shared/assert";
