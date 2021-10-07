@@ -2,7 +2,6 @@ import { find, forEach, mapValues } from "lodash";
 
 import { assert } from "~shared/assert";
 import { isClient } from "~shared/document";
-import { typedKeys } from "~shared/object";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
 import { DbContext, DbContextInstance } from "./entity/context";
