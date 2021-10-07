@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { routes } from "~frontend/router";
 import { RouteLink } from "~frontend/router/RouteLink";
