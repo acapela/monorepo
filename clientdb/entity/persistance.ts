@@ -29,7 +29,7 @@ export function createEntityPersistanceManager<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
   { dbAdapterConfig, createNewEntity }: EntityClientConfig<Data>
 ): EntityPersistanceManager<Data, Connections> {
-  const [persistedItemsLoaded, resolvePersistedItemsLoaded] = createResolvablePromise<void>();
+  const persistedItems = createResolvablePromise<void>();
   const store = createEntityStore<Data, Connections>(definition);
 
   const getPersistanceTable = memoize(async () => {
@@ -60,7 +60,7 @@ export function createEntityPersistanceManager<Data, Connections>(
       });
     });
 
-    resolvePersistedItemsLoaded();
+    persistedItems.resolve();
   });
 
   let currentCancelPromise: Promise<(() => void) | null>;
@@ -101,7 +101,7 @@ export function createEntityPersistanceManager<Data, Connections>(
     cancelSync?.();
   }
 
-  return { loadPersistedData, startPersistingChanges, destroy, persistedItemsLoaded };
+  return { loadPersistedData, startPersistingChanges, destroy, persistedItemsLoaded: persistedItems.promise };
 }
 
 export type GetEntityClientByDefinition<Data, Connections> = (
