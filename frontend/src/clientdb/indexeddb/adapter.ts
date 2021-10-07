@@ -28,11 +28,11 @@ async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
 }
 
 export function createIndexedDbAdapter(): LocalDbAdapter {
-  const [dbPromise, resolveDb] = createResolvablePromise<IDBPDatabase>();
+  const dbPromise = createResolvablePromise<IDBPDatabase>();
 
   const initialize = memoize(async (dbInfo: DbInfo) => {
     const initializedDb = await initializeDb(dbInfo);
-    resolveDb(initializedDb);
+    dbPromise.resolve(initializedDb);
 
     return true;
   });
@@ -41,7 +41,7 @@ export function createIndexedDbAdapter(): LocalDbAdapter {
   async function getTableTransaction(name: string, keyField: string) {
     assert(dbPromise, "not initialized");
 
-    const db = await dbPromise;
+    const db = await dbPromise.promise;
 
     return await db.transaction([name], "readwrite").objectStore(name);
   }
