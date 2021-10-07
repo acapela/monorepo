@@ -24,13 +24,6 @@
   - [eslint](#eslint)
   - [gitignore](#gitignore)
   - [prettier](#prettier)
-- [IDE](#ide)
-  - [Extensions](#extensions)
-    - [ENV](#env)
-    - [ESLint](#eslint)
-    - [Prettier - Code formatter](#prettier---code-formatter)
-    - [vscode-styled-components](#vscode-styled-components)
-    - [GraphQL](#graphql)
 
 Before setting up this repo, please read https://github.com/weareacapela/onboarding to get some better idea about our values and practices related to creating software.
 
@@ -339,46 +332,3 @@ There is generic, node-based `.gitignore` at root level, but each package has it
 ### prettier
 
 Prettier config is defined at root level and is used as-is in every package.
-
-## IDE
-
-VS Code is the recommended IDE.
-
-### Extensions
-
-There is a bunch of extensions that will make it easier to work with this repo
-
-#### ENV
-
-Will add syntax highlighting for .env files.
-
-VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=IronGeek.vscode-env
-
-#### ESLint
-
-We're using eslint, it'll make it possible to see eslint warning and errors in real-time
-
-VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
-
-#### Prettier - Code formatter
-
-We're using prettier for code-formatting. It'll format code after every file save.
-
-VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
-
-#### vscode-styled-components
-
-We're using styled-components for styling our UI. This will add syntax-highlighting and autocomplete for css-in-js
-
-VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=diegolincoln.vscode-styled-components
-
-![Styled Components](./docs/styled-components.png)
-
-#### GraphQL
-
-This will provide validation and autocomplete when writing gql queries to make sure they match the current schema.
-
-VS Marketplace Link: https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql
-
-![GraphQL](./docs/gql1.png)
-![GraphQL](./docs/gql2.png)
