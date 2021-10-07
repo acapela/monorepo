@@ -8,7 +8,7 @@ import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~cli
 
 export function createIndexedDbAdapter(): PersistanceAdapter {
   return {
-    async removeDb(name) {
+    async removeDB(name) {
       try {
         await deleteDB(name);
         return true;
@@ -16,7 +16,7 @@ export function createIndexedDbAdapter(): PersistanceAdapter {
         return false;
       }
     },
-    async openDb({ name, tables, version }) {
+    async openDB({ name, tables, version }) {
       const db = await openDB(name, version, {
         upgrade(database, oldVersion, newVersion) {
           // Each time new version of database is detected - wipe out entire data and re-create it

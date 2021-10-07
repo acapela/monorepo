@@ -60,8 +60,8 @@ function getTablesConfigFromDefinitions(definitions: EntityDefinition<unknown, u
 /**
  * Will open and return 'system' table holding info about all existing databases.
  */
-async function openLocalDatabasesInfoTable({ openDb }: PersistanceAdapter) {
-  const databasesListDb = await openDb({
+async function openLocalDatabasesInfoTable({ openDB }: PersistanceAdapter) {
+  const databasesListDb = await openDB({
     name: DATABASES_DB_NAME,
     version: SYSTEM_DB_VERSION,
     tables: [{ name: DATABASES_DB_TABLE, keyField: "name" as keyof StoragePersistanceDatabaseInfo }],
@@ -105,7 +105,7 @@ export async function initializePersistance(
   // It is new database, no need to check hashes, just create and register it
   if (!existingDatabaseInfo) {
     // Initialize storage with initial version
-    const persistanceDB = await adapter.openDb({ name: databaseName, version: 1, tables: entityTablesInfo });
+    const persistanceDB = await adapter.openDB({ name: databaseName, version: 1, tables: entityTablesInfo });
 
     // Register metadata about the storage
     await allDatabasesInfoSystemTable.saveItem(databaseName, {
@@ -129,7 +129,7 @@ export async function initializePersistance(
   // Schema did change. Let's upgrade version forcing data wipe-out.
   if (currentSchemaHash !== previousHash) {
     const newVersion = existingDatabaseInfo.version + 1;
-    const persistanceDB = await adapter.openDb({ name: databaseName, version: newVersion, tables: entityTablesInfo });
+    const persistanceDB = await adapter.openDB({ name: databaseName, version: newVersion, tables: entityTablesInfo });
     // Let's register version change.
     await allDatabasesInfoSystemTable.updateItem(databaseName, {
       version: newVersion,
@@ -142,7 +142,7 @@ export async function initializePersistance(
   // We have persistance database already, and schema did not change. There is no need to make any changes to it
 
   // Let's open DB using current version - it means no update migration will be performed and data will be untouched.
-  const persistanceDB = await adapter.openDb({
+  const persistanceDB = await adapter.openDB({
     name: databaseName,
     // We're passing existing version
     version: existingDatabaseInfo.version,

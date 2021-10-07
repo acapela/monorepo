@@ -28,6 +28,6 @@ export interface PersistanceDB {
 }
 
 export interface PersistanceAdapter {
-  openDb(input: PersistanceDbOpenInput): Promise<PersistanceDB>;
-  removeDb(name: string): Promise<boolean>;
+  openDB(input: PersistanceDbOpenInput): Promise<PersistanceDB>;
+  removeDB(name: string): Promise<boolean>;
 }

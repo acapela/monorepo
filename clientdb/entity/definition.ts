@@ -32,6 +32,7 @@ export function defineEntity<Data, Connections = {}>(
 ): EntityDefinition<Data, {}> {
   return {
     config,
+    // Schema hash is used to determine if data shape changed and full reload is needed
     getSchemaHash() {
       const sortedKeys = [...config.keys].sort();
       return getHash(sortedKeys.join(""));
