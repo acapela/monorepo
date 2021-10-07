@@ -1,31 +1,20 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
-import { UserAvatar_UserFragment } from "~gql";
+import { UserEntity } from "~frontend/clientdb/user";
 
 import { Avatar, AvatarSize } from "./Avatar";
 
 interface Props {
-  user: UserAvatar_UserFragment;
+  user: UserEntity;
   className?: string;
   size?: AvatarSize;
   disableNameTooltip?: boolean;
 }
 
-const fragments = {
-  user: gql`
-    fragment UserAvatar_user on user {
-      name
-      avatar_url
-    }
-  `,
-};
-
-export const UserAvatar = withFragments(
-  fragments,
-  styled<Props>(({ user, className, size = "regular", disableNameTooltip }) => (
+export const UserAvatar = styled<Props>(
+  observer(({ user, className, size = "regular", disableNameTooltip }) => (
     <Avatar
       name={user.name}
       url={user.avatar_url}
@@ -33,5 +22,5 @@ export const UserAvatar = withFragments(
       disableNameTooltip={disableNameTooltip}
       className={className}
     />
-  ))``
-);
+  ))
+)``;

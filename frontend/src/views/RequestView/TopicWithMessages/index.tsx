@@ -7,7 +7,6 @@ import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
-import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
@@ -29,7 +28,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   //   messages.map((m) => m.id)
   // );
 
-  const isClosed = isTopicClosed(topic);
+  const isClosed = topic.isClosed;
 
   const scrollerRef = useRef<ScrollHandle>();
 
