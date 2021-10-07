@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
+import { styledObserver } from "~shared/component";
 import { theme } from "~ui/theme";
 import { TimeLabelWithDateTooltip } from "~ui/time/DateLabel";
 
@@ -16,8 +17,8 @@ interface Props {
   isHovered?: boolean;
 }
 
-export const MessageMetaDataWrapper = styled(
-  observer(({ user, date, children, isHidden = false, isHovered = false, className }: Props) => {
+export const MessageMetaDataWrapper = styledObserver(
+  ({ user, date, children, isHidden = false, isHovered = false, className }: Props) => {
     const canShowSideTimeLabel = isHidden && isHovered;
 
     return (
@@ -34,7 +35,7 @@ export const MessageMetaDataWrapper = styled(
         {children}
       </UIHolder>
     );
-  })
+  }
 )``;
 
 const UIHolder = styled.div<{}>`
