@@ -1,3 +1,5 @@
+import { runInAction } from "mobx";
+
 import { assert } from "~shared/assert";
 import { ResolvablePromise, createResolvablePromise } from "~shared/promises";
 
@@ -22,6 +24,35 @@ export function createPushQueue() {
   // Make sure we never have multiple flushing at once.
   let isFlushing = false;
 
+  /**
+   * If one task in queue failed - reject all pending tasks.
+   *
+   * We start rejecting in reverse order (starting from last added).
+   *
+   * eg. if you add topic, then message - if topic fails > we first rejest (and undo) adding message and then topic.
+   *
+   * In a way like CMD+Z undo works - you first undo last actions.
+   */
+  function rejectAllAndReset(failedTask: Task<unknown>, failedTaskError: unknown) {
+    const tasksFromNewest = Array.from(queue).reverse();
+
+    // Run in action so all fails are flushed to UI at once.
+    runInAction(() => {
+      for (const taskToReject of tasksFromNewest) {
+        const taskPromise = taskFlushedPromisesMap.get(taskToReject);
+        assert(taskPromise, "Incorrect state - no task promise");
+
+        queue.delete(taskToReject);
+
+        if (taskToReject === failedTask) {
+          taskPromise.reject(failedTaskError);
+        } else {
+          taskPromise.reject(new Error(`Previous task in queue failed`));
+        }
+      }
+    });
+  }
+
   async function flushNext() {
     if (isFlushing) return;
     const [nextTask] = Array.from(queue);
@@ -43,8 +74,7 @@ export function createPushQueue() {
       flushPromise.resolve(result);
       scheduleNext();
     } catch (error) {
-      // Note: at this point entire queue is stopped. Next attempt will happen next time something is added to the queue.
-      flushPromise.reject(error);
+      rejectAllAndReset(nextTask, error);
     } finally {
       isFlushing = false;
     }
