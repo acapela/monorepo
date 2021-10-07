@@ -1,19 +1,28 @@
+import { uniq } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
 import { assert } from "~shared/assert";
+import { mapGetOrCreate } from "~shared/map";
+import { typedKeys } from "~shared/object";
 
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
+import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
 import { UniqueEntityIndex, createUniqueEntityIndex } from "./uniqueIndex";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
+export type EntitySimpleQuery<Data> = Partial<{
+  [key in keyof Data]: QueryIndexValue<Data[key]>;
+}>;
+
 export type EntityStore<Data, Connections> = {
   items: IObservableArray<Entity<Data, Connections>>;
   findById(id: string): Entity<Data, Connections> | null;
+  simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[];
   removeById(id: string, source?: EntityChangeSource): boolean;
-  find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
+  query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   add(input: Entity<Data, Connections>, source?: EntityChangeSource): Entity<Data, Connections>;
   findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
   assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
@@ -51,6 +60,8 @@ export function createEntityStore<Data, Connections>(
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
 
   const indexesMap = new Map<keyof Data, UniqueEntityIndex<Data, Connections, keyof Data>>();
+
+  const queryIndexes = new Map<keyof Data, QueryIndex<Data, Connections, keyof Data>>();
 
   config.uniqueIndexes?.forEach((uniqueIndex) => {
     const index = createUniqueEntityIndex<Data, Connections, keyof Data>(uniqueIndex, events);
@@ -104,6 +115,20 @@ export function createEntityStore<Data, Connections>(
         return getExistingItemById(id);
       }).get();
     },
+    simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[] {
+      return computed(() => {
+        const computedResults = typedKeys(simpleQuery).map((requiredKey) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const requiredValue = simpleQuery[requiredKey]!;
+
+          const index = mapGetOrCreate(queryIndexes, requiredKey, () => createQueryFieldIndex(requiredKey, store));
+
+          return index.find(requiredValue);
+        });
+
+        return uniq(computedResults.flat());
+      }).get();
+    },
     findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
       const index = indexesMap.get(key);
 
@@ -134,8 +159,8 @@ export function createEntityStore<Data, Connections>(
 
       return didRemove;
     },
-    find(config: EntityQueryConfig<Data, Connections>) {
-      return createEntityQuery(existingItems.get(), config, definition);
+    query(config: EntityQueryConfig<Data, Connections>) {
+      return createEntityQuery(existingItems.get(), config, store);
     },
     destroy() {
       indexesMap.forEach((index) => index.destroy());
