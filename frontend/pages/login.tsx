@@ -3,7 +3,7 @@ import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { DEFAULT_REDIRECT_URL } from "~frontend/config";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -25,7 +25,7 @@ export default function LoginPage(): JSX.Element {
 
 function useRedirectWhenAuthenticated() {
   const { query, replace } = useRouter();
-  const user = useCurrentUser();
+  const user = useCurrentUserTokenData();
   const redirectUrl = readRedirectUrl(query);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const isAuthenticated = !!user;

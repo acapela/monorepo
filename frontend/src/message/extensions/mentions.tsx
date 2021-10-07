@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
+import { UserEntity } from "~frontend/clientdb/user";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/autocomplete/component";
 import { assert } from "~shared/assert";
@@ -49,7 +49,7 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
 
   if (!selectedUserId) {
     return (
-      <SelectList<UserBasicInfoFragment>
+      <SelectList<UserEntity>
         items={matchingUsers}
         noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
         keyGetter={(user) => user.id}

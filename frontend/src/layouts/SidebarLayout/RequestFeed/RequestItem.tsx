@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled, { css } from "styled-components";
 
@@ -13,7 +14,7 @@ interface Props {
   isHighlighted: boolean;
 }
 
-export const RequestItem = function RequestItem({ topicId, isHighlighted = false }: Props) {
+export const RequestItem = observer(function RequestItem({ topicId, isHighlighted = false }: Props) {
   const db = useDb();
 
   const topic = db.topic.findById(topicId);
@@ -33,7 +34,7 @@ export const RequestItem = function RequestItem({ topicId, isHighlighted = false
       </UIFeedItem>
     </RouteLink>
   );
-};
+});
 
 const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   width: 100%;

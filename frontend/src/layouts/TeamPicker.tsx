@@ -7,6 +7,7 @@ import { useDb } from "~frontend/clientdb";
 import { changeCurrentTeamId } from "~frontend/gql/user";
 import { routes } from "~frontend/router";
 import { openUIPrompt } from "~frontend/utils/prompt";
+import { slugify } from "~shared/slugify";
 import { createLengthValidator } from "~shared/validation/inputValidation";
 import { Button } from "~ui/buttons/Button";
 import { IconEmotionSmile } from "~ui/icons";
@@ -32,7 +33,8 @@ export const TeamPickerView = observer(() => {
       return;
     }
 
-    const team = await db.team.create({ name });
+    const team = await db.team.create({ name, slug: slugify(name) });
+
     if (team) {
       handleChangeTeam(team.id);
     }

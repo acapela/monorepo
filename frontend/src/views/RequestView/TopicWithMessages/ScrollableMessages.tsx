@@ -2,6 +2,7 @@ import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { styledObserver } from "~shared/component";
 import { select } from "~shared/sharedState";
 
 import { ScrollHandle, ScrollToBottomMonitor } from "./ScrollToBottomMonitor";
@@ -11,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-export const ScrollableMessages = styled<Props>(
+export const ScrollableMessages = styledObserver<Props>(
   React.forwardRef<ScrollHandle, Props>(({ children, className }, ref) => {
     const holderRef = useRef<HTMLDivElement>(null);
 
