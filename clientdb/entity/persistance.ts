@@ -3,7 +3,7 @@ import { runInAction } from "mobx";
 
 import { createResolvablePromise } from "~shared/promises";
 
-import { ClientAdapterConfig } from "./db/adapter";
+import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { createEntityStore } from "./store";
 
@@ -15,8 +15,8 @@ export type EntityPersistanceManager<Data, Connections> = {
   persistedItemsLoaded: Promise<void>;
 };
 
-interface EntityClientConfig<Data> {
-  dbAdapterConfig?: ClientAdapterConfig;
+interface PersistanceManagerConfig<Data> {
+  persistanceDb: PersistanceDB;
   createNewEntity: (data: Data) => void;
 }
 
@@ -27,16 +27,13 @@ interface EntityClientConfig<Data> {
  */
 export function createEntityPersistanceManager<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { dbAdapterConfig, createNewEntity }: EntityClientConfig<Data>
+  { persistanceDb, createNewEntity }: PersistanceManagerConfig<Data>
 ): EntityPersistanceManager<Data, Connections> {
   const [persistedItemsLoaded, resolvePersistedItemsLoaded] = createResolvablePromise<void>();
   const store = createEntityStore<Data, Connections>(definition);
 
   const getPersistanceTable = memoize(async () => {
-    const persistanceTablePromise = dbAdapterConfig?.dbAdapter?.getTable<Data>({
-      name: definition.config.name,
-      keyField: definition.config.keyField,
-    });
+    const persistanceTablePromise = persistanceDb.getTable<Data>(definition.config.name);
 
     if (!persistanceTablePromise) return null;
 
