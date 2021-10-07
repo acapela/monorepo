@@ -100,3 +100,8 @@ export function useDb() {
 
   return db;
 }
+
+// Used whenever we'd like to do checks without before knowing users's logging state
+export function useUnsafeDb(): null | ClientDb {
+  return useContext(reactContext);
+}

@@ -1,5 +1,6 @@
 import React from "react";
 
+import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
 import { NewRequestView } from "~frontend/views/NewRequestView";
 import { RequestView } from "~frontend/views/RequestView";
 
@@ -10,12 +11,16 @@ export default function RequestPage(): JSX.Element {
 
   const topicId = topicParams?.topicId;
   if (!topicId) {
-    return <NewRequestView />;
+    return (
+      <SidebarLayout>
+        <NewRequestView />
+      </SidebarLayout>
+    );
   }
 
   return (
-    <>
+    <SidebarLayout selectedTopicId={topicId}>
       <RequestView topicId={topicId} />
-    </>
+    </SidebarLayout>
   );
 }
