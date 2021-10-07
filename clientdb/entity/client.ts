@@ -1,5 +1,7 @@
 import { runInAction } from "mobx";
 
+import { assert } from "~shared/assert";
+
 import { ClientAdapterConfig } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
@@ -12,6 +14,7 @@ import { EntityChangeSource } from "./types";
 
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
+  assertFindById(id: string, errorMessage?: string): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
   find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
@@ -92,6 +95,13 @@ export function createEntityClient<Data, Connections>(
     definition,
     findById(id) {
       return store.findById(id);
+    },
+    assertFindById(id, errorMessage) {
+      const item = store.findById(id);
+
+      assert(item, errorMessage ?? `Entity ${definition.config.name} assertion failed. No item with id ${id}`);
+
+      return item;
     },
     get all() {
       return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
