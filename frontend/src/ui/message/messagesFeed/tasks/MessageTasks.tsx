@@ -1,5 +1,4 @@
 import { AnimateSharedLayout } from "framer-motion";
-import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
