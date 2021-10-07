@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
-  const user = useCurrentUser();
+  const user = useCurrentUserTokenData();
   const currentTeamId = useCurrentTeamId();
 
   if (!user) {

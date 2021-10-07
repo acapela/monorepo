@@ -1,60 +1,34 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { addMessageReaction, removeMessageReaction } from "~frontend/gql/reactions";
-import { withFragments } from "~frontend/gql/utils";
-import { MessageReaction_MessageFragment, MessageReaction_Message_ReactionFragment } from "~gql";
+import { useDb } from "~frontend/clientdb";
+import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
+import { MessageReaction_MessageFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
-const fragments = {
-  message: gql`
-    fragment MessageReaction_message on message {
-      id
-    }
-  `,
-  message_reaction: gql`
-    ${MessageReactionTooltip.fragments.message_reaction}
-
-    fragment MessageReaction_message_reaction on message_reaction {
-      id
-      user_id
-      ...MessageReactionTooltip_message_reaction
-    }
-  `,
-};
-
 interface Props {
   message: MessageReaction_MessageFragment;
   emoji: string;
-  reactions: MessageReaction_Message_ReactionFragment[];
+  reactions: MessageReactionEntity[];
 }
 
-export const MessageReaction = withFragments(fragments, ({ message, emoji, reactions }: Props) => {
-  const user = useAssertCurrentUser();
+export const MessageReaction = observer(({ message, emoji, reactions }: Props) => {
+  const db = useDb();
 
-  const currentUserReaction = reactions.find((reaction) => reaction.user_id === user.id);
+  const currentUserReaction = reactions.find((reaction) => reaction.isOwn);
 
   const isSelectedByCurrentUser = !!currentUserReaction;
 
   const handleClick = () => {
     if (currentUserReaction) {
-      removeMessageReaction({
-        id: currentUserReaction.id,
-      });
+      currentUserReaction.remove();
     } else {
-      addMessageReaction({
-        input: {
-          emoji,
-          message_id: message.id,
-          user_id: user.id,
-        },
-      });
+      db.messageReaction.create({ emoji, message_id: message.id });
     }
   };
 

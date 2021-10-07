@@ -1,40 +1,25 @@
-import { gql } from "@apollo/client";
 import { Data as EmojiDataset, getEmojiDataFromNative } from "emoji-mart";
 import data from "emoji-mart/data/all.json";
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { withFragments } from "~frontend/gql/utils";
-import { MessageReactionTooltip_Message_ReactionFragment } from "~gql";
+import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
 import { WHITE } from "~ui/theme/colors/base";
-
-const fragments = {
-  message_reaction: gql`
-    fragment MessageReactionTooltip_message_reaction on message_reaction {
-      user {
-        id
-        name
-      }
-    }
-  `,
-};
 
 interface Props {
   emoji: string;
-  reactions: MessageReactionTooltip_Message_ReactionFragment[];
+  reactions: MessageReactionEntity[];
 }
 
 const MAX_VISIBLE_REACTED_USERS = 6;
 
-export const MessageReactionTooltip = withFragments(fragments, ({ reactions, emoji }: Props) => {
-  const user = useAssertCurrentUser();
-
+export const MessageReactionTooltip = observer(({ reactions, emoji }: Props) => {
   const getTextThatShowsWhoReacted = () => {
     const joiner = reactions.length === 2 ? " and " : ", ";
     const namesOfUsersReacting = reactions
       .slice(0, MAX_VISIBLE_REACTED_USERS)
-      .map((reaction) => (reaction.user.id === user.id ? "You" : reaction.user.name))
+      .map((reaction) => (reaction.isOwn ? "You" : reaction.user?.name))
       .join(joiner);
 
     if (reactions.length > MAX_VISIBLE_REACTED_USERS) {

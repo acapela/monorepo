@@ -1,9 +1,8 @@
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
-import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { styledObserver } from "~frontend/../../shared/component";
 import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { theme } from "~ui/theme";
@@ -18,12 +17,10 @@ interface Props {
   className?: string;
 }
 
-export const MessageAttachment = styled<Props>(
-  observer(({ message, attachment, className, onAttachmentRemoveRequest }) => {
-    const user = useAssertCurrentUser();
-
+export const MessageAttachment = styledObserver<Props>(
+  ({ message, attachment, className, onAttachmentRemoveRequest }) => {
     function getCanEditAttachments() {
-      if (message.user_id !== user.id) return false;
+      if (!message.isOwnMessage) return false;
 
       // For messages of non-text type, attachment is essential part of it, so entire message should be removed instead.
       return message.type === "TEXT";
@@ -45,7 +42,7 @@ export const MessageAttachment = styled<Props>(
         </UIInlineAttachmentHolder>
       </AnimateSharedLayout>
     );
-  })
+  }
 )``;
 
 const UIInlineAttachmentHolder = styled.div<{}>`
