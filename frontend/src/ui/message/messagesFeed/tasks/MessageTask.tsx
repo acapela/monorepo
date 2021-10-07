@@ -1,7 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { TaskEntity } from "~frontend/clientdb/task";
@@ -9,6 +8,7 @@ import { updateTask } from "~frontend/gql/tasks";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { assert } from "~shared/assert";
+import { styledObserver } from "~shared/component";
 import { relativeFormatDateTime } from "~shared/dates/format";
 import { theme } from "~ui/theme";
 

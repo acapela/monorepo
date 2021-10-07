@@ -1,8 +1,8 @@
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
+import { styledObserver } from "~shared/component";
 import { select } from "~shared/sharedState";
 
 import { ScrollHandle, ScrollToBottomMonitor } from "./ScrollToBottomMonitor";

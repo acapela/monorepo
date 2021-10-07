@@ -2,9 +2,9 @@ import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { AttachmentEntity } from "~frontend/clientdb/attachment";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { styledObserver } from "~shared/component";
 import { theme } from "~ui/theme";
 
 import { MessageAttachmentActions } from "./MessageAttachmentActions";

@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { UserEntity } from "~frontend/clientdb/user";
 import { Avatar, AvatarSize } from "~frontend/ui/users/Avatar";
+import { styledObserver } from "~shared/component";
 import { groupByFilter } from "~shared/groupByFilter";
 import { formatNumberWithMaxValue } from "~shared/numbers";
 import { CircleLabel } from "~ui/icons/CircleLabel";

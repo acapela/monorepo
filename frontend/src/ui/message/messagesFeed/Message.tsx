@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
@@ -21,6 +20,7 @@ import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
+import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";

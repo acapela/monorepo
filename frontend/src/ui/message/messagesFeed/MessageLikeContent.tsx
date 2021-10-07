@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { styledObserver } from "~frontend/../../shared/component";
 import { UserEntity } from "~frontend/clientdb/user";
+import { styledObserver } from "~shared/component";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { theme } from "~ui/theme";
 
