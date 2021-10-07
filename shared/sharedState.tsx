@@ -1,4 +1,4 @@
-import { autorun, computed, configure, makeAutoObservable, runInAction } from "mobx";
+import { autorun, computed, makeAutoObservable, runInAction } from "mobx";
 import { PropsWithChildren, createContext, useContext, useEffect } from "react";
 
 import { useConst } from "~shared/hooks/useConst";
@@ -23,12 +23,6 @@ export function createActionHandler(handler: () => void) {
     });
   };
 }
-
-configure({
-  // Not sure if we want to enable this. By default mobx will warn when updating state outside of runInAction call or
-  // store updating itself (store 'methods' will automatically be wrapped in runInAction) (https://mobx.js.org/actions.html)
-  enforceActions: "never",
-});
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function createStoreContext<T extends object, P = {}>(
