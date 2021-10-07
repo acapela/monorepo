@@ -32,6 +32,11 @@ stage="${1:-}"
   exit 1
 }
 
-echo "proxying hasura console for $stage to http://localhost:58080"
-open http://localhost:58080
-kubectl -n $stage port-forward deployment/hasura 58080:8080
+port="58080"
+[[ "$stage" == "production" ]] && {
+  port="58081"
+}
+
+echo "proxying hasura console for $stage to http://localhost:${port}"
+open "http://localhost:${port}"
+kubectl -n $stage port-forward deployment/hasura ${port}:8080
