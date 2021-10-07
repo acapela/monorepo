@@ -18,15 +18,12 @@ import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
-const DB_VERSION = 5;
-
 export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
     {
       db: {
-        dbAdapter: createIndexedDbAdapter(),
-        dbVersion: DB_VERSION,
-        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
+        adapter: createIndexedDbAdapter(),
+        nameSuffix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
       },
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
     },
