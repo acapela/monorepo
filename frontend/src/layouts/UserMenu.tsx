@@ -2,7 +2,6 @@ import router from "next/router";
 import React from "react";
 import styled from "styled-components";
 
-import { addToast } from "~frontend/../../ui/toasts/data";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
@@ -11,6 +10,7 @@ import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { addToast } from "~ui/toasts/data";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
@@ -41,9 +41,7 @@ export function UserMenu() {
           },
           {
             label: "Visit website",
-            onSelect: () => {
-              window?.open("https://acapela.com", "_blank")?.focus();
-            },
+            openUrlOnSelect: "https://acapela.com",
           },
           {
             label: "Sign out",
