@@ -1,18 +1,20 @@
 import { find, forEach, mapValues } from "lodash";
 
-import { typedKeys } from "~shared/object";
+import { assert } from "~shared/assert";
+import { isClient } from "~shared/document";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
 import { DbContext, DbContextInstance } from "./entity/context";
-import { ClientAdapterConfig, DbEntityInfo } from "./entity/db/adapter";
+import { PersistanceAdapterInfo } from "./entity/db/adapter";
 import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
+import { initializePersistance } from "./entity/initializePersistance";
 
 export * from "./entity/index";
 
 interface ClientDbConfig {
-  db?: ClientAdapterConfig;
+  db: PersistanceAdapterInfo;
   contexts?: DbContextInstance<unknown>[];
 }
 
@@ -28,8 +30,14 @@ type ClientDb<Entities extends EntitiesMap> = ClientDbExtra & EntitiesClientsMap
 
 export async function createClientDb<Entities extends EntitiesMap>(
   { db, contexts }: ClientDbConfig,
-  entitiesMap: Entities
+  definitionsMap: Entities
 ): Promise<ClientDb<Entities>> {
+  const definitions = Object.values(definitionsMap);
+
+  assert(isClient, "Client DB can only be created on client side");
+
+  const persistanceDb = await initializePersistance(definitions, db);
+
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
       const foundClient = find(entityClients, (client: EntityClient<unknown, unknown>) => {
@@ -57,27 +65,14 @@ export async function createClientDb<Entities extends EntitiesMap>(
     },
   };
 
-  const entityClients = mapValues(entitiesMap, (definition) => {
+  const entityClients = mapValues(definitionsMap, (definition) => {
     const entityClient = createEntityClient(definition, {
       databaseUtilities: databaseUtilities,
-      dbAdapterConfig: db,
+      persistanceDb,
     });
 
     return entityClient;
   }) as EntitiesClientsMap<Entities>;
-
-  if (db && typeof window !== "undefined") {
-    const entitiesInfo = typedKeys(entitiesMap).map((entityName): DbEntityInfo => {
-      const definition = entitiesMap[entityName];
-      return { name: definition.config.name, keyField: definition.config.keyField as string };
-    });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const dbInitializePromise = db.dbAdapter.initialize({
-      dbPrefix: db.dbPrefix,
-      dbVersion: db.dbVersion,
-      entities: entitiesInfo,
-    });
-  }
 
   function destroy() {
     forEach(entityClients, (client: EntityClient<unknown, unknown>) => {

@@ -48,43 +48,43 @@ copy(
         "minor_version": 1
     },
     "display_information": {
-        "name": "[DEV] Acapela",
+        "name": "Acapela",
         "description": "End your meetings before they start.",
         "background_color": "#000000",
         "long_description": "Less Zoom fatigue. More focus with async meetings. Acapela is the next generation collaboration platform for remote and hybrid teams. Contribute to meetings when it suits you using next level video, text or voice messaging."
     },
     "features": {
         "bot_user": {
-            "display_name": "[DEV] Acapela",
+            "display_name": "Acapela",
             "always_online": true
         },
         "shortcuts": [
             {
-                "name": "Start an Acapela room",
+                "name": "Turn into request",
                 "type": "global",
                 "callback_id": "global_acapela",
-                "description": "Created a virtual meeting room for async discussion"
+                "description": "Creates an Acapela request from a message"
             },
             {
-                "name": "Start room from message",
+                "name": "Create a request",
                 "type": "message",
                 "callback_id": "message_acapela",
-                "description": "Creates an Acapela room from a message"
+                "description": "Creates a request in Acapela"
             }
         ],
         "slash_commands": [
             {
-                "command": "/dev-acapela",
-                "url": "https://acape.la/api/backend/slack/commands",
-                "description": "Create a new Acapela room",
-                "usage_hint": "[room name]",
-                "should_escape": false
+                "command": "/acapela",
+                "url": "https://app.acape.la/api/backend/slack/commands",
+                "description": "Create a new request",
+                "usage_hint": "[message] @people",
+                "should_escape": true
             }
         ]
     },
     "oauth_config": {
         "redirect_urls": [
-            "https://acape.la/api/backend/slack/oauth_redirect"
+            "https://app.acape.la/api/backend/slack/oauth_redirect"
         ],
         "scopes": {
             "user": [
@@ -107,8 +107,8 @@ copy(
     "settings": {
         "interactivity": {
             "is_enabled": true,
-            "request_url": "https://acape.la/api/backend/slack/events",
-            "message_menu_options_url": "https://acape.la/api/backend/slack/options"
+            "request_url": "https://app.acape.la/api/backend/slack/events",
+            "message_menu_options_url": "https://app.acape.la/api/backend/slack/options"
         },
         "org_deploy_enabled": false,
         "socket_mode_enabled": false,

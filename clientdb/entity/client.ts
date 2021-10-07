@@ -2,7 +2,7 @@ import { runInAction } from "mobx";
 
 import { assert } from "~shared/assert";
 
-import { ClientAdapterConfig } from "./db/adapter";
+import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
@@ -36,7 +36,7 @@ export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unkno
 
 interface EntityClientConfig {
   databaseUtilities: DatabaseUtilities;
-  dbAdapterConfig?: ClientAdapterConfig;
+  persistanceDb: PersistanceDB;
 }
 
 /**
@@ -46,7 +46,7 @@ interface EntityClientConfig {
  */
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { databaseUtilities, dbAdapterConfig }: EntityClientConfig
+  { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition);
 
@@ -55,7 +55,7 @@ export function createEntityClient<Data, Connections>(
   }
 
   const persistanceManager = createEntityPersistanceManager(definition, {
-    dbAdapterConfig,
+    persistanceDb,
     createNewEntity: (data) => {
       const entity = createEntityWithData(data);
       store.add(entity, "persistance");
