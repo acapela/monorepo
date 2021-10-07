@@ -9,6 +9,7 @@ interface DefineEntityConfig<Data> {
   keys: Array<keyof Data>;
   keyField: keyof Data;
   updatedAtField: keyof Data;
+  uniqueIndexes?: Array<keyof Data>;
   getIsDeleted?: (item: Data) => boolean;
   getDefaultValues?: (utilities: DatabaseUtilities) => Partial<Data>;
   sync: EntitySyncConfig<Data>;

@@ -32,6 +32,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   keyField: "id",
   keys: getFragmentKeys<TopicFragment>(topicFragment),
   defaultSort: (topic) => topic.index,
+  uniqueIndexes: ["slug"],
   getDefaultValues({ getContextValue }) {
     return {
       __typename: "topic",
