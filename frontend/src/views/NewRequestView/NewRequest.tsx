@@ -35,11 +35,16 @@ export function NewRequest() {
   }
 
   function submit() {
-    // TODO: Fix! Mentions are not quite working correctly.
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: `slug-${topicName}` });
-      db.message.create({ content, topic_id: topic.id, type: "TEXT" });
+
+      // TODO: @Adam, here's the race condition to fix!
+      setTimeout(() => {
+        db.message.create({ content, topic_id: topic.id, type: "TEXT" });
+      }, 1500);
     });
+    setTopicName("");
+    setContent(getEmptyRichContent());
   }
 
   return (
