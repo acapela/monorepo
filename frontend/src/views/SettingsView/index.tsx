@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
-import { SidebarLayout } from "~frontend/layouts/SidebarLayout";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 
 import { NotificationSettings } from "./NotificationSettings";
@@ -15,7 +14,7 @@ export const SettingsView = observer(function SettingsView() {
   const team = useCurrentTeam();
 
   return (
-    <SidebarLayout>
+    <>
       {!team && <>Loading...</>}
       {team && (
         <UIHolder>
@@ -30,7 +29,7 @@ export const SettingsView = observer(function SettingsView() {
           )}
         </UIHolder>
       )}
-    </SidebarLayout>
+    </>
   );
 });
 
