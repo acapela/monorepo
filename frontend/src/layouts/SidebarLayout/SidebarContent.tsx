@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import { RouteLink, routes } from "~frontend/../router";
 import { UserMenu } from "~frontend/layouts/UserMenu";
+import { RouteLink, routes } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";

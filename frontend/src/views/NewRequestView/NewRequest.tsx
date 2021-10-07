@@ -2,11 +2,11 @@ import { runInAction } from "mobx";
 import React, { useCallback, useRef } from "react";
 import styled from "styled-components";
 
-import { runUntracked } from "~frontend/../../shared/mobxUtils";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { runUntracked } from "~shared/mobxUtils";
 import { slugify } from "~shared/slugify";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 

@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-import { routes } from "~frontend/../router";
 import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
+import { routes } from "~frontend/router";
 
 import { TopicWithMessages } from "./TopicWithMessages";
 
