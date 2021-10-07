@@ -3,6 +3,7 @@ import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
 
 import { ScreenCover } from "~frontend/src/ui/Modal/ScreenCover";
+import { openInNewTab } from "~frontend/src/utils/openInNewTab";
 import { borderRadius, fontSize } from "~ui/baseStyles";
 import { BASE_GREY_1, DANGER_COLOR, PRIMARY_PINK_1_TRANSPARENT, PRIMARY_PINK_2 } from "~ui/theme/colors/base";
 import { hoverTransition } from "~ui/transitions";
@@ -26,6 +27,7 @@ export interface PopoverMenuOption {
   isDisabled?: boolean;
   isDestructive?: boolean;
   onSelect?: () => void;
+  openUrlOnSelect?: string;
 }
 
 export const PopoverMenu = styled<Props>(
@@ -41,9 +43,10 @@ export const PopoverMenu = styled<Props>(
                 <UIMenuItem
                   isDestructive={option.isDestructive ?? false}
                   isDisabled={option.isDisabled ?? false}
-                  isClickable={!!option.onSelect}
+                  isClickable={!!option.onSelect || !!option.openUrlOnSelect}
                   key={option.key ?? option.label}
                   onClick={() => {
+                    option.openUrlOnSelect && openInNewTab(option.openUrlOnSelect);
                     onItemSelected?.(option);
                     onCloseRequest?.();
                     option.onSelect?.();

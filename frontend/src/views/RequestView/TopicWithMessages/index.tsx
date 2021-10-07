@@ -1,7 +1,6 @@
-import { gql, useMutation } from "@apollo/client";
 import { AnimateSharedLayout } from "framer-motion";
 import { observer } from "mobx-react";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
@@ -12,7 +11,6 @@ import { isTopicClosed } from "~frontend/topics/utils";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { UpdateLastSeenMessageMutation, UpdateLastSeenMessageMutationVariables } from "~gql";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -21,38 +19,6 @@ import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
 import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
-
-// Marks last message as read
-function useMarkTopicAsRead(topicId: string, messageIds: string[]) {
-  const [updateLastSeenMessage] = useMutation<
-    UpdateLastSeenMessageMutation,
-    UpdateLastSeenMessageMutationVariables
-  >(gql`
-    mutation UpdateLastSeenMessage($topicId: uuid!, $messageId: uuid!) {
-      insert_last_seen_message_one(
-        object: { topic_id: $topicId, message_id: $messageId }
-        on_conflict: { constraint: last_seen_message_pkey, update_columns: [message_id] }
-      ) {
-        message_id
-        seen_at
-      }
-    }
-  `);
-
-  useEffect(() => {
-    if (!messageIds) {
-      return;
-    }
-
-    const lastMessageId = messageIds[messageIds.length - 1];
-
-    if (!lastMessageId) {
-      return;
-    }
-
-    updateLastSeenMessage({ variables: { topicId, messageId: lastMessageId } });
-  }, [messageIds, topicId, updateLastSeenMessage]);
-}
 
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
   const messages = topic.messages.all;

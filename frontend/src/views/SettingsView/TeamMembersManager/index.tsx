@@ -11,7 +11,6 @@ import { assert } from "~shared/assert";
 import { CircleCloseIconButton } from "~ui/buttons/CircleCloseIconButton";
 import { theme } from "~ui/theme";
 
-import { ExitTeamButton } from "./ExitTeamButton";
 import { InvitationPendingIndicator } from "./InvitationPendingIndicator";
 import { InviteMemberForm } from "./InviteMemberForm";
 import { ResendInviteButton } from "./ResendInviteButton";
@@ -48,8 +47,7 @@ export const CurrentTeamMembersManager = observer(() => {
   return (
     <UIPanel>
       <UIHeader>
-        <UITitle>{team.name} members</UITitle>
-        <ExitTeamButton />
+        <UITitle>{team.name} Team</UITitle>
       </UIHeader>
       {team && <SlackInstallationButton {...{ team, isCurrentUserTeamOwner }} />}
       <InviteMemberForm />
@@ -96,10 +94,7 @@ const UIPanel = styled.div<{}>`
   ${theme.borderRadius.modal};
   ${theme.shadow.popover}
 
-  width: 534px;
-  @media (max-width: 560px) {
-    width: 100%;
-  }
+  width: 100%
 `;
 
 const UIHeader = styled.div<{}>`

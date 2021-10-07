@@ -1,32 +1,50 @@
+import router from "next/router";
+import React from "react";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useChangeCurrentTeamIdMutation } from "~frontend/gql/user";
 import { routes } from "~frontend/router";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
-import { IconChevronDown } from "~ui/icons";
+import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
+import { addToast } from "~ui/toasts/data";
 
 export function UserMenu() {
   const user = useAssertCurrentUser();
+
+  const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
 
   return (
     <UIHolder>
       <UserAvatar user={user} size="regular" disableNameTooltip />
       <PopoverMenuTrigger
         onOpen={() => {
-          routes.team.prefetch({});
+          routes.settings.prefetch({});
         }}
         options={[
           {
-            label: "Manage team",
+            label: "Settings",
             onSelect: () => {
-              routes.team.push({});
+              routes.settings.push({});
             },
           },
           {
-            label: "Logout",
+            label: "Switch teams",
+            onSelect: async () => {
+              addToast({ icon: <IconLoader />, type: "success", title: "Exiting current team..." });
+              await changeCurrentTeam({ userId: user.id, teamId: null });
+              router.reload();
+            },
+          },
+          {
+            label: "Visit website",
+            openUrlOnSelect: "https://acapela.com",
+          },
+          {
+            label: "Sign out",
             onSelect: () => {
               routes.logout.push({});
               trackEvent("Signed Out");
@@ -34,7 +52,7 @@ export function UserMenu() {
           },
         ]}
       >
-        <CircleIconButton kind="transparent" icon={<IconChevronDown />} />
+        <CircleIconButton kind="transparent" icon={<IconMoreHoriz />} />
       </PopoverMenuTrigger>
     </UIHolder>
   );

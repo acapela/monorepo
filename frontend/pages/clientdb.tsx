@@ -2,8 +2,6 @@ import { observer } from "mobx-react";
 import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
-import { AppLayout } from "~frontend/layouts/AppLayout";
-import { assignPageLayout } from "~frontend/utils/pageLayout";
 
 function createMessageContent(text: string) {
   return {
@@ -112,8 +110,6 @@ const ClientDbPlayground = observer(function ClientDbPlayground(): JSX.Element {
 });
 
 export default ClientDbPlayground;
-
-assignPageLayout(ClientDbPlayground, AppLayout);
 
 const UIHolder = styled.div`
   ul {

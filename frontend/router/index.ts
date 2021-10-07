@@ -8,7 +8,7 @@ export const routes = {
   newRequest: createRoute("/new", {}),
   topic: createRoute("/[topicId]", { topicId: "string" }),
   home: createRoute("/", {}),
-  team: createRoute("/team", {}),
+  settings: createRoute("/settings", {}),
   logout: createRoute("/logout", {}),
   invitePage: createRoute("/invites/[inviteCode]", { inviteCode: "string" }),
 };

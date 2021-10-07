@@ -10,7 +10,7 @@ import { FindSlackUserQuery, FindSlackUserQueryVariables } from "~gql";
 import { theme } from "~ui/theme";
 import { Toggle } from "~ui/toggle";
 
-import { AddSlackInstallationButton } from "./SlackInstallationButton";
+import { AddSlackInstallationButton } from "./TeamMembersManager/SlackInstallationButton";
 
 const getNotificationChannelDescription = (channel: string) => `Requests will be sent via ${channel}.`;
 
@@ -102,10 +102,7 @@ const UIPanel = styled.div<{}>`
   ${theme.borderRadius.modal};
   ${theme.shadow.popover}
 
-  width: 534px;
-  @media (max-width: 560px) {
-    width: 100%;
-  }
+  width: 100%;
 `;
 
 const UITitle = styled.h3<{}>`
