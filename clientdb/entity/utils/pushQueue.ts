@@ -17,6 +17,7 @@ export function createPushQueue() {
   /**
    * ".add" returns a promise of 'when will this task being executed'. As it is different promise to task itself, we need to keep track of it.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const taskFlushedPromisesMap = new WeakMap<Task<unknown>, ResolvablePromise<any>>();
 
   // TODO: Let's discuss scenario of failed attempts - should we replay?
@@ -29,7 +30,7 @@ export function createPushQueue() {
    *
    * We start rejecting in reverse order (starting from last added).
    *
-   * eg. if you add topic, then message - if topic fails > we first rejest (and undo) adding message and then topic.
+   * eg. if you add topic, then message - if topic fails > we first reject (and undo) adding message and then topic.
    *
    * In a way like CMD+Z undo works - you first undo last actions.
    */
