@@ -148,7 +148,7 @@ export const Message = styledObserver<Props>(
               </UIMessageContent>
             )}
 
-            {message.tasks.all.length > 0 && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
+            {message.tasks.hasItems && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
