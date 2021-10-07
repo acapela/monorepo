@@ -1,8 +1,10 @@
 import { toPairs } from "lodash";
 import { observer } from "mobx-react";
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
+import { useDb } from "~frontend/clientdb";
+import { MentionTaskDraftsContext } from "~frontend/message/content-and-task-drafts";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { UserBasicInfoFragment } from "~gql";
@@ -12,7 +14,7 @@ import { assert } from "~shared/assert";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
-import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
+import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
@@ -23,11 +25,8 @@ import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
 
-/**
- * TODO: This type should be moved to `shared/types` when we'll add backend integration that will pick message mentions
- * to create notifications.
- */
 const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) => {
+  const { tasks, createOrUpdateTaskDraft } = useContext(MentionTaskDraftsContext);
   const team = useAssertCurrentTeam();
   const teamMemberUsers = team.members.all.map((member) => member.user);
 
@@ -43,7 +42,10 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
     setSelectedUserId(null);
   }, [keyword]);
 
-  if (!teamMemberUsers.length) return null;
+  const task = tasks.find((task) => task.userId === selectedUserId);
+  if (!teamMemberUsers.length || task) {
+    return null;
+  }
 
   // Picker has 2 stages. First we select user, then we select mention type.
 
@@ -55,6 +57,11 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
         keyGetter={(user) => user.id}
         onItemSelected={(user) => {
           setSelectedUserId(user.id);
+          const task = tasks.find((task) => task.userId === user.id);
+          if (task) {
+            // if there is already a task for the user, reuse it
+            onSelect({ taskId: task.id });
+          }
         }}
         renderItem={(user) => {
           return (
@@ -75,8 +82,9 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
     <MentionTypePicker
       selected="request-read"
       onSelect={(mentionType) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        onSelect({ originalName: selectedUser.name!, userId: selectedUser.id, type: mentionType });
+        if (createOrUpdateTaskDraft) {
+          onSelect({ taskId: createOrUpdateTaskDraft(selectedUser.id, mentionType).id });
+        }
       }}
     />
   );
@@ -85,8 +93,8 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
 type MentionTypeLabel = string;
 
 const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
-  "request-read": "Request read receipt",
-  "request-response": "Request response",
+  [REQUEST_READ]: "Request read receipt",
+  [REQUEST_RESPONSE]: "Request response",
 };
 
 function MentionTypePicker({
@@ -112,11 +120,12 @@ function MentionTypePicker({
   );
 }
 
-function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) {
+const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) => {
+  const db = useDb();
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(false);
-  const [mentionType, setMentionType] = useState<MentionType>(props.data.type ?? DEFAULT_MENTION_TYPE);
+  const { tasks, createOrUpdateTaskDraft } = useContext(MentionTaskDraftsContext);
 
   useEffect(() => {
     if (!isMentionPickerOpen) return;
@@ -137,7 +146,16 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
     }
   }
 
-  const otherProps = !props.isEditable ? { "data-tooltip": props.data.originalName } : {};
+  if (!props.data.taskId || tasks.length == 0) {
+    return null;
+  }
+
+  const task = tasks.find((task) => task.id == props.data.taskId);
+  const taskUser = task ? db.user.findById(task.userId) : null;
+
+  if (!task || !taskUser) {
+    return null;
+  }
 
   return (
     <>
@@ -150,18 +168,24 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
         >
           <PopPresenceAnimator>
             <MentionTypePicker
-              selected={mentionType}
+              selected={task.type}
               onSelect={(mentionType: MentionType) => {
-                setMentionType(mentionType);
-                props.update({ type: mentionType });
+                if (createOrUpdateTaskDraft) {
+                  props.update({ taskId: createOrUpdateTaskDraft(task.userId, mentionType).id });
+                }
                 closeMentionTypePicker();
               }}
             />
           </PopPresenceAnimator>
         </Popover>
       )}
-      <UIMention mentionType={mentionType} ref={anchorRef} onClick={handleOpenMentionTypePicker} {...otherProps}>
-        @{props?.data?.originalName}
+      <UIMention
+        mentionType={task.type}
+        ref={anchorRef}
+        onClick={handleOpenMentionTypePicker}
+        data-tooltip={mentionTypeLabelMap[task.type]}
+      >
+        @{taskUser.name}
         {props.isEditable && (
           <UIMentionPopoverOpenIndicator>
             <UIMentionIcon icon={<IconChevronUp />} size={"inherit"} />
@@ -170,7 +194,7 @@ function TypedMention(props: PropsWithChildren<AutocompleteNodeProps<EditorMenti
       </UIMention>
     </>
   );
-}
+});
 
 export const userMentionExtension = createAutocompletePlugin<EditorMentionData>({
   type: "mention",

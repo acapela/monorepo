@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
+import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
@@ -21,6 +22,7 @@ const taskFragment = gql`
     type
     updated_at
     due_at
+    team_invitation_id
   }
 `;
 
@@ -33,13 +35,15 @@ export const taskEntity = defineEntity<TaskFragment>({
       __typename: "task",
       done_at: null,
       seen_at: null,
+      due_at: null,
+      team_invitation_id: null,
       ...getGenericDefaultData(),
     };
   },
   keys: getFragmentKeys<TaskFragment>(taskFragment),
   sync: createHasuraSyncSetupFromFragment<TaskFragment>(taskFragment, {
     insertColumns: ["done_at", "due_at", "user_id", "seen_at", "type", "message_id", "id"],
-    updateColumns: ["done_at", "due_at", "seen_at", "type", "user_id"],
+    updateColumns: ["done_at", "due_at", "seen_at"],
   }),
 }).addConnections((task, { getEntity, getContextValue }) => {
   return {
@@ -52,6 +56,9 @@ export const taskEntity = defineEntity<TaskFragment>({
       }
 
       return getEntity(userEntity).findById(task.user_id);
+    },
+    get teamInvitation() {
+      return task.team_invitation_id ? getEntity(teamInvitationEntity).findById(task.team_invitation_id) : null;
     },
     get isOwn() {
       return task.user_id === getContextValue(userIdContext);

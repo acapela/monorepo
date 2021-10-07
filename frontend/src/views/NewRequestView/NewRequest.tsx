@@ -1,33 +1,26 @@
 import { runInAction } from "mobx";
-import React, { useCallback, useRef } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
-import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
-import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
 export function NewRequest() {
-  const editorRef = useRef<Editor>(null);
   const db = useDb();
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
-    getInitialValue: () => "",
-    checkShouldStore: (value: string) => {
-      return value !== null && value.trim() !== "";
-    },
+    initialValue: "",
   });
-
-  const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
 
   const [content, setContent] = useLocalStorageState<RichEditorNode>({
     key: "message-draft-for-new-request",
-    getInitialValue: getEmptyRichContent,
-    checkShouldStore,
+    initialValue: getEmptyRichContent(),
   });
 
   function handleSubmitTopicName(submittedTopicName: string) {

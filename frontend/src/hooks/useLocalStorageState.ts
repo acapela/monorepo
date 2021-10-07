@@ -1,26 +1,25 @@
+import { isEqual } from "lodash";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export function useLocalStorageState<S>({
   key,
-  getInitialValue,
-  checkShouldStore,
+  initialValue,
 }: {
   key: string;
-  getInitialValue: () => S;
-  checkShouldStore: (value: S) => boolean;
+  initialValue: S;
 }): [S, Dispatch<SetStateAction<S>>] {
   const [value, setValue] = useState<S>(() => {
     const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : getInitialValue();
+    return storedValue ? JSON.parse(storedValue) : initialValue;
   });
 
   useEffect(() => {
-    if (checkShouldStore(value)) {
-      localStorage.setItem(key, JSON.stringify(value));
-    } else {
+    if (isEqual(value, initialValue)) {
       localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(value));
     }
-  }, [value, checkShouldStore, key]);
+  }, [value, key, initialValue]);
 
   return [value, setValue];
 }

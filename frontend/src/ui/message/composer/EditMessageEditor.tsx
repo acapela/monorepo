@@ -1,16 +1,19 @@
-import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
+import {
+  MentionTaskDraftsContext,
+  getTaskIdsFromContentMentions,
+  useStoredContentAndTasks,
+} from "~frontend/message/content-and-task-drafts";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
-import { UpdateMessageContentMutation, UpdateMessageContentMutationVariables } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
-import { RichEditorNode } from "~richEditor/content/types";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
@@ -25,6 +28,8 @@ interface Props {
 }
 
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
+  const db = useDb();
+
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
     message.attachments.all.map((messageAttachment) => ({
       mimeType: messageAttachment.mime_type,
@@ -35,27 +40,7 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const [content, setContent] = useState<RichEditorNode>(message.content);
-
-  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
-    gql`
-      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
-        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
-          id
-          content
-        }
-      }
-    `,
-    {
-      optimisticResponse: (vars) => ({
-        __typename: "mutation_root",
-        message: {
-          __typename: "message",
-          ...vars,
-        },
-      }),
-    }
-  );
+  const { content, taskDrafts, mentionTasksContextValue, setContentAndUpdateTasks } = useStoredContentAndTasks(message);
 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
@@ -82,14 +67,24 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    const updatingMessagePromise = updateMessageContent({
-      variables: {
-        id: message.id,
-        content,
-      },
-    }) as Promise<unknown>;
+    message.update({ content });
 
-    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
+    const mentionedTaskIds = getTaskIdsFromContentMentions(content);
+
+    for (const task of message.tasks.all.filter((task) => !mentionedTaskIds.has(task.id))) {
+      db.task.removeById(task.id);
+    }
+
+    for (const taskDraft of taskDrafts.filter((draft) => mentionedTaskIds.has(draft.id))) {
+      db.task.create({
+        id: taskDraft.id,
+        message_id: message.id,
+        user_id: taskDraft.userId,
+        type: taskDraft.type,
+      });
+    }
+
+    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
     trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }
@@ -102,20 +97,22 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   return (
     <UIHolder>
-      <MessageContentEditor
-        content={content}
-        onContentChange={setContent}
-        onFilesSelected={uploadAttachments}
-        uploadingAttachments={uploadingAttachments}
-        attachments={attachments}
-        onAttachmentRemoveRequest={(attachmentId) => {
-          attachmentsList.filter((existingAttachment) => {
-            return existingAttachment.uuid !== attachmentId;
-          });
-        }}
-        autofocusKey={message.id}
-        hideEditorSubmitButton
-      />
+      <MentionTaskDraftsContext.Provider value={mentionTasksContextValue}>
+        <MessageContentEditor
+          content={content}
+          onContentChange={setContentAndUpdateTasks}
+          onFilesSelected={uploadAttachments}
+          uploadingAttachments={uploadingAttachments}
+          attachments={attachments}
+          onAttachmentRemoveRequest={(attachmentId) => {
+            attachmentsList.filter((existingAttachment) => {
+              return existingAttachment.uuid !== attachmentId;
+            });
+          }}
+          autofocusKey={message.id}
+          hideEditorSubmitButton
+        />
+      </MentionTaskDraftsContext.Provider>
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel
