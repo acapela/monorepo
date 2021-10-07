@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
 
-import { MessageTask_TaskFragment } from "~gql";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { niceFormatDateTime } from "~shared/dates/format";
 import { IconCheck, IconTime, IconUserCheck } from "~ui/icons";
 
 interface Props {
-  task: MessageTask_TaskFragment;
+  task: TaskEntity;
   taskAssigneeName: string;
 }
 

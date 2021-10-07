@@ -6,7 +6,6 @@ import { assert } from "~shared/assert";
 import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
-import { updateRoomLastActivityDate } from "../rooms/rooms";
 
 export async function prepareMessagePlainTextData(message: Message) {
   if ((message.type as Message_Type_Enum) !== "TEXT") {
