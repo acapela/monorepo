@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import { ReactNode } from "react";
 import styled from "styled-components";
 

@@ -79,7 +79,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       return topic.owner_id === getContextValue(userIdContext);
     },
     get isClosed() {
-      return !!topic.closed_at && !!topic.closed_by_user_id;
+      return !!topic.closed_at;
     },
     get isArchived() {
       return !!topic.archived_at;

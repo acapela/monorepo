@@ -3,8 +3,8 @@ import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
+import { MessageEntity } from "~frontend/clientdb/message";
 import { MessageReactionEntity } from "~frontend/clientdb/messageReaction";
-import { MessageReaction_MessageFragment } from "~gql";
 import { fontSize } from "~ui/baseStyles";
 import { Tooltip } from "~ui/popovers/Tooltip";
 import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE } from "~ui/theme/colors/base";
@@ -12,7 +12,7 @@ import { BACKGROUND_ACCENT, BACKGROUND_ACCENT_WEAK, SECONDARY_TEXT_COLOR, WHITE 
 import { MessageReactionTooltip } from "./MessageReactionTooltip";
 
 interface Props {
-  message: MessageReaction_MessageFragment;
+  message: MessageEntity;
   emoji: string;
   reactions: MessageReactionEntity[];
 }
