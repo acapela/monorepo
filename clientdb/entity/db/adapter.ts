@@ -1,49 +1,33 @@
-/**
- * This module defines interfaces for persistance database adapter
- */
-
-export interface DbEntityInfo {
+export interface PersistanceTableConfig {
   name: string;
   keyField: string;
 }
 
-export interface DbInfo {
-  dbPrefix: string;
-  dbVersion: number;
-  entities: DbEntityInfo[];
-}
-
-export interface EntityDbInfo extends DbInfo {
-  entityName: string;
-}
-
-export interface SaveItemInput<Data> extends EntityDbInfo {
-  item: Data;
-}
-
-export interface RemoveItemInput extends EntityDbInfo {
-  itemId: string;
-}
-
-interface GetTableConfig<Data> {
-  name: string;
-  keyField: keyof Data;
-}
-
-export interface LocalDbTableAdapter<Data> {
+export interface PersistanceTableAdapter<Data> {
   saveItem(key: string, input: Data): Promise<boolean>;
   removeItem(key: string): Promise<boolean>;
   fetchAllItems(): Promise<Data[]>;
+  fetchItem(key: string): Promise<Data | null>;
+  updateItem(key: string, input: Partial<Data>): Promise<boolean>;
   clearTable(): Promise<boolean>;
 }
 
-export interface ClientAdapterConfig {
-  dbAdapter: LocalDbAdapter;
-  dbVersion: number;
-  dbPrefix: string;
+export interface PersistanceAdapterInfo {
+  adapter: PersistanceAdapter;
+  nameSuffix?: string;
 }
 
-export interface LocalDbAdapter {
-  getTable<Data>(conifg: GetTableConfig<Data>): Promise<LocalDbTableAdapter<Data>>;
-  initialize(input: DbInfo): Promise<boolean>;
+export interface PersistanceDbOpenInput {
+  name: string;
+  version: number;
+  tables: PersistanceTableConfig[];
+}
+
+export interface PersistanceDB {
+  getTable<Data>(name: string): Promise<PersistanceTableAdapter<Data>>;
+}
+
+export interface PersistanceAdapter {
+  openDB(input: PersistanceDbOpenInput): Promise<PersistanceDB>;
+  removeDB(name: string): Promise<boolean>;
 }
