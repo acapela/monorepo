@@ -53,9 +53,9 @@ export const messageEntity = defineEntity<MessageFragment>({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return getEntity(userEntity).findById(message.user_id)!;
     },
-    tasks: getEntity(taskEntity).find((task) => task.message_id === message.id),
-    reactions: getEntity(messageReactionEntity).find((reaction) => reaction.message_id === message.id),
-    attachments: getEntity(attachmentEntity).find((attachment) => attachment.message_id === message.id),
+    tasks: getEntity(taskEntity).query({ message_id: message.id }),
+    reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
+    attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
 

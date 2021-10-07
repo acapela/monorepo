@@ -5,6 +5,7 @@ import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
 import { teamInvitationEntity } from "./teamInvitation";
+import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
@@ -49,6 +50,13 @@ export const taskEntity = defineEntity<TaskFragment>({
   return {
     get message() {
       return getEntity(messageEntity).findById(task.message_id);
+    },
+    get topic() {
+      const message = getEntity(messageEntity).findById(task.message_id);
+
+      if (!message) return null;
+
+      return message.topic;
     },
     get user() {
       if (!task.user_id) {
