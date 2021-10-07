@@ -4,6 +4,7 @@ import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
+import { teamInvitationEntity } from "./teamInvitation";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
@@ -21,6 +22,9 @@ const taskFragment = gql`
     type
     updated_at
     due_at
+    team_invitation {
+      id
+    }
   }
 `;
 
@@ -55,6 +59,10 @@ export const taskEntity = defineEntity<TaskFragment>({
     },
     get isOwn() {
       return task.user_id === getContextValue(userIdContext);
+    },
+    get teamInvitation() {
+      if (!task.team_invitation?.id) return null;
+      return getEntity(teamInvitationEntity).findById(task.team_invitation.id);
     },
   };
 });

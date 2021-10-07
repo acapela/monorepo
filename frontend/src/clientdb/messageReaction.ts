@@ -25,9 +25,10 @@ export const messageReactionEntity = defineEntity<MessageReactionFragment>({
   keyField: "id",
   updatedAtField: "updated_at",
   keys: getFragmentKeys<MessageReactionFragment>(messageReactionFragment),
-  getDefaultValues() {
+  getDefaultValues({ getContextValue }) {
     return {
       __typename: "message_reaction",
+      user_id: getContextValue(userIdContext) ?? undefined,
       ...getGenericDefaultData(),
     };
   },
