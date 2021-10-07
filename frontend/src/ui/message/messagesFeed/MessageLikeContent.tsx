@@ -1,28 +1,16 @@
-import { gql } from "@apollo/client";
 import { motion } from "framer-motion";
 import { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { withFragments } from "~frontend/gql/utils";
-import { MessageLikeContent_UserFragment } from "~gql";
+import { styledObserver } from "~frontend/../../shared/component";
+import { UserEntity } from "~frontend/clientdb/user";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { theme } from "~ui/theme";
 
 import { MessageMetaDataWrapper } from "./MessageMetaData";
 
-const fragments = {
-  user: gql`
-    ${MessageMetaDataWrapper.fragments.user}
-
-    fragment MessageLikeContent_user on user {
-      id
-      ...MessageMetaData_user
-    }
-  `,
-};
-
 interface Props {
-  user: MessageLikeContent_UserFragment;
+  user: UserEntity;
   date: Date;
   children: ReactNode;
   hasHiddenMetadata?: boolean;
@@ -30,28 +18,28 @@ interface Props {
   className?: string;
 }
 
-const _MessageLikeContent = styled<Props>(({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
-  const holderRef = useRef<HTMLDivElement>(null);
-  const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
+export const MessageLikeContent = styledObserver<Props>(
+  ({ user, date, children, tools, className, hasHiddenMetadata = false }) => {
+    const holderRef = useRef<HTMLDivElement>(null);
+    const [isHovered, { set: setHovered, unset: unsetHovered }] = useBoolean(false);
 
-  return (
-    <UIAnimatedMessageWrapper
-      ref={holderRef}
-      className={className}
-      onMouseEnter={() => setHovered()}
-      onMouseLeave={() => unsetHovered()}
-    >
-      <UIContentContainer>
-        <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
-          {children}
-        </MessageMetaDataWrapper>
-        {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
-      </UIContentContainer>
-    </UIAnimatedMessageWrapper>
-  );
-})``;
-
-export const MessageLikeContent = withFragments(fragments, _MessageLikeContent);
+    return (
+      <UIAnimatedMessageWrapper
+        ref={holderRef}
+        className={className}
+        onMouseEnter={() => setHovered()}
+        onMouseLeave={() => unsetHovered()}
+      >
+        <UIContentContainer>
+          <MessageMetaDataWrapper user={user} date={date} isHidden={hasHiddenMetadata} isHovered={isHovered}>
+            {children}
+          </MessageMetaDataWrapper>
+          {tools && <UIFlyingTools>{tools}</UIFlyingTools>}
+        </UIContentContainer>
+      </UIAnimatedMessageWrapper>
+    );
+  }
+)``;
 
 const UIFlyingTools = styled(motion.div)<{}>`
   position: absolute;
