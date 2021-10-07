@@ -6,6 +6,7 @@ import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { slugify } from "~shared/slugify";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
@@ -37,7 +38,7 @@ export function NewRequest() {
   function submit() {
     // TODO: Fix! Mentions are not quite working correctly.
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: `slug-${topicName}` });
+      const topic = db.topic.create({ name: topicName, slug: slugify(topicName) });
       db.message.create({ content, topic_id: topic.id, type: "TEXT" });
     });
   }

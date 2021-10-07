@@ -10,10 +10,10 @@ import { theme } from "~ui/theme";
 import { RequestFeed } from "./RequestFeed";
 
 interface Props {
-  selectedTopicId?: string;
+  selectedTopicSlug?: string;
 }
 
-export function SidebarContent({ selectedTopicId }: Props) {
+export function SidebarContent({ selectedTopicSlug }: Props) {
   return (
     <UIHolder>
       <UIHeader>
@@ -33,7 +33,7 @@ export function SidebarContent({ selectedTopicId }: Props) {
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed selectedItemId={selectedTopicId} />
+        <RequestFeed topicSlug={selectedTopicSlug} />
       </UIRequestFeed>
     </UIHolder>
   );

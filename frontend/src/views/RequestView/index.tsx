@@ -7,12 +7,12 @@ import { useDb } from "~frontend/clientdb";
 import { TopicWithMessages } from "./TopicWithMessages";
 
 interface Props {
-  topicId: string;
+  topicSlug: string;
 }
 
-export const RequestView = observer(({ topicId }: Props) => {
+export const RequestView = observer(({ topicSlug }: Props) => {
   const db = useDb();
-  const topic = db.topic.findById(topicId);
+  const topic = db.topic.findByUniqueIndex("slug", topicSlug);
   return <UIHolder>{topic && <TopicWithMessages topic={topic} />}</UIHolder>;
 });
 

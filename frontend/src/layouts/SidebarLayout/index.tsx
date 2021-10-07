@@ -11,11 +11,11 @@ import { TeamPickerView } from "../TeamPicker";
 import { SidebarContent } from "./SidebarContent";
 
 interface Props {
-  selectedTopicId?: string;
+  selectedTopicSlug?: string;
   children?: ReactNode;
 }
 
-export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
+export const SidebarLayout = ({ selectedTopicSlug, children }: Props) => {
   const user = useCurrentUserTokenData();
   const currentTeamId = useCurrentTeamId();
 
@@ -38,7 +38,7 @@ export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
   return (
     <UIHolder>
       <UISidebar>
-        <SidebarContent selectedTopicId={selectedTopicId} />
+        <SidebarContent selectedTopicSlug={selectedTopicSlug} />
       </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>
