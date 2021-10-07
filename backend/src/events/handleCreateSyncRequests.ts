@@ -3,16 +3,6 @@ import { log } from "~shared/logger";
 
 import { HasuraEvent } from "../hasura";
 
-/**
- * you remove topic
- *
- * cascade :> messages, tasks
- *
- * sync_request for task
- *
- * task > message > topic.team_id
- */
-
 export async function handleCreateSyncRequests(event: HasuraEvent<unknown>) {
   const { item, userId } = event;
 
