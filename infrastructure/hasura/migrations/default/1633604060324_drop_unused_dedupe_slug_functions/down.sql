@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP FUNCTION public.dedupe_room_slug;
+-- DROP FUNCTION public.dedupe_space_slug;
