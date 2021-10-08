@@ -10,7 +10,6 @@ import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
-import { UniqueEntityIndex, createUniqueEntityIndex } from "./uniqueIndex";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
 export type EntitySimpleQuery<Data> = Partial<{
@@ -59,15 +58,7 @@ export function createEntityStore<Data, Connections>(
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
 
-  const indexesMap = new Map<keyof Data, UniqueEntityIndex<Data, Connections, keyof Data>>();
-
   const queryIndexes = new Map<keyof Data, QueryIndex<Data, Connections, keyof Data>>();
-
-  config.uniqueIndexes?.forEach((uniqueIndex) => {
-    const index = createUniqueEntityIndex<Data, Connections, keyof Data>(uniqueIndex, events);
-
-    indexesMap.set(uniqueIndex, index);
-  });
 
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.
@@ -130,11 +121,18 @@ export function createEntityStore<Data, Connections>(
       }).get();
     },
     findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
-      const index = indexesMap.get(key);
+      const query: Partial<Data> = {};
+      // TS was complaining about ^ {[key]: value} as it considered key as string in such case, not as keyof Data
+      query[key] = value;
 
-      assert(index, `No index is defined for entity ${config.name} (${key})`);
+      return computed(() => {
+        const results = store.simpleQuery(query);
+        if (!results.length) return null;
 
-      return index.find(value);
+        if (results.length > 1) console.warn(`Store has multiple items for unique index value ${key}:${value}.`);
+
+        return results[0];
+      }).get();
     },
     assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
       const entity = store.findByUniqueIndex(key, value);
@@ -163,7 +161,6 @@ export function createEntityStore<Data, Connections>(
       return createEntityQuery(existingItems.get(), config, store);
     },
     destroy() {
-      indexesMap.forEach((index) => index.destroy());
       queryIndexes.forEach((queryIndex) => {
         queryIndex.destroy();
       });
