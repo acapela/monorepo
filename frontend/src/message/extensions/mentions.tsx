@@ -1,20 +1,21 @@
+import { JSONContent } from "@tiptap/core";
 import { toPairs } from "lodash";
 import { observer } from "mobx-react";
-import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
-import { MentionTaskDraftsContext } from "~frontend/message/content-and-task-drafts";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/autocomplete/component";
 import { assert } from "~shared/assert";
+import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
-import { MentionType, REQUEST_READ, REQUEST_RESPONSE } from "~shared/types/mention";
+import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";
@@ -25,8 +26,7 @@ import { Popover } from "~ui/popovers/Popover";
 import { SelectList } from "~ui/SelectList";
 import { theme } from "~ui/theme";
 
-const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<EditorMentionData>) => {
-  const { tasks, createOrUpdateTaskDraft } = useContext(MentionTaskDraftsContext);
+const MentionPicker = observer(({ keyword, onSelect, editor }: AutocompletePickerProps<EditorMentionData>) => {
   const team = useAssertCurrentTeam();
   const teamMemberUsers = team.members.all.map((member) => member.user);
 
@@ -42,10 +42,7 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
     setSelectedUserId(null);
   }, [keyword]);
 
-  const task = tasks.find((task) => task.userId === selectedUserId);
-  if (!teamMemberUsers.length || task) {
-    return null;
-  }
+  if (!teamMemberUsers.length) return null;
 
   // Picker has 2 stages. First we select user, then we select mention type.
 
@@ -56,11 +53,13 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
         noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
         keyGetter={(user) => user.id}
         onItemSelected={(user) => {
-          setSelectedUserId(user.id);
-          const task = tasks.find((task) => task.userId === user.id);
-          if (task) {
-            // if there is already a task for the user, reuse it
-            onSelect({ taskId: task.id });
+          const mentionNodeForSameUser = getMentionNodesFromContent(editor.getJSON() as never).find(
+            (node) => node.attrs.data.userId === user.id
+          );
+          if (mentionNodeForSameUser) {
+            onSelect({ userId: user.id, type: mentionNodeForSameUser.attrs.data.type });
+          } else {
+            setSelectedUserId(user.id);
           }
         }}
         renderItem={(user) => {
@@ -82,9 +81,7 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
     <MentionTypePicker
       selected="request-read"
       onSelect={(mentionType) => {
-        if (createOrUpdateTaskDraft) {
-          onSelect({ taskId: createOrUpdateTaskDraft(selectedUser.id, mentionType).id });
-        }
+        onSelect({ userId: selectedUser.id, type: mentionType });
       }}
     />
   );
@@ -93,8 +90,8 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
 type MentionTypeLabel = string;
 
 const mentionTypeLabelMap: Record<MentionType, MentionTypeLabel> = {
-  [REQUEST_READ]: "Request read receipt",
-  [REQUEST_RESPONSE]: "Request response",
+  "request-read": "Request read receipt",
+  "request-response": "Request response",
 };
 
 function MentionTypePicker({
@@ -120,20 +117,35 @@ function MentionTypePicker({
   );
 }
 
+function updateContentMentionTypesForUser(node: JSONContent, userId: string, type: MentionType): JSONContent {
+  let attrs = node.attrs;
+  if (node.type === MENTION_TYPE_KEY) {
+    const { data } = node.attrs as { data: EditorMentionData };
+    if (data.userId == userId) {
+      attrs = { data: { userId, type } };
+    }
+  }
+
+  const content = node.content
+    ? node.content.map((childNode) => updateContentMentionTypesForUser(childNode, userId, type))
+    : undefined;
+
+  return { ...node, attrs, content };
+}
+
 const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<EditorMentionData>>) => {
+  const { editor, isEditable, data } = props;
   const db = useDb();
   const anchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const [isMentionPickerOpen, { set: openMentionTypePicker, unset: closeMentionTypePicker }] = useBoolean(false);
-  const { tasks, createOrUpdateTaskDraft } = useContext(MentionTaskDraftsContext);
-
   useEffect(() => {
     if (!isMentionPickerOpen) return;
 
-    props.editor.on("update", closeMentionTypePicker);
+    editor.on("update", closeMentionTypePicker);
 
     return () => {
-      props.editor.off("update", closeMentionTypePicker);
+      editor.off("update", closeMentionTypePicker);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMentionPickerOpen]);
@@ -141,20 +153,9 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
   useShortcut("Escape", closeMentionTypePicker);
 
   function handleOpenMentionTypePicker() {
-    if (props.isEditable) {
+    if (isEditable) {
       openMentionTypePicker();
     }
-  }
-
-  if (!props.data.taskId || tasks.length == 0) {
-    return null;
-  }
-
-  const task = tasks.find((task) => task.id == props.data.taskId);
-  const taskUser = task ? db.user.findById(task.userId) : null;
-
-  if (!task || !taskUser) {
-    return null;
   }
 
   return (
@@ -164,15 +165,15 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
           anchorRef={anchorRef}
           placement="top-start"
           onClickOutside={closeMentionTypePicker}
-          isDisabled={!props.isEditable}
+          isDisabled={!isEditable}
         >
           <PopPresenceAnimator>
             <MentionTypePicker
-              selected={task.type}
+              selected={data.type}
               onSelect={(mentionType: MentionType) => {
-                if (createOrUpdateTaskDraft) {
-                  props.update({ taskId: createOrUpdateTaskDraft(task.userId, mentionType).id });
-                }
+                editor.commands.setContent(
+                  updateContentMentionTypesForUser(editor.getJSON() as never, data.userId, mentionType)
+                );
                 closeMentionTypePicker();
               }}
             />
@@ -180,13 +181,13 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
         </Popover>
       )}
       <UIMention
-        mentionType={task.type}
+        mentionType={data.type}
         ref={anchorRef}
         onClick={handleOpenMentionTypePicker}
-        data-tooltip={mentionTypeLabelMap[task.type]}
+        data-tooltip={mentionTypeLabelMap[data.type]}
       >
-        @{taskUser.name}
-        {props.isEditable && (
+        @{db.user.findById(data.userId)?.name ?? "???"}
+        {isEditable && (
           <UIMentionPopoverOpenIndicator>
             <UIMentionIcon icon={<IconChevronUp />} size={"inherit"} />
           </UIMentionPopoverOpenIndicator>
@@ -199,9 +200,7 @@ const TypedMention = observer((props: PropsWithChildren<AutocompleteNodeProps<Ed
 export const userMentionExtension = createAutocompletePlugin<EditorMentionData>({
   type: "mention",
   triggerChar: "@",
-  nodeComponent(props) {
-    return <TypedMention {...props} />;
-  },
+  nodeComponent: TypedMention,
   pickerComponent: MentionPicker,
 });
 

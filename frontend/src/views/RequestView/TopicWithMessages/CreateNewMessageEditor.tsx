@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
-import { MentionTaskDraftsContext, useStoredContentAndTasks } from "~frontend/message/content-and-task-drafts";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
@@ -18,9 +18,9 @@ import { Message_Type_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
-import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
 interface Props {
@@ -46,7 +46,10 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const { content, taskDrafts, mentionTasksContextValue, setContentAndUpdateTasks } = useStoredContentAndTasks(topicId);
+  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-topic:" + topicId,
+    initialValue: getEmptyRichContent(),
+  });
 
   const topicContext = useTopicStoreContext();
 
@@ -88,25 +91,17 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   };
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
-    const messageId = getUUID();
-
     const newMessage = db.message.create({
-      id: messageId,
       topic_id: topicId,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
-    for (const taskDraft of taskDrafts) {
-      db.task.create({
-        id: taskDraft.id,
-        message_id: messageId,
-        user_id: taskDraft.userId,
-        type: taskDraft.type,
-      });
+    for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
+      db.task.create({ message_id: newMessage.id, user_id: userId, type });
     }
 
-    setContentAndUpdateTasks(getEmptyRichContent());
+    setContent(getEmptyRichContent());
 
     trackEvent("Sent Message", {
       messageType: type,
@@ -115,7 +110,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     });
     await Promise.all(
       bindAttachmentsToMessage(
-        messageId,
+        newMessage.id,
         attachments.map(({ uuid }) => uuid)
       )
     );
@@ -140,55 +135,53 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
           });
         }}
       />
-      <MentionTaskDraftsContext.Provider value={mentionTasksContextValue}>
-        <MessageContentEditor
-          ref={editorRef}
-          isDisabled={isDisabled || isEditingAnyMessage}
-          content={content}
-          onContentChange={setContentAndUpdateTasks}
-          onSubmit={async () => {
-            if (validator(content)) {
-              setShouldValidateOnChange(true);
-              return;
-            }
-
-            attachmentsList.clear();
-
-            try {
-              await submitMessage({
-                type: "TEXT",
-                content: content,
-                attachments,
-              });
-            } catch (error) {
-              console.error("error while submitting message", error);
-              // In case of error - restore attachments and content you were trying to send
-              attachmentsList.set(attachments);
-              setContentAndUpdateTasks(content);
-            }
-          }}
-          onFilesSelected={uploadAttachments}
-          uploadingAttachments={uploadingAttachments}
-          attachments={attachments}
-          onEditorReady={focusEditor}
-          onAttachmentRemoveRequest={(attachmentId) => {
-            attachmentsList.filter((existingAttachment) => {
-              return existingAttachment.uuid !== attachmentId;
-            });
-          }}
-          additionalContent={
-            <>
-              {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
-              {topicContext?.currentlyReplyingToMessageId && (
-                <ReplyingToMessageById
-                  onRemove={handleStopReplyingToMessage}
-                  messageId={topicContext.currentlyReplyingToMessageId}
-                />
-              )}
-            </>
+      <MessageContentEditor
+        ref={editorRef}
+        isDisabled={isDisabled || isEditingAnyMessage}
+        content={content}
+        onContentChange={setContent}
+        onSubmit={async () => {
+          if (validator(content)) {
+            setShouldValidateOnChange(true);
+            return;
           }
-        />
-      </MentionTaskDraftsContext.Provider>
+
+          attachmentsList.clear();
+
+          try {
+            await submitMessage({
+              type: "TEXT",
+              content: content,
+              attachments,
+            });
+          } catch (error) {
+            console.error("error while submitting message", error);
+            // In case of error - restore attachments and content you were trying to send
+            attachmentsList.set(attachments);
+            setContent(content);
+          }
+        }}
+        onFilesSelected={uploadAttachments}
+        uploadingAttachments={uploadingAttachments}
+        attachments={attachments}
+        onEditorReady={focusEditor}
+        onAttachmentRemoveRequest={(attachmentId) => {
+          attachmentsList.filter((existingAttachment) => {
+            return existingAttachment.uuid !== attachmentId;
+          });
+        }}
+        additionalContent={
+          <>
+            {validationErrorMessage && <UIValidationError>{validationErrorMessage}</UIValidationError>}
+            {topicContext?.currentlyReplyingToMessageId && (
+              <ReplyingToMessageById
+                onRemove={handleStopReplyingToMessage}
+                messageId={topicContext.currentlyReplyingToMessageId}
+              />
+            )}
+          </>
+        }
+      />
     </UIEditorContainer>
   );
 });

@@ -6,14 +6,14 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
-import {
-  MentionTaskDraftsContext,
-  getTaskIdsFromContentMentions,
-  useStoredContentAndTasks,
-} from "~frontend/message/content-and-task-drafts";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
+import { RichEditorNode } from "~richEditor/content/types";
+import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
@@ -26,6 +26,9 @@ interface Props {
   onCancelRequest?: () => void;
   onSaved?: () => void;
 }
+
+const isMentioningTask = ({ userId, type }: EditorMentionData, task: TaskEntity) =>
+  task.user_id === userId && task.type === type;
 
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
   const db = useDb();
@@ -40,7 +43,10 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const { content, taskDrafts, mentionTasksContextValue, setContentAndUpdateTasks } = useStoredContentAndTasks(message);
+  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-message" + message.id,
+    initialValue: message.content,
+  });
 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
@@ -69,19 +75,21 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
     message.update({ content });
 
-    const mentionedTaskIds = getTaskIdsFromContentMentions(content);
+    const mentionData = getUniqueMentionDataFromContent(content);
 
-    for (const task of message.tasks.all.filter((task) => !mentionedTaskIds.has(task.id))) {
+    const unmentionedTasks = message.tasks.all.filter(
+      (task) => !mentionData.some((mention) => isMentioningTask(mention, task))
+    );
+    for (const task of unmentionedTasks) {
       db.task.removeById(task.id);
     }
 
-    for (const taskDraft of taskDrafts.filter((draft) => mentionedTaskIds.has(draft.id))) {
-      db.task.create({
-        id: taskDraft.id,
-        message_id: message.id,
-        user_id: taskDraft.userId,
-        type: taskDraft.type,
-      });
+    const newlyMentionedTasks = mentionData.filter(
+      (node) => message.tasks.query((task) => isMentioningTask(node, task)).all.length == 0
+    );
+    for (const newMention of newlyMentionedTasks) {
+      const { userId, type } = newMention;
+      db.task.create({ message_id: message.id, user_id: userId, type });
     }
 
     await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
@@ -97,22 +105,20 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
 
   return (
     <UIHolder>
-      <MentionTaskDraftsContext.Provider value={mentionTasksContextValue}>
-        <MessageContentEditor
-          content={content}
-          onContentChange={setContentAndUpdateTasks}
-          onFilesSelected={uploadAttachments}
-          uploadingAttachments={uploadingAttachments}
-          attachments={attachments}
-          onAttachmentRemoveRequest={(attachmentId) => {
-            attachmentsList.filter((existingAttachment) => {
-              return existingAttachment.uuid !== attachmentId;
-            });
-          }}
-          autofocusKey={message.id}
-          hideEditorSubmitButton
-        />
-      </MentionTaskDraftsContext.Provider>
+      <MessageContentEditor
+        content={content}
+        onContentChange={setContent}
+        onFilesSelected={uploadAttachments}
+        uploadingAttachments={uploadingAttachments}
+        attachments={attachments}
+        onAttachmentRemoveRequest={(attachmentId) => {
+          attachmentsList.filter((existingAttachment) => {
+            return existingAttachment.uuid !== attachmentId;
+          });
+        }}
+        autofocusKey={message.id}
+        hideEditorSubmitButton
+      />
       <UIButtons gap={8} justifyContent="end">
         <Button kind="transparent" onClick={onCancelRequest}>
           Cancel

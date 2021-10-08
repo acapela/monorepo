@@ -7,7 +7,6 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { MentionTaskDraftsContext, taskToMentionTaskData } from "~frontend/message/content-and-task-drafts";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditMessageEditor } from "~frontend/ui/message/composer/EditMessageEditor";
 import { MessageLinksPreviews } from "~frontend/ui/message/display/MessageLinksPreviews";
@@ -111,50 +110,48 @@ export const Message = styledObserver<Props>(
     const messageActionsOptions = getMessageActionsOptions();
 
     return (
-      <MentionTaskDraftsContext.Provider value={{ tasks: message.tasks.all.map(taskToMentionTaskData) }}>
-        <UIHolder id={message.id}>
-          <MessageLikeContent
-            className={className}
-            tools={
-              shouldShowTools && (
-                <UITools>
-                  <MakeReactionButton message={message} />
-                  <ReplyButton messageId={message.id} />
-                  {messageActionsOptions.length > 0 && (
-                    <PopoverMenuTrigger
-                      onOpen={() => setIsActive(true)}
-                      onClose={() => setIsActive(false)}
-                      options={messageActionsOptions}
-                    >
-                      <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
-                    </PopoverMenuTrigger>
-                  )}
-                </UITools>
-              )
-            }
-            user={message.user}
-            hasHiddenMetadata={isBundledWithPreviousMessage}
-            date={new Date(message.created_at)}
-          >
-            <UIMessageBody>
-              {isInEditMode && (
-                <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
-              )}
-              {!isInEditMode && (
-                <UIMessageContent>
-                  {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
-                  <MessageText content={toJS(message.content)} />
-                  <MessageMedia message={message} />
-                  <MessageLinksPreviews message={message} />
-                  <MessageReactions message={message} />
-                </UIMessageContent>
-              )}
+      <UIHolder id={message.id}>
+        <MessageLikeContent
+          className={className}
+          tools={
+            shouldShowTools && (
+              <UITools>
+                <MakeReactionButton message={message} />
+                <ReplyButton messageId={message.id} />
+                {messageActionsOptions.length > 0 && (
+                  <PopoverMenuTrigger
+                    onOpen={() => setIsActive(true)}
+                    onClose={() => setIsActive(false)}
+                    options={messageActionsOptions}
+                  >
+                    <OptionsButton tooltip={isActive ? undefined : "Show Options"} />
+                  </PopoverMenuTrigger>
+                )}
+              </UITools>
+            )
+          }
+          user={message.user}
+          hasHiddenMetadata={isBundledWithPreviousMessage}
+          date={new Date(message.created_at)}
+        >
+          <UIMessageBody>
+            {isInEditMode && (
+              <EditMessageEditor message={message} onCancelRequest={handleStopEditing} onSaved={handleStopEditing} />
+            )}
+            {!isInEditMode && (
+              <UIMessageContent>
+                {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
+                <MessageText content={toJS(message.content)} />
+                <MessageMedia message={message} />
+                <MessageLinksPreviews message={message} />
+                <MessageReactions message={message} />
+              </UIMessageContent>
+            )}
 
-              {message.tasks.all.length > 0 && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
-            </UIMessageBody>
-          </MessageLikeContent>
-        </UIHolder>
-      </MentionTaskDraftsContext.Provider>
+            {message.tasks.all.length > 0 && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
+          </UIMessageBody>
+        </MessageLikeContent>
+      </UIHolder>
     );
   }
 )``;

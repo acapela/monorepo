@@ -1,3 +1,6 @@
+import { MentionType } from "./mention";
+
 export interface EditorMentionData {
-  taskId: string;
+  userId: string;
+  type: MentionType;
 }

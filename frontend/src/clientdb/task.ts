@@ -38,7 +38,7 @@ export const taskEntity = defineEntity<TaskFragment>({
       done_at: null,
       seen_at: null,
       due_at: null,
-      team_invitation_id: null,
+      team_invitation: null,
       ...getGenericDefaultData(),
     };
   },
