@@ -1,9 +1,10 @@
-import { range } from "lodash";
+import { isEqual, range } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
+import { onEnterPressed } from "~frontend/../../ui/forms/utils";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
@@ -15,6 +16,10 @@ import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
+/**
+ * Creates a placeholder with up to 2 random team members mentioned
+ * The current user won't be included
+ */
 function usePlaceholder(): string {
   const db = useDb();
   const user = useAssertCurrentUser();
@@ -69,6 +74,11 @@ export const NewRequest = observer(function NewRequest() {
     setTopicName(submittedTopicName);
   }
 
+  const hasTypedInAnything = useMemo(
+    () => topicName !== "" || !isEqual(content, getEmptyRichContent()),
+    [topicName, content]
+  );
+
   function getAvailableSlugForTopicName(topicName: string) {
     const optimisticSlug = slugify(topicName);
 
@@ -86,6 +96,10 @@ export const NewRequest = observer(function NewRequest() {
     });
   }
 
+  function focusEditor() {
+    editorRef.current?.chain().focus("start");
+  }
+
   function submit() {
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
@@ -96,16 +110,31 @@ export const NewRequest = observer(function NewRequest() {
   }
 
   return (
-    <UIHolder>
-      <UITopicNameInput value={topicName} onChangeText={handleSubmitTopicName} placeholder={"Add topic"} />
-      <NewRequestRichEditor value={content} onChange={setContent} placeholder={placeholder} />
+    <UIHolder isEmpty={!hasTypedInAnything}>
+      <UITopicNameInput
+        value={topicName}
+        onChangeText={handleSubmitTopicName}
+        placeholder={"Add topic"}
+        onKeyPress={onEnterPressed(focusEditor)}
+      />
+      <NewRequestRichEditor ref={editorRef} value={content} onChange={setContent} placeholder={placeholder} />
       <button onClick={submit}>Submit</button>
     </UIHolder>
   );
 });
 
-const UIHolder = styled.div<{}>`
-  width: 600px;
+const UIHolder = styled.div<{ isEmpty: boolean }>`
+  ${(props) => {
+    if (props.isEmpty) {
+      return css`
+        width: 300px;
+      `;
+    }
+    return css`
+      width: 560px;
+      min-height: 150px;
+    `;
+  }}
 `;
 
 const UITopicNameInput = styled(TransparentTextInput)<{}>`
