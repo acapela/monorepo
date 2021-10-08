@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 import { ApolloContext } from "~frontend/apollo/client";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { routes } from "~frontend/router";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -16,7 +16,7 @@ import {
 import { assert } from "~shared/assert";
 
 export default function InvitePage() {
-  const user = useCurrentUser();
+  const user = useCurrentUserTokenData();
   const { inviteCode: token } = routes.invitePage.useAssertParams().route;
 
   assert(token, "Invite code required");

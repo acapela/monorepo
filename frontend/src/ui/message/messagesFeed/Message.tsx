@@ -1,12 +1,11 @@
-import { gql, useMutation } from "@apollo/client";
 import { MotionProps } from "framer-motion";
-import { observer } from "mobx-react";
+import { toJS } from "mobx";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { MessageEntity } from "~frontend/clientdb/message";
 import { MentionTaskDraftsContext, taskToMentionTaskData } from "~frontend/message/content-and-task-drafts";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
@@ -20,9 +19,9 @@ import { ReplyButton } from "~frontend/ui/message/reply/ReplyButton";
 import { ReplyingToMessage } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { OptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
-import { DeleteTextMessageMutation, DeleteTextMessageMutationVariables } from "~gql";
 import { convertMessageContentToPlainText } from "~richEditor/content/plainText";
 import { assert } from "~shared/assert";
+import { styledObserver } from "~shared/component";
 import { useDebouncedValue } from "~shared/hooks/useDebouncedValue";
 import { select } from "~shared/sharedState";
 import { IconCheck, IconEdit, IconTrash } from "~ui/icons";
@@ -40,18 +39,9 @@ interface Props extends MotionProps {
   className?: string;
 }
 
-export const Message = styled<Props>(
-  observer(({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
-    const user = useCurrentUser();
-    const [deleteMessage] = useMutation<DeleteTextMessageMutation, DeleteTextMessageMutationVariables>(
-      gql`
-        mutation DeleteTextMessage($id: uuid!) {
-          message: delete_message_by_pk(id: $id) {
-            id
-          }
-        }
-      `
-    );
+export const Message = styledObserver<Props>(
+  ({ message, className, isReadonly, isBundledWithPreviousMessage = false, onCloseTopicRequest }) => {
+    const user = useCurrentUserTokenData();
 
     const topicContext = useTopicStoreContext();
 
@@ -85,7 +75,7 @@ export const Message = styled<Props>(
       });
 
       if (didConfirm) {
-        await deleteMessage({ variables: { id: message.id } });
+        message.remove();
         trackEvent("Deleted Message", { messageId: message.id });
       }
     }
@@ -153,7 +143,7 @@ export const Message = styled<Props>(
               {!isInEditMode && (
                 <UIMessageContent>
                   {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
-                  <MessageText content={message.content} />
+                  <MessageText content={toJS(message.content)} />
                   <MessageMedia message={message} />
                   <MessageLinksPreviews message={message} />
                   <MessageReactions message={message} />
@@ -166,7 +156,7 @@ export const Message = styled<Props>(
         </UIHolder>
       </MentionTaskDraftsContext.Provider>
     );
-  })
+  }
 )``;
 
 const UIHolder = styled.div<{}>``;

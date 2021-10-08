@@ -4,10 +4,10 @@ import React, { PropsWithChildren, useContext, useEffect, useRef, useState } fro
 import styled, { css } from "styled-components";
 
 import { useDb } from "~frontend/clientdb";
+import { UserEntity } from "~frontend/clientdb/user";
 import { MentionTaskDraftsContext } from "~frontend/message/content-and-task-drafts";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
-import { UserBasicInfoFragment } from "~gql";
 import { createAutocompletePlugin } from "~richEditor/autocomplete";
 import { AutocompleteNodeProps, AutocompletePickerProps } from "~richEditor/autocomplete/component";
 import { assert } from "~shared/assert";
@@ -51,7 +51,7 @@ const MentionPicker = observer(({ keyword, onSelect }: AutocompletePickerProps<E
 
   if (!selectedUserId) {
     return (
-      <SelectList<UserBasicInfoFragment>
+      <SelectList<UserEntity>
         items={matchingUsers}
         noItemsPlaceholder={<EmptyStatePlaceholder description="No users found" noSpacing icon={<IconUser />} />}
         keyGetter={(user) => user.id}

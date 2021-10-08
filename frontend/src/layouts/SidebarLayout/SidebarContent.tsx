@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-import { RouteLink, routes } from "~frontend/../router";
 import { UserMenu } from "~frontend/layouts/UserMenu";
+import { RouteLink, routes } from "~frontend/router";
 import { Button } from "~ui/buttons/Button";
 import { IconPlus } from "~ui/icons";
 import { theme } from "~ui/theme";
@@ -10,10 +10,10 @@ import { theme } from "~ui/theme";
 import { RequestFeed } from "./RequestFeed";
 
 interface Props {
-  selectedTopicId?: string;
+  selectedTopicSlug?: string;
 }
 
-export function SidebarContent({ selectedTopicId }: Props) {
+export function SidebarContent({ selectedTopicSlug }: Props) {
   return (
     <UIHolder>
       <UIHeader>
@@ -33,7 +33,7 @@ export function SidebarContent({ selectedTopicId }: Props) {
       </UISearch>
 
       <UIRequestFeed>
-        <RequestFeed selectedItemId={selectedTopicId} />
+        <RequestFeed topicSlug={selectedTopicSlug} />
       </UIRequestFeed>
     </UIHolder>
   );

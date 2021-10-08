@@ -22,7 +22,9 @@ const taskFragment = gql`
     type
     updated_at
     due_at
-    team_invitation_id
+    team_invitation {
+      id
+    }
   }
 `;
 
@@ -57,11 +59,12 @@ export const taskEntity = defineEntity<TaskFragment>({
 
       return getEntity(userEntity).findById(task.user_id);
     },
-    get teamInvitation() {
-      return task.team_invitation_id ? getEntity(teamInvitationEntity).findById(task.team_invitation_id) : null;
-    },
     get isOwn() {
       return task.user_id === getContextValue(userIdContext);
+    },
+    get teamInvitation() {
+      if (!task.team_invitation?.id) return null;
+      return getEntity(teamInvitationEntity).findById(task.team_invitation.id);
     },
   };
 });

@@ -1,26 +1,15 @@
-import { gql } from "@apollo/client";
+import { observer } from "mobx-react";
 import React from "react";
 
-import { withFragments } from "~frontend/gql/utils";
-import { UserBasicInfo_UserFragment } from "~gql";
+import { UserEntity } from "~frontend/clientdb/user";
 import { TextBody14, TextMeta10 } from "~ui/typo";
 
 import { Avatar } from "./Avatar";
 import { UserBasicInfoContainer } from "./UserBasicInfoContainer";
 
-const fragments = {
-  user: gql`
-    fragment UserBasicInfo_user on user {
-      name
-      email
-      avatar_url
-    }
-  `,
-};
+type Props = { user: UserEntity };
 
-type Props = { user: UserBasicInfo_UserFragment };
-
-export const UserBasicInfo = withFragments(fragments, ({ user }: Props) => (
+export const UserBasicInfo = observer(({ user }: Props) => (
   <UserBasicInfoContainer>
     <Avatar url={user.avatar_url} />
     <div>

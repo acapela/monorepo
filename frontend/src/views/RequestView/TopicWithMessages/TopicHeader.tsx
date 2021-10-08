@@ -4,8 +4,6 @@ import styled, { css } from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
-import { isTopicClosed } from "~frontend/topics/utils";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Button } from "~ui/buttons/Button";
 import { theme } from "~ui/theme";
@@ -22,8 +20,8 @@ interface Props {
 
 export const TopicHeader = observer(({ topic, onCloseTopicRequest }: Props) => {
   const [isClosingTopic, { unset: closeClosingModal, set: openClosingTopicModal }] = useBoolean(false);
-  const isClosed = Boolean(topic && isTopicClosed(topic));
-  const isTopicManager = useIsCurrentUserTopicManager(topic);
+  const isClosed = topic.isClosed;
+  const isTopicManager = topic.isOwn;
 
   const handleRestoreTopic = () => {
     topic.update({ closed_at: null, closed_by_user_id: null, archived_at: null });

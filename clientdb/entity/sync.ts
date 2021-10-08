@@ -1,10 +1,12 @@
 import { runInAction } from "mobx";
 
+import { runUntracked } from "~shared/mobxUtils";
 import { createResolvablePromise } from "~shared/promises";
 
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity } from "./entity";
 import { EntityStore } from "./store";
+import { createPushQueue } from "./utils/pushQueue";
 
 interface UpdatesSyncManager<Data> extends DatabaseUtilities {
   updateItems(items: Data[]): void;
@@ -40,6 +42,8 @@ interface EntitySyncManager<Data> {
   firstSyncPromise: Promise<void>;
 }
 
+const pushQueue = createPushQueue();
+
 /**
  * Sync manager sets manages running sync operations and repeating them after previous sync.
  */
@@ -50,7 +54,7 @@ export function createEntitySyncManager<Data, Connections>(
 ): EntitySyncManager<Data> {
   const syncConfig = store.definition.config.sync;
 
-  const [firstSyncPromise, resolveFirstSyncPromise] = createResolvablePromise<void>();
+  const firstSyncPromise = createResolvablePromise<void>();
 
   // Watch for all local changes and as a side effect - push them to remote.
   function initializePushSync() {
@@ -73,7 +77,7 @@ export function createEntitySyncManager<Data, Connections>(
       }
 
       try {
-        const result = await config.entitySyncConfig.remove?.(entity, databaseUtilities);
+        const result = await pushQueue.add(() => config.entitySyncConfig.remove?.(entity, databaseUtilities));
         if (result !== true) {
           restoreEntity();
           // TODO: Handle restore local entity in case of failure
@@ -87,7 +91,7 @@ export function createEntitySyncManager<Data, Connections>(
       if (source !== "user") return;
 
       try {
-        await handleEntityCreatedOrUpdatedByUser(entity);
+        await pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity));
       } catch (error) {
         entity.update(dataBefore, "sync");
       }
@@ -96,7 +100,7 @@ export function createEntitySyncManager<Data, Connections>(
     const cancelCreates = store.events.on("itemAdded", async (entity, source) => {
       if (source !== "user") return;
       try {
-        await handleEntityCreatedOrUpdatedByUser(entity);
+        await pushQueue.add(() => handleEntityCreatedOrUpdatedByUser(entity));
       } catch (error) {
         entity.remove("sync");
       }
@@ -113,12 +117,14 @@ export function createEntitySyncManager<Data, Connections>(
     // TODO: optimize by creating index or cached value modified on each remove/update/addition
     let initialDate = new Date(0);
 
-    store.items.forEach((item) => {
-      const nextItemUpdatedAt = item.getUpdatedAt();
+    runUntracked(() => {
+      store.items.forEach((item) => {
+        const nextItemUpdatedAt = item.getUpdatedAt();
 
-      if (nextItemUpdatedAt > initialDate) {
-        initialDate = nextItemUpdatedAt;
-      }
+        if (nextItemUpdatedAt > initialDate) {
+          initialDate = nextItemUpdatedAt;
+        }
+      });
     });
 
     return initialDate;
@@ -130,7 +136,7 @@ export function createEntitySyncManager<Data, Connections>(
       ...databaseUtilities,
       lastSyncDate: getLastSyncDate(),
       updateItems(items) {
-        resolveFirstSyncPromise();
+        firstSyncPromise.resolve();
         // Ignore empty update list (initial one is usually empty)
         if (!items.length) return;
 
@@ -207,6 +213,6 @@ export function createEntitySyncManager<Data, Connections>(
   return {
     cancel,
     start,
-    firstSyncPromise,
+    firstSyncPromise: firstSyncPromise.promise,
   };
 }

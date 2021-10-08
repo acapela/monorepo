@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 
@@ -10,7 +11,7 @@ interface Props {
   taskAssigneeName: string;
 }
 
-export const TaskStatusIcon = ({ task, taskAssigneeName }: Props) => {
+export const TaskStatusIcon = observer(({ task, taskAssigneeName }: Props) => {
   function getTaskStatus(): "unseen" | "seen" | "done" {
     if (task.done_at) return "done";
     if (task.seen_at) return "seen";
@@ -39,7 +40,7 @@ export const TaskStatusIcon = ({ task, taskAssigneeName }: Props) => {
       )}
     </>
   );
-};
+});
 
 const UIIconHolder = styled.span<{}>`
   font-size: 1.5em;

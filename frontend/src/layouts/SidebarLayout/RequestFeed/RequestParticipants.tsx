@@ -29,7 +29,7 @@ export const RequestParticipants = observer(function RequestParticipants({ topic
 
     // Corner case: Your own avatar should only appear is you assigned a task to yourself and no one else
     if (participantsWithoutCurrentUser.length === 0) {
-      return [db.user.findById(currentUser.id) as UserEntity];
+      return [currentUser];
     }
 
     return db.user.find(({ id }) => participantsWithoutCurrentUser.includes(id)).all;

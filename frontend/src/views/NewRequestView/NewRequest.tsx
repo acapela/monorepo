@@ -6,6 +6,8 @@ import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
+import { runUntracked } from "~shared/mobxUtils";
+import { slugify } from "~shared/slugify";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
@@ -27,10 +29,27 @@ export function NewRequest() {
     setTopicName(submittedTopicName);
   }
 
+  function getAvailableSlugForTopicName(topicName: string) {
+    const optimisticSlug = slugify(topicName);
+
+    return runUntracked(() => {
+      if (!db.topic.findByUniqueIndex("slug", optimisticSlug)) {
+        return optimisticSlug;
+      }
+      let suffixIndex = 2;
+
+      while (db.topic.findByUniqueIndex("slug", `${optimisticSlug}-${suffixIndex}`)) {
+        suffixIndex++;
+      }
+
+      return `${optimisticSlug}-${suffixIndex}`;
+    });
+  }
+
   function submit() {
     // TODO: Fix! Mentions are not quite working correctly.
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: `slug-${topicName}` });
+      const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
       db.message.create({ content, topic_id: topic.id, type: "TEXT" });
     });
   }
