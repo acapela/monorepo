@@ -25,7 +25,7 @@ export async function fetchGraphQLSchema(): Promise<string> {
       query: getIntrospectionQuery(),
     },
     headers: {
-      "X-Hasura-Role": process.env.HASURA_API_ADMIN_ROLE,
+      "X-Hasura-Role": "user",
       "x-hasura-admin-secret": process.env.HASURA_API_SECRET,
     },
   });
