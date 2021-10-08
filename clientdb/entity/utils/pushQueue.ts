@@ -15,7 +15,7 @@ type Task<T> = () => T;
 export function createPushQueue() {
   const queue = new Set<Task<unknown>>();
   /**
-   * ".add" returns a promise of 'when will this task being executed'. As it is different promise to task itself, we need to keep track of it.
+   * ".add" returns a promise of 'when will this task be completed'. As it is different promise to task itself, we need to keep track of it.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const taskFlushedPromisesMap = new WeakMap<Task<unknown>, ResolvablePromise<any>>();
@@ -85,7 +85,7 @@ export function createPushQueue() {
     setTimeout(() => flushNext(), 0);
   }
 
-  async function add<T>(task: () => T) {
+  async function add<T>(task: Task<T>) {
     queue.add(task);
     const flushPromise = createResolvablePromise<T>();
     taskFlushedPromisesMap.set(task, flushPromise);
