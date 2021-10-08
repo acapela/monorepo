@@ -4,9 +4,9 @@ import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { routes } from "~frontend/../router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
+import { routes } from "~frontend/router";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -57,6 +57,7 @@ export const NewRequest = observer(function NewRequest() {
   const db = useDb();
   const placeholder = usePlaceholder();
 
+  // Submitting can be done from the editor or from the topic input box
   useShortcut(["Meta", "Enter"], () => {
     submit();
     // Captures and prevents the event from getting to the editor
@@ -78,10 +79,6 @@ export const NewRequest = observer(function NewRequest() {
     getInitialValue: getEmptyRichContent,
     checkShouldStore,
   });
-
-  function handleSubmitTopicName(submittedTopicName: string) {
-    setTopicName(submittedTopicName);
-  }
 
   const hasTypedMessageContent = useMemo(() => !isEqual(messageContent, getEmptyRichContent()), [messageContent]);
 
@@ -142,7 +139,7 @@ export const NewRequest = observer(function NewRequest() {
       <UITopicNameInput
         autoFocus
         value={topicName}
-        onChangeText={handleSubmitTopicName}
+        onChangeText={setTopicName}
         placeholder={"Add topic"}
         onKeyPress={onEnterPressed(focusEditor)}
       />
