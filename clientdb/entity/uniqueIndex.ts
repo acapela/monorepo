@@ -11,6 +11,8 @@ export interface UniqueEntityIndex<Data, Connections, K extends keyof Data> {
 
 /**
  * Will create unique key index for entity store that will automatically add/update/delete items from the index on changes.
+ *
+ * This is useful if we eg. have 'slug' and want to quickly access entity by it.
  */
 export function createUniqueEntityIndex<Data, Connections, K extends keyof Data>(
   key: K,
