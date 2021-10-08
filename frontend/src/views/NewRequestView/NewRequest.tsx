@@ -4,15 +4,17 @@ import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { onEnterPressed } from "~frontend/../../ui/forms/utils";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
+import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { runUntracked } from "~shared/mobxUtils";
 import { slugify } from "~shared/slugify";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
+import { onEnterPressed } from "~ui/forms/utils";
+import { useShortcut } from "~ui/keyboard/useShortcut";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
@@ -54,6 +56,12 @@ export const NewRequest = observer(function NewRequest() {
   const db = useDb();
   const placeholder = usePlaceholder();
 
+  useShortcut(["Meta", "Enter"], () => {
+    submit();
+    // Captures and prevents the event from getting to the editor
+    return true;
+  });
+
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
     getInitialValue: () => "",
@@ -64,7 +72,7 @@ export const NewRequest = observer(function NewRequest() {
 
   const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
 
-  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+  const [messageContent, setMessageContent] = useLocalStorageState<RichEditorNode>({
     key: "message-draft-for-new-request",
     getInitialValue: getEmptyRichContent,
     checkShouldStore,
@@ -74,10 +82,23 @@ export const NewRequest = observer(function NewRequest() {
     setTopicName(submittedTopicName);
   }
 
+  const hasTypedMessageContent = useMemo(() => !isEqual(messageContent, getEmptyRichContent()), [messageContent]);
+
   const hasTypedInAnything = useMemo(
-    () => topicName !== "" || !isEqual(content, getEmptyRichContent()),
-    [topicName, content]
+    () => topicName !== "" || hasTypedMessageContent,
+    [topicName, hasTypedMessageContent]
   );
+
+  const [isValid, nextStepPromptLabel] = useMemo(() => {
+    if (topicName.length === 0) {
+      return [false, "Please add a topic name before creating request"];
+    }
+    const mentionNodes = getNodesFromContentByType(messageContent, "mention");
+    if (mentionNodes.length < 1) {
+      return [false, "You should mention at least one teammate before creating request"];
+    }
+    return [true, "Hit ⌘+Enter to create request"];
+  }, [topicName, messageContent]);
 
   function getAvailableSlugForTopicName(topicName: string) {
     const optimisticSlug = slugify(topicName);
@@ -101,11 +122,14 @@ export const NewRequest = observer(function NewRequest() {
   }
 
   function submit() {
+    if (!isValid) {
+      return;
+    }
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
-      db.message.create({ content, topic_id: topic.id, type: "TEXT" });
+      db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
       setTopicName("");
-      setContent(getEmptyRichContent());
+      setMessageContent(getEmptyRichContent());
     });
   }
 
@@ -117,8 +141,14 @@ export const NewRequest = observer(function NewRequest() {
         placeholder={"Add topic"}
         onKeyPress={onEnterPressed(focusEditor)}
       />
-      <NewRequestRichEditor ref={editorRef} value={content} onChange={setContent} placeholder={placeholder} />
-      <button onClick={submit}>Submit</button>
+      <NewRequestRichEditor
+        ref={editorRef}
+        value={messageContent}
+        onChange={setMessageContent}
+        placeholder={placeholder}
+        onSubmit={submit}
+      />
+      {hasTypedMessageContent && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
     </UIHolder>
   );
 });
@@ -142,4 +172,19 @@ const UITopicNameInput = styled(TransparentTextInput)<{}>`
   font-family: "Inter", sans-serif;
 
   font-size: 24px;
+`;
+
+const UINextStepPrompt = styled.div<{}>`
+  /* From framer */
+  font-weight: 400;
+  font-style: normal;
+  font-family: "Inter", sans-serif;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  letter-spacing: 0px;
+  line-height: 1.5;
+  text-align: left;
+  /* From framer */
+
+  margin-top: 20px; ;
 `;
