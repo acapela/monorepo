@@ -140,6 +140,7 @@ export const NewRequest = observer(function NewRequest() {
   return (
     <UIHolder isEmpty={!hasTypedInAnything}>
       <UITopicNameInput
+        autoFocus
         value={topicName}
         onChangeText={handleSubmitTopicName}
         placeholder={"Add topic"}
