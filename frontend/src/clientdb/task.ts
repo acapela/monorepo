@@ -5,7 +5,6 @@ import { TaskFragment } from "~gql";
 
 import { messageEntity } from "./message";
 import { teamInvitationEntity } from "./teamInvitation";
-import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { userIdContext } from "./utils/context";
