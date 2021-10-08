@@ -36,7 +36,7 @@ export function NewRequest() {
     setTopicName(submittedTopicName);
   }
 
-  function getFreeSlugForTopicName(topicName: string) {
+  function getAvailableSlugForTopicName(topicName: string) {
     const optimisticSlug = slugify(topicName);
 
     return runUntracked(() => {
@@ -56,7 +56,7 @@ export function NewRequest() {
   function submit() {
     // TODO: Fix! Mentions are not quite working correctly.
     runInAction(() => {
-      const topic = db.topic.create({ name: topicName, slug: getFreeSlugForTopicName(topicName) });
+      const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
       db.message.create({ content, topic_id: topic.id, type: "TEXT" });
     });
   }

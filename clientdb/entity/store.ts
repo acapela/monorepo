@@ -164,6 +164,9 @@ export function createEntityStore<Data, Connections>(
     },
     destroy() {
       indexesMap.forEach((index) => index.destroy());
+      queryIndexes.forEach((queryIndex) => {
+        queryIndex.destroy();
+      });
     },
   };
 
