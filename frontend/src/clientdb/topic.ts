@@ -32,6 +32,7 @@ export const topicEntity = defineEntity<TopicFragment>({
   keyField: "id",
   keys: getFragmentKeys<TopicFragment>(topicFragment),
   defaultSort: (topic) => topic.index,
+  uniqueIndexes: ["slug"],
   getDefaultValues({ getContextValue }) {
     return {
       __typename: "topic",
@@ -77,6 +78,9 @@ export const topicEntity = defineEntity<TopicFragment>({
     messages: getEntity(messageEntity).find((message) => message.topic_id === topic.id),
     get isOwn() {
       return topic.owner_id === getContextValue(userIdContext);
+    },
+    get isClosed() {
+      return !!topic.closed_at;
     },
     get isArchived() {
       return !!topic.archived_at;

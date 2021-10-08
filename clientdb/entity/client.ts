@@ -1,5 +1,7 @@
 import { runInAction } from "mobx";
 
+import { assert } from "~shared/assert";
+
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
@@ -12,6 +14,9 @@ import { EntityChangeSource } from "./types";
 
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
+  assertFindById(id: string, errorMessage?: string): Entity<Data, Connections>;
+  findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
+  assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
   find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
@@ -93,6 +98,19 @@ export function createEntityClient<Data, Connections>(
     findById(id) {
       return store.findById(id);
     },
+    assertFindById(id, errorMessage) {
+      const item = store.findById(id);
+
+      assert(item, errorMessage ?? `Entity ${definition.config.name} assertion failed. No item with id ${id}`);
+
+      return item;
+    },
+    findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
+      return store.findByUniqueIndex(key, value);
+    },
+    assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> {
+      return store.assertFindByUniqueIndex(key, value);
+    },
     get all() {
       return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
@@ -129,6 +147,7 @@ export function createEntityClient<Data, Connections>(
     destroy() {
       persistanceManager.destroy();
       syncManager.cancel();
+      store.destroy();
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,

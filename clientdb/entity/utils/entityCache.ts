@@ -17,9 +17,12 @@ export function createEntityCache<Data, Connections, Result>(getter: (entity: En
       return cachedValue.get();
     }
 
-    const newCachedValue = computed(() => {
-      return getter(entity);
-    });
+    const newCachedValue = computed(
+      () => {
+        return getter(entity);
+      },
+      { name: `entityCachedValue` }
+    );
 
     cacheMap.set(entity, newCachedValue);
 

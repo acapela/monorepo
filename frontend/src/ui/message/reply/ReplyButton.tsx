@@ -1,3 +1,4 @@
+import { runInContext } from "lodash";
 import { observer } from "mobx-react";
 import React from "react";
 
@@ -15,7 +16,9 @@ export const ReplyButton = observer(({ messageId }: Props) => {
   async function handleMarkAsBeingRepliedTo() {
     if (!topicContext) return;
 
-    topicContext.currentlyReplyingToMessageId = messageId;
+    runInContext(() => {
+      topicContext.currentlyReplyingToMessageId = messageId;
+    });
   }
 
   return <WideIconButton kind="secondary" tooltip="Reply" onClick={handleMarkAsBeingRepliedTo} icon={<IconReply />} />;

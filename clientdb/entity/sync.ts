@@ -1,5 +1,6 @@
 import { runInAction } from "mobx";
 
+import { runUntracked } from "~shared/mobxUtils";
 import { createResolvablePromise } from "~shared/promises";
 
 import { DatabaseUtilities } from "./entitiesConnections";
@@ -116,12 +117,14 @@ export function createEntitySyncManager<Data, Connections>(
     // TODO: optimize by creating index or cached value modified on each remove/update/addition
     let initialDate = new Date(0);
 
-    store.items.forEach((item) => {
-      const nextItemUpdatedAt = item.getUpdatedAt();
+    runUntracked(() => {
+      store.items.forEach((item) => {
+        const nextItemUpdatedAt = item.getUpdatedAt();
 
-      if (nextItemUpdatedAt > initialDate) {
-        initialDate = nextItemUpdatedAt;
-      }
+        if (nextItemUpdatedAt > initialDate) {
+          initialDate = nextItemUpdatedAt;
+        }
+      });
     });
 
     return initialDate;

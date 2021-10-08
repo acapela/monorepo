@@ -1,7 +1,8 @@
+import { observer } from "mobx-react";
 import React from "react";
 import styled, { css } from "styled-components";
 
-import { useDb } from "~frontend/clientdb";
+import { TopicEntity } from "~frontend/clientdb/topic";
 import { routes } from "~frontend/router";
 import { RouteLink } from "~frontend/router/RouteLink";
 import { theme } from "~ui/theme";
@@ -9,21 +10,17 @@ import { theme } from "~ui/theme";
 import { RequestParticipants } from "./RequestParticipants";
 
 interface Props {
-  topicId: string;
+  topic: TopicEntity;
   isHighlighted: boolean;
 }
 
-export const RequestItem = function RequestItem({ topicId, isHighlighted = false }: Props) {
-  const db = useDb();
-
-  const topic = db.topic.findById(topicId);
-
+export const RequestItem = observer(function RequestItem({ topic, isHighlighted = false }: Props) {
   if (!topic) {
     return null;
   }
 
   return (
-    <RouteLink passHref route={routes.topic} params={{ topicId }}>
+    <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
       <UIFeedItem isHighlighted={isHighlighted}>
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
@@ -33,7 +30,7 @@ export const RequestItem = function RequestItem({ topicId, isHighlighted = false
       </UIFeedItem>
     </RouteLink>
   );
-};
+});
 
 const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
   width: 100%;

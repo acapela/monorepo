@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import router from "next/router";
 import React from "react";
 import styled from "styled-components";
@@ -12,7 +13,7 @@ import { IconLoader, IconMoreHoriz } from "~ui/icons";
 import { PopoverMenuTrigger } from "~ui/popovers/PopoverMenuTrigger";
 import { addToast } from "~ui/toasts/data";
 
-export function UserMenu() {
+export const UserMenu = observer(function UserMenu() {
   const user = useAssertCurrentUser();
 
   const [changeCurrentTeam] = useChangeCurrentTeamIdMutation();
@@ -56,7 +57,7 @@ export function UserMenu() {
       </PopoverMenuTrigger>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   display: flex;

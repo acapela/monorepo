@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { LoginOptionsView } from "~frontend/views/LoginOptionsView";
 import { WindowView } from "~frontend/views/WindowView";
@@ -11,12 +11,12 @@ import { TeamPickerView } from "../TeamPicker";
 import { SidebarContent } from "./SidebarContent";
 
 interface Props {
-  selectedTopicId?: string;
+  selectedTopicSlug?: string;
   children?: ReactNode;
 }
 
-export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
-  const user = useCurrentUser();
+export const SidebarLayout = ({ selectedTopicSlug, children }: Props) => {
+  const user = useCurrentUserTokenData();
   const currentTeamId = useCurrentTeamId();
 
   if (!user) {
@@ -38,7 +38,7 @@ export const SidebarLayout = ({ selectedTopicId, children }: Props) => {
   return (
     <UIHolder>
       <UISidebar>
-        <SidebarContent selectedTopicId={selectedTopicId} />
+        <SidebarContent selectedTopicSlug={selectedTopicSlug} />
       </UISidebar>
       <UIMainContent>{children}</UIMainContent>
     </UIHolder>

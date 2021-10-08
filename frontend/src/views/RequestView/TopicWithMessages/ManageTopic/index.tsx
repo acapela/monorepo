@@ -3,7 +3,6 @@ import React, { useCallback } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { useIsCurrentUserTopicManager } from "~frontend/topics/useIsCurrentUserTopicManager";
 import { CircleOptionsButton } from "~frontend/ui/options/OptionsButton";
 import { openConfirmPrompt } from "~frontend/utils/confirm";
 import { openUIPrompt } from "~frontend/utils/prompt";
@@ -51,7 +50,7 @@ export const ManageTopic = observer(({ topic, onRenameRequest }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic.name]);
 
-  const isTopicManager = useIsCurrentUserTopicManager(topic);
+  const isTopicManager = topic.isOwn;
 
   const options = [];
   if (isTopicManager) {

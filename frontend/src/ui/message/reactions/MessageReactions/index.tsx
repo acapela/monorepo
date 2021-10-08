@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
@@ -6,7 +7,7 @@ import { MessageEntity } from "~frontend/clientdb/message";
 import { groupReactionsByEmoji } from "./groupReactionsByEmoji";
 import { MessageReaction } from "./MessageReaction";
 
-export function MessageReactions({ message }: { message: MessageEntity }) {
+export const MessageReactions = observer(function MessageReactions({ message }: { message: MessageEntity }) {
   const reactions = message.reactions.all;
   const reactionsByEmoji = useMemo(() => groupReactionsByEmoji(reactions), [reactions]);
 
@@ -17,7 +18,7 @@ export function MessageReactions({ message }: { message: MessageEntity }) {
   if (messageReactions.length < 1) return null;
 
   return <UIReactions>{messageReactions}</UIReactions>;
-}
+});
 
 const UIReactions = styled.div<{}>`
   display: flex;

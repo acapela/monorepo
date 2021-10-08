@@ -1,9 +1,12 @@
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
+import { assert } from "~shared/assert";
+
 import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { EntityChangeSource } from "./types";
+import { UniqueEntityIndex, createUniqueEntityIndex } from "./uniqueIndex";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
 export type EntityStore<Data, Connections> = {
@@ -12,8 +15,11 @@ export type EntityStore<Data, Connections> = {
   removeById(id: string, source?: EntityChangeSource): boolean;
   find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   add(input: Entity<Data, Connections>, source?: EntityChangeSource): Entity<Data, Connections>;
+  findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
+  assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   events: EntityStoreEventsEmmiter<Data, Connections>;
   definition: EntityDefinition<Data, Connections>;
+  destroy: () => void;
 };
 
 export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknown, unknown>> =
@@ -25,7 +31,7 @@ type EntityStoreEvents<Data, Connections> = {
   itemRemoved: [Entity<Data, Connections>, EntityChangeSource];
 };
 
-type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntityStoreEvents<Data, Connections>>;
+export type EntityStoreEventsEmmiter<Data, Connections> = EventsEmmiter<EntityStoreEvents<Data, Connections>>;
 
 /**
  * Store is inner 'registry' of all items of given entity. It is like 'raw' database with no extra logic (like syncing)
@@ -43,6 +49,14 @@ export function createEntityStore<Data, Connections>(
 
   // Allow listening to CRUD updates in the store
   const events = createEventsEmmiter<EntityStoreEvents<Data, Connections>>();
+
+  const indexesMap = new Map<keyof Data, UniqueEntityIndex<Data, Connections, keyof Data>>();
+
+  config.uniqueIndexes?.forEach((uniqueIndex) => {
+    const index = createUniqueEntityIndex<Data, Connections, keyof Data>(uniqueIndex, events);
+
+    indexesMap.set(uniqueIndex, index);
+  });
 
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.
@@ -90,6 +104,20 @@ export function createEntityStore<Data, Connections>(
         return getExistingItemById(id);
       }).get();
     },
+    findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
+      const index = indexesMap.get(key);
+
+      assert(index, `No index is defined for entity ${config.name} (${key})`);
+
+      return index.find(value);
+    },
+    assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
+      const entity = store.findByUniqueIndex(key, value);
+
+      assert(entity, `Assertion error for assertFindByUniqueIndex for key ${key} and value ${value}`);
+
+      return entity;
+    },
     removeById(id, source = "user") {
       const entity = itemsMap[id] ?? null;
 
@@ -108,6 +136,9 @@ export function createEntityStore<Data, Connections>(
     },
     find(config: EntityQueryConfig<Data, Connections>) {
       return createEntityQuery(existingItems.get(), config, definition);
+    },
+    destroy() {
+      indexesMap.forEach((index) => index.destroy());
     },
   };
 

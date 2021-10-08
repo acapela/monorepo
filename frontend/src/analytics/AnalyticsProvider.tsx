@@ -2,7 +2,7 @@ import { ErrorBoundary } from "@sentry/nextjs";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useCurrentTeam } from "~frontend/team/useCurrentTeamId";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 
@@ -11,7 +11,7 @@ import { identifyUser, identifyUserGroup } from "./tracking";
 
 export const AnalyticsManager = observer(() => {
   const [isSegmentLoaded, setIsSegmentLoaded] = useState(false);
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserTokenData();
   const team = useCurrentTeam();
 
   function tryToInitialize() {

@@ -43,6 +43,7 @@ insert_permissions:
     backend_only: false
     check: {}
     columns:
+    - id
     - name
     - slug
     set:
