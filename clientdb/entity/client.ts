@@ -15,6 +15,8 @@ import { EntityChangeSource } from "./types";
 export type EntityClient<Data, Connections> = {
   findById(id: string): Entity<Data, Connections> | null;
   assertFindById(id: string, errorMessage?: string): Entity<Data, Connections>;
+  findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> | null;
+  assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
   find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
@@ -103,6 +105,12 @@ export function createEntityClient<Data, Connections>(
 
       return item;
     },
+    findByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]) {
+      return store.findByUniqueIndex(key, value);
+    },
+    assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> {
+      return store.assertFindByUniqueIndex(key, value);
+    },
     get all() {
       return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
@@ -139,6 +147,7 @@ export function createEntityClient<Data, Connections>(
     destroy() {
       persistanceManager.destroy();
       syncManager.cancel();
+      store.destroy();
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,

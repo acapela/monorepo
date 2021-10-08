@@ -7,10 +7,10 @@ import { theme } from "~ui/theme";
 import { RequestItem } from "./RequestItem";
 
 interface Props {
-  selectedItemId?: string;
+  topicSlug?: string;
 }
 
-export const RequestFeed = observer(({ selectedItemId }: Props) => {
+export const RequestFeed = observer(({ topicSlug }: Props) => {
   const db = useDb();
   const topics = db.topic.find((topic) => topic.closedByUser === null).all;
 
@@ -19,7 +19,7 @@ export const RequestFeed = observer(({ selectedItemId }: Props) => {
       <UISection key="Open">
         <UISectionTitle>Open</UISectionTitle>
         {topics.map((topic) => (
-          <RequestItem isHighlighted={selectedItemId === topic.id} key={topic.id} topicId={topic.id} />
+          <RequestItem isHighlighted={topicSlug === topic.slug} key={topic.id} topic={topic} />
         ))}
       </UISection>
     </UIHolder>
