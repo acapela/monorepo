@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
@@ -44,6 +45,11 @@ export const messageEntity = defineEntity<MessageFragment>({
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
     updateColumns: ["content"],
   }),
+  customObservableAnnotations: {
+    // Content might be very nested and we dont want to observe any single change in it. We always change content as a whole.
+    // We never do message.content.doc.foo.bar = 2, we always do message.content = newContent, so no nested observation needed.
+    content: observable.ref,
+  },
 }).addConnections((message, { getEntity, getContextValue }) => {
   return {
     get topic() {
