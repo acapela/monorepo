@@ -28,7 +28,12 @@ export const AnalyticsManager = observer(() => {
     });
   }
 
+  // Team is observable so unwrap it inside the observer instead of inside of useEffect
+  const teamName = team?.name;
+  const teamId = team?.id;
+
   useEffect(() => {
+    if (!teamName || !teamId) return;
     if (!isSegmentLoaded) return;
     if (!currentUser) return;
 
@@ -41,9 +46,8 @@ export const AnalyticsManager = observer(() => {
       avatarUrl: picture ?? undefined,
     });
 
-    if (!team) return;
-    identifyUserGroup(team.id, { teamName: team.name, teamId: team.id });
-  }, [currentUser, isSegmentLoaded, team]);
+    identifyUserGroup(teamId, { teamName, teamId });
+  }, [currentUser, isSegmentLoaded, teamName, teamId]);
 
   return (
     <ClientSideOnly onClientRendered={tryToInitialize}>
