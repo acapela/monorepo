@@ -12,7 +12,7 @@ interface Props {
 
 export const RequestFeed = observer(({ topicSlug }: Props) => {
   const db = useDb();
-  const topics = db.topic.query({ closedByUser: null }).all;
+  const topics = db.topic.query({ closed_by_user_id: null }).all;
 
   return (
     <UIHolder>
