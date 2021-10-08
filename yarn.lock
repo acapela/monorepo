@@ -3479,6 +3479,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tiptap/extension-placeholder@npm:^2.0.0-beta.31":
+  version: 2.0.0-beta.31
+  resolution: "@tiptap/extension-placeholder@npm:2.0.0-beta.31"
+  dependencies:
+    prosemirror-model: ^1.14.3
+    prosemirror-state: ^1.3.4
+    prosemirror-view: ^1.20.1
+  peerDependencies:
+    "@tiptap/core": ^2.0.0-beta.1
+  checksum: cb1849728d7f5970a5432ed536da0186a8defb7c8a97c13150dc1cdc10d4beac59e8e85eccf91f04c30fd11a8da210153addb497274e2358a91ee24ac74a8a1f
+  languageName: node
+  linkType: hard
+
 "@tiptap/extension-strike@npm:^2.0.0-beta.17":
   version: 2.0.0-beta.17
   resolution: "@tiptap/extension-strike@npm:2.0.0-beta.17"
@@ -18705,6 +18718,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "~root@workspace:."
   dependencies:
+    "@tiptap/extension-placeholder": ^2.0.0-beta.31
     "@types/express": ^4.17.13
     "@types/jest": ^26.0.24
     "@types/lodash": ^4.14.174

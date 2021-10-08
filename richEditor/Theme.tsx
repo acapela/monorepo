@@ -54,4 +54,14 @@ export const richEditorContentCss = css`
   strong {
     font-weight: bold;
   }
+
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    height: 0;
+
+    ${theme.font.body14.semibold.build()}
+  }
 `;

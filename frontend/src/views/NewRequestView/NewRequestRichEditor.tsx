@@ -1,3 +1,4 @@
+import Placeholder from "@tiptap/extension-placeholder";
 import { ChainedCommands, Editor, EditorContent, JSONContent } from "@tiptap/react";
 import { isEqual } from "lodash";
 import React, { useCallback, useEffect, useImperativeHandle } from "react";
@@ -18,6 +19,12 @@ import { useAlphanumericShortcut } from "~ui/keyboard/useAlphanumericShortcut";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 export type { Editor } from "@tiptap/react";
+
+function usePlaceholder(placeholder: string) {
+  return Placeholder.configure({
+    placeholder,
+  });
+}
 
 export function getEmptyRichContent(): JSONContent {
   return {
@@ -88,13 +95,15 @@ function getFocusEditorAtEndCommand(editor: Editor): ChainedCommands {
 }
 
 export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function RichEditor(
-  { value = getEmptyRichContent(), onChange, onSubmit, placeholder, isDisabled },
+  { value = getEmptyRichContent(), onChange, onSubmit, placeholder = "Write something...", isDisabled },
   ref
 ) {
+  const placeholderExtension = usePlaceholder(placeholder);
+
   const editor = useConst(
     () =>
       new Editor({
-        extensions: [...richEditorExtensions, ...messageComposerExtensions],
+        extensions: [...richEditorExtensions, ...messageComposerExtensions, placeholderExtension],
         content: value,
         enableInputRules: true,
       })

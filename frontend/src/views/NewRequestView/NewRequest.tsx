@@ -1,7 +1,10 @@
+import { range } from "lodash";
 import { runInAction } from "mobx";
-import React, { useCallback, useRef } from "react";
+import { observer } from "mobx-react";
+import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
 
+import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -10,9 +13,39 @@ import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
-export function NewRequest() {
+function usePlaceholder(): string {
+  const db = useDb();
+  const user = useAssertCurrentUser();
+
+  const teamMembers = db.teamMember.find(
+    (teamMember) => teamMember.user_id !== user.id && teamMember.user !== null
+  ).all;
+
+  return useMemo(() => {
+    function getMemberMentions() {
+      let displayNames = "";
+
+      const unusedMemberIndexes = range(teamMembers.length);
+
+      for (let i = 0; i < 2 && i < teamMembers.length; i++) {
+        const randomIndex = Math.floor(Math.random() * unusedMemberIndexes.length);
+
+        const teamMemberIndex = unusedMemberIndexes.splice(randomIndex, 1)[0];
+
+        const randomTeamMember = teamMembers[teamMemberIndex];
+        displayNames += `@${randomTeamMember.user.name} `;
+      }
+
+      return displayNames;
+    }
+    return `${getMemberMentions()} I would like you to...`;
+  }, [teamMembers]);
+}
+
+export const NewRequest = observer(function NewRequest() {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
+  const placeholder = usePlaceholder();
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
@@ -50,11 +83,11 @@ export function NewRequest() {
   return (
     <UIHolder>
       <UITopicNameInput value={topicName} onChangeText={handleSubmitTopicName} placeholder={"Add topic"} />
-      <NewRequestRichEditor value={content} onChange={setContent} placeholder="Hello!" />
+      <NewRequestRichEditor value={content} onChange={setContent} placeholder={placeholder} />
       <button onClick={submit}>Submit</button>
     </UIHolder>
   );
-}
+});
 
 const UIHolder = styled.div<{}>`
   width: 600px;
