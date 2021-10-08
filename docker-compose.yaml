@@ -37,5 +37,7 @@ services:
       HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER: Bearer ${HASURA_EVENT_SECRET}
       HASURA_CRON_WEBHOOK_URL: http://host.docker.internal:1337/api/v1/cron
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+      # Uncomment for debugging
+      # HASURA_GRAPHQL_LOG_LEVEL: debug
 volumes:
   db_data:

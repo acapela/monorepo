@@ -1,12 +1,14 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
+import { configure } from "mobx";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
 import { createClientDb } from "~clientdb";
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { teamMemberEntity } from "~frontend/clientdb/teamMember";
 import { useCurrentTeamId } from "~frontend/team/useCurrentTeamId";
 import { assert } from "~shared/assert";
+import { isDev } from "~shared/dev";
 
 import { attachmentEntity } from "./attachment";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
@@ -18,15 +20,20 @@ import { topicEntity } from "./topic";
 import { userEntity } from "./user";
 import { apolloContext, teamIdContext, userIdContext } from "./utils/context";
 
-const DB_VERSION = 5;
+if (isDev()) {
+  configure({
+    observableRequiresReaction: true,
+    computedRequiresReaction: true,
+    enforceActions: "always",
+  });
+}
 
 export function createNewClientDb(userId: string, teamId: string | null, apolloClient: ApolloClient<unknown>) {
   const clientdb = createClientDb(
     {
       db: {
-        dbAdapter: createIndexedDbAdapter(),
-        dbVersion: DB_VERSION,
-        dbPrefix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
+        adapter: createIndexedDbAdapter(),
+        nameSuffix: `acapela-team-${teamId ?? "no-team"}-user-${userId}`,
       },
       contexts: [userIdContext.create(userId), teamIdContext.create(teamId), apolloContext.create(apolloClient)],
     },
@@ -56,7 +63,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   const [db, setDb] = useState<ClientDb | null>(null);
   const [canRender, setCanRender] = useState(false);
   const teamId = useCurrentTeamId();
-  const userId = useCurrentUser()?.id ?? null;
+  const userId = useCurrentUserTokenData()?.id ?? null;
   const apolloClient = useApolloClient();
 
   useEffect(() => {

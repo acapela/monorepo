@@ -73,3 +73,6 @@ export async function onWindowLoaded(callback: () => void) {
   await windowLoadedPromise;
   callback();
 }
+
+export const isServer = typeof document === "undefined";
+export const isClient = typeof document !== "undefined";

@@ -1,84 +1,85 @@
-import { IDBPDatabase, openDB } from "idb";
-import { memoize } from "lodash";
+import { deleteDB, openDB } from "idb";
 
-import { DbInfo, LocalDbAdapter } from "~clientdb";
-import { assert } from "~shared/assert";
-import { createResolvablePromise } from "~shared/promises";
+import { PersistanceAdapter, PersistanceDB, PersistanceTableAdapter } from "~clientdb";
 
 /**
  * This is IndexedDB adapter for clientdb that allows persisting all the data locally.
  */
 
-async function initializeDb({ dbVersion, dbPrefix, entities }: DbInfo) {
-  const db = await openDB(`${dbPrefix}-clientdb`, dbVersion, {
-    upgrade(database, oldVersion, newVersion) {
-      // Each time new version of database is detected - wipe out entire data and re-create it
-      console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
-      for (const existingStore of database.objectStoreNames) {
-        database.deleteObjectStore(existingStore);
-      }
-
-      for (const entity of entities) {
-        database.createObjectStore(entity.name, { keyPath: entity.keyField });
+export function createIndexedDbAdapter(): PersistanceAdapter {
+  return {
+    async removeDB(name) {
+      try {
+        await deleteDB(name);
+        return true;
+      } catch (error) {
+        return false;
       }
     },
-  });
+    async openDB({ name, tables, version }) {
+      const db = await openDB(name, version, {
+        upgrade(database, oldVersion, newVersion) {
+          // Each time new version of database is detected - wipe out entire data and re-create it
+          console.info(`New database version - handling upgrade`, { oldVersion, newVersion });
+          for (const existingStore of database.objectStoreNames) {
+            database.deleteObjectStore(existingStore);
+          }
 
-  return db;
-}
-
-export function createIndexedDbAdapter(): LocalDbAdapter {
-  const [dbPromise, resolveDb] = createResolvablePromise<IDBPDatabase>();
-
-  const initialize = memoize(async (dbInfo: DbInfo) => {
-    const initializedDb = await initializeDb(dbInfo);
-    resolveDb(initializedDb);
-
-    return true;
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function getTableTransaction(name: string, keyField: string) {
-    assert(dbPromise, "not initialized");
-
-    const db = await dbPromise;
-
-    return await db.transaction([name], "readwrite").objectStore(name);
-  }
-
-  const indexedDbAdapter: LocalDbAdapter = {
-    initialize,
-    async getTable({ keyField, name }) {
-      assert(dbPromise, "not initialized");
-
-      async function getTransaction() {
-        return await getTableTransaction(name, keyField as string);
-      }
-
-      return {
-        async clearTable() {
-          const tr = await getTransaction();
-          await tr.clear();
-          return true;
+          for (const entity of tables) {
+            database.createObjectStore(entity.name, { keyPath: entity.keyField });
+          }
         },
-        async fetchAllItems() {
-          const tr = await getTransaction();
-          return tr.getAll();
-        },
-        async removeItem(itemId) {
-          const tr = await getTransaction();
-          await tr.delete(itemId);
-          return true;
-        },
-        async saveItem(itemId, data) {
-          const tr = await getTransaction();
+      });
 
-          await tr.put(data);
-          return true;
+      const adapter: PersistanceDB = {
+        async getTable<Data>(name: string) {
+          async function getTransaction() {
+            return await db.transaction([name], "readwrite").objectStore(name);
+          }
+          const tableAdapter: PersistanceTableAdapter<Data> = {
+            async fetchItem(key) {
+              const tr = await getTransaction();
+              return tr.get(key);
+            },
+            async updateItem(key, input) {
+              const existingItem = await tableAdapter.fetchItem(key);
+
+              if (existingItem === null) {
+                return false;
+              }
+
+              const updateData: Data = { ...existingItem, ...input };
+
+              return tableAdapter.saveItem(key, updateData);
+            },
+
+            async clearTable() {
+              const tr = await getTransaction();
+              await tr.clear();
+              return true;
+            },
+            async fetchAllItems() {
+              const tr = await getTransaction();
+              return tr.getAll();
+            },
+            async removeItem(itemId) {
+              const tr = await getTransaction();
+              await tr.delete(itemId);
+              return true;
+            },
+            async saveItem(itemId, data) {
+              const tr = await getTransaction();
+
+              await tr.put(data);
+              return true;
+            },
+          };
+
+          return tableAdapter;
         },
       };
+
+      return adapter;
     },
   };
-
-  return indexedDbAdapter;
 }

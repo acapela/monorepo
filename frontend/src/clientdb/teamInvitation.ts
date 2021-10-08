@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-import { defineEntity } from "~clientdb";
+import { EntityByDefinition, defineEntity } from "~clientdb";
 import { userEntity } from "~frontend/clientdb/user";
 import { getFragmentKeys } from "~frontend/clientdb/utils/analyzeFragment";
 import { getGenericDefaultData } from "~frontend/clientdb/utils/getGenericDefaultData";
@@ -38,3 +38,5 @@ export const teamInvitationEntity = defineEntity<TeamInvitationFragment>({
     return teamInvitation.used_by_user_id ? getEntity(userEntity).findById(teamInvitation.used_by_user_id) : null;
   },
 }));
+
+export type TeamInvitationEntity = EntityByDefinition<typeof teamInvitationEntity>;

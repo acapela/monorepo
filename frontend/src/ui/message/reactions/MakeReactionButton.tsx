@@ -1,12 +1,12 @@
 import { EmojiData } from "emoji-mart";
 import { AnimatePresence } from "framer-motion";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import { useRef } from "react";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
-import { addMessageReaction } from "~frontend/gql/reactions";
 import { isBaseEmoji } from "~richEditor/EmojiButton";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { WideIconButton } from "~ui/buttons/WideIconButton";
@@ -15,13 +15,13 @@ import { IconEmotionSmile } from "~ui/icons";
 import { Popover } from "~ui/popovers/Popover";
 
 export const MakeReactionButton = observer(({ message }: { message: MessageEntity }) => {
-  const user = useAssertCurrentUser();
+  const db = useDb();
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const [isPicking, { set: open, unset: close }] = useBoolean(false);
 
-  const handleEmojiSelect = (emoji: EmojiData) => {
+  const handleEmojiSelect = action((emoji: EmojiData) => {
     if (!isBaseEmoji(emoji)) {
       console.warn("Custom emojis are not supported");
       return;
@@ -29,21 +29,19 @@ export const MakeReactionButton = observer(({ message }: { message: MessageEntit
 
     close();
 
-    const hasUserAlreadyReacted =
-      message.reactions.query((reaction) => reaction.emoji === emoji.native && reaction.user_id === user.id).all
-        .length > 0;
+    const hasUserAlreadyReacted = message.reactions.query(
+      (reaction) => reaction.emoji === emoji.native && reaction.isOwn
+    ).hasItems;
 
     if (hasUserAlreadyReacted) return;
 
-    addMessageReaction({
-      input: {
-        emoji: emoji.native,
-        message_id: message.id,
-        user_id: user.id,
-      },
+    db.messageReaction.create({
+      emoji: emoji.native,
+      message_id: message.id,
     });
+
     trackEvent("Reacted To Message", { messageId: message.id, reactionEmoji: emoji.native });
-  };
+  });
 
   return (
     <>

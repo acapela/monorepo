@@ -1,5 +1,6 @@
 import { findUserBySlackId } from "~backend/src/slack/utils";
 import { Prisma, db } from "~db";
+import { slugify } from "~shared/slugify";
 import { MentionType } from "~shared/types/mention";
 
 async function createMissingTeamInvitations(teamId: string, invitingUserId: string, slackUserIds: string[]) {
@@ -101,7 +102,7 @@ export async function createTopicForSlackUsers({
     data: {
       team_id: teamId,
       name: topicName,
-      slug: topicName,
+      slug: slugify(topicName),
       index: "a",
       owner_id: ownerId,
       message: {

@@ -1,7 +1,7 @@
 import { gql, useSubscription } from "@apollo/client";
 import { PropsWithChildren } from "react";
 
-import { useCurrentUser } from "~frontend/authentication/useCurrentUser";
+import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { CurrentTeamSubscription, CurrentTeamSubscriptionVariables } from "~gql";
 
 import { CurrentTeamIdContext } from "./CurrentTeamIdContext";
@@ -11,7 +11,7 @@ We can't always rely on the current_team_id from the session because when a user
 Instead, we take the current_team_id from the session on the server-side, and on the page load, we create a subscription.
 */
 export function CurrentTeamIdProvider({ children }: PropsWithChildren<{}>) {
-  const user = useCurrentUser();
+  const user = useCurrentUserTokenData();
   const { data } = useSubscription<CurrentTeamSubscription, CurrentTeamSubscriptionVariables>(
     gql`
       subscription CurrentTeam($userId: uuid!) {

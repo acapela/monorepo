@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import { extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
+import { action, extendObservable, makeAutoObservable, runInAction, toJS } from "mobx";
 
 import { assert } from "~shared/assert";
 import { typedKeys } from "~shared/object";
@@ -54,7 +54,11 @@ export function createEntity<D, C>({
     );
   }
 
-  const observableData = makeAutoObservable(dataWithDefaults as D & object);
+  const initialKey = data[config.keyField];
+
+  const observableData = makeAutoObservable(dataWithDefaults as D & object, undefined, {
+    name: `${definition.config.name}-${initialKey}`,
+  });
 
   const connections =
     getConnections?.(observableData, {
@@ -142,7 +146,14 @@ export function createEntity<D, C>({
     },
   };
 
-  const entity: Entity<D, C> = extendObservable(observableDataAndConnections, entityMethods);
+  const entity: Entity<D, C> = extendObservable(observableDataAndConnections, entityMethods, {
+    getData: false,
+    getKey: false,
+    getKeyName: false,
+    getUpdatedAt: false,
+    remove: action,
+    update: action,
+  });
 
   return entity;
 }

@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { ReactNode } from "react";
 
 import { createChannel } from "~shared/channel";
+import { createResolvablePromise } from "~shared/promises";
 
 /**
  * This module allows creating imperative functions that render some UI.
@@ -113,7 +114,7 @@ export function createPromiseUI<I, O>(renderer: PromiseUIRenderer<I, O>) {
 
     isInProgress = true;
 
-    const [promise, resolvePromise] = createResolvablePromise<O>();
+    const resultPromise = createResolvablePromise<O>();
 
     const removeUIPromise = addPromiseUIInProgress({
       id: ++promiseId,
@@ -121,44 +122,13 @@ export function createPromiseUI<I, O>(renderer: PromiseUIRenderer<I, O>) {
       renderer,
       resolvePromise(data) {
         removeUIPromise();
-        resolvePromise(data);
+        resultPromise.resolve(data);
         isInProgress = false;
       },
     });
 
-    return promise;
+    return resultPromise.promise;
   }
 
   return start;
-}
-
-/**
- * Simple utility that allows creating a promise that can be resolved from outside of itself.
- *
- * Example:
- *
- * ```tsx
- * const [promise, resolve] = createResolvablePromise<string>();
- *
- * async function foo() {
- *   console.info('foo start');
- *   const value = await promise;
- *   console.info(`foo ended with ${value}`)
- * }
- *
- * foo(); // Logs 'foo start'
- *
- * resolve('bar');
- *
- * // Logs 'foo ended with bar'
- */
-function createResolvablePromise<T>() {
-  let resolve: (data: T) => void;
-
-  const promise = new Promise<T>((innerResolve) => {
-    resolve = innerResolve;
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return [promise, resolve!] as const;
 }
