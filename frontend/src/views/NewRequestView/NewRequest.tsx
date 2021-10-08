@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef } from "react";
 import styled, { css } from "styled-components";
 
+import { routes } from "~frontend/../router";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
@@ -128,8 +129,11 @@ export const NewRequest = observer(function NewRequest() {
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
       db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+
       setTopicName("");
       setMessageContent(getEmptyRichContent());
+
+      routes.topic.push({ topicSlug: topic.slug });
     });
   }
 
