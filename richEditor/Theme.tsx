@@ -7,7 +7,7 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
-  ${theme.font.body14.withExceptionalLineHeight("1.25", "This line-height is different from the standard").build}
+  ${theme.font.body14.build}
 
   ol {
     list-style-type: decimal;
