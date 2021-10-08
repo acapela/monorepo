@@ -4,18 +4,42 @@ export function makePromiseVoidable(input: Promise<unknown>): Promise<void> {
   });
 }
 
-export function createResolvablePromise<T>() {
-  let pickedResolve: (value: T) => void;
-  let didResolve = false;
+export interface ResolvablePromise<T> {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (error: unknown) => void;
+  getIsComplete(): boolean;
+}
 
-  const promise = new Promise<T>((resolve) => {
-    pickedResolve = (value) => {
-      if (didResolve) return;
+export function createResolvablePromise<T>(): ResolvablePromise<T> {
+  let resolve: (value: T) => void;
+  let reject: (error: unknown) => void;
+  let didResolve = false;
+  let didReject = false;
+
+  function getIsComplete() {
+    return didResolve || didReject;
+  }
+
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = (value) => {
+      if (getIsComplete()) return;
       didResolve = true;
-      resolve(value);
+      resolvePromise(value);
+    };
+    reject = (error) => {
+      if (getIsComplete()) return;
+      didReject = true;
+      rejectPromise(error);
     };
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return [promise, pickedResolve!] as const;
+  return {
+    promise,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    resolve: resolve!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    reject: reject!,
+    getIsComplete,
+  };
 }
