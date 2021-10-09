@@ -71,6 +71,7 @@ export const topicEntity = defineEntity<TopicFragment>({
       "slug",
     ],
   }),
+  search: { fields: { name: true } },
 }).addConnections((topic, { getEntity, getContextValue }) => {
   const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
