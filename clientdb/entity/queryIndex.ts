@@ -4,6 +4,10 @@ import { Entity } from "~clientdb";
 
 import { EntityStore } from "./store";
 
+/**
+ * Thunk is a value or lazy getter of that value. It is useful if we don't want to have to eagerly provide some value,
+ * but instead calculate it when demanded.
+ */
 type Thunk<T> = T | (() => T);
 
 function resolveThunk<T>(thunk: Thunk<T>): T {
@@ -21,6 +25,9 @@ export interface QueryIndex<Data, Connections, K extends keyof Data> {
   find(value: QueryIndexValue<Data[K]>): Entity<Data, Connections>[];
 }
 
+/**
+ * Will get existing value or create new one from observable map.
+ */
 function observableMapGetOrCreate<K, V>(map: ObservableMap<K, V>, key: K, getter: () => V): V {
   if (map.has(key)) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -110,7 +117,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
     cancelDeleted();
   }
 
-  function performFindForSingle(indexValue: Data[K]) {
+  function findResultsForIndexValue(indexValue: Data[K]) {
     const results = observableIndex.get(indexValue);
 
     if (!results) return [];
@@ -118,16 +125,20 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
     return results;
   }
 
-  function performFind(indexValue: QueryIndexValue<Data[K]>) {
+  /**
+   * In case of single value - eg "foo" will find all entities that have this exact value.
+   * In case of array values eg. ["foo", "bar"] will find all entities that has either of those (aka. "or")
+   */
+  function findResultsForSingleOrMultipleValues(indexValue: QueryIndexValue<Data[K]>) {
     const resolvedIndexValue = resolveThunk(indexValue);
     if (!Array.isArray(resolvedIndexValue)) {
-      return performFindForSingle(resolvedIndexValue);
+      return findResultsForIndexValue(resolvedIndexValue);
     }
 
     const results: Entity<Data, Connections>[] = [];
 
     for (const possibleValue of resolvedIndexValue) {
-      const possibleValueResults = performFindForSingle(possibleValue);
+      const possibleValueResults = findResultsForIndexValue(possibleValue);
 
       for (const result of possibleValueResults) {
         if (results.includes(result)) continue;
@@ -140,7 +151,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
 
   function find(indexValue: QueryIndexValue<Data[K]>) {
     return computed(() => {
-      return performFind(indexValue);
+      return findResultsForSingleOrMultipleValues(indexValue);
     }).get();
   }
 
