@@ -4,6 +4,7 @@ import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
 
 import { messageEntity } from "./message";
+import { taskEntity } from "./task";
 import { userEntity } from "./user";
 import { getFragmentKeys } from "./utils/analyzeFragment";
 import { teamIdContext, userIdContext } from "./utils/context";
@@ -71,11 +72,22 @@ export const topicEntity = defineEntity<TopicFragment>({
     ],
   }),
 }).addConnections((topic, { getEntity, getContextValue }) => {
+  const messages = getEntity(messageEntity).query({ topic_id: topic.id });
+
+  const tasks = getEntity(taskEntity).query({ message_id: () => messages.all.map((message) => message.id) });
+
+  const participants = getEntity(userEntity).query((user) => {
+    if (user.id === getContextValue(userIdContext)) return true;
+    return messages.query((message) => message.tasks.query({ user_id: user.id }).hasItems).hasItems;
+  });
+
   return {
     get owner() {
       return getEntity(userEntity).findById(topic.owner_id);
     },
-    messages: getEntity(messageEntity).find((message) => message.topic_id === topic.id),
+    messages,
+    tasks,
+    participants,
     get isOwn() {
       return topic.owner_id === getContextValue(userIdContext);
     },

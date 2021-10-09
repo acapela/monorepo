@@ -1,11 +1,15 @@
 import { sortBy } from "lodash";
 import { IObservableArray, computed } from "mobx";
 
-import { EntityDefinition } from "./definition";
+import { typedKeys } from "~shared/object";
+
 import { Entity } from "./entity";
+import { EntitySimpleQuery, EntityStore } from "./store";
 import { createEntityCache } from "./utils/entityCache";
 
-type EntityQueryFilter<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
+type EntityFunctionQuery<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
+
+type EntityQueryFilter<Data, Connections> = EntitySimpleQuery<Data> | EntityFunctionQuery<Data, Connections>;
 type EntityQuerySorter<Data, Connections> = (item: Entity<Data, Connections>) => SortResult;
 
 export type SortResult = string | number | boolean | Date | null | void | undefined;
@@ -19,8 +23,18 @@ export type EntityQueryConfig<Data, Connections> =
   | EntityQueryFilter<Data, Connections>
   | EntityQueryResolvedConfig<Data, Connections>;
 
+function isPlainFilter<Data, Connections>(
+  filter: EntitySimpleQuery<Data> | EntityQueryResolvedConfig<Data, Connections>,
+  store: EntityStore<Data, Connections>
+): filter is EntitySimpleQuery<Data> {
+  return typedKeys(filter).every((configKey) => {
+    return store.definition.config.keys.includes(configKey);
+  });
+}
+
 function resolveEntityQueryConfig<Data, Connections>(
-  config: EntityQueryConfig<Data, Connections>
+  config: EntityQueryConfig<Data, Connections>,
+  store: EntityStore<Data, Connections>
 ): EntityQueryResolvedConfig<Data, Connections> {
   if (typeof config === "function") {
     return {
@@ -28,8 +42,8 @@ function resolveEntityQueryConfig<Data, Connections>(
     };
   }
 
-  if (!config) {
-    return { filter: truePredicate };
+  if (isPlainFilter(config, store)) {
+    return { filter: config };
   }
 
   return config;
@@ -44,10 +58,6 @@ export type EntityQuery<Data, Connections> = {
   query: (config: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
 };
 
-function truePredicate() {
-  return true;
-}
-
 /**
  * Query keeps track of all items passing given query filter and sorter.
  *
@@ -57,20 +67,31 @@ export function createEntityQuery<Data, Connections>(
   // Might be plain array or any observable array. This allows creating nested queries of previously created queries
   source: MaybeObservableArray<Entity<Data, Connections>>,
   config: EntityQueryConfig<Data, Connections>,
-  definition: EntityDefinition<Data, Connections>
+  store: EntityStore<Data, Connections>
 ): EntityQuery<Data, Connections> {
+  const { definition } = store;
   const entityName = definition.config.name;
   const { filter, sort = definition.config.defaultSort as EntityQuerySorter<Data, Connections> } =
-    resolveEntityQueryConfig(config);
+    resolveEntityQueryConfig(config, store);
 
-  const cachedFilter = filter ? createEntityCache(filter) : null;
+  function isEntityPassingFilter(item: Entity<Data, Connections>) {
+    if (!filter) return true;
+
+    if (typeof filter === "function") {
+      return filter(item);
+    }
+
+    return store.simpleQuery(filter).includes(item);
+  }
+
+  const cachedFilter = createEntityCache(isEntityPassingFilter);
   const cachedSort = sort ? createEntityCache(sort) : null;
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
   const passingItems = computed(
     () => {
-      const passedItems = cachedFilter ? source.filter(cachedFilter) : source.slice();
+      const passedItems = source.filter(cachedFilter);
 
       if (cachedSort) {
         return sortBy(passedItems, cachedSort);
@@ -83,7 +104,7 @@ export function createEntityQuery<Data, Connections>(
 
   const hasItemsComputed = computed(
     () => {
-      return passingItems.get().length > 0;
+      return source.some(cachedFilter);
     },
     { name: `${entityName}HasItems` }
   );
@@ -104,7 +125,7 @@ export function createEntityQuery<Data, Connections>(
       ).get();
     },
     query(config) {
-      return createEntityQuery(passingItems.get(), config, definition);
+      return createEntityQuery(passingItems.get(), config, store);
     },
   };
 }

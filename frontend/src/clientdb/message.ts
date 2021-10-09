@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { MessageFragment } from "~gql";
@@ -44,6 +45,11 @@ export const messageEntity = defineEntity<MessageFragment>({
     insertColumns: ["id", "content", "replied_to_message_id", "topic_id", "type"],
     updateColumns: ["content"],
   }),
+  customObservableAnnotations: {
+    // Content might be very nested and we dont want to observe any single change in it. We always change content as a whole.
+    // We never do message.content.doc.foo.bar = 2, we always do message.content = newContent, so no nested observation needed.
+    content: observable.ref,
+  },
 }).addConnections((message, { getEntity, getContextValue }) => {
   return {
     get topic() {
@@ -53,9 +59,9 @@ export const messageEntity = defineEntity<MessageFragment>({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return getEntity(userEntity).findById(message.user_id)!;
     },
-    tasks: getEntity(taskEntity).find((task) => task.message_id === message.id),
-    reactions: getEntity(messageReactionEntity).find((reaction) => reaction.message_id === message.id),
-    attachments: getEntity(attachmentEntity).find((attachment) => attachment.message_id === message.id),
+    tasks: getEntity(taskEntity).query({ message_id: message.id }),
+    reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
+    attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
 

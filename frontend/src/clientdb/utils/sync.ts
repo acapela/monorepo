@@ -18,6 +18,7 @@ import {
   User_Constraint,
 } from "~gql";
 import { assert } from "~shared/assert";
+import { runUntracked } from "~shared/mobxUtils";
 
 import { analyzeFragment } from "./analyzeFragment";
 import { apolloContext, teamIdContext } from "./context";
@@ -142,13 +143,15 @@ export function createHasuraSyncSetupFromFragment<T>(
   }
 
   function getPushInputFromData(data: T) {
-    // If we have specified input columns - use those
-    if (insertColumns) {
-      return pick(data, insertColumns);
-    }
+    return runUntracked(() => {
+      // If we have specified input columns - use those
+      if (insertColumns) {
+        return pick(data, insertColumns);
+      }
 
-    // Otherwise, pass all keys of data we have.
-    return pick(data, keys);
+      // Otherwise, pass all keys of data we have.
+      return pick(data, keys);
+    });
   }
 
   function fixLastUpdateDateForHasura(date: Date) {

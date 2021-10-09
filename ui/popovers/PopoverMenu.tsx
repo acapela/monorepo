@@ -1,3 +1,4 @@
+import { runInAction } from "mobx";
 import React, { ReactNode, RefObject } from "react";
 import { useClickAway } from "react-use";
 import styled, { css } from "styled-components";
@@ -49,7 +50,9 @@ export const PopoverMenu = styled<Props>(
                     option.openUrlOnSelect && openInNewTab(option.openUrlOnSelect);
                     onItemSelected?.(option);
                     onCloseRequest?.();
-                    option.onSelect?.();
+                    runInAction(() => {
+                      option.onSelect?.();
+                    });
                   }}
                 >
                   {option.icon && <UIItemIcon>{option.icon}</UIItemIcon>}

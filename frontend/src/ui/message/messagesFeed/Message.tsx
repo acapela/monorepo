@@ -1,5 +1,5 @@
 import { MotionProps } from "framer-motion";
-import { toJS } from "mobx";
+import { action } from "mobx";
 import React, { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import styled from "styled-components";
@@ -46,16 +46,16 @@ export const Message = styledObserver<Props>(
 
     const isInEditMode = select(() => topicContext?.editedMessageId === message.id);
 
-    function handleStartEditing() {
+    const handleStartEditing = action(function handleStartEditing() {
       assert(topicContext, "Topic context required");
       topicContext.editedMessageId = message.id;
-    }
+    });
 
-    function handleStopEditing() {
+    const handleStopEditing = action(function handleStopEditing() {
       if (topicContext?.editedMessageId !== message.id) return;
 
       topicContext.editedMessageId = null;
-    }
+    });
 
     const [isActive, setIsActive] = useState(false);
     const holderRef = useRef<HTMLDivElement>(null);
@@ -141,14 +141,14 @@ export const Message = styledObserver<Props>(
             {!isInEditMode && (
               <UIMessageContent>
                 {message.repliedToMessage && <ReplyingToMessage message={message.repliedToMessage} />}
-                <MessageText content={toJS(message.content)} />
+                <MessageText content={message.content} />
                 <MessageMedia message={message} />
                 <MessageLinksPreviews message={message} />
                 <MessageReactions message={message} />
               </UIMessageContent>
             )}
 
-            {message.tasks.all.length > 0 && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
+            {message.tasks.hasItems && <MessageTasks tasks={message.tasks.all} taskOwnerId={message.user_id} />}
           </UIMessageBody>
         </MessageLikeContent>
       </UIHolder>
