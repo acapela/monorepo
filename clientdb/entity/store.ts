@@ -1,7 +1,7 @@
 import { uniq } from "lodash";
 import { IObservableArray, computed, observable, runInAction } from "mobx";
 
-import { assert } from "~shared/assert";
+import { MessageOrError, assert } from "~shared/assert";
 import { mapGetOrCreate } from "~shared/map";
 import { typedKeys } from "~shared/object";
 
@@ -9,6 +9,7 @@ import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
+import { createEntitySearch } from "./search";
 import { EntityChangeSource } from "./types";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
@@ -19,6 +20,7 @@ export type EntitySimpleQuery<Data> = Partial<{
 export type EntityStore<Data, Connections> = {
   items: IObservableArray<Entity<Data, Connections>>;
   findById(id: string): Entity<Data, Connections> | null;
+  assertFindById(id: string, error?: MessageOrError): Entity<Data, Connections>;
   simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[];
   removeById(id: string, source?: EntityChangeSource): boolean;
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
@@ -35,7 +37,8 @@ export type EntityStoreFromDefinition<Definition extends EntityDefinition<unknow
 
 type EntityStoreEvents<Data, Connections> = {
   itemAdded: [Entity<Data, Connections>, EntityChangeSource];
-  itemUpdated: [entity: Entity<Data, Connections>, source: EntityChangeSource, dataBefore: Data];
+  itemUpdated: [entity: Entity<Data, Connections>, dataBefore: Data, source: EntityChangeSource];
+  itemWillUpdate: [entity: Entity<Data, Connections>, input: Partial<Data>, source: EntityChangeSource];
   itemRemoved: [Entity<Data, Connections>, EntityChangeSource];
 };
 
@@ -105,6 +108,13 @@ export function createEntityStore<Data, Connections>(
       return computed(() => {
         return getExistingItemById(id);
       }).get();
+    },
+    assertFindById(id, error) {
+      const item = store.findById(id);
+
+      assert(item, error ?? `No item found for id ${id}`);
+
+      return item;
     },
     simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[] {
       return computed(() => {

@@ -8,6 +8,7 @@ import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
 import { createEntityPersistanceManager } from "./persistance";
 import { EntityQuery, EntityQueryConfig } from "./query";
+import { createEntitySearch } from "./search";
 import { createEntityStore } from "./store";
 import { createEntitySyncManager } from "./sync";
 import { EntityChangeSource } from "./types";
@@ -19,6 +20,7 @@ export type EntityClient<Data, Connections> = {
   assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
+  search(term: string): Entity<Data, Connections>[];
   query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
@@ -51,6 +53,8 @@ export function createEntityClient<Data, Connections>(
   { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition);
+
+  const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
 
   function createEntityWithData(input: Partial<Data>) {
     return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });
@@ -111,6 +115,11 @@ export function createEntityClient<Data, Connections>(
     assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections> {
       return store.assertFindByUniqueIndex(key, value);
     },
+    search(term) {
+      assert(searchEngine, `No search configuration is provided for entity ${definition.config.name}`);
+
+      return searchEngine.search(term);
+    },
     get all() {
       return client.query({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
@@ -148,6 +157,7 @@ export function createEntityClient<Data, Connections>(
       persistanceManager.destroy();
       syncManager.cancel();
       store.destroy();
+      searchEngine?.destroy();
     },
     firstSyncLoaded: syncManager.firstSyncPromise,
     persistanceLoaded: persistanceManager.persistedItemsLoaded,
