@@ -12403,6 +12403,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minisearch@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "minisearch@npm:3.1.0"
+  checksum: f8121e279a25e6d72c35e85ab0370511c4d430085551b69ca74c0257edbde99ecb5e74f81fb8d13ef26c7ffd3d85b86901153130eaa36f1cf070ebb476628dbe
+  languageName: node
+  linkType: hard
+
 "minizlib@npm:^2.0.0, minizlib@npm:^2.1.1":
   version: 2.1.2
   resolution: "minizlib@npm:2.1.2"
@@ -18576,6 +18583,8 @@ __metadata:
 "~clientdb@0.1.0, ~clientdb@workspace:clientdb":
   version: 0.0.0-use.local
   resolution: "~clientdb@workspace:clientdb"
+  dependencies:
+    minisearch: ^3.1.0
   languageName: unknown
   linkType: soft
 

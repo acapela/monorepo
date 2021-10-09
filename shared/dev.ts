@@ -1,15 +1,24 @@
+import { noop } from "lodash";
+
 export function isDev() {
   return !["staging", "production"].includes(process.env.STAGE);
 }
 
-export function measureTime(name: string) {
-  const time = Date.now();
-  const fullLabel = `${name}-${time}`;
+const groupsTotal = new Map<string, number>();
 
-  // eslint-disable-next-line no-console
-  console.time(fullLabel);
+export function measureTime(name: string, isEnabled = true) {
+  if (!isEnabled) return noop;
+
+  const start = performance.now();
+
   return function end() {
-    // eslint-disable-next-line no-console
-    console.timeEnd(fullLabel);
+    const duration = performance.now() - start;
+    const currentTotal = groupsTotal.get(name) ?? 0;
+
+    const newTotal = currentTotal + duration;
+
+    groupsTotal.set(name, newTotal);
+
+    console.info(`[Measure] ${name} - ${duration}ms (total ${newTotal}ms)`);
   };
 }

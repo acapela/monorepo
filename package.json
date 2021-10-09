@@ -43,6 +43,7 @@
     "tooling": "yarn workspace ~tooling",
     "ui": "yarn workspace ~ui",
     "db": "yarn workspace ~db",
+    "clientdb": "yarn workspace ~clientdb",
     "richEditor": "yarn workspace ~richEditor",
     "shared": "yarn workspace ~shared",
     "e2e": "yarn workspace ~e2e",
