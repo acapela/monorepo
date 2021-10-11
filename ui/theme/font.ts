@@ -8,6 +8,7 @@ export interface Font {
   speziaExtended: Font;
   speziaMono: Font;
   inter: Font;
+  permanentMarker: Font;
 
   h1: Font;
   h2: Font;
@@ -75,6 +76,14 @@ export function createFontStyles(parentStyles: StylesPart[]): Font {
         ...parentStyles,
         css`
           font-family: "Inter", ${BACKUP_FONT_FAMILIES};
+        `,
+      ]);
+    },
+    get permanentMarker() {
+      return createFontStyles([
+        ...parentStyles,
+        css`
+          font-family: "Permanent Marker", ${BACKUP_FONT_FAMILIES};
         `,
       ]);
     },

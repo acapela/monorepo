@@ -1,5 +1,7 @@
 import styled from "styled-components";
 
+import { theme } from "~frontend/../../ui/theme";
+
 interface Props {
   className?: string;
 }
@@ -21,15 +23,13 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UICreateATopicLabel = styled.div<{}>`
-  /* <Framer css> */
+  ${theme.font.permanentMarker.build()}
   padding-right: 46px;
-  overflow: visible;
+
+  /* <Framer css> */
   transform: rotate(-9deg);
-  font-family: "Permanent Marker";
   color: #ff57e3;
   font-size: 18px;
-  letter-spacing: 0px;
-  line-height: 1.2;
   /* </Framer css> */
 `;
 
