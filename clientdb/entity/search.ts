@@ -58,6 +58,7 @@ export function createEntitySearch<Data, Connections>(
         return value as string;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const stringValue = fieldConfig.extract(value!);
 
       return stringValue;

@@ -20,8 +20,8 @@ export const SidebarContent = observer(function SidebarContent({ selectedTopicSl
 
   const db = useDb();
 
-  console.log(db.topic.search(searchTerm));
-  console.log(db.message.search(searchTerm));
+  console.info(db.topic.search(searchTerm));
+  console.info(db.message.search(searchTerm));
   return (
     <UIHolder>
       <UIHeader>

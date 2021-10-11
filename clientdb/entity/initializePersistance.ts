@@ -1,4 +1,3 @@
-import { measureTime } from "~shared/dev";
 import { getHash } from "~shared/hash";
 
 import { PersistanceAdapter, PersistanceAdapterInfo, PersistanceDB, PersistanceTableConfig } from "./db/adapter";

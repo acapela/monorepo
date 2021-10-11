@@ -9,7 +9,6 @@ import { EntityDefinition } from "./definition";
 import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
-import { createEntitySearch } from "./search";
 import { EntityChangeSource } from "./types";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
