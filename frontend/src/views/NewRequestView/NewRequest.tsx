@@ -37,7 +37,7 @@ function useMessageContentExamplePlaceholder(): string {
   const db = useDb();
   const user = useAssertCurrentUser();
 
-  const teamMembers = db.teamMember.find(
+  const teamMembers = db.teamMember.query(
     (teamMember) => teamMember.user_id !== user.id && teamMember.user !== null
   ).all;
 
