@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { useUnsafeDb } from "~frontend/clientdb";
+import { useNullableDb } from "~frontend/clientdb";
 import { assertDefined } from "~shared/assert";
 
 import { CurrentTeamIdContext } from "./CurrentTeamIdContext";
@@ -17,7 +17,7 @@ export function useAssertCurrentTeamId(): string {
 
 export function useCurrentTeam() {
   const teamId = useCurrentTeamId();
-  const db = useUnsafeDb();
+  const db = useNullableDb();
   return teamId ? db?.team.findById(teamId) : null;
 }
 
