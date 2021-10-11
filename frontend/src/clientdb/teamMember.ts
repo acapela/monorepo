@@ -33,7 +33,6 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
   }),
 }).addConnections((teamMember, { getEntity }) => ({
   get user() {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return getEntity(userEntity).findById(teamMember.user_id)!;
+    return getEntity(userEntity).assertFindById(teamMember.user_id);
   },
 }));

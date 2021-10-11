@@ -33,7 +33,7 @@ import { NewRequestRichEditor } from "./NewRequestRichEditor";
  * Creates a placeholder with up to 2 random team members mentioned
  * The current user won't be included
  */
-function usePlaceholder(): string {
+function useMessageContentExamplePlaceholder(): string {
   const db = useDb();
   const user = useAssertCurrentUser();
 
@@ -41,7 +41,7 @@ function usePlaceholder(): string {
     (teamMember) => teamMember.user_id !== user.id && teamMember.user !== null
   ).all;
 
-  return useMemo(() => {
+  const exampleRequestBodyWithTeamMemberNamesMentioned = useMemo(() => {
     function getMemberMentions() {
       let displayNames = "";
 
@@ -60,14 +60,16 @@ function usePlaceholder(): string {
     }
     return `${getMemberMentions()} I would like you to...`;
   }, [teamMembers]);
+
+  return exampleRequestBodyWithTeamMemberNamesMentioned;
 }
 
 export const NewRequest = observer(function NewRequest() {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
-  const placeholder = usePlaceholder();
+  const messageContentExample = useMessageContentExamplePlaceholder();
   const router = useRouter();
-  const [isSubmitting, { set: beginSubmitting }] = useBoolean(false);
+  const [isSubmitting, { set: markAsSubmittingInProgress }] = useBoolean(false);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
@@ -172,7 +174,7 @@ export const NewRequest = observer(function NewRequest() {
       return;
     }
 
-    beginSubmitting();
+    markAsSubmittingInProgress();
 
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
@@ -201,7 +203,7 @@ export const NewRequest = observer(function NewRequest() {
         isDisabled={isSubmitting}
         value={messageContent}
         onChange={setMessageContent}
-        placeholder={placeholder}
+        placeholder={messageContentExample}
         onSubmit={submit}
       />
 
