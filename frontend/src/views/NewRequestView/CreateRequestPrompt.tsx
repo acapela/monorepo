@@ -40,16 +40,16 @@ function Arrow() {
         <path
           d="M 1.539 15.117 C 1.539 15.117 5.726 27.717 18 38 C 30.274 48.283 45.605 46.273 45.605 46.273"
           fill="transparent"
-          stroke-width="3"
+          strokeWidth="3"
           stroke="rgb(255, 87, 227)"
-          stroke-linecap="square"
+          strokeLinecap="square"
         ></path>
         <path
           d="M 39 54 L 47 46 L 39 38"
           fill="transparent"
-          stroke-width="3"
+          strokeWidth="3"
           stroke="rgb(255, 87, 227)"
-          stroke-linecap="square"
+          strokeLinecap="square"
         ></path>
       </svg>
     </UIArrowStyles>

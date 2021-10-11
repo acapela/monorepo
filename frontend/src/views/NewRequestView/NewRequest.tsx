@@ -22,6 +22,7 @@ import { useFileDroppedInContext } from "~richEditor/DropFileContext";
 import { FileInput } from "~richEditor/FileInput";
 import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
+import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { slugify } from "~shared/slugify";
@@ -90,19 +91,15 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   // Submitting can be done from the editor or from the topic input box
-  useShortcut(
-    ["Meta", "Enter"],
-    () => {
-      if (isSubmitting) {
-        return true;
-      }
-
-      submit();
-      // Captures and prevents the event from getting to the editor
+  useShortcut(["Meta", "Enter"], () => {
+    if (isSubmitting) {
       return true;
-    },
-    { isEnabled: !isSubmitting }
-  );
+    }
+
+    submit();
+    // Captures and prevents the event from getting to the editor
+    return true;
+  });
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
@@ -181,10 +178,14 @@ export const NewRequest = observer(function NewRequest() {
 
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
-      const message = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+      const newMessage = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+
+      for (const { userId, type } of getUniqueMentionDataFromContent(messageContent)) {
+        db.task.create({ message_id: newMessage.id, user_id: userId, type });
+      }
 
       attachments.forEach((attachment) => {
-        db.attachment.update(attachment.uuid, { message_id: message.id });
+        db.attachment.update(attachment.uuid, { message_id: newMessage.id });
       });
 
       routes.topic.push({ topicSlug: topic.slug });
