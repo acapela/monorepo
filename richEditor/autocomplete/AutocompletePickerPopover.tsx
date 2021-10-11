@@ -43,6 +43,7 @@ export function AutocompletePickerPopoverBase<D>({ baseProps, PickerComponent }:
         <Popover anchorRef={anchorRef} placement="top-start">
           <PopPresenceAnimator>
             <PickerComponent
+              {...baseProps}
               keyword={baseProps.query}
               onSelect={(item) => {
                 baseProps.command(item);

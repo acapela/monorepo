@@ -98,3 +98,10 @@ export function getNextItemInArray<T>(items: T[], activeItem: T) {
 
   return nextItem;
 }
+
+/*
+ * Creates a new array with the given item inserted at the given index into the array
+ */
+export function insertAtIndexIntoArray<T>(items: T[], item: T, index: number) {
+  return [...items.slice(0, index), item, ...items.slice(index)];
+}

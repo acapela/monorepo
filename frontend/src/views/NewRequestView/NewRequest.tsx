@@ -1,24 +1,25 @@
+import type { Editor } from "@tiptap/react";
 import { isEqual, noop, range } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { routes } from "~frontend/router";
 import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
 import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
 import { UploadingAttachmentPreview } from "~frontend/ui/message/composer/UploadingAttachmentPreview";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { isMac } from "~frontend/utils/platformDetection";
-import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { useFileDroppedInContext } from "~richEditor/DropFileContext";
-import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
@@ -97,18 +98,12 @@ export const NewRequest = observer(function NewRequest() {
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
-    getInitialValue: () => "",
-    checkShouldStore: (value: string) => {
-      return value !== null && value.trim() !== "";
-    },
+    initialValue: "",
   });
-
-  const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
 
   const [messageContent, setMessageContent] = useLocalStorageState<RichEditorNode>({
     key: "message-draft-for-new-request",
-    getInitialValue: getEmptyRichContent,
-    checkShouldStore,
+    initialValue: getEmptyRichContent(),
   });
 
   const hasTypedMessageContent = useMemo(() => !isEqual(messageContent, getEmptyRichContent()), [messageContent]);
