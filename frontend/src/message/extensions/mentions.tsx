@@ -15,7 +15,7 @@ import { MENTION_TYPE_KEY, getMentionNodesFromContent } from "~shared/editor/men
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { useSearch } from "~shared/search";
 import { EditorMentionData } from "~shared/types/editor";
-import { DEFAULT_MENTION_TYPE, MentionType } from "~shared/types/mention";
+import { MentionType } from "~shared/types/mention";
 import { PopPresenceAnimator } from "~ui/animations";
 import { CircleIconButton } from "~ui/buttons/CircleIconButton";
 import { EmptyStatePlaceholder } from "~ui/empty/EmptyStatePlaceholder";

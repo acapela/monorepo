@@ -16,3 +16,11 @@ export const baseInputStyles = css`
 
   outline: none;
 `;
+
+export function onEnterPressed(fn: () => void) {
+  return function keyPressMonitor(event: React.KeyboardEvent) {
+    if (event.key === "Enter") {
+      fn();
+    }
+  };
+}

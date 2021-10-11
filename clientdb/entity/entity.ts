@@ -56,9 +56,13 @@ export function createEntity<D, C>({
 
   const initialKey = data[config.keyField];
 
-  const observableData = makeAutoObservable(dataWithDefaults as D & object, undefined, {
-    name: `${definition.config.name}-${initialKey}`,
-  });
+  const observableData = makeAutoObservable<D & object>(
+    dataWithDefaults as D & object,
+    config.customObservableAnnotations,
+    {
+      name: `${definition.config.name}-${initialKey}`,
+    }
+  );
 
   const connections =
     getConnections?.(observableData, {

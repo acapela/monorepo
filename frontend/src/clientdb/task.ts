@@ -52,6 +52,13 @@ export const taskEntity = defineEntity<TaskFragment>({
     get message() {
       return getEntity(messageEntity).findById(task.message_id);
     },
+    get topic() {
+      const message = getEntity(messageEntity).findById(task.message_id);
+
+      if (!message) return null;
+
+      return message.topic;
+    },
     get user() {
       if (!task.user_id) {
         return null;

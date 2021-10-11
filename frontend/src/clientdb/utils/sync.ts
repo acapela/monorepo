@@ -12,12 +12,11 @@ import {
   PullSyncRequestsSubscriptionVariables,
   Task_Constraint,
   Team_Constraint,
-  Team_Invitation_Constraint,
   Team_Member_Constraint,
   Topic_Constraint,
-  User_Constraint,
 } from "~gql";
 import { assert } from "~shared/assert";
+import { runUntracked } from "~shared/mobxUtils";
 
 import { analyzeFragment } from "./analyzeFragment";
 import { apolloContext, teamIdContext } from "./context";
@@ -39,10 +38,8 @@ import { apolloContext, teamIdContext } from "./context";
 type ConstraintsTypeMap = {
   task: Task_Constraint;
   topic: Topic_Constraint;
-  user: User_Constraint;
   team: Team_Constraint;
   team_member: Team_Member_Constraint;
-  team_invitation: Team_Invitation_Constraint;
   message: Message_Constraint;
   message_reaction: Message_Reaction_Constraint;
   attachment: Attachment_Constraint;
@@ -55,10 +52,8 @@ type ConstraintsValueMap = {
 const upsertConstraints: ConstraintsValueMap = {
   task: "task_pkey",
   topic: "thread_pkey",
-  user: "user_pkey",
   team: "team_id_key",
   team_member: "team_member_id_key",
-  team_invitation: "team_invitation_pkey",
   message: "message_id_key",
   message_reaction: "message_reaction_id_key",
   attachment: "attachment_id_key",
@@ -142,13 +137,15 @@ export function createHasuraSyncSetupFromFragment<T>(
   }
 
   function getPushInputFromData(data: T) {
-    // If we have specified input columns - use those
-    if (insertColumns) {
-      return pick(data, insertColumns);
-    }
+    return runUntracked(() => {
+      // If we have specified input columns - use those
+      if (insertColumns) {
+        return pick(data, insertColumns);
+      }
 
-    // Otherwise, pass all keys of data we have.
-    return pick(data, keys);
+      // Otherwise, pass all keys of data we have.
+      return pick(data, keys);
+    });
   }
 
   function fixLastUpdateDateForHasura(date: Date) {

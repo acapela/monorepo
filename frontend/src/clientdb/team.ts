@@ -43,8 +43,8 @@ export const teamEntity = defineEntity<TeamFragment>({
   }),
 }).addConnections((team, { getEntity }) => ({
   hasSlackInstallation: !!team.slack_installation?.team_id,
-  members: getEntity(teamMemberEntity).find((member) => member.team_id === team.id),
-  invitations: getEntity(teamInvitationEntity).find((invitation) => invitation.team_id === team.id),
+  members: getEntity(teamMemberEntity).query({ team_id: team.id }),
+  invitations: getEntity(teamInvitationEntity).query({ team_id: team.id }),
 }));
 
 export type TeamEntity = EntityByDefinition<typeof teamEntity>;

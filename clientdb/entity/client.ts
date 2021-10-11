@@ -19,7 +19,7 @@ export type EntityClient<Data, Connections> = {
   assertFindByUniqueIndex<K extends keyof Data>(key: K, value: Data[K]): Entity<Data, Connections>;
   removeById(id: string, source?: EntityChangeSource): boolean;
   all: Entity<Data, Connections>[];
-  find: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
+  query: (filter: EntityQueryConfig<Data, Connections>) => EntityQuery<Data, Connections>;
   create(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   update(id: string, input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
   createOrUpdate(input: Partial<Data>, source?: EntityChangeSource): Entity<Data, Connections>;
@@ -112,10 +112,10 @@ export function createEntityClient<Data, Connections>(
       return store.assertFindByUniqueIndex(key, value);
     },
     get all() {
-      return client.find({ filter: () => true, sort: definition.config.defaultSort }).all;
+      return client.query({ filter: () => true, sort: definition.config.defaultSort }).all;
     },
-    find(config) {
-      return store.find(config);
+    query(config) {
+      return store.query(config);
     },
     removeById(id, source = "user") {
       return store.removeById(id, source);

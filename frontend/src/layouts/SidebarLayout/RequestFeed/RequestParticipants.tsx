@@ -1,12 +1,6 @@
-import React from "emoji-mart/node_modules/@types/react";
-import { uniq } from "lodash";
-import { computed } from "mobx";
 import { observer } from "mobx-react";
 
-import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
-import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
-import { UserEntity } from "~frontend/clientdb/user";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 
 interface Props {
@@ -15,25 +9,7 @@ interface Props {
 
 // TODO: Extend this component so that it shows multiple participants accordingly
 export const RequestParticipants = observer(function RequestParticipants({ topic }: Props) {
-  const db = useDb();
-  const currentUser = useAssertCurrentUser();
-
-  const participants: UserEntity[] = computed(() => {
-    const allTasks = db.task.find((task) => task.message?.topic_id === topic.id).all;
-
-    const allUsersWithTasksAssigned = allTasks.map((task) => task.user_id);
-
-    const allTopicParticipants = uniq([...allUsersWithTasksAssigned, topic.owner_id]);
-
-    const participantsWithoutCurrentUser = allTopicParticipants.filter((userId) => userId !== currentUser.id);
-
-    // Corner case: Your own avatar should only appear is you assigned a task to yourself and no one else
-    if (participantsWithoutCurrentUser.length === 0) {
-      return [currentUser];
-    }
-
-    return db.user.find(({ id }) => participantsWithoutCurrentUser.includes(id)).all;
-  }).get();
+  const participants = topic.participants.all;
 
   return (
     <span>

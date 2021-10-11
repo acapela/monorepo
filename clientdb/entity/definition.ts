@@ -1,3 +1,5 @@
+import { AnnotationsMap } from "mobx";
+
 import { getHash } from "~shared/hash";
 
 import { DatabaseUtilities } from "./entitiesConnections";
@@ -14,6 +16,7 @@ interface DefineEntityConfig<Data> {
   getDefaultValues?: (utilities: DatabaseUtilities) => Partial<Data>;
   sync: EntitySyncConfig<Data>;
   defaultSort?: (item: Data) => SortResult;
+  customObservableAnnotations?: AnnotationsMap<Data, never>;
 }
 
 export interface EntityDefinition<Data, Connections> {
