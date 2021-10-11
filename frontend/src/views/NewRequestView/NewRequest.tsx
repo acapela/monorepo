@@ -1,12 +1,11 @@
-import { isEqual, range } from "lodash";
+import { isEqual, noop, range } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React, { useCallback, useMemo, useRef } from "react";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
-import { useFileDroppedInContext } from "~frontend/../../richEditor/DropFileContext";
-import { useDocumentFilesPaste } from "~frontend/../../richEditor/useDocumentFilePaste";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { routes } from "~frontend/router";
@@ -17,7 +16,10 @@ import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAtt
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
+import { useFileDroppedInContext } from "~richEditor/DropFileContext";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
+import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { slugify } from "~shared/slugify";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
@@ -63,6 +65,8 @@ export const NewRequest = observer(function NewRequest() {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const placeholder = usePlaceholder();
+  const router = useRouter();
+  const [isSubmitting, { set: beginSubmitting }] = useBoolean(false);
 
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
   const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
@@ -78,11 +82,15 @@ export const NewRequest = observer(function NewRequest() {
   });
 
   // Submitting can be done from the editor or from the topic input box
-  useShortcut(["Meta", "Enter"], () => {
-    submit();
-    // Captures and prevents the event from getting to the editor
-    return true;
-  });
+  useShortcut(
+    ["Meta", "Enter"],
+    () => {
+      submit();
+      // Captures and prevents the event from getting to the editor
+      return true;
+    },
+    { isEnabled: !isSubmitting }
+  );
 
   const [topicName, setTopicName] = useLocalStorageState<string>({
     key: "topic-name-draft-for-new-request",
@@ -118,6 +126,23 @@ export const NewRequest = observer(function NewRequest() {
     return [true, "Hit ⌘+Enter to create request"];
   }, [topicName, messageContent]);
 
+  // Cleanup contents after route has changed
+  useEffect(() => {
+    router.events.on("routeChangeComplete", function cleanup() {
+      // Don't erase contents if changed page by accident
+      if (isSubmitting) {
+        return;
+      }
+      setTopicName("");
+      setMessageContent(getEmptyRichContent());
+      attachmentsList.clear();
+    });
+
+    return () => {
+      router.events.off("routeChangeComplete", noop);
+    };
+  }, [isSubmitting, setTopicName, setMessageContent, attachmentsList, router.events]);
+
   function getAvailableSlugForTopicName(topicName: string) {
     const optimisticSlug = slugify(topicName);
 
@@ -143,6 +168,9 @@ export const NewRequest = observer(function NewRequest() {
     if (!isValid) {
       return;
     }
+
+    beginSubmitting();
+
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
       const message = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
@@ -150,9 +178,6 @@ export const NewRequest = observer(function NewRequest() {
       attachments.forEach((attachment) => {
         db.attachment.update(attachment.uuid, { message_id: message.id });
       });
-
-      setTopicName("");
-      setMessageContent(getEmptyRichContent());
 
       routes.topic.push({ topicSlug: topic.slug });
     });
@@ -162,6 +187,7 @@ export const NewRequest = observer(function NewRequest() {
     <UIHolder isEmpty={!hasTypedInAnything}>
       <UITopicNameInput
         autoFocus
+        disabled={isSubmitting}
         value={topicName}
         onChangeText={setTopicName}
         placeholder={"Add topic"}
@@ -169,6 +195,7 @@ export const NewRequest = observer(function NewRequest() {
       />
       <NewRequestRichEditor
         ref={editorRef}
+        isDisabled={isSubmitting}
         value={messageContent}
         onChange={setMessageContent}
         placeholder={placeholder}
@@ -193,7 +220,8 @@ export const NewRequest = observer(function NewRequest() {
           ))}
         </UIAttachmentsPreviews>
       )}
-      {hasTypedMessageContent && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
+      {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
+      {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
     </UIHolder>
   );
 });

@@ -158,8 +158,8 @@ export const NewRequestRichEditor = namedForwardRef<Editor, Props>(function Rich
     getFocusAtEndCommand().setContent(value).run();
   }, [value]);
 
-  useShortcut(["Shift", "Enter"], handleSubmit, { isEnabled: isFocused });
-  useShortcut(["Meta", "Enter"], handleSubmit, { isEnabled: isFocused });
+  useShortcut(["Shift", "Enter"], handleSubmit, { isEnabled: isFocused && !isDisabled });
+  useShortcut(["Meta", "Enter"], handleSubmit, { isEnabled: isFocused && !isDisabled });
 
   /**
    * Let's use any key pressed to instantly focus inside the editor
