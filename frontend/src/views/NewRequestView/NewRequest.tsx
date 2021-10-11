@@ -27,6 +27,7 @@ import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
+import { CreateRequestPrompt } from "./CreateRequestPrompt";
 import { NewRequestRichEditor } from "./NewRequestRichEditor";
 
 /**
@@ -190,6 +191,7 @@ export const NewRequest = observer(function NewRequest() {
 
   return (
     <UIHolder isEmpty={!hasTypedInAnything}>
+      {!hasTypedInAnything && <UIFlyingCreateARequestLabel />}
       <UITopicNameInput
         autoFocus
         disabled={isSubmitting}
@@ -232,6 +234,7 @@ export const NewRequest = observer(function NewRequest() {
 });
 
 const UIHolder = styled.div<{ isEmpty: boolean }>`
+  position: relative;
   padding: 40px;
   ${(props) => {
     if (props.isEmpty) {
@@ -244,6 +247,16 @@ const UIHolder = styled.div<{ isEmpty: boolean }>`
       min-height: 150px;
     `;
   }}
+`;
+
+const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
+  position: absolute;
+  left: -96px;
+  top: -32px;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `;
 
 const UITopicNameInput = styled(TransparentTextInput)<{}>`
