@@ -32,6 +32,7 @@ export const teamMemberEntity = defineEntity<TeamMemberFragment>({
     updateColumns: ["notify_email", "notify_slack"],
   }),
 }).addConnections((teamMember, { getEntity }) => ({
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  user: getEntity(userEntity).findById(teamMember.user_id)!,
+  get user() {
+    return getEntity(userEntity).assertFindById(teamMember.user_id);
+  },
 }));

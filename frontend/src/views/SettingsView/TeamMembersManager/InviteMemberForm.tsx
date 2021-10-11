@@ -1,19 +1,27 @@
+import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
 import isEmail from "validator/lib/isEmail";
 
 import { trackEvent } from "~frontend/analytics/tracking";
-import { useDb } from "~frontend/clientdb";
 import { useAssertCurrentTeam } from "~frontend/team/useCurrentTeamId";
+import { CreateTeamInvitationMutation, CreateTeamInvitationMutationVariables } from "~gql";
 import { Button } from "~ui/buttons/Button";
 import { RoundedTextInput } from "~ui/forms/RoundedTextInput";
 import { IconPlusSquare } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 export const InviteMemberForm = observer(() => {
-  const db = useDb();
   const team = useAssertCurrentTeam();
+
+  const [createTeamInvitation] = useMutation<CreateTeamInvitationMutation, CreateTeamInvitationMutationVariables>(gql`
+    mutation CreateTeamInvitation($input: team_invitation_insert_input!) {
+      insert_team_invitation_one(object: $input) {
+        id
+      }
+    }
+  `);
 
   const teamEmails = useMemo(
     () =>
@@ -29,7 +37,7 @@ export const InviteMemberForm = observer(() => {
   const isEmailAcceptable = isEmail(email) && !teamEmails.has(email);
 
   const handleSubmit = () => {
-    db.teamInvitation.create({ email, team_id: team.id });
+    createTeamInvitation({ variables: { input: { email, team_id: team.id } } });
     setEmail("");
     trackEvent("Invite Sent", { inviteEmail: email, teamId: team.id });
   };

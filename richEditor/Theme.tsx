@@ -7,7 +7,7 @@ export const richEditorContentCss = css`
     outline: none;
   }
 
-  ${theme.font.body14.withExceptionalLineHeight("1.25", "This line-height is different from the standard").build}
+  ${theme.font.body14.build}
 
   ol {
     list-style-type: decimal;
@@ -53,5 +53,15 @@ export const richEditorContentCss = css`
 
   strong {
     font-weight: bold;
+  }
+
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    height: 0;
+
+    ${theme.font.body14.semibold.build()}
   }
 `;

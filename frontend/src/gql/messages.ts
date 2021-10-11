@@ -8,7 +8,6 @@ import {
 
 import { AttachmentDetailedInfoFragment } from "./attachments";
 import { ReactionBasicInfoFragment } from "./reactions";
-import { TaskBasicInfoFragment } from "./tasks";
 import { UserBasicInfoFragment } from "./user";
 import { createFragment } from "./utils";
 
@@ -32,7 +31,6 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
     ${MessageBasicInfoFragment()}
     ${AttachmentDetailedInfoFragment()}
     ${ReactionBasicInfoFragment()}
-    ${TaskBasicInfoFragment()}
 
     fragment MessageDetailedInfo on message {
       ...MessageBasicInfo
@@ -42,10 +40,6 @@ export const MessageDetailedInfoFragment = createFragment<MessageDetailedInfoFra
       }
       message_reactions {
         ...ReactionBasicInfo
-      }
-
-      tasks {
-        ...TaskBasicInfo
       }
     }
   `

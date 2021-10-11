@@ -34,7 +34,7 @@ export const attachmentEntity = defineEntity<AttachmentFragment>({
   },
   sync: createHasuraSyncSetupFromFragment<AttachmentFragment>(attachmentFragment, {
     insertColumns: ["id", "message_id", "mime_type", "original_name"],
-    updateColumns: [],
+    updateColumns: ["message_id"],
   }),
 }).addConnections((attachment, { getEntity }) => ({
   get message() {

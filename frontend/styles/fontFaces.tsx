@@ -45,6 +45,14 @@ export const fontFacesStyles = css`
     font-style: normal;
     font-display: fallback;
   }
+
+  @font-face {
+    font-family: "Permanent Marker";
+    src: url("/fonts/PermanentMarker-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: fallback;
+  }
 `;
 
 export const FontFaces = createGlobalStyle`

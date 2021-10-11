@@ -1,16 +1,19 @@
-import { gql, useMutation } from "@apollo/client";
 import { observer } from "mobx-react";
-import React, { useState } from "react";
+import React from "react";
 import { useList } from "react-use";
 import styled from "styled-components";
 
 import { trackEvent } from "~frontend/analytics/tracking";
+import { useDb } from "~frontend/clientdb";
 import { MessageEntity } from "~frontend/clientdb/message";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { bindAttachmentsToMessage, removeAttachment } from "~frontend/gql/attachments";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
-import { UpdateMessageContentMutation, UpdateMessageContentMutationVariables } from "~gql";
 import { isRichEditorContentEmpty } from "~richEditor/content/isEmpty";
 import { RichEditorNode } from "~richEditor/content/types";
+import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
+import { EditorMentionData } from "~shared/types/editor";
 import { Button } from "~ui/buttons/Button";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 import { HStack } from "~ui/Stack";
@@ -24,7 +27,12 @@ interface Props {
   onSaved?: () => void;
 }
 
+const isMentioningTask = ({ userId, type }: EditorMentionData, task: TaskEntity) =>
+  task.user_id === userId && task.type === type;
+
 export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }: Props) => {
+  const db = useDb();
+
   const [attachments, attachmentsList] = useList<EditorAttachmentInfo>(
     message.attachments.all.map((messageAttachment) => ({
       mimeType: messageAttachment.mime_type,
@@ -35,27 +43,10 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const [content, setContent] = useState<RichEditorNode>(message.content);
-
-  const [updateMessageContent] = useMutation<UpdateMessageContentMutation, UpdateMessageContentMutationVariables>(
-    gql`
-      mutation UpdateMessageContent($id: uuid!, $content: jsonb!) {
-        message: update_message_by_pk(pk_columns: { id: $id }, _set: { content: $content }) {
-          id
-          content
-        }
-      }
-    `,
-    {
-      optimisticResponse: (vars) => ({
-        __typename: "mutation_root",
-        message: {
-          __typename: "message",
-          ...vars,
-        },
-      }),
-    }
-  );
+  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-message" + message.id,
+    initialValue: message.content,
+  });
 
   useShortcut("Escape", onCancelRequest);
   useShortcut("Enter", () => {
@@ -82,14 +73,26 @@ export const EditMessageEditor = observer(({ message, onCancelRequest, onSaved }
       await removeAttachment({ id: attachmentToRemove.id });
     });
 
-    const updatingMessagePromise = updateMessageContent({
-      variables: {
-        id: message.id,
-        content,
-      },
-    }) as Promise<unknown>;
+    message.update({ content });
 
-    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises, updatingMessagePromise]);
+    const mentionData = getUniqueMentionDataFromContent(content);
+
+    const unmentionedTasks = message.tasks.all.filter(
+      (task) => !mentionData.some((mention) => isMentioningTask(mention, task))
+    );
+    for (const task of unmentionedTasks) {
+      db.task.removeById(task.id);
+    }
+
+    const newlyMentionedTasks = mentionData.filter(
+      (node) => message.tasks.query((task) => isMentioningTask(node, task)).all.length == 0
+    );
+    for (const newMention of newlyMentionedTasks) {
+      const { userId, type } = newMention;
+      db.task.create({ message_id: message.id, user_id: userId, type });
+    }
+
+    await Promise.all([...addAttachmentsPromises, ...removingAttachmentsPromises]);
     trackEvent("Edited Message", { messageId: message.id });
     onSaved?.();
   }

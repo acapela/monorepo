@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { TaskEntity } from "~frontend/clientdb/task";
-import { updateTask } from "~frontend/gql/tasks";
 import { UserAvatar } from "~frontend/ui/users/UserAvatar";
 import { getTeamInvitationDisplayName } from "~frontend/utils/getTeamInvitationDisplayName";
 import { assert } from "~shared/assert";
@@ -33,7 +32,7 @@ export const MessageTask = styledObserver(function MessageTask({ task, className
     const isTaskToBeMarkedAsDone = task.type === "request-read";
     const doneParams = isTaskToBeMarkedAsDone ? { done_at: nowAsIsoString } : {};
 
-    updateTask({ taskId: task.id, input: { seen_at: nowAsIsoString, ...doneParams } });
+    task.update({ seen_at: nowAsIsoString, ...doneParams });
 
     trackEvent("Marked Task As Seen", {
       taskId: task.id,
@@ -56,7 +55,7 @@ export const MessageTask = styledObserver(function MessageTask({ task, className
     const isTaskToBeMarkedAsIncomplete = task.type === "request-read";
     const doneParams = isTaskToBeMarkedAsIncomplete ? { done_at: null } : {};
 
-    updateTask({ taskId: task.id, input: { seen_at: null, ...doneParams } });
+    task.update({ seen_at: null, ...doneParams });
 
     trackEvent("Marked Task As Unseen", {
       taskId: task.id,
