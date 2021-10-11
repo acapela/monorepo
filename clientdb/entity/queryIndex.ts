@@ -93,7 +93,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
     if (indexValueBefore === indexValueNow) return;
 
     const listBefore = observableMapGetOrCreate(observableIndex, indexValueBefore, () => observable.array());
-    const listNow = observableMapGetOrCreate(observableIndex, indexValueBefore, () => observable.array());
+    const listNow = observableMapGetOrCreate(observableIndex, indexValueNow, () => observable.array());
 
     runInAction(() => {
       listBefore.remove(entity);

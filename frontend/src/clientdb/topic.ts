@@ -94,6 +94,10 @@ export const topicEntity = defineEntity<TopicFragment>({
     get isClosed() {
       return !!topic.closed_at;
     },
+    get isNew() {
+      return false;
+      return !!topic.archived_at;
+    },
     get isArchived() {
       return !!topic.archived_at;
     },

@@ -46,7 +46,8 @@ export const SidebarLayout = ({ selectedTopicSlug, children }: Props) => {
 };
 
 const UISidebar = styled.div<{}>`
-  min-height: 100vh;
+  max-height: 100vh;
+  height: 100vh;
   background-color: ${theme.colors.layout.background()};
 
   box-sizing: border-box;

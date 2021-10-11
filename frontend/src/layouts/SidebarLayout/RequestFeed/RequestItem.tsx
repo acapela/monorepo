@@ -15,17 +15,13 @@ interface Props {
 }
 
 export const RequestItem = observer(function RequestItem({ topic, isHighlighted = false }: Props) {
-  if (!topic) {
-    return null;
-  }
-
   return (
     <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
       <UIFeedItem isHighlighted={isHighlighted}>
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
           <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
-          <UIFeedItemSubTitle>{""}</UIFeedItemSubTitle>
+          <UIFeedItemSubTitle>{"jkljkl"}</UIFeedItemSubTitle>
         </UIFeedItemLabels>
       </UIFeedItem>
     </RouteLink>
@@ -44,13 +40,17 @@ const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
 
   align-items: center;
 
+  ${theme.transitions.hover()};
+
+  &:hover {
+    background-color: hsla(0, 0%, 0%, 0.025);
+  }
+
   ${(props) =>
     props.isHighlighted &&
     css`
       &&& {
-        /* TODO: Move to theme */
-        background-color: #ff57e3;
-        color: ${theme.colors.layout.foreground()};
+        background-color: hsla(0, 0%, 0%, 0.05);
       }
     `}
 `;

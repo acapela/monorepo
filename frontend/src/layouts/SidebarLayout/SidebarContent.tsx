@@ -41,6 +41,9 @@ export function SidebarContent({ selectedTopicSlug }: Props) {
 
 const UIHolder = styled.div<{}>`
   width: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const UIHeader = styled.div<{}>`
@@ -51,7 +54,9 @@ const UIHeader = styled.div<{}>`
   justify-content: space-between;
 `;
 
-const UIRequestFeed = styled.div<{}>``;
+const UIRequestFeed = styled.div<{}>`
+  overflow-y: auto;
+`;
 
 const UISearch = styled.div<{}>`
   border-color: rgba(0, 0, 0, 0.05);
@@ -68,6 +73,7 @@ const UISearch = styled.div<{}>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 `;
 
 const UISearchPlaceholder = styled.span<{}>``;
