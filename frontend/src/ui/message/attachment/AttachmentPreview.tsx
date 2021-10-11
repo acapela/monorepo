@@ -23,12 +23,7 @@ export const AttachmentPreview = observer(({ id, onRemoveRequest }: Props) => {
       <MessageAttachmentDisplayer attachmentUrl={`/attachments/${attachment.id}`} attachment={attachment} />
       {!!onRemoveRequest && (
         <UIRemoveButtonHolder>
-          <CircleIconButton
-            tooltip="Remove file"
-            kind="primary"
-            icon={<IconCross />}
-            onClick={() => onRemoveRequest(id)}
-          />
+          <CircleIconButton kind="primary" icon={<IconCross />} onClick={() => onRemoveRequest(id)} />
         </UIRemoveButtonHolder>
       )}
     </UIHolder>

@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { useCurrentUserTokenData } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
+import { DropFileContext } from "~richEditor/DropFileContext";
 import { ClientSideOnly } from "~ui/ClientSideOnly";
 import { theme } from "~ui/theme";
 
@@ -16,25 +17,42 @@ export const NewRequestView = observer(function NewRequestView() {
   const hasTeamMembers = db.teamMember.all.length > 1;
 
   return (
-    <UIHolder>
+    <>
       {hasTeamMembers && (
-        <ClientSideOnly>
-          <NewRequest />
-        </ClientSideOnly>
+        <UIDropFileHolder>
+          <ClientSideOnly>
+            <NewRequest />
+          </ClientSideOnly>
+        </UIDropFileHolder>
       )}
       {/* TODO: Temporary. Get new designs and integrate with onboarding flow */}
       {!hasTeamMembers && (
-        <UIInviteNewMembersSection>
-          <UIInviteNewMembersTitle>Hi {user?.name} 👋</UIInviteNewMembersTitle>
-          Please invite new team members to Acapela or integrate with slack.
-          <CurrentTeamMembersManager />
-        </UIInviteNewMembersSection>
+        <UIHolder>
+          <UIInviteNewMembersSection>
+            <UIInviteNewMembersTitle>Hi {user?.name} 👋</UIInviteNewMembersTitle>
+            To begin using Acapela, please invite new team members or integrate with slack.
+            <CurrentTeamMembersManager />
+          </UIInviteNewMembersSection>
+        </UIHolder>
       )}
-    </UIHolder>
+    </>
   );
 });
 
-const UIHolder = styled.div<{}>`
+const UIInviteNewMembersSection = styled.div<{}>`
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 32px;
+`;
+
+const UIInviteNewMembersTitle = styled.h1<{}>`
+  ${theme.font.h2.build()}
+`;
+
+const UIDropFileHolder = styled(DropFileContext)<{}>`
   height: 100%;
   width: 100%;
   display: flex;
@@ -42,14 +60,10 @@ const UIHolder = styled.div<{}>`
   justify-content: center;
 `;
 
-const UIInviteNewMembersSection = styled.div<{}>`
+const UIHolder = styled.div<{}>`
+  height: 100%;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: start;
+  align-items: center;
   justify-content: center;
-  gap: 24px;
-`;
-
-const UIInviteNewMembersTitle = styled.h1<{}>`
-  ${theme.font.h2.build()}
 `;

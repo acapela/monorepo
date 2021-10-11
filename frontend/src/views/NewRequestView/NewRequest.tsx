@@ -2,11 +2,18 @@ import { isEqual, range } from "lodash";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef } from "react";
+import { useList } from "react-use";
 import styled, { css } from "styled-components";
 
+import { useFileDroppedInContext } from "~frontend/../../richEditor/DropFileContext";
+import { useDocumentFilesPaste } from "~frontend/../../richEditor/useDocumentFilePaste";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { useDb } from "~frontend/clientdb";
 import { routes } from "~frontend/router";
+import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPreview";
+import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
+import { UploadingAttachmentPreview } from "~frontend/ui/message/composer/UploadingAttachmentPreview";
+import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -56,6 +63,19 @@ export const NewRequest = observer(function NewRequest() {
   const editorRef = useRef<Editor>(null);
   const db = useDb();
   const placeholder = usePlaceholder();
+
+  const [attachments, attachmentsList] = useList<EditorAttachmentInfo>([]);
+  const { uploadAttachments, uploadingAttachments } = useUploadAttachments({
+    onUploadFinish: (attachment) => attachmentsList.push(attachment),
+  });
+
+  useFileDroppedInContext((files) => {
+    uploadAttachments(files);
+  });
+
+  useDocumentFilesPaste((files) => {
+    uploadAttachments(files);
+  });
 
   // Submitting can be done from the editor or from the topic input box
   useShortcut(["Meta", "Enter"], () => {
@@ -125,7 +145,11 @@ export const NewRequest = observer(function NewRequest() {
     }
     runInAction(() => {
       const topic = db.topic.create({ name: topicName, slug: getAvailableSlugForTopicName(topicName) });
-      db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+      const message = db.message.create({ content: messageContent, topic_id: topic.id, type: "TEXT" });
+
+      attachments.forEach((attachment) => {
+        db.attachment.update(attachment.uuid, { message_id: message.id });
+      });
 
       setTopicName("");
       setMessageContent(getEmptyRichContent());
@@ -150,12 +174,32 @@ export const NewRequest = observer(function NewRequest() {
         placeholder={placeholder}
         onSubmit={submit}
       />
+
+      {(uploadingAttachments.length > 0 || attachments.length > 0) && (
+        <UIAttachmentsPreviews>
+          {attachments.map((attachment) => (
+            <AttachmentPreview
+              id={attachment.uuid}
+              key={attachment.uuid}
+              onRemoveRequest={() => {
+                attachmentsList.filter((existingAttachment) => {
+                  return existingAttachment.uuid !== attachment.uuid;
+                });
+              }}
+            />
+          ))}
+          {uploadingAttachments.map(({ percentage }, index) => (
+            <UploadingAttachmentPreview percentage={percentage} key={index} />
+          ))}
+        </UIAttachmentsPreviews>
+      )}
       {hasTypedMessageContent && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
     </UIHolder>
   );
 });
 
 const UIHolder = styled.div<{ isEmpty: boolean }>`
+  padding: 40px;
   ${(props) => {
     if (props.isEmpty) {
       return css`
@@ -188,5 +232,13 @@ const UINextStepPrompt = styled.div<{}>`
   text-align: left;
   /* From framer */
 
-  margin-top: 20px; ;
+  margin-top: 24px; ;
+`;
+
+const UIAttachmentsPreviews = styled.div<{}>`
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  grid-template-rows: repeat(auto-fill, 120px);
+  gap: 12px;
 `;
