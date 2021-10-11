@@ -11,7 +11,6 @@ import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
 import { initializePersistance } from "./entity/initializePersistance";
-import { initializePersistedCache } from "./entity/persistedCache";
 
 export * from "./entity/index";
 
@@ -40,7 +39,6 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   const end = measureTime("init pers");
   const persistanceDb = await initializePersistance(definitions, db);
-  const cache = await initializePersistedCache(db);
 
   end();
 
@@ -75,7 +73,6 @@ export async function createClientDb<Entities extends EntitiesMap>(
     const entityClient = createEntityClient(definition, {
       databaseUtilities: databaseUtilities,
       persistanceDb,
-      cache,
     });
 
     return entityClient;

@@ -3773,6 +3773,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/flexsearch@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@types/flexsearch@npm:0.7.1"
+  checksum: 5fa1afc7fe7511448866b0f08fe4cef8faf01257a8f9fe487be04319371f833086a74ef0e19a6efe9723b9b81571ea607860db4b71c9fb584a66195e16be7115
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.12":
   version: 9.0.12
   resolution: "@types/fs-extra@npm:9.0.12"
@@ -8604,6 +8611,13 @@ __metadata:
   version: 1.0.3
   resolution: "flatten@npm:1.0.3"
   checksum: 5c57379816f1692aaa79fbc6390e0a0644e5e8442c5783ed57c6d315468eddbc53a659eaa03c9bb1e771b0f4a9bd8dd8a2620286bf21fd6538a7857321fdfb20
+  languageName: node
+  linkType: hard
+
+"flexsearch@npm:^0.7.21":
+  version: 0.7.21
+  resolution: "flexsearch@npm:0.7.21"
+  checksum: ae77c6ebba6f02660bf28a36b56427ec2d737dcb9bd03564db27801484be2dd943fc7350e60a6f0aed47ab1b85af7fd5b33e27e84fd2fcbb241d9c5d21c8d068
   languageName: node
   linkType: hard
 
@@ -18584,6 +18598,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "~clientdb@workspace:clientdb"
   dependencies:
+    "@types/flexsearch": ^0.7.1
+    flexsearch: ^0.7.21
     minisearch: ^3.1.0
   languageName: unknown
   linkType: soft

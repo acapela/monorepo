@@ -19,6 +19,6 @@ export function measureTime(name: string, isEnabled = true) {
 
     groupsTotal.set(name, newTotal);
 
-    console.info(`[Measure] ${name} - ${duration}ms (total ${newTotal}ms)`);
+    console.info(`⏱ ${name} - ${duration}ms (total ${newTotal}ms)`);
   };
 }

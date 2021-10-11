@@ -1,6 +1,11 @@
 import { PersistanceAdapterInfo } from "~clientdb";
 
 /**
+ * Note: it turned out not to be needed, as we started using flexsearch which indexes items really quickly.
+ * I'm leaving this code in case we'll need it later. (which is likely)
+ */
+
+/**
  * To avoid conflicts with other IndexedDb we always add clientdb string to database name.
  */
 const CACHE_DB_NAME = "clientdb-cache";

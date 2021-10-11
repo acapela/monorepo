@@ -1,56 +1,14 @@
-import { memoize } from "lodash";
-import MiniSearch, { AsPlainObject, Options as MiniSearchOptions } from "minisearch";
-import { observable, runInAction } from "mobx";
+import { Index } from "flexsearch";
+import { mapValues, memoize, pick, values } from "lodash";
 import { computed, makeAutoObservable } from "mobx";
 
 import { Entity } from "~clientdb";
 import { assert } from "~shared/assert";
 import { measureTime } from "~shared/dev";
+import { runUntracked } from "~shared/mobxUtils";
 import { typedKeys } from "~shared/object";
 
-import { PersistedCache } from "./persistedCache";
 import { EntityStore } from "./store";
-
-/**
- * This will be a bit nerdy comment, but I'm actually a bit excited and I'd like to share story of this search approach. Feel free to skip it if you want.
- *
- * TLDR: You can search inside 5000 long list under 1ms. No matter how big items are.
- *
- * MiniSearch is amazing, because time of search depends only on search keyword length, even if you have 1000s of items. No matter how big those items are.
- *
- * I really strongly recommend reading blog post about it https://lucaongaro.eu/blog/2019/01/30/minisearch-client-side-fulltext-search-engine.html
- * it is simply a nerd-joy to learn about it. Also author responses in github repo on issues is really great read.
- *
- * How it works? (simplified)
- *
- * Assuming we have items like [hello, hell, help], index will look something like
- * {
- *   hel: {
- *     p: [3], // 3rd item is matching
- *     l: {
- *       "": [2], // 2nd item is matching
- *       "o": [1] // 1st item is matching
- *     }
- *   }
- * }
- *
- * It means no matter how many items we have, it is exactly as easy to find list of matching items.
- *
- * If we have multi-word items like "hello world", it is simply splitted by word and recorded the same way, only also remembering which word of term it is eg
- * {
- *   hello: {
- *     1: 0 < hello is first word of item 1
- *   },
- *   world: {
- *     1: 1 < world is second word of item 1
- *   }
- * }
- *
- * Also, creation of index is relatively cheap. It is usually also smaller then the data itself (due to many items using the same words and being indexed together).
- *
- * Index can also be persisted itself in local db if this will be needed, but author actually recommends not doing it until
- * absolutely necessary - https://github.com/lucaong/minisearch/issues/76
- */
 
 interface EntitySearchFieldDetailedConfig<Value> {
   extract?: (value: Value) => string;
@@ -82,74 +40,52 @@ export interface EntitySearch<Data, Connections> {
 const DEV_MEASURE = true;
 
 export function createEntitySearch<Data, Connections>(
-  { fields, persistIndex = true }: EntitySearchConfig<Data>,
-  store: EntityStore<Data, Connections>,
-  cache: PersistedCache
+  { fields }: EntitySearchConfig<Data>,
+  store: EntityStore<Data, Connections>
 ): EntitySearch<Data, Connections> {
   const fieldsList = typedKeys(fields);
+  const entityName = store.definition.config.name;
 
-  const cacheIndexKey = `search-index-${store.definition.config.name}`;
+  function prepareEntitySearchTerm(entity: Entity<Data, Connections>): string {
+    const dataToIndex: Partial<Data> = pick(entity, fieldsList);
 
-  function extractField(item: Data, key: string): string {
-    const fieldConfig = fields[key as keyof Data];
-    const rawValue = item[key as keyof Data];
+    const indexedValuesMap = mapValues(dataToIndex, (value, key) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const fieldConfig = fields[key as keyof Data]!;
 
-    if (!fieldConfig) {
-      assert(typeof rawValue === "string", `Key ${key} inside item is not a string`);
-      return rawValue;
-    }
+      if (!isDetailedEntitySearchFieldConfig(fieldConfig) || !fieldConfig.extract) {
+        assert(typeof value === "string", `Only string values can be indexed if no convert function is provided`);
+        return value as string;
+      }
 
-    if (!isDetailedEntitySearchFieldConfig(fieldConfig)) {
-      assert(typeof rawValue === "string", `Key ${key} inside item is not a string`);
-      return rawValue;
-    }
+      const stringValue = fieldConfig.extract(value!);
 
-    if (!fieldConfig.extract) {
-      assert(typeof rawValue === "string", `Key ${key} inside item is not a string`);
-      return rawValue;
-    }
-
-    return fieldConfig.extract(rawValue);
-  }
-
-  const miniSearchOptions: MiniSearchOptions<Data> = {
-    fields: fieldsList as string[],
-    extractField,
-    idField: store.definition.config.keyField as string,
-    searchOptions: {
-      // Will match "hello" item for "he" input keyword. Otherwise only full words would be matched
-      prefix: true,
-    },
-  };
-
-  const getEngine = memoize(async () => {
-    if (!persistIndex) {
-      const engine = new MiniSearch<Data>(miniSearchOptions);
-      runInAction(() => {
-        engine.addAll(store.items);
-      });
-
-      return engine;
-    }
-
-    const end = measureTime(`Create ${store.definition.config.name} index`, DEV_MEASURE);
-
-    const persistedIndex = await cache.get<AsPlainObject>(cacheIndexKey);
-
-    if (persistedIndex) {
-      end();
-      return MiniSearch.loadJS<Data>(persistedIndex, miniSearchOptions);
-    }
-
-    const engine = new MiniSearch<Data>(miniSearchOptions);
-    runInAction(() => {
-      engine.addAll(store.items);
+      return stringValue;
     });
 
-    await cache.set<AsPlainObject>(cacheIndexKey, engine.toJSON());
-    end();
-    return engine;
+    const term = values<string>(indexedValuesMap).join(" ");
+
+    return term;
+  }
+
+  const index = new Index({
+    preset: "match",
+    // Will find "hello", when looking for "he"
+    tokenize: "forward",
+    // Will normalize custom characters.
+    charset: "lating:advanced",
+    language: "en",
   });
+
+  function populateIndex() {
+    const end = measureTime(`Indexing existing ${entityName} items`, DEV_MEASURE);
+    runUntracked(() => {
+      store.items.forEach((entity) => {
+        index.add(entity.getKey(), prepareEntitySearchTerm(entity));
+      });
+    });
+    end();
+  }
 
   /**
    * Changes of items can change search results. But index is not observable so we need a way to track updates in it to
@@ -162,59 +98,32 @@ export function createEntitySearch<Data, Connections>(
   }
 
   const initializeUpdatesIfNeeded = memoize(() => {
-    const cancelAdd = store.events.on("itemAdded", async (entity) => {
+    const cancelAdd = store.events.on("itemAdded", (entity) => {
+      index.add(entity.getKey(), prepareEntitySearchTerm(entity));
       trackUpdate();
-      (await getEngine()).add(entity);
     });
-    const cancelDelete = store.events.on("itemRemoved", async (entity) => {
+
+    const cancelDelete = store.events.on("itemRemoved", (entity) => {
       trackUpdate();
-      (await getEngine()).remove(entity);
+      index.remove(entity.getKey());
     });
-    /**
-     * Important!
-     *
-     * To 'update' single item index we need to first remove it and then add it again.
-     *
-     * However, to remove item, we must provide having exact same data as it has when being added to the index initially.
-     *
-     * Otherwise it will be impossible to know from what parts of the index it has to be removed.
-     *
-     * Thus we remove item in 'itemWillUpdate' (still having original data) and instantly add it again in 'itemUpdated' (when item has new data)
-     */
-    const cancelWillUpdate = store.events.on("itemWillUpdate", async (entity) => {
+
+    const cancelUpdate = store.events.on("itemUpdated", (entity) => {
+      index.update(entity.getKey(), prepareEntitySearchTerm(entity));
       trackUpdate();
-      (await getEngine()).remove(entity);
-    });
-    const cancelUpdate = store.events.on("itemUpdated", async (entity) => {
-      trackUpdate();
-      (await getEngine()).add(entity);
     });
 
     return function cancel() {
       cancelAdd();
       cancelDelete();
-      cancelWillUpdate();
       cancelUpdate();
     };
   });
 
-  const initializeIfNeeded = memoize(async () => {
-    await getEngine();
+  const initializeIfNeeded = memoize(() => {
+    populateIndex();
 
     return initializeUpdatesIfNeeded();
-  });
-
-  const getEngineObservable = memoize(() => {
-    const engineObservable = observable.box<MiniSearch<Data> | null>(null);
-
-    getEngine().then(async (engine) => {
-      initializeUpdatesIfNeeded();
-      runInAction(() => {
-        engineObservable.set(engine);
-      });
-    });
-
-    return engineObservable;
   });
 
   function search(input: string) {
@@ -224,22 +133,19 @@ export function createEntitySearch<Data, Connections>(
     initializeIfNeeded();
 
     return computed(() => {
-      const engine = getEngineObservable().get();
-
-      if (!engine) return [];
       // We simply read this value to let mobx know to re-compute if there is change in the index
       status.updatesCount;
-      const end = measureTime(`Search ${store.definition.config.name} for term ${input}`, DEV_MEASURE);
-      const rawResults = engine.search(input);
+      const end = measureTime(`Search ${entityName}`, DEV_MEASURE);
+      const foundIds = index.search(input, { limit: 20, suggest: true });
 
       end();
 
-      return rawResults.map((result) => store.assertFindById(result.id));
+      return foundIds.map((id) => store.assertFindById(id as string));
     }).get();
   }
 
-  async function destroy() {
-    const cancelUpdatesTracking = await initializeIfNeeded();
+  function destroy() {
+    const cancelUpdatesTracking = initializeIfNeeded();
 
     cancelUpdatesTracking();
   }

@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "license": "UNLICENSED",
   "dependencies": {
+    "flexsearch": "^0.7.21",
     "minisearch": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/flexsearch": "^0.7.1"
   }
 }
