@@ -13,6 +13,7 @@ import { AttachmentPreview } from "~frontend/ui/message/attachment/AttachmentPre
 import { EditorAttachmentInfo } from "~frontend/ui/message/composer/attachments";
 import { UploadingAttachmentPreview } from "~frontend/ui/message/composer/UploadingAttachmentPreview";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
+import { isMac } from "~frontend/utils/platformDetection";
 import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
@@ -116,6 +117,8 @@ export const NewRequest = observer(function NewRequest() {
   );
 
   const [isValid, nextStepPromptLabel] = useMemo(() => {
+    const submitShortcut = isMac() ? "⌘+Enter" : "Ctrl+Enter";
+
     if (topicName.length === 0) {
       return [false, "Please add a topic name before creating request"];
     }
@@ -123,7 +126,7 @@ export const NewRequest = observer(function NewRequest() {
     if (mentionNodes.length < 1) {
       return [false, "You should mention at least one teammate before creating request"];
     }
-    return [true, "Hit ⌘+Enter to create request"];
+    return [true, `Hit ${submitShortcut} to create request`];
   }, [topicName, messageContent]);
 
   // Cleanup contents after route has changed
