@@ -18,13 +18,16 @@ import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { useFileDroppedInContext } from "~richEditor/DropFileContext";
+import { FileInput } from "~richEditor/FileInput";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
 import { useDocumentFilesPaste } from "~richEditor/useDocumentFilePaste";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { runUntracked } from "~shared/mobxUtils";
 import { slugify } from "~shared/slugify";
+import { Button } from "~ui/buttons/Button";
 import { FreeTextInput as TransparentTextInput } from "~ui/forms/FreeInputText";
 import { onEnterPressed } from "~ui/forms/utils";
+import { IconFolder } from "~ui/icons";
 import { useShortcut } from "~ui/keyboard/useShortcut";
 
 import { CreateRequestPrompt } from "./CreateRequestPrompt";
@@ -89,6 +92,10 @@ export const NewRequest = observer(function NewRequest() {
   useShortcut(
     ["Meta", "Enter"],
     () => {
+      if (isSubmitting) {
+        return true;
+      }
+
       submit();
       // Captures and prevents the event from getting to the editor
       return true;
@@ -190,52 +197,70 @@ export const NewRequest = observer(function NewRequest() {
   }
 
   return (
-    <UIHolder isEmpty={!hasTypedInAnything}>
-      {!hasTypedInAnything && <UIFlyingCreateARequestLabel />}
-      <UITopicNameInput
-        autoFocus
-        disabled={isSubmitting}
-        value={topicName}
-        onChangeText={setTopicName}
-        placeholder={"Add topic"}
-        onKeyPress={onEnterPressed(focusEditor)}
-      />
-      <NewRequestRichEditor
-        ref={editorRef}
-        isDisabled={isSubmitting}
-        value={messageContent}
-        onChange={setMessageContent}
-        placeholder={messageContentExample}
-        onSubmit={submit}
-      />
+    <UIHolder>
+      <UIContentHolder isEmpty={!hasTypedInAnything}>
+        {!hasTypedInAnything && <UIFlyingCreateARequestLabel />}
+        <UITopicNameInput
+          autoFocus
+          disabled={isSubmitting}
+          value={topicName}
+          onChangeText={setTopicName}
+          placeholder={"Add topic"}
+          onKeyPress={onEnterPressed(focusEditor)}
+        />
+        <NewRequestRichEditor
+          ref={editorRef}
+          isDisabled={isSubmitting}
+          value={messageContent}
+          onChange={setMessageContent}
+          placeholder={messageContentExample}
+          onSubmit={submit}
+        />
 
-      {(uploadingAttachments.length > 0 || attachments.length > 0) && (
-        <UIAttachmentsPreviews>
-          {attachments.map((attachment) => (
-            <AttachmentPreview
-              id={attachment.uuid}
-              key={attachment.uuid}
-              onRemoveRequest={() => {
-                attachmentsList.filter((existingAttachment) => {
-                  return existingAttachment.uuid !== attachment.uuid;
-                });
-              }}
-            />
-          ))}
-          {uploadingAttachments.map(({ percentage }, index) => (
-            <UploadingAttachmentPreview percentage={percentage} key={index} />
-          ))}
-        </UIAttachmentsPreviews>
-      )}
-      {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
-      {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+        {(uploadingAttachments.length > 0 || attachments.length > 0) && (
+          <UIAttachmentsPreviews>
+            {attachments.map((attachment) => (
+              <AttachmentPreview
+                id={attachment.uuid}
+                key={attachment.uuid}
+                onRemoveRequest={() => {
+                  attachmentsList.filter((existingAttachment) => {
+                    return existingAttachment.uuid !== attachment.uuid;
+                  });
+                }}
+              />
+            ))}
+            {uploadingAttachments.map(({ percentage }, index) => (
+              <UploadingAttachmentPreview percentage={percentage} key={index} />
+            ))}
+          </UIAttachmentsPreviews>
+        )}
+        {hasTypedMessageContent && !isSubmitting && <UINextStepPrompt>{nextStepPromptLabel}</UINextStepPrompt>}
+        {isSubmitting && <UINextStepPrompt>Creating new request...</UINextStepPrompt>}
+      </UIContentHolder>
+      <UIFooter>
+        <FileInput onFileSelected={(file) => uploadAttachments([file])}>
+          <Button kind="secondary" icon={<IconFolder />} iconPosition="start">
+            Add File
+          </Button>
+        </FileInput>
+      </UIFooter>
     </UIHolder>
   );
 });
 
-const UIHolder = styled.div<{ isEmpty: boolean }>`
+const UIHolder = styled.div<{}>`
   position: relative;
-  padding: 40px;
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const UIContentHolder = styled.div<{ isEmpty: boolean }>`
+  position: relative;
   ${(props) => {
     if (props.isEmpty) {
       return css`
@@ -251,10 +276,11 @@ const UIHolder = styled.div<{ isEmpty: boolean }>`
 
 const UIFlyingCreateARequestLabel = styled(CreateRequestPrompt)<{}>`
   position: absolute;
-  left: -96px;
-  top: -32px;
+  /* Aligning prompt absolutely from very center of screen */
+  left: -140px;
+  top: -72px;
 
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 900px) {
     display: none;
   }
 `;
@@ -287,4 +313,22 @@ const UIAttachmentsPreviews = styled.div<{}>`
   grid-template-columns: repeat(auto-fill, 120px);
   grid-template-rows: repeat(auto-fill, 120px);
   gap: 12px;
+`;
+
+const UIFooter = styled.div<{}>`
+  position: absolute;
+  bottom: 0;
+
+  padding: 16px;
+
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+
+  border-color: rgba(0, 0, 0, 0.05);
+  border-style: solid;
+  border-top-width: 1px;
 `;
