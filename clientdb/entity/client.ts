@@ -7,6 +7,7 @@ import { EntityDefinition } from "./definition";
 import { DatabaseUtilities } from "./entitiesConnections";
 import { Entity, createEntity } from "./entity";
 import { createEntityPersistanceManager } from "./persistance";
+import { PersistedCache } from "./persistedCache";
 import { EntityQuery, EntityQueryConfig } from "./query";
 import { createEntitySearch } from "./search";
 import { createEntityStore } from "./store";
@@ -41,6 +42,7 @@ export type EntityClientByDefinition<Def extends EntityDefinition<unknown, unkno
 interface EntityClientConfig {
   databaseUtilities: DatabaseUtilities;
   persistanceDb: PersistanceDB;
+  cache: PersistedCache;
 }
 
 /**
@@ -50,11 +52,11 @@ interface EntityClientConfig {
  */
 export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { databaseUtilities, persistanceDb }: EntityClientConfig
+  { databaseUtilities, persistanceDb, cache }: EntityClientConfig
 ): EntityClient<Data, Connections> {
   const store = createEntityStore<Data, Connections>(definition);
 
-  const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
+  const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store, cache) : null;
 
   function createEntityWithData(input: Partial<Data>) {
     return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });

@@ -1,6 +1,7 @@
 import { find, forEach, mapValues } from "lodash";
 
 import { assert } from "~shared/assert";
+import { measureTime } from "~shared/dev";
 import { isClient } from "~shared/document";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";
@@ -10,6 +11,7 @@ import { EntityDefinition } from "./entity/definition";
 import { DatabaseUtilities } from "./entity/entitiesConnections";
 import { EntitiesMap } from "./entity/entitiesMap";
 import { initializePersistance } from "./entity/initializePersistance";
+import { initializePersistedCache } from "./entity/persistedCache";
 
 export * from "./entity/index";
 
@@ -36,7 +38,11 @@ export async function createClientDb<Entities extends EntitiesMap>(
 
   assert(isClient, "Client DB can only be created on client side");
 
+  const end = measureTime("init pers");
   const persistanceDb = await initializePersistance(definitions, db);
+  const cache = await initializePersistedCache(db);
+
+  end();
 
   const databaseUtilities: DatabaseUtilities = {
     getEntity<Data, Connections>(definition: EntityDefinition<Data, Connections>): EntityClient<Data, Connections> {
@@ -69,6 +75,7 @@ export async function createClientDb<Entities extends EntitiesMap>(
     const entityClient = createEntityClient(definition, {
       databaseUtilities: databaseUtilities,
       persistanceDb,
+      cache,
     });
 
     return entityClient;

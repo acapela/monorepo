@@ -1,6 +1,6 @@
 import { memoize } from "lodash";
-import MiniSearch from "minisearch";
-import { runInAction } from "mobx";
+import MiniSearch, { AsPlainObject, Options as MiniSearchOptions } from "minisearch";
+import { observable, runInAction } from "mobx";
 import { computed, makeAutoObservable } from "mobx";
 
 import { Entity } from "~clientdb";
@@ -8,6 +8,7 @@ import { assert } from "~shared/assert";
 import { measureTime } from "~shared/dev";
 import { typedKeys } from "~shared/object";
 
+import { PersistedCache } from "./persistedCache";
 import { EntityStore } from "./store";
 
 /**
@@ -70,6 +71,7 @@ type EntitySearchFields<Data> = {
 
 export interface EntitySearchConfig<Data> {
   fields: EntitySearchFields<Data>;
+  persistIndex?: boolean;
 }
 
 export interface EntitySearch<Data, Connections> {
@@ -80,10 +82,13 @@ export interface EntitySearch<Data, Connections> {
 const DEV_MEASURE = true;
 
 export function createEntitySearch<Data, Connections>(
-  { fields }: EntitySearchConfig<Data>,
-  store: EntityStore<Data, Connections>
+  { fields, persistIndex = true }: EntitySearchConfig<Data>,
+  store: EntityStore<Data, Connections>,
+  cache: PersistedCache
 ): EntitySearch<Data, Connections> {
   const fieldsList = typedKeys(fields);
+
+  const cacheIndexKey = `search-index-${store.definition.config.name}`;
 
   function extractField(item: Data, key: string): string {
     const fieldConfig = fields[key as keyof Data];
@@ -107,7 +112,7 @@ export function createEntitySearch<Data, Connections>(
     return fieldConfig.extract(rawValue);
   }
 
-  const engine = new MiniSearch<Data>({
+  const miniSearchOptions: MiniSearchOptions<Data> = {
     fields: fieldsList as string[],
     extractField,
     idField: store.definition.config.keyField as string,
@@ -115,14 +120,35 @@ export function createEntitySearch<Data, Connections>(
       // Will match "hello" item for "he" input keyword. Otherwise only full words would be matched
       prefix: true,
     },
-  });
+  };
 
-  const populateIndexIfNeeded = memoize(() => {
+  const getEngine = memoize(async () => {
+    if (!persistIndex) {
+      const engine = new MiniSearch<Data>(miniSearchOptions);
+      runInAction(() => {
+        engine.addAll(store.items);
+      });
+
+      return engine;
+    }
+
     const end = measureTime(`Create ${store.definition.config.name} index`, DEV_MEASURE);
+
+    const persistedIndex = await cache.get<AsPlainObject>(cacheIndexKey);
+
+    if (persistedIndex) {
+      end();
+      return MiniSearch.loadJS<Data>(persistedIndex, miniSearchOptions);
+    }
+
+    const engine = new MiniSearch<Data>(miniSearchOptions);
     runInAction(() => {
       engine.addAll(store.items);
     });
+
+    await cache.set<AsPlainObject>(cacheIndexKey, engine.toJSON());
     end();
+    return engine;
   });
 
   /**
@@ -136,13 +162,13 @@ export function createEntitySearch<Data, Connections>(
   }
 
   const initializeUpdatesIfNeeded = memoize(() => {
-    const cancelAdd = store.events.on("itemAdded", (entity) => {
+    const cancelAdd = store.events.on("itemAdded", async (entity) => {
       trackUpdate();
-      engine.add(entity);
+      (await getEngine()).add(entity);
     });
-    const cancelDelete = store.events.on("itemRemoved", (entity) => {
+    const cancelDelete = store.events.on("itemRemoved", async (entity) => {
       trackUpdate();
-      engine.remove(entity);
+      (await getEngine()).remove(entity);
     });
     /**
      * Important!
@@ -155,13 +181,13 @@ export function createEntitySearch<Data, Connections>(
      *
      * Thus we remove item in 'itemWillUpdate' (still having original data) and instantly add it again in 'itemUpdated' (when item has new data)
      */
-    const cancelWillUpdate = store.events.on("itemWillUpdate", (entity) => {
+    const cancelWillUpdate = store.events.on("itemWillUpdate", async (entity) => {
       trackUpdate();
-      engine.remove(entity);
+      (await getEngine()).remove(entity);
     });
-    const cancelUpdate = store.events.on("itemUpdated", (entity) => {
+    const cancelUpdate = store.events.on("itemUpdated", async (entity) => {
       trackUpdate();
-      engine.add(entity);
+      (await getEngine()).add(entity);
     });
 
     return function cancel() {
@@ -172,10 +198,23 @@ export function createEntitySearch<Data, Connections>(
     };
   });
 
-  const initializeIfNeeded = memoize(() => {
-    populateIndexIfNeeded();
+  const initializeIfNeeded = memoize(async () => {
+    await getEngine();
 
     return initializeUpdatesIfNeeded();
+  });
+
+  const getEngineObservable = memoize(() => {
+    const engineObservable = observable.box<MiniSearch<Data> | null>(null);
+
+    getEngine().then(async (engine) => {
+      initializeUpdatesIfNeeded();
+      runInAction(() => {
+        engineObservable.set(engine);
+      });
+    });
+
+    return engineObservable;
   });
 
   function search(input: string) {
@@ -185,6 +224,9 @@ export function createEntitySearch<Data, Connections>(
     initializeIfNeeded();
 
     return computed(() => {
+      const engine = getEngineObservable().get();
+
+      if (!engine) return [];
       // We simply read this value to let mobx know to re-compute if there is change in the index
       status.updatesCount;
       const end = measureTime(`Search ${store.definition.config.name} for term ${input}`, DEV_MEASURE);
@@ -196,8 +238,8 @@ export function createEntitySearch<Data, Connections>(
     }).get();
   }
 
-  function destroy() {
-    const cancelUpdatesTracking = initializeIfNeeded();
+  async function destroy() {
+    const cancelUpdatesTracking = await initializeIfNeeded();
 
     cancelUpdatesTracking();
   }
