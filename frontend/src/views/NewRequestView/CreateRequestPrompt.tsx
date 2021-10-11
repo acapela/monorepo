@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { theme } from "~frontend/../../ui/theme";
+import { theme } from "~ui/theme";
 
 interface Props {
   className?: string;
