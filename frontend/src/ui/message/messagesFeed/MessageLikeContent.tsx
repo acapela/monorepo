@@ -64,6 +64,7 @@ const UIContentContainer = styled.div<{}>`
 const UIAnimatedMessageWrapper = styled.div<{}>`
   display: flex;
   align-items: start;
+  padding: 0 20px;
 
   ${theme.borderRadius.item}
   ${theme.transitions.hover()}
