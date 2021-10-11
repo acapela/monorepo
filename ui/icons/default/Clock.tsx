@@ -2,12 +2,18 @@ import * as React from "react";
 
 function SvgClock(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" {...props}>
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M5.53 1.47a.75.75 0 010 1.06l-3 3a.75.75 0 01-1.06-1.06l3-3a.75.75 0 011.06 0zM3.75 12a8.25 8.25 0 1116.5 0 8.25 8.25 0 01-16.5 0zM12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 8a.75.75 0 00-1.5 0v4c0 .25.125.485.334.624l3 2a.75.75 0 10.832-1.248l-2.666-1.777V8zm5.72-5.47a.75.75 0 011.06-1.06l3 3a.75.75 0 01-1.06 1.06l-3-3z"
-        fill="currentColor"
+        d="M 7 0 C 10.866 0 14 3.134 14 7 C 14 10.866 10.866 14 7 14 C 3.134 14 0 10.866 0 7 C 0 3.134 3.134 0 7 0 Z"
+        fill="hsl(0, 0%, 0%)"
+      />
+      <path
+        d="M 7 3.5 L 7 7 L 9 9"
+        fill="transparent"
+        strokeWidth="1.5"
+        stroke="hsl(0, 0%, 100%)"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

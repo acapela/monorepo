@@ -64,7 +64,7 @@ const UIHolder = styled.div<{}>`
 `;
 
 const UIMainContent = styled.div<{}>`
-  flex-grow: 1;
   max-height: 100vh;
   background-color: ${theme.colors.layout.foreground()};
+  width: calc(100vw - 300px);
 `;

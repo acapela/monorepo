@@ -9,8 +9,6 @@ import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
-import { theme } from "~ui/theme";
 import { TextH3 } from "~ui/typo";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
@@ -73,24 +71,22 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
         </ScrollableMessages>
 
         {!isClosed && (
-          <ClientSideOnly>
-            <UIMessageComposer>
-              <CreateNewMessageEditor
-                topicId={topic.id}
-                requireMention={messages.length === 0}
-                onMessageSent={() => {
-                  scrollerRef.current?.scrollToBottom("auto");
-                  const openTasks = messages.flatMap(
-                    (message) => message.tasks.query((task) => !task.done_at && task.user_id === user.id).all
-                  );
-                  const doneAt = new Date().toISOString();
-                  for (const openTask of openTasks) {
-                    openTask.update({ done_at: doneAt });
-                  }
-                }}
-              />
-            </UIMessageComposer>
-          </ClientSideOnly>
+          <UIMessageComposer>
+            <CreateNewMessageEditor
+              topicId={topic.id}
+              requireMention={messages.length === 0}
+              onMessageSent={() => {
+                scrollerRef.current?.scrollToBottom("auto");
+                const openTasks = messages.flatMap(
+                  (message) => message.tasks.query((task) => !task.done_at && task.user_id === user.id).all
+                );
+                const doneAt = new Date().toISOString();
+                for (const openTask of openTasks) {
+                  openTask.update({ done_at: doneAt });
+                }
+              }}
+            />
+          </UIMessageComposer>
         )}
       </UIHolder>
     </TopicStoreContext>
