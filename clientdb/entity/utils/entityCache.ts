@@ -26,7 +26,9 @@ export function createEntityCache<Data, Connections, Result>(getter: (entity: En
 
     cacheMap.set(entity, newCachedValue);
 
-    return newCachedValue.get();
+    const result = newCachedValue.get();
+
+    return result;
   }
 
   return getCached;
