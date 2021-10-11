@@ -1,3 +1,5 @@
+import { runInAction } from "mobx";
+
 type EventHandler<T extends unknown[]> = (...args: T) => void;
 
 type Unsubscribe = () => void;
@@ -39,8 +41,10 @@ export function createEventsEmmiter<EventsMap extends Record<string, unknown[]>>
     }
     const listeners = getHandlersForEvent(name);
 
-    Array.from(listeners).forEach((listener) => {
-      listener(...data);
+    runInAction(() => {
+      Array.from(listeners).forEach((listener) => {
+        listener(...data);
+      });
     });
   }
 
