@@ -1,5 +1,6 @@
 import { Editor } from "@tiptap/core";
 import { NodeViewProps } from "@tiptap/react";
+import { SuggestionProps } from "@tiptap/suggestion";
 
 export interface AutocompleteNodeProps<D> {
   data: D;
@@ -9,7 +10,7 @@ export interface AutocompleteNodeProps<D> {
   editor: Editor;
 }
 
-export interface AutocompletePickerProps<D> {
+export type AutocompletePickerProps<D> = SuggestionProps & {
   keyword: string;
   onSelect: (item: D) => void;
-}
+};

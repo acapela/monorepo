@@ -12,10 +12,8 @@ import {
   PullSyncRequestsSubscriptionVariables,
   Task_Constraint,
   Team_Constraint,
-  Team_Invitation_Constraint,
   Team_Member_Constraint,
   Topic_Constraint,
-  User_Constraint,
 } from "~gql";
 import { assert } from "~shared/assert";
 import { runUntracked } from "~shared/mobxUtils";
@@ -40,10 +38,8 @@ import { apolloContext, teamIdContext } from "./context";
 type ConstraintsTypeMap = {
   task: Task_Constraint;
   topic: Topic_Constraint;
-  user: User_Constraint;
   team: Team_Constraint;
   team_member: Team_Member_Constraint;
-  team_invitation: Team_Invitation_Constraint;
   message: Message_Constraint;
   message_reaction: Message_Reaction_Constraint;
   attachment: Attachment_Constraint;
@@ -56,10 +52,8 @@ type ConstraintsValueMap = {
 const upsertConstraints: ConstraintsValueMap = {
   task: "task_pkey",
   topic: "thread_pkey",
-  user: "user_pkey",
   team: "team_id_key",
   team_member: "team_member_id_key",
-  team_invitation: "team_invitation_pkey",
   message: "message_id_key",
   message_reaction: "message_reaction_id_key",
   attachment: "attachment_id_key",

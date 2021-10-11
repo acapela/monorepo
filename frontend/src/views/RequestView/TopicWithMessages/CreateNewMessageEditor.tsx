@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useDb } from "~frontend/clientdb";
 import { bindAttachmentsToMessage } from "~frontend/gql/attachments";
+import { useLocalStorageState } from "~frontend/hooks/useLocalStorageState";
 import { useTopicStoreContext } from "~frontend/topics/TopicStore";
 import { EditorAttachmentInfo, uploadFiles } from "~frontend/ui/message/composer/attachments";
 import { MessageContentEditor } from "~frontend/ui/message/composer/MessageContentComposer";
@@ -13,21 +14,20 @@ import { Recorder } from "~frontend/ui/message/composer/Recorder";
 import { useUploadAttachments } from "~frontend/ui/message/composer/useUploadAttachments";
 import { ReplyingToMessageById } from "~frontend/ui/message/reply/ReplyingToMessage";
 import { chooseMessageTypeFromMimeType } from "~frontend/utils/chooseMessageType";
-import { useLocalStorageState } from "~frontend/utils/useLocalStorageState";
 import { Message_Type_Enum } from "~gql";
 import { getNodesFromContentByType } from "~richEditor/content/helper";
 import { RichEditorNode } from "~richEditor/content/types";
 import { Editor, getEmptyRichContent } from "~richEditor/RichEditor";
+import { getUniqueMentionDataFromContent } from "~shared/editor/mentions";
 import { useDependencyChangeEffect } from "~shared/hooks/useChangeEffect";
 import { select } from "~shared/sharedState";
-import { getUUID } from "~shared/uuid";
 import { theme } from "~ui/theme";
 
 interface Props {
   topicId: string;
   isDisabled?: boolean;
   requireMention: boolean;
-  onMessageSent: (messageData: unknown) => void;
+  onMessageSent: () => void;
 }
 
 interface SubmitMessageParams {
@@ -46,11 +46,9 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     onUploadFinish: (attachment) => attachmentsList.push(attachment),
   });
 
-  const checkShouldStore = useCallback(() => Boolean(editorRef.current && !editorRef.current.isEmpty), []);
-  const [value, setValue] = useLocalStorageState<RichEditorNode>({
-    key: "message-draft-for-topic:" + (topicId ?? "new-topic"),
-    getInitialValue: getEmptyRichContent,
-    checkShouldStore,
+  const [content, setContent] = useLocalStorageState<RichEditorNode>({
+    key: "message-draft-for-topic:" + topicId,
+    initialValue: getEmptyRichContent(),
   });
 
   const topicContext = useTopicStoreContext();
@@ -75,8 +73,8 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   const validationErrorMessage = useMemo(() => {
     if (!shouldValidateOnChange) return null;
 
-    return validator(value);
-  }, [shouldValidateOnChange, validator, value]);
+    return validator(content);
+  }, [shouldValidateOnChange, validator, content]);
 
   function focusEditor() {
     editorRef.current?.chain().focus("end").run();
@@ -93,15 +91,17 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
   };
 
   const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
-    const messageId = getUUID();
-
     const newMessage = db.message.create({
-      id: messageId,
       topic_id: topicId,
       type,
       content,
       replied_to_message_id: topicContext?.currentlyReplyingToMessageId,
     });
+    for (const { userId, type } of getUniqueMentionDataFromContent(content)) {
+      db.task.create({ message_id: newMessage.id, user_id: userId, type });
+    }
+
+    setContent(getEmptyRichContent());
 
     trackEvent("Sent Message", {
       messageType: type,
@@ -110,14 +110,14 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     });
     await Promise.all(
       bindAttachmentsToMessage(
-        messageId,
+        newMessage.id,
         attachments.map(({ uuid }) => uuid)
       )
     );
 
     handleStopReplyingToMessage();
 
-    onMessageSent(newMessage);
+    onMessageSent();
   };
 
   return (
@@ -138,27 +138,27 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
       <MessageContentEditor
         ref={editorRef}
         isDisabled={isDisabled || isEditingAnyMessage}
-        content={value}
-        onContentChange={setValue}
+        content={content}
+        onContentChange={setContent}
         onSubmit={async () => {
-          if (validator(value)) {
+          if (validator(content)) {
             setShouldValidateOnChange(true);
             return;
           }
 
           attachmentsList.clear();
-          setValue(getEmptyRichContent());
 
           try {
             await submitMessage({
               type: "TEXT",
-              content: value,
+              content: content,
               attachments,
             });
           } catch (error) {
+            console.error("error while submitting message", error);
             // In case of error - restore attachments and content you were trying to send
             attachmentsList.set(attachments);
-            setValue(value);
+            setContent(content);
           }
         }}
         onFilesSelected={uploadAttachments}

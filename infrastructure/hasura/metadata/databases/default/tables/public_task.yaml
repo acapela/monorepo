@@ -19,7 +19,13 @@ insert_permissions:
         user_id:
           _eq: X-Hasura-User-Id
     columns:
+    - done_at
     - due_at
+    - id
+    - message_id
+    - seen_at
+    - type
+    - user_id
   role: user
 select_permissions:
 - permission:
@@ -30,6 +36,7 @@ select_permissions:
     - id
     - message_id
     - seen_at
+    - team_invitation_id
     - type
     - updated_at
     - user_id
@@ -55,6 +62,13 @@ update_permissions:
       - message:
           user_id:
             _eq: X-Hasura-User-Id
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      message:
+        user_id:
+          _eq: X-Hasura-User-Id
   role: user
 event_triggers:
 - definition:
