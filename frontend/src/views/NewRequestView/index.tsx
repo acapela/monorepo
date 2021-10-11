@@ -55,9 +55,6 @@ const UIInviteNewMembersTitle = styled.h1<{}>`
 const UIDropFileHolder = styled(DropFileContext)<{}>`
   height: 100%;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 const UIHolder = styled.div<{}>`
