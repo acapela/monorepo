@@ -10,6 +10,7 @@ import { Entity } from "./entity";
 import { EntityQuery, EntityQueryConfig, createEntityQuery } from "./query";
 import { QueryIndex, QueryIndexValue, createQueryFieldIndex } from "./queryIndex";
 import { EntityChangeSource } from "./types";
+import { computedArray, computedMaybeArray } from "./utils/computedArray";
 import { EventsEmmiter, createEventsEmmiter } from "./utils/eventManager";
 
 export type EntitySimpleQuery<Data> = Partial<{
@@ -64,7 +65,7 @@ export function createEntityStore<Data, Connections>(
 
   // Each entity might have 'is deleted' flag which makes is 'as it is not existing' for the store.
   // Let's make sure we always filter such item out.
-  const existingItems = computed(() => {
+  const existingItems = computedArray(() => {
     const { getIsDeleted } = definition.config;
     if (!getIsDeleted) {
       return items;
@@ -115,7 +116,7 @@ export function createEntityStore<Data, Connections>(
       return item;
     },
     simpleQuery(simpleQuery: EntitySimpleQuery<Data>): Entity<Data, Connections>[] {
-      return computed(() => {
+      return computedArray(() => {
         const computedResults = typedKeys(simpleQuery).map((requiredKey) => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const requiredValue = simpleQuery[requiredKey]!;

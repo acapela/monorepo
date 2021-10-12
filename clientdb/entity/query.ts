@@ -5,6 +5,7 @@ import { typedKeys } from "~shared/object";
 
 import { Entity } from "./entity";
 import { EntitySimpleQuery, EntityStore } from "./store";
+import { computedArray } from "./utils/computedArray";
 import { createEntityCache } from "./utils/entityCache";
 
 type EntityFunctionQuery<Data, Connections> = (item: Entity<Data, Connections>) => boolean;
@@ -89,7 +90,7 @@ export function createEntityQuery<Data, Connections>(
 
   // Note: this value will be cached as long as it is in use and nothing it uses changes.
   // TLDR: query value is cached between renders if no items it used changed.
-  const passingItems = computed(
+  const passingItems = computedArray(
     () => {
       const passedItems = source.filter(cachedFilter);
 

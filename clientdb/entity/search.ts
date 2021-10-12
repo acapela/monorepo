@@ -9,6 +9,7 @@ import { runUntracked } from "~shared/mobxUtils";
 import { typedKeys } from "~shared/object";
 
 import { EntityStore } from "./store";
+import { computedArray } from "./utils/computedArray";
 
 interface EntitySearchFieldDetailedConfig<Value> {
   extract?: (value: Value) => string;
@@ -134,7 +135,7 @@ export function createEntitySearch<Data, Connections>(
     // Index is built on first search (aka. it is lazy)
     initializeIfNeeded();
 
-    return computed(() => {
+    return computedArray(() => {
       // We simply read this value to let mobx know to re-compute if there is change in the index
       status.updatesCount;
       const end = measureTime(`Search ${entityName}`, DEV_SHOULD_MEASURE_PERFORMANCE);

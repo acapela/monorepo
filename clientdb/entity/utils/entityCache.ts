@@ -1,6 +1,8 @@
-import { IComputedValue, computed } from "mobx";
+import { IComputedValue } from "mobx";
 
 import { Entity } from "~clientdb/entity/entity";
+
+import { computedMaybeArray } from "./computedArray";
 
 /**
  * Creates 'smart' entity cache that keeps result for given entity as no value it's getter uses.
@@ -17,7 +19,7 @@ export function createEntityCache<Data, Connections, Result>(getter: (entity: En
       return cachedValue.get();
     }
 
-    const newCachedValue = computed(
+    const newCachedValue = computedMaybeArray(
       () => {
         return getter(entity);
       },
