@@ -7,6 +7,7 @@ import { routes } from "~frontend/router";
 import { RouteLink } from "~frontend/router/RouteLink";
 import { theme } from "~ui/theme";
 
+import { RequestContentSnippet } from "./RequestContentSnippet";
 import { RequestParticipants } from "./RequestParticipants";
 
 interface Props {
@@ -21,7 +22,9 @@ export const RequestItem = observer(function RequestItem({ topic, isHighlighted 
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
           <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
-          <UIFeedItemSubTitle>{"jkljkl"}</UIFeedItemSubTitle>
+          <UIFeedItemSubTitle>
+            <RequestContentSnippet topic={topic} />
+          </UIFeedItemSubTitle>
         </UIFeedItemLabels>
       </UIFeedItem>
     </RouteLink>
