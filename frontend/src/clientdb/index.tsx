@@ -1,4 +1,5 @@
 import { ApolloClient, useApolloClient } from "@apollo/client";
+import { AnimatePresence } from "framer-motion";
 import { configure } from "mobx";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
@@ -12,6 +13,7 @@ import { isDev } from "~shared/dev";
 
 import { attachmentEntity } from "./attachment";
 import { createIndexedDbAdapter } from "./indexeddb/adapter";
+import { LoadingScreen } from "./LoadingScreen";
 import { messageEntity } from "./message";
 import { messageReactionEntity } from "./messageReaction";
 import { taskEntity } from "./task";
@@ -95,7 +97,7 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
   return (
     <reactContext.Provider value={db}>
       {canRender && children}
-      {!canRender && <div>Loading...</div>}
+      <AnimatePresence>{!canRender && <LoadingScreen />}</AnimatePresence>
     </reactContext.Provider>
   );
 }
