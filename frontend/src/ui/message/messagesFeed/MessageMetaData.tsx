@@ -24,7 +24,7 @@ export const MessageMetaDataWrapper = styledObserver(
       <UIHolder className={className}>
         {!isHidden && (
           <>
-            <UserAvatar user={user} size="small" />{" "}
+            <UserAvatar user={user} />{" "}
             <UIHead>
               {user.name || "Guest"} <UIHeaderTimeLabel date={date} />
             </UIHead>
@@ -41,13 +41,13 @@ const UIHolder = styled.div<{}>`
   display: grid;
 
   grid-template-columns: 24px minmax(360px, 700px);
-  gap: 8px 12px;
+  gap: 0 10px;
 `;
 
 const UIHead = styled.div<{}>`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 
   ${theme.font.body14.semibold.build()}
 `;

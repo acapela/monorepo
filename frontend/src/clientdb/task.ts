@@ -69,6 +69,9 @@ export const taskEntity = defineEntity<TaskFragment>({
     get isOwn() {
       return task.user_id === getContextValue(userIdContext);
     },
+    get isDone() {
+      return Boolean(task.done_at);
+    },
     get teamInvitation() {
       if (!task.team_invitation?.id) return null;
       return getEntity(teamInvitationEntity).findById(task.team_invitation.id);

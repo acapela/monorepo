@@ -8,15 +8,13 @@ import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { TopicStoreContext } from "~frontend/topics/TopicStore";
 import { MessagesFeed } from "~frontend/ui/message/messagesFeed/MessagesFeed";
-import { TopicViewCard } from "~frontend/ui/topic/TopicViewCard";
 import { UIContentWrapper } from "~frontend/ui/UIContentWrapper";
-import { ClientSideOnly } from "~ui/ClientSideOnly";
+import { TextH3 } from "~ui/typo";
 
 import { CreateNewMessageEditor } from "./CreateNewMessageEditor";
 import { ScrollableMessages } from "./ScrollableMessages";
 import { ScrollHandle } from "./ScrollToBottomMonitor";
 import { TopicClosureBanner as TopicClosureNote } from "./TopicClosureNote";
-import { TopicHeader } from "./TopicHeader";
 import { TopicSummaryMessage } from "./TopicSummary";
 
 export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) => {
@@ -55,68 +53,60 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
   return (
     <TopicStoreContext>
-      <UITopicViewCard headerNode={topic && <TopicHeader onCloseTopicRequest={onCloseTopicRequest} topic={topic} />}>
-        {/* Absolutely placed backdrop will take it's width relative to the width its container */}
-        {/* This works as this nested container holds no padding/margin left or right */}
+      <UIHolder>
+        <UITitle>{topic.name}</UITitle>
 
-        <>
-          <ScrollableMessages ref={scrollerRef as never}>
-            <AnimateSharedLayout>
-              <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
+        <ScrollableMessages ref={scrollerRef as never}>
+          <AnimateSharedLayout>
+            <MessagesFeed onCloseTopicRequest={onCloseTopicRequest} messages={messages} />
 
-              {topic && isClosed && <TopicSummaryMessage topic={topic} />}
-            </AnimateSharedLayout>
+            {topic && isClosed && <TopicSummaryMessage topic={topic} />}
+          </AnimateSharedLayout>
 
-            {!messages.length && !isClosed && (
-              <UIContentWrapper>Start a request by adding a first message with an @-mention below.</UIContentWrapper>
-            )}
-
-            {isClosed && <TopicClosureNote />}
-          </ScrollableMessages>
-
-          {!isClosed && (
-            <ClientSideOnly>
-              <UIMessageComposer>
-                <CreateNewMessageEditor
-                  topicId={topic.id}
-                  requireMention={messages.length === 0}
-                  onMessageSent={() => {
-                    scrollerRef.current?.scrollToBottom("auto");
-                    const openTasks = messages.flatMap(
-                      (message) => message.tasks.query((task) => !task.done_at && task.user_id === user.id).all
-                    );
-                    const doneAt = new Date().toISOString();
-                    for (const openTask of openTasks) {
-                      openTask.update({ done_at: doneAt });
-                    }
-                  }}
-                />
-              </UIMessageComposer>
-            </ClientSideOnly>
+          {!messages.length && !isClosed && (
+            <UIContentWrapper>Start a request by adding a first message with an @-mention below.</UIContentWrapper>
           )}
-        </>
-      </UITopicViewCard>
+
+          {isClosed && <TopicClosureNote />}
+        </ScrollableMessages>
+
+        {!isClosed && (
+          <UIMessageComposer>
+            <CreateNewMessageEditor
+              topicId={topic.id}
+              requireMention={messages.length === 0}
+              onMessageSent={() => {
+                scrollerRef.current?.scrollToBottom("auto");
+                const openTasks = messages.flatMap(
+                  (message) => message.tasks.query((task) => !task.isDone && task.user_id === user.id).all
+                );
+                const doneAt = new Date().toISOString();
+                for (const openTask of openTasks) {
+                  openTask.update({ done_at: doneAt });
+                }
+              }}
+            />
+          </UIMessageComposer>
+        )}
+      </UIHolder>
     </TopicStoreContext>
   );
 });
 
-const UITopicViewCard = styled(TopicViewCard)`
-  ${ScrollableMessages} {
-    flex: 1 1 100%;
-    padding: 16px 24px;
-    width: 100%;
-    overflow: auto;
-  }
+const UIHolder = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
 
-  ${TopicClosureNote} {
-    margin: 48px auto;
-  }
+const UITitle = styled(TextH3)`
+  padding: 20px;
+  font-weight: 700;
 `;
 
 const UIMessageComposer = styled.div`
-  flex: 1 0 auto;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: auto;
   padding: 24px;
   padding-top: 0px;
 `;

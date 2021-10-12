@@ -1,19 +1,16 @@
-import { gql } from "@apollo/client";
 import { isFriday, nextMonday, setHours, startOfToday, startOfTomorrow } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import React, { ReactNode, useRef } from "react";
 import styled from "styled-components";
 
-import { createMutation } from "~frontend/gql/utils";
-import { UpdateTasksInMessageMutation, UpdateTasksInMessageMutationVariables } from "~gql";
+import { TaskEntity } from "~frontend/clientdb/task";
 import { useBoolean } from "~shared/hooks/useBoolean";
 import { Popover } from "~ui/popovers/Popover";
 import { PopoverMenu, PopoverMenuOption } from "~ui/popovers/PopoverMenu";
 import { DateTimePicker } from "~ui/time/DateTimePicker";
 
 interface Props {
-  messageId: string;
-  previousDueDate?: string | null;
+  task: TaskEntity;
   children: ReactNode;
 }
 
@@ -30,24 +27,7 @@ function getNextWorkDayEndOfDay() {
   return setHours(nextWorkDay, END_OF_WORK_DAY);
 }
 
-export const [, { mutate: updateTasksInMessage }] = createMutation<
-  UpdateTasksInMessageMutation,
-  UpdateTasksInMessageMutationVariables
->(
-  () => gql`
-    mutation UpdateTasksInMessage($messageId: uuid!, $input: task_set_input!) {
-      update_task(where: { message_id: { _eq: $messageId } }, _set: $input) {
-        returning {
-          id
-          message_id
-          due_at
-        }
-      }
-    }
-  `
-);
-
-export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Props) => {
+export const TaskDueDateSetter = ({ task, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, { set: openMenu, unset: closeMenu }] = useBoolean(false);
@@ -55,10 +35,10 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
 
   const handleSubmit = async (date: Date | null) => {
     closeCalendar();
-    updateTasksInMessage({ messageId, input: { due_at: date?.toISOString() ?? null } });
+    task.update({ due_at: date?.toISOString() ?? null });
   };
 
-  const calendarInitialValue = previousDueDate ? new Date(previousDueDate) : getNextWorkDayEndOfDay();
+  const calendarInitialValue = task.due_at ? new Date(task.due_at) : getNextWorkDayEndOfDay();
   const isLastDayOfWorkWeek = isFriday(new Date());
 
   return (
@@ -105,7 +85,7 @@ export const TaskDueDateSetter = ({ messageId, previousDueDate, children }: Prop
               ] as PopoverMenuOption[]
             ).concat(
               // Add option to delete due date if previously present
-              previousDueDate
+              task.due_at
                 ? [
                     {
                       key: "delete",
