@@ -1,6 +1,6 @@
 import { Index } from "flexsearch";
 import { mapValues, memoize, pick, values } from "lodash";
-import { computed, makeAutoObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 import { Entity } from "~clientdb";
 import { assert } from "~shared/assert";

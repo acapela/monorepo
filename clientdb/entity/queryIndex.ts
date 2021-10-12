@@ -1,4 +1,4 @@
-import { IObservableArray, ObservableMap, computed, observable, runInAction } from "mobx";
+import { IObservableArray, ObservableMap, observable, runInAction } from "mobx";
 
 import { Entity } from "~clientdb";
 
