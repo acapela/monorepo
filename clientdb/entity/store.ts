@@ -192,7 +192,7 @@ export function createEntityStore<Data, Connections>(
       return didRemove;
     },
     query(config: EntityQueryConfig<Data, Connections>) {
-      return createEntityQuery(existingItems.get(), config, store);
+      return createEntityQuery(() => existingItems.get(), config, store);
     },
     destroy() {
       queryIndexes.forEach((queryIndex) => {
