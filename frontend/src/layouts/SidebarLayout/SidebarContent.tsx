@@ -12,11 +12,7 @@ import { theme } from "~ui/theme";
 import { RequestFeed } from "./RequestFeed";
 import { RequestSearchResults } from "./RequestFeed/RequestSearchResults";
 
-interface Props {
-  selectedTopicSlug?: string;
-}
-
-export const SidebarContent = observer(function SidebarContent({ selectedTopicSlug }: Props) {
+export const SidebarContent = observer(function SidebarContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isInSearchMode = searchTerm.trim().length > 0;
@@ -50,7 +46,7 @@ export const SidebarContent = observer(function SidebarContent({ selectedTopicSl
       </UISearch>
 
       <UIRequestFeed>
-        {!isInSearchMode && <RequestFeed topicSlug={selectedTopicSlug} />}
+        {!isInSearchMode && <RequestFeed />}
         {isInSearchMode && <RequestSearchResults searchTerm={searchTerm} />}
       </UIRequestFeed>
     </UIHolder>

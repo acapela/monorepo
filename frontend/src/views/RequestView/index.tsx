@@ -35,7 +35,6 @@ function useUpdateRouterIfSlugChanges(topic: TopicEntity | null) {
 
 export const RequestView = observer(({ topicSlug }: Props) => {
   const db = useDb();
-  console.log({ topicSlug });
   const topic = db.topic.findByUniqueIndex("slug", topicSlug);
 
   useUpdateRouterIfSlugChanges(topic);

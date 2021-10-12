@@ -18,23 +18,35 @@ type AvatarsLayoutDescription = {
   avatarSize: number;
 };
 
+/**
+ * Defines how to visually display avatars depending on count of participants
+ */
 const avatarLayoutByCount: Record<number, AvatarsLayoutDescription> = {
+  // Show one, full size avatar
   1: { avatarSize: 1, avatars: [[0, 0]] },
+  // Show smaller avatars on corners
   2: {
     avatarSize: 0.56,
     avatars: [
+      // top left
       [0, 0],
+      // bottom right
       [1, 1],
     ],
   },
+  // Show triangle of avatars
   3: {
     avatarSize: 0.46,
     avatars: [
+      // top left
       [0, 0],
+      // top right
       [1, 0],
+      // bottom center
       [0.5, 1],
     ],
   },
+  // Show as square of 4 avatars
   4: {
     avatarSize: 0.46,
     avatars: [

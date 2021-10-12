@@ -5,11 +5,7 @@ import { useDb } from "~frontend/clientdb";
 
 import { RequestFeedGroups } from "./RequestFeedGroups";
 
-interface Props {
-  topicSlug?: string;
-}
-
-export const RequestFeed = observer(({ topicSlug }: Props) => {
+export const RequestFeed = observer(() => {
   const db = useDb();
   const topics = db.topic.query({ sort: (topic) => topic.lastActivityDate }).all;
 
