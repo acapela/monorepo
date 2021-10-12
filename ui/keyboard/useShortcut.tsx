@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { convertMaybeArrayToArray } from "~shared/array";
 import { createCleanupObject } from "~shared/cleanup";
 
+import { describeShortcut } from "./describeShortcut";
 import {
   ShortcutCallback,
   ShortcutDefinition,
@@ -22,6 +23,8 @@ export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCal
 
     return createShortcutListener(keys, { callback, options });
   }, [keys, callback, options]);
+
+  return describeShortcut(shortcut);
 }
 
 export function useShortcuts(shortcuts: ShortcutDefinition[], callback?: ShortcutCallback, options?: ShortcutOptions) {
