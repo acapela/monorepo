@@ -26,14 +26,13 @@ export const MessageTask = observer(({ task }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const assigneeName = task.user?.name ?? getTeamInvitationDisplayName(teamInvitation!);
 
-  const isDone = !!task.done_at;
   return (
     <UISingleTask key={task.id}>
       {task.user ? <UserAvatar user={task.user} /> : <Avatar name="?" />}
       <UITextInfo>
         <UIUserNameLabel>{assigneeName}</UIUserNameLabel>
-        <UIStatusLabel isDone={isDone}>
-          {isDone && "✓ "}
+        <UIStatusLabel isDone={task.isDone}>
+          {task.isDone && "✓ "}
           {TASK_TYPE_LABELS.get(task.type || "") ?? task.type}
         </UIStatusLabel>
       </UITextInfo>
