@@ -79,6 +79,8 @@ export const messageEntity = defineEntity<MessageFragment>({
         return new Date(message.updated_at);
       }
 
+      // We know we have at least one item as we just did `tasks.hasItems`.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const lastTask = maxBy(tasks.all, (task) => task.getUpdatedAt())!;
 
       return lastTask.getUpdatedAt();

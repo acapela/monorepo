@@ -1,7 +1,6 @@
 import { find, forEach, mapValues } from "lodash";
 
 import { assert } from "~shared/assert";
-import { measureTime } from "~shared/dev";
 import { isClient } from "~shared/document";
 
 import { EntityClient, EntityClientByDefinition, createEntityClient } from "./entity/client";

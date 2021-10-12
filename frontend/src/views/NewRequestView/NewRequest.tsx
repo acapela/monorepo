@@ -126,6 +126,7 @@ export const NewRequest = observer(function NewRequest() {
       return [false, "You should mention at least one teammate before creating request"];
     }
     return [true, `Hit ${sendShortcutDescription} to create request`];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topicName, messageContent]);
 
   // Cleanup contents after route has changed

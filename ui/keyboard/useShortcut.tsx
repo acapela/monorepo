@@ -1,19 +1,15 @@
 import { useEffect } from "react";
 
-import { convertMaybeArrayToArray } from "~shared/array";
 import { createCleanupObject } from "~shared/cleanup";
 
 import { describeShortcut } from "./describeShortcut";
 import {
   ShortcutCallback,
   ShortcutDefinition,
-  ShortcutKeys,
   ShortcutOptions,
   createShortcutListener,
   resolveShortcutsDefinition,
 } from "./shortcutBase";
-
-console.log({ resolveShortcutsDefinition });
 
 export function useShortcut(shortcut: ShortcutDefinition, callback?: ShortcutCallback, options?: ShortcutOptions) {
   const keys = resolveShortcutsDefinition(shortcut);

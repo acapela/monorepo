@@ -1,8 +1,6 @@
 import { observer } from "mobx-react";
 import styled from "styled-components";
 
-import { groupByFilter } from "~frontend/../../shared/groupByFilter";
-import { useDb } from "~frontend/clientdb";
 import { TopicEntity } from "~frontend/clientdb/topic";
 import { theme } from "~ui/theme";
 
@@ -19,7 +17,7 @@ export const RequestsGroup = observer(({ topics, groupName }: Props) => {
       <UISection>
         <UISectionTitle>{groupName}</UISectionTitle>
         {topics.map((topic) => (
-          <RequestItem isHighlighted={false} key={topic.id} topic={topic} />
+          <RequestItem key={topic.id} topic={topic} />
         ))}
       </UISection>
     </UIHolder>

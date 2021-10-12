@@ -97,5 +97,3 @@ const UISearchPlaceholder = styled.input<{}>`
   outline: none;
   background: transparent;
 `;
-
-const UISearchShortcut = styled.span<{}>``;
