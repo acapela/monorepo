@@ -1,8 +1,10 @@
 import { AnimateSharedLayout } from "framer-motion";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+import { runUntracked } from "~frontend/../../shared/mobxUtils";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -30,8 +32,8 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   // );
 
   useEffect(() => {
-    const unseenTasks = messages.flatMap(
-      (message) => message.tasks.query((task) => !task.seen_at && task.user_id === user.id).all
+    const unseenTasks = runUntracked(() =>
+      messages.flatMap((message) => message.tasks.query((task) => !task.seen_at && task.user_id === user.id).all)
     );
     const seenAt = new Date().toISOString();
     for (const unseenTask of unseenTasks) {
@@ -80,7 +82,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
                 <CreateNewMessageEditor
                   topicId={topic.id}
                   requireMention={messages.length === 0}
-                  onMessageSent={() => {
+                  onMessageSent={action(() => {
                     scrollerRef.current?.scrollToBottom("auto");
                     const openTasks = messages.flatMap(
                       (message) => message.tasks.query((task) => !task.done_at && task.user_id === user.id).all
@@ -89,7 +91,7 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
                     for (const openTask of openTasks) {
                       openTask.update({ done_at: doneAt });
                     }
-                  }}
+                  })}
                 />
               </UIMessageComposer>
             </ClientSideOnly>

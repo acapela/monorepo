@@ -1,4 +1,4 @@
-import { runInContext } from "lodash";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 
@@ -16,7 +16,7 @@ export const ReplyButton = observer(({ messageId }: Props) => {
   async function handleMarkAsBeingRepliedTo() {
     if (!topicContext) return;
 
-    runInContext(() => {
+    runInAction(() => {
       topicContext.currentlyReplyingToMessageId = messageId;
     });
   }
