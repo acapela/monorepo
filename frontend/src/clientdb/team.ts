@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 
 import { defineEntity } from "~clientdb";
 import { EntityByDefinition } from "~clientdb/entity/entity";
-import { teamInvitationEntity } from "~frontend/clientdb/teamInvitation";
 import { TeamFragment } from "~gql";
 
 import { teamMemberEntity } from "./teamMember";
@@ -44,7 +43,6 @@ export const teamEntity = defineEntity<TeamFragment>({
 }).addConnections((team, { getEntity }) => ({
   hasSlackInstallation: !!team.slack_installation?.team_id,
   members: getEntity(teamMemberEntity).query({ team_id: team.id }),
-  invitations: getEntity(teamInvitationEntity).query({ team_id: team.id }),
 }));
 
 export type TeamEntity = EntityByDefinition<typeof teamEntity>;

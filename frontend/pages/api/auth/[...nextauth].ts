@@ -1,19 +1,15 @@
-import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { NextAuthOptions, User as ProviderUser } from "next-auth";
 import { AdapterInstance } from "next-auth/adapters";
 import Providers, { EmailConfig } from "next-auth/providers";
 
 import { initializeSecrets } from "~config";
-import { Account, User, db } from "~db";
+import { User, db } from "~db";
 import { assert } from "~shared/assert";
 import { trackFirstBackendUserEvent } from "~shared/backendAnalytics";
 import { DEFAULT_NOTIFICATION_EMAIL, sendEmail } from "~shared/email";
+import { enrichPayload, signJWT, verifyJWT } from "~shared/jwt";
 import { getSearchParams } from "~shared/urlParams";
-
-type Role = "user";
-const ALLOWED_ROLES: Role[] = ["user"];
-const DEFAULT_ROLE: Role = "user";
 
 /**
  * In this file we manage authorization integration using next-auth.
@@ -56,9 +52,6 @@ type AuthAdapter = AdapterInstance<User, Profile, Session>;
 async function checkWhitelist(profile: Profile) {
   const email = profile.email.toLocaleLowerCase();
 
-  const teamInviteEntry = await db.team_invitation.findFirst({ where: { email } });
-  if (teamInviteEntry) return;
-
   const whiteListEntry = await db.whitelist.findFirst({ where: { email } });
 
   if (!whiteListEntry) {
@@ -71,9 +64,7 @@ async function checkWhitelist(profile: Profile) {
 }
 
 function getIsNewUser(user: User | ProviderUser): user is ProviderUser {
-  if (user.created_at) return false;
-
-  return true;
+  return !user.created_at;
 }
 
 const authAdapterProvider = {
@@ -85,7 +76,6 @@ const authAdapterProvider = {
       async createUser(profile) {
         if (process.env.ENABLE_WHITELIST) await checkWhitelist(profile);
 
-        // noinspection UnnecessaryLocalVariableJS
         const user = await db.user.create({
           data: { name: profile.name, email: profile.email, avatar_url: profile.image },
         });
@@ -218,6 +208,8 @@ const GOOGLE_AUTH_SCOPES = [
   "directory.readonly",
 ];
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
 async function getAuthInitOptions() {
   await initializeSecrets();
   const authInitOptions: NextAuthOptions = {
@@ -231,13 +223,13 @@ async function getAuthInitOptions() {
         if (!tokenData?.token) {
           throw new Error("JWT Token not found");
         }
-        return jwt.sign(tokenData.token, tokenData.secret, { algorithm: "HS256" });
+        return signJWT(tokenData.token, tokenData.secret);
       },
       decode: async (tokenData) => {
         if (!tokenData?.token) {
           throw new Error("JWT Token not found");
         }
-        const decodedToken = jwt.verify(tokenData.token, tokenData.secret, { algorithms: ["HS256"] });
+        const decodedToken = verifyJWT(tokenData.token, tokenData.secret);
 
         return decodedToken as Record<string, unknown>;
       },
@@ -249,30 +241,13 @@ async function getAuthInitOptions() {
     pages: {
       error: "/auth/error", // Error code passed in query string as ?error=
     },
-    useSecureCookies: false,
-    debug: process.env.NODE_ENV === "development",
+    debug: isDevelopment,
     callbacks: {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jwt: async (token, user: User, account: Account, profile: Profile) => {
+      jwt: async (token, user: User) => {
         if (!user) {
           return token;
         }
-
-        return {
-          ...token,
-          id: token.sub,
-          // Add some useful information we might use in the frontend.
-          picture: user.avatar_url,
-          name: profile.name,
-          currentTeamId: user.current_team_id ?? null,
-          // Make JWT token compatible with hasura
-          "https://hasura.io/jwt/claims": {
-            "x-hasura-allowed-roles": ALLOWED_ROLES,
-            "x-hasura-default-role": DEFAULT_ROLE,
-            "x-hasura-user-id": user.id,
-          },
-        };
+        return enrichPayload({ ...token, userId: user.id, teamId: user.current_team_id });
       },
 
       async signIn(user: User | ProviderUser, accountInfo) {
@@ -337,33 +312,10 @@ async function getAuthInitOptions() {
       sessionToken: {
         name: `next-auth.session-token`,
         options: {
-          /**
-           * !!!
-           * We make session cookie accessible on client side.
-           *
-           * This is because it seems to be the only way to make it work with hasura.
-           *
-           * Context:
-           * Hasura requires token to be present in request header using Bearer token.
-           * In order to provide this header, we need to know token on client side.
-           *
-           * By default next-auth uses http-only cookies to store token. This means token is only
-           * accessible for server during request and is 'invisible' on client side. This is more
-           * secure as it makes it impossible for evil scripts to 'steal' the token on client side.
-           *
-           * Workaround could be to create proxy server that 'translates' request moving token from
-           * cookie to header of the request.
-           *
-           * We've decided to use client side token for sake of faster development now and consider
-           * adding proxy later.
-           *
-           * The perfect solution would be configurable option in hasura that allows reading JWT from
-           * cookie. But seems its not possible right now (https://github.com/hasura/graphql-engine/issues/2183)
-           */
-          httpOnly: false, // <-- ! We make this cookie accessible on client side.
+          httpOnly: true,
           sameSite: "lax",
           path: "/",
-          secure: false,
+          secure: true,
         },
       },
     },

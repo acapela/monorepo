@@ -3,35 +3,11 @@ import { useSession } from "next-auth/client";
 import { useDb } from "~frontend/clientdb";
 import { UserEntity } from "~frontend/clientdb/user";
 import { assertDefined } from "~shared/assert";
-import { UserTokenData } from "~shared/types/jwtAuth";
+import { UserTokenPayload } from "~shared/jwt";
 
-/**
- * This hook works exactly like default next-auth useSession, but has proper typing for user data and also does some
- * simple data mapping.
- */
-function useUserAuth(): UserTokenData | null {
-  const [session] = useSession();
-
-  if (!session) return null;
-
-  const id = get<string | null>(session, "sub", null);
-  const picture = get<string | null>(session, "picture", null);
-
-  return { ...session, id, picture } as unknown as UserTokenData;
-}
-
-function get<T>(target: Record<string, unknown> | null | void, key: string, defaultValue: T): T {
-  if (!target) return defaultValue;
-
-  const existingValue = Reflect.get(target, key) as T;
-
-  return existingValue ?? defaultValue;
-}
-
-export function useCurrentUserTokenData(): UserTokenData | null {
-  const user = useUserAuth();
-
-  return user;
+export function useCurrentUserTokenData(): UserTokenPayload | null {
+  const [user] = useSession();
+  return user as ReturnType<typeof useCurrentUserTokenData>;
 }
 
 /**
@@ -39,7 +15,7 @@ export function useCurrentUserTokenData(): UserTokenData | null {
  *
  * Therefore in components that renders only on logged in use-cases, we can assert current user
  */
-export function useAssetCurrentUserAuth(): UserTokenData {
+export function useAssetCurrentUserAuth(): UserTokenPayload {
   const user = useCurrentUserTokenData();
 
   const validatedUser = assertDefined(user, `Using useAssertCurrentUser with null user`);

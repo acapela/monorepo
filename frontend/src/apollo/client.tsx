@@ -1,8 +1,5 @@
-import { IncomingMessage } from "http";
-
 import {
   ApolloClient,
-  ApolloLink,
   ApolloProvider,
   FieldMergeFunction,
   HttpLink,
@@ -14,15 +11,13 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLError } from "graphql";
 import { memoize } from "lodash";
-import { NextApiRequest } from "next";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useMemo } from "react";
 
-import { TOKEN_COOKIE_NAME, readCurrentToken } from "~frontend/authentication/cookie";
 import { readAppInitialPropByName } from "~frontend/utils/next";
 import { TypedTypePolicies } from "~gql";
 import { assertDefined } from "~shared/assert";
-import { useConst } from "~shared/hooks/useConst";
 import { isServer } from "~shared/isServer";
+import { Maybe } from "~shared/types";
 import { addToast } from "~ui/toasts/data";
 
 import { createDateParseLink } from "./dateStringParseLink";
@@ -68,57 +63,9 @@ const typePolicies: TypedTypePolicies = {
   },
 };
 
-export function readTokenFromRequest(req?: IncomingMessage): string | null {
-  if (!req) return null;
-
-  const nextRequest = req as NextApiRequest;
-  return nextRequest.cookies?.[TOKEN_COOKIE_NAME] ?? null;
-}
-
-export type ApolloContext = Partial<{ noAuth: boolean; headers: Record<string, unknown> }>;
-
-const createAuthorizationHeaderLink = (forcedAuthToken?: string) =>
-  new ApolloLink((operation, forward) => {
-    const { noAuth, headers = {} } = operation.getContext() as ApolloContext;
-
-    const authToken = forcedAuthToken ?? readCurrentToken();
-
-    if (!authToken || noAuth) {
-      return forward(operation);
-    }
-
-    operation.setContext({
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        ...headers,
-      },
-    });
-
-    return forward(operation);
-  });
-
-function createSocketLink(websocketEndpoint?: string) {
-  const rootUrl = websocketEndpoint ?? "";
-  return new WebSocketLink({
-    uri: `${rootUrl}/v1/graphql`,
-    options: {
-      reconnect: true,
-      lazy: true,
-      connectionParams: () => {
-        const authToken = readCurrentToken();
-
-        if (!authToken) {
-          return {};
-        }
-
-        return {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        };
-      },
-    },
-  });
+interface ApolloClientOptions {
+  forcedAuthToken?: Maybe<string>;
+  websocketEndpoint?: string;
 }
 
 function getGraphqlUrl() {
@@ -154,49 +101,37 @@ const parseDatesLink = createDateParseLink();
 
 const httpLink = parseDatesLink.concat(httpRawLink);
 
-interface ApolloClientOptions {
-  forcedAuthToken?: string;
-  websocketEndpoint?: string;
-}
+export const getApolloClient = memoize(
+  (websocketEndpoint: ApolloClientOptions["websocketEndpoint"]): ApolloClient<unknown> => {
+    const link = isServer
+      ? httpLink
+      : splitLinks(
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+          },
+          new WebSocketLink({
+            // Try to read hasura endpoint from _app initial props if option is not provided.
+            uri: `${websocketEndpoint ?? readAppInitialPropByName("hasuraWebsocketEndpoint") ?? ""}/v1/graphql`,
+            options: {
+              reconnect: true,
+              lazy: true,
+            },
+          }),
+          httpLink
+        );
 
-export const getApolloClient = memoize((options: ApolloClientOptions = {}): ApolloClient<unknown> => {
-  if (!isServer) {
-    // Client side - never use forced token and always read one dynamically
-    options.forcedAuthToken = undefined;
+    return new ApolloClient({
+      credentials: "include",
+      ssrMode: isServer,
+      link,
+      cache: new InMemoryCache({ typePolicies }),
+    });
   }
-
-  const authTokenLink = createAuthorizationHeaderLink(options.forcedAuthToken);
-
-  function getLink() {
-    if (isServer) {
-      return authTokenLink.concat(httpLink);
-    }
-
-    return splitLinks(
-      ({ query }) => {
-        const definition = getMainDefinition(query);
-        return definition.kind === "OperationDefinition" && definition.operation === "subscription";
-      },
-      // Try to read hasura endpoint from _app initial props if option is not provided.
-      createSocketLink(options.websocketEndpoint || readAppInitialPropByName("hasuraWebsocketEndpoint")),
-      authTokenLink.concat(httpLink)
-    );
-  }
-
-  const link = getLink();
-
-  return new ApolloClient({
-    ssrMode: isServer,
-    link,
-    cache: new InMemoryCache({ typePolicies }),
-  });
-});
+);
 
 interface ApolloClientProviderProps {
   children: ReactNode;
-  // On server side, queries are pre-populated using authorized client. This props allows using the same client instance,
-  // resulting in initial render having all data in place and avoiding loading state.
-  ssrAuthToken?: string | null;
   websocketEndpoint?: string | null;
 }
 
@@ -206,13 +141,8 @@ export function getRenderedApolloClient() {
   return assertDefined(renderedApolloClient, "getRenderedApolloClient called before first ApolloClientProvider render");
 }
 
-export const ApolloClientProvider = ({ children, ssrAuthToken, websocketEndpoint }: ApolloClientProviderProps) => {
-  const client = useConst(() =>
-    getApolloClient({
-      forcedAuthToken: ssrAuthToken ?? undefined,
-      websocketEndpoint: websocketEndpoint ?? undefined,
-    })
-  );
+export const ApolloClientProvider = ({ children, websocketEndpoint }: ApolloClientProviderProps) => {
+  const client = useMemo(() => getApolloClient(websocketEndpoint ?? undefined), [websocketEndpoint]);
 
   renderedApolloClient = client;
 

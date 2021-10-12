@@ -8,9 +8,6 @@ object_relationships:
 - name: team
   using:
     foreign_key_constraint_on: team_id
-- name: used_by_user
-  using:
-    foreign_key_constraint_on: used_by_user_id
 insert_permissions:
 - permission:
     backend_only: false
@@ -21,9 +18,7 @@ insert_permissions:
             _eq: X-Hasura-User-Id
     columns:
     - created_at
-    - email
     - id
-    - team_id
     - updated_at
     set:
       inviting_user_id: x-hasura-User-Id
@@ -36,14 +31,9 @@ select_permissions:
 - permission:
     columns:
     - created_at
-    - email
     - id
     - inviting_user_id
-    - slack_user_id
-    - team_id
     - updated_at
-    - used_at
-    - used_by_user_id
     filter:
       team:
         memberships:
@@ -58,29 +48,3 @@ delete_permissions:
           user_id:
             _eq: X-Hasura-User-Id
   role: user
-event_triggers:
-- definition:
-    delete:
-      columns: "*"
-    enable_manual: false
-    insert:
-      columns: "*"
-    update:
-      columns:
-      - used_at
-      - email
-      - created_at
-      - id
-      - inviting_user_id
-      - team_id
-      - token
-      - used_by_user_id
-  headers:
-  - name: Authorization
-    value_from_env: HASURA_EVENTS_WEBHOOK_AUTHORIZATION_HEADER
-  name: team_invitation_updates
-  retry_conf:
-    interval_sec: 10
-    num_retries: 0
-    timeout_sec: 60
-  webhook_from_env: HASURA_EVENTS_WEBHOOK_URL

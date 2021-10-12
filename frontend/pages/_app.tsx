@@ -4,16 +4,16 @@ import "focus-visible";
 import * as Sentry from "@sentry/nextjs";
 import { ErrorBoundary } from "@sentry/nextjs";
 import { AnimatePresence, MotionConfig } from "framer-motion";
+import { NextPageContext } from "next";
 import { Session } from "next-auth";
-import { Provider as SessionProvider, getSession } from "next-auth/client";
+import { Provider as SessionProvider } from "next-auth/client";
 import { AppContext, AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
-import styled, { createGlobalStyle } from "styled-components";
-import { ThemeProvider } from "styled-components";
+import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 
 import { AnalyticsManager } from "~frontend/analytics/AnalyticsProvider";
-import { ApolloClientProvider as ApolloProvider, readTokenFromRequest } from "~frontend/apollo/client";
+import { ApolloClientProvider as ApolloProvider } from "~frontend/apollo/client";
 import { getUserFromRequest } from "~frontend/authentication/request";
 import { ClientDbProvider } from "~frontend/clientdb";
 import initializeUserbackPlugin from "~frontend/scripts/userback";
@@ -43,7 +43,6 @@ if (["staging", "production"].includes(stage)) {
 
 interface AddedProps {
   session: Session;
-  authToken: string | null;
   hasuraWebsocketEndpoint: string | null;
 }
 
@@ -55,7 +54,6 @@ export default function App({
   Component,
   pageProps,
   session,
-  authToken,
   hasuraWebsocketEndpoint,
 }: AppProps & AddedProps): JSX.Element {
   // Load Userback integration after initial app render
@@ -76,7 +74,7 @@ export default function App({
       <CommonMetadata />
       <SessionProvider session={session}>
         <MotionConfig transition={{ ...POP_ANIMATION_CONFIG }}>
-          <ApolloProvider ssrAuthToken={authToken} websocketEndpoint={hasuraWebsocketEndpoint}>
+          <ApolloProvider websocketEndpoint={hasuraWebsocketEndpoint}>
             <ThemeProvider theme={getTheme("default")}>
               <CurrentTeamIdProvider>
                 <ClientDbProvider>
@@ -110,6 +108,33 @@ const CommonMetadata = () => {
   );
 };
 
+function tryRedirectWithCookie({ req, res }: NextPageContext) {
+  if (!req || !res) {
+    return false;
+  }
+
+  const urlPath = req?.url;
+  if (!urlPath) {
+    return false;
+  }
+  const searchIndex = urlPath.indexOf("?");
+  const searchParams = new URLSearchParams(urlPath.slice(searchIndex));
+  const jwt = searchParams.get("jwt");
+  if (!jwt) {
+    return false;
+  }
+
+  searchParams.delete("jwt");
+  res
+    .writeHead(302, {
+      Location: `${urlPath.slice(0, searchIndex)}?${searchParams}`,
+      "Set-Cookie": `next-auth.session-token=${jwt};`,
+    })
+    .end();
+
+  return true;
+}
+
 /**
  * In order to have current user data available on the first render, let's parse cookie content
  * on server side.
@@ -122,23 +147,12 @@ const CommonMetadata = () => {
  * session provider value will update.
  */
 App.getInitialProps = async (context: AppContext) => {
-  async function getSessionForEnv() {
-    // In development, we might wipe out db so we cant trust 'jwt'
-    if (process.env.NODE_ENV === "development") {
-      return await getSession({ req: context.ctx.req });
-    }
-
-    // In production, simply parse the token if it's still valid
-    return getUserFromRequest(context.ctx.req);
+  if (tryRedirectWithCookie(context.ctx)) {
+    return;
   }
 
-  // We're pre-fetching all the queries on server side before actual rendering happens.
-  // During server-side rendering, we will use apollo client with fixed token value
-  const authToken = readTokenFromRequest(context.ctx.req);
-
   return {
-    session: await getSessionForEnv(),
-    authToken,
+    session: await getUserFromRequest(context.ctx.req),
     hasuraWebsocketEndpoint: process.env.HASURA_WEBSOCKET_ENDPOINT,
   };
 };

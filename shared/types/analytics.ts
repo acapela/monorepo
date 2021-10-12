@@ -1,10 +1,11 @@
 import { Message_Type_Enum } from "~gql";
+import { Maybe } from "~shared/types";
 
 export type AnalyticsUserProfile = {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
+  id: Maybe<string>;
+  name: Maybe<string>;
+  email: Maybe<string>;
+  avatarUrl?: Maybe<string>;
 };
 
 /**

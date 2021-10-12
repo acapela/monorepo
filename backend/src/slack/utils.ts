@@ -14,11 +14,11 @@ export async function fetchTeamBotToken(teamId: string) {
 
 // finds a slack user either through the team_member's slack installation or by email
 export async function findSlackUserId(teamId: string, user: User) {
-  const teamMemberSlackInstallation = await db.team_member_slack_installation.findFirst({
+  const teamMemberSlack = await db.team_member_slack.findFirst({
     where: { team_member: { team_id: teamId, user_id: user.id } },
   });
-  if (teamMemberSlackInstallation) {
-    return teamMemberSlackInstallation.slack_user_id;
+  if (teamMemberSlack) {
+    return teamMemberSlack.slack_user_id;
   }
 
   const token = await fetchTeamBotToken(teamId);
@@ -38,13 +38,7 @@ export async function findSlackUserId(teamId: string, user: User) {
 // Finds a user for a Slack user id either through a team_member's slack installation, team_invitation or by email
 export async function findUserBySlackId(slackToken: string, slackUserId: string, teamId?: string) {
   const user = await db.user.findFirst({
-    where: {
-      team_member: { some: { team_id: teamId } },
-      OR: [
-        { team_member: { some: { team_member_slack_installation: { slack_user_id: slackUserId } } } },
-        { team_invitation_team_invitation_used_by_user_idTouser: { some: { slack_user_id: slackUserId } } },
-      ],
-    },
+    where: { team_member: { some: { team_id: teamId, team_member_slack: { slack_user_id: slackUserId } } } },
   });
   if (user) {
     return user;

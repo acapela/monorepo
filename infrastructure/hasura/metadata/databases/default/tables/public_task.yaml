@@ -5,9 +5,6 @@ object_relationships:
 - name: message
   using:
     foreign_key_constraint_on: message_id
-- name: team_invitation
-  using:
-    foreign_key_constraint_on: team_invitation_id
 - name: user
   using:
     foreign_key_constraint_on: user_id
@@ -36,7 +33,6 @@ select_permissions:
     - id
     - message_id
     - seen_at
-    - team_invitation_id
     - type
     - updated_at
     - user_id

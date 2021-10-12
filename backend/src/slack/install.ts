@@ -1,14 +1,8 @@
 import { ActionHandler } from "~backend/src/actions/actionHandlers";
 import { UnprocessableEntityError } from "~backend/src/errors/errorTypes";
 import { getDevPublicTunnel } from "~backend/src/localtunnel";
-import { findSlackUserId } from "~backend/src/slack/utils";
 import { db } from "~db";
-import {
-  FindSlackUserInput,
-  FindSlackUserOutput,
-  GetTeamSlackInstallationUrlInput,
-  GetTeamSlackInstallationUrlOutput,
-} from "~gql";
+import { GetTeamSlackInstallationUrlInput, GetTeamSlackInstallationUrlOutput } from "~gql";
 import { assert } from "~shared/assert";
 import { isDev } from "~shared/dev";
 
@@ -35,15 +29,6 @@ export const getSlackInstallURL = async ({ withBot }: { withBot: boolean }, meta
     redirectUri: basePath + "/slack/oauth_redirect",
     metadata: JSON.stringify(metadata),
   });
-};
-
-export const findSlackUser: ActionHandler<{ input: FindSlackUserInput }, FindSlackUserOutput> = {
-  actionName: "find_slack_user",
-
-  async handle(userId, { input: { team_id } }) {
-    const user = await db.user.findUnique({ where: { id: userId } });
-    return { has_slack_user: Boolean(user && (await findSlackUserId(team_id, user))) };
-  },
 };
 
 export const getTeamSlackInstallationURL: ActionHandler<

@@ -1,7 +1,8 @@
 import "~config";
 
 import { Prisma, PrismaClient } from "@prisma/client";
-import { sign } from "jsonwebtoken";
+
+import { enrichPayload, signJWT } from "~shared/jwt";
 
 import { user } from ".prisma/client";
 
@@ -20,20 +21,12 @@ export const db = new PrismaClient({
 const PREFIX = "__TESTING__";
 
 function createJWTForUser(user: user): string {
-  return sign(
-    {
-      email: user.email,
-      picture: null,
+  return signJWT(
+    enrichPayload({
       sub: user.id,
-      id: user.id,
-      currentTeamId: user.current_team_id,
-      "https://hasura.io/jwt/claims": {
-        "x-hasura-allowed-roles": ["user"],
-        "x-hasura-default-role": "user",
-        "x-hasura-user-id": user.id,
-      },
-    },
-    process.env.AUTH_JWT_TOKEN_SECRET
+      userId: user.id,
+      teamId: user.current_team_id,
+    })
   );
 }
 

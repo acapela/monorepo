@@ -1,0 +1,22 @@
+table:
+  name: team_member_slack
+  schema: public
+object_relationships:
+- name: team_member
+  using:
+    foreign_key_constraint_on: team_member_id
+select_permissions:
+- permission:
+    columns:
+    - created_at
+    - id
+    - slack_user_id
+    - team_member_id
+    - updated_at
+    filter:
+      team_member:
+        team:
+          memberships:
+            user_id:
+              _eq: X-Hasura-User-Id
+  role: user
