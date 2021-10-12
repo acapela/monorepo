@@ -5,7 +5,7 @@ import { createResolvablePromise } from "~shared/promises";
 
 import { PersistanceDB } from "./db/adapter";
 import { EntityDefinition } from "./definition";
-import { createEntityStore } from "./store";
+import { EntityStore } from "./store";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type EntityPersistanceManager<Data, Connections> = {
@@ -16,6 +16,8 @@ export type EntityPersistanceManager<Data, Connections> = {
 };
 
 interface PersistanceManagerConfig<Data> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  store: EntityStore<Data, any>;
   persistanceDb: PersistanceDB;
   createNewEntity: (data: Data) => void;
 }
@@ -27,10 +29,9 @@ interface PersistanceManagerConfig<Data> {
  */
 export function createEntityPersistanceManager<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
-  { persistanceDb, createNewEntity }: PersistanceManagerConfig<Data>
+  { persistanceDb, createNewEntity, store }: PersistanceManagerConfig<Data>
 ): EntityPersistanceManager<Data, Connections> {
   const persistedItems = createResolvablePromise<void>();
-  const store = createEntityStore<Data, Connections>(definition);
 
   const getPersistanceTable = memoize(async () => {
     const persistanceTablePromise = persistanceDb.getTable<Data>(definition.config.name);

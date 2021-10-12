@@ -50,13 +50,14 @@ export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
   { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
-  const store = createEntityStore<Data, Connections>(definition);
+  const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
 
   function createEntityWithData(input: Partial<Data>) {
     return createEntity<Data, Connections>({ data: input, definition, store, databaseUtilities });
   }
 
   const persistanceManager = createEntityPersistanceManager(definition, {
+    store,
     persistanceDb,
     createNewEntity: (data) => {
       const entity = createEntityWithData(data);
