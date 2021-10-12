@@ -1,8 +1,9 @@
-import { IObservableArray, ObservableMap, computed, observable, runInAction } from "mobx";
+import { IObservableArray, ObservableMap, observable, runInAction } from "mobx";
 
 import { Entity } from "~clientdb";
 
 import { EntityStore } from "./store";
+import { computedArray } from "./utils/computedArray";
 
 /**
  * Thunk is a value or lazy getter of that value. It is useful if we don't want to have to eagerly provide some value,
@@ -150,7 +151,7 @@ export function createQueryFieldIndex<Data, Connections, K extends keyof Data>(
   }
 
   function find(indexValue: QueryIndexValue<Data[K]>) {
-    return computed(() => {
+    return computedArray(() => {
       return findResultsForSingleOrMultipleValues(indexValue);
     }).get();
   }
