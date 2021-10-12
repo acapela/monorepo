@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { maxBy } from "lodash";
 import { observable } from "mobx";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
@@ -61,6 +62,7 @@ export const messageEntity = defineEntity<MessageFragment>({
     },
   },
 }).addConnections((message, { getEntity, getContextValue }) => {
+  const tasks = getEntity(taskEntity).query({ message_id: message.id });
   return {
     get topic() {
       return getEntity(topicEntity).findById(message.topic_id);
@@ -69,9 +71,20 @@ export const messageEntity = defineEntity<MessageFragment>({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return getEntity(userEntity).findById(message.user_id)!;
     },
-    tasks: getEntity(taskEntity).query({ message_id: message.id }),
+    tasks,
     reactions: getEntity(messageReactionEntity).query({ message_id: message.id }),
     attachments: getEntity(attachmentEntity).query({ message_id: message.id }),
+    get lastActivityDate() {
+      if (!tasks.hasItems) {
+        return new Date(message.updated_at);
+      }
+
+      // We know we have at least one item as we just did `tasks.hasItems`.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const lastTask = maxBy(tasks.all, (task) => task.getUpdatedAt())!;
+
+      return lastTask.getUpdatedAt();
+    },
     get repliedToMessage() {
       if (!message.replied_to_message_id) return null;
 

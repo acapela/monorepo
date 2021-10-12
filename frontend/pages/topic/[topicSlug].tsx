@@ -9,6 +9,7 @@ export default function RequestPage(): JSX.Element {
   const topicParams = routes.topic.useParams()?.route;
 
   const topicSlug = topicParams?.topicSlug;
+
   if (!topicSlug) {
     return (
       <SidebarLayout>
@@ -18,7 +19,7 @@ export default function RequestPage(): JSX.Element {
   }
 
   return (
-    <SidebarLayout selectedTopicSlug={topicSlug}>
+    <SidebarLayout>
       <RequestView topicSlug={topicSlug} />
     </SidebarLayout>
   );

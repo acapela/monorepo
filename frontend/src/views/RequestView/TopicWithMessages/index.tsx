@@ -1,8 +1,10 @@
 import { AnimateSharedLayout } from "framer-motion";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+import { runUntracked } from "~frontend/../../shared/mobxUtils";
 import { trackEvent } from "~frontend/analytics/tracking";
 import { useAssertCurrentUser } from "~frontend/authentication/useCurrentUser";
 import { TopicEntity } from "~frontend/clientdb/topic";
@@ -28,8 +30,8 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
   // );
 
   useEffect(() => {
-    const unseenTasks = messages.flatMap(
-      (message) => message.tasks.query((task) => !task.seen_at && task.user_id === user.id).all
+    const unseenTasks = runUntracked(() =>
+      messages.flatMap((message) => message.tasks.query((task) => !task.seen_at && task.user_id === user.id).all)
     );
     const seenAt = new Date().toISOString();
     for (const unseenTask of unseenTasks) {
@@ -41,14 +43,14 @@ export const TopicWithMessages = observer(({ topic }: { topic: TopicEntity }) =>
 
   const scrollerRef = useRef<ScrollHandle>();
 
-  const handleCloseTopic = (topicSummary: string) => {
+  const handleCloseTopic = action((topicSummary: string) => {
     topic.update({
       closed_at: new Date().toISOString(),
       closed_by_user_id: user.id,
       closing_summary: topicSummary,
     });
     trackEvent("Closed Topic", { topicId: topic.id });
-  };
+  });
   const onCloseTopicRequest = isClosed ? undefined : handleCloseTopic;
 
   return (

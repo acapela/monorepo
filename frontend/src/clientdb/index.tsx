@@ -94,6 +94,11 @@ export function ClientDbProvider({ children }: PropsWithChildren<{}>) {
     };
   }, [userId, teamId, apolloClient]);
 
+  // In dev, make currently used db usable via console
+  if (isDev() && db) {
+    Reflect.set(window, "db", db);
+  }
+
   return (
     <reactContext.Provider value={db}>
       {canRender && children}

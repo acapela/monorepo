@@ -52,7 +52,7 @@ export function createEntityClient<Data, Connections>(
   definition: EntityDefinition<Data, Connections>,
   { databaseUtilities, persistanceDb }: EntityClientConfig
 ): EntityClient<Data, Connections> {
-  const store = createEntityStore<Data, Connections>(definition);
+  const store = createEntityStore<Data, Connections>(definition, databaseUtilities);
 
   const searchEngine = definition.config.search ? createEntitySearch(definition.config.search, store) : null;
 
@@ -61,6 +61,7 @@ export function createEntityClient<Data, Connections>(
   }
 
   const persistanceManager = createEntityPersistanceManager(definition, {
+    store,
     persistanceDb,
     createNewEntity: (data) => {
       const entity = createEntityWithData(data);

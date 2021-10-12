@@ -7,17 +7,18 @@ import { routes } from "~frontend/router";
 import { RouteLink } from "~frontend/router/RouteLink";
 import { theme } from "~ui/theme";
 
+import { RequestContentSnippet } from "./RequestContentSnippet";
 import { RequestParticipants } from "./RequestParticipants";
 
 interface Props {
   topic: TopicEntity;
-  isHighlighted: boolean;
 }
 
-export const RequestItem = observer(function RequestItem({ topic, isHighlighted = false }: Props) {
-  if (!topic) {
-    return null;
-  }
+export const RequestItem = observer(function RequestItem({ topic }: Props) {
+  const topicRouteParams = routes.topic.useParams();
+
+  // TODO: Optimize by adding some sort of selector. Now each request item will re-render or route change.
+  const isHighlighted = topicRouteParams?.route.topicSlug === topic.slug;
 
   return (
     <RouteLink passHref route={routes.topic} params={{ topicSlug: topic.slug }}>
@@ -25,7 +26,9 @@ export const RequestItem = observer(function RequestItem({ topic, isHighlighted 
         <RequestParticipants topic={topic} />
         <UIFeedItemLabels>
           <UIFeedItemTitle>{topic.name}</UIFeedItemTitle>
-          <UIFeedItemSubTitle>{""}</UIFeedItemSubTitle>
+          <UIFeedItemSubTitle>
+            <RequestContentSnippet topic={topic} />
+          </UIFeedItemSubTitle>
         </UIFeedItemLabels>
       </UIFeedItem>
     </RouteLink>
@@ -44,13 +47,17 @@ const UIFeedItem = styled.a<{ isHighlighted?: boolean }>`
 
   align-items: center;
 
+  ${theme.transitions.hover()};
+
+  &:hover {
+    background-color: hsla(0, 0%, 0%, 0.025);
+  }
+
   ${(props) =>
     props.isHighlighted &&
     css`
       &&& {
-        /* TODO: Move to theme */
-        background-color: #ff57e3;
-        color: ${theme.colors.layout.foreground()};
+        background-color: hsla(0, 0%, 0%, 0.05);
       }
     `}
 `;

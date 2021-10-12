@@ -6,6 +6,7 @@ import { Entity } from "~clientdb";
 import { assert } from "~shared/assert";
 import { measureTime } from "~shared/dev";
 import { runUntracked } from "~shared/mobxUtils";
+import { isNotNullish } from "~shared/nullish";
 import { typedKeys } from "~shared/object";
 
 import { EntityStore } from "./store";
@@ -142,7 +143,12 @@ export function createEntitySearch<Data, Connections>(
 
       end();
 
-      return foundIds.map((id) => store.assertFindById(id as string));
+      return (
+        foundIds
+          .map((id) => store.findById(id as string))
+          // It is possible we found items that we dont have access to (they're also indexed) - filter them out.
+          .filter(isNotNullish)
+      );
     }).get();
   }
 

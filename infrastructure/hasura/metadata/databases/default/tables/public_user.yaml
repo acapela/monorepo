@@ -57,6 +57,8 @@ select_permissions:
               memberships:
                 user_id:
                   _eq: X-Hasura-User-Id
+      - id:
+          _eq: X-Hasura-User-Id
   role: user
 update_permissions:
 - permission:

@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useList } from "react-use";
@@ -86,11 +87,11 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
 
   useDependencyChangeEffect(focusEditor, [replyingToMessageId]);
 
-  const handleStopReplyingToMessage = () => {
+  const handleStopReplyingToMessage = action(() => {
     topicContext && (topicContext.currentlyReplyingToMessageId = null);
-  };
+  });
 
-  const submitMessage = async ({ type, content, attachments }: SubmitMessageParams) => {
+  const submitMessage = action(async ({ type, content, attachments }: SubmitMessageParams) => {
     const newMessage = db.message.create({
       topic_id: topicId,
       type,
@@ -118,7 +119,7 @@ export const CreateNewMessageEditor = observer(({ topicId, isDisabled, onMessage
     handleStopReplyingToMessage();
 
     onMessageSent();
-  };
+  });
 
   return (
     <UIEditorContainer>

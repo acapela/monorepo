@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import gql from "graphql-tag";
+import { maxBy } from "lodash";
 
 import { EntityByDefinition, defineEntity } from "~clientdb";
 import { TopicFragment } from "~gql";
@@ -72,37 +74,70 @@ export const topicEntity = defineEntity<TopicFragment>({
     ],
   }),
   search: { fields: { name: true } },
-}).addConnections((topic, { getEntity, getContextValue }) => {
-  const messages = getEntity(messageEntity).query({ topic_id: topic.id });
+})
+  .addConnections((topic, { getEntity, getContextValue }) => {
+    const messages = getEntity(messageEntity).query({ topic_id: topic.id });
 
-  const tasks = getEntity(taskEntity).query({ message_id: () => messages.all.map((message) => message.id) });
+    const tasks = getEntity(taskEntity).query({ message_id: () => messages.all.map((message) => message.id) });
 
-  const participants = getEntity(userEntity).query((user) => {
-    if (user.id === getContextValue(userIdContext)) return true;
-    return messages.query((message) => message.tasks.query({ user_id: user.id }).hasItems).hasItems;
+    const participants = getEntity(userEntity).query((user) => {
+      if (topic.owner_id === user.id) return true;
+
+      if (getEntity(messageEntity).query({ user_id: user.id, topic_id: topic.id }).hasItems) return true;
+
+      return messages.query((message) => message.tasks.query({ user_id: user.id }).hasItems).hasItems;
+    });
+
+    return {
+      get owner() {
+        return getEntity(userEntity).findById(topic.owner_id);
+      },
+      messages,
+      tasks,
+      get participants() {
+        return participants;
+      },
+      get isCurrentUserParticipating() {
+        const userId = getContextValue(userIdContext);
+
+        if (!userId) return false;
+
+        if (topic.owner_id === userId) return true;
+
+        if (getEntity(messageEntity).query({ user_id: userId, topic_id: topic.id }).hasItems) return true;
+        // TODO: optimize
+        return messages.query((message) => message.tasks.query({ user_id: userId }).hasItems).hasItems;
+      },
+      get isOwn() {
+        return topic.owner_id === getContextValue(userIdContext);
+      },
+      get isClosed() {
+        return !!topic.closed_at;
+      },
+      get isNew() {
+        // TODO: Implement tracking if topic is new for current user.
+        return false;
+      },
+      get lastActivityDate() {
+        if (!messages.hasItems) {
+          return new Date(topic.updated_at);
+        }
+
+        const messageWithLatestActivity = maxBy(messages.all, (message) => message.lastActivityDate)!;
+
+        return messageWithLatestActivity.lastActivityDate;
+      },
+      get isArchived() {
+        return !!topic.archived_at;
+      },
+      get closedByUser() {
+        if (!topic.closed_by_user_id) return null;
+        return getEntity(userEntity).findById(topic.closed_by_user_id);
+      },
+    };
+  })
+  .addAccessValidation((topic) => {
+    return topic.isCurrentUserParticipating;
   });
-
-  return {
-    get owner() {
-      return getEntity(userEntity).findById(topic.owner_id);
-    },
-    messages,
-    tasks,
-    participants,
-    get isOwn() {
-      return topic.owner_id === getContextValue(userIdContext);
-    },
-    get isClosed() {
-      return !!topic.closed_at;
-    },
-    get isArchived() {
-      return !!topic.archived_at;
-    },
-    get closedByUser() {
-      if (!topic.closed_by_user_id) return null;
-      return getEntity(userEntity).findById(topic.closed_by_user_id);
-    },
-  };
-});
 
 export type TopicEntity = EntityByDefinition<typeof topicEntity>;

@@ -134,7 +134,13 @@ export function createFontStyles(parentStyles: StylesPart[]): Font {
       ]);
     },
     get h6() {
-      return createFontStyles([...parentStyles, headingBaseStyles]);
+      return createFontStyles([
+        ...parentStyles,
+        headingBaseStyles,
+        css`
+          font-size: 0.875rem;
+        `,
+      ]);
     },
     get body() {
       return createFontStyles([...parentStyles, bodyBaseStyles]);
